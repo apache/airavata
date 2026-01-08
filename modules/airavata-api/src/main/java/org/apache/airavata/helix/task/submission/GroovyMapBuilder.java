@@ -50,6 +50,7 @@ import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.SetEnvPaths;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.task.base.TaskContext;
 import org.apache.airavata.helix.task.base.TaskOnFailException;
@@ -103,7 +104,7 @@ public class GroovyMapBuilder {
 
         SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
-        mapData.setCurrentTime(gmtDateFormat.format(new Date()));
+        mapData.setCurrentTime(gmtDateFormat.format(new Date(AiravataUtils.getUniqueTimestamp().getTime())));
 
         // List<String> emails = taskContext.getUserProfile().getEmails();
         // if (emails != null && emails.size() > 0) {

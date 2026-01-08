@@ -31,7 +31,7 @@ public interface IServer {
         FAILED;
 
         public void updateTime() {
-            now = Calendar.getInstance().getTime();
+            now = new Date(AiravataUtils.getUniqueTimestamp().getTime());
         }
 
         private Date now;

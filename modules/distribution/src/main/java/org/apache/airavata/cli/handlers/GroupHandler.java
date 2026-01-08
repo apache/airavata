@@ -34,6 +34,7 @@ import org.apache.airavata.sharing.model.GroupCardinality;
 import org.apache.airavata.sharing.model.GroupType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.UserGroup;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -63,8 +64,9 @@ public class GroupHandler {
                 ownerId = "admin@" + gatewayId;
             }
             group.setOwnerId(ownerId);
-            group.setCreatedTime(System.currentTimeMillis());
-            group.setUpdatedTime(System.currentTimeMillis());
+            long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
+            group.setCreatedTime(currentTime);
+            group.setUpdatedTime(currentTime);
 
             String groupId = sharingRegistryService.createGroup(group);
             System.out.println("✓ Group created: " + groupId + " (" + name + ")");

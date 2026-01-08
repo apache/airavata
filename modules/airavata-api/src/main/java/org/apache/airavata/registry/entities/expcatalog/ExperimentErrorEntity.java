@@ -148,7 +148,7 @@ public class ExperimentErrorEntity implements Serializable {
     @PrePersist
     void setCreationTime() {
         if (this.creationTime == null) {
-            this.creationTime = new Timestamp(System.currentTimeMillis());
+            this.creationTime = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
         }
     }
 }

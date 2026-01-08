@@ -20,6 +20,7 @@
 package org.apache.airavata.common.exception;
 
 import java.util.UUID;
+import org.apache.airavata.common.utils.AiravataUtils;
 
 /**
  * Utility class for generating standardized error codes.
@@ -61,7 +62,7 @@ public class ErrorCodeGenerator {
      * @return A unique error code with prefix and timestamp
      */
     public static String generateErrorCodeWithTimestamp(String prefix) {
-        long timestamp = System.currentTimeMillis();
+        long timestamp = AiravataUtils.getUniqueTimestamp().getTime();
         return String.format(
                 "%s-%d-%s", prefix, timestamp, UUID.randomUUID().toString().substring(0, 8));
     }

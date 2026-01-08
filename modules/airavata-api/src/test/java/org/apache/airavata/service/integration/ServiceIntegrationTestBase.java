@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -78,20 +77,29 @@ public abstract class ServiceIntegrationTestBase {
     @org.springframework.beans.factory.annotation.Autowired
     protected org.apache.airavata.config.AiravataServerProperties properties;
 
-    @org.junit.jupiter.api.BeforeAll
-    public static void setupTestContainers() {
-        // Initialize Testcontainers services early to ensure URLs are available
-        org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+    /**
+     * Use @DynamicPropertySource to inject Testcontainers URLs before Spring context loads.
+     * This ensures properties are available before any bean creation, including MessagingFactory.
+     */
+    @org.springframework.test.context.DynamicPropertySource
+    static void configureProperties(org.springframework.test.context.DynamicPropertyRegistry registry) {
+        // Initialize Testcontainers services and get URLs
+        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
+        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
+        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+        
+        // Register properties - these will be available before Spring context loads
+        registry.add("kafka.broker-url", () -> kafkaUrl);
+        registry.add("rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("zookeeper.server.connection", () -> zookeeperUrl);
     }
 
     @BeforeEach
     public void setUpBase() {
         testAuthzToken = createTestAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
-
+        
         // Apply test properties for messaging services (Kafka, RabbitMQ, Zookeeper)
-        // This must happen before any messaging factory is used
+        // This ensures AiravataServerProperties object is also updated (in addition to @DynamicPropertySource)
         if (properties != null) {
             org.apache.airavata.config.TestPropertiesHelper.applyTestProperties(properties);
         }
@@ -110,43 +118,16 @@ public abstract class ServiceIntegrationTestBase {
         return authzToken;
     }
 
-    /**
-     * Helper method to end the current transaction and start a new one.
-     * Useful for testing scenarios where you need to commit data.
-     * This ensures all entity managers are flushed before committing so data is visible in subsequent transactions.
-     */
-    protected void commitTransaction() {
-        if (TestTransaction.isActive()) {
-            try {
-                // Flag for commit - this will commit when end() is called
-                // Spring's transaction manager will automatically flush entity managers on commit
-                TestTransaction.flagForCommit();
-                // End the transaction - this will commit if flagged, or rollback if not
-                TestTransaction.end();
-            } catch (org.springframework.transaction.UnexpectedRollbackException e) {
-                // If transaction was already marked for rollback, we need to start fresh
-                // This can happen if an exception occurred during the transaction
-                // Just end the current transaction and start a new one
-                TestTransaction.end();
-            }
-        }
-        // Start a new transaction for subsequent operations
-        TestTransaction.start();
-    }
 
     /**
      * Test configuration that enables component scanning for services.
      * Infrastructure components are automatically excluded via @Profile("!test").
+     * 
+     * Repository configuration is handled by nested @Configuration classes,
+     * each specifying the correct EntityManagerFactory and TransactionManager
+     * for their respective catalogs, matching the structure in JpaConfig.
      */
     @Configuration
-    @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-            basePackages = {
-                "org.apache.airavata.profile.repositories",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.sharing.repositories",
-                "org.apache.airavata.credential.repositories"
-            },
-            enableDefaultTransactions = false)
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
@@ -170,6 +151,87 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.security"
             })
     public static class TestConfiguration {
+        
+        // Spring Data JPA Repository Configuration for each persistence unit
+        // Each configuration uses its own EntityManagerFactory and TransactionManager
+        // These beans are created by JpaConfig which is included in @SpringBootTest classes
+        
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.profile.repositories",
+                entityManagerFactoryRef = "profileServiceEntityManagerFactory",
+                transactionManagerRef = "profileServiceTransactionManager",
+                enableDefaultTransactions = true,
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        @org.springframework.context.annotation.DependsOn({"profileServiceEntityManagerFactoryBean"})
+        static class ProfileServiceJpaRepositoriesConfig {}
+
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.registry.repositories.appcatalog",
+                entityManagerFactoryRef = "appCatalogEntityManagerFactory",
+                transactionManagerRef = "appCatalogTransactionManager",
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class AppCatalogJpaRepositoriesConfig {}
+
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.registry.repositories.replicacatalog",
+                entityManagerFactoryRef = "replicaCatalogEntityManagerFactory",
+                transactionManagerRef = "replicaCatalogTransactionManager",
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class ReplicaCatalogJpaRepositoriesConfig {}
+
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.registry.repositories.workflowcatalog",
+                entityManagerFactoryRef = "workflowCatalogEntityManagerFactory",
+                transactionManagerRef = "workflowCatalogTransactionManager",
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class WorkflowCatalogJpaRepositoriesConfig {}
+
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.sharing.repositories",
+                entityManagerFactoryRef = "sharingRegistryEntityManagerFactory",
+                transactionManagerRef = "sharingRegistryTransactionManager",
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class SharingRegistryJpaRepositoriesConfig {}
+
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.credential.repositories",
+                entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
+                transactionManagerRef = "credentialStoreTransactionManager",
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class CredentialStoreJpaRepositoriesConfig {}
+
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.research.service.model.repo",
+                entityManagerFactoryRef = "researchCatalogEntityManagerFactory",
+                transactionManagerRef = "researchCatalogTransactionManager",
+                considerNestedRepositories = true,
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class ResearchCatalogJpaRepositoriesConfig {}
+
+        // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
+        // This must be the last @Configuration class to ensure expcatalog repository is the final bean
+        @Configuration
+        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
+                basePackages = "org.apache.airavata.registry.repositories.expcatalog",
+                entityManagerFactoryRef = "expCatalogEntityManagerFactory",
+                transactionManagerRef = "expCatalogTransactionManager",
+                considerNestedRepositories = true,
+                repositoryImplementationPostfix = "Impl",
+                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
+        static class ExpCatalogJpaRepositoriesConfig {}
         @Bean
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
                 org.apache.airavata.config.AiravataServerProperties properties) {

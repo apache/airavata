@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,8 +90,8 @@ public class ServiceSocketClient {
 
             if (!connected) {
                 // Wait for connection with timeout
-                long startTime = System.currentTimeMillis();
-                while (!connected && (System.currentTimeMillis() - startTime) < CONNECTION_TIMEOUT_MS) {
+                long startTime = AiravataUtils.getUniqueTimestamp().getTime();
+                while (!connected && (AiravataUtils.getUniqueTimestamp().getTime() - startTime) < CONNECTION_TIMEOUT_MS) {
                     connected = channel.finishConnect();
                     if (!connected) {
                         try {

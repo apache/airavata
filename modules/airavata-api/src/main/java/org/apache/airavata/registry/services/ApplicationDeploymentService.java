@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
@@ -334,10 +335,10 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
 
         if (!isAppDeploymentExists(applicationDeploymentId)) {
             logger.debug("Checking if the Application Deployment already exists");
-            applicationDeploymentEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            applicationDeploymentEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
         }
 
-        applicationDeploymentEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        applicationDeploymentEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
         return applicationDeploymentRepository.save(applicationDeploymentEntity);
     }
 

@@ -39,6 +39,7 @@ import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             org.apache.airavata.common.model.Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             registryService.addGateway(gateway);
-            commitTransaction();
         }
 
         // Ensure user exists in expcatalog (required for search operations)
@@ -75,7 +75,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             org.apache.airavata.common.model.UserProfile userProfile =
                     TestDataFactory.createTestUserProfile(TEST_USERNAME, TEST_GATEWAY_ID);
             userService.addUser(userProfile);
-            commitTransaction();
         }
     }
 
@@ -89,7 +88,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
-                commitTransaction();
             }
 
             boolean exists = registryService.isGatewayExist(TEST_GATEWAY_ID);
@@ -103,7 +101,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
-                commitTransaction();
             }
 
             List<Gateway> gateways = registryService.getAllGateways();
@@ -115,11 +112,10 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should create and persist gateway with all fields, then retrieve it successfully")
         void shouldCreateAndPersistGateway() throws RegistryServiceException {
-            String newGatewayId = "test-gateway-" + System.currentTimeMillis();
+            String newGatewayId = "test-gateway-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(newGatewayId);
 
             String createdGatewayId = registryService.addGateway(gateway);
-            commitTransaction();
 
             assertThat(createdGatewayId).isEqualTo(newGatewayId);
             boolean exists = registryService.isGatewayExist(newGatewayId);
@@ -155,7 +151,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             Project project = TestDataFactory.createTestProject("User Project", TEST_GATEWAY_ID);
             project.setOwner("test-user");
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             List<Project> projects = registryService.getUserProjects(TEST_GATEWAY_ID, "test-user", 10, 0);
 
@@ -169,12 +164,10 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldUpdateProject() throws RegistryServiceException, ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Original Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             Project retrieved = registryService.getProject(projectId);
             retrieved.setDescription("Updated description");
             registryService.updateProject(projectId, retrieved);
-            commitTransaction();
 
             Project updated = registryService.getProject(projectId);
             assertThat(updated.getDescription()).isEqualTo("Updated description");
@@ -185,7 +178,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldDeleteProject() throws RegistryServiceException, ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("To Delete", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             boolean deleted = registryService.deleteProject(projectId);
 
@@ -223,7 +215,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             ExperimentModel experiment = TestDataFactory.createTestExperiment("Exp 1", projectId, TEST_GATEWAY_ID);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             List<ExperimentModel> experiments =
                     registryService.getExperimentsInProject(TEST_GATEWAY_ID, projectId, 10, 0);
@@ -240,12 +231,10 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
-                commitTransaction();
             }
 
             Project project = TestDataFactory.createTestProject("Hierarchy Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Hierarchy Experiment", projectId, TEST_GATEWAY_ID);
@@ -256,11 +245,10 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             }
             ExperimentStatus status = new ExperimentStatus();
             status.setState(ExperimentState.CREATED);
-            status.setTimeOfStateChange(System.currentTimeMillis());
+            status.setTimeOfStateChange(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
             experiment.getExperimentStatus().add(status);
 
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             ExperimentModel retrieved = registryService.getExperiment(experimentId);
             assertThat(retrieved).isNotNull();
@@ -279,12 +267,10 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Original Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             ExperimentModel retrieved = registryService.getExperiment(experimentId);
             retrieved.setDescription("Updated description");
             registryService.updateExperiment(experimentId, retrieved);
-            commitTransaction();
 
             ExperimentModel updated = registryService.getExperiment(experimentId);
             assertThat(updated.getDescription()).isEqualTo("Updated description");
@@ -295,10 +281,12 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldSearchExperimentsByName() throws RegistryServiceException {
             Project project = TestDataFactory.createTestProject("Search Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
+            
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Searchable Experiment", projectId, TEST_GATEWAY_ID);
+            // Ensure experiment has the correct userName for search
+            experiment.setUserName(TEST_USERNAME);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             Map<ExperimentSearchFields, String> filters = new HashMap<>();
             filters.put(ExperimentSearchFields.EXPERIMENT_NAME, "Searchable");
@@ -314,10 +302,12 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         void shouldSearchExperimentsByProject() throws RegistryServiceException {
             Project project = TestDataFactory.createTestProject("Search Project 2", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
+            
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Project Search Experiment", projectId, TEST_GATEWAY_ID);
+            // Ensure experiment has the correct userName for search
+            experiment.setUserName(TEST_USERNAME);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             Map<ExperimentSearchFields, String> filters = new HashMap<>();
             filters.put(ExperimentSearchFields.PROJECT_ID, projectId);
@@ -383,7 +373,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             ComputeResourceDescription slurmResource = TestDataFactory.createSlurmComputeResource("slurm1.example.com");
             slurmResource.setEnabled(true);
             String resourceId = computeResourceService.addComputeResource(slurmResource);
-            commitTransaction();
 
             var availableResources = computeResourceService.getAvailableComputeResourceIdList();
 
@@ -397,12 +386,10 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             ComputeResourceDescription computeResource =
                     TestDataFactory.createSlurmComputeResource("update-host.example.com");
             String resourceId = computeResourceService.addComputeResource(computeResource);
-            commitTransaction();
 
             ComputeResourceDescription retrieved = computeResourceService.getComputeResource(resourceId);
             retrieved.setResourceDescription("Updated description");
             computeResourceService.updateComputeResource(resourceId, retrieved);
-            commitTransaction();
 
             ComputeResourceDescription updated = computeResourceService.getComputeResource(resourceId);
             assertThat(updated.getResourceDescription()).isEqualTo("Updated description");
@@ -440,7 +427,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
             Project project = TestDataFactory.createTestProject("Transaction Test", TEST_GATEWAY_ID);
 
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             Project retrieved = registryService.getProject(projectId);
             assertThat(retrieved).isNotNull();
@@ -454,7 +440,6 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
                 throws RegistryServiceException, org.apache.airavata.common.exception.ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Rollback Test", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             assertThat(projectId).isNotNull();
             // Verify project was created

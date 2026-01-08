@@ -253,7 +253,7 @@ public class ExperimentService {
 
         if (!isExperimentExist(experimentId)) {
             logger.debug("Populating creation time if it doesn't already exist");
-            experimentModel.setCreationTime(System.currentTimeMillis());
+            experimentModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         }
 
         ExperimentEntity existingEntity =

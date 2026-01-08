@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.sharing.entities.EntityPK;
 import org.apache.airavata.sharing.entities.EntityTypePK;
 import org.apache.airavata.sharing.entities.GroupAdminPK;
@@ -118,8 +119,8 @@ public class SharingRegistryService {
             if (domainService.get(domain.getDomainId()) != null)
                 throw new DuplicateEntryException("There exist domain with given domain id");
 
-            domain.setCreatedTime(System.currentTimeMillis());
-            domain.setUpdatedTime(System.currentTimeMillis());
+            domain.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            domain.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             domainService.create(domain);
 
             // create the global permission for the domain
@@ -128,8 +129,8 @@ public class SharingRegistryService {
             permissionType.setDomainId(domain.getDomainId());
             permissionType.setName(OWNER_PERMISSION_NAME);
             permissionType.setDescription("GLOBAL permission to " + domain.getDomainId());
-            permissionType.setCreatedTime(System.currentTimeMillis());
-            permissionType.setUpdatedTime(System.currentTimeMillis());
+            permissionType.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            permissionType.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             permissionTypeService.create(permissionType);
 
             return domain.getDomainId();
@@ -144,7 +145,7 @@ public class SharingRegistryService {
         try {
             Domain oldDomain = domainService.get(domain.getDomainId());
             domain.setCreatedTime(oldDomain.getCreatedTime());
-            domain.setUpdatedTime(System.currentTimeMillis());
+            domain.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             domain = getUpdatedObject(oldDomain, domain);
             domainService.update(domain);
             return true;
@@ -208,8 +209,8 @@ public class SharingRegistryService {
             if (userService.get(userPK) != null)
                 throw new SharingRegistryException("There exist user with given user id");
 
-            user.setCreatedTime(System.currentTimeMillis());
-            user.setUpdatedTime(System.currentTimeMillis());
+            user.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            user.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             userService.create(user);
 
             UserGroup userGroup = new UserGroup();
@@ -220,8 +221,8 @@ public class SharingRegistryService {
             userGroup.setOwnerId(user.getUserId());
             userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
-            userGroup.setCreatedTime(System.currentTimeMillis());
-            userGroup.setUpdatedTime(System.currentTimeMillis());
+            userGroup.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            userGroup.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             userGroupService.create(userGroup);
 
             Domain domain = domainService.get(user.getDomainId());
@@ -248,7 +249,7 @@ public class SharingRegistryService {
             userPK.setDomainId(user.getDomainId());
             User oldUser = userService.get(userPK);
             user.setCreatedTime(oldUser.getCreatedTime());
-            user.setUpdatedTime(System.currentTimeMillis());
+            user.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             user = getUpdatedObject(oldUser, user);
             userService.update(user);
 
@@ -341,8 +342,8 @@ public class SharingRegistryService {
                 throw new SharingRegistryException("There exist group with given group id");
             // Client created groups are always of type MULTI_USER
             group.setGroupCardinality(GroupCardinality.MULTI_USER);
-            group.setCreatedTime(System.currentTimeMillis());
-            group.setUpdatedTime(System.currentTimeMillis());
+            group.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            group.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             // Add group admins once the group is created
             if (group.getGroupAdmins() == null) {
                 group.setGroupAdmins(new java.util.ArrayList<>());
@@ -363,7 +364,7 @@ public class SharingRegistryService {
 
     public boolean updateGroup(UserGroup group) throws SharingRegistryException {
         try {
-            group.setUpdatedTime(System.currentTimeMillis());
+            group.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(group.getGroupId());
             userGroupPK.setDomainId(group.getDomainId());
@@ -459,8 +460,8 @@ public class SharingRegistryService {
                     groupMembership.setChildId(userIds.get(i));
                     groupMembership.setChildType(GroupChildType.USER);
                     groupMembership.setDomainId(domainId);
-                    groupMembership.setCreatedTime(System.currentTimeMillis());
-                    groupMembership.setUpdatedTime(System.currentTimeMillis());
+                    groupMembership.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                    groupMembership.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
                     groupMembershipService.create(groupMembership);
                 }
             }
@@ -520,7 +521,7 @@ public class SharingRegistryService {
             userGroupPK.setDomainId(domainId);
             UserGroup userGroup = userGroupService.get(userGroupPK);
             UserGroup newUserGroup = new UserGroup();
-            newUserGroup.setUpdatedTime(System.currentTimeMillis());
+            newUserGroup.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             newUserGroup.setOwnerId(newOwnerId);
             newUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
             newUserGroup.setCreatedTime(userGroup.getCreatedTime());
@@ -673,8 +674,8 @@ public class SharingRegistryService {
                 groupMembership.setChildId(childId);
                 groupMembership.setChildType(GroupChildType.GROUP);
                 groupMembership.setDomainId(domainId);
-                groupMembership.setCreatedTime(System.currentTimeMillis());
-                groupMembership.setUpdatedTime(System.currentTimeMillis());
+                groupMembership.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                groupMembership.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
                 groupMembershipService.create(groupMembership);
             }
             return true;
@@ -727,8 +728,8 @@ public class SharingRegistryService {
             if (entityTypeService.get(entityTypePK) != null)
                 throw new DuplicateEntryException("There exist EntityType with given EntityType id");
 
-            entityType.setCreatedTime(System.currentTimeMillis());
-            entityType.setUpdatedTime(System.currentTimeMillis());
+            entityType.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            entityType.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             entityTypeService.create(entityType);
             return entityType.getEntityTypeId();
         } catch (DuplicateEntryException e) {
@@ -744,7 +745,7 @@ public class SharingRegistryService {
 
     public boolean updateEntityType(EntityType entityType) throws SharingRegistryException {
         try {
-            entityType.setUpdatedTime(System.currentTimeMillis());
+            entityType.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(entityType.getDomainId());
             entityTypePK.setEntityTypeId(entityType.getEntityTypeId());
@@ -830,8 +831,8 @@ public class SharingRegistryService {
             permissionTypePK.setPermissionTypeId(permissionType.getPermissionTypeId());
             if (permissionTypeService.get(permissionTypePK) != null)
                 throw new DuplicateEntryException("There exist PermissionType with given PermissionType id");
-            permissionType.setCreatedTime(System.currentTimeMillis());
-            permissionType.setUpdatedTime(System.currentTimeMillis());
+            permissionType.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            permissionType.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             permissionTypeService.create(permissionType);
             return permissionType.getPermissionTypeId();
         } catch (DuplicateEntryException e) {
@@ -847,7 +848,7 @@ public class SharingRegistryService {
 
     public boolean updatePermissionType(PermissionType permissionType) throws SharingRegistryException {
         try {
-            permissionType.setUpdatedTime(System.currentTimeMillis());
+            permissionType.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             PermissionTypePK permissionTypePK = new PermissionTypePK();
             permissionTypePK.setDomainId(permissionType.getDomainId());
             permissionTypePK.setPermissionTypeId(permissionType.getPermissionTypeId());
@@ -947,8 +948,8 @@ public class SharingRegistryService {
 
                 createUser(user);
             }
-            entity.setCreatedTime(System.currentTimeMillis());
-            entity.setUpdatedTime(System.currentTimeMillis());
+            entity.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            entity.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
 
             if (entity.getOriginalEntityCreationTime() == 0) {
                 entity.setOriginalEntityCreationTime(entity.getCreatedTime());
@@ -964,8 +965,8 @@ public class SharingRegistryService {
             newSharing.setSharingType(SharingType.DIRECT_CASCADING);
             newSharing.setInheritedParentId(entity.getEntityId());
             newSharing.setDomainId(entity.getDomainId());
-            newSharing.setCreatedTime(System.currentTimeMillis());
-            newSharing.setUpdatedTime(System.currentTimeMillis());
+            newSharing.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            newSharing.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
 
             sharingService.create(newSharing);
 
@@ -999,8 +1000,8 @@ public class SharingRegistryService {
                 newSharing.setInheritedParentId(sharing.getInheritedParentId());
                 newSharing.setSharingType(SharingType.INDIRECT_CASCADING);
                 newSharing.setDomainId(entity.getDomainId());
-                newSharing.setCreatedTime(System.currentTimeMillis());
-                newSharing.setUpdatedTime(System.currentTimeMillis());
+                newSharing.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                newSharing.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
 
                 sharingService.create(newSharing);
             }
@@ -1016,7 +1017,7 @@ public class SharingRegistryService {
     public boolean updateEntity(Entity entity) throws SharingRegistryException {
         try {
             // TODO Check for permission changes
-            entity.setUpdatedTime(System.currentTimeMillis());
+            entity.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.getDomainId());
             entityPK.setEntityId(entity.getEntityId());
@@ -1226,8 +1227,8 @@ public class SharingRegistryService {
                 } else {
                     sharing.setSharingType(SharingType.DIRECT_NON_CASCADING);
                 }
-                sharing.setCreatedTime(System.currentTimeMillis());
-                sharing.setUpdatedTime(System.currentTimeMillis());
+                sharing.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                sharing.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
 
                 sharings.add(sharing);
             }
@@ -1247,8 +1248,8 @@ public class SharingRegistryService {
                         sharing.setSharingType(SharingType.INDIRECT_CASCADING);
                         sharing.setInheritedParentId(entityId);
                         sharing.setDomainId(domainId);
-                        sharing.setCreatedTime(System.currentTimeMillis());
-                        sharing.setUpdatedTime(System.currentTimeMillis());
+                        sharing.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                        sharing.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
                         sharings.add(sharing);
                         entityService.getChildEntities(domainId, childEntityId).stream()
                                 .forEach(e -> temp.addLast(e));

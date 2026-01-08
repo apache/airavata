@@ -37,6 +37,7 @@ import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.AiravataService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -61,7 +62,6 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             org.apache.airavata.common.model.Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             registryService.addGateway(gateway);
-            commitTransaction();
         }
     }
 
@@ -78,13 +78,11 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Test Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Test Experiment", projectId, TEST_GATEWAY_ID);
 
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
             assertThat(experimentId).isNotNull();
             ExperimentModel retrieved = airavataService.getExperiment(experimentId);
             assertThat(retrieved).isNotNull();
@@ -103,12 +101,10 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Status Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Status Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             ExperimentStatus status = airavataService.getExperimentStatus(experimentId);
             assertThat(status).isNotNull();
@@ -125,17 +121,14 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Delete Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment = TestDataFactory.createTestExperiment("To Delete", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             ExperimentModel beforeDelete = airavataService.getExperiment(experimentId);
             assertThat(beforeDelete).isNotNull();
 
             boolean deleted = airavataService.deleteExperiment(experimentId);
-            commitTransaction();
             assertThat(deleted).isTrue();
             assertThatThrownBy(() -> airavataService.getExperiment(experimentId))
                     .isInstanceOf(AiravataSystemException.class);
@@ -155,12 +148,10 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Search Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Search Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             Map<ExperimentSearchFields, String> filters = new HashMap<>();
             filters.put(ExperimentSearchFields.EXPERIMENT_NAME, "Search");
@@ -179,12 +170,10 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Search Project 2", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Project Search Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             Map<ExperimentSearchFields, String> filters = new HashMap<>();
             filters.put(ExperimentSearchFields.PROJECT_ID, projectId);
@@ -203,7 +192,6 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Output Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Output Experiment", projectId, TEST_GATEWAY_ID);
@@ -216,7 +204,6 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
             experiment.getExperimentOutputs().add(output);
 
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             List<OutputDataObjectType> outputs = airavataService.getExperimentOutputs(experimentId);
 
@@ -232,19 +219,16 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Clone Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Original Experiment", projectId, TEST_GATEWAY_ID);
             String originalExperimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             ExperimentModel originalExperiment = airavataService.getExperiment(originalExperimentId);
             assertThat(originalExperiment).isNotNull();
 
             String clonedExperimentId = airavataService.cloneExperiment(
                     testAuthzToken, originalExperimentId, "Cloned Experiment", projectId, originalExperiment);
-            commitTransaction();
 
             assertThat(clonedExperimentId).isNotNull();
             assertThat(clonedExperimentId).isNotEqualTo(originalExperimentId);
@@ -269,17 +253,14 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Update Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Original Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             ExperimentModel retrieved = airavataService.getExperiment(experimentId);
             retrieved.setDescription("Updated description");
             airavataService.updateExperiment(testAuthzToken, experimentId, retrieved);
-            commitTransaction();
 
             ExperimentModel updated = airavataService.getExperiment(experimentId);
             assertThat(updated.getDescription()).isEqualTo("Updated description");
@@ -299,15 +280,13 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             Project project = TestDataFactory.createTestProject("Stats Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Stats Experiment", projectId, TEST_GATEWAY_ID);
             String experimentId = airavataService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
-            long fromTime = System.currentTimeMillis() - 86400000;
-            long toTime = System.currentTimeMillis();
+            long fromTime = AiravataUtils.getUniqueTimestamp().getTime() - 86400000;
+            long toTime = AiravataUtils.getUniqueTimestamp().getTime();
             org.apache.airavata.common.model.ExperimentStatistics stats = airavataService.getExperimentStatistics(
                     TEST_GATEWAY_ID, fromTime, toTime, TEST_USERNAME, null, null, null, 10, 0);
 

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
@@ -559,7 +560,7 @@ public class KeycloakRestClient {
         TokenCacheEntry(String token, int expiresInSeconds) {
             this.token = token;
             // Expire 5 seconds before actual expiration to be safe
-            this.expiresAt = System.currentTimeMillis() + (expiresInSeconds - 5) * 1000L;
+            this.expiresAt = AiravataUtils.getUniqueTimestamp().getTime() + (expiresInSeconds - 5) * 1000L;
         }
 
         String getToken() {
@@ -567,7 +568,7 @@ public class KeycloakRestClient {
         }
 
         boolean isExpired() {
-            return System.currentTimeMillis() >= expiresAt;
+            return AiravataUtils.getUniqueTimestamp().getTime() >= expiresAt;
         }
     }
 }

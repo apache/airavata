@@ -30,6 +30,7 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.security.IamAdminService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @DisplayName("Should check if username is available")
         void shouldCheckUsernameAvailability() throws IamAdminServicesException {
             // For now, we test the method signature and error handling
-            String username = "new-user-" + System.currentTimeMillis();
+            String username = "new-user-" + AiravataUtils.getUniqueTimestamp().getTime();
 
             boolean available = iamAdminService.isUsernameAvailable(testAuthzToken, username);
 
@@ -105,7 +106,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should register new user")
         void shouldRegisterUser() throws IamAdminServicesException {
-            String username = "new-user-" + System.currentTimeMillis();
+            String username = "new-user-" + AiravataUtils.getUniqueTimestamp().getTime();
             String email = username + "@example.com";
 
             boolean registered =

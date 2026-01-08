@@ -160,7 +160,7 @@ public class TaskStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testTaskStatusRepository_MultipleStatusHistory() throws RegistryException {
+    public void testTaskStatusRepository_MultipleStatusHistory() throws RegistryException, InterruptedException {
 
         TaskStatus status1 = new TaskStatus();
         status1.setState(TaskState.CREATED);
@@ -180,5 +180,20 @@ public class TaskStatusRepositoryTest extends TestBase {
 
         TaskStatus latest = taskStatusService.getTaskStatus(taskId);
         assertEquals(TaskState.COMPLETED, latest.getState(), "Latest status should be COMPLETED");
+
+        // Verify strict timestamp ordering
+        java.util.List<TaskStatus> statuses = taskService.getTask(taskId).getTaskStatuses();
+        TaskStatus s1 = statuses.stream().filter(s -> s.getState() == TaskState.CREATED).findFirst().orElse(null);
+        TaskStatus s2 = statuses.stream().filter(s -> s.getState() == TaskState.EXECUTING).findFirst().orElse(null);
+        TaskStatus s3 = statuses.stream().filter(s -> s.getState() == TaskState.COMPLETED).findFirst().orElse(null);
+
+        assertNotNull(s1);
+        assertNotNull(s2);
+        assertNotNull(s3);
+
+        assertTrue(s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
+                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 (" + s1.getTimeOfStateChange() + ")");
+        assertTrue(s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
+                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 (" + s2.getTimeOfStateChange() + ")");
     }
 }

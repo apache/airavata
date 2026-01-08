@@ -41,7 +41,7 @@ public interface ProjectMapper {
     @Mapping(
             target = "creationTime",
             expression =
-                    "java(model.getCreationTime() > 0 ? new java.sql.Timestamp(model.getCreationTime()) : new java.sql.Timestamp(System.currentTimeMillis()))")
+                    "java(model.getCreationTime() > 0 ? new java.sql.Timestamp(model.getCreationTime()) : org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp())")
     ProjectEntity toEntity(Project model);
 
     List<Project> toModelList(List<ProjectEntity> entities);

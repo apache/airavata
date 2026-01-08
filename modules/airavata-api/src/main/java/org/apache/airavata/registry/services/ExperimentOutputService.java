@@ -57,12 +57,12 @@ public class ExperimentOutputService {
     }
 
     public void addExperimentOutputs(List<OutputDataObjectType> outputs, String experimentId) throws RegistryException {
-        // Load the experiment to ensure it's in the persistence context and visible for foreign key constraints
+        // Ensure experiment exists and is flushed to database for foreign key constraints
+        // We need to actually load and flush it, not just get a reference
         ExperimentEntity experimentEntity = experimentRepository
                 .findById(experimentId)
                 .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
         // Save and flush the experiment to ensure it's visible in the database for foreign key constraint checks
-        // This is necessary when the experiment was created in a different transaction
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
         for (OutputDataObjectType output : outputs) {
@@ -76,15 +76,29 @@ public class ExperimentOutputService {
 
     public void updateExperimentOutputs(List<OutputDataObjectType> outputs, String experimentId)
             throws RegistryException {
-        // Delete existing outputs and add new ones
-        List<ExperimentOutputEntity> existing = experimentOutputRepository.findByExperimentId(experimentId);
-        if (!existing.isEmpty()) {
-            experimentOutputRepository.deleteAll(existing);
-            // Flush deletes to ensure they're executed before inserting new ones with same IDs
-            experimentOutputRepository.flush();
+        // Ensure experiment exists and is flushed before any deletes
+        ExperimentEntity experimentEntity = experimentRepository
+                .findById(experimentId)
+                .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
+        experimentEntity = experimentRepository.save(experimentEntity);
+        experimentRepository.flush();
+        
+        // Delete existing outputs using native query to bypass persistence context issues
+        experimentOutputRepository.deleteByExperimentId(experimentId);
+        // Flush to ensure deletes are executed
+        experimentOutputRepository.flush();
+        // Clear entity manager to remove any managed entities from persistence context
+        entityManager.clear();
+        
+        // Use getReference() to get experiment proxy without querying (works after clear)
+        ExperimentEntity experimentRef = entityManager.getReference(ExperimentEntity.class, experimentId);
+        
+        // Add new outputs
+        for (OutputDataObjectType output : outputs) {
+            ExperimentOutputEntity entity = outputDataObjectTypeMapper.toEntity(output);
+            entity.setExperimentId(experimentId);
+            entity.setExperiment(experimentRef);
+            experimentOutputRepository.save(entity);
         }
-        // Use addExperimentOutputs to add new outputs (reuses the same logic)
-        // Note: We don't need to explicitly load the experiment here because addExperimentOutputs will handle it
-        addExperimentOutputs(outputs, experimentId);
     }
 }

@@ -46,6 +46,7 @@ import org.apache.airavata.common.model.SecurityProtocol;
 import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.StorageResourceDescription;
 import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.security.model.AuthzToken;
 
@@ -83,8 +84,9 @@ public class TestDataFactory {
         }
         userProfile.getEmails().add(userId + "@example.com");
         userProfile.setState(Status.ACTIVE);
-        userProfile.setCreationTime(System.currentTimeMillis());
-        userProfile.setLastAccessTime(System.currentTimeMillis());
+        long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
+        userProfile.setCreationTime(currentTime);
+        userProfile.setLastAccessTime(currentTime);
         return userProfile;
     }
 

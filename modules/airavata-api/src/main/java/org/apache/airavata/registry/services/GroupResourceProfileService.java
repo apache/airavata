@@ -95,7 +95,7 @@ public class GroupResourceProfileService {
     public String addGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
         final String groupResourceProfileId = UUID.randomUUID().toString();
         groupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
-        groupResourceProfile.setCreationTime(System.currentTimeMillis());
+        groupResourceProfile.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         updateChildren(groupResourceProfile, groupResourceProfileId);
         return updateGroupResourceProfile(groupResourceProfile);
     }
@@ -153,7 +153,7 @@ public class GroupResourceProfileService {
     }
 
     public String updateGroupResourceProfile(GroupResourceProfile updatedGroupResourceProfile) {
-        updatedGroupResourceProfile.setUpdatedTime(System.currentTimeMillis());
+        updatedGroupResourceProfile.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
         updateChildren(updatedGroupResourceProfile, updatedGroupResourceProfile.getGroupResourceProfileId());
         // Preserve creationTime if not set in the update
         GroupResourceProfileEntity existingEntity = groupResourceProfileRepository

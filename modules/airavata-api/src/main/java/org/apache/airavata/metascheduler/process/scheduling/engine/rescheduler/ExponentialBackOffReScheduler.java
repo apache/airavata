@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.exception.ExperimentNotFoundException;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -108,7 +109,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
                     int value = fib(currentCount);
 
-                    long currentTime = System.currentTimeMillis();
+                    long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
 
                     double scanningInterval = properties.services.scheduler.jobScanningInterval;
 

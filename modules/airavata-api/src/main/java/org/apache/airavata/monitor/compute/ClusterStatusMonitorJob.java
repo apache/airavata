@@ -219,7 +219,7 @@ public class ClusterStatusMonitorJob implements Job {
                                 int running = Integer.parseInt(sparts[0].trim());
                                 int queued = Integer.parseInt(sparts[1].trim());
                                 queueStatus = new QueueStatusModel(
-                                        hostName, queue, isUp, running, queued, System.currentTimeMillis());
+                                        hostName, queue, isUp, running, queued, org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
 
                             } else if (computeResourceProfile
                                     .getResourceManagerType()
@@ -230,7 +230,7 @@ public class ClusterStatusMonitorJob implements Job {
                                 int running = Integer.parseInt(sparts[6].trim());
                                 int queued = Integer.parseInt(sparts[5].trim());
                                 queueStatus = new QueueStatusModel(
-                                        hostName, queue, isUp, running, queued, System.currentTimeMillis());
+                                        hostName, queue, isUp, running, queued, org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
                             }
 
                             if (queueStatus != null) queueStatuses.add(queueStatus);

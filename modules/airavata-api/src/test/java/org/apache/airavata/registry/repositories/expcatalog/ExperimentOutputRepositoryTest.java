@@ -134,13 +134,8 @@ public class ExperimentOutputRepositoryTest extends TestBase {
         outputDataObjectTypeExpList.add(outputDataObjectTypeExp);
 
         experimentOutputService.addExperimentOutputs(outputDataObjectTypeExpList, experimentId);
-        assertEquals(
-                1,
-                experimentService
-                        .getExperiment(experimentId)
-                        .getExperimentOutputs()
-                        .size(),
-                "Experiment should have one output");
+        List<OutputDataObjectType> retrievedOutputs = experimentOutputService.getExperimentOutputs(experimentId);
+        assertEquals(1, retrievedOutputs.size(), "Experiment should have one output");
 
         outputDataObjectTypeExp.setValue("oValueE");
         experimentOutputService.updateExperimentOutputs(outputDataObjectTypeExpList, experimentId);

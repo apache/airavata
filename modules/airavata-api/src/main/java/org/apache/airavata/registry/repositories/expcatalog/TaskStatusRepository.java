@@ -30,6 +30,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskStatusRepository extends JpaRepository<TaskStatusEntity, TaskStatusPK> {
 
-    @Query("SELECT t FROM TaskStatusEntity t WHERE t.taskId = :taskId ORDER BY t.timeOfStateChange DESC")
+    @Query("SELECT t FROM TaskStatusEntity t WHERE t.taskId = :taskId ORDER BY t.timeOfStateChange DESC, t.statusId DESC")
     List<TaskStatusEntity> findByTaskIdOrderByTimeOfStateChangeDesc(@Param("taskId") String taskId);
 }

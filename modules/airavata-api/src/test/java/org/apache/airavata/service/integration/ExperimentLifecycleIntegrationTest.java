@@ -38,6 +38,7 @@ import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.MessageVerificationUtils;
 import org.apache.airavata.messaging.Subscriber;
 import org.apache.airavata.messaging.Type;
@@ -89,19 +90,16 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             registryService.addGateway(gateway);
-            commitTransaction();
         }
 
         Project project = TestDataFactory.createTestProject("Lifecycle Test Project", TEST_GATEWAY_ID);
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-        commitTransaction();
         assertThat(projectId).isNotNull();
 
         // Step 3: Register compute resource
         ComputeResourceDescription computeResource =
                 TestDataFactory.createSlurmComputeResource("lifecycle-test-host.example.com");
         String computeResourceId = computeResourceService.addComputeResource(computeResource);
-        commitTransaction();
         assertThat(computeResourceId).isNotNull();
 
         // Step 4: Create experiment
@@ -109,7 +107,6 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
                 TestDataFactory.createTestExperiment("Lifecycle Test Experiment", projectId, TEST_GATEWAY_ID);
         experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-        commitTransaction();
         assertThat(experimentId).isNotNull();
 
         ExperimentStatus initialStatus = registryService.getExperimentStatus(experimentId);
@@ -126,10 +123,9 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         // Step 6: Update experiment status to VALIDATED
         ExperimentStatus validatedStatus = new ExperimentStatus();
         validatedStatus.setState(ExperimentState.VALIDATED);
-        validatedStatus.setTimeOfStateChange(System.currentTimeMillis());
+        validatedStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
         validatedStatus.setReason("Experiment validated successfully");
         registryService.updateExperimentStatus(validatedStatus, experimentId);
-        commitTransaction();
 
         ExperimentStatus validated = registryService.getExperimentStatus(experimentId);
         assertThat(validated.getState()).isEqualTo(ExperimentState.VALIDATED);
@@ -137,10 +133,9 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         // Step 7: Update experiment status to LAUNCHED
         ExperimentStatus launchedStatus = new ExperimentStatus();
         launchedStatus.setState(ExperimentState.LAUNCHED);
-        launchedStatus.setTimeOfStateChange(System.currentTimeMillis());
+        launchedStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
         launchedStatus.setReason("Experiment launched");
         registryService.updateExperimentStatus(launchedStatus, experimentId);
-        commitTransaction();
 
         ExperimentStatus launched = registryService.getExperimentStatus(experimentId);
         assertThat(launched.getState()).isEqualTo(ExperimentState.LAUNCHED);
@@ -150,32 +145,28 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         process.setExperimentId(experimentId);
         // Note: ProcessModel doesn't have gatewayId field - it's derived from experiment
         String processId = registryService.addProcess(process, experimentId);
-        commitTransaction();
         assertThat(processId).isNotNull();
 
         // Step 9: Update process status to EXECUTING
         ProcessStatus executingStatus = new ProcessStatus();
         executingStatus.setState(ProcessState.EXECUTING);
-        executingStatus.setTimeOfStateChange(System.currentTimeMillis());
+        executingStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
         executingStatus.setReason("Process executing");
         registryService.addProcessStatus(executingStatus, processId);
-        commitTransaction();
 
         // Step 10: Update process status to COMPLETED
         ProcessStatus completedStatus = new ProcessStatus();
         completedStatus.setState(ProcessState.COMPLETED);
-        completedStatus.setTimeOfStateChange(System.currentTimeMillis());
+        completedStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
         completedStatus.setReason("Process completed successfully");
         registryService.addProcessStatus(completedStatus, processId);
-        commitTransaction();
 
         // Step 11: Update experiment status to COMPLETED
         ExperimentStatus completedExperimentStatus = new ExperimentStatus();
         completedExperimentStatus.setState(ExperimentState.COMPLETED);
-        completedExperimentStatus.setTimeOfStateChange(System.currentTimeMillis());
+        completedExperimentStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
         completedExperimentStatus.setReason("Experiment completed successfully");
         registryService.updateExperimentStatus(completedExperimentStatus, experimentId);
-        commitTransaction();
 
         // Step 12: Verify final state
         ExperimentStatus finalStatus = registryService.getExperimentStatus(experimentId);
@@ -210,7 +201,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         MessageHandler handler =
                 MessageVerificationUtils.createCapturingHandlerWithLatch(capturedMessages, messagesReceived, 3);
 
-        String experimentId = "test-exp-messages-" + System.currentTimeMillis();
+        String experimentId = "test-exp-messages-" + AiravataUtils.getUniqueTimestamp().getTime();
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(experimentId);
         routingKeys.add(experimentId + ".*");
@@ -224,12 +215,10 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
-                commitTransaction();
             }
 
             Project project = TestDataFactory.createTestProject("Message Test Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             // Create experiment
             ExperimentModel experiment =
@@ -237,7 +226,6 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             experiment.setExperimentId(experimentId);
             experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
             String createdExperimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
             assertThat(createdExperimentId).isEqualTo(experimentId);
 
             // Manually publish messages to simulate real flow (since status updates don't auto-publish)
@@ -247,7 +235,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             // Publish VALIDATED state
             ExperimentStatus validatedStatus = new ExperimentStatus();
             validatedStatus.setState(ExperimentState.VALIDATED);
-            validatedStatus.setTimeOfStateChange(System.currentTimeMillis());
+            validatedStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
             registryService.updateExperimentStatus(validatedStatus, experimentId);
             org.apache.airavata.messaging.TestMessagingUtils.createExperimentStatusChangeMessage(
                     experimentId, TEST_GATEWAY_ID, ExperimentState.VALIDATED);
@@ -255,16 +243,15 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             // Publish LAUNCHED state
             ExperimentStatus launchedStatus = new ExperimentStatus();
             launchedStatus.setState(ExperimentState.LAUNCHED);
-            launchedStatus.setTimeOfStateChange(System.currentTimeMillis());
+            launchedStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
             registryService.updateExperimentStatus(launchedStatus, experimentId);
 
             // Publish COMPLETED state
             ExperimentStatus completedStatus = new ExperimentStatus();
             completedStatus.setState(ExperimentState.COMPLETED);
-            completedStatus.setTimeOfStateChange(System.currentTimeMillis());
+            completedStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
             registryService.updateExperimentStatus(completedStatus, experimentId);
 
-            commitTransaction();
 
             // Wait for messages (with timeout - may not receive if publisher isn't configured)
             boolean received = messagesReceived.await(5, TimeUnit.SECONDS);
@@ -285,17 +272,14 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             registryService.addGateway(gateway);
-            commitTransaction();
         }
 
         Project project = TestDataFactory.createTestProject("State Transition Test", TEST_GATEWAY_ID);
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-        commitTransaction();
 
         ExperimentModel experiment =
                 TestDataFactory.createTestExperiment("State Transition Experiment", projectId, TEST_GATEWAY_ID);
         String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-        commitTransaction();
 
         List<ExperimentState> states = new ArrayList<>();
         states.add(ExperimentState.CREATED);
@@ -307,10 +291,9 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         for (ExperimentState state : states) {
             ExperimentStatus status = new ExperimentStatus();
             status.setState(state);
-            status.setTimeOfStateChange(System.currentTimeMillis());
+            status.setTimeOfStateChange(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
             status.setReason("State: " + state.name());
             registryService.updateExperimentStatus(status, experimentId);
-            commitTransaction();
         }
 
         ExperimentModel retrieved = registryService.getExperiment(experimentId);

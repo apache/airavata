@@ -65,7 +65,7 @@ public class TaskService {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
             taskEntity.getTaskStatuses().forEach(taskStatusEntity -> {
                 taskStatusEntity.setTaskId(taskId);
-                taskStatusEntity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
+                taskStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
             });
         }
 
@@ -73,13 +73,13 @@ public class TaskService {
             logger.debug("Populating the Primary Key of TaskError objects for the Task");
             taskEntity.getTaskErrors().forEach(taskErrorEntity -> {
                 taskErrorEntity.setTaskId(taskId);
-                taskErrorEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                taskErrorEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
             });
         }
 
         if (taskEntity.getJobs() != null) {
             logger.debug("Populating the Job objects' Task ID for the Task");
-            java.sql.Timestamp currentTimestamp = AiravataUtils.getCurrentTimestamp();
+            java.sql.Timestamp currentTimestamp = AiravataUtils.getUniqueTimestamp();
             taskEntity.getJobs().forEach(jobEntity -> {
                 jobEntity.setTaskId(taskId);
                 // Ensure CREATION_TIME is set if not already set
@@ -180,14 +180,14 @@ public class TaskService {
 
         if (!isTaskExist(taskId)) {
             logger.debug("Setting creation time if Task doesn't already exist");
-            taskModel.setCreationTime(System.currentTimeMillis());
+            taskModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         } else if (taskModel.getCreationTime() == 0) {
             // If updating and creation time is not set, use current time
-            taskModel.setCreationTime(System.currentTimeMillis());
+            taskModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         }
 
         // Always set last update time
-        long currentTime = System.currentTimeMillis();
+        long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
         if (taskModel.getLastUpdateTime() == 0) {
             taskModel.setLastUpdateTime(currentTime);
         }

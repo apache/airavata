@@ -28,6 +28,7 @@ import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.TenantProfileService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @DisplayName(
                 "Should create gateway with unique ID, name, URL, and approval status, then retrieve it successfully")
         void shouldCreateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-create-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-create-" + AiravataUtils.getUniqueTimestamp().getTime();
             String gatewayName = "Test Gateway " + uniqueId;
             String gatewayURL = "https://test-gateway-" + uniqueId + ".example.com";
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
@@ -58,7 +59,6 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
 
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
             assertThat(internalId).isNotNull().isNotEmpty();
             Gateway retrieved = tenantProfileService.getGateway(testAuthzToken, internalId);
             assertThat(retrieved).isNotNull();
@@ -71,19 +71,17 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should update gateway name and persist changes while keeping ID unchanged")
         void shouldUpdateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-update-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-update-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             Gateway toUpdate = tenantProfileService.getGateway(testAuthzToken, internalId);
             String updatedName = "Updated Gateway Name";
             toUpdate.setGatewayName(updatedName);
             boolean updated = tenantProfileService.updateGateway(testAuthzToken, toUpdate);
-            commitTransaction();
 
             assertThat(updated).isTrue();
             Gateway retrieved = tenantProfileService.getGateway(testAuthzToken, internalId);
@@ -95,7 +93,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get gateway by internal ID with all fields including name, URL, and approval status")
         void shouldGetGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-get-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-get-" + AiravataUtils.getUniqueTimestamp().getTime();
             String gatewayName = "Test Gateway " + uniqueId;
             String gatewayURL = "https://test-gateway-" + uniqueId + ".example.com";
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
@@ -103,7 +101,6 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             gateway.setGatewayURL(gatewayURL);
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             Gateway retrieved = tenantProfileService.getGateway(testAuthzToken, internalId);
             assertThat(retrieved).isNotNull();
@@ -116,19 +113,17 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should delete gateway and verify it no longer exists")
         void shouldDeleteGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-delete-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-delete-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             assertThat(tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId()))
                     .isTrue();
 
             boolean deleted = tenantProfileService.deleteGateway(testAuthzToken, internalId, gateway.getGatewayId());
-            commitTransaction();
             assertThat(deleted).isTrue();
             assertThat(tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId()))
                     .isFalse();
@@ -144,13 +139,12 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get all gateways and verify created gateway is in the list")
         void shouldGetAllGateways() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-list-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-list-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             List<Gateway> gateways = tenantProfileService.getAllGateways(testAuthzToken);
 
@@ -165,7 +159,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get all gateways for user and verify all belong to specified user")
         void shouldGetAllGatewaysForUser() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-user-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-user-" + AiravataUtils.getUniqueTimestamp().getTime();
             String requesterUsername = "test-user";
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
@@ -173,7 +167,6 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             gateway.setRequesterUsername(requesterUsername);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             List<Gateway> gateways = tenantProfileService.getAllGatewaysForUser(testAuthzToken, requesterUsername);
 
@@ -192,13 +185,12 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should check if gateway exists and verify it can be retrieved")
         void shouldCheckGatewayExists() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-exists-" + System.currentTimeMillis();
+            String uniqueId = "test-gateway-exists-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.CREATED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             boolean exists = tenantProfileService.isGatewayExist(testAuthzToken, gateway.getGatewayId());
 
@@ -211,11 +203,10 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should prevent duplicate gateway creation and keep original gateway unchanged")
         void shouldPreventDuplicateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String duplicateId = "test-gateway-duplicate-" + System.currentTimeMillis();
+            String duplicateId = "test-gateway-duplicate-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(duplicateId);
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);
-            commitTransaction();
 
             assertThat(tenantProfileService.isGatewayExist(testAuthzToken, duplicateId))
                     .isTrue();

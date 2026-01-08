@@ -108,7 +108,6 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     void shouldCreateExperimentAndVerifyPersistence() throws RegistryServiceException {
         Project project = TestDataFactory.createTestProject("Orchestrator Test Project", TEST_GATEWAY_ID);
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-        commitTransaction();
 
         List<InputDataObjectType> exInputs = new ArrayList<>();
         InputDataObjectType input = new InputDataObjectType();
@@ -131,7 +130,6 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
         experiment.setExperimentOutputs(exOut);
 
         String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-        commitTransaction();
 
         assertThat(experimentId).isNotNull();
         ExperimentModel retrieved = registryService.getExperiment(experimentId);
@@ -150,13 +148,11 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
 
         Project project = TestDataFactory.createTestProject("Status Test Project", TEST_GATEWAY_ID);
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-        commitTransaction();
 
         ExperimentModel experiment =
                 TestDataFactory.createTestExperiment("Status Test Experiment", projectId, TEST_GATEWAY_ID);
         experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-        commitTransaction();
 
         // Verify initial state
         ExperimentStatus initialStatus = registryService.getExperimentStatus(experimentId);
@@ -192,20 +188,17 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
             // Create and launch experiment (simplified - would need full setup)
             Project project = TestDataFactory.createTestProject("Message Test Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
-            commitTransaction();
 
             ExperimentModel experiment =
                     TestDataFactory.createTestExperiment("Message Test Experiment", projectId, TEST_GATEWAY_ID);
             experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
             String experimentId = registryService.createExperiment(TEST_GATEWAY_ID, experiment);
-            commitTransaction();
 
             // Manually update status to trigger message (since full launch requires more setup)
             ExperimentStatus status = new ExperimentStatus();
             status.setState(ExperimentState.VALIDATED);
-            status.setTimeOfStateChange(System.currentTimeMillis());
+            status.setTimeOfStateChange(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
             registryService.updateExperimentStatus(status, experimentId);
-            commitTransaction();
 
             // Wait for message (with timeout)
             boolean received = messageReceived.await(5, TimeUnit.SECONDS);

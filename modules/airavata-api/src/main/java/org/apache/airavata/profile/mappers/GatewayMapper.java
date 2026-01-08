@@ -21,7 +21,7 @@ package org.apache.airavata.profile.mappers;
 
 import java.util.List;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.profile.entities.GatewayEntity;
+import org.apache.airavata.profile.entities.ProfileGatewayEntity;
 import org.apache.airavata.registry.mappers.EntityMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,16 +37,16 @@ public interface GatewayMapper {
             target = "gatewayApprovalStatus",
             expression =
                     "java(entity.getGatewayApprovalStatus() != null ? org.apache.airavata.common.model.GatewayApprovalStatus.valueOf(entity.getGatewayApprovalStatus()) : null)")
-    Gateway toModel(GatewayEntity entity);
+    Gateway toModel(ProfileGatewayEntity entity);
 
     @Mapping(target = "gatewayUrl", source = "gatewayURL")
     @Mapping(
             target = "gatewayApprovalStatus",
             expression =
                     "java(model.getGatewayApprovalStatus() != null ? model.getGatewayApprovalStatus().name() : null)")
-    GatewayEntity toEntity(Gateway model);
+    ProfileGatewayEntity toEntity(Gateway model);
 
-    List<Gateway> toModelList(List<GatewayEntity> entities);
+    List<Gateway> toModelList(List<ProfileGatewayEntity> entities);
 
-    List<GatewayEntity> toEntityList(List<Gateway> models);
+    List<ProfileGatewayEntity> toEntityList(List<Gateway> models);
 }

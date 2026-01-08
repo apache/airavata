@@ -90,16 +90,10 @@ import org.springframework.transaction.annotation.Transactional;
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class StateTransitionValidationIntegrationTest extends ServiceIntegrationTestBase {
 
-    @org.junit.jupiter.api.BeforeAll
-    public static void setupMessagingServices() {
-        // Initialize Kafka and RabbitMQ containers via TestcontainersConfig
-        org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-    }
+    // Testcontainers setup is handled by @DynamicPropertySource in ServiceIntegrationTestBase
 
     @Configuration
     @ComponentScan(
@@ -365,6 +359,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             // Valid process transition: CREATED -> VALIDATED
             ProcessStatus validated = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
             processStatusService.addProcessStatus(validated, testHierarchy.processId);
+            
             ProcessIdentifier processIdentifier =
                     new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
             ProcessStatusChangeEvent processEvent =
@@ -380,6 +375,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             // Valid job transition: SUBMITTED -> QUEUED
             JobStatus queued = StateMachineTestUtils.createJobStatus(JobState.QUEUED, "Queued");
             jobStatusService.addJobStatus(queued, testHierarchy.jobPK);
+            
             JobIdentifier jobIdentifier = new JobIdentifier(
                     testHierarchy.jobId,
                     testHierarchy.taskId,
@@ -391,8 +387,6 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
                     jobEvent, MessageType.JOB, AiravataUtils.getId(MessageType.JOB.name()), testHierarchy.gatewayId);
             jobMsg.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(jobMsg);
-
-            commitTransaction();
 
             // Wait for messages
             boolean received = messageReceived.await(5, TimeUnit.SECONDS);

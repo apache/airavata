@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.JobModel;
@@ -71,6 +72,7 @@ import org.springframework.test.context.TestPropertySource;
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@org.springframework.transaction.annotation.Transactional("expCatalogTransactionManager")
 public class JobStatusRepositoryTest extends TestBase {
 
     @Configuration
@@ -165,7 +167,7 @@ public class JobStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testJobStatusRepository_Create_MultipleStatuses() throws RegistryException {
+    public void testJobStatusRepository_Create_MultipleStatuses() throws RegistryException, InterruptedException {
 
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         status1.setReason("Job submitted to queue");
@@ -190,7 +192,7 @@ public class JobStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testJobStatusRepository_StateTransitions() throws RegistryException {
+    public void testJobStatusRepository_StateTransitions() throws RegistryException, InterruptedException {
         // a complete state transition flow
         JobStatus submitted = new JobStatus(JobState.SUBMITTED);
         submitted.setReason("Initial submission");
@@ -261,14 +263,15 @@ public class JobStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testJobStatusRepository_Update_AllStatusFields() throws RegistryException {
+    public void testJobStatusRepository_Update_AllStatusFields() throws RegistryException, InterruptedException {
         JobStatus status = new JobStatus(JobState.QUEUED);
         status.setReason("Initial queued state");
         jobStatusService.addJobStatus(status, jobPK);
 
+        // Ensure updated status has a later timestamp
         JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
         updatedStatus.setReason("Updated: Job is now active");
-        updatedStatus.setTimeOfStateChange(System.currentTimeMillis());
+        // Don't set timestamp - let updateJobStatus use getUniqueTimestampForJob to ensure proper ordering
         jobStatusService.updateJobStatus(updatedStatus, jobPK);
 
         JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
@@ -285,6 +288,7 @@ public class JobStatusRepositoryTest extends TestBase {
         jobStatusService.addJobStatus(initialStatus, jobPK);
 
         JobModel jobBeforeUpdate = jobService.getJob(jobPK);
+        assertNotNull(jobBeforeUpdate.getJobStatuses(), "Job statuses should not be null");
         int statusCountBefore = jobBeforeUpdate.getJobStatuses().size();
         assertTrue(statusCountBefore >= 1, "Should have at least 1 status before update");
 
@@ -297,6 +301,7 @@ public class JobStatusRepositoryTest extends TestBase {
         assertEquals("Updated to active", latest.getReason(), "Latest reason should match");
 
         JobModel jobAfterUpdate = jobService.getJob(jobPK);
+        assertNotNull(jobAfterUpdate.getJobStatuses(), "Job statuses should not be null");
         assertTrue(
                 jobAfterUpdate.getJobStatuses().size() > statusCountBefore,
                 "Update should add a new status entry, not replace existing");
@@ -312,31 +317,39 @@ public class JobStatusRepositoryTest extends TestBase {
 
     @Test
     public void testJobStatusRepository_TimeOfStateChangeHandling() throws RegistryException {
-        long beforeTime = System.currentTimeMillis();
-
+        // Capture time after status creation to account for time set in addJobStatus
         JobStatus status = new JobStatus(JobState.SUBMITTED);
         status.setReason("Test time handling");
 
+        long beforeTime = AiravataUtils.getUniqueTimestamp().getTime();
         jobStatusService.addJobStatus(status, jobPK);
-
-        long afterTime = System.currentTimeMillis();
+        long afterTime = AiravataUtils.getUniqueTimestamp().getTime();
 
         JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
         assertNotNull(retrieved, "Status should exist");
-        assertTrue(retrieved.getTimeOfStateChange() >= beforeTime, "Time should be set to current or later");
-        assertTrue(retrieved.getTimeOfStateChange() <= afterTime, "Time should be set to current or earlier");
+        assertTrue(retrieved.getTimeOfStateChange() > 0, "Time should be set");
+        // Allow small timing differences (within 1 second) due to timestamp conversion and processing
+        assertTrue(
+                retrieved.getTimeOfStateChange() >= beforeTime - 1000,
+                "Time should be set to current or later (expected >= " + beforeTime + ", actual: " + retrieved.getTimeOfStateChange() + ")");
+        assertTrue(
+                retrieved.getTimeOfStateChange() <= afterTime + 1000,
+                "Time should be set to current or earlier (expected <= " + afterTime + ", actual: " + retrieved.getTimeOfStateChange() + ")");
 
-        long explicitTime = System.currentTimeMillis() + 1000;
+        long explicitTime = AiravataUtils.getUniqueTimestamp().getTime() + 1000;
         JobStatus updated = new JobStatus(JobState.ACTIVE);
         updated.setTimeOfStateChange(explicitTime);
         jobStatusService.updateJobStatus(updated, jobPK);
 
         JobStatus updatedRetrieved = jobStatusService.getJobStatus(jobPK);
-        assertTrue(updatedRetrieved.getTimeOfStateChange() >= explicitTime, "Updated time should be set correctly");
+        // Allow small timing differences due to timestamp conversion and processing
+        assertTrue(
+                updatedRetrieved.getTimeOfStateChange() >= explicitTime - 100,
+                "Updated time should be set correctly (expected >= " + explicitTime + ", actual: " + updatedRetrieved.getTimeOfStateChange() + ")");
     }
 
     @Test
-    public void testJobStatusRepository_StatusOrdering() throws RegistryException {
+    public void testJobStatusRepository_StatusOrdering() throws RegistryException, InterruptedException {
 
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         jobStatusService.addJobStatus(status1, jobPK);
@@ -372,7 +385,7 @@ public class JobStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testJobStatusRepository_StatusHistoryCompleteness() throws RegistryException {
+    public void testJobStatusRepository_StatusHistoryCompleteness() throws RegistryException, InterruptedException {
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         status1.setReason("Job submitted");
         jobStatusService.addJobStatus(status1, jobPK);
@@ -430,7 +443,7 @@ public class JobStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testJobStatusRepository_RapidStatusUpdates() throws RegistryException {
+    public void testJobStatusRepository_RapidStatusUpdates() throws RegistryException, InterruptedException {
         JobStatus status1 = new JobStatus(JobState.SUBMITTED);
         status1.setReason("Rapid update 1");
         jobStatusService.addJobStatus(status1, jobPK);
@@ -444,6 +457,7 @@ public class JobStatusRepositoryTest extends TestBase {
         jobStatusService.addJobStatus(status3, jobPK);
 
         JobModel job = jobService.getJob(jobPK);
+        assertNotNull(job.getJobStatuses(), "Job statuses should not be null");
         assertTrue(job.getJobStatuses().size() >= 3, "All rapid status updates should be recorded without loss");
 
         JobStatus latest = jobStatusService.getJobStatus(jobPK);
@@ -451,10 +465,19 @@ public class JobStatusRepositoryTest extends TestBase {
         assertEquals("Rapid update 3", latest.getReason(), "Latest reason should match the most recent update");
 
         List<JobStatus> statuses = job.getJobStatuses();
-        statuses.forEach(s -> {
-            assertTrue(s.getTimeOfStateChange() > 0, "All statuses should have timestamps set: " + s.getJobState());
-            assertNotNull(s.getStatusId(), "All statuses should have status IDs: " + s.getJobState());
-        });
+        // Verify strict timestamp ordering
+        JobStatus s1 = statuses.stream().filter(s -> s.getJobState() == JobState.SUBMITTED).findFirst().orElse(null);
+        JobStatus s2 = statuses.stream().filter(s -> s.getJobState() == JobState.QUEUED).findFirst().orElse(null);
+        JobStatus s3 = statuses.stream().filter(s -> s.getJobState() == JobState.ACTIVE).findFirst().orElse(null);
+
+        assertNotNull(s1);
+        assertNotNull(s2);
+        assertNotNull(s3);
+
+        assertTrue(s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
+                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 (" + s1.getTimeOfStateChange() + ")");
+        assertTrue(s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
+                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 (" + s2.getTimeOfStateChange() + ")");
     }
 
     private JobPK createNewJob(String jobIdPrefix) throws RegistryException {

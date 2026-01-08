@@ -602,7 +602,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
-        taskModel.setCreationTime(System.currentTimeMillis());
+        taskModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         taskModel.setTaskStatuses(List.of(taskStatus));
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
@@ -624,7 +624,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
             TaskModel monitorTaskModel = new TaskModel();
             monitorTaskModel.setParentProcessId(processModel.getProcessId());
-            monitorTaskModel.setCreationTime(System.currentTimeMillis());
+            monitorTaskModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             monitorTaskModel.setLastUpdateTime(monitorTaskModel.getCreationTime());
             monitorTaskModel.setTaskStatuses(List.of(monitorTaskStatus));
             monitorTaskModel.setTaskType(TaskTypes.MONITORING);

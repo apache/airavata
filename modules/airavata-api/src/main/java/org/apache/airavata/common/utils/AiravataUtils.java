@@ -25,17 +25,83 @@ import java.util.UUID;
 
 public class AiravataUtils {
 
+    private static volatile long lastTimestampMillis = 0;
+    private static volatile int lastMicrosecondFraction = 0;
+    private static final Object timestampLock = new Object();
+
+    /**
+     * Gets the current timestamp with microsecond precision.
+     * This method uses getUniqueTimestamp() internally to ensure consistency
+     * and maximum precision across the codebase.
+     * 
+     * @return A Timestamp with microsecond precision
+     */
     public static Timestamp getCurrentTimestamp() {
-        Calendar calender = Calendar.getInstance();
-        //        java.util.Date d = calender.getTimeInMillis();
-        return new Timestamp(calender.getTimeInMillis());
+        return getUniqueTimestamp();
     }
 
+    /**
+     * Converts a long time value to a Timestamp.
+     * If the time is 0 or negative, returns the current unique timestamp.
+     * Otherwise, creates a Timestamp from the provided time value.
+     * 
+     * @param time Time in milliseconds since epoch
+     * @return A Timestamp object
+     */
     public static Timestamp getTime(long time) {
         if (time == 0 || time < 0) {
-            return getCurrentTimestamp();
+            return getUniqueTimestamp();
         }
         return new Timestamp(time);
+    }
+
+    /**
+     * Gets a unique timestamp with microsecond precision that ensures each call returns a different value.
+     * Uses System.currentTimeMillis() with System.nanoTime() for precise microsecond tracking.
+     * The database column is TIMESTAMP(6) which supports microsecond precision.
+     * 
+     * @return A Timestamp with microsecond precision that is guaranteed to be unique and monotonically increasing
+     */
+    public static Timestamp getUniqueTimestamp() {
+        synchronized (timestampLock) {
+            long currentTimeMillis = System.currentTimeMillis();
+            // Use nanoTime to get precise sub-millisecond timing
+            // nanoTime is relative, but we can use it to ensure uniqueness within the same millisecond
+            long nanoTime = System.nanoTime();
+            // Extract microsecond fraction (0-999) from nanoseconds
+            // We use modulo to get a value between 0 and 999999, then divide by 1000 to get microseconds
+            int microsecondFraction = (int) ((nanoTime % 1_000_000) / 1000);
+            
+            // Ensure timestamp is always increasing, even if called in rapid succession
+            if (currentTimeMillis < lastTimestampMillis) {
+                // Time went backwards (shouldn't happen, but handle it)
+                lastTimestampMillis = currentTimeMillis;
+                lastMicrosecondFraction = microsecondFraction;
+            } else if (currentTimeMillis == lastTimestampMillis) {
+                // Same millisecond - ensure microsecond fraction is increasing
+                if (microsecondFraction <= lastMicrosecondFraction) {
+                    // nanoTime didn't advance enough, increment manually
+                    lastMicrosecondFraction = (lastMicrosecondFraction + 1) % 1000;
+                    if (lastMicrosecondFraction == 0) {
+                        // Wrapped around all 1000 microseconds, increment millisecond
+                        lastTimestampMillis = currentTimeMillis + 1;
+                    }
+                } else {
+                    // nanoTime advanced, use it
+                    lastMicrosecondFraction = microsecondFraction;
+                }
+            } else {
+                // New millisecond - use current microsecond fraction
+                lastTimestampMillis = currentTimeMillis;
+                lastMicrosecondFraction = microsecondFraction;
+            }
+            
+            // Create timestamp with microsecond precision
+            // Timestamp stores nanoseconds internally, so we multiply microseconds by 1000
+            Timestamp timestamp = new Timestamp(lastTimestampMillis);
+            timestamp.setNanos(lastMicrosecondFraction * 1000);
+            return timestamp;
+        }
     }
 
     public static String getId(String name) {

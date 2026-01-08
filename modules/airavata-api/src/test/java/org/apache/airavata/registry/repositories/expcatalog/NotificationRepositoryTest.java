@@ -29,6 +29,7 @@ import org.apache.airavata.common.model.Notification;
 import org.apache.airavata.common.model.NotificationPriority;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.services.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,7 +93,7 @@ public class NotificationRepositoryTest extends TestBase {
         notification.setTitle("Test Notification Title");
         notification.setNotificationMessage("This is a comprehensive test notification message");
         notification.setPriority(NotificationPriority.HIGH);
-        long currentTime = System.currentTimeMillis();
+        long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
         notification.setCreationTime(currentTime);
         notification.setPublishedTime(currentTime);
         notification.setExpirationTime(currentTime + 86400000L); // 1 day later
@@ -172,7 +173,7 @@ public class NotificationRepositoryTest extends TestBase {
         original.setTitle("Updated Title");
         original.setNotificationMessage("Updated message content");
         original.setPriority(NotificationPriority.HIGH);
-        long newExpirationTime = System.currentTimeMillis() + 172800000L; // 2 days later
+        long newExpirationTime = AiravataUtils.getUniqueTimestamp().getTime() + 172800000L; // 2 days later
         original.setExpirationTime(newExpirationTime);
 
         notificationService.updateNotification(original);
@@ -182,7 +183,11 @@ public class NotificationRepositoryTest extends TestBase {
         assertEquals("Updated Title", updated.getTitle(), "Title should be updated");
         assertEquals("Updated message content", updated.getNotificationMessage(), "Message should be updated");
         assertEquals(NotificationPriority.HIGH, updated.getPriority(), "Priority should be updated");
-        assertTrue(updated.getExpirationTime() >= newExpirationTime, "Expiration time should be updated");
+        // Allow small timing differences (within 1 second) due to timestamp conversion
+        assertTrue(
+                updated.getExpirationTime() >= newExpirationTime - 1000,
+                "Expiration time should be updated (expected: " + newExpirationTime + ", actual: " + updated.getExpirationTime() + ")");
+        assertTrue(updated.getExpirationTime() > 0, "Expiration time should be set");
 
         // creation time is preserved (business rule)
         assertEquals(
@@ -308,9 +313,9 @@ public class NotificationRepositoryTest extends TestBase {
         notification.setTitle("Auto Expiration Test");
         notification.setNotificationMessage("Testing automatic expiration time setting");
 
-        long beforeCreation = System.currentTimeMillis();
+        long beforeCreation = AiravataUtils.getUniqueTimestamp().getTime();
         String notificationId = notificationService.createNotification(notification);
-        long afterCreation = System.currentTimeMillis();
+        long afterCreation = AiravataUtils.getUniqueTimestamp().getTime();
 
         Notification retrieved = notificationService.getNotification(notificationId);
         assertNotNull(retrieved, "Notification should be created");

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.DataMovementInterface;
 import org.apache.airavata.common.model.StorageResourceDescription;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfaceEntity;
@@ -71,7 +72,7 @@ public class StorageResourceService {
                 storageResourceId = AppCatalogUtils.getID(description.getHostName());
                 description.setStorageResourceId(storageResourceId);
             }
-            description.setCreationTime(System.currentTimeMillis());
+            description.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             if (description.getDataMovementInterfaces() != null) {
                 description.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(description.getStorageResourceId()));
@@ -84,7 +85,7 @@ public class StorageResourceService {
                 entity.setCreationTime(new java.sql.Timestamp(description.getCreationTime()));
             }
             if (entity.getUpdateTime() == null) {
-                entity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                entity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
             }
             // Ensure storageResourceId is set on all StorageInterfaceEntity objects
             if (entity.getDataMovementInterfaces() != null) {
@@ -93,10 +94,10 @@ public class StorageResourceService {
                         storageInterface.setStorageResourceId(storageResourceId);
                     }
                     if (storageInterface.getCreationTime() == null) {
-                        storageInterface.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                        storageInterface.setCreationTime(AiravataUtils.getUniqueTimestamp());
                     }
                     if (storageInterface.getUpdateTime() == null) {
-                        storageInterface.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                        storageInterface.setUpdateTime(AiravataUtils.getUniqueTimestamp());
                     }
                 }
             }
@@ -117,7 +118,7 @@ public class StorageResourceService {
     public void updateStorageResource(String storageResourceId, StorageResourceDescription updatedStorageResource)
             throws AppCatalogException {
         try {
-            updatedStorageResource.setUpdateTime(System.currentTimeMillis());
+            updatedStorageResource.setUpdateTime(AiravataUtils.getUniqueTimestamp().getTime());
             if (updatedStorageResource.getDataMovementInterfaces() != null) {
                 updatedStorageResource.getDataMovementInterfaces().stream()
                         .forEach(dm -> dm.setStorageResourceId(updatedStorageResource.getStorageResourceId()));
@@ -149,16 +150,16 @@ public class StorageResourceService {
                             ifaceEntity.setStorageResource(existingEntity);
                             // Ensure creationTime and updateTime are set
                             if (ifaceEntity.getCreationTime() == null) {
-                                ifaceEntity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                                ifaceEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
                             }
                             if (ifaceEntity.getUpdateTime() == null) {
-                                ifaceEntity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                                ifaceEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
                             }
                         } else {
                             // Update existing interface
                             ifaceEntity.setDataMovementProtocol(dmInterface.getDataMovementProtocol());
                             ifaceEntity.setPriorityOrder(dmInterface.getPriorityOrder());
-                            ifaceEntity.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                            ifaceEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
                         }
                         newInterfaces.add(ifaceEntity);
                     }
@@ -186,10 +187,10 @@ public class StorageResourceService {
                         iface.setStorageResourceId(storageResourceId);
                         iface.setStorageResource(entity);
                         if (iface.getCreationTime() == null) {
-                            iface.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                            iface.setCreationTime(AiravataUtils.getUniqueTimestamp());
                         }
                         if (iface.getUpdateTime() == null) {
-                            iface.setUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                            iface.setUpdateTime(AiravataUtils.getUniqueTimestamp());
                         }
                     }
                 }

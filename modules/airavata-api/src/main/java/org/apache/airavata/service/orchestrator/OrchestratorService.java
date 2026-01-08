@@ -755,7 +755,7 @@ public class OrchestratorService {
                     queueStatusModel.setQueueUp(false);
                     queueStatusModel.setRunningJobs(0);
                     queueStatusModel.setQueuedJobs(0);
-                    queueStatusModel.setTime(System.currentTimeMillis());
+                    queueStatusModel.setTime(AiravataUtils.getUniqueTimestamp().getTime());
                     queueStatusModels.add(queueStatusModel);
                     orchestratorRegistryService.registerQueueStatuses(queueStatusModels);
                 }

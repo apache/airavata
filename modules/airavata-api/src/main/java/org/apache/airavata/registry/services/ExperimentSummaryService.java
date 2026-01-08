@@ -135,11 +135,18 @@ public class ExperimentSummaryService {
             }
         }
 
+        // Apply accessible experiment IDs filter if provided
+        // If empty but we have filters (e.g., USER_NAME when sharing is disabled), still search using filters
         if (!accessibleExperimentIds.isEmpty()) {
             predicates.add(root.get("experimentId").in(accessibleExperimentIds));
-        } else {
+        } else if (filters.get(DBConstants.Experiment.USER_NAME) == null
+                && filters.get(DBConstants.Experiment.PROJECT_ID) == null
+                && filters.get(DBConstants.Experiment.EXPERIMENT_NAME) == null) {
+            // If no accessible IDs and no user/project/name filters, return empty
+            // This handles the case where sharing is enabled but no accessible experiments
             return new ArrayList<>();
         }
+        // Otherwise, continue with filter-based search (sharing disabled with USER_NAME filter)
 
         query.where(cb.and(predicates.toArray(new Predicate[0])));
 

@@ -33,6 +33,7 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.common.utils.AiravataUtils;
 
 public class StatusMonitor {
 
@@ -54,7 +55,7 @@ public class StatusMonitor {
         Airavata.Client airavataClient;
         boolean tlsEnabled =
                 Boolean.parseBoolean(AiravataServerProperties.getSetting("security.tls.enabled", "false"));
-        long monitoringStartTime = System.currentTimeMillis();
+        long monitoringStartTime = AiravataUtils.getUniqueTimestamp().getTime();
         while (experiments.size() > jobModelMap.size()) {
             logger.info("Running a monitoring round....");
             airavataClient = AiravataClientFactory.createAiravataClient(apiHost, apiPort, tlsEnabled);
@@ -138,7 +139,7 @@ public class StatusMonitor {
                 e.printStackTrace();
             }
         }
-        long monitoringStopTime = System.currentTimeMillis();
+        long monitoringStopTime = AiravataUtils.getUniqueTimestamp().getTime();
 
         for (String line : lines) {
             logger.info(line);

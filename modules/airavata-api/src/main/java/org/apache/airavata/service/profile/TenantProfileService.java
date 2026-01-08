@@ -35,7 +35,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.messaging.Dispatcher;
-import org.apache.airavata.profile.entities.GatewayEntity;
+import org.apache.airavata.profile.entities.ProfileGatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.profile.mappers.GatewayMapper;
 import org.apache.airavata.profile.repositories.TenantProfileRepository;
@@ -310,7 +310,7 @@ public class TenantProfileService {
 
     // Helper methods that wrap repository calls and handle entity-to-model mapping
     private Gateway getGateway(String airavataInternalGatewayId) throws Exception {
-        Optional<GatewayEntity> entityOpt =
+        Optional<ProfileGatewayEntity> entityOpt =
                 tenantProfileRepository.findByAiravataInternalGatewayId(airavataInternalGatewayId);
         if (entityOpt.isEmpty()) {
             return null;
@@ -319,7 +319,7 @@ public class TenantProfileService {
     }
 
     private Gateway getGatewayByGatewayId(String gatewayId) throws Exception {
-        Optional<GatewayEntity> entityOpt = tenantProfileRepository.findByGatewayId(gatewayId);
+        Optional<ProfileGatewayEntity> entityOpt = tenantProfileRepository.findByGatewayId(gatewayId);
         if (entityOpt.isEmpty()) {
             return null;
         }
@@ -327,12 +327,12 @@ public class TenantProfileService {
     }
 
     private List<Gateway> getAllGateways() throws Exception {
-        List<GatewayEntity> entities = tenantProfileRepository.findAllGateways();
+        List<ProfileGatewayEntity> entities = tenantProfileRepository.findAllGateways();
         return gatewayMapper.toModelList(entities);
     }
 
     private List<Gateway> getAllGatewaysForUser(String requesterUsername) throws Exception {
-        List<GatewayEntity> entities = tenantProfileRepository.findByRequesterUsername(requesterUsername);
+        List<ProfileGatewayEntity> entities = tenantProfileRepository.findByRequesterUsername(requesterUsername);
         return gatewayMapper.toModelList(entities);
     }
 
@@ -341,7 +341,7 @@ public class TenantProfileService {
                 GatewayApprovalStatus.APPROVED.name(),
                 GatewayApprovalStatus.CREATED.name(),
                 GatewayApprovalStatus.DEPLOYED.name());
-        List<GatewayEntity> entities =
+        List<ProfileGatewayEntity> entities =
                 tenantProfileRepository.findDuplicateGateways(statuses, gatewayId, gatewayName, gatewayURL);
         if (entities.isEmpty()) {
             return null;
@@ -350,15 +350,15 @@ public class TenantProfileService {
     }
 
     private Gateway createGateway(Gateway gateway) {
-        GatewayEntity entity = gatewayMapper.toEntity(gateway);
-        GatewayEntity persistedCopy = entityManager.merge(entity);
+        ProfileGatewayEntity entity = gatewayMapper.toEntity(gateway);
+        ProfileGatewayEntity persistedCopy = entityManager.merge(entity);
         entityManager.flush(); // Ensure entity is persisted and visible in same transaction
         return gatewayMapper.toModel(persistedCopy);
     }
 
     private Gateway updateGateway(Gateway gateway) {
-        GatewayEntity entity = gatewayMapper.toEntity(gateway);
-        GatewayEntity persistedCopy = entityManager.merge(entity);
+        ProfileGatewayEntity entity = gatewayMapper.toEntity(gateway);
+        ProfileGatewayEntity persistedCopy = entityManager.merge(entity);
         return gatewayMapper.toModel(persistedCopy);
     }
 

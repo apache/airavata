@@ -852,7 +852,7 @@ public class TaskContext {
             end = getUserComputeResourcePreference().getReservationEndTime();
         }
         if (reservation != null && start > 0 && start < end) {
-            long now = Calendar.getInstance().getTimeInMillis();
+            long now = AiravataUtils.getUniqueTimestamp().getTime();
             if (now > start && now < end) {
                 return reservation;
             }

@@ -44,6 +44,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.method.AuthMethod;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +108,7 @@ public class PoolingSSHJClient extends SSHClient {
 
     private SSHClient newClientWithSessionValidation() throws IOException {
         SSHClient newClient = createNewSSHClient();
-        SSHClientInfo info = new SSHClientInfo(1, System.currentTimeMillis(), clientInfoMap.size());
+        SSHClientInfo info = new SSHClientInfo(1, AiravataUtils.getUniqueTimestamp().getTime(), clientInfoMap.size());
         clientInfoMap.put(newClient, info);
 
         /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
@@ -179,7 +180,7 @@ public class PoolingSSHJClient extends SSHClient {
                                 minEntry.getValue().getClientId(),
                                 host);
                         minEntry.getValue().setSessionCount(minEntry.getValue().getSessionCount() + 1);
-                        minEntry.getValue().setLastAccessedTime(System.currentTimeMillis());
+                        minEntry.getValue().setLastAccessedTime(AiravataUtils.getUniqueTimestamp().getTime());
 
                         SSHClient sshClient = minEntry.getKey();
 
@@ -256,7 +257,7 @@ public class PoolingSSHJClient extends SSHClient {
             entriesTobeRemoved = clientInfoMap.entrySet().stream()
                     .filter(entry -> ((entry.getValue().getSessionCount() == 0)
                             && (entry.getValue().getLastAccessedTime() + maxConnectionIdleTimeMS
-                                    < System.currentTimeMillis())))
+                                    < AiravataUtils.getUniqueTimestamp().getTime())))
                     .collect(Collectors.toList());
             entriesTobeRemoved.forEach(entry -> {
                 logger.info(

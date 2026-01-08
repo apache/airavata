@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputPK;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,8 @@ public interface ExperimentInputRepository extends JpaRepository<ExperimentInput
 
     @Query("SELECT e FROM ExperimentInputEntity e WHERE e.experimentId = :experimentId")
     List<ExperimentInputEntity> findByExperimentId(@Param("experimentId") String experimentId);
+
+    @Modifying
+    @Query(value = "DELETE FROM EXPERIMENT_INPUT WHERE EXPERIMENT_ID = :experimentId", nativeQuery = true)
+    void deleteByExperimentId(@Param("experimentId") String experimentId);
 }

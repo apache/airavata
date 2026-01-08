@@ -34,6 +34,7 @@ import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentStatus;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
@@ -203,7 +204,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
 
         String fromDate =
                 String.valueOf(Timestamp.valueOf("2010-10-10 09:00:00").getTime());
-        String toDate = String.valueOf(System.currentTimeMillis());
+        String toDate = String.valueOf(AiravataUtils.getUniqueTimestamp().getTime());
 
         filters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
         filters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);

@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.QueueStatusService;
@@ -88,7 +89,7 @@ public class QueueStatusRepositoryTest extends TestBase {
         queueStatusModel.setQueueUp(true);
         queueStatusModel.setRunningJobs(5);
         queueStatusModel.setQueuedJobs(10);
-        queueStatusModel.setTime(System.currentTimeMillis());
+        queueStatusModel.setTime(AiravataUtils.getUniqueTimestamp().getTime());
 
         boolean returnValue = queueStatusService.createQueueStatuses(Arrays.asList(queueStatusModel));
         assertTrue(returnValue, "Queue status creation should succeed");
@@ -118,7 +119,7 @@ public class QueueStatusRepositoryTest extends TestBase {
         queue1.setQueueUp(true);
         queue1.setRunningJobs(2);
         queue1.setQueuedJobs(3);
-        queue1.setTime(System.currentTimeMillis());
+        queue1.setTime(AiravataUtils.getUniqueTimestamp().getTime());
 
         QueueStatusModel queue2 = new QueueStatusModel();
         queue2.setHostName(uniqueHost2);
@@ -126,7 +127,7 @@ public class QueueStatusRepositoryTest extends TestBase {
         queue2.setQueueUp(false);
         queue2.setRunningJobs(0);
         queue2.setQueuedJobs(0);
-        queue2.setTime(System.currentTimeMillis());
+        queue2.setTime(AiravataUtils.getUniqueTimestamp().getTime());
 
         boolean returnValue = queueStatusService.createQueueStatuses(Arrays.asList(queue1, queue2));
         assertTrue(returnValue, "Multiple queue status creation should succeed");

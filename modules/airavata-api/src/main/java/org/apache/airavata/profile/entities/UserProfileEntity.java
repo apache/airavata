@@ -323,14 +323,16 @@ public class UserProfileEntity {
 
     @PrePersist
     void createdAt() {
-        var date = new Date();
+        java.sql.Timestamp timestamp = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
+        Date date = new Date(timestamp.getTime());
         this.setCreationTime(date);
         this.setLastAccessTime(date);
     }
 
     @PreUpdate
     void updatedAt() {
-        this.setLastAccessTime(new Date());
+        java.sql.Timestamp timestamp = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
+        this.setLastAccessTime(new Date(timestamp.getTime()));
     }
 
     @Override

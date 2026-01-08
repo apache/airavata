@@ -35,6 +35,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.security.authzcache.AuthzCacheEntry;
@@ -214,7 +215,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                         var gatewayGroupMembership = getGatewayGroupMembership(subject, accessToken, gatewayId);
                         decision = hasPermission(gatewayGroupMembership, action);
                         // TODO get the actual token expiration time
-                        var currentTime = System.currentTimeMillis();
+                        var currentTime = AiravataUtils.getUniqueTimestamp().getTime();
                         authzCacheManager.addToAuthzCache(
                                 new AuthzCacheIndex(subject, gatewayId, accessToken, action),
                                 new AuthzCacheEntry(decision, currentTime + 1000 * 60 * 60, currentTime));

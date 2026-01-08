@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.research.service.exception;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResourceNotFound(RuntimeException ex) {
         // You can customize the error response here
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(), "Resource not found", ex.getMessage(), System.currentTimeMillis());
+                HttpStatus.NOT_FOUND.value(), "Resource not found", ex.getMessage(), AiravataUtils.getUniqueTimestamp().getTime());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }

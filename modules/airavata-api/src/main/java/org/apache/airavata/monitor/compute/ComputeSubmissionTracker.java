@@ -20,6 +20,7 @@
 package org.apache.airavata.monitor.compute;
 
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,7 +38,7 @@ public class ComputeSubmissionTracker {
      */
     public void recordSubmission(String computeResourceId) {
         if (computeResourceId != null && !computeResourceId.isEmpty()) {
-            lastSubmissionTimes.put(computeResourceId, System.currentTimeMillis());
+            lastSubmissionTimes.put(computeResourceId, AiravataUtils.getUniqueTimestamp().getTime());
         }
     }
 
@@ -64,7 +65,7 @@ public class ComputeSubmissionTracker {
             return false;
         }
         long timeWindowMillis = timeWindowSeconds * 1000;
-        long currentTime = System.currentTimeMillis();
+        long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
         return (currentTime - lastSubmissionTime) < timeWindowMillis;
     }
 }

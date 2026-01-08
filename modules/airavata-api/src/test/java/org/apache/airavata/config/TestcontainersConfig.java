@@ -291,7 +291,8 @@ public class TestcontainersConfig {
     public static synchronized String getRabbitMQUrl() {
         if (shouldUseExistingContainers() && isRabbitMQAccessible()) {
             logger.info("Using existing RabbitMQ at {}:{}", RABBITMQ_HOST, RABBITMQ_PORT);
-            return String.format("amqp://%s:%s@%s:%d/", RABBITMQ_USER, RABBITMQ_PASSWORD, RABBITMQ_HOST, RABBITMQ_PORT);
+            // Include /develop vhost to match airavata.properties default
+            return String.format("amqp://%s:%s@%s:%d/develop", RABBITMQ_USER, RABBITMQ_PASSWORD, RABBITMQ_HOST, RABBITMQ_PORT);
         }
 
         if (rabbitMQContainer == null || !rabbitMQContainer.isRunning()) {

@@ -815,7 +815,7 @@ public class RegistryService {
                 count = processStatusList.size();
                 for (var processStatus : processStatusList) {
                     var latestStatus = processStatusService.getProcessStatus(processStatus.getProcessId());
-                    if (latestStatus.getState().name().equals(processState.name())) {
+                    if (latestStatus != null && latestStatus.getState().name().equals(processState.name())) {
                         finalProcessList.add(processService.getProcess(latestStatus.getProcessId()));
                     }
                 }

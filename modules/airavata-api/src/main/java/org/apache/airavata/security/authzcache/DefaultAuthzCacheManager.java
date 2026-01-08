@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.security.authzcache;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class DefaultAuthzCacheManager implements AuthzCacheManager {
         if (isAuthzDecisionCached(authzCacheIndex)) {
             AuthzCacheEntry cacheEntry = getAuthzCacheEntry(authzCacheIndex);
             long expiryTime = cacheEntry.getExpiryTime();
-            long currentTime = System.currentTimeMillis();
+            long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
             long timePassed = (currentTime - cacheEntry.getEntryTimestamp()) / 1000;
             if (expiryTime > timePassed) {
                 // access token is still valid. Hence, return the cached decision

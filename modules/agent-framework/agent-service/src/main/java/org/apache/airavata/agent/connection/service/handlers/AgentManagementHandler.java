@@ -42,6 +42,7 @@ import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.service.AiravataService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -123,8 +124,8 @@ public class AgentManagementHandler {
             String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
             ExperimentStatistics experimentStatistics = airavataService.getExperimentStatistics(
                     UserContext.gatewayId(),
-                    System.currentTimeMillis() - 60 * 60 * 1000,
-                    System.currentTimeMillis(),
+                    AiravataUtils.getUniqueTimestamp().getTime() - 60 * 60 * 1000,
+                    AiravataUtils.getUniqueTimestamp().getTime(),
                     null,
                     appInterfaceId,
                     null,

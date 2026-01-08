@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.AuthorizationException;
 import org.apache.airavata.common.model.GroupModel;
 import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.profile.exception.GroupManagerServiceException;
 import org.apache.airavata.security.model.AuthzToken;
@@ -291,7 +292,7 @@ public class GroupManagerService {
                             userId);
                     // Create a minimal user entry with just the userId to allow group membership
                     user.setUserName(userId.split("@")[0]); // Extract username from airavataInternalUserId
-                    user.setCreatedTime(System.currentTimeMillis());
+                    user.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
                     user.setEmail(null);
                     user.setFirstName(null);
                     user.setLastName(null);

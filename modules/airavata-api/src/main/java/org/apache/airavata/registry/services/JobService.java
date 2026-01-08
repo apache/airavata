@@ -57,7 +57,7 @@ public class JobService {
             jobEntity.getJobStatuses().forEach(jobStatusEntity -> {
                 jobStatusEntity.setJobId(jobId);
                 jobStatusEntity.setTaskId(taskId);
-                jobStatusEntity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
+                jobStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
             });
         }
     }
@@ -136,7 +136,7 @@ public class JobService {
             });
         }
 
-        long currentTime = System.currentTimeMillis();
+        long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
         // Always ensure creationTime is set on the model before mapping
         if (!isJobExist(jobPK)) {
             logger.debug("Setting creation time to current time if does not exist");
@@ -159,7 +159,7 @@ public class JobService {
         // Ensure CREATION_TIME is set if mapper didn't set it (mapper returns null if model time is 0 or negative)
         if (jobEntity.getCreationTime() == null) {
             long creationTime = (jobModel.getCreationTime() > 0) ? jobModel.getCreationTime() : currentTime;
-            jobEntity.setCreationTime(new java.sql.Timestamp(creationTime));
+            jobEntity.setCreationTime(AiravataUtils.getTime(creationTime));
         }
 
         populateParentIds(jobEntity);

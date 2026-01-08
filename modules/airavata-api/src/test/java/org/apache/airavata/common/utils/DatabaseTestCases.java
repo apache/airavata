@@ -21,6 +21,7 @@ package org.apache.airavata.common.utils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,9 +90,9 @@ public class DatabaseTestCases {
         }
 
         // Wait for database connection with timeout (max 30 seconds)
-        long startTime = System.currentTimeMillis();
+        long startTime = AiravataUtils.getUniqueTimestamp().getTime();
         long timeoutMs = 30000;
-        while (connection == null && (System.currentTimeMillis() - startTime) < timeoutMs) {
+        while (connection == null && (AiravataUtils.getUniqueTimestamp().getTime() - startTime) < timeoutMs) {
             try {
                 if (dbUtil != null) {
                     connection = dbUtil.getConnection();

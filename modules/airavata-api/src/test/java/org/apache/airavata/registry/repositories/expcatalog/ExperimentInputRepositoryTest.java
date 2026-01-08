@@ -137,13 +137,8 @@ public class ExperimentInputRepositoryTest extends TestBase {
         String returnedExperimentId =
                 experimentInputService.addExperimentInputs(inputDataObjectTypeExpList, experimentId);
         assertEquals(experimentId, returnedExperimentId, "Returned experiment ID should match");
-        assertEquals(
-                1,
-                experimentService
-                        .getExperiment(experimentId)
-                        .getExperimentInputs()
-                        .size(),
-                "Experiment should have one input");
+        List<InputDataObjectType> retrievedInputs = experimentInputService.getExperimentInputs(experimentId);
+        assertEquals(1, retrievedInputs.size(), "Experiment should have one input");
 
         inputDataObjectTypeExp.setValue("iValueE");
         experimentInputService.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);

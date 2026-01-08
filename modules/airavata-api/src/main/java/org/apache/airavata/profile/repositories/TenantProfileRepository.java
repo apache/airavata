@@ -21,7 +21,7 @@ package org.apache.airavata.profile.repositories;
 
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.profile.entities.GatewayEntity;
+import org.apache.airavata.profile.entities.ProfileGatewayEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,24 +31,25 @@ import org.springframework.stereotype.Repository;
  * Created by goshenoy on 3/8/17.
  */
 @Repository
-public interface TenantProfileRepository extends JpaRepository<GatewayEntity, String> {
+public interface TenantProfileRepository extends JpaRepository<ProfileGatewayEntity, String> {
 
-    @Query("SELECT g FROM GatewayEntity g WHERE g.airavataInternalGatewayId = :airavataInternalGatewayId")
-    Optional<GatewayEntity> findByAiravataInternalGatewayId(
+    // Use ProfileGatewayEntity as the entity name (matches @Entity(name = "ProfileGatewayEntity"))
+    @Query("SELECT g FROM ProfileGatewayEntity g WHERE g.airavataInternalGatewayId = :airavataInternalGatewayId")
+    Optional<ProfileGatewayEntity> findByAiravataInternalGatewayId(
             @Param("airavataInternalGatewayId") String airavataInternalGatewayId);
 
-    @Query("SELECT g FROM GatewayEntity g WHERE g.gatewayId = :gatewayId")
-    Optional<GatewayEntity> findByGatewayId(@Param("gatewayId") String gatewayId);
+    @Query("SELECT g FROM ProfileGatewayEntity g WHERE g.gatewayId = :gatewayId")
+    Optional<ProfileGatewayEntity> findByGatewayId(@Param("gatewayId") String gatewayId);
 
-    @Query("SELECT g FROM GatewayEntity g")
-    List<GatewayEntity> findAllGateways();
+    @Query("SELECT g FROM ProfileGatewayEntity g")
+    List<ProfileGatewayEntity> findAllGateways();
 
-    @Query("SELECT g FROM GatewayEntity g WHERE g.requesterUsername = :requesterUsername")
-    List<GatewayEntity> findByRequesterUsername(@Param("requesterUsername") String requesterUsername);
+    @Query("SELECT g FROM ProfileGatewayEntity g WHERE g.requesterUsername = :requesterUsername")
+    List<ProfileGatewayEntity> findByRequesterUsername(@Param("requesterUsername") String requesterUsername);
 
-    @Query("SELECT g FROM GatewayEntity g WHERE g.gatewayApprovalStatus IN :statuses "
+    @Query("SELECT g FROM ProfileGatewayEntity g WHERE g.gatewayApprovalStatus IN :statuses "
             + "AND (g.gatewayId = :gatewayId OR g.gatewayName = :gatewayName OR g.gatewayUrl = :gatewayUrl)")
-    List<GatewayEntity> findDuplicateGateways(
+    List<ProfileGatewayEntity> findDuplicateGateways(
             @Param("statuses") List<String> statuses,
             @Param("gatewayId") String gatewayId,
             @Param("gatewayName") String gatewayName,

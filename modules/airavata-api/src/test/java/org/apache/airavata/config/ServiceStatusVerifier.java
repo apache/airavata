@@ -24,6 +24,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -123,14 +124,14 @@ public class ServiceStatusVerifier {
      * @return true if service started within timeout, false otherwise
      */
     public boolean waitForService(String serviceName, int timeoutSeconds, long retryIntervalMs) {
-        long startTime = System.currentTimeMillis();
+        long startTime = AiravataUtils.getUniqueTimestamp().getTime();
         long timeoutMs = timeoutSeconds * 1000L;
 
         logger.info("Waiting for service {} to start (timeout: {}s)", serviceName, timeoutSeconds);
 
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
+        while (AiravataUtils.getUniqueTimestamp().getTime() - startTime < timeoutMs) {
             if (isServiceRunning(serviceName)) {
-                long elapsed = System.currentTimeMillis() - startTime;
+                long elapsed = AiravataUtils.getUniqueTimestamp().getTime() - startTime;
                 logger.info("Service {} started after {}ms", serviceName, elapsed);
                 return true;
             }
@@ -197,14 +198,14 @@ public class ServiceStatusVerifier {
      * @return true if port became available, false if timeout
      */
     public boolean waitForPort(String host, int port, int timeoutSeconds, long retryIntervalMs) {
-        long startTime = System.currentTimeMillis();
+        long startTime = AiravataUtils.getUniqueTimestamp().getTime();
         long timeoutMs = timeoutSeconds * 1000L;
 
         logger.info("Waiting for port {}:{} to become available (timeout: {}s)", host, port, timeoutSeconds);
 
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
+        while (AiravataUtils.getUniqueTimestamp().getTime() - startTime < timeoutMs) {
             if (isPortListening(host, port, 1000)) {
-                long elapsed = System.currentTimeMillis() - startTime;
+                long elapsed = AiravataUtils.getUniqueTimestamp().getTime() - startTime;
                 logger.info("Port {}:{} became available after {}ms", host, port, elapsed);
                 return true;
             }

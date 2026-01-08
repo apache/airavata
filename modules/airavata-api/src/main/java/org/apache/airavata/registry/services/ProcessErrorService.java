@@ -84,13 +84,15 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
         ProcessErrorEntity entity = errorModelMapper.toEntityFromProcess(error);
         getParentIdSetter().accept(entity, processId);
         // Ensure CREATION_TIME is set if not already set
+        // Use getUniqueTimestamp() to ensure it's always set and unique
         if (entity.getCreationTime() == null) {
-            entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
+            entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp());
         }
         // Get a reference to the process entity (proxy, doesn't fetch from DB)
         ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         entity.setProcess(processEntity);
         ProcessErrorEntity saved = repository.save(entity);
+        repository.flush(); // Ensure creationTime is persisted
         return getErrorIdExtractor().apply(saved);
     }
 

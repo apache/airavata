@@ -39,6 +39,7 @@ import org.apache.airavata.credential.model.CredentialStoreNotifier;
 import org.apache.airavata.credential.model.EmailNotificationMessage;
 import org.apache.airavata.credential.model.EmailNotifierConfiguration;
 import org.apache.airavata.credential.model.NotificationMessage;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +111,7 @@ public class NotifierBootstrap extends TimerTask {
                     cal.add(Calendar.DAY_OF_MONTH, 1); // gap is 1 days
                     date = cal.getTime();
 
-                    Date currentDate = new Date();
+                    Date currentDate = AiravataUtils.getUniqueTimestamp();
                     if (currentDate.after(date)) {
                         // Send an email
                         CommunityUser communityUser = certificateCredential.getCommunityUser();

@@ -78,7 +78,7 @@ import org.springframework.transaction.annotation.Transactional;
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationTestBase {
 
     @org.junit.jupiter.api.BeforeAll
@@ -342,6 +342,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             ProcessStatus inputStaging =
                     StateMachineTestUtils.createProcessStatus(ProcessState.INPUT_DATA_STAGING, "Input data staging");
             processStatusService.addProcessStatus(inputStaging, testHierarchy.processId);
+            
             ProcessStatusChangeEvent event1 = new ProcessStatusChangeEvent(ProcessState.INPUT_DATA_STAGING, identifier);
             MessageContext msgCtx1 = new MessageContext(
                     event1,
@@ -353,6 +354,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
 
             ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
             processStatusService.addProcessStatus(executing, testHierarchy.processId);
+            
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
                     event2,
@@ -365,6 +367,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             ProcessStatus outputStaging =
                     StateMachineTestUtils.createProcessStatus(ProcessState.OUTPUT_DATA_STAGING, "Output data staging");
             processStatusService.addProcessStatus(outputStaging, testHierarchy.processId);
+            
             ProcessStatusChangeEvent event3 =
                     new ProcessStatusChangeEvent(ProcessState.OUTPUT_DATA_STAGING, identifier);
             MessageContext msgCtx3 = new MessageContext(
@@ -374,8 +377,6 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
                     testHierarchy.gatewayId);
             msgCtx3.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCtx3);
-
-            commitTransaction();
 
             // Wait for messages
             boolean received = messageReceived.await(5, TimeUnit.SECONDS);

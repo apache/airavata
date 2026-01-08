@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataConfigUtils;
@@ -365,7 +366,7 @@ public class EmailBasedMonitor extends ServerLifecycle {
                 var msgTime = message.getReceivedDate().getTime();
                 var msgExpiryTime =
                         msgTime + Duration.ofMinutes(emailExpirationTimeMinutes).toMillis();
-                if (System.currentTimeMillis() > msgExpiryTime) {
+                if (AiravataUtils.getUniqueTimestamp().getTime() > msgExpiryTime) {
                     processedMessages.add(message);
                     log.error("cannot read JobStatusUpdate<{}> from {}. marked as timeout", msgHash, publisherId, e);
                 } else {

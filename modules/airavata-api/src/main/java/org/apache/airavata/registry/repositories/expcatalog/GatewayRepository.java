@@ -29,6 +29,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GatewayRepository extends JpaRepository<GatewayEntity, String> {
 
-    @Query("SELECT g FROM ExpCatalogGatewayEntity g WHERE g.gatewayName LIKE :gatewayName")
+    @Query("SELECT g FROM GatewayEntity g WHERE g.gatewayName LIKE :gatewayName")
     List<GatewayEntity> findByGatewayName(@Param("gatewayName") String gatewayName);
 }

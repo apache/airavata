@@ -28,6 +28,7 @@ import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.SlurmComputeResourcePreference;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -45,8 +46,8 @@ public class GroupComputeResourcePreferenceUtilTest {
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
-                System.currentTimeMillis() - 10000,
-                System.currentTimeMillis() + 10000);
+                AiravataUtils.getUniqueTimestamp().getTime() - 10000,
+                AiravataUtils.getUniqueTimestamp().getTime() + 10000);
 
         SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
         slurm.setReservations(new ArrayList<>());
@@ -81,8 +82,8 @@ public class GroupComputeResourcePreferenceUtilTest {
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
-                System.currentTimeMillis() - 20000,
-                System.currentTimeMillis() - 10000);
+                AiravataUtils.getUniqueTimestamp().getTime() - 20000,
+                AiravataUtils.getUniqueTimestamp().getTime() - 10000);
 
         SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
         slurm.setReservations(new ArrayList<>());
@@ -106,8 +107,8 @@ public class GroupComputeResourcePreferenceUtilTest {
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
-                System.currentTimeMillis() - 10000,
-                System.currentTimeMillis() + 10000);
+                AiravataUtils.getUniqueTimestamp().getTime() - 10000,
+                AiravataUtils.getUniqueTimestamp().getTime() + 10000);
 
         SlurmComputeResourcePreference slurm = new SlurmComputeResourcePreference();
         slurm.setReservations(new ArrayList<>());
@@ -129,29 +130,29 @@ public class GroupComputeResourcePreferenceUtilTest {
                 "id1",
                 "res1",
                 Arrays.asList("cpu", "gpu"),
-                System.currentTimeMillis() - 10000,
-                System.currentTimeMillis() + 10000);
+                AiravataUtils.getUniqueTimestamp().getTime() - 10000,
+                AiravataUtils.getUniqueTimestamp().getTime() + 10000);
 
         final ComputeResourceReservation res2 = new ComputeResourceReservation(
                 "id2",
                 "res2",
                 Arrays.asList("cpu", "gpu"),
-                System.currentTimeMillis() - 20000,
-                System.currentTimeMillis() - 10000);
+                AiravataUtils.getUniqueTimestamp().getTime() - 20000,
+                AiravataUtils.getUniqueTimestamp().getTime() - 10000);
 
         final ComputeResourceReservation res3 = new ComputeResourceReservation(
                 "id3",
                 "res3",
                 Arrays.asList("cpu", "gpu"),
-                System.currentTimeMillis() + 10000,
-                System.currentTimeMillis() + 20000);
+                AiravataUtils.getUniqueTimestamp().getTime() + 10000,
+                AiravataUtils.getUniqueTimestamp().getTime() + 20000);
 
         final ComputeResourceReservation res4 = new ComputeResourceReservation(
                 "id3",
                 "res3",
                 Arrays.asList("shared", "compute"),
-                System.currentTimeMillis() + 10000,
-                System.currentTimeMillis() + 20000);
+                AiravataUtils.getUniqueTimestamp().getTime() + 10000,
+                AiravataUtils.getUniqueTimestamp().getTime() + 20000);
         final List<ComputeResourceReservation> reservations = Arrays.asList(res1, res2, res3, res4);
 
         Collections.shuffle(reservations);

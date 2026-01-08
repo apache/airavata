@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import javax.sql.DataSource;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +95,7 @@ public class DatabaseInitializer {
                         try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                             updateStmt.setString(1, version);
                             if (includeExpireDate) {
-                                updateStmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+                                updateStmt.setTimestamp(2, AiravataUtils.getUniqueTimestamp());
                                 updateStmt.setString(3, "SYSTEM");
                                 updateStmt.setString(4, configKey);
                             } else {
@@ -118,7 +119,7 @@ public class DatabaseInitializer {
                             insertStmt.setString(1, configKey);
                             insertStmt.setString(2, version);
                             if (includeExpireDate) {
-                                insertStmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                                insertStmt.setTimestamp(3, AiravataUtils.getUniqueTimestamp());
                                 insertStmt.setString(4, "SYSTEM");
                             }
                             insertStmt.executeUpdate();

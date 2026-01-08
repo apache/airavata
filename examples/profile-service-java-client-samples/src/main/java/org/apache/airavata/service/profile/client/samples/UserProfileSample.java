@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.service.UserProfileService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,9 +115,10 @@ public class UserProfileSample {
         userProfile.setGatewayId(testGatewayId);
         userProfile.addToEmails("test-user-" + userIdValue + "@domain1.com");
         userProfile.addToEmails("test-user-" + userIdValue + "@domain2.com");
-        userProfile.setCreationTime(System.currentTimeMillis());
-        userProfile.setLastAccessTime(System.currentTimeMillis());
-        userProfile.setValidUntil(System.currentTimeMillis());
+        long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
+        userProfile.setCreationTime(currentTime);
+        userProfile.setLastAccessTime(currentTime);
+        userProfile.setValidUntil(currentTime);
         userProfile.setState(Status.ACTIVE);
         userProfile.setNsfDemographics(getNSFDemographics(userIdValue));
         return userProfile;

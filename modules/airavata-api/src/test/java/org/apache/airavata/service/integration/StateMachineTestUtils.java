@@ -38,6 +38,7 @@ import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
@@ -224,7 +225,7 @@ public class StateMachineTestUtils {
      */
     private static long getUniqueTimestamp() {
         synchronized (timestampLock) {
-            long currentTime = System.currentTimeMillis();
+            long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
             // Ensure timestamp is always increasing, even if called in rapid succession
             if (currentTime <= lastTimestamp) {
                 lastTimestamp = lastTimestamp + 1;
@@ -262,8 +263,8 @@ public class StateMachineTestUtils {
      */
     public static void waitForCondition(java.util.function.Supplier<Boolean> condition, long timeoutMs, long intervalMs)
             throws InterruptedException {
-        long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
+        long startTime = AiravataUtils.getUniqueTimestamp().getTime();
+        while (AiravataUtils.getUniqueTimestamp().getTime() - startTime < timeoutMs) {
             if (condition.get()) {
                 return;
             }

@@ -26,6 +26,7 @@ import org.apache.airavata.registry.services.UserService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.User;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -64,8 +65,9 @@ public class AccountHandler {
             sharingUser.setUserId(sharingUserId);
             sharingUser.setDomainId(gatewayId);
             sharingUser.setUserName(username);
-            sharingUser.setCreatedTime(System.currentTimeMillis());
-            sharingUser.setUpdatedTime(System.currentTimeMillis());
+            long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
+            sharingUser.setCreatedTime(currentTime);
+            sharingUser.setUpdatedTime(currentTime);
             sharingRegistryService.createUser(sharingUser);
             System.out.println("✓ User created in sharing registry: " + sharingUserId);
 

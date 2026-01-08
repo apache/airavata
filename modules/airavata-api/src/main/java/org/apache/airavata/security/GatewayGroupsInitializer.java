@@ -72,8 +72,8 @@ public class GatewayGroupsInitializer {
             User adminUser = new User();
             adminUser.setUserId(ownerId);
             adminUser.setDomainId(gatewayId);
-            adminUser.setCreatedTime(System.currentTimeMillis());
-            adminUser.setUpdatedTime(System.currentTimeMillis());
+            adminUser.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            adminUser.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             adminUser.setUserName(adminOwnerUsername);
             sharingRegistryService.createUser(adminUser);
         }
@@ -112,8 +112,8 @@ public class GatewayGroupsInitializer {
         userGroup.setGroupId(AiravataUtils.getId(groupName));
         userGroup.setDomainId(gatewayId);
         userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
-        userGroup.setCreatedTime(System.currentTimeMillis());
-        userGroup.setUpdatedTime(System.currentTimeMillis());
+        userGroup.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+        userGroup.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
         userGroup.setName(groupName);
         userGroup.setDescription(groupDescription);
         userGroup.setOwnerId(ownerId);

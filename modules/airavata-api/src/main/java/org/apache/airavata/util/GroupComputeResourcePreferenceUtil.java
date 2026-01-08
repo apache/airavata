@@ -24,6 +24,7 @@ import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.SlurmComputeResourcePreference;
+import org.apache.airavata.common.utils.AiravataUtils;
 
 public class GroupComputeResourcePreferenceUtil {
 
@@ -45,7 +46,7 @@ public class GroupComputeResourcePreferenceUtil {
             return null;
         }
 
-        long now = System.currentTimeMillis();
+        long now = AiravataUtils.getUniqueTimestamp().getTime();
         for (ComputeResourceReservation reservation : slurm.getReservations()) {
             if (reservation.getQueueNames().contains(queueName)
                     && now > reservation.getStartTime()

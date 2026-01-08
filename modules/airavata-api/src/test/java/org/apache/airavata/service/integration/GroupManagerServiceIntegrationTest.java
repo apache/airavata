@@ -157,10 +157,8 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
                         UserProfileServiceException, IamAdminServicesException {
             UserProfile user1Profile = TestDataFactory.createTestUserProfile("user1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, user1Profile);
-            commitTransaction();
             UserProfile user2Profile = TestDataFactory.createTestUserProfile("user2", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, user2Profile);
-            commitTransaction();
 
             List<String> userIds = new ArrayList<>();
             userIds.add("user1@" + TEST_GATEWAY_ID);
@@ -178,12 +176,10 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
                         UserProfileServiceException, IamAdminServicesException {
             UserProfile user1Profile = TestDataFactory.createTestUserProfile("user1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, user1Profile);
-            commitTransaction();
 
             List<String> userIds = new ArrayList<>();
             userIds.add("user1@" + TEST_GATEWAY_ID);
             groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
-            commitTransaction();
 
             boolean removed = groupManagerService.removeUsersFromGroup(testAuthzToken, userIds, testGroupId);
 
@@ -202,12 +198,10 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
                         UserProfileServiceException, IamAdminServicesException {
             UserProfile adminProfile = TestDataFactory.createTestUserProfile("admin1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, adminProfile);
-            commitTransaction();
 
             List<String> userIds = new ArrayList<>();
             userIds.add("admin1@" + TEST_GATEWAY_ID);
             groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
-            commitTransaction();
 
             List<String> adminIds = new ArrayList<>();
             adminIds.add("admin1@" + TEST_GATEWAY_ID);
@@ -224,17 +218,14 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
                         UserProfileServiceException, IamAdminServicesException {
             UserProfile adminProfile = TestDataFactory.createTestUserProfile("admin1", TEST_GATEWAY_ID);
             userProfileService.addUserProfile(testAuthzToken, adminProfile);
-            commitTransaction();
 
             List<String> userIds = new ArrayList<>();
             userIds.add("admin1@" + TEST_GATEWAY_ID);
             groupManagerService.addUsersToGroup(testAuthzToken, userIds, testGroupId);
-            commitTransaction();
 
             List<String> adminIds = new ArrayList<>();
             adminIds.add("admin1@" + TEST_GATEWAY_ID);
             groupManagerService.addGroupAdmins(testAuthzToken, testGroupId, adminIds);
-            commitTransaction();
 
             boolean removed = groupManagerService.removeGroupAdmins(testAuthzToken, testGroupId, adminIds);
 

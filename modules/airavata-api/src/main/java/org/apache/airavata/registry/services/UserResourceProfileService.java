@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.registry.entities.appcatalog.UserComputeResourcePreferenceEntity;
@@ -112,10 +113,10 @@ public class UserResourceProfileService {
 
         if (!isUserResourceProfileExists(userId, gatewayId)) {
             logger.debug("Checking if the User Resource Profile already exists");
-            userResourceProfileEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            userResourceProfileEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
         }
 
-        userResourceProfileEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        userResourceProfileEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
         return userResourceProfileRepository.save(userResourceProfileEntity);
     }
 

@@ -28,10 +28,10 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Entity(name = "ProfileGatewayEntity")
+@Entity
 @Table(name = "GATEWAY")
-public class GatewayEntity {
-    private static final Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
+public class ProfileGatewayEntity {
+    private static final Logger logger = LoggerFactory.getLogger(ProfileGatewayEntity.class);
     private String airavataInternalGatewayId;
     private String gatewayId;
     private String gatewayName;
@@ -54,7 +54,7 @@ public class GatewayEntity {
     private String requesterUsername;
 
     // set random value for internalGatewayId
-    public GatewayEntity() {
+    public ProfileGatewayEntity() {
         this.airavataInternalGatewayId = UUID.randomUUID().toString();
     }
 
@@ -241,7 +241,7 @@ public class GatewayEntity {
 
     @PrePersist
     void createdAt() {
-        this.setRequestCreationTime(System.currentTimeMillis());
+        this.setRequestCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
     }
 
     @Override
@@ -252,10 +252,10 @@ public class GatewayEntity {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof GatewayEntity)) {
+        if (!(obj instanceof ProfileGatewayEntity)) {
             return false;
         }
-        GatewayEntity gwy = (GatewayEntity) obj;
+        ProfileGatewayEntity gwy = (ProfileGatewayEntity) obj;
         return getAiravataInternalGatewayId().equals(gwy.getAiravataInternalGatewayId());
     }
 

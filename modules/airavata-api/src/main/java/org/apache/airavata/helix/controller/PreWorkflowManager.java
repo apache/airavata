@@ -38,6 +38,7 @@ import org.apache.airavata.common.model.ProcessTerminateEvent;
 import org.apache.airavata.common.model.ProcessWorkflow;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.helix.task.OutPort;
 import org.apache.airavata.helix.task.TaskUtil;
@@ -393,7 +394,7 @@ public class PreWorkflowManager extends WorkflowManager {
                     // updating the process status
                     ProcessStatus status = new ProcessStatus();
                     status.setState(ProcessState.STARTED);
-                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    status.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
                     publishProcessStatus(processId, experimentId, gateway, ProcessState.STARTED);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {

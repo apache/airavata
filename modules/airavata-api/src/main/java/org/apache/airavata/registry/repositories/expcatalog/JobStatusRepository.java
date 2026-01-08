@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
 public interface JobStatusRepository extends JpaRepository<JobStatusEntity, JobStatusPK> {
 
     @Query(
-            "SELECT j FROM JobStatusEntity j WHERE j.jobId = :jobId AND j.taskId = :taskId ORDER BY j.timeOfStateChange DESC")
+            "SELECT j FROM JobStatusEntity j WHERE j.jobId = :jobId AND j.taskId = :taskId ORDER BY j.timeOfStateChange DESC, j.statusId DESC")
     List<JobStatusEntity> findByJobIdAndTaskIdOrderByTimeOfStateChangeDesc(
             @Param("jobId") String jobId, @Param("taskId") String taskId);
 

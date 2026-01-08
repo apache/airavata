@@ -26,6 +26,7 @@ import org.apache.airavata.common.exception.ProjectNotFoundException;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,7 +44,7 @@ public class ProjectHandler {
             project.setOwner(owner);
             project.setGatewayId(gatewayId);
             project.setDescription(description != null ? description : "");
-            project.setCreationTime(System.currentTimeMillis());
+            project.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             project.setSharedUsers(new ArrayList<>());
             project.setSharedGroups(new ArrayList<>());
 

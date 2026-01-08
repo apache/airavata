@@ -83,7 +83,7 @@ import org.springframework.transaction.annotation.Transactional;
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegrationTestBase {
 
     @org.junit.jupiter.api.BeforeAll
@@ -319,7 +319,6 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
             JobStatus status1 = StateMachineTestUtils.createJobStatus(JobState.SUBMITTED, "Job submitted");
             jobStatusService.addJobStatus(status1, testHierarchy.jobPK);
-            commitTransaction();
 
             // Publish message (as would happen in real flow via AiravataTask)
             JobIdentifier identifier = new JobIdentifier(
@@ -337,7 +336,6 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
             // Add another status and publish
             JobStatus status2 = StateMachineTestUtils.createJobStatus(JobState.QUEUED, "Job queued");
             jobStatusService.addJobStatus(status2, testHierarchy.jobPK);
-            commitTransaction();
 
             JobStatusChangeEvent event2 = new JobStatusChangeEvent(JobState.QUEUED, identifier);
             MessageContext msgCtx2 = new MessageContext(

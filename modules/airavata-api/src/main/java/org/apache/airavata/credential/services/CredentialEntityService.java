@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -132,7 +133,7 @@ public class CredentialEntityService {
             entity.setTokenId(credential.getToken());
             entity.setCredential(convertObjectToByteArray(credential));
             entity.setPortalUserId(credential.getPortalUserName());
-            entity.setTimePersisted(new Timestamp(System.currentTimeMillis()));
+            entity.setTimePersisted(AiravataUtils.getUniqueTimestamp());
             entity.setDescription(credential.getDescription());
             // Set default owner type if not specified
             if (entity.getCredentialOwnerType() == null) {

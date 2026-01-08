@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.LaunchValidationException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.exception.ValidationResults;
 import org.apache.airavata.common.exception.ValidatorResult;
 import org.apache.airavata.common.model.ErrorModel;
@@ -118,7 +119,7 @@ public class ValidationServiceImpl implements ValidationService {
                     validationResults.setValidationState(false);
                     ErrorModel details = new ErrorModel();
                     details.setActualErrorMessage(errorMsg);
-                    details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+                    details.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
                     try {
                         registryService.addErrors(errorType, details, entityId);
                     } catch (RegistryServiceException e) {

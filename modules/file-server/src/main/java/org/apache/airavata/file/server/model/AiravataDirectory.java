@@ -22,6 +22,7 @@ package org.apache.airavata.file.server.model;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.agents.api.FileMetadata;
+import org.apache.airavata.common.utils.AiravataUtils;
 
 public class AiravataDirectory {
     private String directoryName;
@@ -32,8 +33,7 @@ public class AiravataDirectory {
     private List<AiravataDirectory> innerDirectories = new ArrayList<>();
 
     public static AiravataDirectory fromMetadata(FileMetadata metadata) {
-        // replace System.currentTimeMillis() with correct times
-        return new AiravataDirectory(metadata.getName(), metadata.getSize(), System.currentTimeMillis());
+        return new AiravataDirectory(metadata.getName(), metadata.getSize(), AiravataUtils.getUniqueTimestamp().getTime());
     }
 
     public AiravataDirectory(String directoryName, long size, long createdTime) {

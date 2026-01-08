@@ -89,7 +89,7 @@ public class ProcessService {
             logger.debug("Populating the Primary Key of ProcessStatus objects for the Process");
             processEntity.getProcessStatuses().forEach(processStatusEntity -> {
                 processStatusEntity.setProcessId(processId);
-                processStatusEntity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
+                processStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
             });
         }
 
@@ -334,9 +334,9 @@ public class ProcessService {
 
         if (!isProcessExist(processId)) {
             logger.debug("Setting creation time if process doesn't already exist");
-            processModel.setCreationTime(System.currentTimeMillis());
+            processModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         }
-        processModel.setLastUpdateTime(System.currentTimeMillis());
+        processModel.setLastUpdateTime(AiravataUtils.getUniqueTimestamp().getTime());
 
         ProcessEntity processEntity = processMapper.toEntity(processModel);
 

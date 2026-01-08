@@ -80,16 +80,10 @@ import org.springframework.transaction.annotation.Transactional;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@Transactional
+@Transactional("expCatalogTransactionManager")
 public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrationTestBase {
 
-    @org.junit.jupiter.api.BeforeAll
-    public static void setupMessagingServices() {
-        // Initialize Kafka and RabbitMQ containers via TestcontainersConfig
-        org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-    }
+    // Testcontainers setup is handled by @DynamicPropertySource in ServiceIntegrationTestBase
 
     @Configuration
     @ComponentScan(
@@ -341,7 +335,6 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
             ProcessStatus status1 = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Process started");
             processStatusService.addProcessStatus(status1, testHierarchy.processId);
-            commitTransaction();
 
             // Publish message (as would happen in real flow via AiravataTask or WorkflowManager)
             ProcessIdentifier identifier =
@@ -359,7 +352,6 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             ProcessStatus status2 =
                     StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Process executing");
             processStatusService.addProcessStatus(status2, testHierarchy.processId);
-            commitTransaction();
 
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
@@ -434,8 +426,6 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
                 msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 publisher.publish(msgCtx);
             }
-
-            commitTransaction();
 
             // Wait for messages
             boolean received = messageReceived.await(5, TimeUnit.SECONDS);

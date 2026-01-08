@@ -57,7 +57,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-add-user", TEST_GATEWAY_ID);
 
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
             assertThat(userId).isNotNull().isEqualTo("test-add-user");
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved).isNotNull();
@@ -75,7 +74,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         void shouldUpdateUserProfile() throws UserProfileServiceException, IamAdminServicesException {
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-update-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
 
             UserProfile toUpdate = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             toUpdate.setFirstName("Updated");
@@ -92,7 +90,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         void shouldGetUserProfileById() throws UserProfileServiceException, IamAdminServicesException {
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-get-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
 
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved).isNotNull();
@@ -119,13 +116,11 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         void shouldDeleteUserProfile() throws UserProfileServiceException, IamAdminServicesException {
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-delete-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
 
             assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID))
                     .isTrue();
 
             boolean deleted = userProfileService.deleteUserProfile(testAuthzToken, userId, TEST_GATEWAY_ID);
-            commitTransaction();
             assertThat(deleted).isTrue();
             assertThat(userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID))
                     .isFalse();
@@ -143,7 +138,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
         void shouldReturnTrueWhenUserExists() throws UserProfileServiceException, IamAdminServicesException {
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-exists-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
 
             boolean exists = userProfileService.doesUserExist(testAuthzToken, userId, TEST_GATEWAY_ID);
 
@@ -173,7 +167,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             UserProfile user2 = TestDataFactory.createTestUserProfile("test-list-user2", TEST_GATEWAY_ID);
             String userId1 = userProfileService.addUserProfile(testAuthzToken, user1);
             String userId2 = userProfileService.addUserProfile(testAuthzToken, user2);
-            commitTransaction();
 
             var users = userProfileService.getAllUserProfilesInGateway(testAuthzToken, TEST_GATEWAY_ID, 0, 10);
 
@@ -194,7 +187,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
                 UserProfile user = TestDataFactory.createTestUserProfile("test-pag-user" + i, TEST_GATEWAY_ID);
                 userProfileService.addUserProfile(testAuthzToken, user);
             }
-            commitTransaction();
 
             var users = userProfileService.getAllUserProfilesInGateway(testAuthzToken, TEST_GATEWAY_ID, 0, 2);
 
@@ -217,7 +209,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             userProfile.setState(Status.ACTIVE);
 
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
 
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved).isNotNull();
@@ -236,7 +227,6 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             userProfile.getEmails().add("email2@example.com");
 
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-            commitTransaction();
 
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved).isNotNull();

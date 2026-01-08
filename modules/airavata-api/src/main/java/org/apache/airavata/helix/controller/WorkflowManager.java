@@ -161,7 +161,7 @@ public abstract class WorkflowManager extends ServerLifecycle {
 
         ProcessStatus status = new ProcessStatus();
         status.setState(state);
-        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        status.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
 
         try {
             registryService.updateProcessStatus(status, processId);
@@ -191,7 +191,7 @@ public abstract class WorkflowManager extends ServerLifecycle {
             processWorkflow.setProcessId(processId);
             processWorkflow.setWorkflowId(workflowName);
             processWorkflow.setType(workflowType);
-            processWorkflow.setCreationTime(System.currentTimeMillis());
+            processWorkflow.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             registryService.addProcessWorkflow(processWorkflow);
         } catch (RegistryServiceException e) {
             logger.error(

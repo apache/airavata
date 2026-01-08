@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.services;
 
+import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.common.model.Notification;
 import org.apache.airavata.registry.entities.expcatalog.NotificationEntity;
@@ -59,44 +60,64 @@ public class NotificationService {
         NotificationEntity entity = notificationMapper.toEntity(notification);
         // Ensure required timestamps are set if mapper didn't set them
         if (entity.getCreationTime() == null) {
-            entity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+            entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp());
         }
         if (entity.getPublishedTime() == null) {
-            entity.setPublishedTime(new java.sql.Timestamp(System.currentTimeMillis()));
+            entity.setPublishedTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp());
         }
         if (entity.getExpirationTime() == null) {
             // Set expiration to 1 year from now if not set
-            entity.setExpirationTime(new java.sql.Timestamp(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000));
+            Timestamp now = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
+            entity.setExpirationTime(new java.sql.Timestamp(now.getTime() + 365L * 24 * 60 * 60 * 1000));
         }
         NotificationEntity saved = notificationRepository.save(entity);
         return saved.getNotificationId();
     }
 
     public void updateNotification(Notification notification) throws RegistryException {
+        // Load existing entity first to preserve creation time and other fields
+        NotificationEntity existing = null;
+        if (notification.getNotificationId() != null) {
+            existing = notificationRepository
+                    .findById(notification.getNotificationId())
+                    .orElse(null);
+        }
+        
+        // Map the model to entity - this will set all fields from the model
         NotificationEntity entity = notificationMapper.toEntity(notification);
-        // Ensure required timestamps are set if mapper didn't set them (mapper returns null if model time is 0)
-        if (entity.getCreationTime() == null) {
-            // Try to preserve existing creation time, or use current time
-            if (notification.getNotificationId() != null) {
-                NotificationEntity existing = notificationRepository
-                        .findById(notification.getNotificationId())
-                        .orElse(null);
-                if (existing != null && existing.getCreationTime() != null) {
-                    entity.setCreationTime(existing.getCreationTime());
-                } else {
-                    entity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
-                }
+        
+        // Preserve creation time from existing entity (business rule)
+        if (existing != null && existing.getCreationTime() != null) {
+            entity.setCreationTime(existing.getCreationTime());
+        } else if (entity.getCreationTime() == null) {
+            entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp());
+        }
+        
+        // Preserve published time if model doesn't have it set
+        if (entity.getPublishedTime() == null) {
+            if (existing != null && existing.getPublishedTime() != null) {
+                entity.setPublishedTime(existing.getPublishedTime());
             } else {
-                entity.setCreationTime(new java.sql.Timestamp(System.currentTimeMillis()));
+                entity.setPublishedTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp());
             }
         }
-        if (entity.getPublishedTime() == null) {
-            entity.setPublishedTime(new java.sql.Timestamp(System.currentTimeMillis()));
+        
+        // Set expirationTime from model if provided, otherwise preserve existing or use default
+        if (notification.getExpirationTime() > 0) {
+            // Model explicitly sets expirationTime - always use it (override any existing value)
+            entity.setExpirationTime(new java.sql.Timestamp(notification.getExpirationTime()));
+        } else if (entity.getExpirationTime() == null) {
+            // No expirationTime in model - preserve existing or set default
+            if (existing != null && existing.getExpirationTime() != null) {
+                entity.setExpirationTime(existing.getExpirationTime());
+            } else {
+                // Set expiration to 1 year from now if not set
+                Timestamp now = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
+                entity.setExpirationTime(new java.sql.Timestamp(now.getTime() + 365L * 24 * 60 * 60 * 1000));
+            }
         }
-        if (entity.getExpirationTime() == null) {
-            // Set expiration to 1 year from now if not set
-            entity.setExpirationTime(new java.sql.Timestamp(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000));
-        }
+        
         notificationRepository.save(entity);
+        notificationRepository.flush(); // Ensure changes are persisted immediately
     }
 }

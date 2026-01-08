@@ -300,10 +300,10 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
         if (!isApplicationInterfaceExists(applicationInterfaceId)) {
             logger.debug("Checking if the Application Interface already exists");
-            applicationInterfaceEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            applicationInterfaceEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
         }
 
-        applicationInterfaceEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        applicationInterfaceEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
         return applicationInterfaceRepository.save(applicationInterfaceEntity);
     }
 
@@ -333,10 +333,10 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
         if (!isApplicationModuleExists(applicationModuleId)) {
             logger.debug("Checking if the Application Module already exists");
-            applicationModuleEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            applicationModuleEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
         }
 
-        applicationModuleEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        applicationModuleEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
         return applicationModuleRepository.save(applicationModuleEntity);
     }
 }

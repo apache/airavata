@@ -36,7 +36,9 @@ import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.TestcontainersConfig;
 import org.apache.airavata.messaging.MessageContext;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.MessageHandler;
+import org.apache.airavata.messaging.Publisher;
 import org.apache.airavata.messaging.Subscriber;
 import org.apache.airavata.messaging.TestMessagingUtils;
 import org.apache.airavata.messaging.Type;
@@ -48,6 +50,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
@@ -56,7 +60,6 @@ import org.springframework.test.context.TestPropertySource;
 @ActiveProfiles("test")
 @TestPropertySource(
         properties = {
-            "rabbitmq.broker-url=${rabbitMQBrokerUrl}",
             "rabbitmq.experiment-exchange-name=test_experiment_exchange",
             "rabbitmq.status-exchange-name=test_status_exchange",
             "rabbitmq.durable-queue=false"
@@ -64,6 +67,14 @@ import org.springframework.test.context.TestPropertySource;
         locations = "classpath:conf/airavata.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class RabbitMQIntegrationTest {
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        // Initialize Testcontainers services and get URLs
+        String rabbitMQUrl = TestcontainersConfig.getRabbitMQUrl();
+        // Register properties - these will be available before Spring context loads
+        registry.add("rabbitmq.broker-url", () -> rabbitMQUrl);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMQIntegrationTest.class);
     private static String rabbitMQUrl;
@@ -73,6 +84,7 @@ public class RabbitMQIntegrationTest {
 
     @BeforeAll
     public static void setupRabbitMQ() {
+        // Get RabbitMQ URL from Testcontainers - this is called after @DynamicPropertySource
         rabbitMQUrl = TestcontainersConfig.getRabbitMQUrl();
         logger.info("RabbitMQ container initialized at: {}", rabbitMQUrl);
     }
@@ -84,16 +96,17 @@ public class RabbitMQIntegrationTest {
         properties.setExchangeName("test_exchange");
         properties.setQueueName("test_queue");
         properties.setDurable(false);
+        properties.setExchangeType(org.apache.airavata.messaging.rabbitmq.RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
 
-        RabbitMQPublisher publisher = new RabbitMQPublisher(properties);
+        RabbitMQPublisher publisher = new RabbitMQPublisher(properties, msg -> "test.key");
         assertNotNull(publisher, "Publisher should be created");
         logger.info("RabbitMQ connection test passed");
     }
 
     @Test
     public void testMessagePublishAndConsume() throws Exception {
-        String exchangeName = "test_exchange_" + System.currentTimeMillis();
-        String queueName = "test_queue_" + System.currentTimeMillis();
+        String exchangeName = "test_exchange_" + AiravataUtils.getUniqueTimestamp().getTime();
+        String queueName = "test_queue_" + AiravataUtils.getUniqueTimestamp().getTime();
         String routingKey = "test.routing.key";
 
         RabbitMQProperties properties = new RabbitMQProperties();
@@ -101,6 +114,7 @@ public class RabbitMQIntegrationTest {
         properties.setExchangeName(exchangeName);
         properties.setQueueName(queueName);
         properties.setDurable(false);
+        properties.setExchangeType(org.apache.airavata.messaging.rabbitmq.RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
 
         // Create publisher
         RabbitMQPublisher publisher = new RabbitMQPublisher(properties, msg -> routingKey);
@@ -121,10 +135,17 @@ public class RabbitMQIntegrationTest {
             messageReceived.countDown();
         };
 
-        // Create subscriber
-        MessagingFactory messagingFactory = new MessagingFactory(new AiravataServerProperties());
-        // would need proper configuration. For integration testing, we test the core
-        // publish/subscribe functionality directly.
+        // Create subscriber with same exchange and routing key
+        RabbitMQSubscriber subscriber = new RabbitMQSubscriber(properties);
+        List<String> subscriberRoutingKeys = new ArrayList<>();
+        subscriberRoutingKeys.add(routingKey);
+        subscriber.listen(
+                (connection, channel) -> new org.apache.airavata.messaging.rabbitmq.MessageConsumer(handler, connection, channel),
+                queueName,
+                subscriberRoutingKeys);
+        
+        // Give subscriber time to start listening
+        Thread.sleep(500);
 
         // Publish message
         publisher.publish(messageContext);
@@ -136,22 +157,25 @@ public class RabbitMQIntegrationTest {
         assertEquals(1, receivedMessages.size(), "Should receive exactly one message");
         assertEquals("test-message-id", receivedMessages.get(0).getMessageId(), "Message ID should match");
 
+        subscriber.close();
         publisher.close();
         logger.info("Message publish and consume test passed");
     }
 
     @Test
     public void testExchangeAndQueueCreation() throws Exception {
-        String exchangeName = "test_exchange_create_" + System.currentTimeMillis();
-        String queueName = "test_queue_create_" + System.currentTimeMillis();
+        String exchangeName = "test_exchange_create_" + AiravataUtils.getUniqueTimestamp().getTime();
+        String queueName = "test_queue_create_" + AiravataUtils.getUniqueTimestamp().getTime();
 
         RabbitMQProperties properties = new RabbitMQProperties();
         properties.setBrokerUrl(rabbitMQUrl);
         properties.setExchangeName(exchangeName);
         properties.setQueueName(queueName);
         properties.setDurable(false);
+        properties.setExchangeType(org.apache.airavata.messaging.rabbitmq.RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
 
-        RabbitMQPublisher publisher = new RabbitMQPublisher(properties);
+        // Publisher needs a routing key supplier
+        RabbitMQPublisher publisher = new RabbitMQPublisher(properties, msg -> "test.routing.key");
 
         // Publishing a message will create exchange and queue
         ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
@@ -169,8 +193,8 @@ public class RabbitMQIntegrationTest {
 
     @Test
     public void testMultipleMessages() throws Exception {
-        String exchangeName = "test_exchange_multi_" + System.currentTimeMillis();
-        String queueName = "test_queue_multi_" + System.currentTimeMillis();
+        String exchangeName = "test_exchange_multi_" + AiravataUtils.getUniqueTimestamp().getTime();
+        String queueName = "test_queue_multi_" + AiravataUtils.getUniqueTimestamp().getTime();
         int messageCount = 5;
 
         RabbitMQProperties properties = new RabbitMQProperties();
@@ -178,6 +202,7 @@ public class RabbitMQIntegrationTest {
         properties.setExchangeName(exchangeName);
         properties.setQueueName(queueName);
         properties.setDurable(false);
+        properties.setExchangeType(org.apache.airavata.messaging.rabbitmq.RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
 
         RabbitMQPublisher publisher = new RabbitMQPublisher(properties, msg -> "test.key");
 
@@ -203,17 +228,14 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should publish and receive ExperimentStatusChangeEvent")
     void shouldPublishAndReceiveExperimentStatusChangeEvent() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                .setDurable(properties.rabbitmq.durableQueue)
-                .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
-        String experimentId = "test-exp-" + System.currentTimeMillis();
+        String experimentId = "test-exp-" + AiravataUtils.getUniqueTimestamp().getTime();
         String gatewayId = "test-gateway";
+        // Routing key format for EXPERIMENT is: gatewayId.experimentId
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(experimentId);
-        routingKeys.add(experimentId + ".*");
+        routingKeys.add(gatewayId + "." + experimentId);
+        routingKeys.add(gatewayId + "." + experimentId + ".*");
 
         CountDownLatch messageReceived = new CountDownLatch(1);
         List<MessageContext> capturedMessages = new ArrayList<>();
@@ -231,6 +253,8 @@ public class RabbitMQIntegrationTest {
         };
 
         Subscriber subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
+        // Give subscriber time to start listening and bind to queue
+        Thread.sleep(500);
         String subscriberId = null;
 
         try {
@@ -255,18 +279,15 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should publish and receive ProcessStatusChangeEvent")
     void shouldPublishAndReceiveProcessStatusChangeEvent() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                .setDurable(properties.rabbitmq.durableQueue)
-                .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
-        String processId = "test-process-" + System.currentTimeMillis();
-        String experimentId = "test-exp-" + System.currentTimeMillis();
+        String processId = "test-process-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String experimentId = "test-exp-" + AiravataUtils.getUniqueTimestamp().getTime();
         String gatewayId = "test-gateway";
+        // Routing key format for PROCESS is: gatewayId.experimentId.processId
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(processId);
-        routingKeys.add(processId + ".*");
+        routingKeys.add(gatewayId + "." + experimentId + "." + processId);
+        routingKeys.add(gatewayId + "." + experimentId + "." + processId + ".*");
 
         CountDownLatch messageReceived = new CountDownLatch(1);
         List<MessageContext> capturedMessages = new ArrayList<>();
@@ -284,6 +305,8 @@ public class RabbitMQIntegrationTest {
         };
 
         Subscriber subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
+        // Give subscriber time to start listening
+        Thread.sleep(100);
         String subscriberId = null;
 
         try {
@@ -308,20 +331,17 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should publish and receive JobStatusChangeEvent")
     void shouldPublishAndReceiveJobStatusChangeEvent() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                .setDurable(properties.rabbitmq.durableQueue)
-                .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
-        String jobId = "test-job-" + System.currentTimeMillis();
+        String jobId = "test-job-" + AiravataUtils.getUniqueTimestamp().getTime();
         String taskId = "test-task";
         String processId = "test-process";
         String experimentId = "test-exp";
         String gatewayId = "test-gateway";
+        // Routing key format for JOB is: gatewayId.experimentId.processId.taskId.jobId
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(jobId);
-        routingKeys.add(jobId + ".*");
+        routingKeys.add(gatewayId + "." + experimentId + "." + processId + "." + taskId + "." + jobId);
+        routingKeys.add(gatewayId + "." + experimentId + "." + processId + "." + taskId + "." + jobId + ".*");
 
         CountDownLatch messageReceived = new CountDownLatch(1);
         List<MessageContext> capturedMessages = new ArrayList<>();
@@ -339,6 +359,8 @@ public class RabbitMQIntegrationTest {
         };
 
         Subscriber subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
+        // Give subscriber time to start listening
+        Thread.sleep(100);
         String subscriberId = null;
 
         try {
@@ -364,18 +386,15 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should verify message routing with routing keys")
     void shouldVerifyMessageRoutingWithRoutingKeys() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                .setDurable(properties.rabbitmq.durableQueue)
-                .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
         String experimentId = "test-exp-routing";
         String gatewayId = "test-gateway";
 
-        // Subscribe to specific routing key
+        // Routing key format for EXPERIMENT is: gatewayId.experimentId
+        // Subscribe to specific routing key pattern
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(experimentId + ".status");
+        routingKeys.add(gatewayId + "." + experimentId);
 
         CountDownLatch messageReceived = new CountDownLatch(1);
         MessageHandler handler = message -> {
@@ -384,6 +403,8 @@ public class RabbitMQIntegrationTest {
         };
 
         Subscriber subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
+        // Give subscriber time to start listening
+        Thread.sleep(100);
         String subscriberId = null;
 
         try {
@@ -404,16 +425,13 @@ public class RabbitMQIntegrationTest {
     @DisplayName("Should verify message serialization and deserialization")
     void shouldVerifyMessageSerializationAndDeserialization() throws Exception {
         MessagingFactory messagingFactory = new MessagingFactory(properties);
-        RabbitMQPublisher publisher = new RabbitMQPublisher(new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                .setExchangeName(properties.rabbitmq.experimentExchangeName)
-                .setDurable(properties.rabbitmq.durableQueue)
-                .setPrefetchCount(properties.rabbitmq.prefetchCount));
+        Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
         String experimentId = "test-exp-serialization";
         String gatewayId = "test-gateway";
+        // Routing key format for EXPERIMENT is: gatewayId.experimentId
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(experimentId);
+        routingKeys.add(gatewayId + "." + experimentId);
 
         CountDownLatch messageReceived = new CountDownLatch(1);
         ExperimentStatusChangeEvent[] receivedEvent = new ExperimentStatusChangeEvent[1];
@@ -426,6 +444,8 @@ public class RabbitMQIntegrationTest {
         };
 
         Subscriber subscriber = messagingFactory.getSubscriber(handler, routingKeys, Type.STATUS);
+        // Give subscriber time to start listening
+        Thread.sleep(100);
         String subscriberId = null;
 
         try {

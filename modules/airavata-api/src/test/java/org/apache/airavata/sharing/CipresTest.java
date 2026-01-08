@@ -27,6 +27,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.JpaConfig;
 import org.apache.airavata.config.TestcontainersConfig;
 import org.apache.airavata.service.SharingRegistryService;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.Entity;
 import org.apache.airavata.sharing.model.EntitySearchField;
@@ -239,7 +240,7 @@ public class CipresTest {
 
             entity1.setFullText("test project 1 stampede gaussian seagrid");
 
-            entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
+            entity1.setOriginalEntityCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             sharingService.createEntity(entity1);
             logger.info("After currentTimeMillis()...");
             Entity entity2 = new Entity();
@@ -279,15 +280,15 @@ public class CipresTest {
             logger.info("After test entity creation...");
 
             logger.info("Before shareEntityWithGroups READ...");
-            long time = System.currentTimeMillis();
+            long time = AiravataUtils.getUniqueTimestamp().getTime();
             sharingService.shareEntityWithGroups(domainId, "test-experiment-2", List.of("test-group-2"), "READ", true);
-            logger.info("Time for sharing " + (System.currentTimeMillis() - time));
+            logger.info("Time for sharing " + (AiravataUtils.getUniqueTimestamp().getTime() - time));
 
             logger.info("Before shareEntityWithGroups CLONE...");
-            time = System.currentTimeMillis();
+            time = AiravataUtils.getUniqueTimestamp().getTime();
             sharingService.shareEntityWithGroups(
                     domainId, "test-experiment-2", List.of("test-group-2"), "CLONE", false);
-            logger.info("Time for sharing " + (System.currentTimeMillis() - time));
+            logger.info("Time for sharing " + (AiravataUtils.getUniqueTimestamp().getTime() - time));
 
             logger.info("Before userHasAccess 1...");
             logger.info(
@@ -488,7 +489,7 @@ public class CipresTest {
 
             entityB1.setFullText("test project 1");
 
-            entityB1.setOriginalEntityCreationTime(System.currentTimeMillis());
+            entityB1.setOriginalEntityCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             sharingService.createEntity(entityB1);
             logger.info("After creating UserBProject1 ...");
 
@@ -508,7 +509,7 @@ public class CipresTest {
 
             entityC1.setFullText("test project 2");
 
-            entityC1.setOriginalEntityCreationTime(System.currentTimeMillis());
+            entityC1.setOriginalEntityCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
             sharingService.createEntity(entityC1);
             logger.info("After creating UserCProject2 ...");
 
@@ -560,9 +561,9 @@ public class CipresTest {
             sharingService.createEntity(entityD2);
             logger.info("After creating Data2 ...");
 
-            time = System.currentTimeMillis();
+            time = AiravataUtils.getUniqueTimestamp().getTime();
             sharingService.shareEntityWithGroups(domainId, "Folder1", List.of("Group1"), "READ", true);
-            logger.info("Time for sharing " + (System.currentTimeMillis() - time));
+            logger.info("Time for sharing " + (AiravataUtils.getUniqueTimestamp().getTime() - time));
             logger.info("After READ sharing UserBFolder1 with Group1 ...");
 
             Entity entityD3 = new Entity();

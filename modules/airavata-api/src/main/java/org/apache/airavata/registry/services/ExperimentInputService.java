@@ -71,16 +71,30 @@ public class ExperimentInputService {
     }
 
     public void updateExperimentInputs(List<InputDataObjectType> inputs, String experimentId) throws RegistryException {
-        // Delete existing inputs and add new ones
-        List<ExperimentInputEntity> existing = experimentInputRepository.findByExperimentId(experimentId);
-        if (!existing.isEmpty()) {
-            experimentInputRepository.deleteAll(existing);
-            // Flush deletes to ensure they're executed before inserting new ones with same IDs
-            experimentInputRepository.flush();
+        // Ensure experiment exists and is flushed before any deletes
+        ExperimentEntity experimentEntity = experimentRepository
+                .findById(experimentId)
+                .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
+        experimentEntity = experimentRepository.save(experimentEntity);
+        experimentRepository.flush();
+        
+        // Delete existing inputs using native query to bypass persistence context issues
+        experimentInputRepository.deleteByExperimentId(experimentId);
+        // Flush to ensure deletes are executed
+        experimentInputRepository.flush();
+        // Clear entity manager to remove any managed entities from persistence context
+        entityManager.clear();
+        
+        // Use getReference() to get experiment proxy without querying (works after clear)
+        ExperimentEntity experimentRef = entityManager.getReference(ExperimentEntity.class, experimentId);
+        
+        // Add new inputs
+        for (InputDataObjectType input : inputs) {
+            ExperimentInputEntity entity = inputDataObjectTypeMapper.toEntity(input);
+            entity.setExperimentId(experimentId);
+            entity.setExperiment(experimentRef);
+            experimentInputRepository.save(entity);
         }
-        // Use addExperimentInputs to add new inputs (reuses the same logic)
-        // Note: We don't need to explicitly load the experiment here because addExperimentInputs will handle it
-        addExperimentInputs(inputs, experimentId);
     }
 
     public List<InputDataObjectType> getExperimentInputs(String experimentId) throws RegistryException {

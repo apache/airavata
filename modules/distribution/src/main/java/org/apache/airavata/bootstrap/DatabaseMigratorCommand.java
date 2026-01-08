@@ -38,6 +38,7 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -287,9 +288,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
     }
 
     private Timestamp getCurrentDate() {
-        Calendar cal = Calendar.getInstance();
-        Date date = cal.getTime();
-        return new Timestamp(date.getTime());
+        return AiravataUtils.getUniqueTimestamp();
     }
 
     private String getIncrementedVersion(String currentVersion) {

@@ -40,6 +40,7 @@ import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.TestcontainersConfig;
 import org.apache.airavata.messaging.MessageContext;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.TestMessagingUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -57,18 +58,28 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "flyway.enabled=false"})
 @ActiveProfiles("test")
-@TestPropertySource(
-        properties = {"kafka.broker-url=${kafkaBootstrapServers}"},
-        locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class KafkaIntegrationTest {
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        // Initialize Testcontainers services and get URLs
+        String kafkaUrl = TestcontainersConfig.getKafkaBootstrapServers();
+        // Register properties - these will be available before Spring context loads
+        registry.add("kafka.broker-url", () -> kafkaUrl);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaIntegrationTest.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -98,7 +109,7 @@ public class KafkaIntegrationTest {
 
     @Test
     public void testMessagePublishAndConsume() throws Exception {
-        String topicName = "test-topic-" + System.currentTimeMillis();
+        String topicName = "test-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String testMessage = "Test message from integration test";
         String testKey = "test-key";
 
@@ -111,7 +122,7 @@ public class KafkaIntegrationTest {
         // Create consumer
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-" + System.currentTimeMillis());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -172,7 +183,7 @@ public class KafkaIntegrationTest {
 
     @Test
     public void testMultipleMessages() throws Exception {
-        String topicName = "test-topic-multi-" + System.currentTimeMillis();
+        String topicName = "test-topic-multi-" + AiravataUtils.getUniqueTimestamp().getTime();
         int messageCount = 10;
 
         Properties producerProps = new Properties();
@@ -182,7 +193,7 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-multi-" + System.currentTimeMillis());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-multi-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -237,7 +248,7 @@ public class KafkaIntegrationTest {
 
     @Test
     public void testTopicCreation() throws Exception {
-        String topicName = "test-topic-create-" + System.currentTimeMillis();
+        String topicName = "test-topic-create-" + AiravataUtils.getUniqueTimestamp().getTime();
 
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -263,7 +274,7 @@ public class KafkaIntegrationTest {
     @Test
     @DisplayName("Should publish and consume ExperimentStatusChangeEvent")
     void shouldPublishAndConsumeExperimentStatusChangeEvent() throws Exception {
-        String topicName = "test-experiment-topic-" + System.currentTimeMillis();
+        String topicName = "test-experiment-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String experimentId = "test-exp-kafka";
         String gatewayId = "test-gateway";
 
@@ -274,7 +285,7 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-experiment-group-" + System.currentTimeMillis());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-experiment-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -330,7 +341,7 @@ public class KafkaIntegrationTest {
     @Test
     @DisplayName("Should publish and consume ProcessStatusChangeEvent")
     void shouldPublishAndConsumeProcessStatusChangeEvent() throws Exception {
-        String topicName = "test-process-topic-" + System.currentTimeMillis();
+        String topicName = "test-process-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String processId = "test-process-kafka";
         String experimentId = "test-exp";
         String gatewayId = "test-gateway";
@@ -342,7 +353,7 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-process-group-" + System.currentTimeMillis());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-process-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -397,7 +408,7 @@ public class KafkaIntegrationTest {
     @Test
     @DisplayName("Should publish and consume JobStatusChangeEvent")
     void shouldPublishAndConsumeJobStatusChangeEvent() throws Exception {
-        String topicName = "test-job-topic-" + System.currentTimeMillis();
+        String topicName = "test-job-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String jobId = "test-job-kafka";
         String taskId = "test-task";
         String processId = "test-process";
@@ -411,7 +422,7 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-job-group-" + System.currentTimeMillis());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-job-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -467,7 +478,7 @@ public class KafkaIntegrationTest {
     @Test
     @DisplayName("Should verify message ordering for state transitions")
     void shouldVerifyMessageOrderingForStateTransitions() throws Exception {
-        String topicName = "test-ordering-topic-" + System.currentTimeMillis();
+        String topicName = "test-ordering-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String experimentId = "test-exp-ordering";
         String gatewayId = "test-gateway";
 
@@ -478,7 +489,7 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-ordering-group-" + System.currentTimeMillis());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-ordering-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
