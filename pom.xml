@@ -285,6 +285,16 @@ under the License.
                 <artifactId>h2</artifactId>
                 <version>2.2.224</version>
             </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>11.20.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-mysql</artifactId>
+                <version>11.20.0</version>
+            </dependency>
 
             <!-- Jakarta -->
             <dependency>
@@ -308,9 +318,14 @@ under the License.
                 <version>2.1.3</version>
             </dependency>
             <dependency>
-              <groupId>jakarta.transaction</groupId>
+                <groupId>jakarta.transaction</groupId>
               <artifactId>jakarta.transaction-api</artifactId>
               <version>2.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>3.0.0</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
@@ -419,6 +434,11 @@ under the License.
             <!-- Spring Boot -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>3.5.3</version>
             </dependency>
@@ -429,8 +449,53 @@ under the License.
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-mail</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-quartz</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>6.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.ldap</groupId>
+                <artifactId>spring-ldap-core</artifactId>
+                <version>3.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-ldap</artifactId>
+                <version>6.4.2</version>
             </dependency>
             <!-- Force jandex version for Hibernate 6.6 compatibility -->
             <dependency>
@@ -438,12 +503,22 @@ under the License.
                 <artifactId>jandex</artifactId>
                 <version>3.2.0</version>
             </dependency>
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-registry-prometheus</artifactId>
+                <version>1.14.2</version>
+            </dependency>
 
             <!-- gRPC -->
             <dependency>
                 <groupId>org.springframework.grpc</groupId>
                 <artifactId>spring-grpc-spring-boot-starter</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty</artifactId>
+                <version>1.73.0</version>
             </dependency>
 
             <!-- OpenAPI -->
@@ -515,6 +590,18 @@ under the License.
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>retries</artifactId>
                 <version>2.41.0</version>
+            </dependency>
+
+            <!-- CLI -->
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>4.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli-spring-boot-starter</artifactId>
+                <version>4.7.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -656,6 +743,11 @@ under the License.
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.3.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
 
                 <!-- Third Party Plugins -->
                 <plugin>
@@ -707,6 +799,16 @@ under the License.
                     <groupId>io.github.ascopes</groupId>
                     <artifactId>protobuf-maven-plugin</artifactId>
                     <version>3.10.2</version>
+                    <configuration>
+                        <protocVersion>4.30.1</protocVersion>
+                        <binaryMavenPlugins>
+                            <binaryMavenPlugin>
+                                <groupId>io.grpc</groupId>
+                                <artifactId>protoc-gen-grpc-java</artifactId>
+                                <version>1.73.0</version>
+                            </binaryMavenPlugin>
+                        </binaryMavenPlugins>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>

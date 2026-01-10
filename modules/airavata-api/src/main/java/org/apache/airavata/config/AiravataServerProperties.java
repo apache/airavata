@@ -197,8 +197,10 @@ public class AiravataServerProperties {
         public String experimentLaunchQueueName = "experiment.launch.queue";
         public String processExchangeName = "process_exchange";
         public String statusExchangeName = "status_exchange";
+        public String dbEventExchangeName = "dbevent_exchange";
         public boolean durableQueue = false;
         public int prefetchCount = 200;
+        public boolean enabled = false;
     }
 
     public Kafka kafka = new Kafka();

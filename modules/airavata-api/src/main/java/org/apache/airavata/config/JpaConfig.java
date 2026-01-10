@@ -74,11 +74,35 @@ public class JpaConfig {
     public static final String CREDENTIAL_STORE_PU = "credential_store";
     public static final String RESEARCH_CATALOG_PU = "research_catalog";
 
+    // Helper method to get property from environment with fallback
+    private String getEnvProperty(String key, String defaultValue) {
+        String value = environment.getProperty(key);
+        return (value != null && !value.isEmpty()) ? value : defaultValue;
+    }
+    
+    // Helper method to create DataSource from environment properties
+    private DataSource createDataSourceFromEnv(String prefix, String poolName) {
+        String url = environment.getProperty(prefix + ".url");
+        if (url == null || url.isEmpty()) {
+            throw new IllegalStateException(
+                    "Database configuration missing: " + prefix + ".url is not set in airavata.properties");
+        }
+        String driver = getEnvProperty(prefix + ".driver", "org.mariadb.jdbc.Driver");
+        String user = environment.getProperty(prefix + ".user");
+        String password = environment.getProperty(prefix + ".password");
+        String validationQuery = getEnvProperty(prefix + ".validation-query", "SELECT 1");
+        return createDataSource(driver, url, user, password, validationQuery, poolName);
+    }
+
     // Helper method to create HikariCP DataSource
     private DataSource createDataSource(
-            String driver, String url, String user, String password, String validationQuery) {
+            String driver, String url, String user, String password, String validationQuery, String poolName) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(driver);
+        // Set pool name for better identification in logs
+        if (poolName != null && !poolName.isEmpty()) {
+            config.setPoolName(poolName);
+        }
         // Append MySQL/MariaDB connection parameters
         String jdbcUrl = url;
         if (url != null
@@ -99,6 +123,8 @@ public class JpaConfig {
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(600000);
         config.setMaxLifetime(1800000);
+        // Register MBeans for monitoring
+        config.setRegisterMbeans(true);
         // Don't fail application startup if database is not available
         // Connection will be established lazily when needed
         config.setInitializationFailTimeout(-1);
@@ -112,16 +138,9 @@ public class JpaConfig {
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
-        // Explicitly set Hibernate dialect to avoid JDBC metadata lookup
-        // MariaDB is compatible with MySQL dialect, but we use MariaDBDialect for better compatibility
-        String dialect = environment != null ? environment.getProperty("hibernate.dialect") : null;
-        if (dialect == null) {
-            // Default to MariaDB dialect (compatible with MySQL)
-            props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
-        } else {
-            props.put("hibernate.dialect", dialect);
-        }
-
+        // Don't set dialect explicitly - let Hibernate auto-detect from datasource to avoid deprecation warning
+        // Hibernate 6+ can auto-detect the dialect from the JDBC driver
+        
         // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown),
         // none for production when database might not be available (skip validation)
         // Can be overridden via hibernate.hbm2ddl.auto property
@@ -162,8 +181,8 @@ public class JpaConfig {
 
         String url = ((HikariDataSource) dataSource).getJdbcUrl();
         Properties jpaProps = createJpaProperties(url);
-        // Disable JDBC metadata usage to avoid connection attempts during startup
-        jpaProps.put("hibernate.temp.use_jdbc_metadata_defaults", "false");
+        // Use new property name instead of deprecated one
+        jpaProps.put("hibernate.boot.allow_jdbc_metadata_access", "false");
         // Use physical naming strategy to ensure column names are used as-is
         jpaProps.put(
                 "hibernate.physical_naming_strategy",
@@ -182,102 +201,59 @@ public class JpaConfig {
     @Primary
     @Profile("!test")
     public DataSource profileServiceDataSource() {
-        var db = properties.database.profile;
-        if (db == null) {
-            throw new IllegalStateException(
-                    "Database configuration for profile service is missing. properties.database.profile is null. Check airavata.properties for database.profile.* properties.");
-        }
-        if (db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for profile service is missing or invalid. properties.database.profile.url is null or empty. Check airavata.properties for database.profile.url. Current value: "
-                            + db.url);
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSourceFromEnv("database.profile", "ProfileServicePool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource appCatalogDataSource() {
-        var db = properties.database.catalog;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for app catalog is missing or invalid. Check airavata.properties for database.catalog.url");
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSourceFromEnv("database.catalog", "AppCatalogPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource registryDataSource() {
-        var db = properties.database.registry;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for registry is missing or invalid. Check airavata.properties for database.registry.url");
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, properties.database.validationQuery);
+        return createDataSourceFromEnv("database.registry", "RegistryPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource replicaDataSource() {
-        var db = properties.database.replica;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for replica catalog is missing or invalid. Check airavata.properties for database.replica.url");
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSourceFromEnv("database.replica", "ReplicaPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource workflowDataSource() {
-        var db = properties.database.workflow;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for workflow catalog is missing or invalid. Check airavata.properties for database.workflow.url");
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSourceFromEnv("database.workflow", "WorkflowPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource sharingDataSource() {
-        var db = properties.database.sharing;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for sharing registry is missing or invalid. Check airavata.properties for database.sharing.url");
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSourceFromEnv("database.sharing", "SharingPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource credentialStoreDataSource() {
-        var db = properties.database.vault;
         // Fallback to registry database if vault DB not configured
-        String url = (db != null && db.url != null && !db.url.isEmpty()) ? db.url : properties.database.registry.url;
-        String user =
-                (db != null && db.user != null && !db.user.isEmpty()) ? db.user : properties.database.registry.user;
-        String password = (db != null && db.password != null && !db.password.isEmpty())
-                ? db.password
-                : properties.database.registry.password;
-        String driver = (db != null && db.driver != null && !db.driver.isEmpty())
-                ? db.driver
-                : properties.database.registry.driver;
-        String validationQuery = properties.database.validationQuery;
-
-        return createDataSource(driver, url, user, password, validationQuery);
+        String url = environment.getProperty("database.vault.url");
+        if (url == null || url.isEmpty()) {
+            url = environment.getProperty("database.registry.url");
+        }
+        String user = getEnvProperty("database.vault.user", environment.getProperty("database.registry.user"));
+        String password = getEnvProperty("database.vault.password", environment.getProperty("database.registry.password"));
+        String driver = getEnvProperty("database.vault.driver", getEnvProperty("database.registry.driver", "org.mariadb.jdbc.Driver"));
+        String validationQuery = getEnvProperty("database.validation-query", "SELECT 1");
+        
+        return createDataSource(driver, url, user, password, validationQuery, "CredentialStorePool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource researchCatalogDataSource() {
-        var db = properties.database.research;
-        if (db == null || db.url == null || db.url.isEmpty()) {
-            throw new IllegalStateException(
-                    "Database configuration for research catalog is missing or invalid. Check airavata.properties for database.research.url");
-        }
-        return createDataSource(db.driver, db.url, db.user, db.password, db.validationQuery);
+        return createDataSourceFromEnv("database.research", "ResearchCatalogPool");
     }
 
     // EntityManagerFactory beans using Spring's LocalContainerEntityManagerFactoryBean

@@ -37,6 +37,7 @@ import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,7 +48,7 @@ public class ProjectHandler {
     private final ProjectRepository projectRepository;
     private final ResourceRepository resourceRepository;
 
-    public ProjectHandler(ProjectRepository projectRepository, ResourceRepository resourceRepository) {
+    public ProjectHandler(@Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository, ResourceRepository resourceRepository) {
         this.projectRepository = projectRepository;
         this.resourceRepository = resourceRepository;
     }

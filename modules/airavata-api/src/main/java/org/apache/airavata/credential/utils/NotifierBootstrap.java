@@ -102,8 +102,7 @@ public class NotifierBootstrap extends TimerTask {
             List<Credential> credentials = credentialReader.getAllCredentials();
 
             for (Credential credential : credentials) {
-                if (credential instanceof CertificateCredential) {
-                    CertificateCredential certificateCredential = (CertificateCredential) credential;
+                if (credential instanceof CertificateCredential certificateCredential) {
 
                     Date date = Utility.convertStringToDate(certificateCredential.getNotAfter());
                     Calendar cal = Calendar.getInstance();

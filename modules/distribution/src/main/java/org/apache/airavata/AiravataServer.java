@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class
         })
 @EnableTransactionManagement
-@EnableConfigurationProperties({AiravataServerProperties.class})
+@EnableConfigurationProperties(AiravataServerProperties.class)
 @ComponentScan(
         basePackages = {
             "org.apache.airavata.service",
@@ -115,53 +115,11 @@ public class AiravataServer {
         excludeList.append("org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,");
         excludeList.append("org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration");
 
-        // Conditionally exclude gRPC auto-configuration if research service is disabled
-        boolean researchEnabled = isResearchServiceEnabled();
-        if (!researchEnabled) {
-            excludeList.append(",org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration");
-            logger.debug("Research service is disabled, excluding gRPC auto-configuration");
-        }
+        logger.info("gRPC configurations will load last after all core services");
 
         defaultProps.put("spring.autoconfigure.exclude", excludeList.toString());
         app.setDefaultProperties(defaultProps);
         app.setRegisterShutdownHook(true);
         app.run(args);
-    }
-
-    /**
-     * Check if research service is enabled by reading from system properties or airavata.properties.
-     */
-    private static boolean isResearchServiceEnabled() {
-        // Check system property first
-        String systemProp = System.getProperty("services.research.enabled");
-        if (systemProp != null) {
-            return "true".equalsIgnoreCase(systemProp);
-        }
-
-        // Try to read from airavata.properties
-        try {
-            String airavataHome = System.getProperty("airavata.home");
-            if (airavataHome == null || airavataHome.isEmpty()) {
-                airavataHome = System.getenv("AIRAVATA_HOME");
-            }
-
-            if (airavataHome != null && !airavataHome.isEmpty()) {
-                File confDir = new File(airavataHome, "conf");
-                File propsFile = new File(confDir, "airavata.properties");
-                if (propsFile.exists() && propsFile.isFile()) {
-                    Properties props = new Properties();
-                    try (InputStream is = new FileInputStream(propsFile)) {
-                        props.load(is);
-                        String enabled = props.getProperty("services.research.enabled", "true");
-                        return "true".equalsIgnoreCase(enabled);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.debug("Could not read services.research.enabled from airavata.properties, defaulting to true", e);
-        }
-
-        // Default to enabled if we can't determine
-        return true;
     }
 }

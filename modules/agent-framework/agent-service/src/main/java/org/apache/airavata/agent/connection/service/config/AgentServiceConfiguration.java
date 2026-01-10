@@ -55,6 +55,12 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
     private void mapScopedProperties(ConfigurableEnvironment environment) {
         Map<String, Object> mappedProperties = new HashMap<>();
 
+        // Enable gRPC server
+        mappedProperties.put("spring.grpc.server.enabled", "true");
+        // Disable property-based configuration to avoid NullPointerException
+        // We use programmatic ServerBuilderCustomizer instead
+        mappedProperties.put("spring.boot.grpc.server.property-mapper.enabled", "false");
+
         // Keep agent config keys scoped (services.agent.*), but map selected keys into framework defaults
         // that expect grpc.* (agent service runs as a separate process).
 
@@ -94,11 +100,66 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
                 environment);
         mapProperty("services.agent.spring.jpa.open-in-view", "spring.jpa.open-in-view", mappedProperties, environment);
 
-        // Map services.agent.grpc.* to grpc.server.*
-        mapProperty("services.agent.grpc.port", "grpc.server.port", mappedProperties, environment);
+        // Enable gRPC server for agent service
+        mappedProperties.put("spring.grpc.server.enabled", "true");
+        
+        // Map services.agent.grpc.* to spring.grpc.server.*
+        mapProperty("services.agent.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
         mapProperty(
                 "services.agent.grpc.max-inbound-message-size",
-                "grpc.server.max-inbound-message-size",
+                "spring.grpc.server.max-inbound-message-size",
+                mappedProperties,
+                environment);
+        
+        // Add keepalive defaults to prevent NullPointerException
+        // Note: Spring Boot gRPC requires all Duration properties to be non-null
+        mapPropertyWithDefault(
+                "services.agent.grpc.enable-keep-alive",
+                "spring.grpc.server.enable-keep-alive",
+                "true",
+                mappedProperties,
+                environment);
+        mapPropertyWithDefault(
+                "services.agent.grpc.keepalive-time",
+                "spring.grpc.server.keepalive-time",
+                "30s",
+                mappedProperties,
+                environment);
+        mapPropertyWithDefault(
+                "services.agent.grpc.keepalive-timeout",
+                "spring.grpc.server.keepalive-timeout",
+                "5s",
+                mappedProperties,
+                environment);
+        mapPropertyWithDefault(
+                "services.agent.grpc.permit-keepalive-without-calls",
+                "spring.grpc.server.permit-keepalive-without-calls",
+                "true",
+                mappedProperties,
+                environment);
+        mapPropertyWithDefault(
+                "services.agent.grpc.permit-keepalive-time",
+                "spring.grpc.server.permit-keepalive-time",
+                "5m",
+                mappedProperties,
+                environment);
+        // Add additional duration properties that might be required
+        mapPropertyWithDefault(
+                "services.agent.grpc.max-connection-idle",
+                "spring.grpc.server.max-connection-idle",
+                "0s",
+                mappedProperties,
+                environment);
+        mapPropertyWithDefault(
+                "services.agent.grpc.max-connection-age",
+                "spring.grpc.server.max-connection-age",
+                "0s",
+                mappedProperties,
+                environment);
+        mapPropertyWithDefault(
+                "services.agent.grpc.max-connection-age-grace",
+                "spring.grpc.server.max-connection-age-grace",
+                "0s",
                 mappedProperties,
                 environment);
 
@@ -120,5 +181,16 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
             mappedProperties.put(standardKey, value);
             logger.trace("Mapped {}={} to {}", scopedKey, value, standardKey);
         }
+    }
+    
+    private void mapPropertyWithDefault(
+            String scopedKey,
+            String standardKey,
+            String defaultValue,
+            Map<String, Object> mappedProperties,
+            ConfigurableEnvironment environment) {
+        String value = environment.getProperty(scopedKey, defaultValue);
+        mappedProperties.put(standardKey, value);
+        logger.trace("Mapped {}={} to {} (default: {})", scopedKey, value, standardKey, defaultValue);
     }
 }

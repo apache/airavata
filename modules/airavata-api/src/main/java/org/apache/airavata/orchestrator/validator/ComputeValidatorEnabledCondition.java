@@ -42,13 +42,10 @@ public class ComputeValidatorEnabledCondition implements Condition {
             return false;
         }
 
-        String className = null;
-        if (metadata instanceof ClassMetadata) {
-            className = ((ClassMetadata) metadata).getClassName();
-        }
-        if (className == null || className.isBlank()) {
+        if (!(metadata instanceof ClassMetadata classMeta) || classMeta.getClassName() == null || classMeta.getClassName().isBlank()) {
             return false;
         }
+        String className = classMeta.getClassName();
 
         // Extract simple class name from full class name
         String simpleClassName = className.substring(className.lastIndexOf('.') + 1);

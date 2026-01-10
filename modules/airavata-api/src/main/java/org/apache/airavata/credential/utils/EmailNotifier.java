@@ -26,68 +26,80 @@ import org.apache.airavata.credential.model.EmailNotifierConfiguration;
 import org.apache.airavata.credential.model.NotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Component;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 12/3/13
- * Time: 4:25 PM
- *
- * EmailNotifier uses Spring's JavaMailSender with Jakarta Mail API.
- * Spring Boot's mail starter provides the Jakarta Mail implementation.
+ * EmailNotifier uses Spring Boot's auto-configured JavaMailSender.
+ * 
+ * Configure via airavata.properties (Spring Mail properties):
+ *   spring.mail.host=smtp.example.com
+ *   spring.mail.port=587
+ *   spring.mail.username=user
+ *   spring.mail.password=secret
+ *   spring.mail.properties.mail.smtp.auth=true
+ *   spring.mail.properties.mail.smtp.starttls.enable=true
  */
+@Component
 public class EmailNotifier implements CredentialStoreNotifier {
 
-    protected static Logger logger = LoggerFactory.getLogger(EmailNotifier.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmailNotifier.class);
 
+    private final JavaMailSender mailSender;
     private EmailNotifierConfiguration emailNotifierConfiguration;
 
-    public EmailNotifier(EmailNotifierConfiguration notifierConfiguration) {
-        this.emailNotifierConfiguration = notifierConfiguration;
-    }
-
-    public void notifyMessage(NotificationMessage message) throws CredentialStoreException {
-        try {
-            JavaMailSender mailSender = createMailSender();
-            SimpleMailMessage email = new SimpleMailMessage();
-            email.setFrom(this.emailNotifierConfiguration.getFromAddress());
-
-            EmailNotificationMessage emailMessage = (EmailNotificationMessage) message;
-
-            email.setSubject(emailMessage.getSubject());
-            email.setText(emailMessage.getMessage());
-            email.setTo(emailMessage.getSenderEmail());
-            mailSender.send(email);
-
-        } catch (Exception e) {
-            var msg = String.format("Error sending email notification message: %s", e.getMessage());
-            logger.error(msg, e);
-            throw new CredentialStoreException(msg, e);
-        }
+    /**
+     * Constructor with Spring-injected JavaMailSender.
+     * The mailSender is auto-configured by Spring Boot based on spring.mail.* properties.
+     */
+    @Autowired
+    public EmailNotifier(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
     }
 
     /**
-     * Creates a JavaMailSender using Spring's JavaMailSenderImpl with Jakarta Mail API.
-     * Spring Boot's mail starter (spring-boot-starter-mail) provides the Jakarta Mail
-     * implementation, which is automatically used by JavaMailSenderImpl.
+     * Legacy constructor for backward compatibility.
      */
-    private JavaMailSender createMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(this.emailNotifierConfiguration.getEmailServer());
-        mailSender.setPort(this.emailNotifierConfiguration.getEmailServerPort());
-        mailSender.setUsername(this.emailNotifierConfiguration.getEmailUserName());
-        mailSender.setPassword(this.emailNotifierConfiguration.getEmailPassword());
+    public EmailNotifier(EmailNotifierConfiguration notifierConfiguration) {
+        this.emailNotifierConfiguration = notifierConfiguration;
+        this.mailSender = null; // Will be set separately or use factory
+    }
 
-        java.util.Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        if (this.emailNotifierConfiguration.isSslConnect()) {
-            props.put("mail.smtp.ssl.enable", "true");
-            props.put("mail.smtp.starttls.enable", "true");
+    /**
+     * Set the email notifier configuration (for legacy usage).
+     */
+    public void setEmailNotifierConfiguration(EmailNotifierConfiguration configuration) {
+        this.emailNotifierConfiguration = configuration;
+    }
+
+    @Override
+    public void notifyMessage(NotificationMessage message) throws CredentialStoreException {
+        try {
+            SimpleMailMessage email = new SimpleMailMessage();
+            
+            // Set from address
+            if (emailNotifierConfiguration != null) {
+                email.setFrom(emailNotifierConfiguration.getFromAddress());
+            }
+
+            EmailNotificationMessage emailMessage = (EmailNotificationMessage) message;
+            email.setSubject(emailMessage.getSubject());
+            email.setText(emailMessage.getMessage());
+            email.setTo(emailMessage.getSenderEmail());
+
+            if (mailSender != null) {
+                mailSender.send(email);
+                logger.info("Email notification sent to: {}", emailMessage.getSenderEmail());
+            } else {
+                throw new CredentialStoreException("JavaMailSender not configured");
+            }
+
+        } catch (Exception e) {
+            String msg = String.format("Error sending email notification message: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
         }
-        props.put("mail.smtp.auth", "true");
-
-        return mailSender;
     }
 }

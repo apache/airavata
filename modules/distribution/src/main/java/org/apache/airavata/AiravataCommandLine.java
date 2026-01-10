@@ -29,6 +29,7 @@ import org.apache.airavata.cli.commands.ServeCommand;
 import org.apache.airavata.cli.commands.ServiceCommand;
 import org.apache.airavata.cli.commands.StorageCommand;
 import org.apache.airavata.cli.commands.TestCommand;
+import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.FlywayConfig;
 import org.apache.airavata.config.JpaConfig;
 import org.springframework.boot.CommandLineRunner;
@@ -50,7 +51,7 @@ import picocli.CommandLine.IFactory;
             org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class,
             org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class
         })
-@Import({JpaConfig.class, FlywayConfig.class})
+@Import({JpaConfig.class, FlywayConfig.class, AiravataServerProperties.class})
 @Component
 @Order(1)
 @ConditionalOnProperty(name = "airavata.cli.enabled", havingValue = "true", matchIfMissing = true)

@@ -132,8 +132,9 @@ public class EmailBasedMonitor extends ServerLifecycle {
             return; // Use default configuration
         }
 
-        if (load instanceof Map) {
-            Map<String, Object> loadMap = (Map<String, Object>) load;
+        if (load instanceof Map<?, ?> rawMap) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> loadMap = (Map<String, Object>) rawMap;
             Map<String, Object> configMap = (Map<String, Object>) loadMap.get("config");
             List<Map<String, Object>> resourceObjs = (List<Map<String, Object>>) configMap.get("resources");
             if (resourceObjs != null) {

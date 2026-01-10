@@ -45,6 +45,7 @@ import org.apache.airavata.research.service.model.repo.TagRepository;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,7 +66,7 @@ public class ResourceHandler {
             UserProfileService userProfileService,
             TagRepository tagRepository,
             ResourceRepository resourceRepository,
-            ProjectRepository projectRepository,
+            @Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository,
             ResourceStarRepository resourceStarRepository) {
         this.userProfileService = userProfileService;
         this.tagRepository = tagRepository;

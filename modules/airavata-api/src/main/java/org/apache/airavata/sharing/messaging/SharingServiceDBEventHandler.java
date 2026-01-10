@@ -27,6 +27,7 @@ import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.SharingResourceType;
 import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.config.JacksonConfig;
 import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.apache.airavata.service.SharingRegistryService;
@@ -47,7 +48,7 @@ import org.springframework.stereotype.Component;
 public class SharingServiceDBEventHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
 
     private final SharingRegistryService sharingRegistryService;
     private final SharingServiceDBEventMessagingFactory messagingFactory;
@@ -87,7 +88,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         var entityDataBytes = new byte[entityDataBuffer.remaining()];
                         entityDataBuffer.duplicate().get(entityDataBytes);
 
-                        var userProfile = objectMapper.readValue(entityDataBytes, UserProfile.class);
+                        var userProfile = objectMapper().readValue(entityDataBytes, UserProfile.class);
                         // Convert UserProfile to User
                         var user = new User();
                         user.setUserId(userProfile.getUserId());
@@ -134,7 +135,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         var tenantEntityDataBytes = new byte[tenantEntityDataBuffer.remaining()];
                         tenantEntityDataBuffer.duplicate().get(tenantEntityDataBytes);
 
-                        var gateway = objectMapper.readValue(tenantEntityDataBytes, Gateway.class);
+                        var gateway = objectMapper().readValue(tenantEntityDataBytes, Gateway.class);
 
                         switch (dBEventMessageContext
                                 .getPublisher()
@@ -324,7 +325,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         var projectEntityDataBytes = new byte[projectEntityDataBuffer.remaining()];
                         projectEntityDataBuffer.duplicate().get(projectEntityDataBytes);
 
-                        var project = objectMapper.readValue(projectEntityDataBytes, Project.class);
+                        var project = objectMapper().readValue(projectEntityDataBytes, Project.class);
                         final var domainId = project.getGatewayId();
                         final var entityId = project.getProjectID();
 

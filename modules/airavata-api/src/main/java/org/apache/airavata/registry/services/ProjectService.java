@@ -28,6 +28,7 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ProjectMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ProjectRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
 
-    public ProjectService(ProjectRepository projectRepository, ProjectMapper projectMapper) {
+    public ProjectService(@Qualifier("expCatalogProjectRepository") ProjectRepository projectRepository, ProjectMapper projectMapper) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
     }

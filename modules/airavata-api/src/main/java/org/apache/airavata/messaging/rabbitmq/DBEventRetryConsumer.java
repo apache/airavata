@@ -28,6 +28,7 @@ import org.apache.airavata.common.model.DBEventMessage;
 import org.apache.airavata.common.model.DBEventPublisherContext;
 import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.config.JacksonConfig;
 import org.apache.airavata.messaging.Dispatcher;
 import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
@@ -50,7 +51,7 @@ import org.springframework.stereotype.Component;
 public class DBEventRetryConsumer implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DBEventRetryConsumer.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
 
     private final Dispatcher dispatcher;
     private final MessagingFactory messagingFactory;
@@ -97,7 +98,7 @@ public class DBEventRetryConsumer implements MessageHandler {
 
             // Deserialize JSON bytes to domain model using Jackson (RabbitMQ uses JSON, never Thrift)
             Class<?> entityClass = getEntityClass(entityType);
-            Object domainModel = objectMapper.readValue(entityJsonBytes, entityClass);
+            Object domainModel = objectMapper().readValue(entityJsonBytes, entityClass);
 
             // Retry dispatch with domain model (already deserialized from JSON)
             logger.info("Retrying DB event dispatch: entityType={}, crudType={}", entityType, crudType);

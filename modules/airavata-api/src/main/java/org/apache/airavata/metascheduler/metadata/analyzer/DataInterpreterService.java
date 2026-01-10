@@ -33,12 +33,13 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Data Interpreter Service using Spring-managed Quartz scheduler.
+ */
 @Component
 @ConditionalOnProperty(name = "services.scheduler.interpreter.enabled", havingValue = "true", matchIfMissing = true)
 public class DataInterpreterService extends ServerLifecycle {
@@ -46,15 +47,18 @@ public class DataInterpreterService extends ServerLifecycle {
     private static final String SERVER_NAME = "Data Interpreter Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
     private Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
 
     private final AiravataServerProperties properties;
-    private final ApplicationContext applicationContext;
 
-    public DataInterpreterService(AiravataServerProperties properties, ApplicationContext applicationContext) {
+    /**
+     * Constructor with Spring-managed Scheduler injection.
+     */
+    @Autowired
+    public DataInterpreterService(AiravataServerProperties properties, Scheduler scheduler) {
         this.properties = properties;
-        this.applicationContext = applicationContext;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -76,13 +80,6 @@ public class DataInterpreterService extends ServerLifecycle {
     @Override
     protected void doStart() throws Exception {
         jobTriggerMap.clear();
-        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-        // Use SpringBeanJobFactory to enable Spring DI for Quartz jobs
-        SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
-        jobFactory.setApplicationContext(applicationContext);
-        schedulerFactoryBean.setJobFactory(jobFactory);
-        schedulerFactoryBean.afterPropertiesSet();
-        scheduler = schedulerFactoryBean.getScheduler();
 
         final int parallelJobs = properties.services.parser.scanningParallelJobs;
         final double scanningInterval = properties.services.parser.scanningInterval;
@@ -104,13 +101,17 @@ public class DataInterpreterService extends ServerLifecycle {
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }
-        scheduler.start();
+        
+        // Scheduler is already started by Spring Boot
+        if (!scheduler.isStarted()) {
+            scheduler.start();
+        }
 
         jobTriggerMap.forEach((x, v) -> {
             try {
                 scheduler.scheduleJob(x, v);
             } catch (SchedulerException e) {
-                logger.error("Error occurred while scheduling job " + x.getKey().getName());
+                throw new RuntimeException("Error occurred while scheduling job " + x.getKey().getName(), e);
             }
         });
     }
@@ -121,7 +122,7 @@ public class DataInterpreterService extends ServerLifecycle {
             scheduler.unscheduleJobs(jobTriggerMap.values().stream()
                     .map(trigger -> trigger.getKey())
                     .collect(java.util.stream.Collectors.toList()));
-            scheduler.shutdown();
+            // Don't shutdown the shared scheduler, Spring Boot will handle it
         }
     }
 

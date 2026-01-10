@@ -30,6 +30,7 @@ import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.config.JacksonConfig;
 import org.apache.airavata.messaging.Dispatcher;
 import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
@@ -46,7 +47,7 @@ import org.springframework.stereotype.Component;
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
 
     private final RegistryService registryService;
     private final RegistryServiceDBEventMessagingFactory messagingFactory;
@@ -85,7 +86,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                     var entityDataBytes = new byte[entityDataBuffer.remaining()];
                     entityDataBuffer.duplicate().get(entityDataBytes);
 
-                    var gateway = objectMapper.readValue(entityDataBytes, Gateway.class);
+                    var gateway = objectMapper().readValue(entityDataBytes, Gateway.class);
 
                     // call service-methods based on CRUD type
                     switch (publisherContext.getCrudType()) {
@@ -119,7 +120,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                     var entityDataBytes = new byte[entityDataBuffer.remaining()];
                     entityDataBuffer.duplicate().get(entityDataBytes);
 
-                    var userProfile = objectMapper.readValue(entityDataBytes, UserProfile.class);
+                    var userProfile = objectMapper().readValue(entityDataBytes, UserProfile.class);
 
                     // call service-methods based on CRUD type
                     switch (publisherContext.getCrudType()) {

@@ -146,7 +146,6 @@ under the License.
         <groupId>io.github.ascopes</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
         <configuration>
-          <protocVersion>4.30.1</protocVersion>
           <sourceDirectories>
             <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
           </sourceDirectories>
@@ -154,7 +153,6 @@ under the License.
             <binaryMavenPlugin>
               <groupId>io.grpc</groupId>
               <artifactId>protoc-gen-grpc-java</artifactId>
-              <version>1.73.0</version>
               <options>@generated=omit</options>
             </binaryMavenPlugin>
           </binaryMavenPlugins>

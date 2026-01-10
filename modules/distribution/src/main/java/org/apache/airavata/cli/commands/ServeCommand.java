@@ -93,6 +93,24 @@ public class ServeCommand implements Runnable {
                     resolvedConfigDir);
             System.setProperty("airavata.cli.enabled", "false");
             System.setProperty("airavata.server.enabled", "true");
+            
+            // Set ALL gRPC keepalive/duration properties as system properties to prevent NullPointerException
+            // Spring Boot gRPC's DefaultServerFactoryPropertyMapper requires ALL Duration fields to be non-null
+            System.setProperty("spring.grpc.server.port", "19908");
+            System.setProperty("spring.grpc.server.enable-keep-alive", "true");
+            System.setProperty("spring.grpc.server.keepalive-time", "30s");
+            System.setProperty("spring.grpc.server.keepalive-timeout", "5s");
+            System.setProperty("spring.grpc.server.permit-keepalive-time", "5m");
+            System.setProperty("spring.grpc.server.permit-keepalive-without-calls", "true");
+            System.setProperty("spring.grpc.server.max-connection-idle", "0s");
+            System.setProperty("spring.grpc.server.max-connection-age", "0s");
+            System.setProperty("spring.grpc.server.max-connection-age-grace", "0s");
+            System.setProperty("spring.grpc.server.shutdown-grace-period", "30s");
+            System.setProperty("spring.grpc.server.max-inbound-message-size", "100MB");
+            System.setProperty("spring.grpc.server.max-inbound-metadata-size", "8KB");
+            // Disable the property mapper to rely only on ServerBuilderCustomizer
+            System.setProperty("spring.boot.grpc.server.property-mapper.enabled", "false");
+            
             SpringApplication app = new SpringApplication(AiravataServer.class);
             var defaultProps = new HashMap<String, Object>();
             defaultProps.put("spring.main.allow-bean-definition-overriding", "true");
@@ -100,16 +118,18 @@ public class ServeCommand implements Runnable {
             defaultProps.put("spring.main.lazy-initialization", "true");
             defaultProps.put("airavata.cli.enabled", "false");
             defaultProps.put("airavata.server.enabled", "true");
-            // Set gRPC keepalive properties early to prevent NullPointerException
-            // These will be mapped to spring.grpc.server.* by ResearchServiceConfiguration
-            defaultProps.put("services.research.grpc.keepalive-time", "30s");
-            defaultProps.put("services.research.grpc.keepalive-timeout", "5s");
-            defaultProps.put("services.research.grpc.permit-keepalive-without-calls", "true");
+            
             app.setDefaultProperties(defaultProps);
             app.setRegisterShutdownHook(true);
-            // Don't catch exceptions - let Spring Boot handle them and keep the server running
-            // The server will block here until shutdown
-            app.run();
+            // Start the application and keep it running
+            var context = app.run();
+            // Keep the main thread alive so the application doesn't shut down
+            try {
+                Thread.currentThread().join();
+            } catch (InterruptedException e) {
+                logger.info("Server interrupted, shutting down...");
+                Thread.currentThread().interrupt();
+            }
         } else {
             try {
                 String jarPath = null;

@@ -32,6 +32,7 @@ import org.apache.airavata.research.service.model.entity.Session;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -63,7 +64,7 @@ public class ResearchHubHandler {
     private int maxRHubSessions;
 
     public ResearchHubHandler(
-            ProjectHandler projectHandler, SessionHandler sessionHandler, ProjectRepository projectRepository) {
+            ProjectHandler projectHandler, SessionHandler sessionHandler, @Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository) {
         this.projectHandler = projectHandler;
         this.sessionHandler = sessionHandler;
     }

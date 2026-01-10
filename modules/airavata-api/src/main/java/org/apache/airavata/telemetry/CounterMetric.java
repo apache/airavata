@@ -19,37 +19,101 @@
 */
 package org.apache.airavata.telemetry;
 
-import io.prometheus.client.Counter;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
+/**
+ * Counter metric wrapper using Micrometer.
+ * Spring Boot Actuator auto-configures the MeterRegistry.
+ */
 public class CounterMetric {
 
-    private Counter counter;
+    private final Counter counter;
+    private final MeterRegistry meterRegistry;
+    private final String monitorName;
+    private final String[] labelNames;
 
+    /**
+     * Legacy constructor for static field initialization.
+     * Uses the global MeterRegistry from MetricsFactory.
+     */
     public CounterMetric(String monitorName) {
-        counter = Counter.build().name(monitorName).help(monitorName).register();
+        this(monitorName, MetricsFactory.getRegistry());
     }
 
+    /**
+     * Legacy constructor with labels for static field initialization.
+     * Uses the global MeterRegistry from MetricsFactory.
+     */
     public CounterMetric(String monitorName, String... labelNames) {
-        counter = Counter.build()
-                .name(monitorName)
-                .help(monitorName)
-                .labelNames(labelNames)
-                .register();
+        this(monitorName, MetricsFactory.getRegistry(), labelNames);
+    }
+
+    /**
+     * Constructor with explicit MeterRegistry.
+     */
+    public CounterMetric(String monitorName, MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        this.monitorName = monitorName;
+        this.labelNames = new String[0];
+        this.counter = Counter.builder(monitorName)
+                .description(monitorName)
+                .register(meterRegistry);
+    }
+
+    /**
+     * Constructor with explicit MeterRegistry and labels.
+     */
+    public CounterMetric(String monitorName, MeterRegistry meterRegistry, String... labelNames) {
+        this.meterRegistry = meterRegistry;
+        this.monitorName = monitorName;
+        this.labelNames = labelNames;
+        // For labeled counters, we don't pre-register - we create on demand
+        this.counter = null;
     }
 
     public void inc() {
-        counter.inc();
+        if (counter != null) {
+            counter.increment();
+        }
     }
 
     public void inc(String... labelValues) {
-        counter.labels(labelValues).inc();
+        if (labelNames.length > 0 && labelValues.length == labelNames.length) {
+            Tags tags = Tags.empty();
+            for (int i = 0; i < labelNames.length; i++) {
+                tags = tags.and(labelNames[i], labelValues[i]);
+            }
+            Counter.builder(monitorName)
+                    .description(monitorName)
+                    .tags(tags)
+                    .register(meterRegistry)
+                    .increment();
+        } else if (counter != null) {
+            counter.increment();
+        }
     }
 
     public void inc(double amount) {
-        counter.inc(amount);
+        if (counter != null) {
+            counter.increment(amount);
+        }
     }
 
     public void inc(double amount, String... labelValues) {
-        counter.labels(labelValues).inc(amount);
+        if (labelNames.length > 0 && labelValues.length == labelNames.length) {
+            Tags tags = Tags.empty();
+            for (int i = 0; i < labelNames.length; i++) {
+                tags = tags.and(labelNames[i], labelValues[i]);
+            }
+            Counter.builder(monitorName)
+                    .description(monitorName)
+                    .tags(tags)
+                    .register(meterRegistry)
+                    .increment(amount);
+        } else if (counter != null) {
+            counter.increment(amount);
+        }
     }
 }

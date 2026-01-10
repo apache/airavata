@@ -72,6 +72,20 @@ public class KeycloakRestClient {
     private final ObjectMapper objectMapper;
     private final Map<String, TokenCacheEntry> tokenCache = new ConcurrentHashMap<>();
 
+    /**
+     * Constructor with Spring-injected RestTemplate and ObjectMapper.
+     */
+    public KeycloakRestClient(String serverUrl, AiravataServerProperties properties, 
+                              RestTemplate restTemplate, ObjectMapper objectMapper) {
+        this.serverUrl = serverUrl;
+        this.properties = properties;
+        this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
+    }
+
+    /**
+     * Legacy constructor - creates own RestTemplate and ObjectMapper.
+     */
     public KeycloakRestClient(String serverUrl, AiravataServerProperties properties) {
         this.serverUrl = serverUrl;
         this.properties = properties;

@@ -247,20 +247,17 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         String parsedCommand = mapData.loadFromString(reportingCommand.getCommand());
                         logger.debug("Parsed usage reporting command {}", parsedCommand);
 
-                        Process commandSubmit = Runtime.getRuntime().exec(parsedCommand);
+                        var processBuilder = new ProcessBuilder("sh", "-c", parsedCommand);
+                        processBuilder.redirectErrorStream(true);
+                        Process commandSubmit = processBuilder.start();
 
-                        BufferedReader reader =
-                                new BufferedReader(new InputStreamReader(commandSubmit.getInputStream()));
-                        StringBuffer output = new StringBuffer();
-
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            output.append(line);
-                            output.append("\n");
+                        String output;
+                        try (var reader = new BufferedReader(new InputStreamReader(commandSubmit.getInputStream()))) {
+                            output = reader.lines().collect(java.util.stream.Collectors.joining("\n"));
                         }
 
-                        logger.info("Usage reporting output " + output.toString());
-                        commandSubmit.waitFor();
+                        int exitCode = commandSubmit.waitFor();
+                        logger.info("Usage reporting output (exit={}): {}", exitCode, output);
                         logger.info("Usage reporting completed");
 
                     } else {

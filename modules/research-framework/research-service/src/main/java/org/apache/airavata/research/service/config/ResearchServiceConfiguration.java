@@ -51,6 +51,9 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
         if ("true".equalsIgnoreCase(enabled)) {
             // Enable gRPC server and map properties when research service is enabled
             mappedProperties.put("spring.grpc.server.enabled", "true");
+            // Disable property-based configuration to avoid NullPointerException
+            // We use programmatic ServerBuilderCustomizer instead
+            mappedProperties.put("spring.boot.grpc.server.property-mapper.enabled", "false");
             mapScopedProperties(environment, mappedProperties);
         } else {
             // Disable gRPC server when research service is disabled
@@ -72,20 +75,24 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
         // Map services.research.grpc.* to spring.grpc.server.*
         mapProperty("services.research.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
 
-        // Map keepalive properties if they exist in scoped form
-        mapProperty(
+        // Map keepalive properties with defaults to prevent NullPointerException
+        // Only map the properties that Spring Boot gRPC's DefaultServerFactoryPropertyMapper expects
+        mapPropertyWithDefault(
                 "services.research.grpc.keepalive-time",
                 "spring.grpc.server.keepalive-time",
+                "30s",
                 mappedProperties,
                 environment);
-        mapProperty(
+        mapPropertyWithDefault(
                 "services.research.grpc.keepalive-timeout",
                 "spring.grpc.server.keepalive-timeout",
+                "5s",
                 mappedProperties,
                 environment);
-        mapProperty(
-                "services.research.grpc.permit-keepalive-without-calls",
-                "spring.grpc.server.permit-keepalive-without-calls",
+        mapPropertyWithDefault(
+                "services.research.grpc.permit-keepalive-time",
+                "spring.grpc.server.permit-keepalive-time",
+                "5m",
                 mappedProperties,
                 environment);
 
@@ -137,13 +144,17 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
                 "springdoc.swagger-ui.oauth.client-id",
                 mappedProperties,
                 environment);
-
-        if (!mappedProperties.isEmpty()) {
-            environment
-                    .getPropertySources()
-                    .addFirst(new MapPropertySource("researchServiceMappedProperties", mappedProperties));
-            logger.debug("Mapped {} research.* properties to Spring Boot properties", mappedProperties.size());
-        }
+    }
+    
+    private void mapPropertyWithDefault(
+            String scopedKey,
+            String standardKey,
+            String defaultValue,
+            Map<String, Object> mappedProperties,
+            ConfigurableEnvironment environment) {
+        String value = environment.getProperty(scopedKey, defaultValue);
+        mappedProperties.put(standardKey, value);
+        logger.trace("Mapped {}={} to {} (default: {})", scopedKey, value, standardKey, defaultValue);
     }
 
     private void mapProperty(

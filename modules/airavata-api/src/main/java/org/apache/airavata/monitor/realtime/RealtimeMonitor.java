@@ -19,47 +19,54 @@
 */
 package org.apache.airavata.monitor.realtime;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Properties;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.MonitoringException;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.stereotype.Component;
 
+/**
+ * Realtime monitor using Spring Kafka's @KafkaListener.
+ * Consumes job status messages from Kafka and processes them.
+ * 
+ * Configure via airavata.properties:
+ *   services.monitor.realtime.enabled=true
+ *   services.monitor.realtime.broker-topic=realtime-monitor-topic
+ *   services.monitor.realtime.broker-consumer-group=airavata-consumer
+ */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.monitor.realtime.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.monitor.realtime", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class RealtimeMonitor extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
+    private static final String LISTENER_ID = "realtimeMonitorListener";
 
     private final AiravataServerProperties properties;
     private final org.apache.airavata.service.registry.RegistryService registryService;
     private final RealtimeComputeStatusParser parser;
     private final AbstractMonitor abstractMonitor;
+    private final KafkaListenerEndpointRegistry kafkaListenerRegistry;
     private String publisherId;
     private String brokerTopic;
-    private Thread consumerThread;
-    private volatile Consumer<String, String> consumer;
 
     public RealtimeMonitor(
-            org.apache.airavata.service.registry.RegistryService registryService, AiravataServerProperties properties) {
+            org.apache.airavata.service.registry.RegistryService registryService, 
+            AiravataServerProperties properties,
+            KafkaListenerEndpointRegistry kafkaListenerRegistry) {
         this.registryService = registryService;
         this.properties = properties;
+        this.kafkaListenerRegistry = kafkaListenerRegistry;
         this.abstractMonitor = new AbstractMonitor(registryService, properties);
-        parser = new RealtimeComputeStatusParser();
+        this.parser = new RealtimeComputeStatusParser();
     }
 
     @jakarta.annotation.PostConstruct
@@ -68,32 +75,22 @@ public class RealtimeMonitor extends ServerLifecycle {
         brokerTopic = properties.services.monitor.realtime.brokerTopic;
     }
 
-    private Consumer<String, String> createConsumer() {
-        final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services.monitor.realtime.brokerConsumerGroup);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        // Create the consumer using props.
-        consumer = new KafkaConsumer<>(props);
-        // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(brokerTopic));
-        return consumer;
-    }
-
-    private void runConsumer() {
-        consumer = createConsumer();
-
-        while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            consumerRecords.forEach(record -> {
-                try {
-                    process(record.key(), record.value());
-                } catch (Exception e) {
-                    logger.error("Error while processing message {}", record.value(), e);
-                }
-            });
-            consumer.commitAsync();
+    /**
+     * Kafka listener for realtime job status messages.
+     * Uses SpEL to get topic name from properties.
+     */
+    @KafkaListener(
+            id = LISTENER_ID,
+            topics = "#{@airavataServerProperties.services.monitor.realtime.brokerTopic}",
+            groupId = "#{@airavataServerProperties.services.monitor.realtime.brokerConsumerGroup}",
+            containerFactory = "kafkaListenerContainerFactory",
+            autoStartup = "false"
+    )
+    public void onMessage(ConsumerRecord<String, String> record) {
+        try {
+            process(record.key(), record.value());
+        } catch (Exception e) {
+            logger.error("Error while processing message {}", record.value(), e);
         }
     }
 
@@ -125,48 +122,31 @@ public class RealtimeMonitor extends ServerLifecycle {
 
     @Override
     protected void doStart() throws Exception {
-        consumerThread = new Thread(() -> {
-            try {
-                runConsumer();
-            } catch (Exception e) {
-                logger.error("Error in RealtimeMonitor consumer thread", e);
-            }
-        });
-        consumerThread.setName("RealtimeMonitor-Consumer");
-        consumerThread.setDaemon(true);
-        consumerThread.start();
+        logger.info("Starting RealtimeMonitor Kafka listener for topic: {}", brokerTopic);
+        // Start the Kafka listener
+        if (kafkaListenerRegistry.getListenerContainer(LISTENER_ID) != null) {
+            kafkaListenerRegistry.getListenerContainer(LISTENER_ID).start();
+            logger.info("RealtimeMonitor Kafka listener started");
+        } else {
+            logger.warn("Kafka listener container not found - Kafka may not be configured");
+        }
     }
 
     @Override
     protected void doStop() throws Exception {
-        if (consumer != null) {
-            try {
-                consumer.wakeup();
-            } catch (Exception e) {
-                logger.warn("Error waking up consumer", e);
-            }
-        }
-        if (consumerThread != null) {
-            consumerThread.interrupt();
-            try {
-                consumerThread.join(5000); // Wait up to 5 seconds
-            } catch (InterruptedException e) {
-                logger.warn("Interrupted while waiting for consumer thread to stop", e);
-                Thread.currentThread().interrupt();
-            }
-        }
-        if (consumer != null) {
-            try {
-                consumer.close();
-            } catch (Exception e) {
-                logger.warn("Error closing consumer", e);
-            }
+        logger.info("Stopping RealtimeMonitor Kafka listener");
+        if (kafkaListenerRegistry.getListenerContainer(LISTENER_ID) != null) {
+            kafkaListenerRegistry.getListenerContainer(LISTENER_ID).stop();
+            logger.info("RealtimeMonitor Kafka listener stopped");
         }
     }
 
     @Override
     public boolean isRunning() {
-        return super.isRunning() && consumerThread != null && consumerThread.isAlive();
+        if (kafkaListenerRegistry.getListenerContainer(LISTENER_ID) != null) {
+            return kafkaListenerRegistry.getListenerContainer(LISTENER_ID).isRunning();
+        }
+        return false;
     }
 
     protected org.apache.airavata.service.registry.RegistryService getRegistryService() {

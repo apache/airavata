@@ -20,24 +20,22 @@
 package org.apache.airavata.registry.model;
 
 /**
- * This class is to uniquely identify third layer child objects. For example, workflow node status object can be
- * uniquely identified with experiment id and node id.
+ * Record to uniquely identify third layer child objects.
+ * For example, workflow node status object can be uniquely identified with experiment id and node id.
  */
-public class CompositeIdentifier {
-    private Object topLevelIdentifier;
-    private Object secondLevelIdentifier;
-    private Object thirdLevelIdentifier;
-
+public record CompositeIdentifier(
+        Object topLevelIdentifier,
+        Object secondLevelIdentifier,
+        Object thirdLevelIdentifier
+) {
+    /**
+     * Compact constructor for two-level identifiers.
+     */
     public CompositeIdentifier(Object topLevelIdentifier, Object secondLevelIdentifier) {
-        this.topLevelIdentifier = topLevelIdentifier;
-        this.secondLevelIdentifier = secondLevelIdentifier;
+        this(topLevelIdentifier, secondLevelIdentifier, null);
     }
 
-    public CompositeIdentifier(Object topLevelIdentifier, Object secondLevelIdentifier, Object thirdLevelIdentifier) {
-        this(topLevelIdentifier, secondLevelIdentifier);
-        this.thirdLevelIdentifier = thirdLevelIdentifier;
-    }
-
+    // Provide getter aliases for backward compatibility
     public Object getTopLevelIdentifier() {
         return topLevelIdentifier;
     }
@@ -52,17 +50,15 @@ public class CompositeIdentifier {
 
     @Override
     public String toString() {
-        if (thirdLevelIdentifier != null
-                && thirdLevelIdentifier instanceof String
-                && topLevelIdentifier instanceof String
-                && secondLevelIdentifier instanceof String) {
-            return topLevelIdentifier + "," + secondLevelIdentifier + "," + thirdLevelIdentifier;
-        } else if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
-            return topLevelIdentifier + "," + secondLevelIdentifier;
-        } else if (topLevelIdentifier instanceof String) {
-            return topLevelIdentifier.toString();
-        } else {
-            return secondLevelIdentifier.toString();
-        }
+        return switch (this) {
+            case CompositeIdentifier(String top, String second, String third) when third != null ->
+                    top + "," + second + "," + third;
+            case CompositeIdentifier(String top, String second, _) ->
+                    top + "," + second;
+            case CompositeIdentifier(String top, _, _) ->
+                    top;
+            default ->
+                    secondLevelIdentifier != null ? secondLevelIdentifier.toString() : "";
+        };
     }
 }

@@ -121,17 +121,11 @@ public class SwingUtil {
      * @return the Frame of a specified component if any; otherwise null
      */
     public static Frame getFrame(Component component) {
-        Frame frame;
         Component parent;
         while ((parent = component.getParent()) != null) {
             component = parent;
         }
-        if (component instanceof Frame) {
-            frame = (Frame) component;
-        } else {
-            frame = null;
-        }
-        return frame;
+        return component instanceof Frame f ? f : null;
     }
 
     /**

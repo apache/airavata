@@ -19,29 +19,56 @@
 */
 package org.apache.airavata.telemetry;
 
-import io.prometheus.client.Gauge;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Gauge metric wrapper using Micrometer.
+ * Spring Boot Actuator auto-configures the MeterRegistry.
+ */
 public class GaugeMetric {
 
-    private Gauge gauge;
+    private final AtomicLong value = new AtomicLong(0);
 
+    /**
+     * Legacy constructor for static field initialization.
+     * Uses the global MeterRegistry from MetricsFactory.
+     */
     public GaugeMetric(String monitorName) {
-        gauge = Gauge.build().name(monitorName).help(monitorName).register();
+        this(monitorName, MetricsFactory.getRegistry());
+    }
+
+    /**
+     * Constructor with explicit MeterRegistry.
+     */
+    public GaugeMetric(String monitorName, MeterRegistry meterRegistry) {
+        Gauge.builder(monitorName, value, AtomicLong::get)
+                .description(monitorName)
+                .register(meterRegistry);
     }
 
     public void inc() {
-        gauge.inc();
+        value.addAndGet(1);
     }
 
-    public void inc(double amount) {
-        gauge.inc(amount);
+    public void inc(long amount) {
+        value.addAndGet(amount);
     }
 
     public void dec() {
-        gauge.dec();
+        value.addAndGet(-1);
     }
 
-    public void dec(double amount) {
-        gauge.dec(amount);
+    public void dec(long amount) {
+        value.addAndGet(-amount);
+    }
+
+    public void set(long newValue) {
+        value.set(newValue);
+    }
+
+    public double get() {
+        return value.get();
     }
 }

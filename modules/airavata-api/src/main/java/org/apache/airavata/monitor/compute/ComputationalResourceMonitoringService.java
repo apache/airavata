@@ -33,15 +33,13 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * Computational Resource Monitoring Service
+ * Computational Resource Monitoring Service using Spring-managed Quartz scheduler
  */
 @Service
 @Profile("!test")
@@ -52,12 +50,16 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
     private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
     private Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
-    private final ApplicationContext applicationContext;
 
-    public ComputationalResourceMonitoringService(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    /**
+     * Constructor with Spring-managed Scheduler injection.
+     * The scheduler is configured via QuartzConfig and supports Spring DI in jobs.
+     */
+    @Autowired
+    public ComputationalResourceMonitoringService(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -80,13 +82,6 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
     protected void doStart() throws Exception {
 
         jobTriggerMap.clear();
-        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-        // Use SpringBeanJobFactory to enable Spring DI for Quartz jobs
-        SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
-        jobFactory.setApplicationContext(applicationContext);
-        schedulerFactoryBean.setJobFactory(jobFactory);
-        schedulerFactoryBean.afterPropertiesSet();
-        scheduler = schedulerFactoryBean.getScheduler();
 
         // Note: These properties are not in AiravataServerProperties yet, using defaults
         // TODO: Add these to AiravataServerProperties if needed
@@ -118,7 +113,11 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }
-        scheduler.start();
+        
+        // Scheduler is already started by Spring Boot, just schedule jobs
+        if (!scheduler.isStarted()) {
+            scheduler.start();
+        }
 
         jobTriggerMap.forEach((x, v) -> {
             try {
@@ -135,7 +134,8 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
             scheduler.unscheduleJobs(jobTriggerMap.values().stream()
                     .map(trigger -> trigger.getKey())
                     .collect(Collectors.toList()));
-            scheduler.shutdown();
+            // Don't shutdown the shared scheduler, just unschedule our jobs
+            // The scheduler will be shut down by Spring Boot
         }
     }
 

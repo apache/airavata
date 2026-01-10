@@ -19,43 +19,59 @@
 */
 package org.apache.airavata.monitor.realtime;
 
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.stereotype.Component;
 
+/**
+ * Kafka message producer using Spring Kafka.
+ * Publishes job status results to Kafka topics.
+ */
+@Component
 public class MessageProducer {
 
     private static final Logger log = LoggerFactory.getLogger(MessageProducer.class);
-    final Producer<String, JobStatusResult> producer;
-    final String topic;
+    
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final String topic;
 
+    public MessageProducer(KafkaTemplate<String, Object> kafkaTemplate, 
+                          AiravataServerProperties properties) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.topic = properties.services.monitor.compute.brokerTopic;
+    }
+
+    /**
+     * Legacy constructor for backward compatibility when Spring Kafka is not available.
+     */
     public MessageProducer(AiravataServerProperties properties) {
-        producer = createProducer(properties);
-        topic = properties.services.monitor.compute.brokerTopic;
+        this.kafkaTemplate = null;
+        this.topic = properties.services.monitor.compute.brokerTopic;
     }
 
-    private Producer<String, JobStatusResult> createProducer(AiravataServerProperties properties) {
-        Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, properties.services.monitor.compute.brokerPublisherId);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ComputeStatusResultSerializer.class.getName());
-        return new KafkaProducer<>(props);
-    }
-
+    /**
+     * Submit a job status result to the Kafka topic.
+     */
     public void submitMessageToQueue(JobStatusResult jobStatusResult) throws ExecutionException, InterruptedException {
         var jobId = jobStatusResult.getJobId();
-        final var record = new ProducerRecord<>(topic, jobId, jobStatusResult);
-        producer.send(record).get();
-        log.info("MessageProducer posted to {}: {}->{}", topic, jobId, jobStatusResult);
-        producer.flush();
+        
+        if (kafkaTemplate != null) {
+            // Use Spring Kafka
+            SendResult<String, Object> result = kafkaTemplate.send(topic, jobId, jobStatusResult).get();
+            log.info("MessageProducer posted to {} partition {} offset {}: {}->{}",
+                    topic,
+                    result.getRecordMetadata().partition(),
+                    result.getRecordMetadata().offset(),
+                    jobId, 
+                    jobStatusResult);
+        } else {
+            log.warn("KafkaTemplate not available - message not sent");
+            throw new IllegalStateException("KafkaTemplate not configured. Use Spring Kafka configuration.");
+        }
     }
 }

@@ -75,8 +75,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     public void init(AdaptorParams adaptorParams) throws AgentException {
 
-        if (adaptorParams instanceof SshAdaptorParams) {
-            SshAdaptorParams params = SshAdaptorParams.class.cast(adaptorParams);
+        if (adaptorParams instanceof SshAdaptorParams params) {
             JSch jSch = new JSch();
             try {
 

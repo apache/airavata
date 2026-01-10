@@ -405,12 +405,9 @@ public class GroupResourceProfileService {
         if (groupResourceProfileEntity.getComputePreferences() != null) {
             for (GroupComputeResourcePrefEntity gcrPref : groupResourceProfileEntity.getComputePreferences()) {
                 gcrPref.setGroupResourceProfile(groupResourceProfileEntity);
-                if (gcrPref instanceof SlurmGroupComputeResourcePrefEntity) {
-                    SlurmGroupComputeResourcePrefEntity slurm = (SlurmGroupComputeResourcePrefEntity) gcrPref;
+                if (gcrPref instanceof SlurmGroupComputeResourcePrefEntity slurm) {
                     if (slurm.getReservations() != null) {
-                        for (ComputeResourceReservationEntity r : slurm.getReservations()) {
-                            r.setGroupComputeResourcePref(slurm);
-                        }
+                        slurm.getReservations().forEach(r -> r.setGroupComputeResourcePref(slurm));
                     }
                 }
             }

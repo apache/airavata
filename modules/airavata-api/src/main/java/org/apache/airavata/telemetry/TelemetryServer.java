@@ -19,26 +19,38 @@
 */
 package org.apache.airavata.telemetry;
 
-import io.prometheus.client.exporter.HTTPServer;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+/**
+ * Telemetry service using Spring Boot Actuator and Micrometer.
+ * 
+ * Prometheus metrics are exposed via Spring Boot Actuator at /actuator/prometheus
+ * No manual HTTP server is needed - Actuator handles this automatically.
+ * 
+ * Configure via airavata.properties:
+ *   services.telemetry.enabled=true
+ *   management.endpoints.web.exposure.include=health,info,prometheus
+ *   management.endpoint.prometheus.enabled=true
+ */
 @Component
-@ConditionalOnProperty(name = "services.telemetry.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.telemetry", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TelemetryServer extends ServerLifecycle {
 
     private final AiravataServerProperties properties;
-    private HTTPServer httpServer;
+    private final MeterRegistry meterRegistry;
 
-    public TelemetryServer(AiravataServerProperties properties) {
+    public TelemetryServer(AiravataServerProperties properties, MeterRegistry meterRegistry) {
         this.properties = properties;
+        this.meterRegistry = meterRegistry;
     }
 
     @Override
     public String getServerName() {
-        return "Prometheus Monitoring Server";
+        return "Micrometer Metrics Service";
     }
 
     @Override
@@ -54,37 +66,21 @@ public class TelemetryServer extends ServerLifecycle {
 
     @Override
     protected void doStart() throws Exception {
-        // Bind address is no longer configurable; keep it simple and local-only by default.
-        String host = "localhost";
-        int port = properties.services.telemetry.server.port;
-        try {
-            logger.info("Starting Prometheus monitoring server on {}:{}", host, port);
-            httpServer = new HTTPServer(host, port, true);
-            logger.info("Prometheus monitoring server started successfully on {}:{}", host, port);
-        } catch (Exception e) {
-            logger.error("Failed to start the monitoring server on host {} and port {}", host, port, e);
-            throw e;
-        }
+        // Actuator automatically exposes /actuator/prometheus endpoint
+        // No manual HTTP server needed
+        logger.info("Micrometer metrics service started. Metrics available at /actuator/prometheus");
+        logger.info("MeterRegistry type: {}", meterRegistry.getClass().getSimpleName());
     }
 
     @Override
     protected void doStop() throws Exception {
-        if (httpServer != null) {
-            logger.info("Stopping Prometheus monitoring server");
-            try {
-                httpServer.stop();
-            } catch (Exception e) {
-                logger.warn("Error stopping Prometheus monitoring server", e);
-            }
-            httpServer = null;
-            logger.info("Prometheus monitoring server stopped");
-        }
+        logger.info("Micrometer metrics service stopped");
     }
 
-    @Override
-    public boolean isRunning() {
-        // HTTPServer doesn't have isRunning() method, so we track state via httpServer != null
-        // The ServerLifecycle base class also tracks running state
-        return httpServer != null && super.isRunning();
+    /**
+     * Get the MeterRegistry for creating custom metrics.
+     */
+    public MeterRegistry getMeterRegistry() {
+        return meterRegistry;
     }
 }

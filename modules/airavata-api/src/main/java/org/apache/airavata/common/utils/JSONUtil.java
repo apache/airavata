@@ -29,9 +29,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import org.apache.airavata.config.JacksonConfig;
 
+/**
+ * JSON utility class using centralized ObjectMapper.
+ */
 public class JSONUtil {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    /**
+     * Get the ObjectMapper instance.
+     * Uses the globally configured ObjectMapper from JacksonConfig.
+     */
+    private static ObjectMapper getObjectMapper() {
+        return JacksonConfig.getGlobalMapper();
+    }
 
     public static void saveJSON(JsonNode jsonNode, File file) throws IOException {
         IOUtil.writeToFile(jsonNodeToString(jsonNode), file);
@@ -39,7 +50,7 @@ public class JSONUtil {
 
     public static ObjectNode stringToJSONObject(String workflowString) {
         try {
-            JsonNode node = objectMapper.readTree(workflowString);
+            JsonNode node = getObjectMapper().readTree(workflowString);
             if (node.isObject()) {
                 return (ObjectNode) node;
             }
@@ -55,7 +66,7 @@ public class JSONUtil {
 
     public static ObjectNode loadJSON(Reader reader) throws IOException {
         try {
-            JsonNode node = objectMapper.readTree(reader);
+            JsonNode node = getObjectMapper().readTree(reader);
             if (node.isObject()) {
                 return (ObjectNode) node;
             }
@@ -67,7 +78,7 @@ public class JSONUtil {
 
     public static String jsonNodeToString(JsonNode jsonNode) {
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to convert JsonNode to string", e);
         }

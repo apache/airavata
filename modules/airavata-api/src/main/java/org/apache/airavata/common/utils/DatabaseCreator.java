@@ -260,77 +260,59 @@ public class DatabaseCreator {
     }
 
     private static void executeSQLScript(String dbscriptName, Connection conn) throws Exception {
-        StringBuffer sql = new StringBuffer();
-        BufferedReader reader = null;
+        var sql = new StringBuilder();
 
-        try {
-            InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
-            if (is == null) {
-                logger.info("Script file not found at " + dbscriptName + ". Uses default database script file");
-                DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
-                is = DatabaseCreator.class
-                        .getClassLoader()
-                        .getResourceAsStream(getDBScriptFileName(databaseType, dbscriptName));
-            }
-            reader = new BufferedReader(new InputStreamReader(is));
+        InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
+        if (is == null) {
+            logger.info("Script file not found at {}. Uses default database script file", dbscriptName);
+            DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
+            is = DatabaseCreator.class
+                    .getClassLoader()
+                    .getResourceAsStream(getDBScriptFileName(databaseType, dbscriptName));
+        }
+        
+        try (var reader = new BufferedReader(new InputStreamReader(is))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if (line.startsWith("//")) {
+                if (line.startsWith("//") || line.startsWith("--")) {
                     continue;
                 }
-                if (line.startsWith("--")) {
+                var st = new StringTokenizer(line);
+                if (st.hasMoreTokens() && "REM".equalsIgnoreCase(st.nextToken())) {
                     continue;
-                }
-                StringTokenizer st = new StringTokenizer(line);
-                if (st.hasMoreTokens()) {
-                    String token = st.nextToken();
-                    if ("REM".equalsIgnoreCase(token)) {
-                        continue;
-                    }
                 }
                 sql.append(" ").append(line);
 
                 // SQL defines "--" as a comment to EOL
                 // and in Oracle it may contain a hint
                 // so we cannot just remove it, instead we must end it
-                if (line.indexOf("--") >= 0) {
+                if (line.contains("--")) {
                     sql.append("\n");
                 }
-                if ((checkStringBufferEndsWith(sql, delimiter))) {
+                if (checkStringBuilderEndsWith(sql, delimiter)) {
                     executeSQL(sql.substring(0, sql.length() - delimiter.length()), conn);
-                    sql.replace(0, sql.length(), "");
+                    sql.setLength(0);
                 }
             }
             // Catch any statements not followed by ;
-            if (sql.length() > 0) {
+            if (!sql.isEmpty()) {
                 executeSQL(sql.toString(), conn);
             }
         } catch (IOException e) {
             log.error("Error occurred while executing SQL script for creating Airavata database", e);
             throw new Exception("Error occurred while executing SQL script for creating Airavata database", e);
-
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
         }
     }
 
     /**
-     * Checks that a string buffer ends up with a given string. It may sound trivial with the existing JDK API but the
-     * various implementation among JDKs can make those methods extremely resource intensive and perform poorly due to
-     * massive memory allocation and copying. See
+     * Checks that a string builder ends with a given string.
      *
-     * @param buffer
-     *            the buffer to perform the check on
-     * @param suffix
-     *            the suffix
-     * @return <code>true</code> if the character sequence represented by the argument is a suffix of the character
-     *         sequence represented by the StringBuffer object; <code>false</code> otherwise. Note that the result will
-     *         be <code>true</code> if the argument is the empty string.
+     * @param buffer the buffer to check
+     * @param suffix the suffix to look for
+     * @return true if the buffer ends with the suffix
      */
-    public static boolean checkStringBufferEndsWith(StringBuffer buffer, String suffix) {
+    public static boolean checkStringBuilderEndsWith(StringBuilder buffer, String suffix) {
         if (suffix.length() > buffer.length()) {
             return false;
         }

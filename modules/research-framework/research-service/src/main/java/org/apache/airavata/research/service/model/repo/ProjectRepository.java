@@ -29,7 +29,7 @@ import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("researchCatalogProjectRepository")
 public interface ProjectRepository extends JpaRepository<Project, String> {
 
     boolean existsByOwnerId(String ownerId);

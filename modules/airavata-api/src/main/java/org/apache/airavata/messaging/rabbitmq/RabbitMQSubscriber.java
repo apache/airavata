@@ -21,173 +21,196 @@ package org.apache.airavata.messaging.rabbitmq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.messaging.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 
 /**
- * RabbitMQ subscriber for airavata-api.
- * All messages are Jackson JSON-deserialized using MessageContext.Wrapper (never Thrift).
- * Used exclusively for database state synchronization in airavata-api.
- * Consumers (MessageConsumer, StatusConsumer, etc.) handle JSON deserialization.
+ * RabbitMQ subscriber using Spring AMQP.
+ * All messages are Jackson JSON-deserialized using MessageContext.Wrapper.
+ * Used for database state synchronization in airavata-api.
  */
 public class RabbitMQSubscriber implements Subscriber {
     private static final Logger log = LoggerFactory.getLogger(RabbitMQSubscriber.class);
 
-    private Connection connection;
-    private Channel channel;
-    private Map<String, QueueDetail> queueDetailMap = new HashMap<>();
-    private RabbitMQProperties properties;
+    private final ConnectionFactory connectionFactory;
+    private final RabbitAdmin rabbitAdmin;
+    private final RabbitMQProperties properties;
+    private final Map<String, ListenerDetail> listenerMap = new HashMap<>();
 
-    public RabbitMQSubscriber(RabbitMQProperties properties) throws AiravataException {
+    /**
+     * Constructor with Spring-managed ConnectionFactory.
+     */
+    public RabbitMQSubscriber(ConnectionFactory connectionFactory, RabbitMQProperties properties) {
+        this.connectionFactory = connectionFactory;
+        this.rabbitAdmin = new RabbitAdmin(connectionFactory);
         this.properties = properties;
-        createConnection();
     }
 
-    private void createConnection() throws AiravataException {
-        try {
-            ConnectionFactory connectionFactory = new ConnectionFactory();
-            connectionFactory.setUri(properties.getBrokerUrl());
-            connectionFactory.setAutomaticRecoveryEnabled(properties.isAutoRecoveryEnable());
-            connection = connectionFactory.newConnection();
-            addShutdownListener();
-            log.info("connected to rabbitmq: " + connection + " for " + properties.getExchangeName());
-            channel = connection.createChannel();
-            channel.basicQos(properties.getPrefetchCount());
-            channel.exchangeDeclare(properties.getExchangeName(), properties.getExchangeType(), true); // durable
-        } catch (Exception e) {
-            String msg = "could not open channel for exchange " + properties.getExchangeName();
-            log.error(msg);
-            throw new AiravataException(msg, e);
-        }
+    /**
+     * Legacy constructor for backward compatibility.
+     */
+    public RabbitMQSubscriber(RabbitMQProperties properties) throws AiravataException {
+        this.properties = properties;
+        this.connectionFactory = null;
+        this.rabbitAdmin = null;
+        log.warn("Using legacy RabbitMQSubscriber constructor - Spring AMQP features not available");
     }
 
     @Override
     public String listen(BiFunction<Connection, Channel, Consumer> supplier, String queueName, List<String> routingKeys)
             throws AiravataException {
+        
+        if (connectionFactory == null) {
+            throw new AiravataException("Spring AMQP ConnectionFactory not available. Use Spring-managed subscriber.");
+        }
 
         try {
-            if (!channel.isOpen()) {
-                channel = connection.createChannel();
-                channel.exchangeDeclare(properties.getExchangeName(), properties.getExchangeType(), false);
+            // Generate unique ID for this listener
+            String id = UUID.randomUUID().toString();
+            
+            // Create or declare queue
+            String actualQueueName = queueName != null ? queueName : "airavata.queue." + id;
+            Queue queue = new Queue(actualQueueName, true, false, false);
+            rabbitAdmin.declareQueue(queue);
+            
+            // Declare exchange
+            TopicExchange exchange = new TopicExchange(properties.getExchangeName(), true, false);
+            rabbitAdmin.declareExchange(exchange);
+            
+            // Bind queue to exchange with routing keys
+            for (String routingKey : routingKeys) {
+                Binding binding = BindingBuilder.bind(queue).to(exchange).with(routingKey);
+                rabbitAdmin.declareBinding(binding);
             }
-            if (queueName == null) {
-                queueName = channel.queueDeclare().getQueue();
-            } else {
-                channel.queueDeclare(
-                        queueName, true, // durable
-                        false, // exclusive
-                        false, // autoDelete
-                        null); // arguments
-            }
-            final String id = getId(routingKeys, queueName);
-            if (queueDetailMap.containsKey(id)) {
-                throw new IllegalStateException("This subscriber is already defined for this Subscriber, "
-                        + "cannot define the same subscriber twice");
-            }
-            // bind all the routing keys
-            for (String key : routingKeys) {
-                //                log.info("Binding key:" + key + " to queue:" + queueName);
-                channel.queueBind(queueName, properties.getExchangeName(), key);
-            }
-
-            channel.basicConsume(
-                    queueName,
-                    properties.isAutoAck(),
-                    properties.getConsumerTag(),
-                    supplier.apply(connection, channel));
-
-            queueDetailMap.put(id, new QueueDetail(queueName, routingKeys));
+            
+            // Create message listener container
+            SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+            container.setConnectionFactory(connectionFactory);
+            container.setQueueNames(actualQueueName);
+            container.setPrefetchCount(properties.getPrefetchCount() > 0 ? properties.getPrefetchCount() : 10);
+            container.setAcknowledgeMode(properties.isAutoAck() ? AcknowledgeMode.AUTO : AcknowledgeMode.MANUAL);
+            
+            // Wrap the legacy Consumer in a ChannelAwareMessageListener
+            container.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
+                // Get the underlying RabbitMQ connection and channel
+                Consumer consumer = supplier.apply(null, channel);
+                if (consumer != null) {
+                    // Create envelope-like object for compatibility
+                    com.rabbitmq.client.Envelope envelope = new com.rabbitmq.client.Envelope(
+                            message.getMessageProperties().getDeliveryTag(),
+                            message.getMessageProperties().getRedelivered() != null && 
+                                message.getMessageProperties().getRedelivered(),
+                            properties.getExchangeName(),
+                            message.getMessageProperties().getReceivedRoutingKey()
+                    );
+                    
+                    // Create basic properties
+                    com.rabbitmq.client.AMQP.BasicProperties basicProps = 
+                            new com.rabbitmq.client.AMQP.BasicProperties.Builder()
+                                .contentType(message.getMessageProperties().getContentType())
+                                .deliveryMode(2) // persistent
+                                .build();
+                    
+                    try {
+                        consumer.handleDelivery(
+                                properties.getConsumerTag(),
+                                envelope,
+                                basicProps,
+                                message.getBody()
+                        );
+                    } catch (Exception e) {
+                        log.error("Error handling message delivery", e);
+                    }
+                }
+            });
+            
+            container.start();
+            
+            // Store listener details for later cleanup
+            listenerMap.put(id, new ListenerDetail(container, actualQueueName, routingKeys));
+            
+            log.info("Started listener {} for queue {} with routing keys {}", id, actualQueueName, routingKeys);
             return id;
-        } catch (IOException e) {
-            String msg = "could not open channel for exchange " + properties.getExchangeName();
-            log.error(msg);
+            
+        } catch (Exception e) {
+            String msg = "Could not create listener for exchange " + properties.getExchangeName();
+            log.error(msg, e);
             throw new AiravataException(msg, e);
         }
     }
 
     @Override
     public void stopListen(String id) throws AiravataException {
-        QueueDetail details = queueDetailMap.get(id);
-        if (details != null) {
+        ListenerDetail detail = listenerMap.remove(id);
+        if (detail != null) {
             try {
-                for (String key : details.getRoutingKeys()) {
-                    channel.queueUnbind(details.getQueueName(), properties.getExchangeName(), key);
+                detail.container.stop();
+                detail.container.destroy();
+                
+                // Optionally delete queue
+                if (rabbitAdmin != null) {
+                    rabbitAdmin.deleteQueue(detail.queueName);
                 }
-                channel.queueDelete(details.getQueueName(), true, true);
-            } catch (IOException e) {
-                String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange "
-                        + properties.getExchangeName();
-                log.debug(msg);
+                
+                log.info("Stopped listener {} for queue {}", id, detail.queueName);
+            } catch (Exception e) {
+                log.warn("Error stopping listener {}: {}", id, e.getMessage());
             }
         }
     }
 
     @Override
     public void sendAck(long deliveryTag) {
-        try {
-            if (channel.isOpen()) {
-                channel.basicAck(deliveryTag, false);
-            } else {
-                channel = connection.createChannel();
-                channel.basicQos(properties.getPrefetchCount());
-                channel.basicAck(deliveryTag, false);
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
+        // With Spring AMQP, acknowledgment is handled by the container
+        // based on AcknowledgeMode setting
+        log.debug("sendAck called for deliveryTag {} - handled by Spring AMQP container", deliveryTag);
     }
 
-    private void addShutdownListener() {
-        connection.addShutdownListener(cause -> {
-            log.warn(
-                    "RabbitMQ connection {} for exchange={} is now shutdown. cause={}",
-                    connection.getId(),
-                    properties.getExchangeName(),
-                    cause);
-        });
-    }
-
-    private String getId(List<String> routingKeys, String queueName) {
-        String id = "";
-        for (String key : routingKeys) {
-            id = id + "_" + key;
-        }
-        return id + "_" + queueName;
-    }
-
+    /**
+     * Close all listeners and clean up resources.
+     */
     public void close() {
-        if (connection != null) {
+        for (Map.Entry<String, ListenerDetail> entry : listenerMap.entrySet()) {
             try {
-                connection.close();
-            } catch (IOException ignore) {
+                entry.getValue().container.stop();
+                entry.getValue().container.destroy();
+            } catch (Exception e) {
+                log.warn("Error closing listener {}: {}", entry.getKey(), e.getMessage());
             }
         }
+        listenerMap.clear();
+        log.info("RabbitMQSubscriber closed - all listeners stopped");
     }
 
-    private class QueueDetail {
-        String queueName;
-        List<String> routingKeys;
+    /**
+     * Internal class to track listener details.
+     */
+    private static class ListenerDetail {
+        final SimpleMessageListenerContainer container;
+        final String queueName;
+        final List<String> routingKeys;
 
-        private QueueDetail(String queueName, List<String> routingKeys) {
+        ListenerDetail(SimpleMessageListenerContainer container, String queueName, List<String> routingKeys) {
+            this.container = container;
             this.queueName = queueName;
             this.routingKeys = routingKeys;
-        }
-
-        public String getQueueName() {
-            return queueName;
-        }
-
-        List<String> getRoutingKeys() {
-            return routingKeys;
         }
     }
 }

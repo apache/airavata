@@ -32,14 +32,13 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Process rescheduling service to scann the Queue or Requeued services and relaunch them.
+ * Process rescheduling service to scan the Queue or Requeued services and relaunch them.
+ * Uses Spring-managed Quartz scheduler for job scheduling.
  */
 @Component
 @ConditionalOnProperty(name = "services.scheduler.rescheduler.enabled", havingValue = "true", matchIfMissing = true)
@@ -48,15 +47,18 @@ public class ProcessReschedulingService extends ServerLifecycle {
     private static final String SERVER_NAME = "Airavata Process Rescheduling Service";
     private static final String SERVER_VERSION = "1.0";
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
     private Map<JobDetail, Trigger> jobTriggerMap = new HashMap<>();
 
     private final AiravataServerProperties properties;
-    private final ApplicationContext applicationContext;
 
-    public ProcessReschedulingService(AiravataServerProperties properties, ApplicationContext applicationContext) {
+    /**
+     * Constructor with Spring-managed Scheduler injection.
+     */
+    @Autowired
+    public ProcessReschedulingService(AiravataServerProperties properties, Scheduler scheduler) {
         this.properties = properties;
-        this.applicationContext = applicationContext;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -79,13 +81,6 @@ public class ProcessReschedulingService extends ServerLifecycle {
     protected void doStart() throws Exception {
 
         jobTriggerMap.clear();
-        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-        // Use SpringBeanJobFactory to enable Spring DI for Quartz jobs
-        SpringBeanJobFactory jobFactory = new SpringBeanJobFactory();
-        jobFactory.setApplicationContext(applicationContext);
-        schedulerFactoryBean.setJobFactory(jobFactory);
-        schedulerFactoryBean.afterPropertiesSet();
-        scheduler = schedulerFactoryBean.getScheduler();
 
         final int parallelJobs = properties.services.scheduler.clusterScanningParallelJobs;
         final double scanningInterval = properties.services.scheduler.jobScanningInterval;
@@ -107,13 +102,17 @@ public class ProcessReschedulingService extends ServerLifecycle {
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }
-        scheduler.start();
+        
+        // Scheduler is already started by Spring Boot
+        if (!scheduler.isStarted()) {
+            scheduler.start();
+        }
 
         jobTriggerMap.forEach((x, v) -> {
             try {
                 scheduler.scheduleJob(x, v);
             } catch (SchedulerException e) {
-                logger.error("Error occurred while scheduling job " + x.getKey().getName());
+                throw new RuntimeException("Error occurred while scheduling job " + x.getKey().getName(), e);
             }
         });
     }
@@ -124,7 +123,7 @@ public class ProcessReschedulingService extends ServerLifecycle {
             scheduler.unscheduleJobs(jobTriggerMap.values().stream()
                     .map(trigger -> trigger.getKey())
                     .collect(java.util.stream.Collectors.toList()));
-            scheduler.shutdown();
+            // Don't shutdown the shared scheduler, Spring Boot will handle it
         }
     }
 

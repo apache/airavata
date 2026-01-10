@@ -37,8 +37,7 @@ public class DBEventMessage extends MessagingEvent {
      * Assumes the MessageContext contains a DBEventMessage event.
      */
     public DBEventMessage(MessageContext messageContext) {
-        if (messageContext.getEvent() instanceof DBEventMessage) {
-            DBEventMessage event = (DBEventMessage) messageContext.getEvent();
+        if (messageContext.getEvent() instanceof DBEventMessage event) {
             this.dbEventType = event.getDbEventType();
             this.messageContext = event.getMessageContext();
             this.publisherService = event.getPublisherService();

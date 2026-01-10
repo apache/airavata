@@ -93,12 +93,7 @@ public class PoolingSSHJClient extends SSHClient {
         });
 
         poolMonitoringService.scheduleWithFixedDelay(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        removeStaleConnections();
-                    }
-                },
+                this::removeStaleConnections,
                 10,
                 maxConnectionIdleTimeMS * 2,
                 TimeUnit.MILLISECONDS);

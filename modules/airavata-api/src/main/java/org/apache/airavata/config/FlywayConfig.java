@@ -20,18 +20,22 @@
 package org.apache.airavata.config;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 /**
- * Configuration for Flyway database migrations.
+ * Configuration for Flyway database migrations using Spring Boot's Flyway integration.
  * Each persistence unit has its own Flyway instance that manages migrations
  * for its corresponding database.
  *
@@ -67,7 +71,19 @@ public class FlywayConfig {
     }
 
     /**
-     * Configure Flyway for profile service database.
+     * Common Flyway configuration customizer that can be shared across all datasources.
+     * Uses Spring Boot's FlywayConfigurationCustomizer for consistent configuration.
+     */
+    private FlywayConfigurationCustomizer createFlywayCustomizer(String databaseName) {
+        return config -> {
+            config.baselineOnMigrate(true);
+            config.validateOnMigrate(true);
+            config.locations(getMigrationLocation(databaseName));
+        };
+    }
+
+    /**
+     * Configure Flyway for profile service database using Spring Boot's approach.
      */
     @Bean(name = "profileServiceFlyway", initMethod = "migrate")
     @DependsOn("profileServiceDataSource")
@@ -176,5 +192,18 @@ public class FlywayConfig {
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
+    }
+
+    /**
+     * Flyway migration strategy bean for Spring Boot autoconfiguration.
+     * This allows Spring Boot to manage Flyway lifecycle if needed.
+     */
+    @Bean
+    public FlywayMigrationStrategy flywayMigrationStrategy() {
+        return flyway -> {
+            // Custom migration strategy if needed
+            // For now, just run migrate (default behavior)
+            flyway.migrate();
+        };
     }
 }

@@ -72,10 +72,8 @@ public class TaskUtil {
                 TaskParam parm = classField.getAnnotation(TaskParam.class);
                 if (parm != null) {
                     classField.setAccessible(true);
-                    if (classField.get(data) instanceof TaskParamType) {
-                        result.put(
-                                parm.name(),
-                                TaskParamType.class.cast(classField.get(data)).serialize());
+                    if (classField.get(data) instanceof TaskParamType taskParamValue) {
+                        result.put(parm.name(), taskParamValue.serialize());
                     } else {
                         result.put(parm.name(), classField.get(data).toString());
                     }

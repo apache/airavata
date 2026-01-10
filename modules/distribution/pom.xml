@@ -146,12 +146,10 @@ under the License.
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.7.5</version>
         </dependency>
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli-spring-boot-starter</artifactId>
-            <version>4.7.5</version>
         </dependency>
     </dependencies>
 
@@ -235,6 +233,24 @@ under the License.
                             <key>airavata.home</key>
                             <value>${project.build.outputDirectory}</value>
                         </systemProperty>
+                        <!-- 
+                        Disable gRPC server - Duration NPE bug still exists in Spring gRPC 1.0.1
+                        TESTED: Spring gRPC 1.0.0 ❌ (Duration NPE)
+                        TESTED: Spring gRPC 1.0.1 ❌ (Duration NPE still present)
+                        
+                        DefaultServerFactoryPropertyMapper.durationProperty() calls .toNanos() 
+                        on null Duration properties during auto-configuration.
+                        
+                        Bug persists across versions - disable at JVM level until fixed upstream.
+                        -->
+                        <systemProperty>
+                            <key>spring.grpc.server.enabled</key>
+                            <value>false</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>spring.grpc.client.enabled</key>
+                            <value>false</value>
+                        </systemProperty>
                     </systemProperties>
                     <commandlineArgs>serve --foreground</commandlineArgs>
                 </configuration>
@@ -296,7 +312,6 @@ under the License.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.1</version>
             </plugin>
         </plugins>
     </build>

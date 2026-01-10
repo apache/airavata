@@ -37,6 +37,7 @@ import org.apache.airavata.common.model.SharingResourceType;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.config.JacksonConfig;
 import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.SharingRegistryService;
@@ -64,7 +65,7 @@ import org.springframework.stereotype.Component;
 public class Dispatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
 
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
@@ -412,7 +413,7 @@ public class Dispatcher {
             Object domainModel = entityModel;
 
             // Serialize domain model to JSON using Jackson (RabbitMQ uses JSON, never Thrift)
-            byte[] entityJsonBytes = objectMapper.writeValueAsBytes(domainModel);
+            byte[] entityJsonBytes = objectMapper().writeValueAsBytes(domainModel);
 
             // Create DBEventMessage for synchronization queue (will be Jackson-serialized via MessageContext.Wrapper)
             DBEventMessage dbEventMessage = new DBEventMessage();

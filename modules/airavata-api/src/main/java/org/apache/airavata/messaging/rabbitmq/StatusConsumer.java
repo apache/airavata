@@ -26,6 +26,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
+import org.apache.airavata.config.JacksonConfig;
 import org.apache.airavata.messaging.MessageContext;
 import org.apache.airavata.messaging.MessageHandler;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 public class StatusConsumer extends DefaultConsumer {
     private static final Logger log = LoggerFactory.getLogger(StatusConsumer.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
 
     private MessageHandler handler;
 
@@ -52,7 +53,7 @@ public class StatusConsumer extends DefaultConsumer {
         try {
             // Deserialize JSON bytes to MessageContext.Wrapper using Jackson (RabbitMQ uses JSON, never Thrift)
             // All RabbitMQ messages in airavata-api use Jackson JSON serialization
-            MessageContext.Wrapper jsonWrapper = objectMapper.readValue(body, MessageContext.Wrapper.class);
+            MessageContext.Wrapper jsonWrapper = objectMapper().readValue(body, MessageContext.Wrapper.class);
             MessageContext messageContext = jsonWrapper.toMessageContext();
             messageContext.setIsRedeliver(envelope.isRedeliver());
 

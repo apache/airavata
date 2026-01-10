@@ -30,20 +30,25 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
+/**
+ * Cluster Status Monitor Job Scheduler using Spring-managed Quartz scheduler.
+ */
 public class ClusterStatusMonitorJobScheduler {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJobScheduler.class);
 
-    Scheduler scheduler;
-    private AiravataServerProperties properties;
+    private final Scheduler scheduler;
+    private final AiravataServerProperties properties;
 
-    public ClusterStatusMonitorJobScheduler(AiravataServerProperties properties) throws Exception {
+    /**
+     * Constructor accepting Spring-managed Scheduler.
+     * 
+     * @param scheduler Spring-managed Quartz scheduler
+     * @param properties Server properties
+     */
+    public ClusterStatusMonitorJobScheduler(Scheduler scheduler, AiravataServerProperties properties) {
+        this.scheduler = scheduler;
         this.properties = properties;
-        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-        schedulerFactoryBean.afterPropertiesSet();
-        scheduler = schedulerFactoryBean.getScheduler();
-        scheduler.start();
     }
 
     public void scheduleClusterStatusMonitoring() throws SchedulerException {

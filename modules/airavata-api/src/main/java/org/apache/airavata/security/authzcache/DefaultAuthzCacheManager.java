@@ -26,8 +26,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+/**
+ * Default authorization cache manager using Caffeine-backed cache.
+ * 
+ * Configure via airavata.properties:
+ *   security.authzCache.enabled=true
+ */
 @Component
-@ConditionalOnProperty(name = "security.authzCache.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "security.authzCache", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class DefaultAuthzCacheManager implements AuthzCacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuthzCacheManager.class);

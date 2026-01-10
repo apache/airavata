@@ -76,7 +76,8 @@ public class CredentialEntityService {
     @jakarta.annotation.PostConstruct
     public void init() {
         String configDir = org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
-        String credentialStoreKeyStorePath = properties.security.vault.keystore.url;
+        // Use Environment instead of properties object as it's populated earlier in Spring lifecycle
+        String credentialStoreKeyStorePath = environment.getProperty("security.vault.keystore.url");
         if (credentialStoreKeyStorePath == null || credentialStoreKeyStorePath.isEmpty()) {
             // In test profile, use default keystore location
             boolean isTestProfile = environment != null
@@ -91,22 +92,17 @@ public class CredentialEntityService {
         }
         // Keystore path is relative to configDir (e.g., "keystores/airavata.sym.p12")
         this.keyStorePath = new java.io.File(configDir, credentialStoreKeyStorePath).getAbsolutePath();
-        this.secretKeyAlias = properties.security.vault.keystore.alias != null
-                ? properties.security.vault.keystore.alias
-                : "airavata";
+        String aliasFromEnv = environment.getProperty("security.vault.keystore.alias");
+        this.secretKeyAlias = aliasFromEnv != null ? aliasFromEnv : "airavata";
 
         // Verify keystore password is set (required for encryption/decryption)
         boolean isTestProfile = environment != null
                 && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
-        if (properties.security.vault.keystore.password == null
-                || properties.security.vault.keystore.password.isEmpty()) {
+        String keystorePassword = environment.getProperty("security.vault.keystore.password");
+        if (keystorePassword == null || keystorePassword.isEmpty()) {
             if (isTestProfile) {
                 // In test profile, use default password if not set
-                if (properties.security.vault.keystore == null) {
-                    properties.security.vault.keystore =
-                            new org.apache.airavata.config.AiravataServerProperties.Security.Vault.Keystore();
-                }
-                properties.security.vault.keystore.password = "airavata";
+                keystorePassword = "airavata";
                 logger.debug("Test profile detected, using default keystore password");
             } else {
                 throw new IllegalStateException(

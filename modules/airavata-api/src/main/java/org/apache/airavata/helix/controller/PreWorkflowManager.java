@@ -143,9 +143,9 @@ public class PreWorkflowManager extends WorkflowManager {
 
     @Override
     protected void doStop() throws Exception {
-        if (subscriber != null && subscriber instanceof RabbitMQSubscriber) {
+        if (subscriber instanceof RabbitMQSubscriber rmqSubscriber) {
             try {
-                ((RabbitMQSubscriber) subscriber).close();
+                rmqSubscriber.close();
             } catch (Exception e) {
                 logger.warn("Error closing subscriber", e);
             }
