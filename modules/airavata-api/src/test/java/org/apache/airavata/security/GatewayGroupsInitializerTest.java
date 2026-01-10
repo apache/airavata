@@ -52,9 +52,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
+            "spring.main.lazy-initialization=true",
             "security.tls.enabled=true",
+            "security.iam.enabled=false",
             "security.manager.enabled=false",
+            "security.authzCache.enabled=false",
             "flyway.enabled=false",
+            "services.scheduler.rescheduler.enabled=false",
+            "services.parser.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")

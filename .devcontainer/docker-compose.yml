@@ -16,6 +16,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
       - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
+      - ./keycloak/realm-master.json:/opt/keycloak/data/import/realm-master.json
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
     command: [ "start", "--import-realm" ]
     networks:

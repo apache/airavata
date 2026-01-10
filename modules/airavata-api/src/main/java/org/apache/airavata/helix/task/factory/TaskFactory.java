@@ -22,13 +22,11 @@ package org.apache.airavata.helix.task.factory;
 import java.util.EnumMap;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputeResourceType;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class TaskFactory {
 
     private final Map<ComputeResourceType, HelixTaskFactory> factories;

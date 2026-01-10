@@ -90,11 +90,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 @ConditionalOnBean({
     org.apache.airavata.service.orchestrator.OrchestratorRegistryService.class,
     org.apache.airavata.orchestrator.impl.SimpleOrchestratorImpl.class
@@ -909,7 +909,7 @@ public class OrchestratorService {
     }
 
     private void startCurator() {
-        String connectionSting = properties.zookeeper.server.connection;
+        String connectionSting = properties.zookeeper().server().connection();
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
         curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
         curatorClient.start();
@@ -917,7 +917,7 @@ public class OrchestratorService {
 
     private Subscriber getExperimentSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(properties.rabbitmq.experimentLaunchQueueName);
+        routingKeys.add(properties.rabbitmq().experimentLaunchQueueName());
         return messagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
     }
 

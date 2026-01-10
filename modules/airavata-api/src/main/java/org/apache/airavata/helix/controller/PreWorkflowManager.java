@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -66,8 +65,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.controller.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "services.prewm.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.controller", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "services.prewm", name = "enabled", havingValue = "true")
 public class PreWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
@@ -105,8 +104,8 @@ public class PreWorkflowManager extends WorkflowManager {
     @jakarta.annotation.PostConstruct
     public void initWorkflowManager() {
         if (properties != null) {
-            String managerName = properties.services.prewm.name;
-            boolean loadBalance = properties.services.prewm.loadBalanceClusters;
+            String managerName = properties.services().prewm().name();
+            boolean loadBalance = properties.services().prewm().loadBalanceClusters();
             this.workflowManagerName = managerName;
             this.loadBalanceClusters = loadBalance;
         }
@@ -159,7 +158,7 @@ public class PreWorkflowManager extends WorkflowManager {
 
     private void initLaunchSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
-        routingKeys.add(properties.rabbitmq.processExchangeName);
+        routingKeys.add(properties.rabbitmq().processExchangeName());
         this.subscriber =
                 messagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
@@ -299,7 +298,7 @@ public class PreWorkflowManager extends WorkflowManager {
         final List<AbstractTask> allTasks = new ArrayList<>();
 
         Optional<List<String>> workflowsOpt = Optional.ofNullable(processModel.getProcessWorkflows())
-                .map(wfs -> wfs.stream().map(ProcessWorkflow::getWorkflowId).collect(Collectors.toList()));
+                .map(wfs -> wfs.stream().map(ProcessWorkflow::getWorkflowId).toList());
 
         if (workflowsOpt.isPresent()) {
             List<String> workflows = workflowsOpt.get();

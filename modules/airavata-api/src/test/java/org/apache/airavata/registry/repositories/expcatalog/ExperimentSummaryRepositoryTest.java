@@ -48,44 +48,11 @@ import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            ExperimentSummaryRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ExperimentSummaryRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final GatewayService gatewayService;
     private final ProjectService projectService;
@@ -101,7 +68,6 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
             ExperimentStatusService experimentStatusService,
             ExperimentSummaryService experimentSummaryService,
             ExperimentSummaryRepository experimentSummaryRepository) {
-        super(Database.EXP_CATALOG);
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;

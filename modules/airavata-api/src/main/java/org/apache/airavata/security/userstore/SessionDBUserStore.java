@@ -25,7 +25,6 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Element;
@@ -37,7 +36,6 @@ import org.w3c.dom.NodeList;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "security.userstore.sessiondb.enabled", havingValue = "true", matchIfMissing = false)
 public class SessionDBUserStore extends AbstractJDBCUserStore {
 
     private String sessionTable;

@@ -68,8 +68,7 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 /**
@@ -79,8 +78,7 @@ import org.springframework.stereotype.Component;
  */
 @TaskDef(name = "Data Parsing Task")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class DataParsingTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DataParsingTask.class);
@@ -352,9 +350,9 @@ public class DataParsingTask extends AbstractTask {
         }
 
         boolean deleteContainer = this.properties != null
-                && this.properties.services != null
-                && this.properties.services.parser != null
-                && this.properties.services.parser.deleteContainer;
+                && this.properties.services() != null
+                && this.properties.services().parser() != null
+                && this.properties.services().parser().deleteContainer();
         if (deleteContainer) {
             dockerClient.removeContainerCmd(containerResponse.getId()).exec();
             logger.info("Successfully removed container with id " + containerResponse.getId());

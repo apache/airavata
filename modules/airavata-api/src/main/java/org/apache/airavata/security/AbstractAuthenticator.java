@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.security;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,8 +106,9 @@ public abstract class AbstractAuthenticator implements Authenticator {
      * @return Current time as a string.
      */
     protected String getCurrentTime() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
-        return simpleDateFormat.format(AiravataUtils.getUniqueTimestamp());
+        return DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)
+                .withZone(ZoneId.systemDefault())
+                .format(AiravataUtils.getUniqueTimestamp().toInstant());
     }
 
     /**

@@ -48,9 +48,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("!test")
 @ConditionalOnProperty(
-        name = "scheduler.reschedulerPolicy",
-        havingValue = "ExponentialBackOffReScheduler",
-        matchIfMissing = true)
+        prefix = "services.scheduler",
+        name = "rescheduler-policy",
+        havingValue = "ExponentialBackOffReScheduler")
 public class ExponentialBackOffReScheduler implements ReScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExponentialBackOffReScheduler.class);
@@ -71,14 +71,13 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     @Override
     public void reschedule(ProcessModel processModel, ProcessState processState) {
         try {
-            int maxReschedulingCount = properties.services.scheduler.maximumReschedulerThreshold;
+            int maxReschedulingCount = properties.services().scheduler().maximumReschedulerThreshold();
             List<ProcessStatus> processStatusList = processModel.getProcessStatuses();
             ExperimentModel experimentModel = registryService.getExperiment(processModel.getExperimentId());
             LOGGER.info("Rescheduling process with Id " + processModel.getProcessId() + " experimentId "
                     + processModel.getExperimentId());
-            // Get policy bean from Spring context using property-based selection
-            String policyClassName = properties.services.scheduler.computeResourceSelectionPolicyClass;
-            ComputeResourceSelectionPolicy policy = getPolicyBean(policyClassName);
+            // Get policy bean from Spring context - loaded via @ConditionalOnProperty
+            ComputeResourceSelectionPolicy policy = getPolicyBean();
             if (processState.equals(ProcessState.QUEUED)) {
                 Optional<ComputationalResourceSchedulingModel> computationalResourceSchedulingModel =
                         policy.selectComputeResource(processModel.getProcessId());
@@ -111,7 +110,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
                     long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
 
-                    double scanningInterval = properties.services.scheduler.jobScanningInterval;
+                    double scanningInterval = properties.services().scheduler().jobScanningInterval();
 
                     if (currentTime >= (pastValue + value * scanningInterval * 1000)) {
                         updateResourceSchedulingModel(processModel, experimentModel, registryService);
@@ -196,32 +195,13 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     }
 
     /**
-     * Get policy bean by bean name from Spring context.
-     * Uses property-based selection for deterministic bean resolution.
-     * Derives bean name from class name (simple class name with first letter lowercase).
+     * Get the active policy bean from Spring context.
+     * Only one policy is loaded based on @ConditionalOnProperty matching services.scheduler.selection-policy.
      */
-    private ComputeResourceSelectionPolicy getPolicyBean(String policyClassName) {
-        try {
-            // Extract simple class name from full class name
-            String simpleClassName = policyClassName.substring(policyClassName.lastIndexOf('.') + 1);
-            // Spring default bean name is simple class name with first letter lowercase
-            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
-
-            return applicationContext.getBean(beanName, ComputeResourceSelectionPolicy.class);
-        } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
-            // Extract bean name for error message
-            String simpleClassName = policyClassName.substring(policyClassName.lastIndexOf('.') + 1);
-            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
-            LOGGER.error(
-                    "Policy bean not found in Spring context: {} (derived from class name: {})",
-                    beanName,
-                    policyClassName,
-                    e);
-            throw new IllegalStateException(
-                    "Policy bean not found: " + beanName + " (from class: " + policyClassName + ")", e);
-        } catch (Exception e) {
-            LOGGER.error("Failed to get policy bean for class: {}", policyClassName, e);
-            throw new IllegalStateException("Failed to get policy bean for: " + policyClassName, e);
-        }
+    private ComputeResourceSelectionPolicy getPolicyBean() {
+        return applicationContext.getBeansOfType(ComputeResourceSelectionPolicy.class).values().stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "No ComputeResourceSelectionPolicy bean found. Check services.scheduler.selection-policy property."));
     }
 }

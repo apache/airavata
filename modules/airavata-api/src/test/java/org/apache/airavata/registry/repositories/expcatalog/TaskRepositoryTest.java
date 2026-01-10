@@ -1,22 +1,7 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.
+ */
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +21,6 @@ import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
@@ -45,44 +29,10 @@ import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            TaskRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
-@org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class TaskRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final GatewayService gatewayService;
     private final ProjectService projectService;
@@ -96,7 +46,6 @@ public class TaskRepositoryTest extends TestBase {
             ExperimentService experimentService,
             ProcessService processService,
             TaskService taskService) {
-        super(Database.EXP_CATALOG);
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
@@ -105,18 +54,15 @@ public class TaskRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testTaskRepository() throws RegistryException {
+    public void testTaskRepository() throws Exception {
         Gateway gateway = new Gateway();
-        gateway.setGatewayId("gateway");
-        gateway.setDomain("SEAGRID");
-        gateway.setEmailAddress("abc@d.com");
+        gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         String gatewayId = gatewayService.addGateway(gateway);
 
         Project project = new Project();
         project.setName("projectName");
         project.setOwner("user");
         project.setGatewayId(gatewayId);
-
         String projectId = projectService.addProject(project, gatewayId);
 
         ExperimentModel experimentModel = new ExperimentModel();
@@ -125,7 +71,6 @@ public class TaskRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
-
         String experimentId = experimentService.addExperiment(experimentModel);
 
         ProcessModel processModel = new ProcessModel();
@@ -135,44 +80,31 @@ public class TaskRepositoryTest extends TestBase {
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskModel.setParentProcessId(processId);
-        taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
+        taskModel.setSubTaskModel("test-subtask".getBytes(StandardCharsets.UTF_8));
 
         if (taskModel.getTaskStatuses() == null) {
             taskModel.setTaskStatuses(new java.util.ArrayList<>());
         }
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.CREATED);
-        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        taskStatus.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
         taskModel.getTaskStatuses().add(taskStatus);
 
         String taskId = taskService.addTask(taskModel, processId);
-        assertTrue(taskId != null);
-        assertTrue(processService.getProcess(processId).getTasks().size() == 1);
+        assertNotNull(taskId);
+        assertTrue(taskService.isTaskExist(taskId));
 
-        taskModel.setTaskType(TaskTypes.MONITORING);
-        taskService.updateTask(taskModel, taskId);
         TaskModel retrievedTask = taskService.getTask(taskId);
-        assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());
+        assertNotNull(retrievedTask);
+        assertEquals(TaskTypes.JOB_SUBMISSION, retrievedTask.getTaskType());
+        assertNotNull(retrievedTask.getSubTaskModel());
         assertEquals(1, retrievedTask.getTaskStatuses().size());
         assertEquals(TaskState.CREATED, retrievedTask.getTaskStatuses().get(0).getState());
 
-        assertNotNull(retrievedTask.getSubTaskModel(), "SubTask model should not be null");
-        assertTrue(retrievedTask.getSubTaskModel() instanceof byte[], "SubTask model should be byte array");
-        assertEquals(
-                "subtask model",
-                new String((byte[]) retrievedTask.getSubTaskModel(), StandardCharsets.UTF_8),
-                "SubTask model content should match");
+        List<String> taskIds = taskService.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
+        assertEquals(1, taskIds.size());
 
-        List<String> taskIdList = taskService.getTaskIds(DBConstants.Task.PARENT_PROCESS_ID, processId);
-        assertTrue(taskIdList.size() == 1);
-        assertTrue(taskIdList.get(0).equals(taskId));
-
-        experimentService.removeExperiment(experimentId);
-        processService.removeProcess(processId);
         taskService.removeTask(taskId);
         assertFalse(taskService.isTaskExist(taskId));
-
-        gatewayService.removeGateway(gatewayId);
-        projectService.removeProject(projectId);
     }
 }

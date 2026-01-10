@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Component;
  *   spring.mail.properties.mail.smtp.starttls.enable=true
  */
 @Component
+@ConditionalOnBean(JavaMailSender.class)
 public class EmailNotifier implements CredentialStoreNotifier {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailNotifier.class);
@@ -79,12 +81,34 @@ public class EmailNotifier implements CredentialStoreNotifier {
         try {
             SimpleMailMessage email = new SimpleMailMessage();
             
-            // Set from address
+            if (emailNotifierConfiguration != null) {
+                email.setFrom(emailNotifierConfiguration.getFromAddress());
+            }
+            email.setText(message.getMessage());
+
+            if (mailSender != null) {
+                mailSender.send(email);
+                logger.info("Notification message sent");
+            } else {
+                throw new CredentialStoreException("JavaMailSender not configured");
+            }
+
+        } catch (Exception e) {
+            String msg = String.format("Error sending notification message: %s", e.getMessage());
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
+        }
+    }
+
+    @Override
+    public void notifyEmail(EmailNotificationMessage emailMessage) throws CredentialStoreException {
+        try {
+            SimpleMailMessage email = new SimpleMailMessage();
+            
             if (emailNotifierConfiguration != null) {
                 email.setFrom(emailNotifierConfiguration.getFromAddress());
             }
 
-            EmailNotificationMessage emailMessage = (EmailNotificationMessage) message;
             email.setSubject(emailMessage.getSubject());
             email.setText(emailMessage.getMessage());
             email.setTo(emailMessage.getSenderEmail());

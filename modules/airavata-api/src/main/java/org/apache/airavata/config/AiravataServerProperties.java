@@ -20,645 +20,490 @@
 package org.apache.airavata.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
- * Spring Boot configuration properties for Airavata server.
- * Maps all properties from airavata.properties to strongly-typed Java objects.
- *
- * <p>This is a pure data structure that mirrors the property file structure exactly.
- * Property binding is handled automatically by Spring Boot's {@code @ConfigurationProperties}.
- *
- * <p>For utility methods (config directory resolution, file loading, etc.), see
- * {@link AiravataConfigUtils}.
+ * Immutable Spring Boot configuration properties for Airavata server.
+ * All properties are loaded atomically at startup via constructor binding.
+ * 
+ * <p>This record mirrors the property file structure exactly. Spring Boot's
+ * relaxed binding handles kebab-case to camelCase conversion automatically.
+ * 
+ * <p>Properties should be set in airavata.properties. Runtime validation
+ * is performed by PropertiesValidationConfig for fail-fast behavior.
  */
 @ConfigurationProperties(prefix = "")
-public class AiravataServerProperties {
-
+public record AiravataServerProperties(
+    Database database,
+    Security security,
+    RabbitMQ rabbitmq,
+    Kafka kafka,
+    Zookeeper zookeeper,
+    Helix helix,
+    Flyway flyway,
+    Services services,
+    Airavata airavata
+) {
     // ==================== Database Configuration ====================
-    @NestedConfigurationProperty
-    public Database database = new Database();
+    public record Database(
+        Registry registry,
+        Catalog catalog,
+        Vault vault,
+        Profile profile,
+        Sharing sharing,
+        Replica replica,
+        Workflow workflow,
+        Research research,
+        String validationQuery
+    ) {
+        public record Registry(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
 
-    public static class Database {
-        @NestedConfigurationProperty
-        public Registry registry = new Registry();
-
-        @NestedConfigurationProperty
-        public Catalog catalog = new Catalog();
-
-        @NestedConfigurationProperty
-        public Vault vault = new Vault();
-
-        @NestedConfigurationProperty
-        public Profile profile = new Profile();
-
-        @NestedConfigurationProperty
-        public Sharing sharing = new Sharing();
-
-        @NestedConfigurationProperty
-        public Replica replica = new Replica();
-
-        @NestedConfigurationProperty
-        public Workflow workflow = new Workflow();
-
-        @NestedConfigurationProperty
-        public Research research = new Research();
-
-        public String validationQuery = "SELECT 1";
-
-        public static class Registry {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
+        public record Catalog(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery,
+            Hikari hikari
+        ) {
+            public record Hikari(
+                long leakDetectionThreshold,
+                String poolName
+            ) {}
         }
 
-        public static class Catalog {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
+        public record Vault(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
 
-            @NestedConfigurationProperty
-            public Hikari hikari = new Hikari();
+        public record Profile(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
 
-            public static class Hikari {
-                public long leakDetectionThreshold = 20000;
-                public String poolName = "AppCatalogPool";
-            }
-        }
+        public record Sharing(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
 
-        public static class Vault {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
-        }
+        public record Replica(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
 
-        public static class Profile {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
-        }
+        public record Workflow(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
 
-        public static class Sharing {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
-        }
-
-        public static class Replica {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
-        }
-
-        public static class Workflow {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
-        }
-
-        public static class Research {
-            public String driver = "org.mariadb.jdbc.Driver";
-            public String url;
-            public String user;
-            public String password;
-            public String validationQuery = "SELECT 1";
-        }
+        public record Research(
+            String driver,
+            String url,
+            String user,
+            String password,
+            String validationQuery
+        ) {}
     }
 
     // ==================== Security Configuration ====================
-    public Security security = new Security();
-
-    public static class Security {
-        public Tls tls = new Tls();
-        public AuthzCache authzCache = new AuthzCache();
-        public Iam iam = new Iam();
-        public Vault vault = new Vault();
-
-        public static class Tls {
-            public boolean enabled = false;
-            public int clientTimeout = 10000;
-            public Keystore keystore = new Keystore();
+    public record Security(
+        Tls tls,
+        AuthzCache authzCache,
+        Authentication authentication,
+        Iam iam,
+        Vault vault
+    ) {
+        public record Tls(
+            boolean enabled,
+            int clientTimeout,
+            Keystore keystore
+        ) {
+            public record Keystore(
+                String path,
+                String password
+            ) {}
         }
 
-        public static class Keystore {
-            public String path = "keystores/airavata.p12";
-            public String password = "airavata";
+        public record AuthzCache(boolean enabled) {}
+
+        public record Authentication(boolean enabled) {}
+
+        public record Iam(
+            boolean enabled,
+            String serverUrl,
+            String oauthClientId,
+            String oauthClientSecret,
+            Super superAdmin
+        ) {
+            public record Super(
+                String username,
+                String password
+            ) {}
         }
 
-        public static class AuthzCache {
-            public boolean enabled = true;
-        }
-
-        public static class Iam {
-            public String serverUrl;
-            public String oauthClientId;
-            public String oauthClientSecret;
-
-            @NestedConfigurationProperty
-            public Super superAdmin = new Super();
-
-            public static class Super {
-                public String username = "admin";
-                public String password = "admin";
-            }
-        }
-
-        public static class Vault {
-            public Keystore keystore = new Keystore();
-
-            public static class Keystore {
-                public String url;
-                public String password;
-                public String alias;
-            }
+        public record Vault(Keystore keystore) {
+            public record Keystore(
+                String url,
+                String password,
+                String alias
+            ) {}
         }
     }
 
     // ==================== Messaging Configuration ====================
-    public RabbitMQ rabbitmq = new RabbitMQ();
+    public record RabbitMQ(
+        boolean enabled,
+        String brokerUrl,
+        String experimentExchangeName,
+        String experimentLaunchQueueName,
+        String processExchangeName,
+        String statusExchangeName,
+        String dbEventExchangeName,
+        boolean durableQueue,
+        int prefetchCount
+    ) {}
 
-    public static class RabbitMQ {
-        public String brokerUrl = "amqp://guest:guest@localhost:5672/develop";
-        public String experimentExchangeName = "experiment_exchange";
-        public String experimentLaunchQueueName = "experiment.launch.queue";
-        public String processExchangeName = "process_exchange";
-        public String statusExchangeName = "status_exchange";
-        public String dbEventExchangeName = "dbevent_exchange";
-        public boolean durableQueue = false;
-        public int prefetchCount = 200;
-        public boolean enabled = false;
-    }
-
-    public Kafka kafka = new Kafka();
-
-    public static class Kafka {
-        public String brokerUrl = "localhost:9092";
-    }
+    public record Kafka(
+        boolean enabled,
+        String brokerUrl
+    ) {}
 
     // ==================== Infrastructure Configuration ====================
-    public Zookeeper zookeeper = new Zookeeper();
-
-    public static class Zookeeper {
-        public Server server = new Server();
-        public boolean embedded = false;
-
-        public static class Server {
-            public String connection = "localhost:2181";
-        }
+    public record Zookeeper(
+        Server server,
+        boolean embedded
+    ) {
+        public record Server(String connection) {}
     }
 
     // ==================== Helix Configuration ====================
-    @NestedConfigurationProperty
-    public Helix helix = new Helix();
-
-    public static class Helix {
-        public Cluster cluster = new Cluster();
-        public Controller controller = new Controller();
-        public Participant participant = new Participant();
-
-        public static class Cluster {
-            public String name = "AiravataCluster";
-        }
-
-        public static class Controller {
-            public String name = "AiravataController";
-        }
-
-        public static class Participant {
-            public String name = "AiravataParticipant";
-        }
+    public record Helix(
+        Cluster cluster,
+        Controller controller,
+        Participant participant
+    ) {
+        public record Cluster(String name) {}
+        public record Controller(String name) {}
+        public record Participant(String name) {}
     }
 
     // ==================== Flyway Configuration ====================
-    @NestedConfigurationProperty
-    public Flyway flyway = new Flyway();
-
-    public static class Flyway {
-        public boolean enabled = false;
-    }
+    public record Flyway(boolean enabled) {}
 
     // ==================== Services Configuration ====================
-    public Services services = new Services();
+    public record Services(
+        Thrift thrift,
+        Rest rest,
+        Api api,
+        Participant participant,
+        Controller controller,
+        PreWm prewm,
+        PostWm postwm,
+        Parser parser,
+        Scheduler scheduler,
+        Monitor monitor,
+        Sharing sharing,
+        Registry registry,
+        Background background,
+        Research research,
+        Agent agent,
+        Fileserver fileserver,
+        Telemetry telemetry,
+        Dbus dbus
+    ) {
+        public record Thrift(
+            boolean enabled,
+            Server server
+        ) {
+            public record Server(int port) {}
+        }
 
-    public static class Services {
-        // Service enablement flags - both can be true to run in parallel
-        public Thrift thrift = new Thrift(); // Default: enabled
-        public Rest rest = new Rest(); // Default: disabled
+        public record Rest(
+            boolean enabled,
+            Server server
+        ) {
+            public record Server(int port) {}
+        }
 
-        public Api api = new Api();
-        public Participant participant = new Participant();
-        public Controller controller = new Controller();
-        public PreWm prewm = new PreWm();
-        public PostWm postwm = new PostWm();
-        public Parser parser = new Parser();
-        public Scheduler scheduler = new Scheduler();
-        public Monitor monitor = new Monitor();
-        public Sharing sharing = new Sharing();
-        public Registry registry = new Registry();
-        public Background background = new Background();
-        public Research research = new Research();
-        public Agent agent = new Agent();
-        public Fileserver fileserver = new Fileserver();
-        public Dbus dbus = new Dbus();
-
-        public static class Thrift {
-            public boolean enabled = true;
-            public Server server = new Server();
-
-            public static class Server {
-                public int port = 8930;
+        public record Api(Vault vault) {
+            public record Vault(Keystore keystore) {
+                public record Keystore(
+                    String url,
+                    String password,
+                    String alias
+                ) {}
             }
         }
 
-        public static class Rest {
-            public boolean enabled = false;
-            public Server server = new Server();
+        public record Participant(boolean enabled) {}
 
-            public static class Server {
-                public int port = 8082;
+        public record Controller(boolean enabled) {}
+
+        public record PreWm(
+            boolean enabled,
+            boolean loadBalanceClusters,
+            String name
+        ) {}
+
+        public record PostWm(
+            boolean enabled,
+            boolean loadBalanceClusters,
+            String name
+        ) {}
+
+        public record Parser(
+            boolean enabled,
+            boolean loadBalanceClusters,
+            String name,
+            String brokerConsumerGroup,
+            String topic,
+            String storageResourceId,
+            boolean deleteContainer,
+            double scanningInterval,
+            int scanningParallelJobs,
+            String enabledGateways,
+            int timeStepSeconds
+        ) {}
+
+        public record Scheduler(
+            boolean enabled,
+            Interpreter interpreter,
+            Rescheduler rescheduler,
+            double clusterScanningInterval,
+            double jobScanningInterval,
+            int clusterScanningParallelJobs,
+            int maximumReschedulerThreshold,
+            /** Simple class name for conditional matching - e.g. "DefaultComputeResourceSelectionPolicy" */
+            String selectionPolicy,
+            /** Simple class name for conditional matching - e.g. "ExponentialBackOffReScheduler" */
+            String reschedulerPolicy
+        ) {
+            public record Interpreter(boolean enabled) {}
+            public record Rescheduler(boolean enabled) {}
+        }
+
+        public record Monitor(
+            Email email,
+            Realtime realtime,
+            Compute compute
+        ) {
+            public record Email(
+                boolean enabled,
+                String address,
+                String folderName,
+                String host,
+                String password,
+                String storeProtocol,
+                int period,
+                int connectionRetryInterval,
+                int expiryMins
+            ) {}
+
+            public record Realtime(
+                boolean enabled,
+                String brokerConsumerGroup,
+                String brokerTopic
+            ) {}
+
+            public record Compute(
+                boolean enabled,
+                String brokerPublisherId,
+                String emailPublisherId,
+                String realtimePublisherId,
+                String brokerTopic,
+                String brokerConsumerGroup,
+                Notification notification,
+                String statusPublishEndpoint,
+                String validators,
+                int clusterCheckTimeWindow,
+                int clusterCheckRepeatTime
+            ) {
+                public record Notification(String emailIds) {}
             }
         }
 
-        public static class Research {
-            public boolean enabled = true;
-            public Grpc grpc = new Grpc();
-            public Hub hub = new Hub();
-            public Portal portal = new Portal();
-            public Server server = new Server();
-            public Spring spring = new Spring();
-            public Springdoc springdoc = new Springdoc();
+        public record Sharing(boolean enabled) {}
 
-            @NestedConfigurationProperty
-            public Openid openid = new Openid();
+        public record Registry(boolean enabled) {}
 
-            public static class Openid {
-                public String url = "http://localhost:18080/realms/default";
-            }
+        public record Background(Controller controller) {
+            public record Controller(boolean enabled) {}
+        }
 
-            public static class Grpc {
-                public int port = 19908;
-                public String keepaliveTime = "30s";
-                public String keepaliveTimeout = "5s";
-                public boolean permitKeepaliveWithoutCalls = true;
-            }
+        public record Research(
+            boolean enabled,
+            Grpc grpc,
+            Hub hub,
+            Portal portal,
+            Server server,
+            Spring spring,
+            Springdoc springdoc,
+            Openid openid
+        ) {
+            public record Grpc(
+                int port,
+                String keepaliveTime,
+                String keepaliveTimeout,
+                boolean permitKeepaliveWithoutCalls
+            ) {}
 
-            public static class Hub {
-                public String adminApiKey = "JUPYTER_ADMIN_API_KEY";
-                public int limit = 10;
-                public String url = "http://localhost:20000";
-            }
+            public record Hub(
+                String adminApiKey,
+                int limit,
+                String url
+            ) {}
 
-            public static class Portal {
-                public String devUrl = "http://localhost:5173";
-                public String url = "http://localhost:5173";
-            }
+            public record Portal(
+                String devUrl,
+                String url
+            ) {}
 
-            public static class Server {
-                public int port = 18889;
-            }
+            public record Server(int port) {}
 
-            public static class Spring {
-                public Servlet servlet = new Servlet();
-
-                public static class Servlet {
-                    public Multipart multipart = new Multipart();
-
-                    public static class Multipart {
-                        public String maxFileSize = "200MB";
-                        public String maxRequestSize = "200MB";
-                    }
+            public record Spring(Servlet servlet) {
+                public record Servlet(Multipart multipart) {
+                    public record Multipart(
+                        String maxFileSize,
+                        String maxRequestSize
+                    ) {}
                 }
             }
 
-            public static class Springdoc {
-                public ApiDocs apiDocs = new ApiDocs();
-                public SwaggerUi swaggerUi = new SwaggerUi();
-
-                public static class ApiDocs {
-                    public boolean enabled = true;
-                }
-
-                public static class SwaggerUi {
-                    public String docExpansion = "none";
-                    public String operationsSorter = "alpha";
-                    public String path = "/swagger-ui.html";
-                    public String tagsSorter = "alpha";
-                    public Oauth oauth = new Oauth();
-
-                    public static class Oauth {
-                        public String clientId = "data-catalog-portal";
-                        public boolean usePkceWithAuthorizationCodeGrant = true;
-                    }
-                }
-            }
-        }
-
-        public static class Agent {
-            public boolean enabled = true;
-
-            @NestedConfigurationProperty
-            public Appinterface appinterface = new Appinterface();
-
-            public Grpc grpc = new Grpc();
-            public Server server = new Server();
-            public Spring spring = new Spring();
-            public Storage storage = new Storage();
-            public Tunnelserver tunnelserver = new Tunnelserver();
-
-            public static class Appinterface {
-                public String id = "AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6";
-            }
-
-            public static class Grpc {
-                public long maxInboundMessageSize = 20971520;
-                public int port = 19900;
-            }
-
-            public static class Server {
-                public int port = 18880;
-            }
-
-            public static class Spring {
-                public Jpa jpa = new Jpa();
-                public Servlet servlet = new Servlet();
-
-                public static class Jpa {
-                    public Hibernate hibernate = new Hibernate();
-                    public boolean openInView = false;
-
-                    public static class Hibernate {
-                        public String ddlAuto = "validate";
-                    }
-                }
-
-                public static class Servlet {
-                    public Multipart multipart = new Multipart();
-
-                    public static class Multipart {
-                        public String maxFileSize = "200MB";
-                        public String maxRequestSize = "200MB";
-                    }
+            public record Springdoc(
+                ApiDocs apiDocs,
+                SwaggerUi swaggerUi
+            ) {
+                public record ApiDocs(boolean enabled) {}
+                public record SwaggerUi(
+                    String docExpansion,
+                    String operationsSorter,
+                    String path,
+                    String tagsSorter,
+                    Oauth oauth
+                ) {
+                    public record Oauth(
+                        String clientId,
+                        boolean usePkceWithAuthorizationCodeGrant
+                    ) {}
                 }
             }
 
-            public static class Storage {
-                public String id;
-                public String path = "/tmp";
-            }
-
-            public static class Tunnelserver {
-                public String url = "http://localhost:8000";
-                public String host = "localhost";
-                public int port = 17000;
-                public String token = "airavata";
-            }
+            public record Openid(String url) {}
         }
 
-        public static class Fileserver {
-            public boolean enabled = true;
-            public Server server = new Server();
-            public Spring spring = new Spring();
+        public record Agent(
+            boolean enabled,
+            Appinterface appinterface,
+            Grpc grpc,
+            Server server,
+            Spring spring,
+            Storage storage,
+            Tunnelserver tunnelserver
+        ) {
+            public record Appinterface(String id) {}
 
-            public static class Server {
-                public int port = 8050;
-            }
+            public record Grpc(
+                long maxInboundMessageSize,
+                int port
+            ) {}
 
-            public static class Spring {
-                public Servlet servlet = new Servlet();
+            public record Server(int port) {}
 
-                public static class Servlet {
-                    public Multipart multipart = new Multipart();
+            public record Spring(
+                Jpa jpa,
+                Servlet servlet
+            ) {
+                public record Jpa(
+                    Hibernate hibernate,
+                    boolean openInView
+                ) {
+                    public record Hibernate(String ddlAuto) {}
+                }
 
-                    public static class Multipart {
-                        public String maxFileSize = "10MB";
-                        public String maxRequestSize = "10MB";
-                    }
+                public record Servlet(Multipart multipart) {
+                    public record Multipart(
+                        String maxFileSize,
+                        String maxRequestSize
+                    ) {}
                 }
             }
+
+            public record Storage(
+                String id,
+                String path
+            ) {}
+
+            public record Tunnelserver(
+                String url,
+                String host,
+                int port,
+                String token
+            ) {}
         }
 
-        public Telemetry telemetry = new Telemetry();
+        public record Fileserver(
+            boolean enabled,
+            Server server,
+            Spring spring
+        ) {
+            public record Server(int port) {}
 
-        public static class Telemetry {
-            public boolean enabled = true;
-            public Server server = new Server();
-
-            public static class Server {
-                public int port = 9090;
-            }
-        }
-
-        public static class Api {
-            // Note: Api service is controlled by services.thrift.enabled, not a separate services.api.enabled
-            // All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing Registry) are now
-            // multiplexed on the unified port (services.thrift.server.port). Individual service toggles and ports
-            // removed.
-            public Vault vault = new Vault();
-
-            public static class Vault {
-                public Keystore keystore = new Keystore();
-                // Note: enabled and port removed - service is multiplexed on unified port
-
-                public static class Keystore {
-                    public String url;
-                    public String password;
-                    public String alias;
-                }
-            }
-        }
-
-        public static class Dbus {
-            public boolean enabled = true;
-            public String classpath = "org.apache.airavata.main.DBEventManagerRunner";
-        }
-
-        public static class Participant {
-            public boolean enabled = true; // services.participant.enabled
-        }
-
-        public static class Controller {
-            public boolean enabled = true;
-        }
-
-        public static class PreWm {
-            public boolean enabled = true;
-            public boolean loadBalanceClusters = false;
-            public String name = "AiravataPreWM";
-        }
-
-        public static class PostWm {
-            public boolean enabled = true;
-            public boolean loadBalanceClusters = false;
-            public String name = "AiravataPostWM";
-        }
-
-        public static class Parser {
-            public boolean enabled = false;
-            public boolean loadBalanceClusters = false;
-            public String name = "AiravataParserWM";
-            public String brokerConsumerGroup = "ParsingConsumer";
-            public String topic = "parsing-data";
-            public String storageResourceId = "CHANGE_ME";
-            public boolean deleteContainer = true;
-            public double scanningInterval = 3600;
-            public int scanningParallelJobs = 1;
-            public String enabledGateways = "";
-            public int timeStepSeconds = 5;
-        }
-
-        public static class Scheduler {
-            public boolean enabled = false;
-            public Interpreter interpreter = new Interpreter();
-            public Rescheduler rescheduler = new Rescheduler();
-            public double clusterScanningInterval = 1800000;
-            public double jobScanningInterval = 1800000;
-            public int clusterScanningParallelJobs = 1;
-            public int maximumReschedulerThreshold = 5;
-            public String computeResourceSelectionPolicyClass =
-                    "org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection.MultipleComputeResourcePolicy";
-            public String computeResourceReschedulerPolicyClass =
-                    "org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ExponentialBackOffReScheduler";
-
-            public static class Interpreter {
-                public boolean enabled = true;
-            }
-
-            public static class Rescheduler {
-                public boolean enabled = true;
-            }
-        }
-
-        public static class Monitor {
-            public Email email = new Email();
-            public Realtime realtime = new Realtime();
-            public Compute compute = new Compute();
-
-            public static class Email {
-                public String address;
-                public String folderName = "INBOX";
-                public String host;
-                public String password;
-                public String storeProtocol = "imaps";
-                public int period = 10000;
-                public int connectionRetryInterval = 30000; // 30 seconds
-                public boolean enabled = true;
-                public int expiryMins = 60;
-            }
-
-            public static class Realtime {
-                public boolean enabled = true;
-                public String brokerConsumerGroup = "monitor";
-                public String brokerTopic = "helix-airavata-mq";
-            }
-
-            public static class Compute {
-                public String brokerPublisherId = "AiravataMonitorPublisher";
-                public String emailPublisherId = "EmailBasedProducer";
-                public String realtimePublisherId = "RealtimeProducer";
-                public String brokerTopic = "monitoring-data";
-                public String brokerConsumerGroup = "MonitoringConsumer";
-                public Notification notification = new Notification();
-                public String statusPublishEndpoint;
-                public String validators;
-                public boolean enabled = true; // services.monitor.compute.enabled
-                public int clusterCheckTimeWindow =
-                        300; // time window to skip cluster checks after submission (seconds)
-                public int clusterCheckRepeatTime = 18000; // how often to run cluster status checks (seconds)
-
-                public static class Notification {
-                    public String emailIds = "";
+            public record Spring(Servlet servlet) {
+                public record Servlet(Multipart multipart) {
+                    public record Multipart(
+                        String maxFileSize,
+                        String maxRequestSize
+                    ) {}
                 }
             }
         }
 
-        public static class Sharing {
-            // Note: enabled and serverPort removed - service is multiplexed on unified port
-            // (services.thrift.server.port)
+        public record Telemetry(
+            boolean enabled,
+            Server server
+        ) {
+            public record Server(int port) {}
         }
 
-        public static class Registry {
-            // Note: enabled and Server.port removed - service is multiplexed on unified port
-            // (services.thrift.server.port)
-        }
-
-        public static class Background {
-            public Controller controller = new Controller();
-
-            public static class Controller {
-                public boolean enabled = true;
-            }
-        }
+        public record Dbus(
+            boolean enabled,
+            String classpath
+        ) {}
     }
 
     // ==================== General Settings Configuration ====================
-    @NestedConfigurationProperty
-    public Airavata airavata = new Airavata();
-
-    public static class Airavata {
-        /**
-         * Airavata home directory. Config directory is always {home}/conf.
-         * Binds from property: airavata.home
-         */
-        public String home;
-
-        /**
-         * Default gateway ID.
-         * Binds from property: airavata.default-gateway
-         */
-        public String defaultGateway = "default";
-
-        /**
-         * Enable validation.
-         * Binds from property: airavata.validation-enabled
-         */
-        public boolean validationEnabled = true;
-
-        public Sharing sharing = new Sharing();
-        // NOTE: super-tenant gateway id has been merged into airavata.default-gateway.
-        /**
-         * Size for in-memory authz cache.
-         * Binds from property: airavata.in-memory-cache-size
-         */
-        public int inMemoryCacheSize = 1000;
-
-        /**
-         * Local data location for staging.
-         * Binds from property: airavata.local-data-location
-         */
-        public String localDataLocation = "";
-
-        /**
-         * Max archive size (bytes).
-         * Binds from property: airavata.max-archive-size
-         */
-        public long maxArchiveSize = 0L;
-
-        /**
-         * Streaming transfer settings.
-         * Binds from property: airavata.streaming-transfer.*
-         */
-        public StreamingTransfer streamingTransfer = new StreamingTransfer();
-
-        public static class Sharing {
-            public boolean enabled = true;
-        }
-
-        public static class StreamingTransfer {
-            public boolean enabled = false;
-        }
+    public record Airavata(
+        String home,
+        String defaultGateway,
+        boolean validationEnabled,
+        Sharing sharing,
+        int inMemoryCacheSize,
+        String localDataLocation,
+        long maxArchiveSize,
+        StreamingTransfer streamingTransfer
+    ) {
+        public record Sharing(boolean enabled) {}
+        public record StreamingTransfer(boolean enabled) {}
     }
 }

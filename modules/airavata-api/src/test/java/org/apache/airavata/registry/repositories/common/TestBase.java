@@ -1,50 +1,116 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.registry.repositories.common;
 
-import org.apache.airavata.config.JpaConfig;
-import org.apache.airavata.config.TestcontainersConfig;
+import org.apache.airavata.config.IntegrationTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Base class for repository tests using Spring Boot testing framework.
- * Uses Testcontainers MariaDB databases for testing.
- * All tests use @Transactional for automatic rollback.
+ * Base class for repository integration tests using Spring Boot.
+ * 
+ * <p>This base class provides:
+ * <ul>
+ *   <li>Automatic property loading via {@link TestPropertyInitializer}</li>
+ *   <li>JPA configuration with Testcontainers MariaDB</li>
+ *   <li>Transaction rollback after each test via {@link Transactional}</li>
+ *   <li>Disabled non-essential services (security, monitoring, etc.)</li>
+ * </ul>
+ * 
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+ * public class MyRepositoryTest extends TestBase {
+ *     
+ *     private final MyRepository repository;
+ *     
+ *     public MyRepositoryTest(MyRepository repository) {
+ *         this.repository = repository;
+ *     }
+ *     
+ *     @Test
+ *     void testSomething() {
+ *         // test code
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * <h3>Property Override</h3>
+ * <p>Properties from airavata.properties are loaded with low priority.
+ * To override for specific tests, use:
+ * <pre>
+ * {@code @TestPropertySource(properties = "my.property=value")}
+ * </pre>
+ * 
+ * @see IntegrationTestConfiguration
+ * @see TestPropertyInitializer
  */
 @SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class},
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "flyway.enabled=false"
-        })
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+    classes = IntegrationTestConfiguration.class,
+    properties = {
+        // Allow bean overriding for test configurations
+        "spring.main.allow-bean-definition-overriding=true",
+        
+        // Disable JPA auto-configuration (we configure manually)
+        "spring.autoconfigure.exclude=" +
+            "org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration," +
+            "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration," +
+            "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
+        
+        // Disable Flyway (Testcontainers handles schema)
+        "flyway.enabled=false",
+        
+        // Enable minimal API service for JpaConfig conditional
+        "services.thrift.enabled=true",
+        "services.rest.enabled=false",
+        
+        // Disable all optional services
+        "services.scheduler.enabled=false",
+        "services.scheduler.rescheduler.enabled=false",
+        "services.scheduler.interpreter.enabled=false",
+        "services.controller.enabled=false",
+        "services.participant.enabled=false",
+        "services.monitor.compute.enabled=false",
+        "services.monitor.email.enabled=false",
+        "services.monitor.realtime.enabled=false",
+        
+        // Disable security components
+        "security.iam.enabled=false",
+        "security.authzCache.enabled=false",
+        
+        // Disable messaging
+        "kafka.enabled=false",
+        "rabbitmq.enabled=false"
+    }
+)
 @ActiveProfiles("test")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(
-        org.apache.airavata.config.AiravataServerProperties.class)
+@org.springframework.test.context.TestPropertySource(locations = "classpath:conf/airavata.properties")
 @Transactional
-public class TestBase {
+public abstract class TestBase {
 
+    /**
+     * Database type enum for backward compatibility.
+     * With Testcontainers, all databases are auto-configured.
+     */
     public enum Database {
         APP_CATALOG,
         EXP_CATALOG,
@@ -52,29 +118,21 @@ public class TestBase {
         WORKFLOW_CATALOG
     }
 
-    private Database[] databases;
-
     /**
-     * No-arg constructor for tests that use @TestConstructor autowiring.
-     * Database setup is handled by Spring Boot configuration, so this parameter is optional.
+     * Default constructor for tests using @TestConstructor autowiring.
      */
-    public TestBase() {
-        this.databases = new Database[0];
+    protected TestBase() {
+        // No initialization needed - Spring handles everything
     }
 
     /**
-     * Constructor with database specification (for backward compatibility).
-     * Database setup is now handled by Spring Boot configuration via airavata.properties.
-     * This parameter is kept for compatibility but is not actively used.
+     * Constructor with database specification (backward compatibility).
+     * 
+     * @param databases the databases needed for this test (ignored - all are available)
+     * @deprecated Use default constructor; all databases are auto-configured
      */
-    public TestBase(Database... databases) {
-        if (databases == null) {
-            throw new IllegalArgumentException("Databases can not be null");
-        }
-        this.databases = databases;
+    @Deprecated
+    protected TestBase(Database... databases) {
+        // Databases are now auto-configured via TestcontainersConfig
     }
-
-    // Note: Database setup is now handled by TestcontainersConfig
-    // Testcontainers MariaDB databases are configured automatically
-    // Flyway migrations are applied automatically on container startup
 }

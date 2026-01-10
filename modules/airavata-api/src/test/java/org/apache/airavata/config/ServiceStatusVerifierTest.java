@@ -20,18 +20,16 @@
 package org.apache.airavata.config;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * Unit tests for ServiceStatusVerifier.
- * These tests verify the verifier logic with mock ApplicationContext.
+ * Unit tests for ServiceStatusVerifier using mocked properties.
+ * Since AiravataServerProperties is an immutable record, we use Mockito to mock it.
  */
-@org.springframework.boot.context.properties.EnableConfigurationProperties(
-        org.apache.airavata.config.AiravataServerProperties.class)
 public class ServiceStatusVerifierTest {
 
     private ApplicationContext applicationContext;
@@ -40,72 +38,136 @@ public class ServiceStatusVerifierTest {
 
     @BeforeEach
     public void setUp() {
+        applicationContext = mock(ApplicationContext.class);
+        properties = createMockProperties(true, true, true, true, true, true, true, true, true, true, true, true, true);
+        verifier = new ServiceStatusVerifier(applicationContext, properties);
+    }
 
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-        ctx.register(AiravataServerProperties.class);
-        ctx.refresh();
-
-        this.applicationContext = ctx;
-        this.properties = ctx.getBean(AiravataServerProperties.class);
-        this.verifier = new ServiceStatusVerifier(applicationContext, properties);
+    private AiravataServerProperties createMockProperties(
+            boolean thriftEnabled, boolean restEnabled, 
+            boolean controllerEnabled, boolean participantEnabled,
+            boolean prewmEnabled, boolean postwmEnabled, boolean parserEnabled,
+            boolean realtimeEnabled, boolean emailEnabled, boolean computeEnabled,
+            boolean researchEnabled, boolean agentEnabled, boolean fileserverEnabled) {
+        
+        // Mock the nested records
+        var thrift = mock(AiravataServerProperties.Services.Thrift.class);
+        when(thrift.enabled()).thenReturn(thriftEnabled);
+        
+        var rest = mock(AiravataServerProperties.Services.Rest.class);
+        when(rest.enabled()).thenReturn(restEnabled);
+        
+        var controller = mock(AiravataServerProperties.Services.Controller.class);
+        when(controller.enabled()).thenReturn(controllerEnabled);
+        
+        var participant = mock(AiravataServerProperties.Services.Participant.class);
+        when(participant.enabled()).thenReturn(participantEnabled);
+        
+        var prewm = mock(AiravataServerProperties.Services.PreWm.class);
+        when(prewm.enabled()).thenReturn(prewmEnabled);
+        
+        var postwm = mock(AiravataServerProperties.Services.PostWm.class);
+        when(postwm.enabled()).thenReturn(postwmEnabled);
+        
+        var parser = mock(AiravataServerProperties.Services.Parser.class);
+        when(parser.enabled()).thenReturn(parserEnabled);
+        
+        var realtime = mock(AiravataServerProperties.Services.Monitor.Realtime.class);
+        when(realtime.enabled()).thenReturn(realtimeEnabled);
+        
+        var email = mock(AiravataServerProperties.Services.Monitor.Email.class);
+        when(email.enabled()).thenReturn(emailEnabled);
+        
+        var compute = mock(AiravataServerProperties.Services.Monitor.Compute.class);
+        when(compute.enabled()).thenReturn(computeEnabled);
+        
+        var monitor = mock(AiravataServerProperties.Services.Monitor.class);
+        when(monitor.realtime()).thenReturn(realtime);
+        when(monitor.email()).thenReturn(email);
+        when(monitor.compute()).thenReturn(compute);
+        
+        var research = mock(AiravataServerProperties.Services.Research.class);
+        when(research.enabled()).thenReturn(researchEnabled);
+        
+        var agent = mock(AiravataServerProperties.Services.Agent.class);
+        when(agent.enabled()).thenReturn(agentEnabled);
+        
+        var fileserver = mock(AiravataServerProperties.Services.Fileserver.class);
+        when(fileserver.enabled()).thenReturn(fileserverEnabled);
+        
+        var dbus = mock(AiravataServerProperties.Services.Dbus.class);
+        when(dbus.enabled()).thenReturn(false);
+        
+        var services = mock(AiravataServerProperties.Services.class);
+        when(services.thrift()).thenReturn(thrift);
+        when(services.rest()).thenReturn(rest);
+        when(services.controller()).thenReturn(controller);
+        when(services.participant()).thenReturn(participant);
+        when(services.prewm()).thenReturn(prewm);
+        when(services.postwm()).thenReturn(postwm);
+        when(services.parser()).thenReturn(parser);
+        when(services.monitor()).thenReturn(monitor);
+        when(services.research()).thenReturn(research);
+        when(services.agent()).thenReturn(agent);
+        when(services.fileserver()).thenReturn(fileserver);
+        when(services.dbus()).thenReturn(dbus);
+        
+        var props = mock(AiravataServerProperties.class);
+        when(props.services()).thenReturn(services);
+        
+        return props;
     }
 
     @Test
     public void testIsServiceEnabled_ThriftApi() {
+        var enabledProps = createMockProperties(true, true, true, true, true, true, true, true, true, true, true, true, true);
+        var enabledVerifier = new ServiceStatusVerifier(applicationContext, enabledProps);
+        assertTrue(enabledVerifier.isServiceEnabled("thrift-api"));
 
-        properties.services.thrift.enabled = true;
-        assertTrue(verifier.isServiceEnabled("thrift-api"));
-
-        properties.services.thrift.enabled = false;
-        assertFalse(verifier.isServiceEnabled("thrift-api"));
+        var disabledProps = createMockProperties(false, true, true, true, true, true, true, true, true, true, true, true, true);
+        var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
+        assertFalse(disabledVerifier.isServiceEnabled("thrift-api"));
     }
 
     @Test
     public void testIsServiceEnabled_RestApi() {
+        var disabledProps = createMockProperties(true, false, true, true, true, true, true, true, true, true, true, true, true);
+        var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
+        assertFalse(disabledVerifier.isServiceEnabled("rest-api"));
 
-        properties.services.rest.enabled = false;
-        assertFalse(verifier.isServiceEnabled("rest-api"));
-
-        properties.services.rest.enabled = true;
-        assertTrue(verifier.isServiceEnabled("rest-api"));
+        var enabledProps = createMockProperties(true, true, true, true, true, true, true, true, true, true, true, true, true);
+        var enabledVerifier = new ServiceStatusVerifier(applicationContext, enabledProps);
+        assertTrue(enabledVerifier.isServiceEnabled("rest-api"));
     }
 
     @Test
     public void testIsServiceEnabled_HelixController() {
-        properties.services.controller.enabled = true;
         assertTrue(verifier.isServiceEnabled("helix-controller"));
 
-        properties.services.controller.enabled = false;
-        assertFalse(verifier.isServiceEnabled("helix-controller"));
+        var disabledProps = createMockProperties(true, true, false, true, true, true, true, true, true, true, true, true, true);
+        var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
+        assertFalse(disabledVerifier.isServiceEnabled("helix-controller"));
     }
 
     @Test
     public void testIsServiceEnabled_HelixParticipant() {
-        properties.services.participant.enabled = true;
         assertTrue(verifier.isServiceEnabled("helix-participant"));
 
-        properties.services.participant.enabled = false;
-        assertFalse(verifier.isServiceEnabled("helix-participant"));
+        var disabledProps = createMockProperties(true, true, true, false, true, true, true, true, true, true, true, true, true);
+        var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
+        assertFalse(disabledVerifier.isServiceEnabled("helix-participant"));
     }
 
     @Test
     public void testIsServiceEnabled_WorkflowManagers() {
-        properties.services.prewm.enabled = true;
         assertTrue(verifier.isServiceEnabled("pre-workflow-manager"));
-
-        properties.services.postwm.enabled = true;
         assertTrue(verifier.isServiceEnabled("post-workflow-manager"));
-
-        properties.services.parser.enabled = true;
         assertTrue(verifier.isServiceEnabled("parser-workflow-manager"));
     }
 
     @Test
     public void testIsServiceEnabled_Monitors() {
-        properties.services.monitor.realtime.enabled = true;
         assertTrue(verifier.isServiceEnabled("realtime-monitor"));
-
-        properties.services.monitor.email.enabled = true;
         assertTrue(verifier.isServiceEnabled("email-monitor"));
     }
 
@@ -116,17 +178,15 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testIsServiceRunning() {
-
-        properties.services.thrift.enabled = true;
         assertTrue(verifier.isServiceRunning("thrift-api"));
 
-        properties.services.thrift.enabled = false;
-        assertFalse(verifier.isServiceRunning("thrift-api"));
+        var disabledProps = createMockProperties(false, true, true, true, true, true, true, true, true, true, true, true, true);
+        var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
+        assertFalse(disabledVerifier.isServiceRunning("thrift-api"));
     }
 
     @Test
     public void testIsPortListening_UnusedPort() {
-
         assertFalse(verifier.isPortListening(65534));
     }
 
@@ -142,9 +202,6 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testVerifyServicesRunning() {
-        properties.services.thrift.enabled = true;
-        properties.services.rest.enabled = true;
-
         var result = verifier.verifyServicesRunning("thrift-api", "rest-api");
         assertTrue(result.isSuccess());
         assertEquals(2, result.getSuccessfulServices().size());
@@ -152,20 +209,20 @@ public class ServiceStatusVerifierTest {
 
     @Test
     public void testVerifyServicesNotRunning() {
-        properties.services.thrift.enabled = false;
-        properties.services.rest.enabled = false;
+        var disabledProps = createMockProperties(false, false, true, true, true, true, true, true, true, true, true, true, true);
+        var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
 
-        var result = verifier.verifyServicesNotRunning("thrift-api", "rest-api");
+        var result = disabledVerifier.verifyServicesNotRunning("thrift-api", "rest-api");
         assertTrue(result.isSuccess());
         assertEquals(2, result.getSuccessfulServices().size());
     }
 
     @Test
     public void testVerifyServicesRunning_WithFailures() {
-        properties.services.thrift.enabled = true;
-        properties.services.rest.enabled = false; // This one is disabled
+        var mixedProps = createMockProperties(true, false, true, true, true, true, true, true, true, true, true, true, true);
+        var mixedVerifier = new ServiceStatusVerifier(applicationContext, mixedProps);
 
-        var result = verifier.verifyServicesRunning("thrift-api", "rest-api");
+        var result = mixedVerifier.verifyServicesRunning("thrift-api", "rest-api");
         assertFalse(result.isSuccess());
         assertEquals(1, result.getSuccessfulServices().size());
         assertEquals(1, result.getFailedServices().size());

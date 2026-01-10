@@ -74,6 +74,9 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "flyway.enabled=false",
+            "security.iam.enabled=false",
+            "security.manager.enabled=false",
+            "security.authzCache.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")

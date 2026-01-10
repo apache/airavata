@@ -201,7 +201,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                outputPath = props.airavata.localDataLocation;
+                outputPath = props.airavata().localDataLocation();
             }
         } catch (Exception e) {
             logger.warn("Could not get properties from ApplicationContext, using default local data path", e);
@@ -311,11 +311,11 @@ public abstract class JobSubmissionTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                if (props.services.monitor.realtime.enabled) {
+                if (props.services().monitor().realtime().enabled()) {
                     if (mapData.getPreJobCommands() == null) {
                         mapData.setPreJobCommands(new ArrayList<>());
                     }
-                    String endpoint = props.services.monitor.compute.statusPublishEndpoint;
+                    String endpoint = props.services().monitor().compute().statusPublishEndpoint();
                     mapData.getPreJobCommands()
                             .add(
                                     0,

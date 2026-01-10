@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 import net.schmizz.sshj.Config;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
@@ -109,23 +108,22 @@ public class PoolingSSHJClient extends SSHClient {
         /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
          * value form SSHD config file in order to tune the pool
          */
-        logger.info("Fetching max sessions for the connection of " + host);
+        logger.info("Fetching max sessions for the connection of {}", host);
         try (SFTPClient sftpClient = newClient.newSFTPClient()) {
             RemoteFile remoteFile = sftpClient.open("/etc/ssh/sshd_config");
             byte[] readContent = new byte[(int) remoteFile.length()];
             remoteFile.read(0, readContent, 0, readContent.length);
 
-            if (logger.isTraceEnabled()) {
-                logger.trace("SSHD config file content : " + new String(readContent));
-            }
-            String[] lines = new String(readContent).split("\n");
+            String content = new String(readContent, java.nio.charset.StandardCharsets.UTF_8);
+            logger.trace("SSHD config file content : {}", content);
+            String[] lines = content.split("\n");
 
             for (String line : lines) {
                 if (line.trim().startsWith("MaxSessions")) {
                     String[] splits = line.split(" ");
                     if (splits.length == 2) {
                         int sessionCount = Integer.parseInt(splits[1]);
-                        logger.info("Max session count is : " + sessionCount + " for " + host);
+                        logger.info("Max session count is : {} for {}", sessionCount, host);
                         setMaxSessionsForConnection(sessionCount);
                     }
                     break;
@@ -253,7 +251,7 @@ public class PoolingSSHJClient extends SSHClient {
                     .filter(entry -> ((entry.getValue().getSessionCount() == 0)
                             && (entry.getValue().getLastAccessedTime() + maxConnectionIdleTimeMS
                                     < AiravataUtils.getUniqueTimestamp().getTime())))
-                    .collect(Collectors.toList());
+                    .toList();
             entriesTobeRemoved.forEach(entry -> {
                 logger.info(
                         "Removing connection {} due to inactivity for host {}",

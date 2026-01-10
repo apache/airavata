@@ -72,13 +72,13 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private String getIamServerUrl() throws IamAdminServicesException {
         if (properties == null
-                || properties.security == null
-                || properties.security.iam == null
-                || properties.security.iam.serverUrl == null) {
+                || properties.security() == null
+                || properties.security().iam() == null
+                || properties.security().iam().serverUrl() == null) {
             throw new IamAdminServicesException(
                     "IAM server URL is not configured. Check airavata.properties for security.iam.server-url");
         }
-        return properties.security.iam.serverUrl;
+        return properties.security().iam().serverUrl();
     }
 
     private KeycloakRestClient getRestClient() throws IamAdminServicesException {
@@ -87,6 +87,20 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             restClient = new KeycloakRestClient(serverUrl, properties);
         }
         return restClient;
+    }
+
+    /**
+     * Obtain an admin access token for the specified realm using password credentials.
+     * This can be used to authenticate API calls to Keycloak.
+     *
+     * @param credentials Password credentials containing username and password
+     * @param realm The realm to authenticate against
+     * @return Access token string
+     * @throws IamAdminServicesException if authentication fails
+     */
+    public String getAdminAccessToken(PasswordCredential credentials, String realm) throws IamAdminServicesException {
+        KeycloakRestClient client = getRestClient();
+        return client.obtainAdminToken(realm, credentials);
     }
 
     @Override
@@ -274,33 +288,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                     client.createClient(gatewayDetails.getGatewayId(), pgaClient, adminToken);
             logger.info("Tenant Client configuration exited with code : " + httpResponse.getStatusCode());
 
-            // Add the manage-users and manage-clients roles to the service account
-            UserRepresentation serviceAccountUser =
-                    client.getServiceAccountUser(gatewayDetails.getGatewayId(), pgaClient.getClientId(), adminToken);
-            if (serviceAccountUser != null) {
-                String realmManagementClientId =
-                        getRealmManagementClientId(client, gatewayDetails.getGatewayId(), adminToken);
-                if (realmManagementClientId != null) {
-                    List<RoleRepresentation> availableRoles = client.getAvailableClientRoles(
-                            gatewayDetails.getGatewayId(),
-                            serviceAccountUser.getId(),
-                            realmManagementClientId,
-                            adminToken);
-                    List<RoleRepresentation> manageRoles = availableRoles.stream()
-                            .filter(r -> r.getName().equals("manage-users")
-                                    || r.getName().equals("manage-clients"))
-                            .collect(Collectors.toList());
-                    if (!manageRoles.isEmpty()) {
-                        client.addClientRolesToUser(
-                                gatewayDetails.getGatewayId(),
-                                serviceAccountUser.getId(),
-                                realmManagementClientId,
-                                manageRoles,
-                                adminToken);
-                    }
-                }
-            }
-
             if (httpResponse.getStatusCode() == HttpStatus.CREATED) {
                 List<ClientRepresentation> clients = client.findClientsByClientId(
                         gatewayDetails.getGatewayId(), pgaClient.getClientId(), adminToken);
@@ -310,6 +297,35 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                             client.getClientSecret(gatewayDetails.getGatewayId(), clientUUID, adminToken);
                     gatewayDetails.setOauthClientId(pgaClient.getClientId());
                     gatewayDetails.setOauthClientSecret(clientSecret.getValue());
+                    
+                    // Add the manage-users and manage-clients roles to the service account
+                    // Now that we have the client UUID, we can get the service account user
+                    UserRepresentation serviceAccountUser =
+                            client.getServiceAccountUser(gatewayDetails.getGatewayId(), clientUUID, adminToken);
+                    if (serviceAccountUser != null) {
+                        String realmManagementClientId =
+                                getRealmManagementClientId(client, gatewayDetails.getGatewayId(), adminToken);
+                        if (realmManagementClientId != null) {
+                            List<RoleRepresentation> availableRoles = client.getAvailableClientRoles(
+                                    gatewayDetails.getGatewayId(),
+                                    serviceAccountUser.getId(),
+                                    realmManagementClientId,
+                                    adminToken);
+                            List<RoleRepresentation> manageRoles = availableRoles.stream()
+                                    .filter(r -> r.getName().equals("manage-users")
+                                            || r.getName().equals("manage-clients"))
+                                    .collect(Collectors.toList());
+                            if (!manageRoles.isEmpty()) {
+                                client.addClientRolesToUser(
+                                        gatewayDetails.getGatewayId(),
+                                        serviceAccountUser.getId(),
+                                        realmManagementClientId,
+                                        manageRoles,
+                                        adminToken);
+                            }
+                        }
+                    }
+                    
                     return gatewayDetails;
                 } else {
                     logger.error("Created client not found after creation");

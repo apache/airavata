@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.monitor.email.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "services.monitor.email", name = "enabled", havingValue = "true")
 public class PBSEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(PBSEmailParser.class);
     public static final String BEGUN_EXECUTION = "Begun execution";

@@ -83,8 +83,8 @@ public class RestClientConfig {
      * Configure SSL for RestTemplate using Apache HttpClient 5.
      */
     private void configureSSL(RestTemplate restTemplate) throws Exception {
-        String trustStorePath = properties.security.tls.keystore.path;
-        String trustStorePassword = properties.security.tls.keystore.password;
+        String trustStorePath = properties.security().tls().keystore().path();
+        String trustStorePassword = properties.security().tls().keystore().password();
 
         SSLContext sslContext;
         

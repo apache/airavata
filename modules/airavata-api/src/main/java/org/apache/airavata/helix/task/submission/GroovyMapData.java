@@ -172,8 +172,7 @@ public class GroovyMapData {
                 try {
                     map.put(scriptTag.name(), field.get(this));
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    // ignore silently
+                    logger.debug("Could not access field: {}", field.getName(), e);
                 }
             }
         }
@@ -551,7 +550,7 @@ public class GroovyMapData {
                 try {
                     dataMap.put(field.getAnnotation(ScriptTag.class).name(), field.get(this));
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.debug("Could not access field: {}", field.getName(), e);
                 }
             }
         }

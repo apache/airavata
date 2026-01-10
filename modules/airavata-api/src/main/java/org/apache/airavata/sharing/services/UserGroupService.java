@@ -139,7 +139,7 @@ public class UserGroupService {
         predicates.add(cb.equal(sharingRoot.get("permissionTypeId"), permissionTypeId));
         predicates.add(cb.equal(groupRoot.get("groupCardinality"), GroupCardinality.MULTI_USER.toString()));
 
-        if (!Arrays.asList(sharingTypes).isEmpty()) {
+        if (sharingTypes.length > 0) {
             List<String> sharingTypeNames =
                     Arrays.stream(sharingTypes).map(SharingType::name).toList();
             predicates.add(sharingRoot.get("sharingType").in(sharingTypeNames));

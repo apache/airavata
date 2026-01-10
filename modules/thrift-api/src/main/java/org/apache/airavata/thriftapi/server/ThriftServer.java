@@ -128,7 +128,7 @@ public class ThriftServer extends ServerLifecycle {
 
     @Override
     public boolean isRunning() {
-        if (!properties.security.tls.enabled) {
+        if (!properties.security().tls().enabled()) {
             return super.isRunning() && server != null && server.isServing();
         } else {
             return super.isRunning() && TLSServer != null && TLSServer.isServing();
@@ -138,9 +138,9 @@ public class ThriftServer extends ServerLifecycle {
     public void startThriftServer(TMultiplexedProcessor multiplexedProcessor)
             throws org.apache.airavata.thriftapi.exception.AiravataSystemException {
         try {
-            final int serverPort = properties.services.thrift.server.port;
+            final int serverPort = properties.services().thrift().server().port();
 
-            if (!properties.security.tls.enabled) {
+            if (!properties.security().tls().enabled()) {
                 TServerTransport serverTransport = new TServerSocket(serverPort);
                 TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
                 server = new TThreadPoolServer(options.processor(multiplexedProcessor));
@@ -173,18 +173,18 @@ public class ThriftServer extends ServerLifecycle {
                 var TLSParams = new TSSLTransportFactory.TSSLTransportParameters();
                 String configDir =
                         org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
-                if (properties.security == null
-                        || properties.security.tls == null
-                        || properties.security.tls.keystore == null
-                        || properties.security.tls.keystore.path == null) {
+                if (properties.security() == null
+                        || properties.security().tls() == null
+                        || properties.security().tls().keystore() == null
+                        || properties.security().tls().keystore().path() == null) {
                     throw new IllegalStateException(
                             "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
-                java.io.File keystoreFile = new java.io.File(configDir, properties.security.tls.keystore.path);
-                TLSParams.setKeyStore(keystoreFile.getAbsolutePath(), properties.security.tls.keystore.password);
+                java.io.File keystoreFile = new java.io.File(configDir, properties.security().tls().keystore().path());
+                TLSParams.setKeyStore(keystoreFile.getAbsolutePath(), properties.security().tls().keystore().password());
                 var TLSServerTransport = TSSLTransportFactory.getServerSocket(
-                        serverPort, properties.security.tls.clientTimeout, null, TLSParams);
+                        serverPort, properties.security().tls().clientTimeout(), null, TLSParams);
                 TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
                 TLSServer = new TThreadPoolServer(settings.processor(multiplexedProcessor));
                 tlsServerThread = new Thread(() -> {
@@ -265,7 +265,7 @@ public class ThriftServer extends ServerLifecycle {
 
     @Override
     protected void doStop() throws Exception {
-        if (!properties.security.tls.enabled) {
+        if (!properties.security().tls().enabled()) {
             if (server != null && server.isServing()) {
                 server.stop();
             }

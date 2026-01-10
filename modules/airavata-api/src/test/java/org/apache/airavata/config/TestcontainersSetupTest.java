@@ -44,7 +44,10 @@ import org.springframework.test.context.TestPropertySource;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
+            "flyway.enabled=false", // Disable FlywayConfig since TestcontainersConfig handles migrations
+            "security.iam.enabled=false",
+            "security.manager.enabled=false",
+            "security.authzCache.enabled=false",
         })
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @ActiveProfiles("test")

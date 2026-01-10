@@ -23,19 +23,16 @@ import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationParallelismType;
 import org.apache.airavata.common.model.CommandObject;
@@ -57,13 +54,11 @@ import org.apache.airavata.helix.task.base.TaskOnFailException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class GroovyMapBuilder {
 
     private final RegistryService registryService;
@@ -96,15 +91,14 @@ public class GroovyMapBuilder {
         mapData.setQueueSpecificMacros(taskContext.getQueueSpecificMacros());
         mapData.setAccountString(taskContext.getAllocationProjectNumber());
         mapData.setReservation(taskContext.getReservation());
-        mapData.setJobName("A" + String.valueOf(generateJobName()));
+        mapData.setJobName("A" + generateJobName());
         mapData.setWorkingDirectory(taskContext.getWorkingDir());
         mapData.setTaskId(taskContext.getTaskId());
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
         mapData.setExperimentId(taskContext.getExperimentId());
 
-        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd+HH:mmZ");
-        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("EST"));
-        mapData.setCurrentTime(gmtDateFormat.format(new Date(AiravataUtils.getUniqueTimestamp().getTime())));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd+HH:mmZ").withZone(ZoneId.of("America/New_York"));
+        mapData.setCurrentTime(formatter.format(AiravataUtils.getUniqueTimestamp().toInstant()));
 
         // List<String> emails = taskContext.getUserProfile().getEmails();
         // if (emails != null && emails.size() > 0) {
@@ -131,7 +125,7 @@ public class GroovyMapBuilder {
 
         String hostName = taskContext.getComputeResourceDescription().getHostName();
         List<String> hostAliases = taskContext.getComputeResourceDescription().getHostAliases();
-        if (hostAliases != null && hostAliases.size() > 0) {
+        if (hostAliases != null && !hostAliases.isEmpty()) {
             hostName = hostAliases.get(0);
         }
         mapData.setComputeHostName(hostName);
@@ -217,7 +211,7 @@ public class GroovyMapBuilder {
             List<String> exportCommandList = exportCommands.stream()
                     .sorted((e1, e2) -> e1.getEnvPathOrder() - e2.getEnvPathOrder())
                     .map(map -> map.getName() + "=" + map.getValue())
-                    .collect(Collectors.toList());
+                    .toList();
             mapData.setExports(exportCommandList);
         }
 
@@ -226,7 +220,7 @@ public class GroovyMapBuilder {
             List<String> modulesCmdCollect = moduleCmds.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
                     .map(map -> parseCommands(map.getCommand(), mapData))
-                    .collect(Collectors.toList());
+                    .toList();
             mapData.setModuleCommands(modulesCmdCollect);
         }
 
@@ -235,7 +229,7 @@ public class GroovyMapBuilder {
             List<String> preJobCmdCollect = preJobCommands.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
                     .map(map -> parseCommands(map.getCommand(), mapData))
-                    .collect(Collectors.toList());
+                    .toList();
             mapData.setPreJobCommands(preJobCmdCollect);
         }
 
@@ -244,7 +238,7 @@ public class GroovyMapBuilder {
             List<String> postJobCmdCollect = postJobCommands.stream()
                     .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
                     .map(map -> parseCommands(map.getCommand(), mapData))
-                    .collect(Collectors.toList());
+                    .toList();
             mapData.setPostJobCommands(postJobCmdCollect);
         }
 
@@ -269,31 +263,17 @@ public class GroovyMapBuilder {
     }
 
     public static int generateJobName() {
-        Random random = new Random();
-        int i = random.nextInt(Integer.MAX_VALUE);
-        i = i + 99999999;
-        if (i < 0) {
-            i = i * (-1);
-        }
-        return i;
+        return java.util.concurrent.ThreadLocalRandom.current().nextInt(99999999, Integer.MAX_VALUE);
     }
 
     private static List<String> getProcessInputValues(
             List<InputDataObjectType> processInputs, boolean commandLineOnly) {
-        List<String> inputValues = new ArrayList<String>();
+        List<String> inputValues = new ArrayList<>();
         if (processInputs != null) {
 
             // sort the inputs first and then build the command ListR
-            Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
-                @Override
-                public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
-                    return inputDataObjectType.getInputOrder() - t1.getInputOrder();
-                }
-            };
-            Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
-            for (InputDataObjectType input : processInputs) {
-                sortedInputSet.add(input);
-            }
+            Set<InputDataObjectType> sortedInputSet = new TreeSet<>(Comparator.comparingInt(InputDataObjectType::getInputOrder));
+            sortedInputSet.addAll(processInputs);
             for (InputDataObjectType inputDataObjectType : sortedInputSet) {
                 if (commandLineOnly && !inputDataObjectType.getRequiredToAddedToCommandLine()) {
                     continue;
@@ -341,20 +321,12 @@ public class GroovyMapBuilder {
     }
 
     private static List<String> getProcessInputFiles(List<InputDataObjectType> processInputs, boolean commandLineOnly) {
-        List<String> inputFiles = new ArrayList<String>();
+        List<String> inputFiles = new ArrayList<>();
         if (processInputs != null) {
 
             // sort the inputs first and then build the command ListR
-            Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
-                @Override
-                public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
-                    return inputDataObjectType.getInputOrder() - t1.getInputOrder();
-                }
-            };
-            Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
-            for (InputDataObjectType input : processInputs) {
-                sortedInputSet.add(input);
-            }
+            Set<InputDataObjectType> sortedInputSet = new TreeSet<>(Comparator.comparingInt(InputDataObjectType::getInputOrder));
+            sortedInputSet.addAll(processInputs);
             for (InputDataObjectType inputDataObjectType : sortedInputSet) {
                 if (!inputDataObjectType.getIsRequired()
                         && (inputDataObjectType.getValue() == null || "".equals(inputDataObjectType.getValue()))) {
@@ -483,10 +455,10 @@ public class GroovyMapBuilder {
         AiravataServerProperties props = this.properties;
 
         if (isEmailBasedJobMonitor(taskContext) && props != null) {
-            emailIds = props.services.monitor.email.address;
+            emailIds = props.services().monitor().email().address();
         }
-        if (props != null && props.services.monitor.compute.enabled) {
-            String userJobNotifEmailIds = props.services.monitor.compute.notification.emailIds;
+        if (props != null && props.services().monitor().compute().enabled()) {
+            String userJobNotifEmailIds = props.services().monitor().compute().notification().emailIds();
             if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
                 if (emailIds != null && !emailIds.isEmpty()) {
                     emailIds += ("," + userJobNotifEmailIds);
@@ -541,8 +513,8 @@ public class GroovyMapBuilder {
         }
 
         // last string, no separator
-        if (listOfStrings.size() > 0) {
-            sb.append(listOfStrings.get(listOfStrings.size() - 1));
+        if (!listOfStrings.isEmpty()) {
+            sb.append(listOfStrings.getLast());
         }
 
         return sb.toString();

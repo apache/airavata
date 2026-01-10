@@ -1,0 +1,528 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.config;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.ActiveProfiles;
+
+/**
+ * Comprehensive test to verify all properties in AiravataServerProperties
+ * are correctly bound from airavata.properties.
+ * 
+ * Each assertion verifies the property value against the ground truth
+ * defined in src/test/resources/conf/airavata.properties.
+ */
+@SpringBootTest(classes = PropertiesBindingTest.MinimalConfig.class)
+@ActiveProfiles("test")
+public class PropertiesBindingTest {
+
+    @Configuration
+    @PropertySource(
+        value = "classpath:conf/airavata.properties",
+        factory = AiravataPropertySourceFactory.class)
+    @EnableConfigurationProperties(AiravataServerProperties.class)
+    static class MinimalConfig {
+    }
+
+    @Autowired
+    private AiravataServerProperties properties;
+
+    // ==================== Core Airavata Properties ====================
+    
+    @Nested
+    @DisplayName("Core Airavata Properties")
+    class CoreAiravataProperties {
+        
+        @Test
+        @DisplayName("airavata.default-gateway = default")
+        void testDefaultGateway() {
+            assertEquals("default", properties.airavata().defaultGateway());
+        }
+        
+        @Test
+        @DisplayName("airavata.in-memory-cache-size = 1000")
+        void testInMemoryCacheSize() {
+            assertEquals(1000, properties.airavata().inMemoryCacheSize());
+        }
+        
+        @Test
+        @DisplayName("airavata.local-data-location = /tmp/airavata")
+        void testLocalDataLocation() {
+            assertEquals("/tmp/airavata", properties.airavata().localDataLocation());
+        }
+        
+        @Test
+        @DisplayName("airavata.max-archive-size = 1073741824")
+        void testMaxArchiveSize() {
+            assertEquals(1073741824L, properties.airavata().maxArchiveSize());
+        }
+        
+        @Test
+        @DisplayName("airavata.sharing.enabled = true")
+        void testSharingEnabled() {
+            assertTrue(properties.airavata().sharing().enabled());
+        }
+        
+        @Test
+        @DisplayName("airavata.streaming-transfer.enabled = false")
+        void testStreamingTransferEnabled() {
+            assertFalse(properties.airavata().streamingTransfer().enabled());
+        }
+        
+        @Test
+        @DisplayName("airavata.validation-enabled = true")
+        void testValidationEnabled() {
+            assertTrue(properties.airavata().validationEnabled());
+        }
+    }
+
+    // ==================== Database Properties ====================
+    
+    @Nested
+    @DisplayName("Database Properties")
+    class DatabaseProperties {
+        
+        @Test
+        @DisplayName("database.catalog properties")
+        void testCatalogDatabase() {
+            var catalog = properties.database().catalog();
+            assertEquals("org.mariadb.jdbc.Driver", catalog.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/app_catalog", catalog.url());
+            assertEquals("airavata", catalog.user());
+            assertEquals("123456", catalog.password());
+            assertEquals("SELECT 1", catalog.validationQuery());
+            assertEquals(20000L, catalog.hikari().leakDetectionThreshold());
+            assertEquals("AppCatalogPool", catalog.hikari().poolName());
+        }
+        
+        @Test
+        @DisplayName("database.profile properties")
+        void testProfileDatabase() {
+            var profile = properties.database().profile();
+            assertEquals("org.mariadb.jdbc.Driver", profile.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/profile_service", profile.url());
+            assertEquals("airavata", profile.user());
+            assertEquals("123456", profile.password());
+            assertEquals("SELECT 1", profile.validationQuery());
+        }
+        
+        @Test
+        @DisplayName("database.registry properties")
+        void testRegistryDatabase() {
+            var registry = properties.database().registry();
+            assertEquals("org.mariadb.jdbc.Driver", registry.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/experiment_catalog", registry.url());
+            assertEquals("airavata", registry.user());
+            assertEquals("123456", registry.password());
+            assertEquals("SELECT 1", registry.validationQuery());
+        }
+        
+        @Test
+        @DisplayName("database.replica properties")
+        void testReplicaDatabase() {
+            var replica = properties.database().replica();
+            assertEquals("org.mariadb.jdbc.Driver", replica.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/replica_catalog", replica.url());
+            assertEquals("airavata", replica.user());
+            assertEquals("123456", replica.password());
+            assertEquals("SELECT 1", replica.validationQuery());
+        }
+        
+        @Test
+        @DisplayName("database.research properties")
+        void testResearchDatabase() {
+            var research = properties.database().research();
+            assertEquals("org.mariadb.jdbc.Driver", research.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/research_catalog", research.url());
+            assertEquals("airavata", research.user());
+            assertEquals("123456", research.password());
+            assertEquals("SELECT 1", research.validationQuery());
+        }
+        
+        @Test
+        @DisplayName("database.sharing properties")
+        void testSharingDatabase() {
+            var sharing = properties.database().sharing();
+            assertEquals("org.mariadb.jdbc.Driver", sharing.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/sharing_catalog", sharing.url());
+            assertEquals("airavata", sharing.user());
+            assertEquals("123456", sharing.password());
+            assertEquals("SELECT 1", sharing.validationQuery());
+        }
+        
+        @Test
+        @DisplayName("database.vault properties")
+        void testVaultDatabase() {
+            var vault = properties.database().vault();
+            assertEquals("org.mariadb.jdbc.Driver", vault.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/credential_store", vault.url());
+            assertEquals("airavata", vault.user());
+            assertEquals("123456", vault.password());
+            assertEquals("SELECT 1", vault.validationQuery());
+        }
+        
+        @Test
+        @DisplayName("database.workflow properties")
+        void testWorkflowDatabase() {
+            var workflow = properties.database().workflow();
+            assertEquals("org.mariadb.jdbc.Driver", workflow.driver());
+            assertEquals("jdbc:mariadb://localhost:13306/workflow_catalog", workflow.url());
+            assertEquals("airavata", workflow.user());
+            assertEquals("123456", workflow.password());
+            assertEquals("SELECT 1", workflow.validationQuery());
+        }
+    }
+
+    // ==================== Security Properties ====================
+    
+    @Nested
+    @DisplayName("Security Properties")
+    class SecurityProperties {
+        
+        @Test
+        @DisplayName("security.authentication.enabled = true")
+        void testAuthenticationEnabled() {
+            assertTrue(properties.security().authentication().enabled());
+        }
+        
+        @Test
+        @DisplayName("security.authz-cache.enabled = true")
+        void testAuthzCacheEnabled() {
+            assertTrue(properties.security().authzCache().enabled());
+        }
+        
+        @Test
+        @DisplayName("security.iam properties")
+        void testIamProperties() {
+            var iam = properties.security().iam();
+            assertTrue(iam.enabled());
+            assertEquals("http://localhost:18080", iam.serverUrl());
+            assertEquals("pga", iam.oauthClientId());
+            assertEquals("upCMVu2RZcAXUqpr9V7phAbz6hhF9cbl", iam.oauthClientSecret());
+            assertEquals("default-admin", iam.superAdmin().username());
+            assertEquals("ade4#21242ftfd", iam.superAdmin().password());
+        }
+        
+        @Test
+        @DisplayName("security.tls properties")
+        void testTlsProperties() {
+            var tls = properties.security().tls();
+            assertFalse(tls.enabled());
+            assertEquals(10000, tls.clientTimeout());
+            assertEquals("keystores/airavata.p12", tls.keystore().path());
+            assertEquals("airavata", tls.keystore().password());
+        }
+        
+        @Test
+        @DisplayName("security.vault.keystore properties")
+        void testSecurityVaultKeystore() {
+            var keystore = properties.security().vault().keystore();
+            assertEquals("keystores/airavata.sym.p12", keystore.url());
+            assertEquals("airavata", keystore.password());
+            assertEquals("airavata", keystore.alias());
+        }
+    }
+
+    // ==================== Messaging Properties ====================
+    
+    @Nested
+    @DisplayName("Messaging Properties")
+    class MessagingProperties {
+        
+        @Test
+        @DisplayName("flyway.enabled = false")
+        void testFlywayEnabled() {
+            assertFalse(properties.flyway().enabled());
+        }
+        
+        @Test
+        @DisplayName("helix properties")
+        void testHelixProperties() {
+            assertEquals("AiravataCluster", properties.helix().cluster().name());
+            assertEquals("AiravataController", properties.helix().controller().name());
+            assertEquals("AiravataParticipant", properties.helix().participant().name());
+        }
+        
+        @Test
+        @DisplayName("kafka properties")
+        void testKafkaProperties() {
+            assertFalse(properties.kafka().enabled());
+            assertEquals("localhost:9092", properties.kafka().brokerUrl());
+        }
+        
+        @Test
+        @DisplayName("rabbitmq properties")
+        void testRabbitMQProperties() {
+            var rabbitmq = properties.rabbitmq();
+            assertFalse(rabbitmq.enabled());
+            assertEquals("amqp://guest:guest@localhost:5672/develop", rabbitmq.brokerUrl());
+            assertEquals("dbevent_exchange", rabbitmq.dbEventExchangeName());
+            assertFalse(rabbitmq.durableQueue());
+            assertEquals("experiment_exchange", rabbitmq.experimentExchangeName());
+            assertEquals("experiment.launch.queue", rabbitmq.experimentLaunchQueueName());
+            assertEquals(200, rabbitmq.prefetchCount());
+            assertEquals("process_exchange", rabbitmq.processExchangeName());
+            assertEquals("status_exchange", rabbitmq.statusExchangeName());
+        }
+        
+        @Test
+        @DisplayName("zookeeper properties")
+        void testZookeeperProperties() {
+            assertFalse(properties.zookeeper().embedded());
+            assertEquals("localhost:2181", properties.zookeeper().server().connection());
+        }
+    }
+
+    // ==================== Services Properties ====================
+    
+    @Nested
+    @DisplayName("Services Properties")
+    class ServicesProperties {
+        
+        @Test
+        @DisplayName("services.agent properties")
+        void testAgentService() {
+            var agent = properties.services().agent();
+            assertTrue(agent.enabled());
+            assertEquals("AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6", agent.appinterface().id());
+            assertEquals(20971520L, agent.grpc().maxInboundMessageSize());
+            assertEquals(19900, agent.grpc().port());
+            assertEquals(18880, agent.server().port());
+            assertEquals("validate", agent.spring().jpa().hibernate().ddlAuto());
+            assertFalse(agent.spring().jpa().openInView());
+            assertEquals("200MB", agent.spring().servlet().multipart().maxFileSize());
+            assertEquals("200MB", agent.spring().servlet().multipart().maxRequestSize());
+            assertEquals("localhost_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd", agent.storage().id());
+            assertEquals("/tmp", agent.storage().path());
+            assertEquals("http://localhost:8000", agent.tunnelserver().url());
+            assertEquals("localhost", agent.tunnelserver().host());
+            assertEquals(17000, agent.tunnelserver().port());
+            assertEquals("airavata", agent.tunnelserver().token());
+        }
+        
+        @Test
+        @DisplayName("services.api.vault.keystore properties")
+        void testApiVaultKeystore() {
+            var keystore = properties.services().api().vault().keystore();
+            assertEquals("keystores/airavata.sym.p12", keystore.url());
+            assertEquals("airavata", keystore.password());
+            assertEquals("airavata", keystore.alias());
+        }
+        
+        @Test
+        @DisplayName("services.background.controller.enabled = false")
+        void testBackgroundController() {
+            assertFalse(properties.services().background().controller().enabled());
+        }
+        
+        @Test
+        @DisplayName("services.controller.enabled = true")
+        void testControllerEnabled() {
+            assertTrue(properties.services().controller().enabled());
+        }
+        
+        @Test
+        @DisplayName("services.dbus properties")
+        void testDbusService() {
+            var dbus = properties.services().dbus();
+            assertFalse(dbus.enabled());
+            assertEquals("", dbus.classpath());
+        }
+        
+        @Test
+        @DisplayName("services.fileserver properties")
+        void testFileserverService() {
+            var fileserver = properties.services().fileserver();
+            assertTrue(fileserver.enabled());
+            assertEquals(8050, fileserver.server().port());
+            assertEquals("10MB", fileserver.spring().servlet().multipart().maxFileSize());
+            assertEquals("10MB", fileserver.spring().servlet().multipart().maxRequestSize());
+        }
+        
+        @Test
+        @DisplayName("services.monitor.compute properties")
+        void testComputeMonitor() {
+            var compute = properties.services().monitor().compute();
+            assertTrue(compute.enabled());
+            assertEquals("MonitoringConsumer", compute.brokerConsumerGroup());
+            assertEquals("AiravataMonitorPublisher", compute.brokerPublisherId());
+            assertEquals("monitoring-data", compute.brokerTopic());
+            assertEquals(18000, compute.clusterCheckRepeatTime());
+            assertEquals(300, compute.clusterCheckTimeWindow());
+            assertEquals("EmailBasedProducer", compute.emailPublisherId());
+            assertEquals("", compute.notification().emailIds());
+            assertEquals("RealtimeProducer", compute.realtimePublisherId());
+            assertEquals("http://localhost:8082/topics/helix-airavata-mq", compute.statusPublishEndpoint());
+            assertEquals("BatchQueueValidator,ExperimentStatusValidator", compute.validators());
+        }
+        
+        @Test
+        @DisplayName("services.monitor.email properties")
+        void testEmailMonitor() {
+            var email = properties.services().monitor().email();
+            assertFalse(email.enabled());
+            assertEquals("monitoring.airavata@gmail.com", email.address());
+            assertEquals(30000, email.connectionRetryInterval());
+            assertEquals(60, email.expiryMins());
+            assertEquals("INBOX", email.folderName());
+            assertEquals("imap.gmail.com", email.host());
+            assertEquals("123456", email.password());
+            assertEquals(10000, email.period());
+            assertEquals("imaps", email.storeProtocol());
+        }
+        
+        @Test
+        @DisplayName("services.monitor.realtime properties")
+        void testRealtimeMonitor() {
+            var realtime = properties.services().monitor().realtime();
+            assertTrue(realtime.enabled());
+            assertEquals("monitor", realtime.brokerConsumerGroup());
+            assertEquals("helix-airavata-mq", realtime.brokerTopic());
+        }
+        
+        @Test
+        @DisplayName("services.parser properties")
+        void testParserService() {
+            var parser = properties.services().parser();
+            assertFalse(parser.enabled());
+            assertEquals("ParsingConsumer", parser.brokerConsumerGroup());
+            assertTrue(parser.deleteContainer());
+            assertEquals("", parser.enabledGateways());
+            assertFalse(parser.loadBalanceClusters());
+            assertEquals("AiravataParserWM", parser.name());
+            assertEquals(3600.0, parser.scanningInterval());
+            assertEquals(1, parser.scanningParallelJobs());
+            assertEquals("CHANGE_ME", parser.storageResourceId());
+            assertEquals(5, parser.timeStepSeconds());
+            assertEquals("parsing-data", parser.topic());
+        }
+        
+        @Test
+        @DisplayName("services.participant.enabled = true")
+        void testParticipantEnabled() {
+            assertTrue(properties.services().participant().enabled());
+        }
+        
+        @Test
+        @DisplayName("services.postwm properties")
+        void testPostWmService() {
+            var postwm = properties.services().postwm();
+            assertTrue(postwm.enabled());
+            assertFalse(postwm.loadBalanceClusters());
+            assertEquals("AiravataPostWM", postwm.name());
+        }
+        
+        @Test
+        @DisplayName("services.prewm properties")
+        void testPreWmService() {
+            var prewm = properties.services().prewm();
+            assertTrue(prewm.enabled());
+            assertFalse(prewm.loadBalanceClusters());
+            assertEquals("AiravataPreWM", prewm.name());
+        }
+        
+        @Test
+        @DisplayName("services.research properties")
+        void testResearchService() {
+            var research = properties.services().research();
+            assertFalse(research.enabled());
+            assertEquals(19908, research.grpc().port());
+            assertEquals("30s", research.grpc().keepaliveTime());
+            assertEquals("5s", research.grpc().keepaliveTimeout());
+            assertTrue(research.grpc().permitKeepaliveWithoutCalls());
+            assertEquals("JUPYTER_ADMIN_API_KEY", research.hub().adminApiKey());
+            assertEquals(10, research.hub().limit());
+            assertEquals("http://localhost:20000", research.hub().url());
+            assertEquals("http://localhost:18080/realms/default", research.openid().url());
+            assertEquals("http://localhost:5173", research.portal().devUrl());
+            assertEquals("http://localhost:5173", research.portal().url());
+            assertEquals(18889, research.server().port());
+            assertEquals("200MB", research.spring().servlet().multipart().maxFileSize());
+            assertEquals("200MB", research.spring().servlet().multipart().maxRequestSize());
+            assertTrue(research.springdoc().apiDocs().enabled());
+            assertEquals("none", research.springdoc().swaggerUi().docExpansion());
+            assertEquals("data-catalog-portal", research.springdoc().swaggerUi().oauth().clientId());
+            assertTrue(research.springdoc().swaggerUi().oauth().usePkceWithAuthorizationCodeGrant());
+            assertEquals("alpha", research.springdoc().swaggerUi().operationsSorter());
+            assertEquals("/swagger-ui.html", research.springdoc().swaggerUi().path());
+            assertEquals("alpha", research.springdoc().swaggerUi().tagsSorter());
+        }
+        
+        @Test
+        @DisplayName("services.rest properties")
+        void testRestService() {
+            var rest = properties.services().rest();
+            assertFalse(rest.enabled());
+            assertEquals(8082, rest.server().port());
+        }
+        
+        @Test
+        @DisplayName("services.scheduler properties")
+        void testSchedulerService() {
+            var scheduler = properties.services().scheduler();
+            assertFalse(scheduler.enabled());
+            assertEquals(1800000.0, scheduler.clusterScanningInterval());
+            assertEquals(1, scheduler.clusterScanningParallelJobs());
+            assertTrue(scheduler.interpreter().enabled());
+            assertEquals(1800000.0, scheduler.jobScanningInterval());
+            assertEquals(5, scheduler.maximumReschedulerThreshold());
+            assertTrue(scheduler.rescheduler().enabled());
+            assertEquals("DefaultComputeResourceSelectionPolicy", scheduler.selectionPolicy());
+            assertEquals("ExponentialBackOffReScheduler", scheduler.reschedulerPolicy());
+        }
+        
+        @Test
+        @DisplayName("services.telemetry properties")
+        void testTelemetryService() {
+            var telemetry = properties.services().telemetry();
+            assertTrue(telemetry.enabled());
+            assertEquals(9090, telemetry.server().port());
+        }
+        
+        @Test
+        @DisplayName("services.thrift properties")
+        void testThriftService() {
+            var thrift = properties.services().thrift();
+            assertTrue(thrift.enabled());
+            assertEquals(8930, thrift.server().port());
+        }
+        
+        @Test
+        @DisplayName("services.sharing properties")
+        void testSharingService() {
+            assertTrue(properties.services().sharing().enabled());
+        }
+        
+        @Test
+        @DisplayName("services.registry properties")
+        void testRegistryService() {
+            assertTrue(properties.services().registry().enabled());
+        }
+    }
+}

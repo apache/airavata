@@ -19,10 +19,13 @@
 */
 package org.apache.airavata.profile.utils.keycloak.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * DTO representing a Keycloak role.
  * Replaces org.keycloak.representations.idm.RoleRepresentation.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoleRepresentation {
     private String id;
     private String name;

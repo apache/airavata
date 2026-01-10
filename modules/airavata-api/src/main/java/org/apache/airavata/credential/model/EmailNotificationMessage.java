@@ -20,34 +20,26 @@
 package org.apache.airavata.credential.model;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 12/3/13
- * Time: 5:01 PM
+ * Email notification message that contains subject and sender info.
+ * Uses composition instead of inheritance from NotificationMessage.
  */
-public class EmailNotificationMessage extends NotificationMessage {
-
-    public EmailNotificationMessage(String subject, String senderEmail, String msg) {
-        super(msg);
-        this.subject = subject;
-        this.senderEmail = senderEmail;
+public record EmailNotificationMessage(
+    String subject,
+    String senderEmail,
+    String message
+) {
+    /**
+     * Alias for message() to maintain backward compatibility with getMessage().
+     */
+    public String getMessage() {
+        return message;
     }
-
-    private String subject;
-    private String senderEmail;
 
     public String getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
     public String getSenderEmail() {
         return senderEmail;
-    }
-
-    public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
     }
 }

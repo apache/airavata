@@ -20,12 +20,16 @@
 package org.apache.airavata.registry.utils;
 
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AppCatalogUtils {
+    private static final Logger logger = LoggerFactory.getLogger(AppCatalogUtils.class);
+
     public static String getID(String name) {
         String pro = name.replaceAll("\\s", "");
         String id = pro + "_" + UUID.randomUUID();
-        System.out.println("DEBUG: Generated ID for " + name + ": " + id);
+        logger.debug("Generated ID for {}: {}", name, id);
         return id;
     }
 }

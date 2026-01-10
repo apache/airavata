@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.ssh.SSHJAgentAdaptor;
@@ -50,9 +50,8 @@ import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
@@ -62,8 +61,7 @@ import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 
 @TaskDef(name = "AWS_JOB_SUBMISSION_TASK")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class AWSJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AWSJobSubmissionTask.class);
@@ -150,7 +148,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                     StandardOpenOption.TRUNCATE_EXISTING);
             var jobStatus = new JobStatus();
             jobStatus.setJobState(JobState.QUEUED);
-            jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+            jobModel.setJobStatuses(List.of(jobStatus));
             saveJobModel(jobModel);
             saveAndPublishJobStatus(jobModel);
 
@@ -175,7 +173,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             }
             jobStatus = new JobStatus();
             jobStatus.setJobState(JobState.ACTIVE);
-            jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+            jobModel.setJobStatuses(List.of(jobStatus));
             saveJobModel(jobModel);
             saveAndPublishJobStatus(jobModel);
 
@@ -333,7 +331,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         jobStatus.setJobState(JobState.FAILED);
         jobStatus.setReason(reason);
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+        jobModel.setJobStatuses(List.of(jobStatus));
 
         saveJobModel(jobModel);
         return onFail(reason, false, null);
@@ -353,7 +351,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         jobStatus.setJobState(JobState.SUBMITTED);
         jobStatus.setReason("Job submitted to EC2 instance with PID: " + "DEFAULT_JOB_ID");
         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+        jobModel.setJobStatuses(List.of(jobStatus));
         saveJobModel(jobModel);
         saveAndPublishJobStatus(jobModel);
 

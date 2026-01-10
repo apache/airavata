@@ -24,7 +24,6 @@ import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -45,7 +44,6 @@ import org.w3c.dom.NodeList;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "security.userstore.ldap.enabled", havingValue = "true", matchIfMissing = false)
 public class LDAPUserStore implements UserStore {
 
     private LdapAuthenticationProvider ldapAuthenticationProvider;

@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  * Uses Spring-managed Quartz scheduler for job scheduling.
  */
 @Component
-@ConditionalOnProperty(name = "services.scheduler.rescheduler.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.scheduler.rescheduler", name = "enabled", havingValue = "true")
 public class ProcessReschedulingService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Airavata Process Rescheduling Service";
@@ -82,8 +82,8 @@ public class ProcessReschedulingService extends ServerLifecycle {
 
         jobTriggerMap.clear();
 
-        final int parallelJobs = properties.services.scheduler.clusterScanningParallelJobs;
-        final double scanningInterval = properties.services.scheduler.jobScanningInterval;
+        final int parallelJobs = properties.services().scheduler().clusterScanningParallelJobs();
+        final double scanningInterval = properties.services().scheduler().jobScanningInterval();
 
         for (int i = 0; i < parallelJobs; i++) {
             String name = Constants.PROCESS_SCANNER_TRIGGER + "_" + i;

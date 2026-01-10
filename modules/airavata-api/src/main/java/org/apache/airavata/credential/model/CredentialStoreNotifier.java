@@ -56,4 +56,11 @@ public interface CredentialStoreNotifier {
      * @throws CredentialStoreException
      */
     void notifyMessage(NotificationMessage message) throws CredentialStoreException;
+
+    /**
+     * Notify via email with extended email metadata (subject, sender).
+     * @param emailMessage The email message with subject and sender info
+     * @throws CredentialStoreException
+     */
+    void notifyEmail(EmailNotificationMessage emailMessage) throws CredentialStoreException;
 }

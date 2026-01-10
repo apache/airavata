@@ -33,14 +33,14 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 @Conditional(ComputeValidatorEnabledCondition.class)
 public class BatchQueueValidator implements JobMetadataValidator {
     private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);

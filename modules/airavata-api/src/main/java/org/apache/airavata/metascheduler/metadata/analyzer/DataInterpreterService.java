@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  * Data Interpreter Service using Spring-managed Quartz scheduler.
  */
 @Component
-@ConditionalOnProperty(name = "services.scheduler.interpreter.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.scheduler.interpreter", name = "enabled", havingValue = "true")
 public class DataInterpreterService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Data Interpreter Service";
@@ -81,8 +81,8 @@ public class DataInterpreterService extends ServerLifecycle {
     protected void doStart() throws Exception {
         jobTriggerMap.clear();
 
-        final int parallelJobs = properties.services.parser.scanningParallelJobs;
-        final double scanningInterval = properties.services.parser.scanningInterval;
+        final int parallelJobs = properties.services().parser().scanningParallelJobs();
+        final double scanningInterval = properties.services().parser().scanningInterval();
 
         for (int i = 0; i < parallelJobs; i++) {
             String name = Constants.METADATA_SCANNER_TRIGGER + "_" + i;

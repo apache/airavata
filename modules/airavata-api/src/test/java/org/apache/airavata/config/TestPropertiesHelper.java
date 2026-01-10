@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Helper class for managing test properties.
  * Provides utilities to get test-specific property overrides for Testcontainers services.
+ * 
+ * <p>Note: Since AiravataServerProperties is an immutable record, properties cannot be
+ * mutated at runtime. Use @TestPropertySource annotations in tests to override properties.
  */
 public class TestPropertiesHelper {
 
@@ -78,30 +81,25 @@ public class TestPropertiesHelper {
     }
 
     /**
-     * Applies test properties to AiravataServerProperties.
-     * This method updates the properties object with Testcontainers service URLs.
+     * Logs the current property values for debugging.
+     * Since AiravataServerProperties is immutable, this only reads values.
      *
-     * @param properties AiravataServerProperties to update
+     * @param properties AiravataServerProperties to log
      */
-    public static void applyTestProperties(AiravataServerProperties properties) {
-        Map<String, String> testProps = getAllTestProperties();
-
-        // Update Kafka broker URL
-        if (testProps.containsKey("kafka.broker-url")) {
-            properties.kafka.brokerUrl = testProps.get("kafka.broker-url");
-            logger.debug("Updated kafka.brokerUrl to: {}", properties.kafka.brokerUrl);
+    public static void logProperties(AiravataServerProperties properties) {
+        if (properties == null) {
+            logger.debug("AiravataServerProperties is null");
+            return;
         }
-
-        // Update RabbitMQ broker URL
-        if (testProps.containsKey("rabbitmq.broker-url")) {
-            properties.rabbitmq.brokerUrl = testProps.get("rabbitmq.broker-url");
-            logger.debug("Updated rabbitmq.brokerUrl to: {}", properties.rabbitmq.brokerUrl);
+        
+        if (properties.kafka() != null) {
+            logger.debug("kafka.brokerUrl: {}", properties.kafka().brokerUrl());
         }
-
-        // Update Zookeeper connection
-        if (testProps.containsKey("zookeeper.server.connection")) {
-            properties.zookeeper.server.connection = testProps.get("zookeeper.server.connection");
-            logger.debug("Updated zookeeper.server.connection to: {}", properties.zookeeper.server.connection);
+        if (properties.rabbitmq() != null) {
+            logger.debug("rabbitmq.brokerUrl: {}", properties.rabbitmq().brokerUrl());
+        }
+        if (properties.zookeeper() != null && properties.zookeeper().server() != null) {
+            logger.debug("zookeeper.server.connection: {}", properties.zookeeper().server().connection());
         }
     }
 }

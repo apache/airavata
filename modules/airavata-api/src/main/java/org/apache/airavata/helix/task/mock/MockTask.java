@@ -24,14 +24,12 @@ import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.TaskUtil;
 import org.apache.airavata.helix.task.base.AbstractTask;
 import org.apache.helix.task.TaskResult;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Mock Task")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class MockTask extends AbstractTask {
 
     public MockTask(TaskUtil taskUtil) {

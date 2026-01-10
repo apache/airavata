@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component;
  * Publishes job status results to Kafka topics.
  */
 @Component
+@ConditionalOnProperty(prefix = "kafka", name = "enabled", havingValue = "true")
 public class MessageProducer {
 
     private static final Logger log = LoggerFactory.getLogger(MessageProducer.class);
@@ -43,7 +45,7 @@ public class MessageProducer {
     public MessageProducer(KafkaTemplate<String, Object> kafkaTemplate, 
                           AiravataServerProperties properties) {
         this.kafkaTemplate = kafkaTemplate;
-        this.topic = properties.services.monitor.compute.brokerTopic;
+        this.topic = properties.services().monitor().compute().brokerTopic();
     }
 
     /**
@@ -51,7 +53,7 @@ public class MessageProducer {
      */
     public MessageProducer(AiravataServerProperties properties) {
         this.kafkaTemplate = null;
-        this.topic = properties.services.monitor.compute.brokerTopic;
+        this.topic = properties.services().monitor().compute().brokerTopic();
     }
 
     /**

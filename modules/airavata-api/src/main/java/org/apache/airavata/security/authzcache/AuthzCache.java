@@ -25,6 +25,7 @@ import java.time.Duration;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
  * Provides thread-safe, high-performance caching for authorization decisions.
  */
 @Component
+@ConditionalOnProperty(prefix = "security.authzCache", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class AuthzCache {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthzCache.class);
@@ -39,8 +41,8 @@ public class AuthzCache {
     private final Cache<AuthzCacheIndex, AuthzCacheEntry> cache;
 
     public AuthzCache(AiravataServerProperties serverProperties) {
-        int maxSize = serverProperties.airavata.inMemoryCacheSize > 0 ? 
-                serverProperties.airavata.inMemoryCacheSize : 1000;
+        int maxSize = serverProperties.airavata().inMemoryCacheSize() > 0 ? 
+                serverProperties.airavata().inMemoryCacheSize() : 1000;
         
         this.cache = Caffeine.newBuilder()
                 .maximumSize(maxSize)

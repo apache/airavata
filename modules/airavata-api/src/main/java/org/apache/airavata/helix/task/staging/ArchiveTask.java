@@ -38,14 +38,12 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Archival Task")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class ArchiveTask extends DataStagingTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ArchiveTask.class);
@@ -139,7 +137,7 @@ public class ArchiveTask extends DataStagingTask {
                     var ctx = getApplicationContext();
                     if (ctx != null) {
                         var props = ctx.getBean(AiravataServerProperties.class);
-                        maxArchiveSize = props.airavata.maxArchiveSize;
+                        maxArchiveSize = props.airavata().maxArchiveSize();
                     }
                 } catch (Exception e) {
                     logger.warn("Could not get properties from ApplicationContext, using default max archive size", e);

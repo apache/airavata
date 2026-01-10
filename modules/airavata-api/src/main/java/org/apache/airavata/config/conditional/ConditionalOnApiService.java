@@ -1,0 +1,66 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.config.conditional;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
+
+/**
+ * Composite annotation for API service components.
+ * 
+ * <p>Loads when either REST or Thrift API is enabled.
+ * No default values - both properties MUST be explicitly set.
+ * 
+ * <p>Usage:
+ * <pre>
+ * {@code @Service}
+ * {@code @ConditionalOnApiService}
+ * public class RegistryService { }
+ * </pre>
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Conditional(ConditionalOnApiService.ApiServiceCondition.class)
+public @interface ConditionalOnApiService {
+    
+    /**
+     * Condition that matches when either REST or Thrift API is enabled.
+     * Uses AnyNestedCondition for OR logic.
+     */
+    class ApiServiceCondition extends AnyNestedCondition {
+        
+        ApiServiceCondition() {
+            super(ConfigurationPhase.REGISTER_BEAN);
+        }
+        
+        @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true")
+        static class RestEnabled {}
+        
+        @ConditionalOnProperty(name = "services.thrift.enabled", havingValue = "true")
+        static class ThriftEnabled {}
+    }
+}

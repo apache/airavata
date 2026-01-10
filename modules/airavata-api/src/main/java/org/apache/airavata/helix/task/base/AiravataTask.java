@@ -28,7 +28,6 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
@@ -74,14 +73,12 @@ import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public abstract class AiravataTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataTask.class);
@@ -264,7 +261,7 @@ public abstract class AiravataTask extends AbstractTask {
                 var ctx = getApplicationContext();
                 if (ctx != null) {
                     var props = ctx.getBean(AiravataServerProperties.class);
-                    localDataPath = props.airavata.localDataLocation;
+                    localDataPath = props.airavata().localDataLocation();
                 }
             } catch (Exception e) {
                 logger.warn("Could not get properties from ApplicationContext, using default local data path", e);
@@ -379,13 +376,13 @@ public abstract class AiravataTask extends AbstractTask {
                         if (!skipExperimentStatusPublish) {
                             getRegistryService()
                                     .addExperimentProcessOutputs(
-                                            "EXPERIMENT_OUTPUT", Collections.singletonList(expOutput), experimentId);
+                                            "EXPERIMENT_OUTPUT", List.of(expOutput), experimentId);
                         }
 
                         if (!skipProcessStatusPublish) {
                             getRegistryService()
                                     .addExperimentProcessOutputs(
-                                            "PROCESS_OUTPUT", Collections.singletonList(expOutput), processId);
+                                            "PROCESS_OUTPUT", List.of(expOutput), processId);
                         }
                     }
                 }
@@ -414,13 +411,13 @@ public abstract class AiravataTask extends AbstractTask {
                         if (!skipExperimentStatusPublish) {
                             getRegistryService()
                                     .addExperimentProcessOutputs(
-                                            "EXPERIMENT_OUTPUT", Collections.singletonList(expOutput), experimentId);
+                                            "EXPERIMENT_OUTPUT", List.of(expOutput), experimentId);
                         }
 
                         if (!skipProcessStatusPublish) {
                             getRegistryService()
                                     .addExperimentProcessOutputs(
-                                            "PROCESS_OUTPUT", Collections.singletonList(expOutput), processId);
+                                            "PROCESS_OUTPUT", List.of(expOutput), processId);
                         }
                     }
                 }

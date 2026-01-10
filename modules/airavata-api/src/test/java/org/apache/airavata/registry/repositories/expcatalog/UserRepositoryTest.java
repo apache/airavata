@@ -1,22 +1,21 @@
 /**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,51 +27,20 @@ import java.util.List;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
-import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            UserRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
-@org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+/**
+ * Integration tests for UserRepository.
+ * Inherits test infrastructure from TestBase.
+ */
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class UserRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final GatewayService gatewayService;
     private final UserService userService;
@@ -81,14 +49,12 @@ public class UserRepositoryTest extends TestBase {
     private String gatewayId2;
 
     public UserRepositoryTest(GatewayService gatewayService, UserService userService) {
-        super(Database.EXP_CATALOG);
         this.gatewayService = gatewayService;
         this.userService = userService;
     }
 
     @BeforeEach
-    public void createTestData() throws RegistryException {
-
+    public void createTestData() throws Exception {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gatewayId = gatewayService.addGateway(gateway);
@@ -99,15 +65,13 @@ public class UserRepositoryTest extends TestBase {
     }
 
     @AfterEach
-    public void deleteTestData() throws RegistryException {
-
+    public void deleteTestData() throws Exception {
         gatewayService.removeGateway(gatewayId);
         gatewayService.removeGateway(gatewayId2);
     }
 
     @Test
-    public void test() throws RegistryException {
-
+    public void testUserCrudOperations() throws Exception {
         UserProfile userProfile = new UserProfile();
         userProfile.setUserId("username");
         userProfile.setAiravataInternalUserId("username@" + gatewayId);
@@ -123,8 +87,7 @@ public class UserRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testGetAllUsernamesInGateway() throws RegistryException {
-
+    public void testGetAllUsernamesInGateway() throws Exception {
         String username1 = "username1";
         UserProfile userProfile = new UserProfile();
         userProfile.setUserId(username1);

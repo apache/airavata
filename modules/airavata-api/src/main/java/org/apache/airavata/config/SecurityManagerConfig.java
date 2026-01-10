@@ -23,7 +23,6 @@ import org.apache.airavata.security.AiravataSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -31,10 +30,11 @@ import org.springframework.context.annotation.Profile;
  * Spring configuration for SecurityManager.
  * The AiravataSecurityManager bean is provided by the implementation class (e.g., KeyCloakSecurityManager)
  * which is annotated with @Component. Spring will automatically inject it where needed.
+ * 
+ * <p>Loads when an AiravataSecurityManager bean is present (e.g., KeyCloakSecurityManager).
  */
 @Configuration
 @Profile("!test")
-@ConditionalOnProperty(name = "security.manager.enabled", havingValue = "true", matchIfMissing = false)
 @ConditionalOnBean(AiravataSecurityManager.class)
 public class SecurityManagerConfig {
 

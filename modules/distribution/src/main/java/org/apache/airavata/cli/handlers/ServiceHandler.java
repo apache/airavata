@@ -150,36 +150,22 @@ public class ServiceHandler {
      */
     private boolean getServiceEnabledFromProperties(String serviceName) {
         try {
-            switch (serviceName) {
-                case "thrift-api":
-                    return properties.services.thrift.enabled;
-                case "rest-api":
-                    return properties.services.rest.enabled;
-                case "helix-controller":
-                    return properties.services.controller.enabled;
-                case "helix-participant":
-                    return properties.services.participant.enabled;
-                case "pre-workflow-manager":
-                    return properties.services.prewm.enabled;
-                case "parser-workflow-manager":
-                    return properties.services.parser.enabled;
-                case "post-workflow-manager":
-                    return properties.services.postwm.enabled;
-                case "realtime-monitor":
-                    return properties.services.monitor.realtime.enabled;
-                case "email-monitor":
-                    return properties.services.monitor.email.enabled;
-                case "compute-monitor":
-                    return properties.services.monitor.compute.enabled;
-                case "research-service":
-                    return properties.services.research.enabled;
-                case "agent-service":
-                    return properties.services.agent.enabled;
-                case "file-service":
-                    return properties.services.fileserver.enabled;
-                default:
-                    return false;
-            }
+            return switch (serviceName) {
+                case "thrift-api" -> properties.services().thrift().enabled();
+                case "rest-api" -> properties.services().rest().enabled();
+                case "helix-controller" -> properties.services().controller().enabled();
+                case "helix-participant" -> properties.services().participant().enabled();
+                case "pre-workflow-manager" -> properties.services().prewm().enabled();
+                case "parser-workflow-manager" -> properties.services().parser().enabled();
+                case "post-workflow-manager" -> properties.services().postwm().enabled();
+                case "realtime-monitor" -> properties.services().monitor().realtime().enabled();
+                case "email-monitor" -> properties.services().monitor().email().enabled();
+                case "compute-monitor" -> properties.services().monitor().compute().enabled();
+                case "research-service" -> properties.services().research().enabled();
+                case "agent-service" -> properties.services().agent().enabled();
+                case "file-service" -> properties.services().fileserver().enabled();
+                default -> false;
+            };
         } catch (Exception e) {
             logger.warn("Error getting service enabled status from properties", e);
             return false;

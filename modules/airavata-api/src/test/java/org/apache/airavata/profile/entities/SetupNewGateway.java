@@ -23,147 +23,213 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.KeycloakTestConfig;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+/**
+ * Integration tests for Keycloak tenant and user management.
+ * Tests verify TenantManagementKeycloakImpl against a real Keycloak instance.
+ * 
+ * Uses devcontainer Keycloak on port 18080 if available, otherwise falls back to Testcontainers.
+ * Tests will be skipped if neither is available.
+ */
+@SpringBootTest(classes = KeycloakTestConfig.class)
 @ActiveProfiles("test")
-@Disabled("Requires external Keycloak infrastructure. "
-        + "This test needs a running Keycloak instance with proper configuration. "
-        + "Consider using Testcontainers Keycloak in the future for automated testing.")
+@EnabledIf("isKeycloakAvailable")
 public class SetupNewGateway {
 
     private static final Logger logger = LoggerFactory.getLogger(SetupNewGateway.class);
 
-    @Test
-    public void testFindUser() {
-        UserProfile user = new UserProfile();
+    @Autowired
+    private AiravataServerProperties properties;
 
-        List<String> emails = new ArrayList<>();
-        emails.add("some.man@outlook.com");
-        user.setGatewayId("maven.test.gateway");
-        user.setEmails(emails);
-        TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
-        try {
-            PasswordCredential tenantAdminCreds = new PasswordCredential();
-            tenantAdminCreds.setGatewayId(user.getGatewayId());
-            tenantAdminCreds.setDescription("test credentials for tenant admin creation");
-            tenantAdminCreds.setLoginUserName("mavenTest");
-            tenantAdminCreds.setPassword("Test@1234");
-            tenantAdminCreds.setPortalUserName("TenantAdmin");
-            // FIXME: get an access token from tenant admin creds
-            String accessToken = "";
-            List<UserProfile> list = client.findUser(accessToken, "maven.test.gateway", "some.man@outlook.com", null);
-            assertNotNull(list, "User list should not be null");
-            if (!list.isEmpty()) {
-                logger.info("User ID: {}", list.get(0).getUserId());
-            }
-        } catch (IamAdminServicesException e) {
-            logger.error("Error finding user", e);
-            fail("Failed to find user: " + e.getMessage());
-        }
+    private TenantManagementKeycloakImpl client;
+    private String testGatewayId;
+    private PasswordCredential superAdminCreds;
+
+    /**
+     * Check if Keycloak is available (devcontainer or Docker for Testcontainers).
+     */
+    static boolean isKeycloakAvailable() {
+        return KeycloakTestConfig.isKeycloakAvailable();
+    }
+
+    @BeforeEach
+    public void setUp() {
+        // Use unique gateway ID to avoid conflicts between test runs
+        testGatewayId = "test-gateway-" + UUID.randomUUID().toString().substring(0, 8);
+
+        // Initialize client with Testcontainers Keycloak configuration
+        client = new TenantManagementKeycloakImpl(properties);
+
+        // Set up super admin credentials using Testcontainers Keycloak admin
+        superAdminCreds = new PasswordCredential();
+        superAdminCreds.setGatewayId("master");
+        superAdminCreds.setDescription("Keycloak super admin credentials");
+        superAdminCreds.setLoginUserName("admin");
+        superAdminCreds.setPassword("admin");
+        superAdminCreds.setPortalUserName("admin");
     }
 
     @Test
-    @Disabled("Requires Keycloak setup and admin credentials. "
-            + "This test needs Keycloak super admin credentials and proper gateway configuration.")
-    public void testSetUpGateway() {
+    public void testSetUpGateway() throws IamAdminServicesException {
         Gateway testGateway = new Gateway();
-        testGateway.setGatewayId("maven.test.gateway");
-        testGateway.setGatewayName("maven test gateway");
-        testGateway.setIdentityServerUserName("mavenTest");
-        testGateway.setGatewayAdminFirstName("Maven");
-        testGateway.setGatewayAdminLastName("Test");
-        testGateway.setGatewayAdminEmail("some.man@gmail.com");
-        PasswordCredential superAdminCreds = new PasswordCredential();
-        superAdminCreds.setGatewayId(testGateway.getGatewayId());
-        superAdminCreds.setDescription("test credentials for IS admin creation");
-        superAdminCreds.setLoginUserName("airavataAdmin");
-        superAdminCreds.setPassword("Airavata@123");
-        superAdminCreds.setPortalUserName("superAdmin");
-        TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
-        try {
-            client.addTenant(superAdminCreds, testGateway);
-            boolean adminCreated = client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
-            assertTrue(adminCreated, "Admin account should be created");
-            Gateway gatewayWithIdAndSecret = client.configureClient(superAdminCreds, testGateway);
-            assertNotNull(gatewayWithIdAndSecret.getOauthClientId(), "OAuth Client ID should be set");
-            assertNotNull(gatewayWithIdAndSecret.getOauthClientSecret(), "OAuth Client Secret should be set");
-            logger.info("OAuth Client ID: {}", gatewayWithIdAndSecret.getOauthClientId());
-            logger.info("OAuth Client Secret: {}", gatewayWithIdAndSecret.getOauthClientSecret());
-        } catch (IamAdminServicesException ex) {
-            logger.error("Gateway Setup Failed, reason: " + ex.getCause(), ex);
-            fail("Gateway setup failed: " + ex.getMessage());
-        }
+        testGateway.setGatewayId(testGatewayId);
+        testGateway.setGatewayName("Test Gateway " + testGatewayId);
+        testGateway.setIdentityServerUserName("gatewayAdmin");
+        testGateway.setGatewayAdminFirstName("Gateway");
+        testGateway.setGatewayAdminLastName("Admin");
+        testGateway.setGatewayAdminEmail("admin@" + testGatewayId + ".test");
+        testGateway.setGatewayURL("http://localhost:8080");
+
+        // Create the tenant (realm) in Keycloak
+        Gateway createdGateway = client.addTenant(superAdminCreds, testGateway);
+        assertNotNull(createdGateway, "Gateway should be created");
+
+        // Create tenant admin account
+        boolean adminCreated = client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
+        assertTrue(adminCreated, "Admin account should be created");
+
+        // Configure OAuth client
+        Gateway gatewayWithClient = client.configureClient(superAdminCreds, testGateway);
+        assertNotNull(gatewayWithClient.getOauthClientId(), "OAuth Client ID should be set");
+        assertNotNull(gatewayWithClient.getOauthClientSecret(), "OAuth Client Secret should be set");
+
+        logger.info("Gateway {} created with OAuth Client ID: {}", 
+            testGatewayId, gatewayWithClient.getOauthClientId());
     }
 
     @Test
-    @Disabled("Requires Keycloak setup and admin credentials. "
-            + "This test needs Keycloak tenant admin credentials and proper user configuration.")
-    public void testUserRegistration() {
-        UserProfile user = new UserProfile();
-        user.setUserId("testuser");
-        user.setFirstName("test-firstname");
-        user.setLastName("test-lastname");
-        List<String> emails = new ArrayList<>();
-        emails.add("some.man@outlook.com");
-        user.setGatewayId("maven.test.gateway");
-        user.setEmails(emails);
-        PasswordCredential tenantAdminCreds = new PasswordCredential();
-        tenantAdminCreds.setGatewayId(user.getGatewayId());
-        tenantAdminCreds.setDescription("test credentials for tenant admin creation");
-        tenantAdminCreds.setLoginUserName("mavenTest");
-        tenantAdminCreds.setPassword("Test@1234");
-        tenantAdminCreds.setPortalUserName("TenantAdmin");
+    public void testUserRegistration() throws IamAdminServicesException {
+        // First set up a gateway for user registration
+        Gateway testGateway = new Gateway();
+        testGateway.setGatewayId(testGatewayId);
+        testGateway.setGatewayName("Test Gateway " + testGatewayId);
+        testGateway.setIdentityServerUserName("gatewayAdmin");
+        testGateway.setGatewayAdminFirstName("Gateway");
+        testGateway.setGatewayAdminLastName("Admin");
+        testGateway.setGatewayAdminEmail("admin@" + testGatewayId + ".test");
+        testGateway.setGatewayURL("http://localhost:8080");
 
-        TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
-        try {
-            // FIXME: get an access token from tenant admin creds
-            String accessToken = "";
-            client.createUser(
-                    accessToken,
-                    user.getGatewayId(),
-                    user.getUserId(),
-                    user.getEmails().get(0),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    "test@123");
-            client.enableUserAccount(accessToken, user.getGatewayId(), user.getUserId());
-        } catch (IamAdminServicesException e) {
-            logger.error("User registration failed", e);
-            fail("User registration failed: " + e.getMessage());
-        }
+        client.addTenant(superAdminCreds, testGateway);
+        client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
+        Gateway gatewayWithClient = client.configureClient(superAdminCreds, testGateway);
+
+        // Create test user
+        String userId = "testuser-" + UUID.randomUUID().toString().substring(0, 8);
+        String email = userId + "@test.example.com";
+
+        // Get access token from admin (use master realm for super admin auth)
+        String accessToken = client.getAdminAccessToken(superAdminCreds, "master");
+        assertNotNull(accessToken, "Access token should not be null");
+
+        // Create user
+        boolean userCreated = client.createUser(
+            accessToken,
+            testGatewayId,
+            userId,
+            email,
+            "Test",
+            "User",
+            "Password@123"
+        );
+        assertTrue(userCreated, "User should be created");
+
+        // Enable user account
+        boolean enabled = client.enableUserAccount(accessToken, testGatewayId, userId);
+        assertTrue(enabled, "User account should be enabled");
+
+        // Verify user exists
+        boolean userExists = client.isUserExist(accessToken, testGatewayId, userId);
+        assertTrue(userExists, "User should exist");
+
+        logger.info("User {} created in gateway {}", userId, testGatewayId);
     }
 
     @Test
-    @Disabled("Requires Keycloak setup and admin credentials. "
-            + "This test needs Keycloak tenant admin credentials to retrieve user roles.")
-    public void testGetUserRoles() {
+    public void testFindUser() throws IamAdminServicesException {
+        // First set up a gateway and user
+        Gateway testGateway = new Gateway();
+        testGateway.setGatewayId(testGatewayId);
+        testGateway.setGatewayName("Test Gateway " + testGatewayId);
+        testGateway.setIdentityServerUserName("gatewayAdmin");
+        testGateway.setGatewayAdminFirstName("Gateway");
+        testGateway.setGatewayAdminLastName("Admin");
+        testGateway.setGatewayAdminEmail("admin@" + testGatewayId + ".test");
+        testGateway.setGatewayURL("http://localhost:8080");
+
+        client.addTenant(superAdminCreds, testGateway);
+        client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
+        client.configureClient(superAdminCreds, testGateway);
+
+        // Get access token from master realm (super admin auth)
+        String accessToken = client.getAdminAccessToken(superAdminCreds, "master");
+
+        // Create a user to find
+        String userId = "findme-" + UUID.randomUUID().toString().substring(0, 8);
+        String email = userId + "@findtest.example.com";
+
+        client.createUser(accessToken, testGatewayId, userId, email, "Find", "Me", "Password@123");
+        client.enableUserAccount(accessToken, testGatewayId, userId);
+
+        // Find the user by email
+        List<UserProfile> foundUsers = client.findUser(accessToken, testGatewayId, email, null);
+        assertNotNull(foundUsers, "User list should not be null");
+        assertFalse(foundUsers.isEmpty(), "Should find at least one user");
+        assertEquals(userId, foundUsers.get(0).getUserId(), "Found user ID should match");
+
+        logger.info("Found user: {}", foundUsers.get(0).getUserId());
+    }
+
+    @Test
+    public void testGetUserRoles() throws IamAdminServicesException {
+        // Set up gateway with user
+        Gateway testGateway = new Gateway();
+        testGateway.setGatewayId(testGatewayId);
+        testGateway.setGatewayName("Test Gateway " + testGatewayId);
+        testGateway.setIdentityServerUserName("gatewayAdmin");
+        testGateway.setGatewayAdminFirstName("Gateway");
+        testGateway.setGatewayAdminLastName("Admin");
+        testGateway.setGatewayAdminEmail("admin@" + testGatewayId + ".test");
+        testGateway.setGatewayURL("http://localhost:8080");
+
+        client.addTenant(superAdminCreds, testGateway);
+        client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
+        client.configureClient(superAdminCreds, testGateway);
+
+        // Get access token from master realm (super admin auth)
+        String accessToken = client.getAdminAccessToken(superAdminCreds, "master");
+
+        // Create a user
+        String userId = "roletest-" + UUID.randomUUID().toString().substring(0, 8);
+        String email = userId + "@roletest.example.com";
+
+        client.createUser(accessToken, testGatewayId, userId, email, "Role", "Test", "Password@123");
+        client.enableUserAccount(accessToken, testGatewayId, userId);
+
+        // Get user roles - new users typically have default roles
         PasswordCredential tenantAdminCreds = new PasswordCredential();
-        tenantAdminCreds.setGatewayId("maven.test.gateway");
-        tenantAdminCreds.setLoginUserName("mavenTest");
-        tenantAdminCreds.setPassword("Test@1234");
-        tenantAdminCreds.setPortalUserName("TenantAdmin");
+        tenantAdminCreds.setGatewayId(testGatewayId);
+        tenantAdminCreds.setLoginUserName("gatewayAdmin");
+        tenantAdminCreds.setPassword("Test@123");
 
-        TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
+        List<String> roles = client.getUserRoles(tenantAdminCreds, testGatewayId, userId);
+        assertNotNull(roles, "Roles list should not be null");
 
-        try {
-            List<String> roleNames =
-                    keycloakClient.getUserRoles(tenantAdminCreds, tenantAdminCreds.getGatewayId(), "username");
-            assertNotNull(roleNames, "Role names should not be null");
-            logger.info("Roles: {}", roleNames);
-        } catch (IamAdminServicesException e) {
-            logger.error("Failed to get user roles", e);
-            fail("Failed to get user roles: " + e.getMessage());
-        }
+        logger.info("User {} has roles: {}", userId, roles);
     }
 }

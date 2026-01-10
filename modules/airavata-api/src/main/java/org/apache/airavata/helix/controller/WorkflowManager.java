@@ -102,17 +102,17 @@ public abstract class WorkflowManager extends ServerLifecycle {
 
         try {
             if (!loadBalanceClusters) {
-                String clusterName = properties.helix.cluster.name;
+                String clusterName = properties.helix().cluster().name();
                 logger.info("Using default cluster " + clusterName + " to submit workflows");
                 workflowOperators.add(new WorkflowOperator(
-                        clusterName, workflowManagerName, properties.zookeeper.server.connection, taskUtil));
+                        clusterName, workflowManagerName, properties.zookeeper().server().connection(), taskUtil));
             } else {
                 logger.info("Load balancing workflows among existing clusters");
                 List<String> clusters = zkHelixAdmin.getClusters();
                 logger.info("Total available clusters " + clusters.size());
                 for (String cluster : clusters) {
                     workflowOperators.add(new WorkflowOperator(
-                            cluster, workflowManagerName, properties.zookeeper.server.connection, taskUtil));
+                            cluster, workflowManagerName, properties.zookeeper().server().connection(), taskUtil));
                 }
             }
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public abstract class WorkflowManager extends ServerLifecycle {
         try {
             this.zkHelixAdmin = new ZKHelixAdmin.Builder()
                     .setRealmMode(RealmMode.SINGLE_REALM)
-                    .setZkAddress(properties.zookeeper.server.connection)
+                    .setZkAddress(properties.zookeeper().server().connection())
                     .build();
         } catch (Exception e) {
             logger.warn(

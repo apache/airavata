@@ -96,8 +96,8 @@ public class HelixParticipant<T extends AbstractTask> extends ServerLifecycle {
      */
     protected void initialize() {
         if (properties != null) {
-            this.zkAddress = properties.zookeeper.server.connection;
-            this.clusterName = properties.helix.cluster.name;
+            this.zkAddress = properties.zookeeper().server().connection();
+            this.clusterName = properties.helix().cluster().name();
             this.participantName = getParticipantName();
 
             logger.info("Zookeeper connection URL " + zkAddress);
@@ -135,7 +135,7 @@ public class HelixParticipant<T extends AbstractTask> extends ServerLifecycle {
 
     public HelixParticipant(
             Class<T> taskClass, String taskTypeName, AiravataServerProperties properties, TaskHelperImpl taskHelper) {
-        this(taskClass != null ? Collections.singletonList(taskClass) : null, taskTypeName, properties, taskHelper);
+        this(taskClass != null ? List.of(taskClass) : null, taskTypeName, properties, taskHelper);
     }
 
     public void setShutdownGracePeriod(int shutdownGracePeriod) {
@@ -281,7 +281,7 @@ public class HelixParticipant<T extends AbstractTask> extends ServerLifecycle {
     }
 
     public String getParticipantName() {
-        return properties.helix.participant.name;
+        return properties.helix().participant().name();
     }
 
     @Override

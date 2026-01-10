@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
  * Authenticators are sorted by @Order annotation (higher priority = lower order value).
  */
 @Component
-@ConditionalOnProperty(name = "security.authentication.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "security.authentication", name = "enabled", havingValue = "true")
 public class AuthenticatorRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatorRegistry.class);

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.helix.task.submission.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -90,13 +89,9 @@ public class SlurmOutputParser implements OutputParser {
                     // now starts processing this line
                     log.info(info[i]);
                     String correctLine = info[i];
-                    String[] columns = correctLine.split(" ");
-                    List<String> columnList = new ArrayList<String>();
-                    for (String s : columns) {
-                        if (!"".equals(s)) {
-                            columnList.add(s);
-                        }
-                    }
+                    List<String> columnList = java.util.Arrays.stream(correctLine.split(" "))
+                            .filter(s -> !s.isEmpty())
+                            .toList();
                     try {
                         var jobStatus = new JobStatus();
                         jobStatus.setJobState(JobState.valueOf(columnList.get(4)));

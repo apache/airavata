@@ -21,7 +21,6 @@ package org.apache.airavata.monitor.compute;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.IServer.ServerStatus;
 import org.apache.airavata.config.ServerLifecycle;
 import org.quartz.JobBuilder;
@@ -43,7 +42,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("!test")
-@ConditionalOnProperty(name = "services.monitor.compute.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.monitor.compute", name = "enabled", havingValue = "true")
 public class ComputationalResourceMonitoringService extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);
@@ -133,7 +132,7 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.unscheduleJobs(jobTriggerMap.values().stream()
                     .map(trigger -> trigger.getKey())
-                    .collect(Collectors.toList()));
+                    .toList());
             // Don't shutdown the shared scheduler, just unschedule our jobs
             // The scheduler will be shut down by Spring Boot
         }

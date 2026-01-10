@@ -25,36 +25,39 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Tests for Docker-based service startup.
- *
- * <p>This test class verifies:
- * <ul>
- *   <li>Docker startup script configuration</li>
- *   <li>Service startup with different combinations via environment variables</li>
- *   <li>Docker-specific configurations are valid</li>
- * </ul>
- *
- * <p>Note: These tests verify configuration validity rather than actually
- * starting Docker containers, as that would require Docker to be available
- * in the test environment.
+ * Uses minimal Spring context to verify configuration loading works in Docker contexts.
  */
-@SpringBootTest(
-        classes = {JpaConfig.class, TestcontainersConfig.class, ServiceStartupTestBase.TestConfiguration.class},
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.main.banner-mode=off",
-            "spring.main.log-startup-info=false",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
-@org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
-public class DockerServiceStartupTest extends ServiceStartupTestBase {
+@SpringBootTest(classes = DockerServiceStartupTest.MinimalConfig.class)
+@ActiveProfiles("test")
+public class DockerServiceStartupTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(DockerServiceStartupTest.class);
+
+    @Configuration
+    @PropertySource(
+        value = "classpath:conf/airavata.properties",
+        factory = AiravataPropertySourceFactory.class)
+    @EnableConfigurationProperties(AiravataServerProperties.class)
+    static class MinimalConfig {
+    }
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private AiravataServerProperties properties;
 
     /**
      * Check if docker-startup.sh script exists.
@@ -77,12 +80,9 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         return Files.exists(script) && Files.isReadable(script);
     }
 
-    /**
-     * Test that application context loads with Docker environment variables.
-     */
     @Test
-    public void testDockerEnvironmentVariables() {
-        assertNotNull(applicationContext, "Application context should load with Docker environment variables");
+    void testDockerEnvironmentVariables() {
+        assertNotNull(applicationContext, "Application context should load");
 
         String dbHost = System.getenv("DB_HOST");
         String rabbitmqHost = System.getenv("RABBITMQ_HOST");
@@ -94,47 +94,27 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
                 zookeeperHost);
     }
 
-    /**
-     * Test that Docker startup script is available (if running in Docker context).
-     */
     @Test
-    public void testDockerStartupScriptAvailability() {
+    void testDockerStartupScriptAvailability() {
         assertNotNull(applicationContext, "Application context should load");
         boolean available = isDockerStartupScriptAvailable();
         logger.info("Docker startup script available: {}", available);
     }
 
-    /**
-     * Test that system handles Docker-specific service configurations.
-     */
-    @org.junit.jupiter.api.Nested
-    @org.springframework.test.context.TestPropertySource(
-            properties = {
-                "services.controller.enabled=true",
-                "services.participant.enabled=true",
-                "services.prewm.enabled=true",
-                "services.postwm.enabled=true"
-            })
-    class DockerServiceConfigurationTest {
-        @Test
-        public void testDockerServiceConfiguration() {
-            assertNotNull(applicationContext, "Application context should load with Docker service configuration");
-        }
+    @Test
+    void testDockerServiceConfiguration() {
+        assertNotNull(applicationContext, "Application context should load with Docker service configuration");
+        assertNotNull(properties, "Properties should be loaded");
+        assertNotNull(properties.services(), "Services should be configured");
     }
 
-    /**
-     * Test that system handles missing Docker dependencies gracefully.
-     */
     @Test
-    public void testMissingDockerDependencies() {
+    void testMissingDockerDependencies() {
         assertNotNull(applicationContext, "Application context should load even if Docker dependencies are missing");
     }
 
-    /**
-     * Test that Airavata configuration directory is set correctly for Docker.
-     */
     @Test
-    public void testAiravataConfigDir() {
+    void testAiravataConfigDir() {
         assertNotNull(applicationContext, "Application context should load");
 
         String airavataHome = System.getProperty("airavata.home");
@@ -148,11 +128,8 @@ public class DockerServiceStartupTest extends ServiceStartupTestBase {
         logger.info("Airavata home: {}, config directory: {}", airavataHome, configDir);
     }
 
-    /**
-     * Test that service home directories are set correctly for Docker.
-     */
     @Test
-    public void testServiceHomeDirectories() {
+    void testServiceHomeDirectories() {
         assertNotNull(applicationContext, "Application context should load");
         String airavataHome = System.getenv("AIRAVATA_HOME");
         String agentHome = System.getenv("AIRAVATA_AGENT_HOME");

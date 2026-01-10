@@ -58,7 +58,7 @@ public class ClusterStatusMonitorJobScheduler {
                 .build();
 
         // Trigger the job to run now, and then repeat based on configured interval
-        int repeatTime = properties.services.monitor.compute.clusterCheckRepeatTime;
+        int repeatTime = properties.services().monitor().compute().clusterCheckRepeatTime();
         Trigger trigger = newTrigger()
                 .withIdentity("cluster-status-monitoring-trigger", "airavata")
                 .startNow()

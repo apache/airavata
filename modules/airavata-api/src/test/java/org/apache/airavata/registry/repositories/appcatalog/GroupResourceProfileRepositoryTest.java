@@ -41,44 +41,11 @@ import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            GroupResourceProfileRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false"
-        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class GroupResourceProfileRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
     private final GroupResourceProfileService groupResourceProfileService;
@@ -87,23 +54,30 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     private String groupResourceProfileId = null;
     private String resourceId1 = null;
     private String resourceId2 = null;
+    private String testSuffix; // Unique suffix for this test run
 
     private final String QUEUE1_NAME = "queue1";
     private final String QUEUE2_NAME = "queue2";
 
+    // Track created resources for cleanup
+    private final List<String> createdResourceIds = new ArrayList<>();
+    private final List<String> createdProfileIds = new ArrayList<>();
+
     public GroupResourceProfileRepositoryTest(
             ComputeResourceService computeResourceService, GroupResourceProfileService groupResourceProfileService) {
-        super(Database.APP_CATALOG);
         this.computeResourceService = computeResourceService;
         this.groupResourceProfileService = groupResourceProfileService;
     }
 
     @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
+        // Use unique suffix to avoid conflicts with other tests
+        testSuffix = java.util.UUID.randomUUID().toString().substring(0, 8);
+        gatewayId = "TEST_GATEWAY_" + testSuffix;
+        String uniqueSuffix = testSuffix;
 
         ComputeResourceDescription description = new ComputeResourceDescription();
-
-        description.setHostName("localhost");
+        description.setHostName("grp-test-host1-" + uniqueSuffix);
         description.setResourceDescription("test compute resource");
         List<String> ipdaresses = new ArrayList<String>();
         ipdaresses.add("222.33.43.444");
@@ -130,9 +104,10 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         description.setBatchQueues(batchQueueList);
 
         this.resourceId1 = computeResourceService.addComputeResource(description);
+        createdResourceIds.add(this.resourceId1);
 
         ComputeResourceDescription cm2 = new ComputeResourceDescription();
-        cm2.setHostName("localhost2");
+        cm2.setHostName("grp-test-host2-" + uniqueSuffix);
         cm2.setResourceDescription("test compute host");
 
         BatchQueue cm_batchQueue1 = new BatchQueue();
@@ -155,6 +130,34 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         cm2.setBatchQueues(cmbatchQueueList);
 
         this.resourceId2 = computeResourceService.addComputeResource(cm2);
+        createdResourceIds.add(this.resourceId2);
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    public void tearDown() throws Exception {
+        // Clean up created group resource profiles
+        for (String profileId : createdProfileIds) {
+            try {
+                if (groupResourceProfileService.isGroupResourceProfileExists(profileId)) {
+                    groupResourceProfileService.removeGroupResourceProfile(profileId);
+                }
+            } catch (Exception e) {
+                // Ignore cleanup errors
+            }
+        }
+        createdProfileIds.clear();
+
+        // Clean up created compute resources
+        for (String resourceId : createdResourceIds) {
+            try {
+                if (computeResourceService.isComputeResourceExists(resourceId)) {
+                    computeResourceService.removeComputeResource(resourceId);
+                }
+            } catch (Exception e) {
+                // Ignore cleanup errors
+            }
+        }
+        createdResourceIds.clear();
     }
 
     @Test
@@ -162,7 +165,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_" + testSuffix);
         groupResourceProfile.setComputePreferences(new ArrayList<>());
         groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
 
@@ -233,6 +236,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.setBatchQueueResourcePolicies(batchQueueResourcePolicyList);
 
         groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
+        createdProfileIds.add(groupResourceProfileId);
 
         String computeResourcePolicyId1 = null;
         String batchQueueResourcePolicyId2 = null;
@@ -340,7 +344,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     public void testUpdatingGroupResourceProfileWithoutCreationTime() throws AppCatalogException {
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_" + testSuffix);
         groupResourceProfile.setComputePreferences(new ArrayList<>());
         groupResourceProfile.setDefaultCredentialStoreToken("test-cred-store-token");
 
@@ -349,6 +353,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         cloneGroupResourceProfile.setGroupResourceProfileName(groupResourceProfile.getGroupResourceProfileName());
         cloneGroupResourceProfile.setDefaultCredentialStoreToken(groupResourceProfile.getDefaultCredentialStoreToken());
         String groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
+        createdProfileIds.add(groupResourceProfileId);
         long creationTime = groupResourceProfileService
                 .getGroupResourceProfile(groupResourceProfileId)
                 .getCreationTime();
@@ -365,7 +370,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_" + testSuffix);
         groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
@@ -389,6 +394,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.getComputePreferences().add(groupComputeResourcePreference1);
 
         String groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
+        createdProfileIds.add(groupResourceProfileId);
 
         {
             GroupResourceProfile retrievedGroupResourceProfile =
@@ -407,7 +413,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_" + testSuffix);
         groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
@@ -431,6 +437,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.getComputePreferences().add(groupComputeResourcePreference1);
 
         String groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
+        createdProfileIds.add(groupResourceProfileId);
 
         {
             GroupResourceProfile retrievedGroupResourceProfile =
@@ -448,7 +455,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_" + testSuffix);
         groupResourceProfile.setComputePreferences(new ArrayList<>());
         groupResourceProfile.setComputePreferences(new ArrayList<>());
 
@@ -465,6 +472,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.getComputePreferences().add(groupComputeResourcePreference1);
 
         String groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
+        createdProfileIds.add(groupResourceProfileId);
 
         {
             GroupResourceProfile retrievedGroupResourceProfile =
@@ -483,7 +491,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
-        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
+        groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_" + testSuffix);
         groupResourceProfile.setComputePreferences(new ArrayList<>());
 
         ComputeResourceReservation reservation1 = new ComputeResourceReservation();
@@ -500,6 +508,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         groupResourceProfile.getComputePreferences().add(groupComputeResourcePreference1);
 
         String groupResourceProfileId = groupResourceProfileService.addGroupResourceProfile(groupResourceProfile);
+        createdProfileIds.add(groupResourceProfileId);
 
         {
             GroupResourceProfile retrievedGroupResourceProfile =

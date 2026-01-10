@@ -36,6 +36,7 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.sharing.repositories.DomainRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,6 +69,10 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(
         org.apache.airavata.config.AiravataServerProperties.class)
+@EnabledIfSystemProperty(
+        named = "test.startup.enabled",
+        matches = "true",
+        disabledReason = "Startup tests require full infrastructure - run with -Dtest.startup.enabled=true")
 public class UnifiedApplicationStartupTest {
 
     @Configuration
@@ -212,7 +217,7 @@ public class UnifiedApplicationStartupTest {
     public void testPropertiesAreLoaded() {
         AiravataServerProperties properties = applicationContext.getBean(AiravataServerProperties.class);
         assertNotNull(properties, "AiravataServerProperties should be loaded");
-        assertNotNull(properties.database, "Database properties should be configured");
-        assertNotNull(properties.database.registry, "Registry database properties should be configured");
+        assertNotNull(properties.database(), "Database properties should be configured");
+        assertNotNull(properties.database().registry(), "Registry database properties should be configured");
     }
 }

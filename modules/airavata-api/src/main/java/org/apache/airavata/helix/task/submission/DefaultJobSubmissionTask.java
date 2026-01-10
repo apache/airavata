@@ -22,7 +22,7 @@ package org.apache.airavata.helix.task.submission;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.model.ErrorModel;
@@ -43,15 +43,13 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Default Job Submission")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
@@ -104,7 +102,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
         try {
             var jobsOfTask = getRegistryService().getJobs("taskId", getTaskId());
 
-            if (jobsOfTask.size() > 0) {
+            if (!jobsOfTask.isEmpty()) {
                 logger.warn("A job is already available for task " + getTaskId());
                 return onSuccess("A job is already available for task " + getTaskId());
             }
@@ -138,14 +136,13 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setJobState(JobState.FAILED);
                     jobStatus.setReason(submissionOutput.getFailureReason());
                     statusList.add(jobStatus);
-                    jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+                    jobModel.setJobStatuses(List.of(jobStatus));
                     saveJobModel(jobModel);
-                    logger.error("Job submission failed for job name " + jobModel.getJobName()
-                            + ". Exit code : " + submissionOutput.getExitCode() + ", Submission failed : "
-                            + submissionOutput.isJobSubmissionFailed());
+                    logger.error("Job submission failed for job name {}. Exit code : {}, Submission failed : {}",
+                            jobModel.getJobName(), submissionOutput.getExitCode(), submissionOutput.isJobSubmissionFailed());
 
-                    logger.error("Standard error message : " + submissionOutput.getStdErr());
-                    logger.error("Standard out message : " + submissionOutput.getStdOut());
+                    logger.error("Standard error message : {}", submissionOutput.getStdErr());
+                    logger.error("Standard out message : {}", submissionOutput.getStdOut());
                     return onFail(
                             "Job submission command didn't return a jobId. Reason "
                                     + submissionOutput.getFailureReason(),
@@ -175,7 +172,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
             } else if (jobId != null && !jobId.isEmpty()) {
 
-                logger.info("Received job id " + jobId + " from compute resource");
+                logger.info("Received job id {} from compute resource", jobId);
                 jobModel.setJobId(jobId);
                 saveJobModel(jobModel);
 
@@ -185,7 +182,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         + getComputeResourceDescription().getHostName());
                 jobStatus.setTimeOfStateChange(
                         AiravataUtils.getCurrentTimestamp().getTime());
-                jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+                jobModel.setJobStatuses(List.of(jobStatus));
                 saveAndPublishJobStatus(jobModel);
 
                 if (verifyJobSubmissionByJobId(adaptor, jobId)) {
@@ -193,7 +190,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setReason("Verification step succeeded");
                     jobStatus.setTimeOfStateChange(
                             AiravataUtils.getCurrentTimestamp().getTime());
-                    jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+                    jobModel.setJobStatuses(List.of(jobStatus));
                     saveAndPublishJobStatus(jobModel);
                 }
 
@@ -213,13 +210,13 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         jobStatus.setReason("Verification step succeeded");
                         jobStatus.setTimeOfStateChange(
                                 AiravataUtils.getCurrentTimestamp().getTime());
-                        jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+                        jobModel.setJobStatuses(List.of(jobStatus));
                         saveAndPublishJobStatus(jobModel);
-                        logger.info("Job id " + verifyJobId + " verification succeeded");
+                        logger.info("Job id {} verification succeeded", verifyJobId);
                         break;
                     }
-                    logger.info("Verify step return invalid jobId, retry verification step in "
-                            + (verificationTryCount * 10) + " secs");
+                    logger.info("Verify step return invalid jobId, retry verification step in {} secs",
+                            verificationTryCount * 10);
                     Thread.sleep(verificationTryCount * 10000);
                 }
             }
@@ -277,16 +274,16 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             logger.error("Task failed due to unexpected issue. Trying to control damage", e);
 
             if (jobId != null && !jobId.isEmpty()) {
-                logger.warn("Job " + jobId + " has already being submitted. Trying to cancel the job");
+                logger.warn("Job {} has already being submitted. Trying to cancel the job", jobId);
                 try {
                     boolean cancelled = cancelJob(adaptor, jobId);
                     if (cancelled) {
-                        logger.info("Job " + jobId + " cancellation triggered");
+                        logger.info("Job {} cancellation triggered", jobId);
                     } else {
-                        logger.error("Failed to cancel job " + jobId + ". Please contact system admins");
+                        logger.error("Failed to cancel job {}. Please contact system admins", jobId);
                     }
                 } catch (Exception e1) {
-                    logger.error("Error while cancelling the job " + jobId + ". Please contact system admins");
+                    logger.error("Error while cancelling the job {}. Please contact system admins", jobId);
                     // ignore as we have nothing to do at this point
                 }
             }

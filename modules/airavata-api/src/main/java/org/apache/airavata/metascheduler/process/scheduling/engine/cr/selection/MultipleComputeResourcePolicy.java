@@ -22,7 +22,6 @@ package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -43,9 +42,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("!test")
 @ConditionalOnProperty(
-        name = "scheduler.selectionPolicy",
-        havingValue = "MultipleComputeResourcePolicy",
-        matchIfMissing = false)
+        prefix = "services.scheduler",
+        name = "selection-policy",
+        havingValue = "MultipleComputeResourcePolicy")
 public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultipleComputeResourcePolicy.class);
@@ -72,9 +71,8 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
             List<String> retries = new ArrayList<>();
 
             while (retries.size() < resourceSchedulingModels.size()) {
-                Random rand = new Random();
                 int upperbound = resourceSchedulingModels.size();
-                int int_random = rand.nextInt(upperbound);
+                int int_random = java.util.concurrent.ThreadLocalRandom.current().nextInt(upperbound);
                 ComputationalResourceSchedulingModel resourceSchedulingModel = resourceSchedulingModels.get(int_random);
                 String key = resourceSchedulingModel.getResourceHostId() + "_" + resourceSchedulingModel.getQueueName();
                 if (!retries.contains(key)) {

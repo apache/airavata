@@ -33,57 +33,23 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            JobSubmissionInterfaceRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class JobSubmissionInterfaceRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
     private final JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
     private final JobSubmissionInterfaceMapper mapper;
 
     private String computeResourceId;
+    private String testSuffix;
 
     public JobSubmissionInterfaceRepositoryTest(
             ComputeResourceService computeResourceService,
             JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository,
             JobSubmissionInterfaceMapper mapper) {
-        super(Database.APP_CATALOG);
         this.computeResourceService = computeResourceService;
         this.jobSubmissionInterfaceRepository = jobSubmissionInterfaceRepository;
         this.mapper = mapper;
@@ -91,15 +57,22 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
     @BeforeEach
     public void createTestComputeResource() throws AppCatalogException {
+        // Use unique suffix for test isolation
+        testSuffix = java.util.UUID.randomUUID().toString().substring(0, 8);
 
         ComputeResourceDescription description = new ComputeResourceDescription();
-        description.setHostName("localhost");
+        description.setHostName("jobsub-test-host-" + testSuffix);
+        
+        // Initialize batch queues list
+        java.util.List<BatchQueue> batchQueues = new java.util.ArrayList<>();
         var queue1 = new BatchQueue();
         queue1.setQueueName("queue1");
+        batchQueues.add(queue1);
         var queue2 = new BatchQueue();
         queue2.setQueueName("queue2");
-        description.getBatchQueues().add(queue1);
-        description.getBatchQueues().add(queue2);
+        batchQueues.add(queue2);
+        description.setBatchQueues(batchQueues);
+        
         computeResourceId = computeResourceService.addComputeResource(description);
     }
 
@@ -111,9 +84,11 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
     @Test
     public void testAddJobSubmissionInterface() throws AppCatalogException {
+        // Use unique ID for test isolation
+        String uniqueInterfaceId = "test-jobsub-" + testSuffix;
 
         JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
-        jobSubmissionInterface.setJobSubmissionInterfaceId("test");
+        jobSubmissionInterface.setJobSubmissionInterfaceId(uniqueInterfaceId);
         jobSubmissionInterface.setPriorityOrder(1);
         jobSubmissionInterface.setJobSubmissionProtocol(JobSubmissionProtocol.SSH);
 
@@ -128,7 +103,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
                 jobSubmissionInterfaceRepository.findById(pk).orElse(null);
         Assertions.assertNotNull(entity);
         JobSubmissionInterface retrievedJobSubmissionInterface = mapper.toModel(entity);
-        Assertions.assertEquals("test", retrievedJobSubmissionInterface.getJobSubmissionInterfaceId());
+        Assertions.assertEquals(uniqueInterfaceId, retrievedJobSubmissionInterface.getJobSubmissionInterfaceId());
         Assertions.assertEquals(1, retrievedJobSubmissionInterface.getPriorityOrder());
         Assertions.assertEquals(JobSubmissionProtocol.SSH, retrievedJobSubmissionInterface.getJobSubmissionProtocol());
 

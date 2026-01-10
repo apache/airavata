@@ -35,14 +35,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Parsing Triggering Task")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class ParsingTriggeringTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ParsingTriggeringTask.class);
@@ -73,7 +71,7 @@ public class ParsingTriggeringTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                topic = props.services.parser.topic;
+                topic = props.services().parser().topic();
             }
         } catch (Exception e) {
             logger.warn("Could not get properties from ApplicationContext", e);
@@ -89,8 +87,8 @@ public class ParsingTriggeringTask extends AiravataTask {
                 }
                 var props = ctx.getBean(AiravataServerProperties.class);
                 Properties kafkaProps = new Properties();
-                kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, props.kafka.brokerUrl);
-                kafkaProps.put(ProducerConfig.CLIENT_ID_CONFIG, props.services.parser.brokerConsumerGroup);
+                kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, props.kafka().brokerUrl());
+                kafkaProps.put(ProducerConfig.CLIENT_ID_CONFIG, props.services().parser().brokerConsumerGroup());
                 kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
                 kafkaProps.put(
                         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,

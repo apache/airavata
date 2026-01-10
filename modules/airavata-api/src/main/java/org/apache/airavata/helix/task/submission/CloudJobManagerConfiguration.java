@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.task.submission;
 
 import java.io.File;
-import java.nio.file.Paths;
 import org.apache.airavata.helix.task.submission.parser.AiravataCustomCommandOutputParser;
 
 /**
@@ -70,7 +69,7 @@ public class CloudJobManagerConfiguration implements JobManagerConfiguration {
     public RawCommandInfo getSubmitCommand(String workingDirectory, String filePath) {
         String remoteScriptPath = workingDirectory
                 + File.separator
-                + Paths.get(filePath).getFileName().toString();
+                + java.nio.file.Path.of(filePath).getFileName().toString();
         return new RawCommandInfo("/bin/bash " + remoteScriptPath);
     }
 

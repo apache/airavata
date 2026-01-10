@@ -19,188 +19,138 @@
 */
 package org.apache.airavata.common.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * I/O utility class using modern Java NIO.
+ */
 public class IOUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(IOUtil.class);
 
     /**
-     * @param path
-     * @param content
-     * @throws IOException
+     * Writes content to a file at the specified path.
      */
     public static void writeToFile(String content, String path) throws IOException {
-        logger.debug("Path:" + path + " Content:" + content);
-
-        FileWriter fw = new FileWriter(path);
-        writeToWriter(content, fw);
+        logger.debug("Writing to path: {}", path);
+        Files.writeString(Path.of(path), content);
     }
 
     /**
-     * @param content
-     * @param file
-     * @throws IOException
+     * Writes content to the specified file.
      */
     public static void writeToFile(String content, File file) throws IOException {
-        FileWriter fw = new FileWriter(file);
-        writeToWriter(content, fw);
+        Files.writeString(file.toPath(), content);
     }
 
     /**
-     * @param inputStream
-     * @param file
-     * @throws IOException
+     * Writes input stream to file.
      */
     public static void writeToFile(InputStream inputStream, File file) throws IOException {
-        FileOutputStream outputStream = new FileOutputStream(file);
-        byte[] bytes = new byte[1024];
-        int len;
-        while ((len = inputStream.read(bytes)) != -1) {
-            outputStream.write(bytes, 0, len);
+        try (inputStream; var outputStream = Files.newOutputStream(file.toPath())) {
+            inputStream.transferTo(outputStream);
         }
-        outputStream.close();
     }
 
     /**
-     * Writes a specified String to a specified Writer.
-     *
-     * @param content
-     *            The content to write
-     * @param writer
-     *            The specified Writer
-     *
-     * @throws IOException
+     * Writes content to writer and closes it.
      */
     public static void writeToWriter(String content, Writer writer) throws IOException {
-        writer.write(content);
-        writer.close();
+        try (writer) {
+            writer.write(content);
+        }
     }
 
     /**
-     * Returns the content of a specified file as a String.
-     *
-     * @param path
-     * @return the content of a specified file as a String
-     * @throws IOException
+     * Reads file content as string.
      */
     public static String readFileToString(String path) throws IOException {
-        FileReader read = new FileReader(path);
-        return readToString(read);
+        return Files.readString(Path.of(path));
     }
 
     /**
-     * Returns the content of a specified file as a String.
-     *
-     * @param file
-     * @return the content of a specified file as a String
-     * @throws IOException
+     * Reads file content as string.
      */
     public static String readFileToString(File file) throws IOException {
-        FileReader reader = new FileReader(file);
-        return readToString(reader);
+        return Files.readString(file.toPath());
     }
 
     /**
-     * Returns a String read from a specified InputStream.
-     *
-     * @param stream
-     *            The specified InputStream
-     * @return The String read from the specified InputStream
-     * @throws IOException
+     * Reads input stream to string.
      */
     public static String readToString(InputStream stream) throws IOException {
-        return readToString(new InputStreamReader(stream));
+        try (stream) {
+            return new String(stream.readAllBytes());
+        }
     }
 
     /**
-     * Returns a String read from a specified Reader.
-     *
-     * @param reader
-     *            The specified Reader
-     * @return The String read from the specified Reader
-     * @throws IOException
+     * Reads reader content to string.
      */
     public static String readToString(Reader reader) throws IOException {
-        char[] cbuf = new char[1024];
-        StringBuilder sbuf = new StringBuilder();
-        int len;
-        while ((len = reader.read(cbuf)) != -1) {
-            sbuf.append(cbuf, 0, len);
+        try (reader) {
+            var sb = new StringBuilder();
+            var cbuf = new char[8192];
+            int len;
+            while ((len = reader.read(cbuf)) != -1) {
+                sb.append(cbuf, 0, len);
+            }
+            return sb.toString();
         }
-        return sbuf.toString();
     }
 
     /**
-     * @param file
-     * @return The byte array
-     * @throws IOException
+     * Reads file to byte array.
      */
     public static byte[] readToByteArray(File file) throws IOException {
-        return readToByteArray(new FileInputStream(file));
+        return Files.readAllBytes(file.toPath());
     }
 
     /**
-     * @param inputStream
-     * @return The byte array.
-     * @throws IOException
+     * Reads input stream to byte array.
      */
     public static byte[] readToByteArray(InputStream inputStream) throws IOException {
-        byte[] buf = new byte[1024];
-        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-        int len;
-        while ((len = inputStream.read(buf)) != -1) {
-            byteArrayStream.write(buf, 0, len);
+        try (inputStream) {
+            return inputStream.readAllBytes();
         }
-        return byteArrayStream.toByteArray();
     }
 
     /**
-     * @param path
-     * @return <code>true</code> if and only if the file or directory is successfully deleted; <code>false</code>
-     *         otherwise
+     * Deletes directory recursively.
      */
     public static boolean deleteDirectory(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectory(file);
-                } else {
-                    file.delete();
-                }
-            }
+        if (!path.exists()) {
+            return true;
         }
-        return path.delete();
+        try (Stream<Path> walk = Files.walk(path.toPath())) {
+            walk.sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            return true;
+        } catch (IOException e) {
+            logger.warn("Failed to delete directory: {}", path, e);
+            return false;
+        }
     }
 
     /**
-     * Gets the extension of a specified file.
-     *
-     * @param file
-     *            the specified file.
-     * @return the extension of the file in lower case if there is an extension; null otherwise
+     * Gets file extension in lowercase.
      */
     public static String getExtension(File file) {
-        String ext = null;
         String name = file.getName();
-
         int index = name.lastIndexOf('.');
-        if (index > 0 && index < name.length() - 1) {
-            ext = name.substring(index + 1).toLowerCase();
-        }
-        return ext;
+        return (index > 0 && index < name.length() - 1) 
+                ? name.substring(index + 1).toLowerCase() 
+                : null;
     }
 }

@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
@@ -488,7 +487,7 @@ public class ExperimentSummaryService {
 
         if (experimentStates != null) {
             List<String> statesAsStrings =
-                    experimentStates.stream().map(ExperimentState::toString).collect(Collectors.toList());
+                    experimentStates.stream().map(ExperimentState::toString).toList();
             predicates.add(root.get("experimentStatus").in(statesAsStrings));
         }
 

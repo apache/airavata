@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.helix.task.submission.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -71,17 +70,13 @@ public class UGEOutputParser implements OutputParser {
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
             for (int i = lastStop; i < info.length; i++) {
-                if (jobID.split(",")[0].contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])) {
+                String[] lineParts = info[i].split(" ");
+                if (jobID.split(",")[0].contains(lineParts[0]) && !lineParts[0].isEmpty()) {
                     // now starts processing this line
                     log.info(info[i]);
-                    String correctLine = info[i];
-                    String[] columns = correctLine.split(" ");
-                    List<String> columnList = new ArrayList<String>();
-                    for (String s : columns) {
-                        if (!"".equals(s)) {
-                            columnList.add(s);
-                        }
-                    }
+                    List<String> columnList = new java.util.ArrayList<>(java.util.Arrays.stream(lineParts)
+                            .filter(s -> !s.isEmpty())
+                            .toList());
                     lastStop = i + 1;
                     if ("E".equals(columnList.get(4))) {
                         // There is another status with the same letter E other than error status

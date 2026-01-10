@@ -135,44 +135,44 @@ public class MessagingFactory {
     }
 
     private Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(properties.rabbitmq.experimentExchangeName);
+        rProperties.setExchangeName(properties.rabbitmq().experimentExchangeName());
         return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
     private Publisher getStatusPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(properties.rabbitmq.statusExchangeName);
+        rProperties.setExchangeName(properties.rabbitmq().statusExchangeName());
         return new RabbitMQPublisher(rProperties, this::statusRoutingkey);
     }
 
     private Publisher gerProcessPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(properties.rabbitmq.processExchangeName);
+        rProperties.setExchangeName(properties.rabbitmq().processExchangeName());
         return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
     private RabbitMQProperties getProperties() {
         return new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq.brokerUrl)
-                .setDurable(properties.rabbitmq.durableQueue)
-                .setPrefetchCount(properties.rabbitmq.prefetchCount)
+                .setBrokerUrl(properties.rabbitmq().brokerUrl())
+                .setDurable(properties.rabbitmq().durableQueue())
+                .setPrefetchCount(properties.rabbitmq().prefetchCount())
                 .setAutoRecoveryEnable(true)
                 .setConsumerTag("default")
                 .setExchangeType(RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
     }
 
     private RabbitMQSubscriber getStatusSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(properties.rabbitmq.statusExchangeName).setAutoAck(true);
+        sp.setExchangeName(properties.rabbitmq().statusExchangeName()).setAutoAck(true);
         return new RabbitMQSubscriber(sp);
     }
 
     private RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(properties.rabbitmq.processExchangeName)
+        sp.setExchangeName(properties.rabbitmq().processExchangeName())
                 .setQueueName("process_launch")
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);
     }
 
     private Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(properties.rabbitmq.experimentExchangeName)
+        sp.setExchangeName(properties.rabbitmq().experimentExchangeName())
                 .setQueueName("experiment_launch")
                 .setAutoAck(false);
         return new RabbitMQSubscriber(sp);

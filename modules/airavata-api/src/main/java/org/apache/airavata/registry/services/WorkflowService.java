@@ -21,7 +21,6 @@ package org.apache.airavata.registry.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.AiravataWorkflow;
 import org.apache.airavata.common.model.ApplicationStatus;
 import org.apache.airavata.common.model.DataBlock;
@@ -151,25 +150,25 @@ public class WorkflowService {
         if (entity.getApplications() != null) {
             workflow.setApplications(entity.getApplications().stream()
                     .map(this::convertApplication)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         if (entity.getHandlers() != null) {
             workflow.setHandlers(
-                    entity.getHandlers().stream().map(this::convertHandler).collect(Collectors.toList()));
+                    entity.getHandlers().stream().map(this::convertHandler).toList());
         }
         if (entity.getConnections() != null) {
             workflow.setConnections(entity.getConnections().stream()
                     .map(this::convertConnection)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         if (entity.getStatuses() != null) {
             workflow.setStatuses(entity.getStatuses().stream()
                     .map(this::convertWorkflowStatus)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         if (entity.getErrors() != null) {
             workflow.setErrors(
-                    entity.getErrors().stream().map(this::convertWorkflowError).collect(Collectors.toList()));
+                    entity.getErrors().stream().map(this::convertWorkflowError).toList());
         }
         return workflow;
     }
@@ -190,12 +189,12 @@ public class WorkflowService {
         if (entity.getStatuses() != null) {
             model.setStatuses(entity.getStatuses().stream()
                     .map(this::convertApplicationStatus)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         if (entity.getErrors() != null) {
             model.setErrors(entity.getErrors().stream()
                     .map(this::convertApplicationError)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         return model;
     }
@@ -239,20 +238,20 @@ public class WorkflowService {
         model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
         if (entity.getInputs() != null) {
             model.setInputs(
-                    entity.getInputs().stream().map(this::convertHandlerInput).collect(Collectors.toList()));
+                    entity.getInputs().stream().map(this::convertHandlerInput).toList());
         }
         if (entity.getOutputs() != null) {
             model.setOutputs(
-                    entity.getOutputs().stream().map(this::convertHandlerOutput).collect(Collectors.toList()));
+                    entity.getOutputs().stream().map(this::convertHandlerOutput).toList());
         }
         if (entity.getStatuses() != null) {
             model.setStatuses(entity.getStatuses().stream()
                     .map(this::convertHandlerStatus)
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         if (entity.getErrors() != null) {
             model.setErrors(
-                    entity.getErrors().stream().map(this::convertHandlerError).collect(Collectors.toList()));
+                    entity.getErrors().stream().map(this::convertHandlerError).toList());
         }
         return model;
     }

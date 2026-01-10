@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
  *   management.endpoint.prometheus.enabled=true
  */
 @Component
-@ConditionalOnProperty(prefix = "services.telemetry", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.telemetry", name = "enabled", havingValue = "true")
 public class TelemetryServer extends ServerLifecycle {
 
     private final AiravataServerProperties properties;

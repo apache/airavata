@@ -24,8 +24,8 @@ package org.apache.airavata.credential.utils;
  * Date: 12/27/13
  * Time: 2:22 PM
  */
-import java.text.ParseException;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -105,29 +105,26 @@ public class NotifierBootstrap extends TimerTask {
                 if (credential instanceof CertificateCredential certificateCredential) {
 
                     Date date = Utility.convertStringToDate(certificateCredential.getNotAfter());
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(date);
-                    cal.add(Calendar.DAY_OF_MONTH, 1); // gap is 1 days
-                    date = cal.getTime();
+                    Instant expiryWithGap = date.toInstant().plus(1, ChronoUnit.DAYS);
 
-                    Date currentDate = AiravataUtils.getUniqueTimestamp();
-                    if (currentDate.after(date)) {
+                    Instant currentInstant = AiravataUtils.getUniqueTimestamp().toInstant();
+                    if (currentInstant.isAfter(expiryWithGap)) {
                         // Send an email
                         CommunityUser communityUser = certificateCredential.getCommunityUser();
                         String body = String.format(
                                 MESSAGE, communityUser.getUsername(), certificateCredential.getNotAfter());
                         String subject = String.format(SUBJECT, communityUser.getUsername());
-                        NotificationMessage notificationMessage =
+                        EmailNotificationMessage notificationMessage =
                                 new EmailNotificationMessage(subject, communityUser.getUserEmail(), body);
 
-                        this.credentialStoreNotifier.notifyMessage(notificationMessage);
+                        this.credentialStoreNotifier.notifyEmail(notificationMessage);
                     }
                 }
             }
 
         } catch (CredentialStoreException e) {
             log.error("Error sending emails about credential expiring.", e);
-        } catch (ParseException e) {
+        } catch (java.time.format.DateTimeParseException e) {
             log.error("Error parsing date time when sending emails", e);
         }
     }

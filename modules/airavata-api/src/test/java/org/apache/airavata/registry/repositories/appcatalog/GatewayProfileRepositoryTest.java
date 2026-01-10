@@ -41,51 +41,12 @@ import org.apache.airavata.registry.services.GwyResourceProfileService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            GatewayProfileRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-            "services.thrift.enabled=false",
-            "services.helix.enabled=false",
-            "services.userprofile.enabled=false",
-            "services.groupmanager.enabled=false",
-            "services.iam.enabled=false",
-            "security.manager.enabled=false"
-        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @org.junit.jupiter.api.Disabled("Requires full app catalog; skipped in offline test runs")
 public class GatewayProfileRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
 
@@ -97,7 +58,6 @@ public class GatewayProfileRepositoryTest extends TestBase {
             GwyResourceProfileService gwyResourceProfileService,
             ComputeResourceService computeResourceService,
             AiravataServerProperties properties) {
-        super(Database.APP_CATALOG);
         this.gwyResourceProfileService = gwyResourceProfileService;
         this.computeResourceService = computeResourceService;
         this.properties = properties;
@@ -110,7 +70,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 this.gwyResourceProfileService.getAllGatewayProfiles();
         assertEquals(1, defaultGatewayResourceProfileList.size());
         assertEquals(
-                properties.airavata.defaultGateway,
+                properties.airavata().defaultGateway(),
                 defaultGatewayResourceProfileList.get(0).getGatewayID());
 
         GatewayResourceProfile gf = new GatewayResourceProfile();

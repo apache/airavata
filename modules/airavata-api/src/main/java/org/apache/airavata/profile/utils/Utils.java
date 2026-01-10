@@ -33,7 +33,7 @@ public class Utils {
     }
 
     public String getJDBCURL() {
-        return properties.database.profile.url;
+        return properties.database().profile().url();
     }
 
     public String getHost() {
@@ -65,18 +65,18 @@ public class Utils {
     }
 
     public String getJDBCUser() {
-        return properties.database.profile.user;
+        return properties.database().profile().user();
     }
 
     public String getValidationQuery() {
-        return properties.database.profile.validationQuery;
+        return properties.database().profile().validationQuery();
     }
 
     public String getJDBCPassword() {
-        return properties.database.profile.password;
+        return properties.database().profile().password();
     }
 
     public String getJDBCDriver() {
-        return properties.database.profile.driver;
+        return properties.database().profile().driver();
     }
 }

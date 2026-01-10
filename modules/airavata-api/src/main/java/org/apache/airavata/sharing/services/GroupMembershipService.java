@@ -228,14 +228,13 @@ public class GroupMembershipService {
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.GroupMembershipTable.CHILD_ID, childId);
         filters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
-        LinkedList<GroupMembership> temp = new LinkedList<>();
-        select(filters, 0, -1).stream().forEach(m -> temp.addLast(m));
-        while (temp.size() > 0) {
+        LinkedList<GroupMembership> temp = new LinkedList<>(select(filters, 0, -1));
+        while (!temp.isEmpty()) {
             GroupMembership gm = temp.pop();
             filters = new HashMap<>();
             filters.put(DBConstants.GroupMembershipTable.CHILD_ID, gm.getParentId());
             filters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
-            select(filters, 0, -1).stream().forEach(m -> temp.addLast(m));
+            temp.addAll(select(filters, 0, -1));
             finalParentGroups.add(gm);
         }
         return finalParentGroups;

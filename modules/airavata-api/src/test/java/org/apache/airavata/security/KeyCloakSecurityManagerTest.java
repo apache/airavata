@@ -73,8 +73,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(
-        org.apache.airavata.config.AiravataServerProperties.class)
 public class KeyCloakSecurityManagerTest {
 
     public static final String TEST_USERNAME = "test-user";
@@ -114,12 +112,24 @@ public class KeyCloakSecurityManagerTest {
         @Bean
         @Primary
         public AiravataServerProperties airavataServerProperties(org.springframework.core.env.Environment environment) {
-            AiravataServerProperties properties = new AiravataServerProperties();
-
-            properties.security.tls.enabled = true;
-
-            properties.security.iam.serverUrl = "";
-            properties.security.authzCache.enabled = true; // Enable cache - tests will mock it
+            // Use Mockito to create mock properties since records are immutable
+            var tls = org.mockito.Mockito.mock(AiravataServerProperties.Security.Tls.class);
+            org.mockito.Mockito.when(tls.enabled()).thenReturn(true);
+            
+            var iam = org.mockito.Mockito.mock(AiravataServerProperties.Security.Iam.class);
+            org.mockito.Mockito.when(iam.serverUrl()).thenReturn("");
+            
+            var authzCache = org.mockito.Mockito.mock(AiravataServerProperties.Security.AuthzCache.class);
+            org.mockito.Mockito.when(authzCache.enabled()).thenReturn(true);
+            
+            var security = org.mockito.Mockito.mock(AiravataServerProperties.Security.class);
+            org.mockito.Mockito.when(security.tls()).thenReturn(tls);
+            org.mockito.Mockito.when(security.iam()).thenReturn(iam);
+            org.mockito.Mockito.when(security.authzCache()).thenReturn(authzCache);
+            
+            var properties = org.mockito.Mockito.mock(AiravataServerProperties.class);
+            org.mockito.Mockito.when(properties.security()).thenReturn(security);
+            
             return properties;
         }
 

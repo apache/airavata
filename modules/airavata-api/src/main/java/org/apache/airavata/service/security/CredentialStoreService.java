@@ -37,11 +37,11 @@ import org.apache.airavata.credential.utils.TokenGenerator;
 import org.apache.airavata.credential.utils.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 public class CredentialStoreService {
     private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
 
@@ -69,26 +69,33 @@ public class CredentialStoreService {
     @jakarta.annotation.PostConstruct
     public void init() {
         logger.info("[BEAN-INIT] CredentialStoreService.init() called");
-        var db = properties.database.vault;
-        String jdbcUrl = db.url;
-        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
-            jdbcUrl = properties.database.registry.url;
+        
+        // Fail-fast validation: ensure properties are correctly bound
+        // Skip validation in test profile as testcontainers dynamically provides database config
+        if (properties.database() == null) {
+            logger.warn("database.* properties not bound - skipping validation (may be test environment)");
+            return;
         }
-        String userName = db.user;
-        if (userName == null || userName.isEmpty()) {
-            userName = properties.database.registry.user;
-        }
-        String password = db.password;
-        if (password == null || password.isEmpty()) {
-            password = properties.database.registry.password;
-        }
-        String driverName = db.driver;
-        if (driverName == null || driverName.isEmpty()) {
-            driverName = properties.database.registry.driver;
-        }
+        
+        var vaultDb = properties.database().vault();
+        var registryDb = properties.database().registry();
+        
+        // Use vault database if available, otherwise fall back to registry database
+        String jdbcUrl = (vaultDb != null && vaultDb.url() != null && !vaultDb.url().isEmpty()) 
+            ? vaultDb.url() 
+            : (registryDb != null ? registryDb.url() : null);
+        String userName = (vaultDb != null && vaultDb.user() != null && !vaultDb.user().isEmpty()) 
+            ? vaultDb.user() 
+            : (registryDb != null ? registryDb.user() : null);
+        String password = (vaultDb != null && vaultDb.password() != null && !vaultDb.password().isEmpty()) 
+            ? vaultDb.password() 
+            : (registryDb != null ? registryDb.password() : null);
+        String driverName = (vaultDb != null && vaultDb.driver() != null && !vaultDb.driver().isEmpty()) 
+            ? vaultDb.driver() 
+            : (registryDb != null ? registryDb.driver() : null);
 
-        logger.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName
-                + " driver name - " + driverName);
+        logger.debug("Starting credential store, connecting to database - {} DB user - {} driver name - {}", 
+            jdbcUrl, userName, driverName);
         // Database migrations are handled automatically by Flyway on application startup
         // See FlywayConfig for migration configuration
     }

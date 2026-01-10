@@ -146,7 +146,7 @@ public class UserService {
         predicates.add(cb.equal(sharingRoot.get("entityId"), entityId));
         predicates.add(cb.equal(sharingRoot.get("permissionTypeId"), permissionTypeId));
 
-        if (!Arrays.asList(sharingTypes).isEmpty()) {
+        if (sharingTypes.length > 0) {
             List<String> sharingTypeNames =
                     Arrays.stream(sharingTypes).map(SharingType::name).toList();
             predicates.add(sharingRoot.get("sharingType").in(sharingTypeNames));

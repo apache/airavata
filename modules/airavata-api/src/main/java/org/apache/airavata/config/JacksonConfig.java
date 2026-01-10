@@ -83,6 +83,12 @@ public class JacksonConfig {
      */
     @jakarta.annotation.PostConstruct
     public void initGlobalMapper() {
-        globalMapper = objectMapper();
+        // Initialize using builder to avoid cycle
+        globalMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .build();
     }
 }

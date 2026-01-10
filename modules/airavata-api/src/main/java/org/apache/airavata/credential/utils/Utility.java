@@ -22,12 +22,11 @@ package org.apache.airavata.credential.utils;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.security.KeyStore;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
@@ -41,17 +40,15 @@ public class Utility {
     protected static Logger log = LoggerFactory.getLogger(Utility.class);
 
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
     public static String convertDateToString(Date date) {
-
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        return df.format(date);
+        return FORMATTER.format(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
     }
 
-    public static Date convertStringToDate(String date) throws ParseException {
-
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-        return df.parse(date);
+    public static Date convertStringToDate(String dateStr) {
+        LocalDateTime ldt = LocalDateTime.parse(dateStr, FORMATTER);
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public static String encrypt(String stringToEncrypt) {
@@ -60,19 +57,10 @@ public class Utility {
 
     public static KeyStore loadKeyStore(String keyStoreFile) throws Exception {
         KeyStore ks = KeyStore.getInstance("JKS");
-        // get user password and file input stream
         char[] password = getPassword();
-
-        java.io.FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(keyStoreFile);
+        try (var fis = Files.newInputStream(java.nio.file.Path.of(keyStoreFile))) {
             ks.load(fis, password);
-
             return ks;
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
 

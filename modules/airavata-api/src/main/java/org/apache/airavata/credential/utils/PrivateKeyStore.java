@@ -35,7 +35,7 @@ public class PrivateKeyStore {
     private static PrivateKeyStore privateKeyStore = null;
 
     private PrivateKeyStore() {
-        privateKeyMap = new HashMap<String, PrivateKey>();
+        privateKeyMap = new HashMap<>();
     }
 
     public static PrivateKeyStore getPrivateKeyStore() {

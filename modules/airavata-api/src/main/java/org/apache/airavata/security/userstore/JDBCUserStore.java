@@ -26,7 +26,6 @@ import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -49,7 +48,6 @@ import org.w3c.dom.NodeList;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "security.userstore.jdbc.enabled", havingValue = "true", matchIfMissing = false)
 public class JDBCUserStore extends AbstractJDBCUserStore {
 
     protected static Logger log = LoggerFactory.getLogger(JDBCUserStore.class);

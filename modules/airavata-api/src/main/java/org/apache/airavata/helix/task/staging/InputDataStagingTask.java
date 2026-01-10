@@ -35,14 +35,12 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Input Data Staging Task")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class InputDataStagingTask extends DataStagingTask {
 
     private static final Logger logger = LoggerFactory.getLogger(InputDataStagingTask.class);

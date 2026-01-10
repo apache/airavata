@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -82,25 +81,12 @@ public class DatabaseCreator {
      */
     public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
         try {
-
             log.debug("Running a query to test the database tables existence.");
 
             // check whether the tables are already created with a query
-            Statement statement = null;
-            try {
-                statement = conn.createStatement();
-                ResultSet rs = statement.executeQuery("select * from " + tableName);
-                if (rs != null) {
-                    rs.close();
-                }
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    return false;
-                }
+            try (var statement = conn.createStatement();
+                 var _ = statement.executeQuery("select * from " + tableName)) {
+                // Result set auto-closed by try-with-resources
             }
         } catch (SQLException e) {
             return false;
@@ -117,24 +103,20 @@ public class DatabaseCreator {
      */
     private static void executeSQL(String sql, Connection conn) throws Exception {
         // Check and ignore empty statements
-        if ("".equals(sql.trim())) {
+        if (sql.isBlank()) {
             return;
         }
 
-        Statement statement = null;
-        try {
+        try (Statement statement = conn.createStatement()) {
             log.debug("SQL : " + sql);
 
             boolean ret;
-            int updateCount = 0, updateCountTotal = 0;
-            statement = conn.createStatement();
+            int updateCount, updateCountTotal = 0;
             ret = statement.execute(sql);
             updateCount = statement.getUpdateCount();
             do {
-                if (!ret) {
-                    if (updateCount != -1) {
-                        updateCountTotal += updateCount;
-                    }
+                if (!ret && updateCount != -1) {
+                    updateCountTotal += updateCount;
                 }
                 ret = statement.getMoreResults();
                 if (ret) {
@@ -151,20 +133,11 @@ public class DatabaseCreator {
             }
             conn.clearWarnings();
         } catch (SQLException e) {
-            if (e.getSQLState().equals("X0Y32")) {
-                // eliminating the table already exception for the derby
-                // database
+            if ("X0Y32".equals(e.getSQLState())) {
+                // eliminating the table already exception for the derby database
                 log.info("Table Already Exists", e);
             } else {
                 throw new Exception("Error occurred while executing : " + sql, e);
-            }
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    log.error("Error occurred while closing result set.", e);
-                }
             }
         }
     }
@@ -235,13 +208,13 @@ public class DatabaseCreator {
     }
 
     private static void createDatabase(String prefix, Connection conn) throws Exception {
-        Statement statement = null;
         try {
             conn.setAutoCommit(false);
-            statement = conn.createStatement();
-            executeSQLScript(getScriptLocation(prefix, DatabaseCreator.getDatabaseType(conn)), conn);
-            conn.commit();
-            log.debug("Tables are created successfully.");
+            try (var _ = conn.createStatement()) {
+                executeSQLScript(getScriptLocation(prefix, DatabaseCreator.getDatabaseType(conn)), conn);
+                conn.commit();
+                log.debug("Tables are created successfully.");
+            }
         } catch (SQLException e) {
             String msg = "Failed to create database tables for Airavata resource store. " + e.getMessage();
             log.error(msg, e);
@@ -249,13 +222,6 @@ public class DatabaseCreator {
             throw new Exception(msg, e);
         } finally {
             conn.setAutoCommit(true);
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                log.error("Failed to close statement.", e);
-            }
         }
     }
 

@@ -20,23 +20,13 @@
 package org.apache.airavata.credential.model;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 12/3/13
- * Time: 4:21 PM
- */
-
-/**
  * Encapsulates the notification message.
  * Usually says particular credential is expiring and need to renew.
  */
-public class NotificationMessage {
-
-    protected String message;
-
-    public NotificationMessage(String msg) {
-        this.message = msg;
-    }
-
+public record NotificationMessage(String message) {
+    /**
+     * Alias for message() to maintain backward compatibility with getMessage().
+     */
     public String getMessage() {
         return message;
     }

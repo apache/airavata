@@ -26,7 +26,7 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -53,7 +53,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 public class JpaConfig {
 
     private final AiravataServerProperties properties;
@@ -138,8 +138,21 @@ public class JpaConfig {
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
-        // Don't set dialect explicitly - let Hibernate auto-detect from datasource to avoid deprecation warning
-        // Hibernate 6+ can auto-detect the dialect from the JDBC driver
+        // Set dialect explicitly based on JDBC URL to avoid metadata access issues
+        // Hibernate 6+ requires dialect when jdbc metadata access is disabled
+        if (url != null) {
+            String urlLower = url.toLowerCase();
+            if (urlLower.contains("mariadb")) {
+                props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+            } else if (urlLower.contains("mysql")) {
+                props.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+            } else if (urlLower.contains("h2")) {
+                props.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+            } else if (urlLower.contains("postgresql")) {
+                props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+            }
+            // If none match, Hibernate will auto-detect (requires metadata access)
+        }
         
         // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown),
         // none for production when database might not be available (skip validation)

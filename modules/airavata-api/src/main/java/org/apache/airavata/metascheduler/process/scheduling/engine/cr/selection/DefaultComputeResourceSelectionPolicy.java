@@ -42,9 +42,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("!test")
 @ConditionalOnProperty(
-        name = "scheduler.selectionPolicy",
-        havingValue = "DefaultComputeResourceSelectionPolicy",
-        matchIfMissing = true)
+        prefix = "services.scheduler",
+        name = "selection-policy",
+        havingValue = "DefaultComputeResourceSelectionPolicy")
 public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelectionPolicyImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultComputeResourceSelectionPolicy.class);

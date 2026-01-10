@@ -138,11 +138,11 @@ import org.apache.airavata.registry.utils.Constants;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 public class RegistryService {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
@@ -298,7 +298,7 @@ public class RegistryService {
                 throw new RegistryServiceException(message);
             }
             var gateway = gatewayService.getGateway(gatewayId);
-            logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
+            logger.debug("Airavata retrieved gateway with gateway id : {}", gateway.getGatewayId());
             return gateway;
         } catch (RegistryException e) {
             String message = String.format("Error while getting the gateway: gatewayId=%s", gatewayId);
@@ -316,7 +316,7 @@ public class RegistryService {
                 throw new RegistryServiceException(message);
             }
             gatewayService.removeGateway(gatewayId);
-            logger.debug("Airavata deleted gateway with gateway id : " + gatewayId);
+            logger.debug("Airavata deleted gateway with gateway id : {}", gatewayId);
             return true;
         } catch (RegistryException e) {
             String message = String.format("Error while deleting the gateway: gatewayId=%s", gatewayId);
@@ -391,7 +391,7 @@ public class RegistryService {
                 exception.setMessage(message);
                 throw exception;
             }
-            logger.debug("Airavata retrieved project with project Id : " + projectId);
+            logger.debug("Airavata retrieved project with project Id : {}", projectId);
             var project = projectService.getProject(projectId);
             return project;
         } catch (ProjectNotFoundException e) {
@@ -414,7 +414,7 @@ public class RegistryService {
                 throw exception;
             }
             projectService.removeProject(projectId);
-            logger.debug("Airavata deleted project with project Id : " + projectId);
+            logger.debug("Airavata deleted project with project Id : {}", projectId);
             return true;
         } catch (ProjectNotFoundException e) {
             throw e;
@@ -492,9 +492,9 @@ public class RegistryService {
             limit = Math.min(limit, 1000);
             ExperimentStatistics result = experimentSummaryService.getAccessibleExperimentStatistics(
                     accessibleExpIds, filters, limit, offset);
-            logger.debug("Airavata retrieved experiments for gateway id : " + gatewayId + " between : "
-                    + org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime) + " and "
-                    + org.apache.airavata.common.utils.AiravataUtils.getTime(toTime));
+            logger.debug("Airavata retrieved experiments for gateway id : {} between : {} and {}",
+                    gatewayId, org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime),
+                    org.apache.airavata.common.utils.AiravataUtils.getTime(toTime));
             return result;
         } catch (RegistryException e) {
             String message = String.format("Error while getting experiment statistics: gatewayId=%s", gatewayId);
@@ -527,7 +527,7 @@ public class RegistryService {
                     offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
                     ResultOrderType.DESC);
-            logger.debug("Airavata retrieved experiments for project : " + projectId);
+            logger.debug("Airavata retrieved experiments for project : {}", projectId);
             return experiments;
         } catch (RegistryException e) {
             String message = String.format(
@@ -561,7 +561,7 @@ public class RegistryService {
                     offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME,
                     ResultOrderType.DESC);
-            logger.debug("Airavata retrieved experiments for user : " + userName);
+            logger.debug("Airavata retrieved experiments for user : {}", userName);
             return experiments;
         } catch (RegistryException e) {
             String message = String.format(
@@ -584,7 +584,7 @@ public class RegistryService {
                         "Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
             }
             experimentService.removeExperiment(experimentId);
-            logger.debug("Airavata removed experiment with experiment id : " + experimentId);
+            logger.debug("Airavata removed experiment with experiment id : {}", experimentId);
             return true;
         } catch (RegistryException e) {
             String message = String.format("Error while deleting the experiment: experimentId=%s", experimentId);
@@ -618,18 +618,13 @@ public class RegistryService {
             var processList = processService.getProcessList(
                     Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentModel.getExperimentId());
             if (processList != null) {
-                processList.stream().forEach(p -> {
-                    (p).getTasks().stream().forEach(t -> {
+                processList.forEach(p -> {
+                    p.getTasks().forEach(t -> {
                         try {
                             var jobList = jobService.getJobList(
                                     Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel) t).getTaskId());
                             if (jobList != null) {
-                                Collections.sort(jobList, new Comparator<JobModel>() {
-                                    @Override
-                                    public int compare(JobModel o1, JobModel o2) {
-                                        return (int) (o1.getCreationTime() - o2.getCreationTime());
-                                    }
-                                });
+                                jobList.sort(Comparator.comparingLong(JobModel::getCreationTime));
                                 t.setJobs(jobList);
                             }
                         } catch (RegistryException e) {
@@ -639,7 +634,7 @@ public class RegistryService {
                 });
                 experimentModel.setProcesses(processList);
             }
-            logger.debug("Airavata retrieved detailed experiment with experiment id : " + airavataExperimentId);
+            logger.debug("Airavata retrieved detailed experiment with experiment id : {}", airavataExperimentId);
             return experimentModel;
         } catch (RegistryException e) {
             String message =
@@ -670,7 +665,7 @@ public class RegistryService {
 
     public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryServiceException {
         ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
-        logger.debug("Airavata retrieved experiment status for experiment id : " + airavataExperimentId);
+        logger.debug("Airavata retrieved experiment status for experiment id : {}", airavataExperimentId);
         return experimentStatus;
     }
 
@@ -685,7 +680,7 @@ public class RegistryService {
                 throw new RegistryException(
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            logger.debug("Airavata retrieved experiment outputs for experiment id : " + airavataExperimentId);
+            logger.debug("Airavata retrieved experiment outputs for experiment id : {}", airavataExperimentId);
             return experimentOutputService.getExperimentOutputs(airavataExperimentId);
         } catch (RegistryException e) {
             String message = String.format(
@@ -987,7 +982,7 @@ public class RegistryService {
                     }
                 }
             }
-            logger.debug("Airavata retrieved job models for experiment with experiment id : " + airavataExperimentId);
+            logger.debug("Airavata retrieved job models for experiment with experiment id : {}", airavataExperimentId);
             return jobList;
         } catch (RegistryException e) {
             String message = String.format("Error while getting job details: experimentId=%s", airavataExperimentId);
@@ -997,11 +992,7 @@ public class RegistryService {
     }
 
     private boolean validateString(String name) {
-        boolean valid = true;
-        if (name == null || name.equals("") || name.trim().length() == 0) {
-            valid = false;
-        }
-        return valid;
+        return name != null && !name.isBlank();
     }
 
     public boolean isGatewayExistInternal(String gatewayId) throws RegistryServiceException {
@@ -1017,7 +1008,7 @@ public class RegistryService {
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException {
         try {
             var module = applicationInterfaceService.getApplicationModule(appModuleId);
-            logger.debug("Airavata retrieved application module with module id : " + appModuleId);
+            logger.debug("Airavata retrieved application module with module id : {}", appModuleId);
             return module;
         } catch (AppCatalogException e) {
             String message = String.format("Error while getting application module: appModuleId=%s", appModuleId);
@@ -2127,7 +2118,7 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleExpIds.size() == 0 && !properties.airavata.sharing.enabled) {
+                if (accessibleExpIds.size() == 0 && !properties.airavata().sharing().enabled()) {
                     if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
                         regFilters.put(DBConstants.Experiment.USER_NAME, userName);
                     }
@@ -2510,7 +2501,7 @@ public class RegistryService {
             }
 
             try {
-                if (accessibleProjIds.size() == 0 && !properties.airavata.sharing.enabled) {
+                if (accessibleProjIds.size() == 0 && !properties.airavata().sharing().enabled()) {
                     if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
                         regFilters.put(DBConstants.Project.OWNER, userName);
                     }

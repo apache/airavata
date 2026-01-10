@@ -41,13 +41,13 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 @ConditionalOnMissingBean(name = "testIamAdminService")
 public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
@@ -62,10 +62,10 @@ public class IamAdminService {
 
     private boolean isIamConfigured() {
         return properties != null
-                && properties.security != null
-                && properties.security.iam != null
-                && properties.security.iam.serverUrl != null
-                && !properties.security.iam.serverUrl.isEmpty();
+                && properties.security() != null
+                && properties.security().iam() != null
+                && properties.security().iam().serverUrl() != null
+                && !properties.security().iam().serverUrl().isEmpty();
     }
 
     public IamAdminService(
@@ -344,8 +344,8 @@ public class IamAdminService {
 
     private PasswordCredential getSuperAdminPasswordCredential() throws IamAdminServicesException {
         PasswordCredential isSuperAdminCredentials = new PasswordCredential();
-        isSuperAdminCredentials.setLoginUserName(properties.security.iam.superAdmin.username);
-        isSuperAdminCredentials.setPassword(properties.security.iam.superAdmin.password);
+        isSuperAdminCredentials.setLoginUserName(properties.security().iam().superAdmin().username());
+        isSuperAdminCredentials.setPassword(properties.security().iam().superAdmin().password());
         return isSuperAdminCredentials;
     }
 

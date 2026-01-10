@@ -25,8 +25,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -67,13 +65,13 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.util.ExperimentModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -144,20 +142,20 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     public void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException {
-        logger.info("Terminating experiment " + experiment.getExperimentId());
+        logger.info("Terminating experiment {}", experiment.getExperimentId());
 
         try {
             List<String> processIds = registryService.getProcessIds(experiment.getExperimentId());
-            if (processIds != null && processIds.size() > 0) {
+            if (processIds != null && !processIds.isEmpty()) {
                 for (String processId : processIds) {
-                    logger.info("Terminating process " + processId + " of experiment " + experiment.getExperimentId());
+                    logger.info("Terminating process {} of experiment {}", processId, experiment.getExperimentId());
                     jobSubmitter.terminate(experiment.getExperimentId(), processId, tokenId);
                 }
             } else {
-                logger.warn("No processes found for experiment " + experiment.getExperimentId() + " to cancel");
+                logger.warn("No processes found for experiment {} to cancel", experiment.getExperimentId());
             }
         } catch (RegistryServiceException e) {
-            logger.error("Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
+            logger.error("Failed to fetch process ids for experiment {}", experiment.getExperimentId(), e);
             throw new OrchestratorException(
                     "Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
         }
@@ -649,12 +647,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     private void sortByInputOrder(List<InputDataObjectType> processInputs) {
-        Collections.sort(processInputs, new Comparator<InputDataObjectType>() {
-            @Override
-            public int compare(InputDataObjectType inputDT_1, InputDataObjectType inputDT_2) {
-                return inputDT_1.getInputOrder() - inputDT_2.getInputOrder();
-            }
-        });
+        processInputs.sort(Comparator.comparingInt(InputDataObjectType::getInputOrder));
     }
 
     private TaskModel getInputDataStagingTask(
@@ -672,7 +665,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
+        taskModel.setTaskStatuses(List.of(taskStatus));
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();

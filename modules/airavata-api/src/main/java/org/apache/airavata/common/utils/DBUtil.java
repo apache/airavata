@@ -354,22 +354,22 @@ public class DBUtil {
     public static DBUtil getCredentialStoreDBUtil(AiravataServerProperties properties)
             throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
                     InstantiationException {
-        var db = properties.database.vault;
-        String jdbcUrl = db.url;
+        var db = properties.database().vault();
+        String jdbcUrl = db.url();
         if (jdbcUrl == null || jdbcUrl.isEmpty()) {
-            jdbcUrl = properties.database.registry.url;
+            jdbcUrl = properties.database().registry().url();
         }
-        String userName = db.user;
+        String userName = db.user();
         if (userName == null || userName.isEmpty()) {
-            userName = properties.database.registry.user;
+            userName = properties.database().registry().user();
         }
-        String password = db.password;
+        String password = db.password();
         if (password == null || password.isEmpty()) {
-            password = properties.database.registry.password;
+            password = properties.database().registry().password();
         }
-        String driverName = db.driver;
+        String driverName = db.driver();
         if (driverName == null || driverName.isEmpty()) {
-            driverName = properties.database.registry.driver;
+            driverName = properties.database().registry().driver();
         }
 
         StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");

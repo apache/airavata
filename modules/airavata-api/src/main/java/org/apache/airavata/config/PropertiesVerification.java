@@ -22,13 +22,16 @@ package org.apache.airavata.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * Verifies that all properties are loaded correctly from AiravataServerProperties.
  * Runs early in the startup sequence to validate configuration.
+ * Disabled in test profile since tests use minimal property sets.
  */
 @Component
+@Profile("!test")
 public class PropertiesVerification implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(PropertiesVerification.class);
@@ -44,34 +47,34 @@ public class PropertiesVerification implements CommandLineRunner {
         logger.info("=== Verifying AiravataServerProperties ===");
 
         // Verify API Servers
-        logger.info("Thrift Server - Port: {}", properties.services.thrift.server.port);
-        logger.info("REST Server - Port: {}", properties.services.rest.server.port);
+        logger.info("Thrift Server - Port: {}", properties.services().thrift().server().port());
+        logger.info("REST Server - Port: {}", properties.services().rest().server().port());
         // Verify Database configurations
         logger.info(
                 "AppCatalog DB - URL: {}, Driver: {}",
-                properties.database.catalog.url,
-                properties.database.catalog.driver);
+                properties.database().catalog().url(),
+                properties.database().catalog().driver());
         logger.info(
                 "Registry DB - URL: {}, Driver: {}",
-                properties.database.registry.url,
-                properties.database.registry.driver);
+                properties.database().registry().url(),
+                properties.database().registry().driver());
         // Verify Default Registry
         logger.info(
                 "Default Registry - Gateway: {}, User: {}",
-                properties.airavata.defaultGateway,
-                properties.security.iam.superAdmin.username);
+                properties.airavata().defaultGateway(),
+                properties.security().iam().superAdmin().username());
         // Verify Sharing
-        logger.info("Sharing - Enabled: {}", properties.airavata.sharing.enabled);
+        logger.info("Sharing - Enabled: {}", properties.airavata().sharing().enabled());
         // Verify Zookeeper
         logger.info(
                 "Zookeeper - Embedded: {}, Connection: {}",
-                properties.zookeeper.embedded,
-                properties.zookeeper.server.connection);
+                properties.zookeeper().embedded(),
+                properties.zookeeper().server().connection());
         // Verify RabbitMQ
         logger.info(
                 "RabbitMQ - Broker URL: {}, Experiment Queue: {}",
-                properties.rabbitmq.brokerUrl,
-                properties.rabbitmq.experimentLaunchQueueName);
+                properties.rabbitmq().brokerUrl(),
+                properties.rabbitmq().experimentLaunchQueueName());
         logger.info("=== Properties verification complete ===");
     }
 }

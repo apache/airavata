@@ -68,14 +68,22 @@ public class CacheConfig {
     }
 
     /**
+     * Get cache size from properties with null safety.
+     */
+    private int getCacheSize() {
+        if (properties == null || properties.airavata() == null) {
+            return 1000; // Default
+        }
+        return properties.airavata().inMemoryCacheSize() > 0 ? 
+                properties.airavata().inMemoryCacheSize() : 1000;
+    }
+
+    /**
      * Default Caffeine cache configuration.
      */
     private Caffeine<Object, Object> defaultCacheBuilder() {
-        int maxSize = properties.airavata.inMemoryCacheSize > 0 ? 
-                properties.airavata.inMemoryCacheSize : 1000;
-        
         return Caffeine.newBuilder()
-                .maximumSize(maxSize)
+                .maximumSize(getCacheSize())
                 .expireAfterWrite(Duration.ofMinutes(30))
                 .recordStats();
     }
@@ -85,11 +93,8 @@ public class CacheConfig {
      */
     @Bean
     public com.github.benmanes.caffeine.cache.Cache<Object, Object> authzCaffeineCache() {
-        int maxSize = properties.airavata.inMemoryCacheSize > 0 ? 
-                properties.airavata.inMemoryCacheSize : 1000;
-        
         return Caffeine.newBuilder()
-                .maximumSize(maxSize)
+                .maximumSize(getCacheSize())
                 .expireAfterWrite(Duration.ofMinutes(15))
                 .recordStats()
                 .build();

@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.controller.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.controller", name = "enabled", havingValue = "true")
 public class HelixController extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(HelixController.class);
@@ -58,9 +58,9 @@ public class HelixController extends ServerLifecycle {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        this.clusterName = properties.helix.cluster.name;
-        this.controllerName = properties.helix.controller.name;
-        this.zkAddress = properties.zookeeper.server.connection;
+        this.clusterName = properties.helix().cluster().name();
+        this.controllerName = properties.helix().controller().name();
+        this.zkAddress = properties.zookeeper().server().connection();
     }
 
     @Override

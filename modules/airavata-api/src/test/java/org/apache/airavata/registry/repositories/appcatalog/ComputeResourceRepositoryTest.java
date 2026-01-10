@@ -51,49 +51,15 @@ import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            ComputeResourceRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ComputeResourceRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final ComputeResourceService computeResourceService;
 
     public ComputeResourceRepositoryTest(ComputeResourceService computeResourceService) {
-        super(Database.APP_CATALOG);
         this.computeResourceService = computeResourceService;
     }
 
@@ -293,6 +259,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     @Test
     public void filterComputeResourcesTest() throws AppCatalogException {
+        // Use unique hostname to avoid conflicts with other tests
+        String uniqueHostname = "filter-test-host-" + java.util.UUID.randomUUID().toString();
 
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
         computeResourceService.addResourceJobManager(resourceJobManager);
@@ -305,28 +273,28 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
         ComputeResourceDescription computeResourceDescription =
-                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4, uniqueHostname);
 
         var cfilters = new HashMap<String, String>();
-        cfilters.put(DBConstants.ComputeResource.HOST_NAME, "localhost");
+        cfilters.put(DBConstants.ComputeResource.HOST_NAME, uniqueHostname);
         List<ComputeResourceDescription> computeResourceList = computeResourceService.getComputeResourceList(cfilters);
 
+        // Should be empty before we add the resource with this unique hostname
         Assertions.assertEquals(0, computeResourceList.size());
 
         String computeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
         computeResourceList = computeResourceService.getComputeResourceList(cfilters);
 
         Assertions.assertEquals(1, computeResourceList.size());
-
         Assertions.assertEquals(computeResourceId, computeResourceList.get(0).getComputeResourceId());
 
         try {
             cfilters = new HashMap<String, String>();
-            cfilters.put("Invalid_filter", "localhost");
+            cfilters.put("Invalid_filter", uniqueHostname);
             computeResourceService.getComputeResourceList(cfilters);
             Assertions.fail();
         } catch (Exception e) {
-
+            // Expected exception for invalid filter
         }
     }
 
@@ -381,6 +349,9 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     @Test
     public void addComputeResourceTest() throws AppCatalogException {
+        // Use unique ID to avoid conflicts with other test runs
+        String uniqueResourceId = "compute-resource-" + java.util.UUID.randomUUID().toString();
+        String uniqueHostname = "add-test-host-" + java.util.UUID.randomUUID().toString();
 
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
         computeResourceService.addResourceJobManager(resourceJobManager);
@@ -393,16 +364,17 @@ public class ComputeResourceRepositoryTest extends TestBase {
         GridFTPDataMovement gridFTPDataMovement = prepareGridFTPDataMovement("192.156.33.44");
         String gridFTPDataMovementId = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement);
         ComputeResourceDescription computeResourceDescription =
-                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4);
+                prepareComputeResource(sshSubmissionId, scpDataMovementId, gridFTPDataMovementId, 4, uniqueHostname);
 
-        computeResourceDescription.setComputeResourceId("manually-entered-id");
+        computeResourceDescription.setComputeResourceId(uniqueResourceId);
 
-        Assertions.assertNull(computeResourceService.getComputeResource("manually-entered-id"));
+        // Should not exist before adding
+        Assertions.assertNull(computeResourceService.getComputeResource(uniqueResourceId));
         String computeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
-        Assertions.assertEquals("manually-entered-id", computeResourceId);
+        Assertions.assertEquals(uniqueResourceId, computeResourceId);
         Assertions.assertTrue(computeResourceService.isComputeResourceExists(computeResourceId));
         ComputeResourceDescription savedComputeResource =
-                computeResourceService.getComputeResource("manually-entered-id");
+                computeResourceService.getComputeResource(uniqueResourceId);
         Assertions.assertNotNull(savedComputeResource);
 
         Assertions.assertTrue(deepCompareComputeResourceDescription(computeResourceDescription, savedComputeResource));
@@ -502,9 +474,16 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     private ComputeResourceDescription prepareComputeResource(
             String sshSubmissionId, String scpDataMoveId, String gridFTPDataMoveId, int batchQueueCount) {
+        // Default hostname with UUID for test isolation
+        return prepareComputeResource(sshSubmissionId, scpDataMoveId, gridFTPDataMoveId, batchQueueCount, 
+                "test-host-" + java.util.UUID.randomUUID().toString());
+    }
+
+    private ComputeResourceDescription prepareComputeResource(
+            String sshSubmissionId, String scpDataMoveId, String gridFTPDataMoveId, int batchQueueCount, String hostName) {
         ComputeResourceDescription description = new ComputeResourceDescription();
 
-        description.setHostName("localhost");
+        description.setHostName(hostName);
         description.setResourceDescription("test compute resource");
         description.setGatewayUsageReporting(true);
         List<String> ipdaresses = new ArrayList<String>();

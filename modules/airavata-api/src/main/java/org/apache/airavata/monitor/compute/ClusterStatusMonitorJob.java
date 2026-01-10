@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.monitor.compute.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.monitor.compute", name = "enabled", havingValue = "true")
 public class ClusterStatusMonitorJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
 
@@ -71,7 +71,7 @@ public class ClusterStatusMonitorJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             // Super-tenant gateway is now derived from the default gateway config.
-            String superTenantGatewayId = properties.airavata.defaultGateway;
+            String superTenantGatewayId = properties.airavata().defaultGateway();
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {
@@ -81,14 +81,14 @@ public class ClusterStatusMonitorJob implements Job {
                 logger.warn(
                         "Could not find super tenant compute resources preferences for cluster status monitoring...");
             }
-            if (computeResourcePreferences != null && computeResourcePreferences.size() > 0) {
-                computeResourcePreferences.stream().forEach(p -> {
+            if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
+                computeResourcePreferences.forEach(p -> {
                     try {
                         String computeResourceId = p.getComputeResourceId();
 
                         // Skip cluster monitoring if jobs were submitted recently
                         if (computeSubmissionTracker.hasRecentSubmissions(
-                                computeResourceId, properties.services.monitor.compute.clusterCheckTimeWindow)) {
+                                computeResourceId, properties.services().monitor().compute().clusterCheckTimeWindow())) {
                             logger.debug(
                                     "Skipping cluster status check for {} - jobs submitted recently",
                                     computeResourceId);
@@ -98,7 +98,7 @@ public class ClusterStatusMonitorJob implements Job {
                         String credentialStoreToken = p.getResourceSpecificCredentialStoreToken();
                         String loginUserName = p.getLoginUserName();
                         String hostName = null;
-                        if (credentialStoreToken == null || credentialStoreToken.equals("")) {
+                        if (credentialStoreToken == null || credentialStoreToken.isEmpty()) {
                             credentialStoreToken = registryService
                                     .getGatewayResourceProfile(superTenantGatewayId)
                                     .getCredentialStoreToken();
@@ -111,13 +111,11 @@ public class ClusterStatusMonitorJob implements Job {
                         hostName = computeResourceDescription.getHostName();
                         // FIXME This should come from compute resource description
                         port = 22;
-                        computeResourceDescription.getBatchQueues().stream().forEach(q -> {
-                            queueNames.add(q.getQueueName());
-                        });
+                        computeResourceDescription.getBatchQueues().forEach(q -> queueNames.add(q.getQueueName()));
 
                         List<JobSubmissionInterface> jobSubmissionInterfaces =
                                 computeResourceDescription.getJobSubmissionInterfaces();
-                        if (jobSubmissionInterfaces != null && jobSubmissionInterfaces.size() > 0) {
+                        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
                             if (jobSubmissionInterfaces
                                     .get(0)
                                     .getJobSubmissionProtocol()
@@ -177,7 +175,7 @@ public class ClusterStatusMonitorJob implements Job {
                         else if (computeResourceProfile.getResourceManagerType().equals("PBS"))
                             command = "qstat -Q " + queue + "| tail -1";
 
-                        if (command.equals("")) {
+                        if (command.isEmpty()) {
                             logger.warn("No matching resource manager type found for "
                                     + computeResourceProfile.getResourceManagerType());
                             continue;
@@ -242,7 +240,7 @@ public class ClusterStatusMonitorJob implements Job {
                     logger.error(ex.getMessage(), ex);
                 }
             }
-            if (queueStatuses != null && queueStatuses.size() > 0) {
+            if (queueStatuses != null && !queueStatuses.isEmpty()) {
                 registryService.registerQueueStatuses(queueStatuses);
             }
         } catch (Exception e) {

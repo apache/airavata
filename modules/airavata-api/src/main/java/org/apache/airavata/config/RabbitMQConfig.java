@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Primary;
  *   rabbitmq.db-event-exchange-name=dbevent_exchange
  */
 @Configuration
-@ConditionalOnProperty(prefix = "rabbitmq", name = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "rabbitmq", name = "enabled", havingValue = "true")
 public class RabbitMQConfig {
 
     private final AiravataServerProperties properties;
@@ -64,7 +64,7 @@ public class RabbitMQConfig {
         CachingConnectionFactory factory = new CachingConnectionFactory();
         
         // Parse broker URL from properties
-        String brokerUrl = properties.rabbitmq.brokerUrl;
+        String brokerUrl = properties.rabbitmq().brokerUrl();
         if (brokerUrl != null && !brokerUrl.isEmpty()) {
             try {
                 java.net.URI uri = new java.net.URI(brokerUrl);
@@ -118,7 +118,7 @@ public class RabbitMQConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter);
-        factory.setPrefetchCount(properties.rabbitmq.prefetchCount > 0 ? properties.rabbitmq.prefetchCount : 10);
+        factory.setPrefetchCount(properties.rabbitmq().prefetchCount() > 0 ? properties.rabbitmq().prefetchCount() : 10);
         factory.setConcurrentConsumers(1);
         factory.setMaxConcurrentConsumers(5);
         return factory;
@@ -128,21 +128,21 @@ public class RabbitMQConfig {
     
     @Bean
     public TopicExchange statusExchange() {
-        return new TopicExchange(properties.rabbitmq.statusExchangeName, true, false);
+        return new TopicExchange(properties.rabbitmq().statusExchangeName(), true, false);
     }
 
     @Bean
     public TopicExchange processExchange() {
-        return new TopicExchange(properties.rabbitmq.processExchangeName, true, false);
+        return new TopicExchange(properties.rabbitmq().processExchangeName(), true, false);
     }
 
     @Bean
     public TopicExchange experimentExchange() {
-        return new TopicExchange(properties.rabbitmq.experimentExchangeName, true, false);
+        return new TopicExchange(properties.rabbitmq().experimentExchangeName(), true, false);
     }
 
     @Bean
     public TopicExchange dbEventExchange() {
-        return new TopicExchange(properties.rabbitmq.dbEventExchangeName, true, false);
+        return new TopicExchange(properties.rabbitmq().dbEventExchangeName(), true, false);
     }
 }

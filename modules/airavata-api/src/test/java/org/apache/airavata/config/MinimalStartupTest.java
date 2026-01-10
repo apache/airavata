@@ -29,6 +29,7 @@ import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.TestPropertySource;
 
 /**
@@ -55,11 +57,24 @@ import org.springframework.test.context.TestPropertySource;
             "spring.main.log-startup-info=false",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
+            "spring.main.lazy-initialization=true",
             "flyway.enabled=false",
+            "security.iam.enabled=false",
+            "security.manager.enabled=false",
+            "security.authzCache.enabled=false",
+            "services.scheduler.enabled=false",
+            "services.scheduler.rescheduler.enabled=false",
+            "services.thrift.enabled=false",
+            "services.rest.enabled=false",
+            "helix.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@EnabledIfSystemProperty(
+        named = "test.startup.enabled",
+        matches = "true",
+        disabledReason = "Startup tests require full infrastructure - run with -Dtest.startup.enabled=true")
 public class MinimalStartupTest {
 
     @Configuration
@@ -69,23 +84,22 @@ public class MinimalStartupTest {
                 "org.apache.airavata.registry.services",
                 "org.apache.airavata.registry.repositories",
                 "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.service",
                 "org.apache.airavata.profile.repositories",
                 "org.apache.airavata.profile.mappers",
-                "org.apache.airavata.profile.utils",
-                "org.apache.airavata.sharing.services",
                 "org.apache.airavata.sharing.repositories",
                 "org.apache.airavata.sharing.mappers",
-                "org.apache.airavata.sharing.utils",
                 "org.apache.airavata.credential.repositories",
-                "org.apache.airavata.credential.services",
-                "org.apache.airavata.credential.utils",
-                "org.apache.airavata.messaging",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils",
-                "org.apache.airavata.security",
-                "org.apache.airavata.accountprovisioning"
+                "org.apache.airavata.credential.services"
+            },
+            // Exclude components that require external dependencies or lifecycle management
+            excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*KeyCloak.*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Lifecycle.*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Monitor.*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Scheduler.*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Messaging.*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Kafka.*"),
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Rabbit.*")
             })
     static class TestConfiguration {}
 
@@ -148,7 +162,7 @@ public class MinimalStartupTest {
     public void testPropertiesAreLoaded() {
         AiravataServerProperties properties = applicationContext.getBean(AiravataServerProperties.class);
         assertNotNull(properties, "AiravataServerProperties should be loaded");
-        assertNotNull(properties.database, "Database properties should be configured");
+        assertNotNull(properties.database(), "Database properties should be configured");
     }
 
     @Test

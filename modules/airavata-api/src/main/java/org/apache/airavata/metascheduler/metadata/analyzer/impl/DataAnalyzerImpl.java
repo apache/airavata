@@ -50,12 +50,12 @@ public class DataAnalyzerImpl implements DataAnalyzer {
             LOGGER.debug("Executing Data Analyzer ....... ");
 
             // TODO: handle multiple gateways
-            String gateway = properties.services.parser.enabledGateways;
+            String gateway = properties.services().parser().enabledGateways();
 
             JobState state = JobState.SUBMITTED;
             JobStatus jobStatus = new JobStatus();
             jobStatus.setJobState(state);
-            double time = properties.services.parser.timeStepSeconds;
+            double time = properties.services().parser().timeStepSeconds();
 
             int fiveMinuteCount = registryService.getJobCount(jobStatus, gateway, 5);
 

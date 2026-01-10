@@ -51,7 +51,7 @@ import org.springframework.context.annotation.DependsOn;
  * flyway.enabled=false property.
  */
 @Configuration
-@ConditionalOnProperty(name = "flyway.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "flyway", name = "enabled", havingValue = "true")
 public class FlywayConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(FlywayConfig.class);

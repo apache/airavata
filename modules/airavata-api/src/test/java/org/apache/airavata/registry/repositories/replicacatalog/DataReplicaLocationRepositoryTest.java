@@ -36,46 +36,13 @@ import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(
-        classes = {
-            org.apache.airavata.config.JpaConfig.class,
-            org.apache.airavata.config.TestcontainersConfig.class,
-            DataReplicaLocationRepositoryTest.TestConfiguration.class
-        },
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-        })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
 public class DataReplicaLocationRepositoryTest extends TestBase {
-
-    @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.registry.services",
-                "org.apache.airavata.registry.mappers",
-                "org.apache.airavata.registry.repositories",
-                "org.apache.airavata.registry.utils",
-                "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
-            })
-    @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-    @Import({})
-    static class TestConfiguration {}
 
     private final DataProductService dataProductService;
     private final DataReplicaLocationService dataReplicaLocationService;
@@ -84,7 +51,6 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
 
     public DataReplicaLocationRepositoryTest(
             DataProductService dataProductService, DataReplicaLocationService dataReplicaLocationService) {
-        super(Database.REPLICA_CATALOG);
         this.dataProductService = dataProductService;
         this.dataReplicaLocationService = dataReplicaLocationService;
     }

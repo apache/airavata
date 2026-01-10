@@ -109,22 +109,22 @@ public abstract class AbstractJDBCUserStore implements UserStore {
             // If database configurations are not specified in authenticators.xml we will read them from
             // server.properties file.
             if (properties != null) {
-                var db = properties.database.vault;
-                databaseDriver = db.driver;
+                var db = properties.database().vault();
+                databaseDriver = db.driver();
                 if (databaseDriver == null || databaseDriver.isEmpty()) {
-                    databaseDriver = properties.database.registry.driver;
+                    databaseDriver = properties.database().registry().driver();
                 }
-                databaseURL = db.url;
+                databaseURL = db.url();
                 if (databaseURL == null || databaseURL.isEmpty()) {
-                    databaseURL = properties.database.registry.url;
+                    databaseURL = properties.database().registry().url();
                 }
-                databaseUserName = db.user;
+                databaseUserName = db.user();
                 if (databaseUserName == null || databaseUserName.isEmpty()) {
-                    databaseUserName = properties.database.registry.user;
+                    databaseUserName = properties.database().registry().user();
                 }
-                databasePassword = db.password;
+                databasePassword = db.password();
                 if (databasePassword == null || databasePassword.isEmpty()) {
-                    databasePassword = properties.database.registry.password;
+                    databasePassword = properties.database().registry().password();
                 }
             } else {
                 log.warn("Database configurations not specified in XML and properties not available.");

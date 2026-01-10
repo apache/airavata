@@ -23,7 +23,6 @@ import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
@@ -146,7 +145,7 @@ public class DataReplicaLocationService {
                     model.setReplicaMetadata(metadataCopy);
                     return model;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws ReplicaCatalogException {

@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.task.submission;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Map;
 import org.apache.airavata.common.model.JobManagerCommand;
 import org.slf4j.Logger;
@@ -84,7 +83,7 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
     @Override
     public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
         return new RawCommandInfo(this.installedPath + "bsub < " + workingDirectory + File.separator
-                + Paths.get(pbsFilePath).getFileName().toString());
+                + java.nio.file.Path.of(pbsFilePath).getFileName().toString());
     }
 
     @Override

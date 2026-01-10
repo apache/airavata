@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  *   security.authzCache.enabled=true
  */
 @Component
-@ConditionalOnProperty(prefix = "security.authzCache", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "security.authzCache", name = "enabled", havingValue = "true")
 public class DefaultAuthzCacheManager implements AuthzCacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuthzCacheManager.class);

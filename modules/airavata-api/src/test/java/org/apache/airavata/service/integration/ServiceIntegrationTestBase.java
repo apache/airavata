@@ -33,7 +33,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -51,10 +50,11 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // Infrastructure components (including SecurityManagerConfig) excluded via @ComponentScan excludeFilters -
-            // no property flags needed
-            // IAM configuration
+            // Disable IAM/security components that require Keycloak
+            "security.iam.enabled=false",
             "security.iam.server-url=",
+            "security.manager.enabled=false",
+            "security.authzCache.enabled=false",
             // Disable Flyway in tests - TestcontainersConfig handles migrations
             "flyway.enabled=false",
             // Enable services for conditional beans
@@ -62,7 +62,6 @@ import org.springframework.transaction.annotation.Transactional;
             "services.thrift.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
@@ -98,10 +97,9 @@ public abstract class ServiceIntegrationTestBase {
     public void setUpBase() {
         testAuthzToken = createTestAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
         
-        // Apply test properties for messaging services (Kafka, RabbitMQ, Zookeeper)
-        // This ensures AiravataServerProperties object is also updated (in addition to @DynamicPropertySource)
+        // Log test properties for debugging (AiravataServerProperties is immutable, use @DynamicPropertySource instead)
         if (properties != null) {
-            org.apache.airavata.config.TestPropertiesHelper.applyTestProperties(properties);
+            org.apache.airavata.config.TestPropertiesHelper.logProperties(properties);
         }
     }
 
@@ -128,6 +126,9 @@ public abstract class ServiceIntegrationTestBase {
      * for their respective catalogs, matching the structure in JpaConfig.
      */
     @Configuration
+    @org.springframework.context.annotation.PropertySource(
+        value = "classpath:conf/airavata.properties",
+        factory = org.apache.airavata.config.AiravataPropertySourceFactory.class)
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",

@@ -73,7 +73,11 @@ import org.springframework.test.context.TestPropertySource;
             "services.rest.enabled=false",
             "services.thrift.enabled=true", // Enable services for OrchestratorService
             "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false"
+            "flyway.enabled=false",
+            // Disable IAM/security components
+            "security.iam.enabled=false",
+            "security.manager.enabled=false",
+            "security.authzCache.enabled=false"
         })
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:conf/airavata.properties")

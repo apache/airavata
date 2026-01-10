@@ -28,13 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StringUtil {
+    private static final Logger logger = LoggerFactory.getLogger(StringUtil.class);
     public static final String DELIMETER = ",";
     public static final String QUOTE = "\"";
 
     public static Map<Integer, String> getContainedParameters(String s) {
-        Map<Integer, String> parameterMap = new HashMap<Integer, String>();
+        Map<Integer, String> parameterMap = new HashMap<>();
         int i = 0;
         for (i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '$' && (i + 1) < s.length() && s.charAt(i + 1) == '{') {
@@ -346,14 +349,8 @@ public class StringUtil {
      *            The specified class
      * @return The local class name
      */
-    public static String getClassName(Class klass) {
-        String fullName = klass.getName();
-        int index = fullName.lastIndexOf(".");
-        if (index < 0) {
-            return fullName;
-        } else {
-            return fullName.substring(index + 1);
-        }
+    public static String getClassName(Class<?> klass) {
+        return klass.getSimpleName();
     }
 
     /**
@@ -369,15 +366,13 @@ public class StringUtil {
     }
 
     public static Map<String, String> parseCommandLineOptions(String[] args) {
-        Map<String, String> commandLineOptions = new HashMap<String, String>();
+        Map<String, String> commandLineOptions = new HashMap<>();
         try {
             CommandLineParameters cmdParameters = getCommandLineParser(args);
             Map<String, String> parameters = cmdParameters.getParameters();
-            for (String s : parameters.keySet()) {
-                commandLineOptions.put(s, parameters.get(s) == null ? "" : parameters.get(s));
-            }
+            parameters.forEach((key, value) -> commandLineOptions.put(key, value == null ? "" : value));
         } catch (Exception e1) {
-            e1.printStackTrace();
+            logger.warn("Failed to parse command line", e1);
         }
         return commandLineOptions;
     }
@@ -416,11 +411,9 @@ public class StringUtil {
     private static final String ARG_DOT_REPLACE = "dot_replacement_value";
 
     private static String[] getChangedList(String[] args) {
-        String[] argCopy = Arrays.asList(args).toArray(new String[] {});
-        for (int i = 0; i < argCopy.length; i++) {
-            argCopy[i] = changeOption(argCopy[i]);
-        }
-        return argCopy;
+        return Arrays.stream(args)
+                .map(StringUtil::changeOption)
+                .toArray(String[]::new);
     }
 
     private static String revertOption(String option) {
@@ -432,8 +425,8 @@ public class StringUtil {
     }
 
     public static class CommandLineParameters {
-        private Map<String, String> parameters = new HashMap<String, String>();
-        private List<String> arguments = new ArrayList<String>();
+        private Map<String, String> parameters;
+        private List<String> arguments;
 
         protected CommandLineParameters(Map<String, String> options, List<String> args) {
             this.parameters = options;

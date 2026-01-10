@@ -162,7 +162,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
             commandOutput.readStdErrFromStream(err);
             return commandOutput;
         } catch (JSchException | IOException e) {
-            logger.error("Failed to execute command " + command, e);
+            logger.error("Failed to execute command {}", command, e);
             throw new AgentException("Failed to execute command " + command, e);
         } finally {
             if (channelExec != null) {
@@ -342,12 +342,12 @@ public class SshAgentAdaptor implements AgentAdaptor {
             // since remote file is always a file  we just return the file
             // return remoteFile;
         } catch (JSchException e) {
-            logger.error("Failed to transfer file from " + localFile + " to remote location " + remoteFile, e);
+            logger.error("Failed to transfer file from {} to remote location {}", localFile, remoteFile, e);
             throw new AgentException(
                     "Failed to transfer file from " + localFile + " to remote location " + remoteFile, e);
 
         } catch (FileNotFoundException e) {
-            logger.error("Failed to find local file " + localFile, e);
+            logger.error("Failed to find local file {}", localFile, e);
             throw new AgentException("Failed to find local file " + localFile, e);
 
         } catch (IOException e) {

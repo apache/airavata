@@ -22,7 +22,6 @@ package org.apache.airavata.service.security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.exception.AuthorizationException;
 import org.apache.airavata.common.model.GroupModel;
 import org.apache.airavata.common.model.UserProfile;
@@ -40,11 +39,11 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnExpression("${services.rest.enabled:false} == true || ${services.thrift.enabled:true} == true")
+@ConditionalOnApiService
 public class GroupManagerService {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
 
@@ -250,7 +249,7 @@ public class GroupManagerService {
         final List<String> admins = (userGroup.getGroupAdmins() != null)
                 ? userGroup.getGroupAdmins().stream()
                         .map(groupAdmin -> groupAdmin.getAdminId())
-                        .collect(Collectors.toList())
+                        .toList()
                 : new ArrayList<>();
         groupModel.setAdmins(admins);
 

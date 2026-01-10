@@ -124,13 +124,13 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         try {
             taskRunGauge.dec();
             taskCancelCounter.inc();
-            logger.info("Cancelling task " + taskId);
+            logger.info("Cancelling task {}", taskId);
             onCancel();
         } finally {
             if (participant != null) {
                 participant.unregisterRunningTask(this);
             } else {
-                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
+                logger.warn("Task with id: {} is not unregistered since the participant is not set", taskId);
             }
         }
     }
@@ -156,7 +156,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     protected void publishErrors(Throwable e) {
         // TODO Publish through kafka channel with task and workflow id
-        e.printStackTrace();
+        logger.error("Task error", e);
     }
 
     public void sendNextJob(String jobId) {

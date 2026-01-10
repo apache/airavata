@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.monitor.email.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "services.monitor.email", name = "enabled", havingValue = "true")
 public class LSFEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(LSFEmailParser.class);
     private static final String REGEX = "[a-zA-Z]+\\s+(?<" + JOBID + ">[\\d]+):\\s+<(?<" + JOBNAME

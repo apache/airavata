@@ -22,11 +22,9 @@ package org.apache.airavata.sharing.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import java.io.Serializable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Objects;
 
 public class UserPK implements Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(UserPK.class);
     private String userId;
     private String domainId;
 
@@ -52,22 +50,13 @@ public class UserPK implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserPK that = (UserPK) o;
-
-        if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) return false;
-        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
-            return false;
-
-        return true;
+        return this == o || (o instanceof UserPK that &&
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(domainId, that.domainId));
     }
 
     @Override
     public int hashCode() {
-        int result = getUserId() != null ? getUserId().hashCode() : 0;
-        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
-        return result;
+        return Objects.hash(userId, domainId);
     }
 }

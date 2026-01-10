@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.profile.utils.keycloak.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import java.util.List;
  * DTO representing a Keycloak OAuth client.
  * Replaces org.keycloak.representations.idm.ClientRepresentation.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ClientRepresentation {
     private String id;
     private String name;

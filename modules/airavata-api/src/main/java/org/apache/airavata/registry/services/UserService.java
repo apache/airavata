@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.registry.entities.expcatalog.UserEntity;
 import org.apache.airavata.registry.entities.expcatalog.UserPK;
@@ -50,7 +49,7 @@ public class UserService {
 
     public List<String> getAllUsernamesInGateway(String gatewayId) throws RegistryException {
         List<UserEntity> entities = userRepository.findByGatewayId(gatewayId);
-        return entities.stream().map(UserEntity::getUserId).collect(Collectors.toList());
+        return entities.stream().map(UserEntity::getUserId).toList();
     }
 
     public UserProfile addUser(UserProfile userProfile) throws RegistryException {

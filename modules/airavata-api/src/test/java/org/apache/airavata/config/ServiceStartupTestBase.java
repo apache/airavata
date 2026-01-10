@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Base class for service startup integration tests.
@@ -53,7 +52,6 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public abstract class ServiceStartupTestBase {
 
@@ -89,23 +87,23 @@ public abstract class ServiceStartupTestBase {
             // Check properties directly
             switch (serviceName) {
                 case "thrift-api":
-                    return properties.services.thrift.enabled;
+                    return properties.services().thrift().enabled();
                 case "rest-api":
-                    return properties.services.rest.enabled;
+                    return properties.services().rest().enabled();
                 case "helix-controller":
-                    return properties.services.controller.enabled;
+                    return properties.services().controller().enabled();
                 case "helix-participant":
-                    return properties.services.participant.enabled;
+                    return properties.services().participant().enabled();
                 case "pre-workflow-manager":
-                    return properties.services.prewm.enabled;
+                    return properties.services().prewm().enabled();
                 case "post-workflow-manager":
-                    return properties.services.postwm.enabled;
+                    return properties.services().postwm().enabled();
                 case "parser-workflow-manager":
-                    return properties.services.parser.enabled;
+                    return properties.services().parser().enabled();
                 case "realtime-monitor":
-                    return properties.services.monitor.realtime.enabled;
+                    return properties.services().monitor().realtime().enabled();
                 case "email-monitor":
-                    return properties.services.monitor.email.enabled;
+                    return properties.services().monitor().email().enabled();
                 default:
                     return false;
             }
@@ -143,5 +141,8 @@ public abstract class ServiceStartupTestBase {
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning"
             })
+    @org.springframework.context.annotation.PropertySource(
+        value = "classpath:conf/airavata.properties",
+        factory = AiravataPropertySourceFactory.class)
     static class TestConfiguration {}
 }

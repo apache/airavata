@@ -39,8 +39,13 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 @org.junit.jupiter.api.DisplayName("SharingRegistryService Integration Tests")
+@EnabledIfSystemProperty(
+        named = "test.integration.sharing",
+        matches = "true",
+        disabledReason = "Sharing Registry tests require full database setup - run with -Dtest.integration.sharing=true")
 public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final SharingRegistryService sharingService;
@@ -56,6 +61,8 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
             throws InterruptedException, ApplicationSettingsException, SharingRegistryException,
                     DuplicateEntryException {
         Domain domain = new Domain();
+        String testDomainId = "test-domain-" + System.currentTimeMillis();
+        domain.setDomainId(testDomainId);
         domain.setName("test-domain" + Math.random());
         domain.setDescription("test domain description");
 

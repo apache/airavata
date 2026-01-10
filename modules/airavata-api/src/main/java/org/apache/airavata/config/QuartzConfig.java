@@ -22,7 +22,6 @@ package org.apache.airavata.config;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.quartz.QuartzDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -48,9 +47,10 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
  * spring.quartz.properties.org.quartz.threadPool.threadCount=10
  * spring.quartz.properties.org.quartz.jobStore.isClustered=true
  * </pre>
+ * 
+ * <p>Always loaded as Quartz is a core scheduling dependency.
  */
 @Configuration
-@ConditionalOnProperty(name = "spring.quartz.enabled", havingValue = "true", matchIfMissing = true)
 public class QuartzConfig {
 
     /**
@@ -136,9 +136,12 @@ public class QuartzConfig {
      * @param dataSource Primary datasource
      * @return Quartz-specific datasource
      */
+    /**
+     * Optional: DataSource for Quartz JDBC job store.
+     * Uses the profile service datasource for persistent job storage.
+     */
     @Bean
     @QuartzDataSource
-    @ConditionalOnProperty(name = "spring.quartz.job-store-type", havingValue = "jdbc")
     public DataSource quartzDataSource(@Qualifier("profileServiceDataSource") DataSource dataSource) {
         // For now, reuse the profile service datasource
         // In production, you might want a separate database for Quartz
@@ -146,13 +149,12 @@ public class QuartzConfig {
     }
 
     /**
-     * JDBC Job Store properties (activated when job-store-type=jdbc).
-     * Configures Quartz to use database for persistent job storage.
+     * JDBC Job Store properties for persistent job storage.
+     * Configures Quartz to use database for clustering and persistence.
      * 
      * @return JDBC job store properties
      */
     @Bean
-    @ConditionalOnProperty(name = "spring.quartz.job-store-type", havingValue = "jdbc")
     public Properties quartzJdbcProperties() {
         Properties props = quartzProperties();
         

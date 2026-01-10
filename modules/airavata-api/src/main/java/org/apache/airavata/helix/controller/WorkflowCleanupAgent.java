@@ -45,10 +45,10 @@ public class WorkflowCleanupAgent implements Runnable {
         logger.info("Initializing cleanup agent");
         final HelixManager helixManager;
         helixManager = HelixManagerFactory.getZKHelixManager(
-                properties.helix.cluster.name,
-                properties.helix.controller.name + "-Cleanup-Agent",
+                properties.helix().cluster().name(),
+                properties.helix().controller().name() + "-Cleanup-Agent",
                 InstanceType.SPECTATOR,
-                properties.zookeeper.server.connection);
+                properties.zookeeper().server().connection());
 
         try {
             helixManager.connect();

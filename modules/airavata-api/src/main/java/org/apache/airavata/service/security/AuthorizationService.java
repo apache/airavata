@@ -82,7 +82,7 @@ public class AuthorizationService {
             return; // Owner has access
         }
 
-        if (properties.airavata.sharing.enabled) {
+        if (properties.airavata().sharing().enabled()) {
             String userId = username + "@" + gatewayId;
             if (!userHasAccess(gatewayId, userId, experimentId, gatewayId + ":READ")) {
                 throw new AuthorizationException("User does not have permission to access this resource");
@@ -101,7 +101,7 @@ public class AuthorizationService {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
 
-        if (properties.airavata.sharing.enabled
+        if (properties.airavata().sharing().enabled()
                 && (!username.equals(experimentOwner) || !gatewayId.equals(experimentGatewayId))) {
             String userId = username + "@" + gatewayId;
             if (!userHasAccess(gatewayId, userId, experimentId, gatewayId + ":WRITE")) {
@@ -123,7 +123,7 @@ public class AuthorizationService {
             return; // Owner has access
         }
 
-        if (properties.airavata.sharing.enabled) {
+        if (properties.airavata().sharing().enabled()) {
             String userId = username + "@" + gatewayId;
             if (!userHasAccess(gatewayId, userId, projectId, gatewayId + ":READ")) {
                 throw new AuthorizationException("User does not have permission to access this resource");
@@ -140,7 +140,7 @@ public class AuthorizationService {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
 
-        if (properties.airavata.sharing.enabled
+        if (properties.airavata().sharing().enabled()
                 && (!username.equals(projectOwner) || !gatewayId.equals(projectGatewayId))) {
             String userId = username + "@" + gatewayId;
             if (!userHasAccess(gatewayId, userId, projectId, gatewayId + ":WRITE")) {

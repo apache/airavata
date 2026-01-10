@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.realtime", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.monitor.realtime", name = "enabled", havingValue = "true")
 public class RealtimeMonitor extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
@@ -71,8 +71,8 @@ public class RealtimeMonitor extends ServerLifecycle {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        publisherId = properties.services.monitor.compute.realtimePublisherId;
-        brokerTopic = properties.services.monitor.realtime.brokerTopic;
+        publisherId = properties.services().monitor().compute().realtimePublisherId();
+        brokerTopic = properties.services().monitor().realtime().brokerTopic();
     }
 
     /**

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.task.submission;
 
-import java.util.Collections;
+import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.model.JobModel;
@@ -33,15 +33,13 @@ import org.apache.airavata.helix.task.base.TaskContext;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Fork Job Submission")
 @SuppressWarnings("unused")
 @Component
-@Profile("!test")
-@ConditionalOnProperty(name = "services.participant.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnParticipant
 public class ForkJobSubmissionTask extends JobSubmissionTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ForkJobSubmissionTask.class);
@@ -106,7 +104,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
                         + getComputeResourceDescription().getHostName());
                 jobStatus.setTimeOfStateChange(
                         AiravataUtils.getCurrentTimestamp().getTime());
-                jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+                jobModel.setJobStatuses(List.of(jobStatus));
                 saveAndPublishJobStatus(jobModel);
 
                 return onSuccess("Job submitted successfully");

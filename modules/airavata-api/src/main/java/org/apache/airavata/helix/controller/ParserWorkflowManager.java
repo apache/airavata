@@ -76,8 +76,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.controller.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "services.parser.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.controller", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "services.parser", name = "enabled", havingValue = "true")
 public class ParserWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
@@ -105,9 +105,9 @@ public class ParserWorkflowManager extends WorkflowManager {
     @jakarta.annotation.PostConstruct
     public void initWorkflowManager() {
         if (properties != null) {
-            this.workflowManagerName = properties.services.parser.name;
-            this.loadBalanceClusters = properties.services.parser.loadBalanceClusters;
-            this.parserStorageResourceId = properties.services.parser.storageResourceId;
+            this.workflowManagerName = properties.services().parser().name();
+            this.loadBalanceClusters = properties.services().parser().loadBalanceClusters();
+            this.parserStorageResourceId = properties.services().parser().storageResourceId();
         }
     }
 
@@ -524,14 +524,14 @@ public class ParserWorkflowManager extends WorkflowManager {
     private void runConsumer() {
         final Properties props = new Properties();
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services.parser.brokerConsumerGroup);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services().parser().brokerConsumerGroup());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ProcessCompletionMessageDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
         consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList(properties.services.parser.topic));
+        consumer.subscribe(List.of(properties.services().parser().topic()));
 
         logger.info("Starting the kafka consumer..");
 

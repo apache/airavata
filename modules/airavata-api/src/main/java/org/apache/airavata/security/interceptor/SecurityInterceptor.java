@@ -74,7 +74,7 @@ public class SecurityInterceptor implements MethodInterceptor {
 
     private void authorize(AuthzToken authzToken, Map<String, String> metaData) throws AuthorizationException {
         try {
-            boolean isAPISecured = properties.security.tls.enabled;
+            boolean isAPISecured = properties.security().tls().enabled();
             if (isAPISecured) {
                 boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);
                 if (!isAuthz) {

@@ -66,9 +66,8 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             ExperimentModel experiment = registryService.getExperiment(experimentId);
             boolean allProcessesScheduled = true;
 
-            // Get policy bean from Spring context using property-based selection
-            String policyClassName = properties.services.scheduler.computeResourceSelectionPolicyClass;
-            ComputeResourceSelectionPolicy policy = getPolicyBean(policyClassName);
+            // Get policy bean from Spring context - loaded via @ConditionalOnProperty
+            ComputeResourceSelectionPolicy policy = getPolicyBean();
 
             for (ProcessModel processModel : processModels) {
                 ProcessStatus processStatus = registryService.getProcessStatus(processModel.getProcessId());
@@ -138,29 +137,15 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
      * Uses property-based selection for deterministic bean resolution.
      * Derives bean name from class name (simple class name with first letter lowercase).
      */
-    private ComputeResourceSelectionPolicy getPolicyBean(String policyClassName) {
-        try {
-            // Extract simple class name from full class name
-            String simpleClassName = policyClassName.substring(policyClassName.lastIndexOf('.') + 1);
-            // Spring default bean name is simple class name with first letter lowercase
-            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
-
-            return applicationContext.getBean(beanName, ComputeResourceSelectionPolicy.class);
-        } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
-            // Extract bean name for error message
-            String simpleClassName = policyClassName.substring(policyClassName.lastIndexOf('.') + 1);
-            String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
-            LOGGER.error(
-                    "Policy bean not found in Spring context: {} (derived from class name: {})",
-                    beanName,
-                    policyClassName,
-                    e);
-            throw new IllegalStateException(
-                    "Policy bean not found: " + beanName + " (from class: " + policyClassName + ")", e);
-        } catch (Exception e) {
-            LOGGER.error("Failed to get policy bean for class: {}", policyClassName, e);
-            throw new IllegalStateException("Failed to get policy bean for: " + policyClassName, e);
-        }
+    /**
+     * Get the active policy bean from Spring context.
+     * Only one policy is loaded based on @ConditionalOnProperty matching services.scheduler.selection-policy.
+     */
+    private ComputeResourceSelectionPolicy getPolicyBean() {
+        return applicationContext.getBeansOfType(ComputeResourceSelectionPolicy.class).values().stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "No ComputeResourceSelectionPolicy bean found. Check services.scheduler.selection-policy property."));
     }
 
     @Override

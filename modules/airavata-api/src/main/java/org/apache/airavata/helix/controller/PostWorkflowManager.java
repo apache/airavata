@@ -71,8 +71,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(name = "services.controller.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "services.postwm.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "services.controller", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "services.postwm", name = "enabled", havingValue = "true")
 public class PostWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
@@ -120,8 +120,8 @@ public class PostWorkflowManager extends WorkflowManager {
     @jakarta.annotation.PostConstruct
     public void initWorkflowManager() {
         if (properties != null) {
-            this.workflowManagerName = properties.services.postwm.name;
-            this.loadBalanceClusters = properties.services.postwm.loadBalanceClusters;
+            this.workflowManagerName = properties.services().postwm().name();
+            this.loadBalanceClusters = properties.services().postwm().loadBalanceClusters();
         }
     }
 
@@ -186,8 +186,8 @@ public class PostWorkflowManager extends WorkflowManager {
 
     private Consumer<String, JobStatusResult> createConsumer() {
         final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka.brokerUrl);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services.monitor.compute.brokerConsumerGroup);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services().monitor().compute().brokerConsumerGroup());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ComputeStatusResultDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -195,7 +195,7 @@ public class PostWorkflowManager extends WorkflowManager {
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(properties.services.monitor.compute.brokerTopic));
+        consumer.subscribe(List.of(properties.services().monitor().compute().brokerTopic()));
         return consumer;
     }
 

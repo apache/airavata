@@ -97,21 +97,21 @@ public class KeycloakRestClient {
         RestTemplate template = new RestTemplate();
         try {
             if (properties != null
-                    && properties.security != null
-                    && properties.security.tls != null
-                    && properties.security.tls.enabled) {
+                    && properties.security() != null
+                    && properties.security().tls() != null
+                    && properties.security().tls().enabled()) {
                 // Configure SSL with keystore
                 SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
                 String configDir =
                         org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
-                String keystorePath = properties.security.tls.keystore.path;
+                String keystorePath = properties.security().tls().keystore().path();
                 if (keystorePath == null) {
                     throw new IllegalStateException(
                             "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
                 String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
-                String keystorePassword = properties.security.tls.keystore.password;
+                String keystorePassword = properties.security().tls().keystore().password();
                 KeyStore keyStore = loadKeyStore(keystoreFullPath, keystorePassword);
                 sslContextBuilder.loadTrustMaterial(keyStore, new TrustSelfSignedStrategy());
                 // Note: TLS configuration is handled at JVM level via system properties
@@ -558,12 +558,12 @@ public class KeycloakRestClient {
     // ==================== Helper Methods ====================
 
     private PasswordCredential getSuperAdminCredentials() throws IamAdminServicesException {
-        if (properties == null || properties.security == null || properties.security.iam == null) {
+        if (properties == null || properties.security() == null || properties.security().iam() == null) {
             throw new IamAdminServicesException("IAM configuration not available");
         }
         PasswordCredential creds = new PasswordCredential();
-        creds.setLoginUserName(properties.security.iam.superAdmin.username);
-        creds.setPassword(properties.security.iam.superAdmin.password);
+        creds.setLoginUserName(properties.security().iam().superAdmin().username());
+        creds.setPassword(properties.security().iam().superAdmin().password());
         return creds;
     }
 
