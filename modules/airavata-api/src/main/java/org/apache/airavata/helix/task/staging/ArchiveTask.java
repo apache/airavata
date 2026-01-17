@@ -137,7 +137,7 @@ public class ArchiveTask extends DataStagingTask {
                     var ctx = getApplicationContext();
                     if (ctx != null) {
                         var props = ctx.getBean(AiravataServerProperties.class);
-                        maxArchiveSize = props.airavata().maxArchiveSize();
+                        maxArchiveSize = props.maxArchiveSize();
                     }
                 } catch (Exception e) {
                     logger.warn("Could not get properties from ApplicationContext, using default max archive size", e);

@@ -37,14 +37,14 @@ import org.springframework.stereotype.Component;
  * Realtime monitor using Spring Kafka's @KafkaListener.
  * Consumes job status messages from Kafka and processes them.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   services.monitor.realtime.enabled=true
  *   services.monitor.realtime.broker-topic=realtime-monitor-topic
  *   services.monitor.realtime.broker-consumer-group=airavata-consumer
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.realtime", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.realtime", name = "enabled", havingValue = "true")
 public class RealtimeMonitor extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);

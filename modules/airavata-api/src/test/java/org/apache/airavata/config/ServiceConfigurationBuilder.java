@@ -395,26 +395,26 @@ public class ServiceConfigurationBuilder {
      */
     public Map<String, String> build() {
         Map<String, String> props = new HashMap<>();
-        props.put("services.thrift.enabled", String.valueOf(thriftApi));
-        props.put("services.rest.enabled", String.valueOf(restApi));
-        props.put("services.controller.enabled", String.valueOf(helixController));
-        props.put("services.participant.enabled", String.valueOf(helixParticipant));
-        props.put("services.prewm.enabled", String.valueOf(preWorkflowManager));
-        props.put("services.postwm.enabled", String.valueOf(postWorkflowManager));
-        props.put("services.parser.enabled", String.valueOf(parserWorkflowManager));
-        props.put("services.monitor.realtime.enabled", String.valueOf(realtimeMonitor));
-        props.put("services.monitor.email.enabled", String.valueOf(emailMonitor));
-        props.put("services.research.enabled", String.valueOf(researchService));
-        props.put("services.agent.enabled", String.valueOf(agentService));
-        props.put("services.fileserver.enabled", String.valueOf(fileService));
-        props.put("services.dbus.enabled", String.valueOf(dbeventService));
-        props.put("services.telemetry.enabled", String.valueOf(telemetryService));
+        props.put("airavata.services.thrift.enabled", String.valueOf(thriftApi));
+        props.put("airavata.services.rest.enabled", String.valueOf(restApi));
+        props.put("airavata.services.controller.enabled", String.valueOf(helixController));
+        props.put("airavata.services.participant.enabled", String.valueOf(helixParticipant));
+        props.put("airavata.services.prewm.enabled", String.valueOf(preWorkflowManager));
+        props.put("airavata.services.postwm.enabled", String.valueOf(postWorkflowManager));
+        props.put("airavata.services.parser.enabled", String.valueOf(parserWorkflowManager));
+        props.put("airavata.services.monitor.realtime.enabled", String.valueOf(realtimeMonitor));
+        props.put("airavata.services.monitor.email.enabled", String.valueOf(emailMonitor));
+        props.put("airavata.services.research.enabled", String.valueOf(researchService));
+        props.put("airavata.services.agent.enabled", String.valueOf(agentService));
+        props.put("airavata.services.fileserver.enabled", String.valueOf(fileService));
+        props.put("airavata.services.dbus.enabled", String.valueOf(dbeventService));
+        props.put("airavata.services.telemetry.enabled", String.valueOf(telemetryService));
 
         // Thrift and REST API ports
         // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
-        // services.thrift.server.port
-        props.put("services.thrift.server.port", String.valueOf(thriftPort));
-        props.put("services.rest.server.port", String.valueOf(restPort));
+        // airavata.services.thrift.server.port
+        props.put("airavata.services.thrift.server.port", String.valueOf(thriftPort));
+        props.put("airavata.services.rest.server.port", String.valueOf(restPort));
 
         return props;
     }
@@ -427,26 +427,26 @@ public class ServiceConfigurationBuilder {
      */
     public Properties buildProperties() {
         Properties props = new Properties();
-        props.setProperty("services.thrift.enabled", String.valueOf(thriftApi));
-        props.setProperty("services.rest.enabled", String.valueOf(restApi));
-        props.setProperty("services.controller.enabled", String.valueOf(helixController));
-        props.setProperty("services.participant.enabled", String.valueOf(helixParticipant));
-        props.setProperty("services.prewm.enabled", String.valueOf(preWorkflowManager));
-        props.setProperty("services.postwm.enabled", String.valueOf(postWorkflowManager));
-        props.setProperty("services.parser.enabled", String.valueOf(parserWorkflowManager));
-        props.setProperty("services.monitor.realtime.enabled", String.valueOf(realtimeMonitor));
-        props.setProperty("services.monitor.email.enabled", String.valueOf(emailMonitor));
-        props.setProperty("services.research.enabled", String.valueOf(researchService));
-        props.setProperty("services.agent.enabled", String.valueOf(agentService));
-        props.setProperty("services.fileserver.enabled", String.valueOf(fileService));
-        props.setProperty("services.dbus.enabled", String.valueOf(dbeventService));
-        props.setProperty("services.telemetry.enabled", String.valueOf(telemetryService));
+        props.setProperty("airavata.services.thrift.enabled", String.valueOf(thriftApi));
+        props.setProperty("airavata.services.rest.enabled", String.valueOf(restApi));
+        props.setProperty("airavata.services.controller.enabled", String.valueOf(helixController));
+        props.setProperty("airavata.services.participant.enabled", String.valueOf(helixParticipant));
+        props.setProperty("airavata.services.prewm.enabled", String.valueOf(preWorkflowManager));
+        props.setProperty("airavata.services.postwm.enabled", String.valueOf(postWorkflowManager));
+        props.setProperty("airavata.services.parser.enabled", String.valueOf(parserWorkflowManager));
+        props.setProperty("airavata.services.monitor.realtime.enabled", String.valueOf(realtimeMonitor));
+        props.setProperty("airavata.services.monitor.email.enabled", String.valueOf(emailMonitor));
+        props.setProperty("airavata.services.research.enabled", String.valueOf(researchService));
+        props.setProperty("airavata.services.agent.enabled", String.valueOf(agentService));
+        props.setProperty("airavata.services.fileserver.enabled", String.valueOf(fileService));
+        props.setProperty("airavata.services.dbus.enabled", String.valueOf(dbeventService));
+        props.setProperty("airavata.services.telemetry.enabled", String.valueOf(telemetryService));
 
         // Thrift and REST API ports
         // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
-        // services.thrift.server.port
-        props.setProperty("services.thrift.server.port", String.valueOf(thriftPort));
-        props.setProperty("services.rest.server.port", String.valueOf(restPort));
+        // airavata.services.thrift.server.port
+        props.setProperty("airavata.services.thrift.server.port", String.valueOf(thriftPort));
+        props.setProperty("airavata.services.rest.server.port", String.valueOf(restPort));
 
         return props;
     }

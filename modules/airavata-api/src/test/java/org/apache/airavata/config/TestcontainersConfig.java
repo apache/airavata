@@ -130,7 +130,7 @@ public class TestcontainersConfig {
      * Determine if we should use existing containers.
      * Checks explicit flag first, then auto-detects by checking MariaDB accessibility.
      */
-    private static boolean shouldUseExistingContainers() {
+    public static boolean shouldUseExistingContainers() {
         if (useExistingContainers != null) {
             return useExistingContainers;
         }
@@ -362,6 +362,10 @@ public class TestcontainersConfig {
                 try (var stmt = rootConn.createStatement()) {
                     stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS `" + dbName + "`");
                     logger.info("Ensured database {} exists", dbName);
+                    // Grant privileges to the airavata user on the newly created database
+                    stmt.executeUpdate("GRANT ALL PRIVILEGES ON `" + dbName + "`.* TO '" + DB_USER + "'@'%'");
+                    stmt.executeUpdate("FLUSH PRIVILEGES");
+                    logger.info("Granted privileges on {} to {}", dbName, DB_USER);
                 }
             } catch (Exception e) {
                 logger.warn("Failed to create database {}: {}", dbName, e.getMessage());

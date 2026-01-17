@@ -57,10 +57,10 @@ public @interface ConditionalOnApiService {
             super(ConfigurationPhase.REGISTER_BEAN);
         }
         
-        @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true")
+        @ConditionalOnProperty(name = "airavata.services.rest.enabled", havingValue = "true")
         static class RestEnabled {}
         
-        @ConditionalOnProperty(name = "services.thrift.enabled", havingValue = "true")
+        @ConditionalOnProperty(name = "airavata.services.thrift.enabled", havingValue = "true")
         static class ThriftEnabled {}
     }
 }

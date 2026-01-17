@@ -141,8 +141,6 @@ public abstract class ServiceStartupTestBase {
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning"
             })
-    @org.springframework.context.annotation.PropertySource(
-        value = "classpath:conf/airavata.properties",
-        factory = AiravataPropertySourceFactory.class)
+    // Spring Boot automatically loads application.properties from test resources
     static class TestConfiguration {}
 }

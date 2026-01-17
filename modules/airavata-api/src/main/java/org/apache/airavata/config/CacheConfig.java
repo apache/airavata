@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Primary;
  * Spring Cache configuration using Caffeine.
  * Provides caching for authorization decisions and other frequently accessed data.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   airavata.in-memory-cache-size=1000
  *   security.authzCache.enabled=true
  * 
@@ -71,11 +71,11 @@ public class CacheConfig {
      * Get cache size from properties with null safety.
      */
     private int getCacheSize() {
-        if (properties == null || properties.airavata() == null) {
+        if (properties == null) {
             return 1000; // Default
         }
-        return properties.airavata().inMemoryCacheSize() > 0 ? 
-                properties.airavata().inMemoryCacheSize() : 1000;
+        return properties.inMemoryCacheSize() > 0 ? 
+                properties.inMemoryCacheSize() : 1000;
     }
 
     /**

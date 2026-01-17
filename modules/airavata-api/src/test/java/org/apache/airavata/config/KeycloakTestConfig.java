@@ -243,20 +243,24 @@ public class KeycloakTestConfig {
             null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
         );
         
-        var airavata = new AiravataServerProperties.Airavata(
-            "", "default", true, null, 1000, "/tmp/airavata", 1073741824, null
-        );
-        
         return new AiravataServerProperties(
-            null,  // database
-            security,
-            null,  // zookeeper
-            null,  // curator
-            null,  // kafka
-            null,  // rabbitmq
-            null,  // flyway
-            services,
-            airavata
+            "",                                              // home
+            "default",                                       // defaultGateway
+            true,                                            // validationEnabled
+            null,                                            // sharing
+            1000,                                            // inMemoryCacheSize
+            "/tmp/airavata",                                 // localDataLocation
+            1073741824,                                      // maxArchiveSize
+            null,                                            // streamingTransfer
+            null,                                            // hibernate
+            null,                                            // database
+            security,                                        // security
+            null,                                            // rabbitmq
+            null,                                            // kafka
+            null,                                            // zookeeper
+            null,                                            // helix
+            null,                                            // flyway
+            services                                         // services
         );
     }
 }

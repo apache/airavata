@@ -56,24 +56,33 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
-        properties = {"spring.main.allow-bean-definition-overriding=true", "flyway.enabled=false"})
+        properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
 @TestPropertySource(
         properties = {
-            "rabbitmq.experiment-exchange-name=test_experiment_exchange",
-            "rabbitmq.status-exchange-name=test_status_exchange",
-            "rabbitmq.durable-queue=false"
+            "airavata.rabbitmq.experiment-exchange-name=test_experiment_exchange",
+            "airavata.rabbitmq.status-exchange-name=test_status_exchange",
+            "airavata.rabbitmq.durable-queue=false"
         },
-        locations = "classpath:conf/airavata.properties")
+        locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@org.junit.jupiter.api.condition.EnabledIf("isRabbitMQContainerRunning")
 public class RabbitMQIntegrationTest {
+
+    /**
+     * Check if RabbitMQ is running in a container (vs SSH tunnel).
+     * SSH tunneled services may not work reliably for messaging tests.
+     */
+    static boolean isRabbitMQContainerRunning() {
+        return !TestcontainersConfig.shouldUseExistingContainers();
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         // Initialize Testcontainers services and get URLs
         String rabbitMQUrl = TestcontainersConfig.getRabbitMQUrl();
         // Register properties - these will be available before Spring context loads
-        registry.add("rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMQIntegrationTest.class);

@@ -103,7 +103,7 @@ import org.springframework.transaction.annotation.Transactional;
     }
 )
 @ActiveProfiles("test")
-@org.springframework.test.context.TestPropertySource(locations = "classpath:conf/airavata.properties")
+@org.springframework.test.context.TestPropertySource(locations = "classpath:application.properties")
 @Transactional
 public abstract class TestBase {
 

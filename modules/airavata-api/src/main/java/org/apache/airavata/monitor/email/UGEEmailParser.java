@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.email", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.email", name = "enabled", havingValue = "true")
 public class UGEEmailParser implements EmailParser {
 
     private static final Logger log = LoggerFactory.getLogger(UGEEmailParser.class);

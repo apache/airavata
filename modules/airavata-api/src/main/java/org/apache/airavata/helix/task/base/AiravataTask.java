@@ -261,7 +261,7 @@ public abstract class AiravataTask extends AbstractTask {
                 var ctx = getApplicationContext();
                 if (ctx != null) {
                     var props = ctx.getBean(AiravataServerProperties.class);
-                    localDataPath = props.airavata().localDataLocation();
+                    localDataPath = props.localDataLocation();
                 }
             } catch (Exception e) {
                 logger.warn("Could not get properties from ApplicationContext, using default local data path", e);

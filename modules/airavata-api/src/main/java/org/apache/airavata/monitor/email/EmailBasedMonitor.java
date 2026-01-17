@@ -54,7 +54,7 @@ import org.yaml.snakeyaml.Yaml;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.email", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.email", name = "enabled", havingValue = "true")
 public class EmailBasedMonitor extends ServerLifecycle {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);

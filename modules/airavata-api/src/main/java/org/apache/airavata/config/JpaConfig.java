@@ -85,7 +85,7 @@ public class JpaConfig {
         String url = environment.getProperty(prefix + ".url");
         if (url == null || url.isEmpty()) {
             throw new IllegalStateException(
-                    "Database configuration missing: " + prefix + ".url is not set in airavata.properties");
+                    "Database configuration missing: " + prefix + ".url is not set in application.properties");
         }
         String driver = getEnvProperty(prefix + ".driver", "org.mariadb.jdbc.Driver");
         String user = environment.getProperty(prefix + ".user");
@@ -156,8 +156,8 @@ public class JpaConfig {
         
         // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown),
         // none for production when database might not be available (skip validation)
-        // Can be overridden via hibernate.hbm2ddl.auto property
-        String hbm2ddlAuto = environment != null ? environment.getProperty("hibernate.hbm2ddl.auto") : null;
+        // Can be overridden via airavata.hibernate.hbm2ddl-auto property
+        String hbm2ddlAuto = environment != null ? environment.getProperty("airavata.hibernate.hbm2ddl-auto") : null;
         if (hbm2ddlAuto == null) {
             props.put("hibernate.hbm2ddl.auto", isTestProfile ? "create-drop" : "none");
         } else {
@@ -214,51 +214,51 @@ public class JpaConfig {
     @Primary
     @Profile("!test")
     public DataSource profileServiceDataSource() {
-        return createDataSourceFromEnv("database.profile", "ProfileServicePool");
+        return createDataSourceFromEnv("airavata.database.profile", "ProfileServicePool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource appCatalogDataSource() {
-        return createDataSourceFromEnv("database.catalog", "AppCatalogPool");
+        return createDataSourceFromEnv("airavata.database.catalog", "AppCatalogPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource registryDataSource() {
-        return createDataSourceFromEnv("database.registry", "RegistryPool");
+        return createDataSourceFromEnv("airavata.database.registry", "RegistryPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource replicaDataSource() {
-        return createDataSourceFromEnv("database.replica", "ReplicaPool");
+        return createDataSourceFromEnv("airavata.database.replica", "ReplicaPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource workflowDataSource() {
-        return createDataSourceFromEnv("database.workflow", "WorkflowPool");
+        return createDataSourceFromEnv("airavata.database.workflow", "WorkflowPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource sharingDataSource() {
-        return createDataSourceFromEnv("database.sharing", "SharingPool");
+        return createDataSourceFromEnv("airavata.database.sharing", "SharingPool");
     }
 
     @Bean
     @Profile("!test")
     public DataSource credentialStoreDataSource() {
         // Fallback to registry database if vault DB not configured
-        String url = environment.getProperty("database.vault.url");
+        String url = environment.getProperty("airavata.database.vault.url");
         if (url == null || url.isEmpty()) {
-            url = environment.getProperty("database.registry.url");
+            url = environment.getProperty("airavata.database.registry.url");
         }
-        String user = getEnvProperty("database.vault.user", environment.getProperty("database.registry.user"));
-        String password = getEnvProperty("database.vault.password", environment.getProperty("database.registry.password"));
-        String driver = getEnvProperty("database.vault.driver", getEnvProperty("database.registry.driver", "org.mariadb.jdbc.Driver"));
-        String validationQuery = getEnvProperty("database.validation-query", "SELECT 1");
+        String user = getEnvProperty("airavata.database.vault.user", environment.getProperty("airavata.database.registry.user"));
+        String password = getEnvProperty("airavata.database.vault.password", environment.getProperty("airavata.database.registry.password"));
+        String driver = getEnvProperty("airavata.database.vault.driver", getEnvProperty("airavata.database.registry.driver", "org.mariadb.jdbc.Driver"));
+        String validationQuery = getEnvProperty("airavata.database.validation-query", "SELECT 1");
         
         return createDataSource(driver, url, user, password, validationQuery, "CredentialStorePool");
     }
@@ -266,7 +266,7 @@ public class JpaConfig {
     @Bean
     @Profile("!test")
     public DataSource researchCatalogDataSource() {
-        return createDataSourceFromEnv("database.research", "ResearchCatalogPool");
+        return createDataSourceFromEnv("airavata.database.research", "ResearchCatalogPool");
     }
 
     // EntityManagerFactory beans using Spring's LocalContainerEntityManagerFactoryBean

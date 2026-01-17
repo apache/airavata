@@ -44,6 +44,6 @@ import org.springframework.context.annotation.Profile;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.compute", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.compute", name = "enabled", havingValue = "true")
 public @interface ConditionalOnMonitor {
 }

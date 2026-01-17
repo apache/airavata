@@ -36,6 +36,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,8 @@ import picocli.CommandLine.IFactory;
             org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class,
             org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class
         })
-@Import({JpaConfig.class, FlywayConfig.class, AiravataServerProperties.class})
+@EnableConfigurationProperties(AiravataServerProperties.class)
+@Import({JpaConfig.class, FlywayConfig.class})
 @Component
 @Order(1)
 @ConditionalOnProperty(name = "airavata.cli.enabled", havingValue = "true", matchIfMissing = true)

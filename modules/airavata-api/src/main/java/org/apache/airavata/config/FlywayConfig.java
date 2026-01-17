@@ -43,7 +43,7 @@ import org.springframework.context.annotation.DependsOn;
  * where {airavataHome} is resolved from:
  * <ul>
  *   <li>System property -Dairavata.home=XXX (highest priority)</li>
- *   <li>airavata.home property in airavata.properties (if set and non-empty)</li>
+ *   <li>airavata.home property in application.properties (if set and non-empty)</li>
  *   <li>Resources root (IDE mode: modules/distribution/src/main/resources)</li>
  * </ul>
  *
@@ -51,7 +51,7 @@ import org.springframework.context.annotation.DependsOn;
  * flyway.enabled=false property.
  */
 @Configuration
-@ConditionalOnProperty(prefix = "flyway", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.flyway", name = "enabled", havingValue = "true")
 public class FlywayConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(FlywayConfig.class);

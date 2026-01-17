@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  * Data Interpreter Service using Spring-managed Quartz scheduler.
  */
 @Component
-@ConditionalOnProperty(prefix = "services.scheduler.interpreter", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.scheduler.interpreter", name = "enabled", havingValue = "true")
 public class DataInterpreterService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Data Interpreter Service";

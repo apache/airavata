@@ -27,12 +27,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * <p>This record mirrors the property file structure exactly. Spring Boot's
  * relaxed binding handles kebab-case to camelCase conversion automatically.
+ * All properties are prefixed with "airavata." in application.properties.
  * 
- * <p>Properties should be set in airavata.properties. Runtime validation
+ * <p>Properties should be set in application.properties. Runtime validation
  * is performed by PropertiesValidationConfig for fail-fast behavior.
  */
-@ConfigurationProperties(prefix = "")
+@ConfigurationProperties(prefix = "airavata")
 public record AiravataServerProperties(
+    // Core Airavata settings (formerly nested under airavata.*)
+    String home,
+    String defaultGateway,
+    boolean validationEnabled,
+    Sharing sharing,
+    int inMemoryCacheSize,
+    String localDataLocation,
+    long maxArchiveSize,
+    StreamingTransfer streamingTransfer,
+    Hibernate hibernate,
+    // Subsystem configuration
     Database database,
     Security security,
     RabbitMQ rabbitmq,
@@ -40,9 +52,12 @@ public record AiravataServerProperties(
     Zookeeper zookeeper,
     Helix helix,
     Flyway flyway,
-    Services services,
-    Airavata airavata
+    Services services
 ) {
+    // ==================== Core Airavata Settings ====================
+    public record Sharing(boolean enabled) {}
+    public record StreamingTransfer(boolean enabled) {}
+    public record Hibernate(String hbm2ddlAuto) {}
     // ==================== Database Configuration ====================
     public record Database(
         Registry registry,
@@ -492,18 +507,4 @@ public record AiravataServerProperties(
         ) {}
     }
 
-    // ==================== General Settings Configuration ====================
-    public record Airavata(
-        String home,
-        String defaultGateway,
-        boolean validationEnabled,
-        Sharing sharing,
-        int inMemoryCacheSize,
-        String localDataLocation,
-        long maxArchiveSize,
-        StreamingTransfer streamingTransfer
-    ) {
-        public record Sharing(boolean enabled) {}
-        public record StreamingTransfer(boolean enabled) {}
-    }
 }

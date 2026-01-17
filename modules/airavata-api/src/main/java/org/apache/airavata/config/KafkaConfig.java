@@ -41,13 +41,13 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
  * Spring Kafka configuration for Kafka messaging.
  * Replaces manual KafkaProducer/KafkaConsumer configuration with Spring-managed beans.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   kafka.enabled=true
  *   kafka.broker-url=localhost:9092
  *   services.monitor.realtime.broker-consumer-group=airavata-consumer-group
  */
 @Configuration
-@ConditionalOnProperty(prefix = "kafka", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.kafka", name = "enabled", havingValue = "true")
 public class KafkaConfig {
 
     private final AiravataServerProperties properties;

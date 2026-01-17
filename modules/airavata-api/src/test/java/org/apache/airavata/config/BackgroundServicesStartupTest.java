@@ -67,7 +67,7 @@ import org.springframework.test.context.TestPropertySource;
             "services.monitor.email.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(
         org.apache.airavata.config.AiravataServerProperties.class)
 @EnabledIfSystemProperty(

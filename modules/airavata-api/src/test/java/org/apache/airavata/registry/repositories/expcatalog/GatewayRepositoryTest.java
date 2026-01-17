@@ -93,8 +93,8 @@ public class GatewayRepositoryTest extends TestBase {
     @Test
     void testDefaultGatewayFromProperties() {
         // Verify properties are correctly bound
-        if (properties.airavata() != null) {
-            String defaultGateway = properties.airavata().defaultGateway();
+        if (properties != null) {
+            String defaultGateway = properties.defaultGateway();
             // Just verify it's accessible - actual value depends on config
             assertTrue(defaultGateway == null || !defaultGateway.isEmpty() || defaultGateway.isEmpty());
         }

@@ -36,10 +36,10 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.defaults();
         Map<String, String> props = builder.build();
 
-        assertEquals("true", props.get("services.thrift.enabled"));
-        assertEquals("false", props.get("services.rest.enabled"));
-        assertEquals("true", props.get("services.controller.enabled"));
-        assertEquals("true", props.get("services.participant.enabled"));
+        assertEquals("true", props.get("airavata.services.thrift.enabled"));
+        assertEquals("false", props.get("airavata.services.rest.enabled"));
+        assertEquals("true", props.get("airavata.services.controller.enabled"));
+        assertEquals("true", props.get("airavata.services.participant.enabled"));
     }
 
     @Test
@@ -47,10 +47,10 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.minimal();
         Map<String, String> props = builder.build();
 
-        assertEquals("false", props.get("services.thrift.enabled"));
-        assertEquals("false", props.get("services.rest.enabled"));
-        assertEquals("false", props.get("services.controller.enabled"));
-        assertEquals("false", props.get("services.participant.enabled"));
+        assertEquals("false", props.get("airavata.services.thrift.enabled"));
+        assertEquals("false", props.get("airavata.services.rest.enabled"));
+        assertEquals("false", props.get("airavata.services.controller.enabled"));
+        assertEquals("false", props.get("airavata.services.participant.enabled"));
     }
 
     @Test
@@ -58,15 +58,15 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.allEnabled();
         Map<String, String> props = builder.build();
 
-        assertEquals("true", props.get("services.thrift.enabled"));
-        assertEquals("true", props.get("services.rest.enabled"));
-        assertEquals("true", props.get("services.controller.enabled"));
-        assertEquals("true", props.get("services.participant.enabled"));
-        assertEquals("true", props.get("services.prewm.enabled"));
-        assertEquals("true", props.get("services.postwm.enabled"));
-        assertEquals("true", props.get("services.parser.enabled"));
-        assertEquals("true", props.get("services.monitor.realtime.enabled"));
-        assertEquals("true", props.get("services.monitor.email.enabled"));
+        assertEquals("true", props.get("airavata.services.thrift.enabled"));
+        assertEquals("true", props.get("airavata.services.rest.enabled"));
+        assertEquals("true", props.get("airavata.services.controller.enabled"));
+        assertEquals("true", props.get("airavata.services.participant.enabled"));
+        assertEquals("true", props.get("airavata.services.prewm.enabled"));
+        assertEquals("true", props.get("airavata.services.postwm.enabled"));
+        assertEquals("true", props.get("airavata.services.parser.enabled"));
+        assertEquals("true", props.get("airavata.services.monitor.realtime.enabled"));
+        assertEquals("true", props.get("airavata.services.monitor.email.enabled"));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ServiceConfigurationBuilderTest {
                 new ServiceConfigurationBuilder().disableThriftApi().enableThriftApi();
 
         Map<String, String> props = builder.build();
-        assertEquals("true", props.get("services.thrift.enabled"));
+        assertEquals("true", props.get("airavata.services.thrift.enabled"));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder().disableThriftApi();
 
         Map<String, String> props = builder.build();
-        assertEquals("false", props.get("services.thrift.enabled"));
+        assertEquals("false", props.get("airavata.services.thrift.enabled"));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder().enableRestApi();
 
         Map<String, String> props = builder.build();
-        assertEquals("true", props.get("services.rest.enabled"));
+        assertEquals("true", props.get("airavata.services.rest.enabled"));
     }
 
     @Test
@@ -99,8 +99,8 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder().disableAllMonitors();
 
         Map<String, String> props = builder.build();
-        assertEquals("false", props.get("services.monitor.realtime.enabled"));
-        assertEquals("false", props.get("services.monitor.email.enabled"));
+        assertEquals("false", props.get("airavata.services.monitor.realtime.enabled"));
+        assertEquals("false", props.get("airavata.services.monitor.email.enabled"));
     }
 
     @Test
@@ -108,11 +108,11 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder().disableAllBackgroundServices();
 
         Map<String, String> props = builder.build();
-        assertEquals("false", props.get("services.controller.enabled"));
-        assertEquals("false", props.get("services.participant.enabled"));
-        assertEquals("false", props.get("services.prewm.enabled"));
-        assertEquals("false", props.get("services.postwm.enabled"));
-        assertEquals("false", props.get("services.parser.enabled"));
+        assertEquals("false", props.get("airavata.services.controller.enabled"));
+        assertEquals("false", props.get("airavata.services.participant.enabled"));
+        assertEquals("false", props.get("airavata.services.prewm.enabled"));
+        assertEquals("false", props.get("airavata.services.postwm.enabled"));
+        assertEquals("false", props.get("airavata.services.parser.enabled"));
     }
 
     @Test
@@ -121,8 +121,8 @@ public class ServiceConfigurationBuilderTest {
         Properties props = builder.buildProperties();
 
         assertNotNull(props);
-        assertEquals("true", props.getProperty("services.thrift.enabled"));
-        assertEquals("false", props.getProperty("services.rest.enabled"));
+        assertEquals("true", props.getProperty("airavata.services.thrift.enabled"));
+        assertEquals("false", props.getProperty("airavata.services.rest.enabled"));
     }
 
     @Test
@@ -136,11 +136,11 @@ public class ServiceConfigurationBuilderTest {
                 .disablePostWorkflowManager();
 
         Map<String, String> props = builder.build();
-        assertEquals("true", props.get("services.thrift.enabled"));
-        assertEquals("false", props.get("services.rest.enabled"));
-        assertEquals("true", props.get("services.controller.enabled"));
-        assertEquals("false", props.get("services.participant.enabled"));
-        assertEquals("true", props.get("services.prewm.enabled"));
-        assertEquals("false", props.get("services.postwm.enabled"));
+        assertEquals("true", props.get("airavata.services.thrift.enabled"));
+        assertEquals("false", props.get("airavata.services.rest.enabled"));
+        assertEquals("true", props.get("airavata.services.controller.enabled"));
+        assertEquals("false", props.get("airavata.services.participant.enabled"));
+        assertEquals("true", props.get("airavata.services.prewm.enabled"));
+        assertEquals("false", props.get("airavata.services.postwm.enabled"));
     }
 }

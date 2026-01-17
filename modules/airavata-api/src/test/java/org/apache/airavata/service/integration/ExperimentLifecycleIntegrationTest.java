@@ -55,7 +55,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("Experiment Lifecycle Integration Tests - End-to-end flow from creation to completion with real services")
+@org.junit.jupiter.api.condition.EnabledIf("isMessagingContainerRunning")
 public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBase {
+
+    /**
+     * Check if messaging containers are available (not via SSH tunnel).
+     */
+    static boolean isMessagingContainerRunning() {
+        return !org.apache.airavata.config.TestcontainersConfig.shouldUseExistingContainers();
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentLifecycleIntegrationTest.class);
 

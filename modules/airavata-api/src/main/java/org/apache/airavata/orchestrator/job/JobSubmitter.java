@@ -26,7 +26,7 @@ import org.apache.airavata.orchestrator.exception.OrchestratorException;
  * This is the submitter interface, orchestrator can
  * submit jobs to gfac in different modes, gfac running embedded
  * or gfac running in server mode. This can be configured in
- * airavata.properties
+ * application.properties
  * todo provide a way to configure this in a dynamic way
  */
 public interface JobSubmitter {

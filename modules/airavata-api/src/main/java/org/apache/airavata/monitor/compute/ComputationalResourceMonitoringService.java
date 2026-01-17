@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.compute", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.compute", name = "enabled", havingValue = "true")
 public class ComputationalResourceMonitoringService extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);

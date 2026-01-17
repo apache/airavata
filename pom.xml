@@ -488,14 +488,14 @@ under the License.
                 <version>6.2.2</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.ldap</groupId>
-                <artifactId>spring-ldap-core</artifactId>
-                <version>3.2.3</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-ldap</artifactId>
+                <version>3.5.3</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-ldap</artifactId>
-                <version>6.4.2</version>
+                <version>6.5.1</version>
             </dependency>
             <!-- Force jandex version for Hibernate 6.6 compatibility -->
             <dependency>

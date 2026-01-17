@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
  * REST client configuration for Spring RestTemplate.
  * Provides a configured RestTemplate bean with proper timeouts and SSL support.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   security.tls.enabled=true
  *   security.tls.keystore.path=keystores/airavata.p12
  *   security.tls.keystore.password=secret

@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  * Publishes job status results to Kafka topics.
  */
 @Component
-@ConditionalOnProperty(prefix = "kafka", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.kafka", name = "enabled", havingValue = "true")
 public class MessageProducer {
 
     private static final Logger log = LoggerFactory.getLogger(MessageProducer.class);

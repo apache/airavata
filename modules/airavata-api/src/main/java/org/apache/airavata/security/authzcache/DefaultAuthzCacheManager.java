@@ -29,11 +29,11 @@ import org.springframework.stereotype.Component;
 /**
  * Default authorization cache manager using Caffeine-backed cache.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   security.authzCache.enabled=true
  */
 @Component
-@ConditionalOnProperty(prefix = "security.authzCache", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.security.authzCache", name = "enabled", havingValue = "true")
 public class DefaultAuthzCacheManager implements AuthzCacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuthzCacheManager.class);

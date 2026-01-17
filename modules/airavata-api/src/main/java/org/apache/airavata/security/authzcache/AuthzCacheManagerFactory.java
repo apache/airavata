@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
  * This factory is kept for backward compatibility but simply returns the injected bean.
  */
 @Component
-@ConditionalOnProperty(prefix = "security.authzCache", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.security.authzCache", name = "enabled", havingValue = "true")
 public class AuthzCacheManagerFactory {
     private static final Logger logger = LoggerFactory.getLogger(AuthzCacheManagerFactory.class);
     private final AuthzCacheManager authzCacheManager;

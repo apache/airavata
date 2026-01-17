@@ -50,18 +50,18 @@ public class ServiceStartupRangeTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.minimal();
         Map<String, String> props = builder.build();
 
-        assertEquals("false", props.get("services.thrift.enabled"));
-        assertEquals("false", props.get("services.rest.enabled"));
-        assertEquals("false", props.get("services.controller.enabled"));
-        assertEquals("false", props.get("services.participant.enabled"));
-        assertEquals("false", props.get("services.prewm.enabled"));
-        assertEquals("false", props.get("services.postwm.enabled"));
-        assertEquals("false", props.get("services.parser.enabled"));
-        assertEquals("false", props.get("services.monitor.realtime.enabled"));
-        assertEquals("false", props.get("services.monitor.email.enabled"));
+        assertEquals("false", props.get("airavata.services.thrift.enabled"));
+        assertEquals("false", props.get("airavata.services.rest.enabled"));
+        assertEquals("false", props.get("airavata.services.controller.enabled"));
+        assertEquals("false", props.get("airavata.services.participant.enabled"));
+        assertEquals("false", props.get("airavata.services.prewm.enabled"));
+        assertEquals("false", props.get("airavata.services.postwm.enabled"));
+        assertEquals("false", props.get("airavata.services.parser.enabled"));
+        assertEquals("false", props.get("airavata.services.monitor.realtime.enabled"));
+        assertEquals("false", props.get("airavata.services.monitor.email.enabled"));
 
-        assertNotNull(props.get("services.thrift.server.port"));
-        assertNotNull(props.get("services.rest.server.port"));
+        assertNotNull(props.get("airavata.services.thrift.server.port"));
+        assertNotNull(props.get("airavata.services.rest.server.port"));
     }
 
     /**
@@ -72,18 +72,18 @@ public class ServiceStartupRangeTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.allEnabled();
         Map<String, String> props = builder.build();
 
-        assertEquals("true", props.get("services.thrift.enabled"));
-        assertEquals("true", props.get("services.rest.enabled"));
-        assertEquals("true", props.get("services.controller.enabled"));
-        assertEquals("true", props.get("services.participant.enabled"));
-        assertEquals("true", props.get("services.prewm.enabled"));
-        assertEquals("true", props.get("services.postwm.enabled"));
-        assertEquals("true", props.get("services.parser.enabled"));
-        assertEquals("true", props.get("services.monitor.realtime.enabled"));
-        assertEquals("true", props.get("services.monitor.email.enabled"));
+        assertEquals("true", props.get("airavata.services.thrift.enabled"));
+        assertEquals("true", props.get("airavata.services.rest.enabled"));
+        assertEquals("true", props.get("airavata.services.controller.enabled"));
+        assertEquals("true", props.get("airavata.services.participant.enabled"));
+        assertEquals("true", props.get("airavata.services.prewm.enabled"));
+        assertEquals("true", props.get("airavata.services.postwm.enabled"));
+        assertEquals("true", props.get("airavata.services.parser.enabled"));
+        assertEquals("true", props.get("airavata.services.monitor.realtime.enabled"));
+        assertEquals("true", props.get("airavata.services.monitor.email.enabled"));
 
-        assertNotNull(props.get("services.thrift.server.port"));
-        assertNotNull(props.get("services.rest.server.port"));
+        assertNotNull(props.get("airavata.services.thrift.server.port"));
+        assertNotNull(props.get("airavata.services.rest.server.port"));
     }
 
     /**
@@ -215,15 +215,15 @@ public class ServiceStartupRangeTest {
                     String value = e.getValue();
 
                     return "true".equals(value)
-                            && (key.equals("services.thrift.enabled")
-                                    || key.equals("services.rest.enabled")
-                                    || key.equals("services.controller.enabled")
-                                    || key.equals("services.participant.enabled")
-                                    || key.equals("services.prewm.enabled")
-                                    || key.equals("services.postwm.enabled")
-                                    || key.equals("services.parser.enabled")
-                                    || key.equals("services.monitor.realtime.enabled")
-                                    || key.equals("services.monitor.email.enabled"));
+                            && (key.equals("airavata.services.thrift.enabled")
+                                    || key.equals("airavata.services.rest.enabled")
+                                    || key.equals("airavata.services.controller.enabled")
+                                    || key.equals("airavata.services.participant.enabled")
+                                    || key.equals("airavata.services.prewm.enabled")
+                                    || key.equals("airavata.services.postwm.enabled")
+                                    || key.equals("airavata.services.parser.enabled")
+                                    || key.equals("airavata.services.monitor.realtime.enabled")
+                                    || key.equals("airavata.services.monitor.email.enabled"));
                 })
                 .count();
 
@@ -332,7 +332,7 @@ public class ServiceStartupRangeTest {
 
         Map<String, String> props = builder.build();
 
-        assertEquals("8931", props.get("services.thrift.server.port"));
+        assertEquals("8931", props.get("airavata.services.thrift.server.port"));
     }
 
     /**
@@ -343,8 +343,8 @@ public class ServiceStartupRangeTest {
         ServiceConfigurationBuilder builder = ServiceConfigurationBuilder.defaults();
         Map<String, String> props = builder.build();
 
-        assertEquals("8930", props.get("services.thrift.server.port"));
-        assertEquals("8082", props.get("services.rest.server.port"));
+        assertEquals("8930", props.get("airavata.services.thrift.server.port"));
+        assertEquals("8082", props.get("airavata.services.rest.server.port"));
     }
 
     /**
@@ -358,9 +358,9 @@ public class ServiceStartupRangeTest {
 
         Map<String, String> props = builder.build();
 
-        assertEquals("false", props.get("services.thrift.enabled"));
+        assertEquals("false", props.get("airavata.services.thrift.enabled"));
 
-        assertEquals("9999", props.get("services.thrift.server.port"));
+        assertEquals("9999", props.get("airavata.services.thrift.server.port"));
     }
 
     /**

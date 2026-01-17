@@ -63,23 +63,22 @@ public class PropertiesValidationConfig {
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
         
-        // Validate top-level properties
-        validateNotNull(properties.database(), "database", errors);
-        validateNotNull(properties.security(), "security", errors);
-        validateNotNull(properties.services(), "services", errors);
-        validateNotNull(properties.airavata(), "airavata", errors);
+        // Validate top-level properties (all under airavata.* prefix)
+        validateNotNull(properties.database(), "airavata.database", errors);
+        validateNotNull(properties.security(), "airavata.security", errors);
+        validateNotNull(properties.services(), "airavata.services", errors);
         
         // Validate database properties if database section exists
         if (properties.database() != null) {
-            validateDatabaseConfig(properties.database().registry(), "database.registry", errors, warnings);
-            validateDatabaseConfig(properties.database().catalog(), "database.catalog", errors, warnings);
-            validateDatabaseConfig(properties.database().profile(), "database.profile", errors, warnings);
+            validateDatabaseConfig(properties.database().registry(), "airavata.database.registry", errors, warnings);
+            validateDatabaseConfig(properties.database().catalog(), "airavata.database.catalog", errors, warnings);
+            validateDatabaseConfig(properties.database().profile(), "airavata.database.profile", errors, warnings);
         }
         
         // Validate security properties
         if (properties.security() != null) {
             if (properties.security().iam() != null && properties.security().iam().enabled()) {
-                validateNotEmpty(properties.security().iam().serverUrl(), "security.iam.server-url", errors);
+                validateNotEmpty(properties.security().iam().serverUrl(), "airavata.security.iam.server-url", errors);
             }
         }
         
@@ -87,10 +86,10 @@ public class PropertiesValidationConfig {
         if (properties.services() != null) {
             // Validate API services
             if (properties.services().thrift() != null && properties.services().thrift().enabled()) {
-                validateNotNull(properties.services().thrift().server(), "services.thrift.server", errors);
+                validateNotNull(properties.services().thrift().server(), "airavata.services.thrift.server", errors);
             }
             if (properties.services().rest() != null && properties.services().rest().enabled()) {
-                validateNotNull(properties.services().rest().server(), "services.rest.server", errors);
+                validateNotNull(properties.services().rest().server(), "airavata.services.rest.server", errors);
             }
         }
         
@@ -107,7 +106,7 @@ public class PropertiesValidationConfig {
             for (String error : errors) {
                 sb.append("  - ").append(error).append("\n");
             }
-            sb.append("\nPlease ensure all required properties are set in airavata.properties.\n");
+            sb.append("\nPlease ensure all required properties are set in application.properties.\n");
             sb.append("================================================\n");
             
             throw new IllegalStateException(sb.toString());

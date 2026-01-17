@@ -46,9 +46,7 @@ public class DockerServiceStartupTest {
     private static final Logger logger = LoggerFactory.getLogger(DockerServiceStartupTest.class);
 
     @Configuration
-    @PropertySource(
-        value = "classpath:conf/airavata.properties",
-        factory = AiravataPropertySourceFactory.class)
+    // application.properties is auto-loaded by Spring Boot
     @EnableConfigurationProperties(AiravataServerProperties.class)
     static class MinimalConfig {
     }

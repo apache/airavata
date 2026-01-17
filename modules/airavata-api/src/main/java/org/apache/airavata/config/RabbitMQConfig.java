@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Primary;
  * Spring AMQP configuration for RabbitMQ messaging.
  * Replaces manual RabbitMQ client configuration with Spring-managed beans.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   rabbitmq.enabled=true
  *   rabbitmq.broker-url=amqp://guest:guest@localhost:5672/develop
  *   rabbitmq.prefetch-count=200
@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Primary;
  *   rabbitmq.db-event-exchange-name=dbevent_exchange
  */
 @Configuration
-@ConditionalOnProperty(prefix = "rabbitmq", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.rabbitmq", name = "enabled", havingValue = "true")
 public class RabbitMQConfig {
 
     private final AiravataServerProperties properties;

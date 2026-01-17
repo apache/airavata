@@ -147,7 +147,7 @@ public class SharingManager {
      */
     public String createExperimentEntity(String experimentId, ExperimentModel experiment)
             throws AiravataSystemException {
-        if (!properties.airavata().sharing().enabled()) {
+        if (!properties.sharing().enabled()) {
             return experimentId;
         }
 
@@ -182,7 +182,7 @@ public class SharingManager {
      * Returns the created entity ID.
      */
     public String createProjectEntity(String projectId, Project project) throws AiravataSystemException {
-        if (!properties.airavata().sharing().enabled()) {
+        if (!properties.sharing().enabled()) {
             return projectId;
         }
 
@@ -211,7 +211,7 @@ public class SharingManager {
      * Updates sharing entity metadata for an experiment.
      */
     public void updateExperimentEntity(String experimentId, ExperimentModel experiment) throws AiravataSystemException {
-        if (!properties.airavata().sharing().enabled()) {
+        if (!properties.sharing().enabled()) {
             return;
         }
 
@@ -232,7 +232,7 @@ public class SharingManager {
      * Deletes a sharing entity.
      */
     public void deleteEntity(String entityId) throws AiravataSystemException {
-        if (!properties.airavata().sharing().enabled()) {
+        if (!properties.sharing().enabled()) {
             return;
         }
 

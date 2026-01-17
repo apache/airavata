@@ -55,7 +55,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.authzCache.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class SpringContextLoadTest {
 

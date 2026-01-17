@@ -212,7 +212,7 @@ public abstract class DataStagingTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                localDataPath = props.airavata().localDataLocation();
+                localDataPath = props.localDataLocation();
             }
         } catch (Exception e) {
             logger.warn("Could not get properties from ApplicationContext, using default local data path", e);
@@ -453,7 +453,7 @@ public abstract class DataStagingTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                streamingEnabled = props.airavata().streamingTransfer().enabled();
+                streamingEnabled = props.streamingTransfer().enabled();
             }
         } catch (Exception e) {
             logger.warn("Could not get properties from ApplicationContext, using default streaming setting", e);
@@ -522,7 +522,7 @@ public abstract class DataStagingTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                streamingEnabled = props.airavata().streamingTransfer().enabled();
+                streamingEnabled = props.streamingTransfer().enabled();
             }
         } catch (Exception e) {
             logger.warn("Could not get properties from ApplicationContext, using default streaming setting", e);

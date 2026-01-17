@@ -94,7 +94,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
     protected void setGatewayProperties() {
         if (properties != null) {
             setAiravataUserName(properties.security().iam().superAdmin().username());
-            setGatewayName(properties.airavata().defaultGateway());
+            setGatewayName(properties.defaultGateway());
         }
     }
 

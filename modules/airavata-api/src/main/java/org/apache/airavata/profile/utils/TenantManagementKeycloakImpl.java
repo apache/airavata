@@ -76,7 +76,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 || properties.security().iam() == null
                 || properties.security().iam().serverUrl() == null) {
             throw new IamAdminServicesException(
-                    "IAM server URL is not configured. Check airavata.properties for security.iam.server-url");
+                    "IAM server URL is not configured. Check application.properties for security.iam.server-url");
         }
         return properties.security().iam().serverUrl();
     }

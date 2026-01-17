@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 /**
  * EmailNotifier uses Spring Boot's auto-configured JavaMailSender.
  * 
- * Configure via airavata.properties (Spring Mail properties):
+ * Configure via application.properties (Spring Mail properties):
  *   spring.mail.host=smtp.example.com
  *   spring.mail.port=587
  *   spring.mail.username=user

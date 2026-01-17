@@ -37,7 +37,7 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 public class BaseOrchestratorTest {
 
     public BaseOrchestratorTest() {}

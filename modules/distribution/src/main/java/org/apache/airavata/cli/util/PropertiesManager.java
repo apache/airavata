@@ -33,7 +33,7 @@ public class PropertiesManager {
     private static final Logger logger = LoggerFactory.getLogger(PropertiesManager.class);
 
     /**
-     * Get the path to airavata.properties file.
+     * Get the path to application.properties file.
      * Checks in order:
      * 1. AIRAVATA_CONFIG_DIR environment variable
      * 2. AIRAVATA_HOME/conf directory
@@ -42,7 +42,7 @@ public class PropertiesManager {
     public static Path getPropertiesFilePath() {
         String configDir = System.getenv("AIRAVATA_CONFIG_DIR");
         if (configDir != null && !configDir.isEmpty()) {
-            Path path = Paths.get(configDir, "airavata.properties");
+            Path path = Paths.get(configDir, "application.properties");
             if (Files.exists(path)) {
                 return path;
             }
@@ -50,20 +50,20 @@ public class PropertiesManager {
 
         String airavataHome = System.getenv("AIRAVATA_HOME");
         if (airavataHome != null && !airavataHome.isEmpty()) {
-            Path path = Paths.get(airavataHome, "conf", "airavata.properties");
+            Path path = Paths.get(airavataHome, "conf", "application.properties");
             if (Files.exists(path)) {
                 return path;
             }
         }
 
         // Try current directory
-        Path path = Paths.get("airavata.properties");
+        Path path = Paths.get("application.properties");
         if (Files.exists(path)) {
             return path;
         }
 
         // Default to conf directory relative to current
-        return Paths.get("conf", "airavata.properties");
+        return Paths.get("conf", "application.properties");
     }
 
     /**

@@ -67,18 +67,29 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
-        properties = {"spring.main.allow-bean-definition-overriding=true", "flyway.enabled=false"})
+        properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
+@org.junit.jupiter.api.condition.EnabledIf("isKafkaContainerRunning")
 public class KafkaIntegrationTest {
+
+    /**
+     * Check if Kafka is running in a container (vs SSH tunnel).
+     * SSH tunneled Kafka doesn't work reliably for consumer polling due to advertised listeners issues.
+     */
+    static boolean isKafkaContainerRunning() {
+        // If using existing containers (SSH tunnel), skip these tests
+        // Kafka advertised listeners don't work correctly through SSH tunnels
+        return !TestcontainersConfig.shouldUseExistingContainers();
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         // Initialize Testcontainers services and get URLs
         String kafkaUrl = TestcontainersConfig.getKafkaBootstrapServers();
         // Register properties - these will be available before Spring context loads
-        registry.add("kafka.broker-url", () -> kafkaUrl);
+        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaIntegrationTest.class);

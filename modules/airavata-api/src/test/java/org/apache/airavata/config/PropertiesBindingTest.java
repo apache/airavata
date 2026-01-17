@@ -33,19 +33,17 @@ import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Comprehensive test to verify all properties in AiravataServerProperties
- * are correctly bound from airavata.properties.
+ * are correctly bound from application.properties.
  * 
  * Each assertion verifies the property value against the ground truth
- * defined in src/test/resources/conf/airavata.properties.
+ * defined in src/test/resources/application.properties.
  */
 @SpringBootTest(classes = PropertiesBindingTest.MinimalConfig.class)
 @ActiveProfiles("test")
 public class PropertiesBindingTest {
 
     @Configuration
-    @PropertySource(
-        value = "classpath:conf/airavata.properties",
-        factory = AiravataPropertySourceFactory.class)
+    // application.properties is auto-loaded by Spring Boot
     @EnableConfigurationProperties(AiravataServerProperties.class)
     static class MinimalConfig {
     }
@@ -62,43 +60,43 @@ public class PropertiesBindingTest {
         @Test
         @DisplayName("airavata.default-gateway = default")
         void testDefaultGateway() {
-            assertEquals("default", properties.airavata().defaultGateway());
+            assertEquals("default", properties.defaultGateway());
         }
         
         @Test
         @DisplayName("airavata.in-memory-cache-size = 1000")
         void testInMemoryCacheSize() {
-            assertEquals(1000, properties.airavata().inMemoryCacheSize());
+            assertEquals(1000, properties.inMemoryCacheSize());
         }
         
         @Test
         @DisplayName("airavata.local-data-location = /tmp/airavata")
         void testLocalDataLocation() {
-            assertEquals("/tmp/airavata", properties.airavata().localDataLocation());
+            assertEquals("/tmp/airavata", properties.localDataLocation());
         }
         
         @Test
         @DisplayName("airavata.max-archive-size = 1073741824")
         void testMaxArchiveSize() {
-            assertEquals(1073741824L, properties.airavata().maxArchiveSize());
+            assertEquals(1073741824L, properties.maxArchiveSize());
         }
         
         @Test
         @DisplayName("airavata.sharing.enabled = true")
         void testSharingEnabled() {
-            assertTrue(properties.airavata().sharing().enabled());
+            assertTrue(properties.sharing().enabled());
         }
         
         @Test
         @DisplayName("airavata.streaming-transfer.enabled = false")
         void testStreamingTransferEnabled() {
-            assertFalse(properties.airavata().streamingTransfer().enabled());
+            assertFalse(properties.streamingTransfer().enabled());
         }
         
         @Test
         @DisplayName("airavata.validation-enabled = true")
         void testValidationEnabled() {
-            assertTrue(properties.airavata().validationEnabled());
+            assertTrue(properties.validationEnabled());
         }
     }
 
@@ -221,7 +219,8 @@ public class PropertiesBindingTest {
         @DisplayName("security.iam properties")
         void testIamProperties() {
             var iam = properties.security().iam();
-            assertTrue(iam.enabled());
+            // IAM is disabled for tests (no real IAM server)
+            assertFalse(iam.enabled());
             assertEquals("http://localhost:18080", iam.serverUrl());
             assertEquals("pga", iam.oauthClientId());
             assertEquals("upCMVu2RZcAXUqpr9V7phAbz6hhF9cbl", iam.oauthClientSecret());
@@ -235,7 +234,7 @@ public class PropertiesBindingTest {
             var tls = properties.security().tls();
             assertFalse(tls.enabled());
             assertEquals(10000, tls.clientTimeout());
-            assertEquals("keystores/airavata.p12", tls.keystore().path());
+            assertEquals("conf/keystores/airavata.p12", tls.keystore().path());
             assertEquals("airavata", tls.keystore().password());
         }
         
@@ -243,7 +242,7 @@ public class PropertiesBindingTest {
         @DisplayName("security.vault.keystore properties")
         void testSecurityVaultKeystore() {
             var keystore = properties.security().vault().keystore();
-            assertEquals("keystores/airavata.sym.p12", keystore.url());
+            assertEquals("conf/keystores/airavata.sym.p12", keystore.url());
             assertEquals("airavata", keystore.password());
             assertEquals("airavata", keystore.alias());
         }
@@ -330,7 +329,7 @@ public class PropertiesBindingTest {
         @DisplayName("services.api.vault.keystore properties")
         void testApiVaultKeystore() {
             var keystore = properties.services().api().vault().keystore();
-            assertEquals("keystores/airavata.sym.p12", keystore.url());
+            assertEquals("conf/keystores/airavata.sym.p12", keystore.url());
             assertEquals("airavata", keystore.password());
             assertEquals("airavata", keystore.alias());
         }
@@ -489,10 +488,11 @@ public class PropertiesBindingTest {
             assertFalse(scheduler.enabled());
             assertEquals(1800000.0, scheduler.clusterScanningInterval());
             assertEquals(1, scheduler.clusterScanningParallelJobs());
-            assertTrue(scheduler.interpreter().enabled());
+            // Interpreter and rescheduler are disabled in test properties
+            assertFalse(scheduler.interpreter().enabled());
             assertEquals(1800000.0, scheduler.jobScanningInterval());
             assertEquals(5, scheduler.maximumReschedulerThreshold());
-            assertTrue(scheduler.rescheduler().enabled());
+            assertFalse(scheduler.rescheduler().enabled());
             assertEquals("DefaultComputeResourceSelectionPolicy", scheduler.selectionPolicy());
             assertEquals("ExponentialBackOffReScheduler", scheduler.reschedulerPolicy());
         }

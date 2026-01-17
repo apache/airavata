@@ -201,7 +201,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             var ctx = getApplicationContext();
             if (ctx != null) {
                 var props = ctx.getBean(AiravataServerProperties.class);
-                outputPath = props.airavata().localDataLocation();
+                outputPath = props.localDataLocation();
             }
         } catch (Exception e) {
             logger.warn("Could not get properties from ApplicationContext, using default local data path", e);

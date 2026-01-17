@@ -104,7 +104,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
             }
             if (gatewayId == null || gatewayId.isEmpty()) {
                 if (properties != null) {
-                    gatewayId = properties.airavata().defaultGateway();
+                    gatewayId = properties.defaultGateway();
                 } else {
                     gatewayId = "default";
                 }
@@ -144,7 +144,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter, Watcher {
                 }
             }
             if (gatewayId == null || gatewayId.isEmpty()) {
-                gatewayId = properties.airavata().defaultGateway();
+                gatewayId = properties.defaultGateway();
             }
             ProcessTerminateEvent processTerminateEvent =
                     new ProcessTerminateEvent(processId, gatewayId, experimentId, tokenId);

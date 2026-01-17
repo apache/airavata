@@ -100,7 +100,7 @@ public class QuartzConfig {
 
     /**
      * Quartz-specific properties configuration.
-     * These can be overridden in airavata.properties or application.yml.
+     * These can be overridden in application.properties.
      * 
      * @return Default Quartz properties
      */

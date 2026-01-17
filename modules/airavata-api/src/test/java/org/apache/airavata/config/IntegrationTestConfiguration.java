@@ -34,9 +34,7 @@ import org.springframework.context.annotation.Import;
  * @see TestcontainersConfig
  */
 @Configuration
-@org.springframework.context.annotation.PropertySource(
-    value = "classpath:conf/airavata.properties",
-    factory = AiravataPropertySourceFactory.class)
+// application.properties is auto-loaded by Spring Boot
 @Import({JpaConfig.class, TestcontainersConfig.class})
 @ComponentScan(
     basePackages = {
@@ -82,18 +80,24 @@ public class IntegrationTestConfiguration {
                 new AiravataServerProperties.Services.Rest.Server(8082)),
             null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         
-        var airavata = new AiravataServerProperties.Airavata(
-            "",                                                     // home
-            "default",                                              // defaultGateway
-            true,                                                   // validationEnabled
-            new AiravataServerProperties.Airavata.Sharing(true),    // sharing
-            1000,                                                   // inMemoryCacheSize
-            "/tmp/airavata",                                        // localDataLocation
-            1073741824,                                             // maxArchiveSize
-            new AiravataServerProperties.Airavata.StreamingTransfer(false)  // streamingTransfer
-        );
-        
         return new AiravataServerProperties(
-            database, security, null, null, null, null, null, services, airavata);
+            "",                                              // home
+            "default",                                       // defaultGateway
+            true,                                            // validationEnabled
+            new AiravataServerProperties.Sharing(true),      // sharing
+            1000,                                            // inMemoryCacheSize
+            "/tmp/airavata",                                 // localDataLocation
+            1073741824,                                      // maxArchiveSize
+            new AiravataServerProperties.StreamingTransfer(false),  // streamingTransfer
+            null,                                            // hibernate
+            database,                                        // database
+            security,                                        // security
+            null,                                            // rabbitmq
+            null,                                            // kafka
+            null,                                            // zookeeper
+            null,                                            // helix
+            null,                                            // flyway
+            services                                         // services
+        );
     }
 }

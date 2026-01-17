@@ -80,7 +80,7 @@ import org.springframework.test.context.TestPropertySource;
             "security.authzCache.enabled=false"
         })
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @DisplayName("OrchestratorService Integration Tests")
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {

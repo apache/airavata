@@ -41,10 +41,10 @@ import org.springframework.test.context.TestPropertySource;
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "flyway.enabled=false",
+            "airavata.flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class SSHAccountProvisionerFactoryTest {
 

@@ -40,9 +40,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class ConditionalPropertyValidationTest {
 
     @Configuration
-    @PropertySource(
-        value = "classpath:conf/airavata.properties",
-        factory = AiravataPropertySourceFactory.class)
+    // application.properties is auto-loaded by Spring Boot
     @EnableConfigurationProperties(AiravataServerProperties.class)
     static class MinimalConfig {
     }
@@ -98,12 +96,13 @@ public class ConditionalPropertyValidationTest {
     @Test
     @DisplayName("Verify security enabled flags are bound correctly")
     void testSecurityEnabledFlagsAreBound() {
-        assertTrue(properties.security().iam().enabled(), 
-            "security.iam.enabled should default to true");
+        // IAM is disabled for tests (no real IAM server)
+        assertFalse(properties.security().iam().enabled(), 
+            "airavata.security.iam.enabled should be false for tests");
         assertTrue(properties.security().authentication().enabled(), 
-            "security.authentication.enabled should default to true");
+            "airavata.security.authentication.enabled should be true");
         assertTrue(properties.security().authzCache().enabled(), 
-            "security.authz-cache.enabled should default to true");
+            "airavata.security.authzCache.enabled should be true");
     }
 
     @Test
@@ -203,7 +202,7 @@ public class ConditionalPropertyValidationTest {
             "security.authz-cache must be set");
         
         // Sharing
-        assertNotNull(properties.airavata().sharing(),
+        assertNotNull(properties.sharing(),
             "airavata.sharing must be set");
     }
 

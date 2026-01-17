@@ -72,7 +72,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 public class KeyCloakSecurityManagerTest {
 
     public static final String TEST_USERNAME = "test-user";

@@ -234,7 +234,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
             try {
                 // Get properties from AiravataConfigUtils
                 String zkConnection = org.apache.airavata.config.AiravataConfigUtils.getSetting(
-                        "zookeeper.server.connection", "localhost:2181");
+                        "airavata.zookeeper.server.connection", "localhost:2181");
                 AbstractTask.curatorClient = CuratorFrameworkFactory.newClient(zkConnection, retryPolicy);
                 AbstractTask.curatorClient.start();
             } catch (Exception e) {

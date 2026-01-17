@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.monitor.compute", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.compute", name = "enabled", havingValue = "true")
 public class ClusterStatusMonitorJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(ClusterStatusMonitorJob.class);
 
@@ -71,7 +71,7 @@ public class ClusterStatusMonitorJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             // Super-tenant gateway is now derived from the default gateway config.
-            String superTenantGatewayId = properties.airavata().defaultGateway();
+            String superTenantGatewayId = properties.defaultGateway();
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {

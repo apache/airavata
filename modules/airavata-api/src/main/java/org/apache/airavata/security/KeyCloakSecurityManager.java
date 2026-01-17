@@ -58,7 +58,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-@ConditionalOnProperty(prefix = "security.iam", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.security.iam", name = "enabled", havingValue = "true")
 public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final Logger logger = LoggerFactory.getLogger(KeyCloakSecurityManager.class);
     // Methods that users user to manage their user resource profile

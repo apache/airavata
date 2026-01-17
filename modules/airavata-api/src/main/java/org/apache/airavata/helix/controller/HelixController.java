@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.controller", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.controller", name = "enabled", havingValue = "true")
 public class HelixController extends ServerLifecycle {
 
     private static final Logger logger = LoggerFactory.getLogger(HelixController.class);

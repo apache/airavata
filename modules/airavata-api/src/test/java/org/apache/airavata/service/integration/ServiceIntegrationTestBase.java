@@ -51,15 +51,15 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             // Disable IAM/security components that require Keycloak
-            "security.iam.enabled=false",
-            "security.iam.server-url=",
-            "security.manager.enabled=false",
-            "security.authzCache.enabled=false",
+            "airavata.security.iam.enabled=false",
+            "airavata.security.iam.server-url=",
+            "airavata.security.manager.enabled=false",
+            "airavata.security.authzCache.enabled=false",
             // Disable Flyway in tests - TestcontainersConfig handles migrations
-            "flyway.enabled=false",
+            "airavata.flyway.enabled=false",
             // Enable services for conditional beans
-            "services.rest.enabled=false",
-            "services.thrift.enabled=true"
+            "airavata.services.rest.enabled=false",
+            "airavata.services.thrift.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -88,9 +88,9 @@ public abstract class ServiceIntegrationTestBase {
         String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
         
         // Register properties - these will be available before Spring context loads
-        registry.add("kafka.broker-url", () -> kafkaUrl);
-        registry.add("rabbitmq.broker-url", () -> rabbitMQUrl);
-        registry.add("zookeeper.server.connection", () -> zookeeperUrl);
+        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
+        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
     }
 
     @BeforeEach
@@ -126,9 +126,7 @@ public abstract class ServiceIntegrationTestBase {
      * for their respective catalogs, matching the structure in JpaConfig.
      */
     @Configuration
-    @org.springframework.context.annotation.PropertySource(
-        value = "classpath:conf/airavata.properties",
-        factory = org.apache.airavata.config.AiravataPropertySourceFactory.class)
+    // application.properties is auto-loaded by Spring Boot
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",

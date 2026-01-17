@@ -65,8 +65,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
-@ConditionalOnProperty(prefix = "services.controller", name = "enabled", havingValue = "true")
-@ConditionalOnProperty(prefix = "services.prewm", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.controller", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.prewm", name = "enabled", havingValue = "true")
 public class PreWorkflowManager extends WorkflowManager {
 
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);

@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  * Uses Spring-managed Quartz scheduler for job scheduling.
  */
 @Component
-@ConditionalOnProperty(prefix = "services.scheduler.rescheduler", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.scheduler.rescheduler", name = "enabled", havingValue = "true")
 public class ProcessReschedulingService extends ServerLifecycle {
 
     private static final String SERVER_NAME = "Airavata Process Rescheduling Service";

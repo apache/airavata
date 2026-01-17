@@ -61,10 +61,10 @@ public class PropertiesVerification implements CommandLineRunner {
         // Verify Default Registry
         logger.info(
                 "Default Registry - Gateway: {}, User: {}",
-                properties.airavata().defaultGateway(),
+                properties.defaultGateway(),
                 properties.security().iam().superAdmin().username());
         // Verify Sharing
-        logger.info("Sharing - Enabled: {}", properties.airavata().sharing().enabled());
+        logger.info("Sharing - Enabled: {}", properties.sharing().enabled());
         // Verify Zookeeper
         logger.info(
                 "Zookeeper - Embedded: {}, Connection: {}",

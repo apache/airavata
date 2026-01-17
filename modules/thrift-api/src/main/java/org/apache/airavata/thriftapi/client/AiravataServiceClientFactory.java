@@ -52,7 +52,7 @@ public class AiravataServiceClientFactory {
                         || properties.security().tls().keystore() == null
                         || properties.security().tls().keystore().path() == null) {
                     throw new IllegalStateException(
-                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
+                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in application.properties");
                 }
                 String keystorePath = properties.security().tls().keystore().path();
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")

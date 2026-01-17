@@ -49,7 +49,7 @@ import org.springframework.test.context.TestPropertySource;
  * 2. Run: mvn test -Dtest=TestAiravataServiceClientFactory -Dtest.airavata.server.running=true
  */
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @ActiveProfiles("test")
 @EnabledIfSystemProperty(named = "test.airavata.server.running", matches = "true", disabledReason = "Requires running Airavata server")
 public class TestAiravataServiceClientFactory {

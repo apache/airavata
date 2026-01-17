@@ -31,13 +31,13 @@ import org.springframework.stereotype.Component;
  * Prometheus metrics are exposed via Spring Boot Actuator at /actuator/prometheus
  * No manual HTTP server is needed - Actuator handles this automatically.
  * 
- * Configure via airavata.properties:
+ * Configure via application.properties:
  *   services.telemetry.enabled=true
  *   management.endpoints.web.exposure.include=health,info,prometheus
  *   management.endpoint.prometheus.enabled=true
  */
 @Component
-@ConditionalOnProperty(prefix = "services.telemetry", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "airavata.services.telemetry", name = "enabled", havingValue = "true")
 public class TelemetryServer extends ServerLifecycle {
 
     private final AiravataServerProperties properties;

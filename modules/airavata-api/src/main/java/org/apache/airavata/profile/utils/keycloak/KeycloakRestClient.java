@@ -107,7 +107,7 @@ public class KeycloakRestClient {
                 String keystorePath = properties.security().tls().keystore().path();
                 if (keystorePath == null) {
                     throw new IllegalStateException(
-                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
+                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in application.properties");
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
                 String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();

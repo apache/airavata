@@ -78,16 +78,24 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-            "security.iam.enabled=false",
-            "security.manager.enabled=false",
-            "security.authzCache.enabled=false",
+            "airavata.flyway.enabled=false",
+            "airavata.security.iam.enabled=false",
+            "airavata.security.manager.enabled=false",
+            "airavata.security.authzCache.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional("expCatalogTransactionManager")
+@org.junit.jupiter.api.condition.EnabledIf("isMessagingContainerRunning")
 public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegrationTestBase {
+
+    /**
+     * Check if messaging containers are available (not via SSH tunnel).
+     */
+    static boolean isMessagingContainerRunning() {
+        return !org.apache.airavata.config.TestcontainersConfig.shouldUseExistingContainers();
+    }
 
     @org.junit.jupiter.api.BeforeAll
     public static void setupMessagingServices() {

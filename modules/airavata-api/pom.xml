@@ -233,8 +233,8 @@ under the License.
     </dependency>
     <!-- Spring LDAP for LDAP authentication -->
     <dependency>
-      <groupId>org.springframework.ldap</groupId>
-      <artifactId>spring-ldap-core</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-ldap</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>

@@ -78,12 +78,18 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Distribution-owned config files (airavata.properties, logback.xml, templates, email-config.yml) -->
+    <!-- Distribution-owned config files (application.properties, logback.xml, templates, email-config.yml) -->
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory>conf</outputDirectory>
+      <includes>
+        <include>application.properties</include>
+      </includes>
+    </fileSet>
     <fileSet>
       <directory>src/main/resources/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
-        <include>airavata.properties</include>
         <include>logback.xml</include>
         <include>email-config.yml</include>
         <include>templates/*.template</include>
@@ -137,4 +143,3 @@ under the License.
   </fileSets>
 
 </assembly>
-

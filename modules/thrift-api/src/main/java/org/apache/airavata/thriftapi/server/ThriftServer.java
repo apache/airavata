@@ -178,7 +178,7 @@ public class ThriftServer extends ServerLifecycle {
                         || properties.security().tls().keystore() == null
                         || properties.security().tls().keystore().path() == null) {
                     throw new IllegalStateException(
-                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in airavata.properties");
+                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in application.properties");
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
                 java.io.File keystoreFile = new java.io.File(configDir, properties.security().tls().keystore().path());

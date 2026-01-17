@@ -70,7 +70,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 this.gwyResourceProfileService.getAllGatewayProfiles();
         assertEquals(1, defaultGatewayResourceProfileList.size());
         assertEquals(
-                properties.airavata().defaultGateway(),
+                properties.defaultGateway(),
                 defaultGatewayResourceProfileList.get(0).getGatewayID());
 
         GatewayResourceProfile gf = new GatewayResourceProfile();

@@ -79,7 +79,7 @@ public class OrchestratorUtils {
             throws OrchestratorException, IOException, NumberFormatException {
 
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setEnableValidation(properties.airavata().validationEnabled());
+        orchestratorConfiguration.setEnableValidation(properties.validationEnabled());
         if (orchestratorConfiguration.isEnableValidation()) {
             String validators = properties.services().monitor().compute().validators();
             if (validators != null && !validators.isEmpty()) {

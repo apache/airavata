@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @Transactional
 public class NewOrchestratorTest extends BaseOrchestratorTest {
 

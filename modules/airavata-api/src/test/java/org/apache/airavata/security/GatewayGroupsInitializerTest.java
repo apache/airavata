@@ -62,7 +62,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "services.parser.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:conf/airavata.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(
         org.apache.airavata.config.AiravataServerProperties.class)
 public class GatewayGroupsInitializerTest {
