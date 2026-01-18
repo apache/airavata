@@ -21,7 +21,6 @@ package org.apache.airavata.profile.entities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
@@ -43,7 +42,7 @@ import org.springframework.test.context.ActiveProfiles;
 /**
  * Integration tests for Keycloak tenant and user management.
  * Tests verify TenantManagementKeycloakImpl against a real Keycloak instance.
- * 
+ *
  * Uses devcontainer Keycloak on port 18080 if available, otherwise falls back to Testcontainers.
  * Tests will be skipped if neither is available.
  */
@@ -109,8 +108,7 @@ public class SetupNewGateway {
         assertNotNull(gatewayWithClient.getOauthClientId(), "OAuth Client ID should be set");
         assertNotNull(gatewayWithClient.getOauthClientSecret(), "OAuth Client Secret should be set");
 
-        logger.info("Gateway {} created with OAuth Client ID: {}", 
-            testGatewayId, gatewayWithClient.getOauthClientId());
+        logger.info("Gateway {} created with OAuth Client ID: {}", testGatewayId, gatewayWithClient.getOauthClientId());
     }
 
     @Test
@@ -138,15 +136,8 @@ public class SetupNewGateway {
         assertNotNull(accessToken, "Access token should not be null");
 
         // Create user
-        boolean userCreated = client.createUser(
-            accessToken,
-            testGatewayId,
-            userId,
-            email,
-            "Test",
-            "User",
-            "Password@123"
-        );
+        boolean userCreated =
+                client.createUser(accessToken, testGatewayId, userId, email, "Test", "User", "Password@123");
         assertTrue(userCreated, "User should be created");
 
         // Enable user account

@@ -57,7 +57,8 @@ public class IOUtil {
      * Writes input stream to file.
      */
     public static void writeToFile(InputStream inputStream, File file) throws IOException {
-        try (inputStream; var outputStream = Files.newOutputStream(file.toPath())) {
+        try (inputStream;
+                var outputStream = Files.newOutputStream(file.toPath())) {
             inputStream.transferTo(outputStream);
         }
     }
@@ -133,9 +134,7 @@ public class IOUtil {
             return true;
         }
         try (Stream<Path> walk = Files.walk(path.toPath())) {
-            walk.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+            walk.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             return true;
         } catch (IOException e) {
             logger.warn("Failed to delete directory: {}", path, e);
@@ -149,8 +148,8 @@ public class IOUtil {
     public static String getExtension(File file) {
         String name = file.getName();
         int index = name.lastIndexOf('.');
-        return (index > 0 && index < name.length() - 1) 
-                ? name.substring(index + 1).toLowerCase() 
+        return (index > 0 && index < name.length() - 1)
+                ? name.substring(index + 1).toLowerCase()
                 : null;
     }
 }

@@ -30,10 +30,10 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * Composite annotation for API service components.
- * 
+ *
  * <p>Loads when either REST or Thrift API is enabled.
  * No default values - both properties MUST be explicitly set.
- * 
+ *
  * <p>Usage:
  * <pre>
  * {@code @Service}
@@ -46,20 +46,20 @@ import org.springframework.context.annotation.Conditional;
 @Documented
 @Conditional(ConditionalOnApiService.ApiServiceCondition.class)
 public @interface ConditionalOnApiService {
-    
+
     /**
      * Condition that matches when either REST or Thrift API is enabled.
      * Uses AnyNestedCondition for OR logic.
      */
     class ApiServiceCondition extends AnyNestedCondition {
-        
+
         ApiServiceCondition() {
             super(ConfigurationPhase.REGISTER_BEAN);
         }
-        
+
         @ConditionalOnProperty(name = "airavata.services.rest.enabled", havingValue = "true")
         static class RestEnabled {}
-        
+
         @ConditionalOnProperty(name = "airavata.services.thrift.enabled", havingValue = "true")
         static class ThriftEnabled {}
     }

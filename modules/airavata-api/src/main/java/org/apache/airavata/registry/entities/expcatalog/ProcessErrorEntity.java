@@ -133,9 +133,8 @@ public class ProcessErrorEntity implements Serializable {
         return process;
     }
 
-    public void setProcess(ProcessEntity process) {
-        this.process = process;
-    }
+    // Note: No setter for 'process' - the relationship is read-only (insertable=false, updatable=false)
+    // The processId field should be set instead, and Hibernate will resolve the relationship via the @JoinColumn
 
     @PrePersist
     void setCreationTime() {

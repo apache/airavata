@@ -27,6 +27,7 @@ import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.base.TaskContext;
@@ -35,7 +36,6 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Input Data Staging Task")

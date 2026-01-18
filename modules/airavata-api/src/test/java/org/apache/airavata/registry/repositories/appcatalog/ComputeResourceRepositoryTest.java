@@ -260,7 +260,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void filterComputeResourcesTest() throws AppCatalogException {
         // Use unique hostname to avoid conflicts with other tests
-        String uniqueHostname = "filter-test-host-" + java.util.UUID.randomUUID().toString();
+        String uniqueHostname =
+                "filter-test-host-" + java.util.UUID.randomUUID().toString();
 
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
         computeResourceService.addResourceJobManager(resourceJobManager);
@@ -350,7 +351,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
     @Test
     public void addComputeResourceTest() throws AppCatalogException {
         // Use unique ID to avoid conflicts with other test runs
-        String uniqueResourceId = "compute-resource-" + java.util.UUID.randomUUID().toString();
+        String uniqueResourceId =
+                "compute-resource-" + java.util.UUID.randomUUID().toString();
         String uniqueHostname = "add-test-host-" + java.util.UUID.randomUUID().toString();
 
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -373,8 +375,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String computeResourceId = computeResourceService.addComputeResource(computeResourceDescription);
         Assertions.assertEquals(uniqueResourceId, computeResourceId);
         Assertions.assertTrue(computeResourceService.isComputeResourceExists(computeResourceId));
-        ComputeResourceDescription savedComputeResource =
-                computeResourceService.getComputeResource(uniqueResourceId);
+        ComputeResourceDescription savedComputeResource = computeResourceService.getComputeResource(uniqueResourceId);
         Assertions.assertNotNull(savedComputeResource);
 
         Assertions.assertTrue(deepCompareComputeResourceDescription(computeResourceDescription, savedComputeResource));
@@ -475,12 +476,20 @@ public class ComputeResourceRepositoryTest extends TestBase {
     private ComputeResourceDescription prepareComputeResource(
             String sshSubmissionId, String scpDataMoveId, String gridFTPDataMoveId, int batchQueueCount) {
         // Default hostname with UUID for test isolation
-        return prepareComputeResource(sshSubmissionId, scpDataMoveId, gridFTPDataMoveId, batchQueueCount, 
+        return prepareComputeResource(
+                sshSubmissionId,
+                scpDataMoveId,
+                gridFTPDataMoveId,
+                batchQueueCount,
                 "test-host-" + java.util.UUID.randomUUID().toString());
     }
 
     private ComputeResourceDescription prepareComputeResource(
-            String sshSubmissionId, String scpDataMoveId, String gridFTPDataMoveId, int batchQueueCount, String hostName) {
+            String sshSubmissionId,
+            String scpDataMoveId,
+            String gridFTPDataMoveId,
+            int batchQueueCount,
+            String hostName) {
         ComputeResourceDescription description = new ComputeResourceDescription();
 
         description.setHostName(hostName);

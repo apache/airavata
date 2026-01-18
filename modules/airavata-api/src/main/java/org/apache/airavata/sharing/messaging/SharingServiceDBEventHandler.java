@@ -48,7 +48,10 @@ import org.springframework.stereotype.Component;
 public class SharingServiceDBEventHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
-    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
+
+    private static ObjectMapper objectMapper() {
+        return JacksonConfig.getGlobalMapper();
+    }
 
     private final SharingRegistryService sharingRegistryService;
     private final SharingServiceDBEventMessagingFactory messagingFactory;

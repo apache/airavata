@@ -32,7 +32,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProcessStatusRepository extends JpaRepository<ProcessStatusEntity, ProcessStatusPK> {
 
-    @Query("SELECT p FROM ProcessStatusEntity p WHERE p.processId = :processId ORDER BY p.timeOfStateChange DESC, p.statusId DESC")
+    @Query(
+            "SELECT p FROM ProcessStatusEntity p WHERE p.processId = :processId ORDER BY p.timeOfStateChange DESC, p.statusId DESC")
     List<ProcessStatusEntity> findByProcessIdOrderByTimeOfStateChangeDesc(@Param("processId") String processId);
 
     @Query("SELECT p FROM ProcessStatusEntity p WHERE p.state = :state")

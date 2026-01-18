@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.helix.task.cancel;
 
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.TaskParam;
@@ -33,7 +34,6 @@ import org.apache.helix.task.TaskState;
 import org.apache.helix.task.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Workflow Cancellation Task")
@@ -61,8 +61,8 @@ public class WorkflowCancellationTask extends AbstractTask {
         super.init(manager, workflowName, jobName, taskName);
 
         try {
-            String clusterName =
-                    org.apache.airavata.config.AiravataConfigUtils.getSetting("airavata.helix.cluster.name", "airavata");
+            String clusterName = org.apache.airavata.config.AiravataConfigUtils.getSetting(
+                    "airavata.helix.cluster.name", "airavata");
             String zkConnection = org.apache.airavata.config.AiravataConfigUtils.getSetting(
                     "airavata.zookeeper.server.connection", "localhost:2181");
             helixManager =

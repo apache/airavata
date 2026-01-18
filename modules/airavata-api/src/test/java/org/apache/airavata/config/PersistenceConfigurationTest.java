@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Test to verify that persistence configuration loads correctly
@@ -40,7 +39,6 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class PersistenceConfigurationTest {
 

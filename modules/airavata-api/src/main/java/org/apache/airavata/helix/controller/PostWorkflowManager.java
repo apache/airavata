@@ -187,7 +187,9 @@ public class PostWorkflowManager extends WorkflowManager {
     private Consumer<String, JobStatusResult> createConsumer() {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, properties.services().monitor().compute().brokerConsumerGroup());
+        props.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                properties.services().monitor().compute().brokerConsumerGroup());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ComputeStatusResultDeserializer.class.getName());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");

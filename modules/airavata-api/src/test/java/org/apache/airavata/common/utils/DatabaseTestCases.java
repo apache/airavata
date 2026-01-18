@@ -21,7 +21,6 @@ package org.apache.airavata.common.utils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

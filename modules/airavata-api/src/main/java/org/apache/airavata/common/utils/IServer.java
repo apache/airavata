@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.common.utils;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public interface IServer {

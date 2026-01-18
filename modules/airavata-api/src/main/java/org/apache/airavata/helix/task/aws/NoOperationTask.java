@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.helix.task.aws;
 
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.base.AiravataTask;
 import org.apache.airavata.helix.task.base.TaskContext;
 import org.apache.helix.task.TaskResult;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "No Operation Task")

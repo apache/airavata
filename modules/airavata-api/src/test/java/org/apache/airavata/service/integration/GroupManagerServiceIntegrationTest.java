@@ -72,6 +72,20 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
             sharingRegistryService.createDomain(domain);
         }
 
+        // Ensure the test user exists in sharing registry (required for group ownership FK)
+        String ownerId = testAuthzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.USER_NAME) + "@"
+                + TEST_GATEWAY_ID;
+        if (!sharingRegistryService.isUserExists(TEST_GATEWAY_ID, ownerId)) {
+            org.apache.airavata.sharing.model.User sharingUser = new org.apache.airavata.sharing.model.User();
+            sharingUser.setUserId(ownerId);
+            sharingUser.setDomainId(TEST_GATEWAY_ID);
+            sharingUser.setUserName(TEST_USERNAME);
+            sharingUser.setFirstName("Test");
+            sharingUser.setLastName("User");
+            sharingUser.setEmail(TEST_USERNAME + "@example.com");
+            sharingRegistryService.createUser(sharingUser);
+        }
+
         // Create a test group for use in tests
         GroupModel group = new GroupModel();
         group.setName("Test Group");

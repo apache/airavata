@@ -57,9 +57,7 @@ public class CounterMetric {
         this.meterRegistry = meterRegistry;
         this.monitorName = monitorName;
         this.labelNames = new String[0];
-        this.counter = Counter.builder(monitorName)
-                .description(monitorName)
-                .register(meterRegistry);
+        this.counter = Counter.builder(monitorName).description(monitorName).register(meterRegistry);
     }
 
     /**

@@ -28,6 +28,8 @@ public class JobStatusChangeEvent extends MessagingEvent {
     private JobState state;
     private JobIdentifier jobIdentity;
 
+    public JobStatusChangeEvent() {}
+
     public JobStatusChangeEvent(JobState state, JobIdentifier jobIdentity) {
         this.state = state;
         this.jobIdentity = jobIdentity;

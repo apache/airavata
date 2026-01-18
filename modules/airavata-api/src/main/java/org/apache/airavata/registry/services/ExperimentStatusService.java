@@ -44,7 +44,8 @@ public class ExperimentStatusService {
     private final EntityManager entityManager;
 
     // Track last timestamp per experiment to ensure strict ordering even for rapid additions
-    private static final java.util.Map<String, Timestamp> lastExperimentTimestamps = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<String, Timestamp> lastExperimentTimestamps =
+            new java.util.concurrent.ConcurrentHashMap<>();
     private static final Object timestampLock = new Object();
 
     public ExperimentStatusService(
@@ -67,29 +68,29 @@ public class ExperimentStatusService {
         synchronized (timestampLock) {
             // Get cached timestamp (from previous operations in this JVM)
             Timestamp lastCached = lastExperimentTimestamps.get(experimentId);
-            
+
             // Query database to get the actual latest timestamp (handles distributed scenarios)
             // Flush first to ensure we see any pending changes in this transaction
             experimentStatusRepository.flush();
             entityManager.flush();
-            
+
             // Use native query to get the actual latest timestamp from database
             // This bypasses JPA caching and ensures we see the real persisted data
             // Critical for distributed systems where cache might be stale
             @SuppressWarnings("unchecked")
-            List<Timestamp> timestamps = entityManager.createNativeQuery(
-                    "SELECT TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS " +
-                    "WHERE EXPERIMENT_ID = ? " +
-                    "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                    "LIMIT 1")
+            List<Timestamp> timestamps = entityManager
+                    .createNativeQuery(
+                            "SELECT TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS " + "WHERE EXPERIMENT_ID = ? "
+                                    + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                                    + "LIMIT 1")
                     .setParameter(1, experimentId)
                     .getResultList();
-            
+
             Timestamp dbLatest = null;
             if (!timestamps.isEmpty() && timestamps.get(0) != null) {
                 dbLatest = (Timestamp) timestamps.get(0);
             }
-            
+
             // Use the maximum of cached and database timestamp
             // This handles edge cases where:
             // 1. Cache might be stale (distributed system)
@@ -107,10 +108,10 @@ public class ExperimentStatusService {
             if (lastCached != null && (dbLatest == null || lastCached.compareTo(dbLatest) >= 0)) {
                 lastTimestamp = lastCached;
             }
-            
+
             // Generate base timestamp
             Timestamp baseTimestamp = AiravataUtils.getUniqueTimestamp();
-            
+
             // CRITICAL: Ensure our new timestamp is STRICTLY greater than the last one
             // This handles edge cases where timestamps might be equal due to:
             // 1. Rapid additions within same millisecond
@@ -119,7 +120,7 @@ public class ExperimentStatusService {
             if (lastTimestamp != null) {
                 long lastTime = lastTimestamp.getTime();
                 long baseTime = baseTimestamp.getTime();
-                
+
                 // Enforce 1 second (1000ms) gap to handle DBs with low (second) precision
                 // This ensures strict ordering even if DB truncates to seconds
                 if (baseTime < lastTime + 1000) {
@@ -132,12 +133,13 @@ public class ExperimentStatusService {
                 }
                 // If baseTime >= lastTime + 1000, we're good
             }
-            
+
             // Update cache with the timestamp we'll use (BEFORE returning)
             // This ensures the next call in the same JVM will see this timestamp
-            // Note: addExperimentStatus/updateExperimentStatus will update cache again with persistedTimestamp if different
+            // Note: addExperimentStatus/updateExperimentStatus will update cache again with persistedTimestamp if
+            // different
             lastExperimentTimestamps.put(experimentId, baseTimestamp);
-            
+
             return baseTimestamp;
         }
     }
@@ -149,27 +151,30 @@ public class ExperimentStatusService {
         // Use unique timestamp with microsecond precision to ensure proper ordering
         Timestamp uniqueTimestamp = getUniqueTimestampForExperiment(experimentId);
         experimentStatus.setTimeOfStateChange(uniqueTimestamp.getTime());
-        
+
         ExperimentStatusEntity entity = experimentStatusMapper.toEntity(experimentStatus);
         entity.setExperimentId(experimentId);
         // Ensure timestamp is set correctly on the entity using the same unique timestamp
         entity.setTimeOfStateChange(uniqueTimestamp);
-        
-        // Load the ExperimentEntity and set the relationship to ensure proper entity management
-        ExperimentEntity experimentEntity = experimentRepository.findById(experimentId)
+
+        // Verify experiment exists before saving status
+        ExperimentEntity experimentEntity = experimentRepository
+                .findById(experimentId)
                 .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
-        entity.setExperiment(experimentEntity);
-        
+
+        // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
+        // The experimentId field is already set and is the only field that gets persisted.
+
         // Ensure the experimentStatuses collection is initialized
         if (experimentEntity.getExperimentStatus() == null) {
             experimentEntity.setExperimentStatus(new java.util.ArrayList<>());
         }
-        
+
         // Save and flush to ensure immediate persistence
         // The flush ensures the status is immediately visible to queries
         ExperimentStatusEntity savedEntity = experimentStatusRepository.save(entity);
         experimentStatusRepository.flush();
-        
+
         // CRITICAL: Verify timestamp was persisted correctly and force it if needed
         // In distributed systems, database defaults might override our timestamp
         // We must ensure our explicit timestamp is used to maintain strict ordering
@@ -177,21 +182,22 @@ public class ExperimentStatusService {
         if (persistedTimestamp == null || !persistedTimestamp.equals(uniqueTimestamp)) {
             // Database overrode our timestamp - force it via native update
             // This handles edge cases where database defaults interfere
-            entityManager.createNativeQuery(
-                    "UPDATE EXPERIMENT_STATUS SET TIME_OF_STATE_CHANGE = ? " +
-                    "WHERE STATUS_ID = ? AND EXPERIMENT_ID = ?")
+            entityManager
+                    .createNativeQuery("UPDATE EXPERIMENT_STATUS SET TIME_OF_STATE_CHANGE = ? "
+                            + "WHERE STATUS_ID = ? AND EXPERIMENT_ID = ?")
                     .setParameter(1, uniqueTimestamp)
                     .setParameter(2, savedEntity.getStatusId())
                     .setParameter(3, savedEntity.getExperimentId())
                     .executeUpdate();
             entityManager.flush();
-            // Reload entity to get corrected timestamp
-            entityManager.refresh(savedEntity);
-            persistedTimestamp = uniqueTimestamp; // Use our timestamp since we forced it
+            // Note: We don't call refresh() here to avoid HHH000502 warnings.
+            // The refresh would load the 'experiment' property which is marked as immutable.
+            // We already know the correct timestamp since we just forced it.
+            persistedTimestamp = uniqueTimestamp;
         } else {
-            persistedTimestamp = uniqueTimestamp; // Use our timestamp
+            persistedTimestamp = uniqueTimestamp;
         }
-        
+
         // CRITICAL: Update cache with the timestamp we actually persisted
         // This ensures the next status will have a timestamp strictly greater than this one
         // This is essential for handling rapid status additions in distributed systems
@@ -209,11 +215,13 @@ public class ExperimentStatusService {
                 lastExperimentTimestamps.put(experimentId, incremented);
             }
         }
-        
-        // Add the saved (managed) entity to the collection to keep in-memory state in sync
-        // This ensures that when getExperiment() is called in the same transaction, it sees the updated collection
-        experimentEntity.getExperimentStatus().add(savedEntity);
-        
+
+        // Note: We don't add to experimentEntity.getExperimentStatus() collection because:
+        // 1. The entity is already saved with the correct foreign key (experimentId)
+        // 2. Adding to the collection triggers Hibernate to sync the bidirectional relationship,
+        //    which causes HHH000502 warnings because the 'experiment' property is immutable
+        // 3. The collection will be correctly populated when the parent is reloaded/queried
+
         return savedEntity.getStatusId();
     }
 
@@ -222,21 +230,21 @@ public class ExperimentStatusService {
         // This is critical - flush makes uncommitted changes visible to queries in the same transaction
         experimentStatusRepository.flush();
         entityManager.flush();
-        
+
         // Use native query to bypass any JPA caching and ensure we get the latest from database
         // This is critical for seeing the most recent status in the same transaction
         @SuppressWarnings("unchecked")
-        List<Object[]> results = entityManager.createNativeQuery(
-                "SELECT STATUS_ID, EXPERIMENT_ID, STATE, REASON, TIME_OF_STATE_CHANGE " +
-                "FROM EXPERIMENT_STATUS " +
-                "WHERE EXPERIMENT_ID = ? " +
-                "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                "LIMIT 1")
+        List<Object[]> results = entityManager
+                .createNativeQuery("SELECT STATUS_ID, EXPERIMENT_ID, STATE, REASON, TIME_OF_STATE_CHANGE "
+                        + "FROM EXPERIMENT_STATUS "
+                        + "WHERE EXPERIMENT_ID = ? "
+                        + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                        + "LIMIT 1")
                 .setParameter(1, experimentId)
                 .getResultList();
-        
+
         if (results.isEmpty()) return null;
-        
+
         // Convert native query result to entity
         Object[] row = results.get(0);
         ExperimentStatusEntity entity = new ExperimentStatusEntity();
@@ -244,11 +252,11 @@ public class ExperimentStatusService {
         entity.setExperimentId((String) row[1]);
         // Convert String to ExperimentState enum
         if (row[2] != null) {
-             entity.setState(org.apache.airavata.common.model.ExperimentState.valueOf((String) row[2]));
+            entity.setState(org.apache.airavata.common.model.ExperimentState.valueOf((String) row[2]));
         }
         entity.setReason((String) row[3]);
         entity.setTimeOfStateChange((java.sql.Timestamp) row[4]);
-        
+
         return experimentStatusMapper.toModel(entity);
     }
 
@@ -270,53 +278,58 @@ public class ExperimentStatusService {
                 experimentStatus.setStatusId(ExpCatalogUtils.getID("EXPERIMENT_STATE"));
             }
         }
-        
+
         // Use unique timestamp with microsecond precision to ensure proper ordering
         Timestamp uniqueTimestamp = getUniqueTimestampForExperiment(experimentId);
         experimentStatus.setTimeOfStateChange(uniqueTimestamp.getTime());
-        
+
         ExperimentStatusEntity entity = experimentStatusMapper.toEntity(experimentStatus);
         entity.setExperimentId(experimentId);
         // Ensure timestamp is set correctly on the entity using the same unique timestamp
         entity.setTimeOfStateChange(uniqueTimestamp);
-        
-        // Load the ExperimentEntity and set the relationship to ensure proper entity management
-        ExperimentEntity experimentEntity = experimentRepository.findById(experimentId)
+
+        // Verify experiment exists before saving status
+        ExperimentEntity experimentEntity = experimentRepository
+                .findById(experimentId)
                 .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
-        entity.setExperiment(experimentEntity);
-        
+
+        // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
+        // The experimentId field is already set and is the only field that gets persisted.
+
         // Ensure the experimentStatuses collection is initialized
         if (experimentEntity.getExperimentStatus() == null) {
             experimentEntity.setExperimentStatus(new java.util.ArrayList<>());
         }
-        
+
         // Save and flush to ensure immediate persistence
         // The flush ensures the status is immediately visible to queries
         ExperimentStatusEntity savedEntity = experimentStatusRepository.save(entity);
         experimentStatusRepository.flush();
-        
+
         // Verify timestamp was persisted correctly
         // In distributed systems, database defaults might override our timestamp
-        if (savedEntity.getTimeOfStateChange() == null || 
-            !savedEntity.getTimeOfStateChange().equals(uniqueTimestamp)) {
+        Timestamp persistedTimestamp = savedEntity.getTimeOfStateChange();
+        if (persistedTimestamp == null || !persistedTimestamp.equals(uniqueTimestamp)) {
             // Database overrode our timestamp - force it via native update
-            entityManager.createNativeQuery(
-                    "UPDATE EXPERIMENT_STATUS SET TIME_OF_STATE_CHANGE = ? " +
-                    "WHERE STATUS_ID = ? AND EXPERIMENT_ID = ?")
+            entityManager
+                    .createNativeQuery("UPDATE EXPERIMENT_STATUS SET TIME_OF_STATE_CHANGE = ? "
+                            + "WHERE STATUS_ID = ? AND EXPERIMENT_ID = ?")
                     .setParameter(1, uniqueTimestamp)
                     .setParameter(2, savedEntity.getStatusId())
                     .setParameter(3, savedEntity.getExperimentId())
                     .executeUpdate();
             entityManager.flush();
-            // Refresh to get the corrected timestamp
-            entityManager.refresh(savedEntity);
+            // Note: We don't call refresh() here to avoid HHH000502 warnings.
+            // The refresh would load the 'experiment' property which is marked as immutable.
+            // We already know the correct timestamp since we just forced it.
+            persistedTimestamp = uniqueTimestamp;
         }
-        
+
         // CRITICAL: Update cache with the timestamp we actually persisted
         // This ensures the next status will have a timestamp strictly greater than this one
         // This is essential for handling rapid status additions in distributed systems
         synchronized (timestampLock) {
-            Timestamp persistedTimestamp = savedEntity.getTimeOfStateChange();
+            // Use persistedTimestamp which is either the saved value or the forced uniqueTimestamp
             if (persistedTimestamp != null) {
                 Timestamp lastCached = lastExperimentTimestamps.get(experimentId);
                 // Always update cache to ensure strict ordering
@@ -331,11 +344,13 @@ public class ExperimentStatusService {
                 }
             }
         }
-        
-        // Add the saved (managed) entity to the collection to keep in-memory state in sync
-        // This ensures that when getExperiment() is called in the same transaction, it sees the updated collection
-        experimentEntity.getExperimentStatus().add(savedEntity);
-        
+
+        // Note: We don't add to experimentEntity.getExperimentStatus() collection because:
+        // 1. The entity is already saved with the correct foreign key (experimentId)
+        // 2. Adding to the collection triggers Hibernate to sync the bidirectional relationship,
+        //    which causes HHH000502 warnings because the 'experiment' property is immutable
+        // 3. The collection will be correctly populated when the parent is reloaded/queried
+
         return savedEntity.getStatusId();
     }
 }

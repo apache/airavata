@@ -77,8 +77,18 @@ public class AiravataCommandLine implements CommandLineRunner {
 
     private final CommandLine commandLine;
 
+    /**
+     * Constructor for Spring injection with picocli factory.
+     */
     public AiravataCommandLine(IFactory factory) {
         this.commandLine = new CommandLine(this, factory);
+    }
+    
+    /**
+     * No-arg constructor for standalone CLI usage (e.g., testing).
+     */
+    public AiravataCommandLine() {
+        this.commandLine = null; // Will be created by picocli during execution
     }
 
     @Override

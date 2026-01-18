@@ -35,7 +35,7 @@ import org.apache.airavata.config.JacksonConfig;
  * JSON utility class using centralized ObjectMapper.
  */
 public class JSONUtil {
-    
+
     /**
      * Get the ObjectMapper instance.
      * Uses the globally configured ObjectMapper from JacksonConfig.

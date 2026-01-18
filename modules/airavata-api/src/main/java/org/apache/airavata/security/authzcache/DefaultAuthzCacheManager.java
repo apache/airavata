@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Default authorization cache manager using Caffeine-backed cache.
- * 
+ *
  * Configure via application.properties:
  *   security.authzCache.enabled=true
  */

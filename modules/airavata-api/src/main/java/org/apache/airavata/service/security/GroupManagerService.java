@@ -27,6 +27,7 @@ import org.apache.airavata.common.model.GroupModel;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.profile.exception.GroupManagerServiceException;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
@@ -39,7 +40,6 @@ import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service

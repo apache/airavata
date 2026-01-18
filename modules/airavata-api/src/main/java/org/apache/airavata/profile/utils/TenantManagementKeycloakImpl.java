@@ -71,14 +71,32 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     private String getIamServerUrl() throws IamAdminServicesException {
-        if (properties == null
-                || properties.security() == null
-                || properties.security().iam() == null
-                || properties.security().iam().serverUrl() == null) {
-            throw new IamAdminServicesException(
-                    "IAM server URL is not configured. Check application.properties for security.iam.server-url");
+        // Try to get from properties first
+        if (properties != null
+                && properties.security() != null
+                && properties.security().iam() != null
+                && properties.security().iam().serverUrl() != null
+                && !properties.security().iam().serverUrl().isEmpty()) {
+            return properties.security().iam().serverUrl();
         }
-        return properties.security().iam().serverUrl();
+        
+        // Fallback to environment variable (useful for testing with dynamic URLs)
+        String envUrl = System.getenv("IAM_SERVER_URL");
+        if (envUrl != null && !envUrl.isEmpty()) {
+            logger.info("Using IAM server URL from environment: {}", envUrl);
+            return envUrl;
+        }
+        
+        // Fallback to system property (can be set by tests)
+        String sysPropUrl = System.getProperty("airavata.security.iam.server-url");
+        if (sysPropUrl != null && !sysPropUrl.isEmpty()) {
+            logger.info("Using IAM server URL from system property: {}", sysPropUrl);
+            return sysPropUrl;
+        }
+        
+        throw new IamAdminServicesException(
+                "IAM server URL is not configured. Check application.properties for security.iam.server-url, "
+                + "or set IAM_SERVER_URL environment variable");
     }
 
     private KeycloakRestClient getRestClient() throws IamAdminServicesException {
@@ -297,7 +315,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                             client.getClientSecret(gatewayDetails.getGatewayId(), clientUUID, adminToken);
                     gatewayDetails.setOauthClientId(pgaClient.getClientId());
                     gatewayDetails.setOauthClientSecret(clientSecret.getValue());
-                    
+
                     // Add the manage-users and manage-clients roles to the service account
                     // Now that we have the client UUID, we can get the service account user
                     UserRepresentation serviceAccountUser =
@@ -325,7 +343,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                             }
                         }
                     }
-                    
+
                     return gatewayDetails;
                 } else {
                     logger.error("Created client not found after creation");
@@ -542,8 +560,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             KeycloakRestClient client = getRestClient();
             List<UserRepresentation> retrieveUserList =
                     client.searchUsers(tenantId, userName, null, null, email, 0, 1, accessToken);
+            List<UserProfile> userList = new ArrayList<>();
             if (!retrieveUserList.isEmpty()) {
-                List<UserProfile> userList = new ArrayList<>();
                 for (UserRepresentation user : retrieveUserList) {
                     UserProfile profile = new UserProfile();
                     profile.setUserId(user.getUsername());
@@ -552,11 +570,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                     profile.setEmails(Arrays.asList(new String[] {user.getEmail()}));
                     userList.add(profile);
                 }
-                return userList;
             } else {
-                logger.error("requested User not found");
-                return null;
+                logger.debug("No users found matching the search criteria");
             }
+            return userList;
         } catch (Exception ex) {
             logger.error("Error finding user in keycloak server, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();

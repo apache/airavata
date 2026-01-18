@@ -36,6 +36,7 @@ import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.StoragePreference;
 import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.base.TaskContext;
@@ -44,7 +45,6 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Output Data Staging Task")

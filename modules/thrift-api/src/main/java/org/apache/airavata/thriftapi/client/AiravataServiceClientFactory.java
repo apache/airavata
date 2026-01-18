@@ -57,7 +57,8 @@ public class AiravataServiceClientFactory {
                 String keystorePath = properties.security().tls().keystore().path();
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
                 String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
-                params.setKeyStore(keystoreFullPath, properties.security().tls().keystore().password());
+                params.setKeyStore(
+                        keystoreFullPath, properties.security().tls().keystore().password());
                 transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             }
 

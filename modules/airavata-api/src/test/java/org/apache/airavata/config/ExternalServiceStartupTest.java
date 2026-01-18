@@ -25,9 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Tests for external service startup (Agent Service, Research Service, File Service).
@@ -54,11 +52,6 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
-@EnabledIfSystemProperty(
-        named = "test.startup.enabled",
-        matches = "true",
-        disabledReason = "Startup tests require full infrastructure - run with -Dtest.startup.enabled=true")
 public class ExternalServiceStartupTest extends ServiceStartupTestBase {
 
     /**

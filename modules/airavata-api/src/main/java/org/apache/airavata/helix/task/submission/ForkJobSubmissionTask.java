@@ -26,6 +26,7 @@ import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.TaskUtil;
@@ -33,7 +34,6 @@ import org.apache.airavata.helix.task.base.TaskContext;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Fork Job Submission")

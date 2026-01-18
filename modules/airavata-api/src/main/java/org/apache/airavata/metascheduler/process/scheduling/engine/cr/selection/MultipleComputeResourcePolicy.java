@@ -72,7 +72,8 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
 
             while (retries.size() < resourceSchedulingModels.size()) {
                 int upperbound = resourceSchedulingModels.size();
-                int int_random = java.util.concurrent.ThreadLocalRandom.current().nextInt(upperbound);
+                int int_random =
+                        java.util.concurrent.ThreadLocalRandom.current().nextInt(upperbound);
                 ComputationalResourceSchedulingModel resourceSchedulingModel = resourceSchedulingModels.get(int_random);
                 String key = resourceSchedulingModel.getResourceHostId() + "_" + resourceSchedulingModel.getQueueName();
                 if (!retries.contains(key)) {

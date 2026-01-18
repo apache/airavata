@@ -39,6 +39,8 @@ import org.apache.airavata.messaging.Subscriber;
 import org.apache.airavata.messaging.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -47,9 +49,31 @@ public class MessagingFactory {
     private static final Logger logger = LoggerFactory.getLogger(MessagingFactory.class);
 
     private final AiravataServerProperties properties;
+    private final ConnectionFactory connectionFactory;
 
-    public MessagingFactory(AiravataServerProperties properties) {
+    /**
+     * Constructor with optional Spring AMQP ConnectionFactory.
+     * When ConnectionFactory is available, subscribers will use Spring AMQP features.
+     */
+    @Autowired
+    public MessagingFactory(
+            AiravataServerProperties properties,
+            @Autowired(required = false) ConnectionFactory connectionFactory) {
         this.properties = properties;
+        this.connectionFactory = connectionFactory;
+        if (connectionFactory != null) {
+            logger.info("MessagingFactory initialized with Spring AMQP ConnectionFactory");
+        } else {
+            logger.warn("MessagingFactory initialized without Spring AMQP ConnectionFactory - using legacy mode");
+        }
+    }
+
+    /**
+     * Backward-compatible constructor without ConnectionFactory.
+     * Uses legacy mode where Spring AMQP features are not available.
+     */
+    public MessagingFactory(AiravataServerProperties properties) {
+        this(properties, null);
     }
 
     public Subscriber getSubscriber(final MessageHandler messageHandler, List<String> routingKeys, Type type)
@@ -95,7 +119,7 @@ public class MessagingFactory {
                 .setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME)
                 .setQueueName(DBEventManagerConstants.getQueueName(serviceName))
                 .setAutoAck(false);
-        Subscriber subscriber = new RabbitMQSubscriber(rProperties);
+        Subscriber subscriber = createSubscriber(rProperties);
         subscriber.listen(
                 ((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
                 rProperties.getQueueName(),
@@ -135,47 +159,110 @@ public class MessagingFactory {
     }
 
     private Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(properties.rabbitmq().experimentExchangeName());
+        rProperties.setExchangeName(getExperimentExchangeName());
         return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
     private Publisher getStatusPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(properties.rabbitmq().statusExchangeName());
+        rProperties.setExchangeName(getStatusExchangeName());
         return new RabbitMQPublisher(rProperties, this::statusRoutingkey);
     }
 
     private Publisher gerProcessPublisher(RabbitMQProperties rProperties) throws AiravataException {
-        rProperties.setExchangeName(properties.rabbitmq().processExchangeName());
+        rProperties.setExchangeName(getProcessExchangeName());
         return new RabbitMQPublisher(rProperties, messageContext -> rProperties.getExchangeName());
     }
 
+    // Helper methods for exchange names with defaults for Testcontainers integration
+    private String getExperimentExchangeName() {
+        return properties.rabbitmq() != null && properties.rabbitmq().experimentExchangeName() != null
+                ? properties.rabbitmq().experimentExchangeName()
+                : "experiment_exchange";
+    }
+
+    private String getStatusExchangeName() {
+        return properties.rabbitmq() != null && properties.rabbitmq().statusExchangeName() != null
+                ? properties.rabbitmq().statusExchangeName()
+                : "status_exchange";
+    }
+
+    private String getProcessExchangeName() {
+        return properties.rabbitmq() != null && properties.rabbitmq().processExchangeName() != null
+                ? properties.rabbitmq().processExchangeName()
+                : "process_exchange";
+    }
+
     private RabbitMQProperties getProperties() {
-        return new RabbitMQProperties()
-                .setBrokerUrl(properties.rabbitmq().brokerUrl())
-                .setDurable(properties.rabbitmq().durableQueue())
-                .setPrefetchCount(properties.rabbitmq().prefetchCount())
+        RabbitMQProperties rProperties = new RabbitMQProperties()
                 .setAutoRecoveryEnable(true)
                 .setConsumerTag("default")
                 .setExchangeType(RabbitMQProperties.EXCHANGE_TYPE.TOPIC);
+
+        if (properties.rabbitmq() != null) {
+            // Use properties if available
+            rProperties
+                    .setBrokerUrl(properties.rabbitmq().brokerUrl())
+                    .setDurable(properties.rabbitmq().durableQueue())
+                    .setPrefetchCount(properties.rabbitmq().prefetchCount());
+        } else if (connectionFactory != null) {
+            // Fall back to ConnectionFactory (for Testcontainers integration)
+            // Extract connection info from Spring AMQP ConnectionFactory
+            if (connectionFactory
+                    instanceof org.springframework.amqp.rabbit.connection.CachingConnectionFactory cachingFactory) {
+                String host = cachingFactory.getHost();
+                int port = cachingFactory.getPort();
+                String brokerUrl = "amqp://" + host + ":" + port;
+                rProperties.setBrokerUrl(brokerUrl);
+                logger.info("Using broker URL from ConnectionFactory: {}", brokerUrl);
+            }
+            // Use sensible defaults for other properties
+            rProperties.setDurable(false).setPrefetchCount(200);
+        } else {
+            throw new IllegalStateException(
+                    "RabbitMQ is not configured. Ensure airavata.rabbitmq.enabled=true and all required "
+                            + "RabbitMQ properties are set (broker-url, exchange names, etc.)");
+        }
+
+        return rProperties;
+    }
+
+    /**
+     * Check if RabbitMQ messaging is available.
+     * @return true if RabbitMQ is configured and enabled (via properties or ConnectionFactory)
+     */
+    public boolean isRabbitMQAvailable() {
+        // Check if ConnectionFactory is available (set by Spring AMQP/Testcontainers)
+        if (connectionFactory != null) {
+            return true;
+        }
+        // Fall back to checking properties using null-safe helper methods
+        return properties.isRabbitMQEnabled() && properties.getRabbitMQBrokerUrl() != null;
     }
 
     private RabbitMQSubscriber getStatusSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(properties.rabbitmq().statusExchangeName()).setAutoAck(true);
-        return new RabbitMQSubscriber(sp);
+        sp.setExchangeName(getStatusExchangeName()).setAutoAck(true);
+        return createSubscriber(sp);
     }
 
     private RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(properties.rabbitmq().processExchangeName())
-                .setQueueName("process_launch")
-                .setAutoAck(false);
-        return new RabbitMQSubscriber(sp);
+        sp.setExchangeName(getProcessExchangeName()).setQueueName("process_launch").setAutoAck(false);
+        return createSubscriber(sp);
     }
 
     private Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(properties.rabbitmq().experimentExchangeName())
-                .setQueueName("experiment_launch")
-                .setAutoAck(false);
-        return new RabbitMQSubscriber(sp);
+        sp.setExchangeName(getExperimentExchangeName()).setQueueName("experiment_launch").setAutoAck(false);
+        return createSubscriber(sp);
+    }
+
+    /**
+     * Create a RabbitMQSubscriber, using Spring AMQP ConnectionFactory if available.
+     */
+    private RabbitMQSubscriber createSubscriber(RabbitMQProperties sp) throws AiravataException {
+        if (connectionFactory != null) {
+            return new RabbitMQSubscriber(connectionFactory, sp);
+        } else {
+            return new RabbitMQSubscriber(sp);
+        }
     }
 
     private String statusRoutingkey(MessageContext msgCtx) {

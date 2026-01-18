@@ -19,16 +19,15 @@
 */
 package org.apache.airavata.registry.services;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.mappers.ApplicationDeploymentMapper;

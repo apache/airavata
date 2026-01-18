@@ -42,7 +42,7 @@ public class ClusterStatusMonitorJobScheduler {
 
     /**
      * Constructor accepting Spring-managed Scheduler.
-     * 
+     *
      * @param scheduler Spring-managed Quartz scheduler
      * @param properties Server properties
      */

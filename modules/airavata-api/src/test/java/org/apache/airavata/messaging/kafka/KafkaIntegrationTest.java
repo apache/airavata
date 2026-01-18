@@ -37,10 +37,10 @@ import org.apache.airavata.common.model.JobStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.TestcontainersConfig;
 import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.TestMessagingUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -55,6 +55,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,26 +64,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-@org.junit.jupiter.api.condition.EnabledIf("isKafkaContainerRunning")
+@Timeout(value = 2, unit = TimeUnit.MINUTES)  // Prevent tests from hanging indefinitely
 public class KafkaIntegrationTest {
-
-    /**
-     * Check if Kafka is running in a container (vs SSH tunnel).
-     * SSH tunneled Kafka doesn't work reliably for consumer polling due to advertised listeners issues.
-     */
-    static boolean isKafkaContainerRunning() {
-        // If using existing containers (SSH tunnel), skip these tests
-        // Kafka advertised listeners don't work correctly through SSH tunnels
-        return !TestcontainersConfig.shouldUseExistingContainers();
-    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -133,7 +122,9 @@ public class KafkaIntegrationTest {
         // Create consumer
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-" + AiravataUtils.getUniqueTimestamp().getTime());
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-consumer-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -146,30 +137,12 @@ public class KafkaIntegrationTest {
 
             // Subscribe to topic
             consumer.subscribe(Collections.singletonList(topicName));
+            
+            // Force partition assignment by doing an initial poll
+            consumer.poll(Duration.ofMillis(100));
+            logger.info("Consumer subscribed and partition assignment triggered");
 
-            // Start consumer in background thread
-            Thread consumerThread = new Thread(() -> {
-                try {
-                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
-                    for (ConsumerRecord<String, String> record : records) {
-                        logger.info(
-                                "Received message: key={}, value={}, offset={}",
-                                record.key(),
-                                record.value(),
-                                record.offset());
-                        receivedMessage[0] = record.value();
-                        messageReceived.countDown();
-                    }
-                } catch (Exception e) {
-                    logger.error("Error consuming message", e);
-                }
-            });
-            consumerThread.start();
-
-            // Wait a bit for consumer to be ready
-            Thread.sleep(1000);
-
-            // Publish message
+            // Publish message FIRST (since auto.offset.reset=earliest, consumer will see it)
             ProducerRecord<String, String> record = new ProducerRecord<>(topicName, testKey, testMessage);
             RecordMetadata metadata = producer.send(record).get();
 
@@ -180,13 +153,26 @@ public class KafkaIntegrationTest {
                     metadata.partition(),
                     metadata.offset());
 
+            // Now poll for the message
+            long startTime = System.currentTimeMillis();
+            while (receivedMessage[0] == null && System.currentTimeMillis() - startTime < 10000) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                for (ConsumerRecord<String, String> consumerRecord : records) {
+                    logger.info(
+                            "Received message: key={}, value={}, offset={}",
+                            consumerRecord.key(),
+                            consumerRecord.value(),
+                            consumerRecord.offset());
+                    receivedMessage[0] = consumerRecord.value();
+                    messageReceived.countDown();
+                }
+            }
+
             // Wait for message to be received
-            boolean received = messageReceived.await(10, TimeUnit.SECONDS);
+            boolean received = messageReceived.await(5, TimeUnit.SECONDS);
 
             assertTrue(received, "Message should be received within timeout");
             assertEquals(testMessage, receivedMessage[0], "Received message should match sent message");
-
-            consumerThread.join(5000);
         }
 
         logger.info("Message publish and consume test passed");
@@ -194,7 +180,8 @@ public class KafkaIntegrationTest {
 
     @Test
     public void testMultipleMessages() throws Exception {
-        String topicName = "test-topic-multi-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String topicName =
+                "test-topic-multi-" + AiravataUtils.getUniqueTimestamp().getTime();
         int messageCount = 10;
 
         Properties producerProps = new Properties();
@@ -204,7 +191,10 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group-multi-" + AiravataUtils.getUniqueTimestamp().getTime());
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-consumer-group-multi-"
+                        + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -216,42 +206,35 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
+            
+            // Force partition assignment by doing an initial poll
+            consumer.poll(Duration.ofMillis(100));
+            logger.info("Consumer subscribed and partition assignment triggered");
 
-            // Start consumer thread
-            Thread consumerThread = new Thread(() -> {
-                try {
-                    while (receivedCount[0] < messageCount) {
-                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
-                        for (ConsumerRecord<String, String> record : records) {
-                            receivedCount[0]++;
-                            logger.debug("Received message {}/{}: {}", receivedCount[0], messageCount, record.value());
-                            messagesReceived.countDown();
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error consuming messages", e);
-                }
-            });
-            consumerThread.start();
-
-            Thread.sleep(1000);
-
-            // Publish multiple messages
+            // Publish multiple messages FIRST (since auto.offset.reset=earliest, consumer will see them)
             for (int i = 0; i < messageCount; i++) {
                 ProducerRecord<String, String> record = new ProducerRecord<>(topicName, "key-" + i, "message-" + i);
                 producer.send(record);
             }
-
             producer.flush();
             logger.info("Published {} messages", messageCount);
 
+            // Now poll for the messages
+            long startTime = System.currentTimeMillis();
+            while (receivedCount[0] < messageCount && System.currentTimeMillis() - startTime < 30000) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                for (ConsumerRecord<String, String> record : records) {
+                    receivedCount[0]++;
+                    logger.debug("Received message {}/{}: {}", receivedCount[0], messageCount, record.value());
+                    messagesReceived.countDown();
+                }
+            }
+
             // Wait for all messages
-            boolean allReceived = messagesReceived.await(30, TimeUnit.SECONDS);
+            boolean allReceived = messagesReceived.await(5, TimeUnit.SECONDS);
 
             assertTrue(allReceived, "All messages should be received within timeout");
             assertEquals(messageCount, receivedCount[0], "Should receive all messages");
-
-            consumerThread.join(5000);
         }
 
         logger.info("Multiple messages test passed - {} messages sent and received", messageCount);
@@ -259,7 +242,8 @@ public class KafkaIntegrationTest {
 
     @Test
     public void testTopicCreation() throws Exception {
-        String topicName = "test-topic-create-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String topicName =
+                "test-topic-create-" + AiravataUtils.getUniqueTimestamp().getTime();
 
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -285,7 +269,8 @@ public class KafkaIntegrationTest {
     @Test
     @DisplayName("Should publish and consume ExperimentStatusChangeEvent")
     void shouldPublishAndConsumeExperimentStatusChangeEvent() throws Exception {
-        String topicName = "test-experiment-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String topicName =
+                "test-experiment-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String experimentId = "test-exp-kafka";
         String gatewayId = "test-gateway";
 
@@ -296,7 +281,9 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-experiment-group-" + AiravataUtils.getUniqueTimestamp().getTime());
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-experiment-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -308,51 +295,50 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
+            
+            // Force partition assignment by doing an initial poll
+            consumer.poll(Duration.ofMillis(100));
+            logger.info("Consumer subscribed and partition assignment triggered");
 
-            // Start consumer thread
-            Thread consumerThread = new Thread(() -> {
-                try {
-                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
-                    for (ConsumerRecord<String, String> record : records) {
-                        MessageContext.Wrapper wrapper =
-                                objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
-                        MessageContext messageContext = wrapper.toMessageContext();
-                        if (messageContext.getType() == MessageType.EXPERIMENT) {
-                            receivedEvent[0] = (ExperimentStatusChangeEvent) messageContext.getEvent();
-                            logger.info(
-                                    "Received ExperimentStatusChangeEvent: experimentId={}, state={}",
-                                    receivedEvent[0].getExperimentId(),
-                                    receivedEvent[0].getState());
-                            messageReceived.countDown();
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error consuming message", e);
-                }
-            });
-            consumerThread.start();
-
-            Thread.sleep(1000);
-
+            // Publish message FIRST (since auto.offset.reset=earliest, consumer will see it)
             MessageContext messageContext = TestMessagingUtils.createExperimentStatusChangeMessage(
                     experimentId, gatewayId, ExperimentState.COMPLETED);
             String messageValue = objectMapper.writeValueAsString(new MessageContext.Wrapper(messageContext));
             ProducerRecord<String, String> record = new ProducerRecord<>(topicName, experimentId, messageValue);
             producer.send(record).get();
+            logger.info("Published ExperimentStatusChangeEvent message");
 
-            assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
+            // Now poll for the message
+            long startTime = System.currentTimeMillis();
+            while (receivedEvent[0] == null && System.currentTimeMillis() - startTime < 10000) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                for (ConsumerRecord<String, String> consumerRecord : records) {
+                    MessageContext.Wrapper wrapper =
+                            objectMapper.readValue(consumerRecord.value(), MessageContext.Wrapper.class);
+                    MessageContext ctx = wrapper.toMessageContext();
+                    if (ctx.getType() == MessageType.EXPERIMENT) {
+                        receivedEvent[0] = (ExperimentStatusChangeEvent) ctx.getEvent();
+                        logger.info(
+                                "Received ExperimentStatusChangeEvent: experimentId={}, state={}",
+                                receivedEvent[0].getExperimentId(),
+                                receivedEvent[0].getState());
+                        messageReceived.countDown();
+                    }
+                }
+            }
+
+            assertTrue(messageReceived.await(5, TimeUnit.SECONDS), "Message should be received");
             assertNotNull(receivedEvent[0], "Event should be deserialized");
             assertEquals(experimentId, receivedEvent[0].getExperimentId(), "Experiment ID should match");
             assertEquals(ExperimentState.COMPLETED, receivedEvent[0].getState(), "State should match");
-
-            consumerThread.join(5000);
         }
     }
 
     @Test
     @DisplayName("Should publish and consume ProcessStatusChangeEvent")
     void shouldPublishAndConsumeProcessStatusChangeEvent() throws Exception {
-        String topicName = "test-process-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String topicName =
+                "test-process-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String processId = "test-process-kafka";
         String experimentId = "test-exp";
         String gatewayId = "test-gateway";
@@ -364,7 +350,9 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-process-group-" + AiravataUtils.getUniqueTimestamp().getTime());
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-process-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -376,50 +364,50 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
+            
+            // Force partition assignment by doing an initial poll
+            consumer.poll(Duration.ofMillis(100));
+            logger.info("Consumer subscribed and partition assignment triggered");
 
-            Thread consumerThread = new Thread(() -> {
-                try {
-                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
-                    for (ConsumerRecord<String, String> record : records) {
-                        MessageContext.Wrapper wrapper =
-                                objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
-                        MessageContext messageContext = wrapper.toMessageContext();
-                        if (messageContext.getType() == MessageType.PROCESS) {
-                            receivedEvent[0] = (ProcessStatusChangeEvent) messageContext.getEvent();
-                            logger.info(
-                                    "Received ProcessStatusChangeEvent: processId={}, state={}",
-                                    receivedEvent[0].getProcessIdentity().getProcessId(),
-                                    receivedEvent[0].getState());
-                            messageReceived.countDown();
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error consuming message", e);
-                }
-            });
-            consumerThread.start();
-
-            Thread.sleep(1000);
-
+            // Publish message FIRST (since auto.offset.reset=earliest, consumer will see it)
             MessageContext messageContext = TestMessagingUtils.createProcessStatusChangeMessage(
                     processId, experimentId, gatewayId, ProcessState.EXECUTING);
             String messageValue = objectMapper.writeValueAsString(new MessageContext.Wrapper(messageContext));
             ProducerRecord<String, String> record = new ProducerRecord<>(topicName, processId, messageValue);
             producer.send(record).get();
+            logger.info("Published ProcessStatusChangeEvent message");
 
-            assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
+            // Now poll for the message
+            long startTime = System.currentTimeMillis();
+            while (receivedEvent[0] == null && System.currentTimeMillis() - startTime < 10000) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                for (ConsumerRecord<String, String> consumerRecord : records) {
+                    MessageContext.Wrapper wrapper =
+                            objectMapper.readValue(consumerRecord.value(), MessageContext.Wrapper.class);
+                    MessageContext ctx = wrapper.toMessageContext();
+                    if (ctx.getType() == MessageType.PROCESS) {
+                        receivedEvent[0] = (ProcessStatusChangeEvent) ctx.getEvent();
+                        logger.info(
+                                "Received ProcessStatusChangeEvent: processId={}, state={}",
+                                receivedEvent[0].getProcessIdentity().getProcessId(),
+                                receivedEvent[0].getState());
+                        messageReceived.countDown();
+                    }
+                }
+            }
+
+            assertTrue(messageReceived.await(5, TimeUnit.SECONDS), "Message should be received");
             assertNotNull(receivedEvent[0], "Event should be deserialized");
             assertEquals(processId, receivedEvent[0].getProcessIdentity().getProcessId(), "Process ID should match");
             assertEquals(ProcessState.EXECUTING, receivedEvent[0].getState(), "State should match");
-
-            consumerThread.join(5000);
         }
     }
 
     @Test
     @DisplayName("Should publish and consume JobStatusChangeEvent")
     void shouldPublishAndConsumeJobStatusChangeEvent() throws Exception {
-        String topicName = "test-job-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String topicName =
+                "test-job-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String jobId = "test-job-kafka";
         String taskId = "test-task";
         String processId = "test-process";
@@ -433,7 +421,9 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-job-group-" + AiravataUtils.getUniqueTimestamp().getTime());
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-job-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -445,51 +435,51 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
+            
+            // Force partition assignment by doing an initial poll
+            consumer.poll(Duration.ofMillis(100));
+            logger.info("Consumer subscribed and partition assignment triggered");
 
-            Thread consumerThread = new Thread(() -> {
-                try {
-                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
-                    for (ConsumerRecord<String, String> record : records) {
-                        MessageContext.Wrapper wrapper =
-                                objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
-                        MessageContext messageContext = wrapper.toMessageContext();
-                        if (messageContext.getType() == MessageType.JOB) {
-                            receivedEvent[0] = (JobStatusChangeEvent) messageContext.getEvent();
-                            logger.info(
-                                    "Received JobStatusChangeEvent: jobId={}, state={}",
-                                    receivedEvent[0].getJobIdentity().getJobId(),
-                                    receivedEvent[0].getState());
-                            messageReceived.countDown();
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error consuming message", e);
-                }
-            });
-            consumerThread.start();
-
-            Thread.sleep(1000);
-
+            // Publish message FIRST (since auto.offset.reset=earliest, consumer will see it)
             JobIdentifier jobIdentifier = new JobIdentifier(jobId, taskId, processId, experimentId, gatewayId);
             JobStatusChangeEvent event = new JobStatusChangeEvent(JobState.ACTIVE, jobIdentifier);
             MessageContext messageContext = new MessageContext(event, MessageType.JOB, "test-job-msg-id", gatewayId);
             String messageValue = objectMapper.writeValueAsString(new MessageContext.Wrapper(messageContext));
             ProducerRecord<String, String> record = new ProducerRecord<>(topicName, jobId, messageValue);
             producer.send(record).get();
+            logger.info("Published JobStatusChangeEvent message");
 
-            assertTrue(messageReceived.await(10, TimeUnit.SECONDS), "Message should be received");
+            // Now poll for the message
+            long startTime = System.currentTimeMillis();
+            while (receivedEvent[0] == null && System.currentTimeMillis() - startTime < 10000) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                for (ConsumerRecord<String, String> consumerRecord : records) {
+                    MessageContext.Wrapper wrapper =
+                            objectMapper.readValue(consumerRecord.value(), MessageContext.Wrapper.class);
+                    MessageContext ctx = wrapper.toMessageContext();
+                    if (ctx.getType() == MessageType.JOB) {
+                        receivedEvent[0] = (JobStatusChangeEvent) ctx.getEvent();
+                        logger.info(
+                                "Received JobStatusChangeEvent: jobId={}, state={}",
+                                receivedEvent[0].getJobIdentity().getJobId(),
+                                receivedEvent[0].getState());
+                        messageReceived.countDown();
+                    }
+                }
+            }
+
+            assertTrue(messageReceived.await(5, TimeUnit.SECONDS), "Message should be received");
             assertNotNull(receivedEvent[0], "Event should be deserialized");
             assertEquals(jobId, receivedEvent[0].getJobIdentity().getJobId(), "Job ID should match");
             assertEquals(JobState.ACTIVE, receivedEvent[0].getState(), "State should match");
-
-            consumerThread.join(5000);
         }
     }
 
     @Test
     @DisplayName("Should verify message ordering for state transitions")
     void shouldVerifyMessageOrderingForStateTransitions() throws Exception {
-        String topicName = "test-ordering-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
+        String topicName =
+                "test-ordering-topic-" + AiravataUtils.getUniqueTimestamp().getTime();
         String experimentId = "test-exp-ordering";
         String gatewayId = "test-gateway";
 
@@ -500,7 +490,9 @@ public class KafkaIntegrationTest {
 
         Properties consumerProps = new Properties();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-ordering-group-" + AiravataUtils.getUniqueTimestamp().getTime());
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-ordering-group-" + AiravataUtils.getUniqueTimestamp().getTime());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -517,31 +509,12 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
+            
+            // Force partition assignment by doing an initial poll
+            consumer.poll(Duration.ofMillis(100));
+            logger.info("Consumer subscribed and partition assignment triggered");
 
-            Thread consumerThread = new Thread(() -> {
-                try {
-                    while (receivedStates.size() < expectedStates.size()) {
-                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
-                        for (ConsumerRecord<String, String> record : records) {
-                            MessageContext.Wrapper wrapper =
-                                    objectMapper.readValue(record.value(), MessageContext.Wrapper.class);
-                            MessageContext messageContext = wrapper.toMessageContext();
-                            if (messageContext.getType() == MessageType.EXPERIMENT) {
-                                ExperimentStatusChangeEvent event =
-                                        (ExperimentStatusChangeEvent) messageContext.getEvent();
-                                receivedStates.add(event.getState());
-                                messagesReceived.countDown();
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error consuming messages", e);
-                }
-            });
-            consumerThread.start();
-
-            Thread.sleep(1000);
-
+            // Publish all messages FIRST (since auto.offset.reset=earliest, consumer will see them)
             for (ExperimentState state : expectedStates) {
                 MessageContext messageContext =
                         TestMessagingUtils.createExperimentStatusChangeMessage(experimentId, gatewayId, state);
@@ -549,16 +522,31 @@ public class KafkaIntegrationTest {
                 ProducerRecord<String, String> record = new ProducerRecord<>(topicName, experimentId, messageValue);
                 producer.send(record).get();
             }
-
             producer.flush();
+            logger.info("Published {} state transition messages", expectedStates.size());
 
-            assertTrue(messagesReceived.await(30, TimeUnit.SECONDS), "All messages should be received");
+            // Now poll for the messages
+            long startTime = System.currentTimeMillis();
+            while (receivedStates.size() < expectedStates.size() && System.currentTimeMillis() - startTime < 30000) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                for (ConsumerRecord<String, String> consumerRecord : records) {
+                    MessageContext.Wrapper wrapper =
+                            objectMapper.readValue(consumerRecord.value(), MessageContext.Wrapper.class);
+                    MessageContext ctx = wrapper.toMessageContext();
+                    if (ctx.getType() == MessageType.EXPERIMENT) {
+                        ExperimentStatusChangeEvent event =
+                                (ExperimentStatusChangeEvent) ctx.getEvent();
+                        receivedStates.add(event.getState());
+                        messagesReceived.countDown();
+                    }
+                }
+            }
+
+            assertTrue(messagesReceived.await(5, TimeUnit.SECONDS), "All messages should be received");
             assertEquals(expectedStates.size(), receivedStates.size(), "Should receive all states");
             for (int i = 0; i < expectedStates.size(); i++) {
                 assertEquals(expectedStates.get(i), receivedStates.get(i), "State order should be preserved");
             }
-
-            consumerThread.join(5000);
         }
     }
 }

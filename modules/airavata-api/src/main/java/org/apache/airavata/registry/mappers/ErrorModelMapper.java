@@ -48,6 +48,7 @@ public interface ErrorModelMapper {
             target = "rootCauseErrorIdList",
             expression =
                     "java(model.getRootCauseErrorIdList() != null ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
+    @Mapping(target = "experiment", ignore = true) // Set by parent entity - immutable in JPA
     ExperimentErrorEntity toEntity(ErrorModel model);
 
     @Mapping(
@@ -66,6 +67,7 @@ public interface ErrorModelMapper {
             target = "rootCauseErrorIdList",
             expression =
                     "java(model.getRootCauseErrorIdList() != null ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
+    @Mapping(target = "process", ignore = true) // Set by parent entity - immutable in JPA
     ProcessErrorEntity toEntityFromProcess(ErrorModel model);
 
     @Mapping(
@@ -84,6 +86,7 @@ public interface ErrorModelMapper {
             target = "rootCauseErrorIdList",
             expression =
                     "java(model.getRootCauseErrorIdList() != null ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
+    @Mapping(target = "task", ignore = true) // Set by parent entity - immutable in JPA
     org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity toEntityFromTask(ErrorModel model);
 
     List<ErrorModel> toModelListFromExperiment(List<ExperimentErrorEntity> entities);

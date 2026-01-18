@@ -19,4 +19,27 @@
 */
 package org.apache.airavata.common.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+/**
+ * Base class for all messaging events.
+ * Uses Jackson polymorphic type handling to support JSON serialization/deserialization
+ * of event subclasses through message brokers (RabbitMQ, Kafka).
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = ExperimentStatusChangeEvent.class, name = "experimentStatus"),
+    @JsonSubTypes.Type(value = ExperimentSubmitEvent.class, name = "experimentSubmit"),
+    @JsonSubTypes.Type(value = ProcessStatusChangeEvent.class, name = "processStatus"),
+    @JsonSubTypes.Type(value = ProcessStatusChangeRequestEvent.class, name = "processStatusRequest"),
+    @JsonSubTypes.Type(value = ProcessSubmitEvent.class, name = "processSubmit"),
+    @JsonSubTypes.Type(value = ProcessTerminateEvent.class, name = "processTerminate"),
+    @JsonSubTypes.Type(value = JobStatusChangeEvent.class, name = "jobStatus"),
+    @JsonSubTypes.Type(value = JobStatusChangeRequestEvent.class, name = "jobStatusRequest"),
+    @JsonSubTypes.Type(value = TaskStatusChangeEvent.class, name = "taskStatus"),
+    @JsonSubTypes.Type(value = TaskStatusChangeRequestEvent.class, name = "taskStatusRequest"),
+    @JsonSubTypes.Type(value = TaskOutputChangeEvent.class, name = "taskOutput"),
+    @JsonSubTypes.Type(value = DBEventMessage.class, name = "dbEvent")
+})
 public class MessagingEvent {}

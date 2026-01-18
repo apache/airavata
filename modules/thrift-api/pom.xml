@@ -149,5 +149,14 @@ under the License.
                 </configuration>
             </plugin>
         </plugins>
+        <!-- Include shared test resources from root -->
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/../../src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
     </build>
 </project>

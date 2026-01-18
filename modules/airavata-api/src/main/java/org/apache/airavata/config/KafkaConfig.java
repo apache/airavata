@@ -40,7 +40,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 /**
  * Spring Kafka configuration for Kafka messaging.
  * Replaces manual KafkaProducer/KafkaConsumer configuration with Spring-managed beans.
- * 
+ *
  * Configure via application.properties:
  *   kafka.enabled=true
  *   kafka.broker-url=localhost:9092
@@ -62,7 +62,8 @@ public class KafkaConfig {
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
+        configProps.put(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -84,8 +85,10 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, 
+        configProps.put(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
+        configProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
                 properties.services().monitor().realtime().brokerConsumerGroup());
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -112,8 +115,10 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, Object> jsonConsumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG,
+        configProps.put(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.kafka().brokerUrl());
+        configProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
                 properties.services().monitor().realtime().brokerConsumerGroup());
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);

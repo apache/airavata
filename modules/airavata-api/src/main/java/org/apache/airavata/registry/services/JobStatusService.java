@@ -46,9 +46,10 @@ public class JobStatusService {
     private final EntityManager entityManager;
 
     // Track last timestamp per job to ensure strict ordering even for rapid additions
-    private static final java.util.Map<String, Timestamp> lastJobTimestamps = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<String, Timestamp> lastJobTimestamps =
+            new java.util.concurrent.ConcurrentHashMap<>();
     private static final Object timestampLock = new Object();
-    
+
     /**
      * Gets a unique timestamp for a job with microsecond precision.
      * Uses in-memory cache and database query to ensure it's always greater than previous.
@@ -59,21 +60,21 @@ public class JobStatusService {
         synchronized (timestampLock) {
             // Get cached timestamp (from previous operations in this JVM)
             Timestamp lastCached = lastJobTimestamps.get(jobKey);
-            
+
             // Query database to get the actual latest timestamp (handles distributed scenarios)
-            // Flush first to ensure we see any pending changes in this transaction
-            jobStatusRepository.flush();
-            entityManager.flush();
-            
+            // Note: Native queries in the same transaction see uncommitted changes, so no flush needed
+            // Avoid flushing to prevent triggering persistence of unrelated entities (like Process)
+            // that might not be fully initialized
+
             // Use native query to get the actual latest timestamp from database
             // This bypasses JPA caching and ensures we see the real persisted data
             // Critical for distributed systems where cache might be stale
             @SuppressWarnings("unchecked")
-            List<Timestamp> timestamps = entityManager.createNativeQuery(
-                    "SELECT TIME_OF_STATE_CHANGE FROM JOB_STATUS " +
-                    "WHERE JOB_ID = ? AND TASK_ID = ? " +
-                    "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                    "LIMIT 1")
+            List<Timestamp> timestamps = entityManager
+                    .createNativeQuery(
+                            "SELECT TIME_OF_STATE_CHANGE FROM JOB_STATUS " + "WHERE JOB_ID = ? AND TASK_ID = ? "
+                                    + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                                    + "LIMIT 1")
                     .setParameter(1, jobPK.getJobId())
                     .setParameter(2, jobPK.getTaskId())
                     .getResultList();
@@ -81,7 +82,7 @@ public class JobStatusService {
             if (!timestamps.isEmpty() && timestamps.get(0) != null) {
                 dbLatest = (Timestamp) timestamps.get(0);
             }
-            
+
             // Use the maximum of cached and database timestamp
             // This handles edge cases where:
             // 1. Cache might be stale (distributed system)
@@ -99,10 +100,10 @@ public class JobStatusService {
             if (lastCached != null && (dbLatest == null || lastCached.compareTo(dbLatest) >= 0)) {
                 lastTimestamp = lastCached;
             }
-            
+
             // Generate base timestamp
             Timestamp baseTimestamp = AiravataUtils.getUniqueTimestamp();
-            
+
             // CRITICAL: Ensure our new timestamp is STRICTLY greater than the last one
             // This handles edge cases where timestamps might be equal due to:
             // 1. Rapid additions within same millisecond
@@ -111,7 +112,7 @@ public class JobStatusService {
             if (lastTimestamp != null) {
                 long lastTime = lastTimestamp.getTime();
                 long baseTime = baseTimestamp.getTime();
-                
+
                 if (baseTime < lastTime) {
                     // Clock went backwards (edge case in distributed systems)
                     // Increment by 1 millisecond
@@ -121,12 +122,12 @@ public class JobStatusService {
                     // Same millisecond - must increment nanos to ensure strict ordering
                     int lastNanos = lastTimestamp.getNanos();
                     int baseNanos = baseTimestamp.getNanos();
-                    
+
                     // Ensure new nanos is strictly greater
                     // Use 100ms increment to handle DBs with only millisecond/low precision
                     // 1 second (1000ms) might be safer but 100ms is a good compromise
-                    int newNanos = Math.max(baseNanos, lastNanos + 100_000_000); 
-                    
+                    int newNanos = Math.max(baseNanos, lastNanos + 100_000_000);
+
                     if (newNanos >= 1_000_000_000) {
                         // Overflow to next second(s)
                         long extraSeconds = newNanos / 1_000_000_000;
@@ -139,46 +140,45 @@ public class JobStatusService {
                 }
                 // If baseTime > lastTime, we're good - baseTimestamp is already greater
             }
-            
+
             // Update cache with the timestamp we'll use (BEFORE returning)
             // This ensures the next call in the same JVM will see this timestamp
             // Note: addJobStatus/updateJobStatus will update cache again with persistedTimestamp if different
             lastJobTimestamps.put(jobKey, baseTimestamp);
-            
+
             return baseTimestamp;
         }
     }
-    
+
     /**
      * Ensures the given timestamp is greater than the last timestamp for this job.
      * Queries database to get actual latest timestamp.
      */
     private Timestamp ensureTimestampOrdering(JobPK jobPK, Timestamp timestamp) {
-        // Flush any pending changes first
-        jobStatusRepository.flush();
-        entityManager.flush();
-        
+        // Note: Native queries in the same transaction see uncommitted changes, so no flush needed
+        // Avoid flushing to prevent triggering persistence of unrelated entities (like Process)
+        // that might not be fully initialized
+
         // Check cache first - it's more reliable in the same transaction
         String jobKey = jobPK.getJobId() + ":" + jobPK.getTaskId();
         Timestamp lastCached = lastJobTimestamps.get(jobKey);
-        
+
         // Use native query to get the actual latest timestamp for this job
         // This ensures we see flushed changes in the same transaction
         @SuppressWarnings("unchecked")
-        List<Timestamp> timestamps = entityManager.createNativeQuery(
-                "SELECT TIME_OF_STATE_CHANGE FROM JOB_STATUS " +
-                "WHERE JOB_ID = ? AND TASK_ID = ? " +
-                "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                "LIMIT 1")
+        List<Timestamp> timestamps = entityManager
+                .createNativeQuery("SELECT TIME_OF_STATE_CHANGE FROM JOB_STATUS " + "WHERE JOB_ID = ? AND TASK_ID = ? "
+                        + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                        + "LIMIT 1")
                 .setParameter(1, jobPK.getJobId())
                 .setParameter(2, jobPK.getTaskId())
                 .getResultList();
-        
+
         Timestamp dbLatest = null;
         if (!timestamps.isEmpty() && timestamps.get(0) != null) {
             dbLatest = (Timestamp) timestamps.get(0);
         }
-        
+
         // Use the maximum of cache and database
         // CRITICAL: In the same transaction, prefer cache if it's >= database
         // because native queries might not see uncommitted changes even after flush
@@ -192,7 +192,7 @@ public class JobStatusService {
         if (lastCached != null && (dbLatest == null || lastCached.compareTo(dbLatest) >= 0)) {
             lastTimestamp = lastCached;
         }
-        
+
         if (lastTimestamp != null) {
             if (!timestamp.after(lastTimestamp)) {
                 // Increment by 1 millisecond to ensure strict ordering
@@ -211,7 +211,7 @@ public class JobStatusService {
                 }
             }
         }
-        
+
         return timestamp;
     }
 
@@ -226,28 +226,26 @@ public class JobStatusService {
         this.entityManager = entityManager;
     }
 
-
     public JobStatus getJobStatus(JobPK jobPK) throws RegistryException {
-        // Flush any pending changes to ensure the query sees the latest data
-        // This is critical - flush makes uncommitted changes visible to queries in the same transaction
-        jobStatusRepository.flush();
-        entityManager.flush();
-        
+        // Note: Native queries in the same transaction see uncommitted changes, so no flush needed
+        // Avoid flushing to prevent triggering persistence of unrelated entities (like Process)
+        // that might not be fully initialized
+
         // Use native query to bypass any JPA caching and ensure we get the latest from database
         // This is critical for seeing the most recent status in the same transaction
         @SuppressWarnings("unchecked")
-        List<Object[]> results = entityManager.createNativeQuery(
-                "SELECT STATUS_ID, JOB_ID, TASK_ID, STATE, REASON, TIME_OF_STATE_CHANGE " +
-                "FROM JOB_STATUS " +
-                "WHERE JOB_ID = ? AND TASK_ID = ? " +
-                "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                "LIMIT 1")
+        List<Object[]> results = entityManager
+                .createNativeQuery(
+                        "SELECT STATUS_ID, JOB_ID, TASK_ID, STATE, REASON, TIME_OF_STATE_CHANGE " + "FROM JOB_STATUS "
+                                + "WHERE JOB_ID = ? AND TASK_ID = ? "
+                                + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                                + "LIMIT 1")
                 .setParameter(1, jobPK.getJobId())
                 .setParameter(2, jobPK.getTaskId())
                 .getResultList();
-        
+
         if (results.isEmpty()) return null;
-        
+
         // Convert native query result to entity
         Object[] row = results.get(0);
         JobStatusEntity entity = new JobStatusEntity();
@@ -260,7 +258,7 @@ public class JobStatusService {
         }
         entity.setReason((String) row[4]);
         entity.setTimeOfStateChange((java.sql.Timestamp) row[5]);
-        
+
         return jobStatusMapper.toModel(entity);
     }
 
@@ -272,29 +270,32 @@ public class JobStatusService {
         // Get timestamp BEFORE any database operations to ensure it's truly unique
         Timestamp uniqueTimestamp = getUniqueTimestampForJob(jobPK);
         jobStatus.setTimeOfStateChange(uniqueTimestamp.getTime());
-        
+
         JobStatusEntity entity = jobStatusMapper.toEntity(jobStatus);
         entity.setJobId(jobPK.getJobId());
         entity.setTaskId(jobPK.getTaskId());
         // CRITICAL: Set timestamp on entity BEFORE any save operations
         // This ensures our explicit timestamp is used, not database default
         entity.setTimeOfStateChange(uniqueTimestamp);
-        
-        // Load the JobEntity and set the relationship to ensure proper entity management
-        JobEntity jobEntity = jobRepository.findById(jobPK)
+
+        // Verify job exists before saving status
+        JobEntity jobEntity = jobRepository
+                .findById(jobPK)
                 .orElseThrow(() -> new RegistryException("Job with ID " + jobPK.getJobId() + " does not exist"));
-        entity.setJob(jobEntity);
-        
+
+        // Note: We don't call entity.setJob() because the @JoinColumn has insertable=false.
+        // The jobId and taskId fields are already set and are the only fields that get persisted.
+
         // Ensure the jobStatuses collection is initialized
         if (jobEntity.getJobStatuses() == null) {
             jobEntity.setJobStatuses(new java.util.ArrayList<>());
         }
-        
-        // Save and flush to ensure immediate persistence
-        // The flush ensures the status is immediately visible to queries
+
+        // Save the entity - it will be persisted when the transaction commits
+        // Note: Avoid flushing here to prevent triggering persistence of unrelated entities
+        // (like Process) that might not be fully initialized
         JobStatusEntity savedEntity = jobStatusRepository.save(entity);
-        jobStatusRepository.flush();
-        
+
         // CRITICAL: Verify timestamp was persisted correctly and force it if needed
         // In distributed systems, database defaults might override our timestamp
         // We must ensure our explicit timestamp is used to maintain strict ordering
@@ -302,22 +303,25 @@ public class JobStatusService {
         if (persistedTimestamp == null || !persistedTimestamp.equals(uniqueTimestamp)) {
             // Database overrode our timestamp - force it via native update
             // This handles edge cases where database defaults interfere
-            int updated = entityManager.createNativeQuery(
-                    "UPDATE JOB_STATUS SET TIME_OF_STATE_CHANGE = ? " +
-                    "WHERE STATUS_ID = ? AND JOB_ID = ? AND TASK_ID = ?")
+            entityManager
+                    .createNativeQuery("UPDATE JOB_STATUS SET TIME_OF_STATE_CHANGE = ? "
+                            + "WHERE STATUS_ID = ? AND JOB_ID = ? AND TASK_ID = ?")
                     .setParameter(1, uniqueTimestamp)
                     .setParameter(2, savedEntity.getStatusId())
                     .setParameter(3, savedEntity.getJobId())
                     .setParameter(4, savedEntity.getTaskId())
                     .executeUpdate();
+            // Flush only after native update to ensure the update is persisted
+            // This is safe because we're only updating an existing entity, not creating new ones
             entityManager.flush();
-            // Reload entity to get corrected timestamp
-            entityManager.refresh(savedEntity);
-            persistedTimestamp = uniqueTimestamp; // Use our timestamp since we forced it
+            // Note: We don't call refresh() here to avoid HHH000502 warnings.
+            // The refresh would load the 'job' property which is marked as immutable.
+            // We already know the correct timestamp since we just forced it.
+            persistedTimestamp = uniqueTimestamp;
         } else {
-            persistedTimestamp = uniqueTimestamp; // Use our timestamp
+            persistedTimestamp = uniqueTimestamp;
         }
-        
+
         // CRITICAL: Update cache with the timestamp we actually persisted
         // This ensures the next status will have a timestamp strictly greater than this one
         // This is essential for handling rapid status additions in distributed systems
@@ -336,15 +340,18 @@ public class JobStatusService {
                 lastJobTimestamps.put(jobKey, incremented);
             }
         }
-        
-        // Add the saved (managed) entity to the collection to keep in-memory state in sync
-        jobEntity.getJobStatuses().add(savedEntity);
+
+        // Note: We don't add to jobEntity.getJobStatuses() collection because:
+        // 1. The entity is already saved with the correct foreign key (jobId, taskId)
+        // 2. Adding to the collection triggers Hibernate to sync the bidirectional relationship,
+        //    which causes HHH000502 warnings because the 'job' property is immutable
+        // 3. The collection will be correctly populated when the parent is reloaded/queried
     }
 
     public void updateJobStatus(JobStatus jobStatus, JobPK jobPK) throws RegistryException {
         // Always generate a new statusId to ensure we create a new status entry, not update an existing one
         jobStatus.setStatusId(ExpCatalogUtils.getID("JOB_STATE"));
-        
+
         // Always use unique timestamp to ensure proper ordering
         // Even if a timestamp is provided, we ensure it's greater than previous statuses
         Timestamp uniqueTimestamp;
@@ -372,45 +379,52 @@ public class JobStatusService {
         entity.setTaskId(jobPK.getTaskId());
         // Ensure timestamp is set correctly on the entity using the same unique timestamp
         entity.setTimeOfStateChange(uniqueTimestamp);
-        
-        // Load the JobEntity and set the relationship to ensure proper entity management
-        JobEntity jobEntity = jobRepository.findById(jobPK)
+
+        // Verify job exists before saving status
+        JobEntity jobEntity = jobRepository
+                .findById(jobPK)
                 .orElseThrow(() -> new RegistryException("Job with ID " + jobPK.getJobId() + " does not exist"));
-        entity.setJob(jobEntity);
-        
+
+        // Note: We don't call entity.setJob() because the @JoinColumn has insertable=false.
+        // The jobId and taskId fields are already set and are the only fields that get persisted.
+
         // Ensure the jobStatuses collection is initialized
         if (jobEntity.getJobStatuses() == null) {
             jobEntity.setJobStatuses(new java.util.ArrayList<>());
         }
-        
-        // Save and flush to ensure immediate persistence
-        // The flush ensures the status is immediately visible to queries
+
+        // Save the entity - it will be persisted when the transaction commits
+        // Note: Avoid flushing here to prevent triggering persistence of unrelated entities
+        // (like Process) that might not be fully initialized
         JobStatusEntity savedEntity = jobStatusRepository.save(entity);
-        jobStatusRepository.flush();
-        
+
         // Verify timestamp was persisted correctly
         // In distributed systems, database defaults might override our timestamp
-        if (savedEntity.getTimeOfStateChange() == null || 
-            !savedEntity.getTimeOfStateChange().equals(uniqueTimestamp)) {
+        Timestamp persistedTimestamp = savedEntity.getTimeOfStateChange();
+        if (persistedTimestamp == null || !persistedTimestamp.equals(uniqueTimestamp)) {
             // Database overrode our timestamp - force it via native update
-            entityManager.createNativeQuery(
-                    "UPDATE JOB_STATUS SET TIME_OF_STATE_CHANGE = ? " +
-                    "WHERE STATUS_ID = ? AND JOB_ID = ? AND TASK_ID = ?")
+            entityManager
+                    .createNativeQuery("UPDATE JOB_STATUS SET TIME_OF_STATE_CHANGE = ? "
+                            + "WHERE STATUS_ID = ? AND JOB_ID = ? AND TASK_ID = ?")
                     .setParameter(1, uniqueTimestamp)
                     .setParameter(2, savedEntity.getStatusId())
                     .setParameter(3, savedEntity.getJobId())
                     .setParameter(4, savedEntity.getTaskId())
                     .executeUpdate();
+            // Flush only after native update to ensure the update is persisted
+            // This is safe because we're only updating an existing entity, not creating new ones
             entityManager.flush();
-            // Refresh to get the corrected timestamp
-            entityManager.refresh(savedEntity);
+            // Note: We don't call refresh() here to avoid HHH000502 warnings.
+            // The refresh would load the 'job' property which is marked as immutable.
+            // We already know the correct timestamp since we just forced it.
+            persistedTimestamp = uniqueTimestamp;
         }
-        
+
         // CRITICAL: Update cache with the timestamp we actually persisted
         // This ensures the next status will have a timestamp strictly greater than this one
         String jobKey = jobPK.getJobId() + ":" + jobPK.getTaskId();
         synchronized (timestampLock) {
-            Timestamp persistedTimestamp = savedEntity.getTimeOfStateChange();
+            // Use persistedTimestamp which is either the saved value or the forced uniqueTimestamp
             if (persistedTimestamp != null) {
                 Timestamp lastCached = lastJobTimestamps.get(jobKey);
                 // Always update cache to ensure strict ordering
@@ -430,10 +444,12 @@ public class JobStatusService {
                 }
             }
         }
-        
-        // Add the saved (managed) entity to the collection to keep in-memory state in sync
-        // This ensures that when getJob() is called in the same transaction, it sees the updated collection
-        jobEntity.getJobStatuses().add(savedEntity);
+
+        // Note: We don't add to jobEntity.getJobStatuses() collection because:
+        // 1. The entity is already saved with the correct foreign key (jobId, taskId)
+        // 2. Adding to the collection triggers Hibernate to sync the bidirectional relationship,
+        //    which causes HHH000502 warnings because the 'job' property is immutable
+        // 3. The collection will be correctly populated when the parent is reloaded/queried
     }
 
     public List<String> getDistinctListofJobStatus(String gatewayId, String state, double minutes)

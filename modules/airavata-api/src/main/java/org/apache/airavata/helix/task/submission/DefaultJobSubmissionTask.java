@@ -32,6 +32,7 @@ import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.base.TaskContext;
@@ -43,7 +44,6 @@ import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -138,8 +138,11 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     statusList.add(jobStatus);
                     jobModel.setJobStatuses(List.of(jobStatus));
                     saveJobModel(jobModel);
-                    logger.error("Job submission failed for job name {}. Exit code : {}, Submission failed : {}",
-                            jobModel.getJobName(), submissionOutput.getExitCode(), submissionOutput.isJobSubmissionFailed());
+                    logger.error(
+                            "Job submission failed for job name {}. Exit code : {}, Submission failed : {}",
+                            jobModel.getJobName(),
+                            submissionOutput.getExitCode(),
+                            submissionOutput.isJobSubmissionFailed());
 
                     logger.error("Standard error message : {}", submissionOutput.getStdErr());
                     logger.error("Standard out message : {}", submissionOutput.getStdOut());
@@ -215,7 +218,8 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         logger.info("Job id {} verification succeeded", verifyJobId);
                         break;
                     }
-                    logger.info("Verify step return invalid jobId, retry verification step in {} secs",
+                    logger.info(
+                            "Verify step return invalid jobId, retry verification step in {} secs",
                             verificationTryCount * 10);
                     Thread.sleep(verificationTryCount * 10000);
                 }

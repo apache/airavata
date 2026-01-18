@@ -90,6 +90,7 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -138,7 +139,6 @@ import org.apache.airavata.registry.utils.Constants;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -310,10 +310,10 @@ public class RegistryService {
     public boolean deleteGateway(String gatewayId) throws RegistryServiceException {
         try {
             if (!gatewayService.isGatewayExist(gatewayId)) {
-                String message = String.format(
-                        "Gateway '%s' does not exist in the system. Please provide a valid gateway ID.", gatewayId);
-                logger.error(message);
-                throw new RegistryServiceException(message);
+                // Gateway doesn't exist - this is fine for delete operations (idempotent)
+                // It may have been deleted already or never existed in this registry
+                logger.debug("Gateway '{}' does not exist in the system, nothing to delete.", gatewayId);
+                return true;
             }
             gatewayService.removeGateway(gatewayId);
             logger.debug("Airavata deleted gateway with gateway id : {}", gatewayId);
@@ -492,8 +492,10 @@ public class RegistryService {
             limit = Math.min(limit, 1000);
             ExperimentStatistics result = experimentSummaryService.getAccessibleExperimentStatistics(
                     accessibleExpIds, filters, limit, offset);
-            logger.debug("Airavata retrieved experiments for gateway id : {} between : {} and {}",
-                    gatewayId, org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime),
+            logger.debug(
+                    "Airavata retrieved experiments for gateway id : {} between : {} and {}",
+                    gatewayId,
+                    org.apache.airavata.common.utils.AiravataUtils.getTime(fromTime),
                     org.apache.airavata.common.utils.AiravataUtils.getTime(toTime));
             return result;
         } catch (RegistryException e) {
@@ -2117,14 +2119,12 @@ public class RegistryService {
                 }
             }
 
-            try {
-                if (accessibleExpIds.size() == 0 && !properties.sharing().enabled()) {
-                    if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
-                        regFilters.put(DBConstants.Experiment.USER_NAME, userName);
-                    }
+            // Check sharing settings - if sharing is not enabled or not configured,
+            // fall back to filtering by username for non-shared experiments
+            if (accessibleExpIds.isEmpty() && !properties.isSharingEnabled()) {
+                if (!regFilters.containsKey(DBConstants.Experiment.USER_NAME)) {
+                    regFilters.put(DBConstants.Experiment.USER_NAME, userName);
                 }
-            } catch (Exception e) {
-                logger.warn("Error checking sharing settings, continuing without filter", e);
             }
             summaries = experimentSummaryService.searchAllAccessibleExperiments(
                     accessibleExpIds,
@@ -2500,14 +2500,12 @@ public class RegistryService {
                 }
             }
 
-            try {
-                if (accessibleProjIds.size() == 0 && !properties.sharing().enabled()) {
-                    if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
-                        regFilters.put(DBConstants.Project.OWNER, userName);
-                    }
+            // Check sharing settings - if sharing is not enabled or not configured,
+            // fall back to filtering by owner for non-shared projects
+            if (accessibleProjIds.isEmpty() && !properties.isSharingEnabled()) {
+                if (!regFilters.containsKey(DBConstants.Project.OWNER)) {
+                    regFilters.put(DBConstants.Project.OWNER, userName);
                 }
-            } catch (Exception e) {
-                logger.warn("Error checking sharing settings, continuing without filter", e);
             }
 
             projects = projectService.searchAllAccessibleProjects(

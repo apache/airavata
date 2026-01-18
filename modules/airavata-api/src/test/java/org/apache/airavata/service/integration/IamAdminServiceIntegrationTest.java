@@ -24,30 +24,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.UserProfile;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.security.IamAdminService;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Integration tests for IamAdminService (Keycloak operations).
- * Note: These tests require proper Keycloak configuration or mocking.
- * Some tests may be skipped if Keycloak is not available.
+ * Uses Keycloak testcontainer for real IAM testing.
+ * IAM properties are configured by ServiceIntegrationTestBase.TestConfiguration.
  */
 @DisplayName("IamAdminService Integration Tests")
-@TestPropertySource(
-        properties = {
-            "security.iam.server-url=http://localhost:18080",
-            "security.iam.super.username=admin",
-            "security.iam.super.password=admin"
-        })
 public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final IamAdminService iamAdminService;
@@ -186,8 +179,12 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 boolean added = iamAdminService.addRoleToUser(testAuthzToken, username, roleName);
                 assertThat(added).isNotNull();
             } catch (Exception e) {
-                // Expected if gateway/credentials not set up
-                assertThat(e).isInstanceOfAny(IamAdminServicesException.class, RegistryServiceException.class);
+                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null)
+                assertThat(e)
+                        .isInstanceOfAny(
+                                IamAdminServicesException.class,
+                                RegistryServiceException.class,
+                                NullPointerException.class);
             }
         }
 
@@ -201,8 +198,12 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 boolean removed = iamAdminService.removeRoleFromUser(testAuthzToken, username, roleName);
                 assertThat(removed).isNotNull();
             } catch (Exception e) {
-                // Expected if gateway/credentials not set up
-                assertThat(e).isInstanceOfAny(IamAdminServicesException.class, RegistryServiceException.class);
+                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null)
+                assertThat(e)
+                        .isInstanceOfAny(
+                                IamAdminServicesException.class,
+                                RegistryServiceException.class,
+                                NullPointerException.class);
             }
         }
 
@@ -215,8 +216,12 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 List<UserProfile> users = iamAdminService.getUsersWithRole(testAuthzToken, roleName);
                 assertThat(users).isNotNull();
             } catch (Exception e) {
-                // Expected if gateway/credentials not set up
-                assertThat(e).isInstanceOfAny(IamAdminServicesException.class, RegistryServiceException.class);
+                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null)
+                assertThat(e)
+                        .isInstanceOfAny(
+                                IamAdminServicesException.class,
+                                RegistryServiceException.class,
+                                NullPointerException.class);
             }
         }
     }

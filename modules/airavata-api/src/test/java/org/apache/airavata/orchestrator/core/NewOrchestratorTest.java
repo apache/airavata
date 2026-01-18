@@ -22,7 +22,6 @@ package org.apache.airavata.orchestrator.core;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(
@@ -38,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @Transactional
 public class NewOrchestratorTest extends BaseOrchestratorTest {
 

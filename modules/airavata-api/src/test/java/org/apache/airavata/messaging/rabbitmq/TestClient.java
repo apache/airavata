@@ -38,13 +38,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {org.apache.airavata.config.JpaConfig.class, TestcontainersConfig.class},
         properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "airavata.rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "airavata.rabbitmq.exchange.name";

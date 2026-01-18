@@ -23,6 +23,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import java.nio.charset.Charset;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.fuse.DirEntry;
 import org.apache.airavata.fuse.FileEntry;
 import org.apache.airavata.fuse.FileInfo;
@@ -47,7 +48,6 @@ import org.apache.airavata.fuse.StatFsReq;
 import org.apache.airavata.fuse.StatFsRes;
 import org.apache.airavata.fuse.WriteFileReq;
 import org.apache.airavata.fuse.WriteFileRes;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -119,7 +119,9 @@ public class FuseFSHandler extends FuseServiceGrpc.FuseServiceImplBase {
                         .setFileMode(777)
                         .setInfo(FileInfo.newBuilder()
                                 .setModTime(Timestamp.newBuilder()
-                                        .setSeconds(AiravataUtils.getUniqueTimestamp().getTime() / 1000)
+                                        .setSeconds(AiravataUtils.getUniqueTimestamp()
+                                                        .getTime()
+                                                / 1000)
                                         .build())
                                 .setName("file2")
                                 .setIno(100)

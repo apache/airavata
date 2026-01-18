@@ -26,6 +26,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -90,7 +91,8 @@ public class JobEntity implements Serializable {
     @OrderBy("timeOfStateChange ASC")
     private List<JobStatusEntity> jobStatuses;
 
-    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // Note: No cascade - this is a read-only relationship (insertable=false, updatable=false)
+    @ManyToOne(targetEntity = TaskEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(
             name = "TASK_ID",
             referencedColumnName = "TASK_ID",
@@ -201,7 +203,6 @@ public class JobEntity implements Serializable {
         return task;
     }
 
-    public void setTask(TaskEntity task) {
-        this.task = task;
-    }
+    // Note: No setter for 'task' - the relationship is read-only (insertable=false, updatable=false)
+    // The taskId field should be set instead, and Hibernate will resolve the relationship via the @JoinColumn
 }

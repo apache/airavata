@@ -123,7 +123,6 @@ public class ExperimentStatusEntity implements Serializable {
         return experiment;
     }
 
-    public void setExperiment(ExperimentEntity experiment) {
-        this.experiment = experiment;
-    }
+    // Note: No setter for 'experiment' - the relationship is read-only (insertable=false, updatable=false)
+    // The experimentId field should be set instead, and Hibernate will resolve the relationship via the @JoinColumn
 }

@@ -63,8 +63,8 @@ public class ExperimentInputService {
         for (InputDataObjectType input : inputs) {
             ExperimentInputEntity entity = inputDataObjectTypeMapper.toEntity(input);
             entity.setExperimentId(experimentId);
-            // Set experiment relationship to ensure EXPERIMENT_ID is set via @JoinColumn
-            entity.setExperiment(experimentEntity);
+            // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
+            // The experimentId field is already set and is the only field that gets persisted.
             experimentInputRepository.save(entity);
         }
         return experimentId;
@@ -77,22 +77,20 @@ public class ExperimentInputService {
                 .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
-        
+
         // Delete existing inputs using native query to bypass persistence context issues
         experimentInputRepository.deleteByExperimentId(experimentId);
         // Flush to ensure deletes are executed
         experimentInputRepository.flush();
         // Clear entity manager to remove any managed entities from persistence context
         entityManager.clear();
-        
-        // Use getReference() to get experiment proxy without querying (works after clear)
-        ExperimentEntity experimentRef = entityManager.getReference(ExperimentEntity.class, experimentId);
-        
+
         // Add new inputs
         for (InputDataObjectType input : inputs) {
             ExperimentInputEntity entity = inputDataObjectTypeMapper.toEntity(input);
             entity.setExperimentId(experimentId);
-            entity.setExperiment(experimentRef);
+            // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
+            // The experimentId field is already set and is the only field that gets persisted.
             experimentInputRepository.save(entity);
         }
     }

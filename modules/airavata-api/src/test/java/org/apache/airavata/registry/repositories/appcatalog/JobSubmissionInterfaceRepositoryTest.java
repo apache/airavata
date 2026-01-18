@@ -62,7 +62,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
 
         ComputeResourceDescription description = new ComputeResourceDescription();
         description.setHostName("jobsub-test-host-" + testSuffix);
-        
+
         // Initialize batch queues list
         java.util.List<BatchQueue> batchQueues = new java.util.ArrayList<>();
         var queue1 = new BatchQueue();
@@ -72,7 +72,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
         queue2.setQueueName("queue2");
         batchQueues.add(queue2);
         description.setBatchQueues(batchQueues);
-        
+
         computeResourceId = computeResourceService.addComputeResource(description);
     }
 

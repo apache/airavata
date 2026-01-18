@@ -72,7 +72,8 @@ public class JobStatusEntity implements Serializable {
     @Column(name = "REASON")
     private String reason;
 
-    @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // Note: No cascade - this is a read-only relationship (insertable=false, updatable=false)
+    @ManyToOne(targetEntity = JobEntity.class, fetch = FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID", insertable = false, updatable = false),
         @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
@@ -133,7 +134,6 @@ public class JobStatusEntity implements Serializable {
         return job;
     }
 
-    public void setJob(JobEntity job) {
-        this.job = job;
-    }
+    // Note: No setter for 'job' - the relationship is read-only (insertable=false, updatable=false)
+    // The jobId and taskId fields should be set instead, and Hibernate will resolve the relationship via the @JoinColumns
 }

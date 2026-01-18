@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.exception.ExperimentNotFoundException;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -32,6 +31,7 @@ import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
@@ -201,7 +201,8 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
     private ComputeResourceSelectionPolicy getPolicyBean() {
         return applicationContext.getBeansOfType(ComputeResourceSelectionPolicy.class).values().stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "No ComputeResourceSelectionPolicy bean found. Check services.scheduler.selection-policy property."));
+                .orElseThrow(
+                        () -> new IllegalStateException(
+                                "No ComputeResourceSelectionPolicy bean found. Check services.scheduler.selection-policy property."));
     }
 }

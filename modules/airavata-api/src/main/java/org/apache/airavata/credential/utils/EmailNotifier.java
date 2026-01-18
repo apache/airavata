@@ -27,14 +27,14 @@ import org.apache.airavata.credential.model.NotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * EmailNotifier uses Spring Boot's auto-configured JavaMailSender.
- * 
+ *
  * Configure via application.properties (Spring Mail properties):
  *   spring.mail.host=smtp.example.com
  *   spring.mail.port=587
@@ -80,7 +80,7 @@ public class EmailNotifier implements CredentialStoreNotifier {
     public void notifyMessage(NotificationMessage message) throws CredentialStoreException {
         try {
             SimpleMailMessage email = new SimpleMailMessage();
-            
+
             if (emailNotifierConfiguration != null) {
                 email.setFrom(emailNotifierConfiguration.getFromAddress());
             }
@@ -104,7 +104,7 @@ public class EmailNotifier implements CredentialStoreNotifier {
     public void notifyEmail(EmailNotificationMessage emailMessage) throws CredentialStoreException {
         try {
             SimpleMailMessage email = new SimpleMailMessage();
-            
+
             if (emailNotifierConfiguration != null) {
                 email.setFrom(emailNotifierConfiguration.getFromAddress());
             }

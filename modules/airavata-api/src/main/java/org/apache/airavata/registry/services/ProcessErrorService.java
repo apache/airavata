@@ -19,17 +19,14 @@
 */
 package org.apache.airavata.registry.services;
 
-import jakarta.persistence.EntityManager;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.apache.airavata.common.model.ErrorModel;
-import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessErrorPK;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ErrorModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessErrorRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,14 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, ProcessErrorRepository, ProcessErrorPK> {
 
-    private final EntityManager entityManager;
-
     public ProcessErrorService(
             ProcessErrorRepository processErrorRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
             ErrorModelMapper errorModelMapper) {
         super(processErrorRepository, errorModelMapper);
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -88,9 +81,8 @@ public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, Pr
         if (entity.getCreationTime() == null) {
             entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp());
         }
-        // Get a reference to the process entity (proxy, doesn't fetch from DB)
-        ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
-        entity.setProcess(processEntity);
+        // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
+        // The processId field is already set and is the only field that gets persisted.
         ProcessErrorEntity saved = repository.save(entity);
         repository.flush(); // Ensure creationTime is persisted
         return getErrorIdExtractor().apply(saved);

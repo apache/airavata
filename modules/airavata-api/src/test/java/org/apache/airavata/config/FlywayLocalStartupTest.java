@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Test to verify Flyway configuration is correct for local/production startup.
@@ -44,7 +43,6 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false", // Disable FlywayConfig since TestcontainersConfig handles migrations
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class FlywayLocalStartupTest {
 

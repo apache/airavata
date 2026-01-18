@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Primary;
 /**
  * Jackson ObjectMapper configuration.
  * Provides a single, properly configured ObjectMapper bean for the entire application.
- * 
+ *
  * All JSON serialization/deserialization should use this bean instead of creating
  * new ObjectMapper instances.
  */

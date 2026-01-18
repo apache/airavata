@@ -114,8 +114,7 @@ public class AiravataConfigUtils {
             return resourcesRoot;
         }
 
-        throw new IllegalStateException(
-                "airavata.home is not set. Please set -Dairavata.home=XXX.");
+        throw new IllegalStateException("airavata.home is not set. Please set -Dairavata.home=XXX.");
     }
 
     /**
@@ -155,8 +154,8 @@ public class AiravataConfigUtils {
             }
             Properties loaded = new Properties();
             // Try classpath first
-            try (InputStream is = AiravataConfigUtils.class.getClassLoader()
-                    .getResourceAsStream(APPLICATION_PROPERTIES)) {
+            try (InputStream is =
+                    AiravataConfigUtils.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES)) {
                 if (is != null) {
                     loaded.load(is);
                     cachedProperties = loaded;

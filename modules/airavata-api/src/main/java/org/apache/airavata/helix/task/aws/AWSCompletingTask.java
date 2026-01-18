@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.task.aws;
 
 import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.aws.utils.AWSTaskUtil;
@@ -28,7 +29,6 @@ import org.apache.airavata.helix.task.base.TaskContext;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "AWS_COMPLETING_TASK")

@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.airavata.common.exception.ProjectNotFoundException;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.springframework.stereotype.Service;
 
 @Service

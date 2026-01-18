@@ -37,21 +37,22 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Integration test for Airavata Thrift client.
- * 
+ *
  * This test requires a running Airavata server and valid access token.
- * 
+ *
  * To run:
  * 1. Start Airavata server
  * 2. Run: mvn test -Dtest=TestAiravataServiceClientFactory -Dtest.airavata.server.running=true
  */
 @SpringBootTest(classes = {org.apache.airavata.config.JpaConfig.class})
-@TestPropertySource(locations = "classpath:application.properties")
 @ActiveProfiles("test")
-@EnabledIfSystemProperty(named = "test.airavata.server.running", matches = "true", disabledReason = "Requires running Airavata server")
+@EnabledIfSystemProperty(
+        named = "test.airavata.server.running",
+        matches = "true",
+        disabledReason = "Requires running Airavata server")
 public class TestAiravataServiceClientFactory {
 
     @Autowired
@@ -67,11 +68,11 @@ public class TestAiravataServiceClientFactory {
         claimsMap.put(Constants.USER_NAME, "2021test1");
         token.setClaimsMap(claimsMap);
 
-        boolean tlsEnabled = properties.security() != null 
-                && properties.security().tls() != null 
+        boolean tlsEnabled = properties.security() != null
+                && properties.security().tls() != null
                 && properties.security().tls().enabled();
-        Airavata.Client apiClient = AiravataServiceClientFactory.createAiravataClient(
-                "apidev.scigap.org", 8930, tlsEnabled, properties);
+        Airavata.Client apiClient =
+                AiravataServiceClientFactory.createAiravataClient("apidev.scigap.org", 8930, tlsEnabled, properties);
 
         assertNotNull(apiClient, "Airavata client should be created");
 

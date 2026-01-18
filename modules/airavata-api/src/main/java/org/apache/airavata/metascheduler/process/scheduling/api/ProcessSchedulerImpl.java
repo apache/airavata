@@ -144,8 +144,9 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
     private ComputeResourceSelectionPolicy getPolicyBean() {
         return applicationContext.getBeansOfType(ComputeResourceSelectionPolicy.class).values().stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "No ComputeResourceSelectionPolicy bean found. Check services.scheduler.selection-policy property."));
+                .orElseThrow(
+                        () -> new IllegalStateException(
+                                "No ComputeResourceSelectionPolicy bean found. Check services.scheduler.selection-policy property."));
     }
 
     @Override

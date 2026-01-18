@@ -20,8 +20,6 @@
 package org.apache.airavata.config;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;

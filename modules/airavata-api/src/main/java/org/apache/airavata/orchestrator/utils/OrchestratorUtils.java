@@ -44,6 +44,7 @@ import org.apache.airavata.common.model.StoragePreference;
 import org.apache.airavata.common.model.UnicoreJobSubmission;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
@@ -51,7 +52,6 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 

@@ -21,20 +21,19 @@ package org.apache.airavata.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Comprehensive test to verify all properties in AiravataServerProperties
  * are correctly bound from application.properties.
- * 
+ *
  * Each assertion verifies the property value against the ground truth
  * defined in src/test/resources/application.properties.
  */
@@ -45,54 +44,53 @@ public class PropertiesBindingTest {
     @Configuration
     // application.properties is auto-loaded by Spring Boot
     @EnableConfigurationProperties(AiravataServerProperties.class)
-    static class MinimalConfig {
-    }
+    static class MinimalConfig {}
 
     @Autowired
     private AiravataServerProperties properties;
 
     // ==================== Core Airavata Properties ====================
-    
+
     @Nested
     @DisplayName("Core Airavata Properties")
     class CoreAiravataProperties {
-        
+
         @Test
         @DisplayName("airavata.default-gateway = default")
         void testDefaultGateway() {
             assertEquals("default", properties.defaultGateway());
         }
-        
+
         @Test
         @DisplayName("airavata.in-memory-cache-size = 1000")
         void testInMemoryCacheSize() {
             assertEquals(1000, properties.inMemoryCacheSize());
         }
-        
+
         @Test
         @DisplayName("airavata.local-data-location = /tmp/airavata")
         void testLocalDataLocation() {
             assertEquals("/tmp/airavata", properties.localDataLocation());
         }
-        
+
         @Test
         @DisplayName("airavata.max-archive-size = 1073741824")
         void testMaxArchiveSize() {
             assertEquals(1073741824L, properties.maxArchiveSize());
         }
-        
+
         @Test
         @DisplayName("airavata.sharing.enabled = true")
         void testSharingEnabled() {
             assertTrue(properties.sharing().enabled());
         }
-        
+
         @Test
         @DisplayName("airavata.streaming-transfer.enabled = false")
         void testStreamingTransferEnabled() {
             assertFalse(properties.streamingTransfer().enabled());
         }
-        
+
         @Test
         @DisplayName("airavata.validation-enabled = true")
         void testValidationEnabled() {
@@ -101,11 +99,11 @@ public class PropertiesBindingTest {
     }
 
     // ==================== Database Properties ====================
-    
+
     @Nested
     @DisplayName("Database Properties")
     class DatabaseProperties {
-        
+
         @Test
         @DisplayName("database.catalog properties")
         void testCatalogDatabase() {
@@ -118,7 +116,7 @@ public class PropertiesBindingTest {
             assertEquals(20000L, catalog.hikari().leakDetectionThreshold());
             assertEquals("AppCatalogPool", catalog.hikari().poolName());
         }
-        
+
         @Test
         @DisplayName("database.profile properties")
         void testProfileDatabase() {
@@ -129,7 +127,7 @@ public class PropertiesBindingTest {
             assertEquals("123456", profile.password());
             assertEquals("SELECT 1", profile.validationQuery());
         }
-        
+
         @Test
         @DisplayName("database.registry properties")
         void testRegistryDatabase() {
@@ -140,7 +138,7 @@ public class PropertiesBindingTest {
             assertEquals("123456", registry.password());
             assertEquals("SELECT 1", registry.validationQuery());
         }
-        
+
         @Test
         @DisplayName("database.replica properties")
         void testReplicaDatabase() {
@@ -151,7 +149,7 @@ public class PropertiesBindingTest {
             assertEquals("123456", replica.password());
             assertEquals("SELECT 1", replica.validationQuery());
         }
-        
+
         @Test
         @DisplayName("database.research properties")
         void testResearchDatabase() {
@@ -162,18 +160,18 @@ public class PropertiesBindingTest {
             assertEquals("123456", research.password());
             assertEquals("SELECT 1", research.validationQuery());
         }
-        
+
         @Test
         @DisplayName("database.sharing properties")
         void testSharingDatabase() {
             var sharing = properties.database().sharing();
             assertEquals("org.mariadb.jdbc.Driver", sharing.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/sharing_catalog", sharing.url());
+            assertEquals("jdbc:mariadb://localhost:13306/sharing_registry", sharing.url());
             assertEquals("airavata", sharing.user());
             assertEquals("123456", sharing.password());
             assertEquals("SELECT 1", sharing.validationQuery());
         }
-        
+
         @Test
         @DisplayName("database.vault properties")
         void testVaultDatabase() {
@@ -184,7 +182,7 @@ public class PropertiesBindingTest {
             assertEquals("123456", vault.password());
             assertEquals("SELECT 1", vault.validationQuery());
         }
-        
+
         @Test
         @DisplayName("database.workflow properties")
         void testWorkflowDatabase() {
@@ -198,36 +196,36 @@ public class PropertiesBindingTest {
     }
 
     // ==================== Security Properties ====================
-    
+
     @Nested
     @DisplayName("Security Properties")
     class SecurityProperties {
-        
+
         @Test
         @DisplayName("security.authentication.enabled = true")
         void testAuthenticationEnabled() {
             assertTrue(properties.security().authentication().enabled());
         }
-        
+
         @Test
         @DisplayName("security.authz-cache.enabled = true")
         void testAuthzCacheEnabled() {
             assertTrue(properties.security().authzCache().enabled());
         }
-        
+
         @Test
         @DisplayName("security.iam properties")
         void testIamProperties() {
             var iam = properties.security().iam();
-            // IAM is disabled for tests (no real IAM server)
-            assertFalse(iam.enabled());
+            // IAM is enabled for tests with Keycloak testcontainer
+            assertTrue(iam.enabled());
             assertEquals("http://localhost:18080", iam.serverUrl());
             assertEquals("pga", iam.oauthClientId());
-            assertEquals("upCMVu2RZcAXUqpr9V7phAbz6hhF9cbl", iam.oauthClientSecret());
+            assertEquals("m36BXQIxX3j3VILadeHMK5IvbOeRlCCc", iam.oauthClientSecret());
             assertEquals("default-admin", iam.superAdmin().username());
-            assertEquals("ade4#21242ftfd", iam.superAdmin().password());
+            assertEquals("admin123", iam.superAdmin().password());
         }
-        
+
         @Test
         @DisplayName("security.tls properties")
         void testTlsProperties() {
@@ -237,7 +235,7 @@ public class PropertiesBindingTest {
             assertEquals("conf/keystores/airavata.p12", tls.keystore().path());
             assertEquals("airavata", tls.keystore().password());
         }
-        
+
         @Test
         @DisplayName("security.vault.keystore properties")
         void testSecurityVaultKeystore() {
@@ -249,17 +247,17 @@ public class PropertiesBindingTest {
     }
 
     // ==================== Messaging Properties ====================
-    
+
     @Nested
     @DisplayName("Messaging Properties")
     class MessagingProperties {
-        
+
         @Test
         @DisplayName("flyway.enabled = false")
         void testFlywayEnabled() {
             assertFalse(properties.flyway().enabled());
         }
-        
+
         @Test
         @DisplayName("helix properties")
         void testHelixProperties() {
@@ -267,14 +265,14 @@ public class PropertiesBindingTest {
             assertEquals("AiravataController", properties.helix().controller().name());
             assertEquals("AiravataParticipant", properties.helix().participant().name());
         }
-        
+
         @Test
         @DisplayName("kafka properties")
         void testKafkaProperties() {
             assertFalse(properties.kafka().enabled());
             assertEquals("localhost:9092", properties.kafka().brokerUrl());
         }
-        
+
         @Test
         @DisplayName("rabbitmq properties")
         void testRabbitMQProperties() {
@@ -289,7 +287,7 @@ public class PropertiesBindingTest {
             assertEquals("process_exchange", rabbitmq.processExchangeName());
             assertEquals("status_exchange", rabbitmq.statusExchangeName());
         }
-        
+
         @Test
         @DisplayName("zookeeper properties")
         void testZookeeperProperties() {
@@ -299,17 +297,19 @@ public class PropertiesBindingTest {
     }
 
     // ==================== Services Properties ====================
-    
+
     @Nested
     @DisplayName("Services Properties")
     class ServicesProperties {
-        
+
         @Test
         @DisplayName("services.agent properties")
         void testAgentService() {
             var agent = properties.services().agent();
             assertTrue(agent.enabled());
-            assertEquals("AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6", agent.appinterface().id());
+            assertEquals(
+                    "AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6",
+                    agent.appinterface().id());
             assertEquals(20971520L, agent.grpc().maxInboundMessageSize());
             assertEquals(19900, agent.grpc().port());
             assertEquals(18880, agent.server().port());
@@ -317,14 +317,16 @@ public class PropertiesBindingTest {
             assertFalse(agent.spring().jpa().openInView());
             assertEquals("200MB", agent.spring().servlet().multipart().maxFileSize());
             assertEquals("200MB", agent.spring().servlet().multipart().maxRequestSize());
-            assertEquals("localhost_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd", agent.storage().id());
+            assertEquals(
+                    "localhost_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd",
+                    agent.storage().id());
             assertEquals("/tmp", agent.storage().path());
             assertEquals("http://localhost:8000", agent.tunnelserver().url());
             assertEquals("localhost", agent.tunnelserver().host());
             assertEquals(17000, agent.tunnelserver().port());
             assertEquals("airavata", agent.tunnelserver().token());
         }
-        
+
         @Test
         @DisplayName("services.api.vault.keystore properties")
         void testApiVaultKeystore() {
@@ -333,19 +335,19 @@ public class PropertiesBindingTest {
             assertEquals("airavata", keystore.password());
             assertEquals("airavata", keystore.alias());
         }
-        
+
         @Test
         @DisplayName("services.background.controller.enabled = false")
         void testBackgroundController() {
             assertFalse(properties.services().background().controller().enabled());
         }
-        
+
         @Test
         @DisplayName("services.controller.enabled = true")
         void testControllerEnabled() {
             assertTrue(properties.services().controller().enabled());
         }
-        
+
         @Test
         @DisplayName("services.dbus properties")
         void testDbusService() {
@@ -353,7 +355,7 @@ public class PropertiesBindingTest {
             assertFalse(dbus.enabled());
             assertEquals("", dbus.classpath());
         }
-        
+
         @Test
         @DisplayName("services.fileserver properties")
         void testFileserverService() {
@@ -363,7 +365,7 @@ public class PropertiesBindingTest {
             assertEquals("10MB", fileserver.spring().servlet().multipart().maxFileSize());
             assertEquals("10MB", fileserver.spring().servlet().multipart().maxRequestSize());
         }
-        
+
         @Test
         @DisplayName("services.monitor.compute properties")
         void testComputeMonitor() {
@@ -380,7 +382,7 @@ public class PropertiesBindingTest {
             assertEquals("http://localhost:8082/topics/helix-airavata-mq", compute.statusPublishEndpoint());
             assertEquals("BatchQueueValidator,ExperimentStatusValidator", compute.validators());
         }
-        
+
         @Test
         @DisplayName("services.monitor.email properties")
         void testEmailMonitor() {
@@ -395,7 +397,7 @@ public class PropertiesBindingTest {
             assertEquals(10000, email.period());
             assertEquals("imaps", email.storeProtocol());
         }
-        
+
         @Test
         @DisplayName("services.monitor.realtime properties")
         void testRealtimeMonitor() {
@@ -404,7 +406,7 @@ public class PropertiesBindingTest {
             assertEquals("monitor", realtime.brokerConsumerGroup());
             assertEquals("helix-airavata-mq", realtime.brokerTopic());
         }
-        
+
         @Test
         @DisplayName("services.parser properties")
         void testParserService() {
@@ -421,13 +423,13 @@ public class PropertiesBindingTest {
             assertEquals(5, parser.timeStepSeconds());
             assertEquals("parsing-data", parser.topic());
         }
-        
+
         @Test
         @DisplayName("services.participant.enabled = true")
         void testParticipantEnabled() {
             assertTrue(properties.services().participant().enabled());
         }
-        
+
         @Test
         @DisplayName("services.postwm properties")
         void testPostWmService() {
@@ -436,7 +438,7 @@ public class PropertiesBindingTest {
             assertFalse(postwm.loadBalanceClusters());
             assertEquals("AiravataPostWM", postwm.name());
         }
-        
+
         @Test
         @DisplayName("services.prewm properties")
         void testPreWmService() {
@@ -445,7 +447,7 @@ public class PropertiesBindingTest {
             assertFalse(prewm.loadBalanceClusters());
             assertEquals("AiravataPreWM", prewm.name());
         }
-        
+
         @Test
         @DisplayName("services.research properties")
         void testResearchService() {
@@ -458,7 +460,8 @@ public class PropertiesBindingTest {
             assertEquals("JUPYTER_ADMIN_API_KEY", research.hub().adminApiKey());
             assertEquals(10, research.hub().limit());
             assertEquals("http://localhost:20000", research.hub().url());
-            assertEquals("http://localhost:18080/realms/default", research.openid().url());
+            assertEquals(
+                    "http://localhost:18080/realms/default", research.openid().url());
             assertEquals("http://localhost:5173", research.portal().devUrl());
             assertEquals("http://localhost:5173", research.portal().url());
             assertEquals(18889, research.server().port());
@@ -466,13 +469,15 @@ public class PropertiesBindingTest {
             assertEquals("200MB", research.spring().servlet().multipart().maxRequestSize());
             assertTrue(research.springdoc().apiDocs().enabled());
             assertEquals("none", research.springdoc().swaggerUi().docExpansion());
-            assertEquals("data-catalog-portal", research.springdoc().swaggerUi().oauth().clientId());
+            assertEquals(
+                    "data-catalog-portal",
+                    research.springdoc().swaggerUi().oauth().clientId());
             assertTrue(research.springdoc().swaggerUi().oauth().usePkceWithAuthorizationCodeGrant());
             assertEquals("alpha", research.springdoc().swaggerUi().operationsSorter());
             assertEquals("/swagger-ui.html", research.springdoc().swaggerUi().path());
             assertEquals("alpha", research.springdoc().swaggerUi().tagsSorter());
         }
-        
+
         @Test
         @DisplayName("services.rest properties")
         void testRestService() {
@@ -480,7 +485,7 @@ public class PropertiesBindingTest {
             assertFalse(rest.enabled());
             assertEquals(8082, rest.server().port());
         }
-        
+
         @Test
         @DisplayName("services.scheduler properties")
         void testSchedulerService() {
@@ -496,7 +501,7 @@ public class PropertiesBindingTest {
             assertEquals("DefaultComputeResourceSelectionPolicy", scheduler.selectionPolicy());
             assertEquals("ExponentialBackOffReScheduler", scheduler.reschedulerPolicy());
         }
-        
+
         @Test
         @DisplayName("services.telemetry properties")
         void testTelemetryService() {
@@ -504,7 +509,7 @@ public class PropertiesBindingTest {
             assertTrue(telemetry.enabled());
             assertEquals(9090, telemetry.server().port());
         }
-        
+
         @Test
         @DisplayName("services.thrift properties")
         void testThriftService() {
@@ -512,13 +517,13 @@ public class PropertiesBindingTest {
             assertTrue(thrift.enabled());
             assertEquals(8930, thrift.server().port());
         }
-        
+
         @Test
         @DisplayName("services.sharing properties")
         void testSharingService() {
             assertTrue(properties.services().sharing().enabled());
         }
-        
+
         @Test
         @DisplayName("services.registry properties")
         void testRegistryService() {

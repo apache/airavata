@@ -32,9 +32,9 @@ import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessErrorService;
@@ -263,10 +263,12 @@ public class ProcessErrorRepositoryTest extends TestBase {
         // Allow small timing differences (within 1 second) due to timestamp conversion and processing time
         assertTrue(
                 retrieved.getCreationTime() >= beforeCreation - 1000,
-                "Creation time should be set to current or later (expected >= " + beforeCreation + ", actual: " + retrieved.getCreationTime() + ")");
+                "Creation time should be set to current or later (expected >= " + beforeCreation + ", actual: "
+                        + retrieved.getCreationTime() + ")");
         assertTrue(
                 retrieved.getCreationTime() <= afterCreation + 1000,
-                "Creation time should be set to current or earlier (expected <= " + afterCreation + ", actual: " + retrieved.getCreationTime() + ")");
+                "Creation time should be set to current or earlier (expected <= " + afterCreation + ", actual: "
+                        + retrieved.getCreationTime() + ")");
     }
 
     @Test

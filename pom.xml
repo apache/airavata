@@ -395,11 +395,7 @@ under the License.
                 <artifactId>simpleclient_pushgateway</artifactId>
                 <version>0.16.0</version>
             </dependency>
-            <dependency>
-                <groupId>org.quartz-scheduler</groupId>
-                <artifactId>quartz</artifactId>
-                <version>2.5.0</version>
-            </dependency>
+            <!-- Quartz is managed by spring-boot-starter-quartz via spring-boot-dependencies BOM -->
             <dependency>
                 <groupId>com.hierynomus</groupId>
                 <artifactId>sshj</artifactId>
@@ -607,6 +603,27 @@ under the License.
     </dependencyManagement>
 
     <build>
+        <!-- Share application.properties from root level to all modules -->
+        <resources>
+            <!-- Include root-level shared main resources (application.properties) -->
+            <resource>
+                <directory>${session.executionRootDirectory}/src/main/resources</directory>
+            </resource>
+            <!-- Also include module-specific main resources if they exist -->
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <!-- Include root-level shared test resources (application.properties) -->
+            <testResource>
+                <directory>${session.executionRootDirectory}/src/test/resources</directory>
+            </testResource>
+            <!-- Also include module-specific test resources if they exist -->
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -643,7 +660,10 @@ under the License.
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <argLine>-Xmx1024m --add-opens java.base/java.lang=ALL-UNNAMED --add-opens jdk.unsupported/sun.misc=ALL-UNNAMED --enable-native-access=ALL-UNNAMED
                     </argLine>
-                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <!-- Global timeout: 10 minutes per forked process to prevent indefinite hangs -->
+                    <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
                     <systemPropertyVariables>
                     </systemPropertyVariables>
                     <excludes>

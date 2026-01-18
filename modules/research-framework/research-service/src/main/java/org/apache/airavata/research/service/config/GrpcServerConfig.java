@@ -34,7 +34,7 @@ import org.springframework.grpc.server.ServerBuilderCustomizer;
 /**
  * Configuration for gRPC server with keepalive settings.
  * Programmatically sets all keepalive properties to prevent NullPointerException.
- * 
+ *
  * This configuration is designed to load LAST, after all other services are initialized,
  * to ensure proper dependency ordering and avoid the Duration NPE in DefaultServerFactoryPropertyMapper.
  */
@@ -47,18 +47,13 @@ public class GrpcServerConfig {
     /**
      * Primary ServerBuilderCustomizer that sets all required gRPC properties.
      * Uses @DependsOn to ensure it loads after core infrastructure beans.
-     * 
+     *
      * @return customizer for NettyServerBuilder
      */
     @Bean
     @Primary
     @Order(Ordered.LOWEST_PRECEDENCE) // Configure last
-    @DependsOn({
-        "dataSource", 
-        "entityManagerFactory", 
-        "transactionManager",
-        "quartzScheduler"
-    })
+    @DependsOn({"dataSource", "entityManagerFactory", "transactionManager", "quartzScheduler"})
     public ServerBuilderCustomizer<NettyServerBuilder> keepAliveServerConfigurer() {
         return serverBuilder -> {
             serverBuilder

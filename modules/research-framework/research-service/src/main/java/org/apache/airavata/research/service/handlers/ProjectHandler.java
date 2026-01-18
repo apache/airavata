@@ -48,7 +48,9 @@ public class ProjectHandler {
     private final ProjectRepository projectRepository;
     private final ResourceRepository resourceRepository;
 
-    public ProjectHandler(@Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository, ResourceRepository resourceRepository) {
+    public ProjectHandler(
+            @Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository,
+            ResourceRepository resourceRepository) {
         this.projectRepository = projectRepository;
         this.resourceRepository = resourceRepository;
     }

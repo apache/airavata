@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.entities.expcatalog;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -70,7 +69,9 @@ public class ExperimentErrorEntity implements Serializable {
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     private String rootCauseErrorIdList;
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // Note: No cascade - this is a read-only relationship (insertable=false, updatable=false)
+    // The relationship is managed through the experimentId field
+    @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(
             name = "EXPERIMENT_ID",
             referencedColumnName = "EXPERIMENT_ID",
@@ -141,9 +142,8 @@ public class ExperimentErrorEntity implements Serializable {
         return experiment;
     }
 
-    public void setExperiment(ExperimentEntity experiment) {
-        this.experiment = experiment;
-    }
+    // Note: No setter for 'experiment' - the relationship is read-only (insertable=false, updatable=false)
+    // The experimentId field should be set instead, and Hibernate will resolve the relationship via the @JoinColumn
 
     @PrePersist
     void setCreationTime() {

@@ -20,6 +20,7 @@
 package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Integration tests for OrchestratorService.
@@ -70,20 +70,35 @@ import org.springframework.test.context.TestPropertySource;
         },
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "services.rest.enabled=false",
-            "services.thrift.enabled=true", // Enable services for OrchestratorService
+            "airavata.services.rest.enabled=false",
+            "airavata.services.thrift.enabled=true", // Enable services for OrchestratorService
             "spring.aop.proxy-target-class=true",
-            "flyway.enabled=false",
-            // Disable IAM/security components
-            "security.iam.enabled=false",
-            "security.manager.enabled=false",
-            "security.authzCache.enabled=false"
+            "airavata.flyway.enabled=false",
+            // Enable IAM/security components via Keycloak testcontainer
+            "airavata.security.manager.enabled=false",
+            "airavata.security.authzCache.enabled=true",
+            "airavata.rabbitmq.enabled=true"
         })
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @DisplayName("OrchestratorService Integration Tests")
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
+
+    /**
+     * Inject messaging container URLs into Spring properties before context loads.
+     */
+    @org.springframework.test.context.DynamicPropertySource
+    static void configureMessaging(org.springframework.test.context.DynamicPropertyRegistry registry) {
+        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
+        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
+        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+        String keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
+
+        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
+        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
+        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
+    }
 
     @Autowired(required = false)
     private OrchestratorService orchestratorService;
@@ -169,7 +184,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify messages are published on state changes")
     void shouldVerifyMessagesPublishedOnStateChanges() throws Exception {
-        if (orchestratorService == null || messagingFactory == null) {
+        if (orchestratorService == null || messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
             logger.warn("OrchestratorService or MessagingFactory not available, skipping test");
             return;
         }
@@ -201,7 +216,8 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
             // Manually update status to trigger message (since full launch requires more setup)
             ExperimentStatus status = new ExperimentStatus();
             status.setState(ExperimentState.VALIDATED);
-            status.setTimeOfStateChange(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
+            status.setTimeOfStateChange(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
+                    .getTime());
             registryService.updateExperimentStatus(status, experimentId);
 
             // Wait for message (with timeout)

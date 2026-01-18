@@ -23,14 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Test to verify AiravataApplication startup in Thrift mode (default).
@@ -52,13 +50,8 @@ import org.springframework.test.context.TestPropertySource;
             "flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(
         org.apache.airavata.config.AiravataServerProperties.class)
-@EnabledIfSystemProperty(
-        named = "test.startup.enabled",
-        matches = "true",
-        disabledReason = "Startup tests require full infrastructure - run with -Dtest.startup.enabled=true")
 public class ThriftModeStartupTest {
 
     @Configuration

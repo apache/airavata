@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Primary;
 /**
  * Spring AMQP configuration for RabbitMQ messaging.
  * Replaces manual RabbitMQ client configuration with Spring-managed beans.
- * 
+ *
  * Configure via application.properties:
  *   rabbitmq.enabled=true
  *   rabbitmq.broker-url=amqp://guest:guest@localhost:5672/develop
@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "airavata.rabbitmq", name = "enabled", havingValue = "true")
+@org.springframework.context.annotation.Profile("!test")
 public class RabbitMQConfig {
 
     private final AiravataServerProperties properties;
@@ -62,7 +63,7 @@ public class RabbitMQConfig {
     @Primary
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory factory = new CachingConnectionFactory();
-        
+
         // Parse broker URL from properties
         String brokerUrl = properties.rabbitmq().brokerUrl();
         if (brokerUrl != null && !brokerUrl.isEmpty()) {
@@ -83,10 +84,10 @@ public class RabbitMQConfig {
                 factory.setPort(5672);
             }
         }
-        
+
         factory.setChannelCacheSize(25);
         factory.setConnectionCacheSize(5);
-        
+
         return factory;
     }
 
@@ -118,14 +119,17 @@ public class RabbitMQConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter);
-        factory.setPrefetchCount(properties.rabbitmq().prefetchCount() > 0 ? properties.rabbitmq().prefetchCount() : 10);
+        factory.setPrefetchCount(
+                properties.rabbitmq().prefetchCount() > 0
+                        ? properties.rabbitmq().prefetchCount()
+                        : 10);
         factory.setConcurrentConsumers(1);
         factory.setMaxConcurrentConsumers(5);
         return factory;
     }
 
     // Exchange declarations - create based on configured exchange names
-    
+
     @Bean
     public TopicExchange statusExchange() {
         return new TopicExchange(properties.rabbitmq().statusExchangeName(), true, false);

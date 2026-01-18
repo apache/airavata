@@ -64,7 +64,9 @@ public class ResearchHubHandler {
     private int maxRHubSessions;
 
     public ResearchHubHandler(
-            ProjectHandler projectHandler, SessionHandler sessionHandler, @Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository) {
+            ProjectHandler projectHandler,
+            SessionHandler sessionHandler,
+            @Qualifier("researchCatalogProjectRepository") ProjectRepository projectRepository) {
         this.projectHandler = projectHandler;
         this.sessionHandler = sessionHandler;
     }

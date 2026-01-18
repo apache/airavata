@@ -20,6 +20,10 @@
 package org.apache.airavata.messaging.rabbitmq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import java.util.function.Function;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.messaging.MessageContext;
@@ -37,7 +41,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
  */
 public class RabbitMQPublisher implements Publisher {
     private static final Logger log = LoggerFactory.getLogger(RabbitMQPublisher.class);
-    
+
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
     private final RabbitMQProperties properties;
@@ -46,9 +50,11 @@ public class RabbitMQPublisher implements Publisher {
     /**
      * Constructor with Spring-managed RabbitTemplate.
      */
-    public RabbitMQPublisher(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, 
-                             RabbitMQProperties properties, 
-                             Function<MessageContext, String> routingKeySupplier) {
+    public RabbitMQPublisher(
+            RabbitTemplate rabbitTemplate,
+            ObjectMapper objectMapper,
+            RabbitMQProperties properties,
+            Function<MessageContext, String> routingKeySupplier) {
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
         this.properties = properties;
@@ -58,8 +64,7 @@ public class RabbitMQPublisher implements Publisher {
     /**
      * Constructor with Spring-managed RabbitTemplate without routing key supplier.
      */
-    public RabbitMQPublisher(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, 
-                             RabbitMQProperties properties) {
+    public RabbitMQPublisher(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, RabbitMQProperties properties) {
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
         this.properties = properties;
@@ -92,8 +97,7 @@ public class RabbitMQPublisher implements Publisher {
     public void publish(MessageContext messageContext) throws AiravataException {
         try {
             MessageContext.Wrapper jsonWrapper = new MessageContext.Wrapper(messageContext);
-            String routingKey = routingKeySupplier != null ? 
-                    routingKeySupplier.apply(messageContext) : "";
+            String routingKey = routingKeySupplier != null ? routingKeySupplier.apply(messageContext) : "";
             byte[] jsonMessageBody = objectMapper.writeValueAsBytes(jsonWrapper);
             send(jsonMessageBody, routingKey);
         } catch (Exception e) {
@@ -126,7 +130,7 @@ public class RabbitMQPublisher implements Publisher {
                 MessageProperties messageProperties = new MessageProperties();
                 messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
                 messageProperties.setDeliveryMode(org.springframework.amqp.core.MessageDeliveryMode.PERSISTENT);
-                
+
                 Message message = new Message(jsonMessageBody, messageProperties);
                 rabbitTemplate.send(properties.getExchangeName(), routingKey, message);
             } else {
@@ -142,13 +146,30 @@ public class RabbitMQPublisher implements Publisher {
 
     /**
      * Legacy send method using raw RabbitMQ client.
-     * Used during migration for backward compatibility.
+     * Used when Spring AMQP RabbitTemplate is not available.
      */
     private void sendLegacy(byte[] jsonMessageBody, String routingKey) throws Exception {
-        // This is a simplified version - in production, this would use the raw client
-        log.warn("Using legacy RabbitMQ client - consider migrating to Spring AMQP");
-        throw new UnsupportedOperationException(
-                "Legacy RabbitMQ client not available. Use Spring AMQP RabbitTemplate.");
+        log.debug("Using legacy RabbitMQ client for publishing");
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setUri(properties.getBrokerUrl());
+
+        try (Connection connection = factory.newConnection();
+                Channel channel = connection.createChannel()) {
+            // Declare exchange (idempotent operation)
+            String exchangeType = properties.getExchangeType() != null ? properties.getExchangeType() : "topic";
+            channel.exchangeDeclare(properties.getExchangeName(), exchangeType, properties.isDurable());
+
+            // Build message properties
+            AMQP.BasicProperties.Builder propsBuilder = new AMQP.BasicProperties.Builder()
+                    .contentType("application/json")
+                    .deliveryMode(properties.isDurable() ? 2 : 1); // 2 = persistent
+
+            // Publish message
+            channel.basicPublish(properties.getExchangeName(), routingKey, propsBuilder.build(), jsonMessageBody);
+
+            log.debug(
+                    "Published message to exchange={}, routingKey={}", properties.getExchangeName(), routingKey);
+        }
     }
 
     /**

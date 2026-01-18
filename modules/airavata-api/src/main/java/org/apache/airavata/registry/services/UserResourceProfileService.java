@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.registry.services;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.UserComputeResourcePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.UserComputeResourcePreferencePK;
 import org.apache.airavata.registry.entities.appcatalog.UserResourceProfileEntity;

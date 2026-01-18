@@ -51,7 +51,10 @@ import org.springframework.stereotype.Component;
 public class DBEventRetryConsumer implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DBEventRetryConsumer.class);
-    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
+
+    private static ObjectMapper objectMapper() {
+        return JacksonConfig.getGlobalMapper();
+    }
 
     private final Dispatcher dispatcher;
     private final MessagingFactory messagingFactory;

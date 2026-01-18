@@ -20,6 +20,7 @@
 package org.apache.airavata.service.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -55,7 +56,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -74,30 +74,36 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "airavata.flyway.enabled=false",
-            "airavata.security.iam.enabled=false",
             "airavata.security.manager.enabled=false",
-            "airavata.security.authzCache.enabled=false",
+            "airavata.security.authzCache.enabled=true",
+            "airavata.rabbitmq.enabled=true",
         })
-@org.junit.jupiter.api.condition.EnabledIf("isMessagingContainerRunning")
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional("expCatalogTransactionManager")
 public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationTestBase {
 
     /**
-     * Check if messaging containers are available (not via SSH tunnel).
+     * Inject messaging container URLs into Spring properties before context loads.
      */
-    static boolean isMessagingContainerRunning() {
-        return !org.apache.airavata.config.TestcontainersConfig.shouldUseExistingContainers();
-    }
+    @org.springframework.test.context.DynamicPropertySource
+    static void configureMessaging(org.springframework.test.context.DynamicPropertyRegistry registry) {
+        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
+        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
+        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+        String keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
 
-    @org.junit.jupiter.api.BeforeAll
-    public static void setupMessagingServices() {
-        // Initialize Kafka and RabbitMQ containers via TestcontainersConfig
-        org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
+        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("airavata.rabbitmq.experiment-exchange-name", () -> "experiment_exchange");
+        registry.add("airavata.rabbitmq.experiment-launch-queue-name", () -> "experiment.launch.queue");
+        registry.add("airavata.rabbitmq.process-exchange-name", () -> "process_exchange");
+        registry.add("airavata.rabbitmq.status-exchange-name", () -> "status_exchange");
+        registry.add("airavata.rabbitmq.db-event-exchange-name", () -> "dbevent_exchange");
+        registry.add("airavata.rabbitmq.durable-queue", () -> "false");
+        registry.add("airavata.rabbitmq.prefetch-count", () -> "200");
+        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
+        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
     }
 
     @Configuration
@@ -108,10 +114,13 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
                 "org.apache.airavata.registry.repositories",
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
-                "org.apache.airavata.common.utils"
+                "org.apache.airavata.common.utils",
+                "org.apache.airavata.messaging"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DataMovementStateMachineIntegrationTest.class);
 
     private final GatewayService gatewayService;
     private final ProjectService projectService;
@@ -326,7 +335,8 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
     @Test
     @DisplayName("Should verify messages are published for data staging state transitions")
     void shouldVerifyMessagesPublishedForDataStaging() throws Exception {
-        if (messagingFactory == null) {
+        if (messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
+            logger.warn("RabbitMQ not available, skipping messaging verification");
             return;
         }
 
@@ -353,7 +363,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             ProcessStatus inputStaging =
                     StateMachineTestUtils.createProcessStatus(ProcessState.INPUT_DATA_STAGING, "Input data staging");
             processStatusService.addProcessStatus(inputStaging, testHierarchy.processId);
-            
+
             ProcessStatusChangeEvent event1 = new ProcessStatusChangeEvent(ProcessState.INPUT_DATA_STAGING, identifier);
             MessageContext msgCtx1 = new MessageContext(
                     event1,
@@ -365,7 +375,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
 
             ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
             processStatusService.addProcessStatus(executing, testHierarchy.processId);
-            
+
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
                     event2,
@@ -378,7 +388,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             ProcessStatus outputStaging =
                     StateMachineTestUtils.createProcessStatus(ProcessState.OUTPUT_DATA_STAGING, "Output data staging");
             processStatusService.addProcessStatus(outputStaging, testHierarchy.processId);
-            
+
             ProcessStatusChangeEvent event3 =
                     new ProcessStatusChangeEvent(ProcessState.OUTPUT_DATA_STAGING, identifier);
             MessageContext msgCtx3 = new MessageContext(

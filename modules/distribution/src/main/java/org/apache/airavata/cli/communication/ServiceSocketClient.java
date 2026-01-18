@@ -91,7 +91,8 @@ public class ServiceSocketClient {
             if (!connected) {
                 // Wait for connection with timeout
                 long startTime = AiravataUtils.getUniqueTimestamp().getTime();
-                while (!connected && (AiravataUtils.getUniqueTimestamp().getTime() - startTime) < CONNECTION_TIMEOUT_MS) {
+                while (!connected
+                        && (AiravataUtils.getUniqueTimestamp().getTime() - startTime) < CONNECTION_TIMEOUT_MS) {
                     connected = channel.finishConnect();
                     if (!connected) {
                         try {

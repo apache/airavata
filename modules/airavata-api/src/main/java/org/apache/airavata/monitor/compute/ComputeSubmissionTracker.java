@@ -38,7 +38,8 @@ public class ComputeSubmissionTracker {
      */
     public void recordSubmission(String computeResourceId) {
         if (computeResourceId != null && !computeResourceId.isEmpty()) {
-            lastSubmissionTimes.put(computeResourceId, AiravataUtils.getUniqueTimestamp().getTime());
+            lastSubmissionTimes.put(
+                    computeResourceId, AiravataUtils.getUniqueTimestamp().getTime());
         }
     }
 

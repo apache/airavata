@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.cli.handlers;
 
 import java.io.IOException;
@@ -74,9 +74,7 @@ public class ServiceHandler {
     }
 
     @Autowired
-    public ServiceHandler(
-            AiravataServerProperties properties,
-            ServiceRegistry serviceRegistry) {
+    public ServiceHandler(AiravataServerProperties properties, ServiceRegistry serviceRegistry) {
         this.properties = properties;
         this.serviceRegistry = serviceRegistry;
     }
@@ -158,9 +156,11 @@ public class ServiceHandler {
                 case "pre-workflow-manager" -> properties.services().prewm().enabled();
                 case "parser-workflow-manager" -> properties.services().parser().enabled();
                 case "post-workflow-manager" -> properties.services().postwm().enabled();
-                case "realtime-monitor" -> properties.services().monitor().realtime().enabled();
+                case "realtime-monitor" ->
+                    properties.services().monitor().realtime().enabled();
                 case "email-monitor" -> properties.services().monitor().email().enabled();
-                case "compute-monitor" -> properties.services().monitor().compute().enabled();
+                case "compute-monitor" ->
+                    properties.services().monitor().compute().enabled();
                 case "research-service" -> properties.services().research().enabled();
                 case "agent-service" -> properties.services().agent().enabled();
                 case "file-service" -> properties.services().fileserver().enabled();

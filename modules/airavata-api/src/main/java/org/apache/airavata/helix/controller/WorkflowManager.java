@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.controller;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.MessageType;
@@ -105,14 +104,20 @@ public abstract class WorkflowManager extends ServerLifecycle {
                 String clusterName = properties.helix().cluster().name();
                 logger.info("Using default cluster " + clusterName + " to submit workflows");
                 workflowOperators.add(new WorkflowOperator(
-                        clusterName, workflowManagerName, properties.zookeeper().server().connection(), taskUtil));
+                        clusterName,
+                        workflowManagerName,
+                        properties.zookeeper().server().connection(),
+                        taskUtil));
             } else {
                 logger.info("Load balancing workflows among existing clusters");
                 List<String> clusters = zkHelixAdmin.getClusters();
                 logger.info("Total available clusters " + clusters.size());
                 for (String cluster : clusters) {
                     workflowOperators.add(new WorkflowOperator(
-                            cluster, workflowManagerName, properties.zookeeper().server().connection(), taskUtil));
+                            cluster,
+                            workflowManagerName,
+                            properties.zookeeper().server().connection(),
+                            taskUtil));
                 }
             }
         } catch (Exception e) {

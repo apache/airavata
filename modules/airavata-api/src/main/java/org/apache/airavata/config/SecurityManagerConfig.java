@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Profile;
  * Spring configuration for SecurityManager.
  * The AiravataSecurityManager bean is provided by the implementation class (e.g., KeyCloakSecurityManager)
  * which is annotated with @Component. Spring will automatically inject it where needed.
- * 
+ *
  * <p>Loads when an AiravataSecurityManager bean is present (e.g., KeyCloakSecurityManager).
  */
 @Configuration

@@ -20,7 +20,6 @@
 package org.apache.airavata.helix.controller;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -393,7 +392,8 @@ public class PreWorkflowManager extends WorkflowManager {
                     // updating the process status
                     ProcessStatus status = new ProcessStatus();
                     status.setState(ProcessState.STARTED);
-                    status.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp().getTime());
+                    status.setTimeOfStateChange(
+                            AiravataUtils.getUniqueTimestamp().getTime());
                     publishProcessStatus(processId, experimentId, gateway, ProcessState.STARTED);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {

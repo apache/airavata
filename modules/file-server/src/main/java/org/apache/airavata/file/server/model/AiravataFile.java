@@ -30,8 +30,7 @@ public class AiravataFile {
 
     public static AiravataFile fromMetadata(FileMetadata metadata) {
         long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
-        return new AiravataFile(
-                metadata.getName(), metadata.getSize(), currentTime, currentTime);
+        return new AiravataFile(metadata.getName(), metadata.getSize(), currentTime, currentTime);
     }
 
     public AiravataFile(String fileName, long fileSize, long createdTime, long updatedTime) {

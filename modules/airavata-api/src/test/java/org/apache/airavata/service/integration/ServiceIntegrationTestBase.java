@@ -19,19 +19,14 @@
 */
 package org.apache.airavata.service.integration;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.security.UserInfo;
+import java.util.concurrent.TimeUnit;
 import org.apache.airavata.security.model.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,83 +45,74 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
-            // Disable IAM/security components that require Keycloak
-            "airavata.security.iam.enabled=false",
-            "airavata.security.iam.server-url=",
             "airavata.security.manager.enabled=false",
-            "airavata.security.authzCache.enabled=false",
-            // Disable Flyway in tests - TestcontainersConfig handles migrations
+            "airavata.security.authzCache.enabled=true",
             "airavata.flyway.enabled=false",
-            // Enable services for conditional beans
             "airavata.services.rest.enabled=false",
-            "airavata.services.thrift.enabled=true"
+            "airavata.services.thrift.enabled=true",
+            "airavata.kafka.enabled=false",
+            "airavata.rabbitmq.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
+@Timeout(value = 2, unit = TimeUnit.MINUTES)
 public abstract class ServiceIntegrationTestBase {
 
-    protected static final String TEST_GATEWAY_ID = "test-gateway";
-    protected static final String TEST_USERNAME = "test-user";
-    protected static final String TEST_ACCESS_TOKEN = "test-access-token";
+    protected static final String TEST_GATEWAY_ID = "default";
+    protected static final String TEST_USERNAME = "default-admin";
+
+    private static String keycloakUrl;
 
     protected AuthzToken testAuthzToken;
 
     @org.springframework.beans.factory.annotation.Autowired
     protected org.apache.airavata.config.AiravataServerProperties properties;
 
-    /**
-     * Use @DynamicPropertySource to inject Testcontainers URLs before Spring context loads.
-     * This ensures properties are available before any bean creation, including MessagingFactory.
-     */
     @org.springframework.test.context.DynamicPropertySource
     static void configureProperties(org.springframework.test.context.DynamicPropertyRegistry registry) {
-        // Initialize Testcontainers services and get URLs
         String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
         String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
         String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-        
-        // Register properties - these will be available before Spring context loads
+        keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
+
         registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
         registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("airavata.rabbitmq.experiment-exchange-name", () -> "experiment_exchange");
+        registry.add("airavata.rabbitmq.experiment-launch-queue-name", () -> "experiment.launch.queue");
+        registry.add("airavata.rabbitmq.process-exchange-name", () -> "process_exchange");
+        registry.add("airavata.rabbitmq.status-exchange-name", () -> "status_exchange");
+        registry.add("airavata.rabbitmq.db-event-exchange-name", () -> "dbevent_exchange");
+        registry.add("airavata.rabbitmq.durable-queue", () -> "false");
+        registry.add("airavata.rabbitmq.prefetch-count", () -> "200");
         registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
+
+        // Override IAM server URL with Keycloak testcontainer URL
+        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
+        System.setProperty("airavata.security.iam.server-url", keycloakUrl);
     }
 
     @BeforeEach
     public void setUpBase() {
-        testAuthzToken = createTestAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
-        
-        // Log test properties for debugging (AiravataServerProperties is immutable, use @DynamicPropertySource instead)
+        testAuthzToken = createRealAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
         if (properties != null) {
             org.apache.airavata.config.TestPropertiesHelper.logProperties(properties);
         }
     }
 
-    /**
-     * Creates a test AuthzToken with the specified gateway ID and username.
-     */
-    protected AuthzToken createTestAuthzToken(String gatewayId, String username) {
-        AuthzToken authzToken = new AuthzToken();
-        authzToken.setAccessToken(TEST_ACCESS_TOKEN);
-        Map<String, String> claimsMap = new HashMap<>();
-        claimsMap.put(Constants.GATEWAY_ID, gatewayId);
-        claimsMap.put(Constants.USER_NAME, username);
-        authzToken.setClaimsMap(claimsMap);
-        return authzToken;
+    protected AuthzToken createRealAuthzToken(String gatewayId, String username) {
+        return org.apache.airavata.config.KeycloakTokenHelper.createRealAuthzToken(
+                keycloakUrl, properties, gatewayId, username);
     }
 
+    /** @deprecated Use createRealAuthzToken instead */
+    @Deprecated
+    protected AuthzToken createTestAuthzToken(String gatewayId, String username) {
+        return createRealAuthzToken(gatewayId, username);
+    }
 
-    /**
-     * Test configuration that enables component scanning for services.
-     * Infrastructure components are automatically excluded via @Profile("!test").
-     * 
-     * Repository configuration is handled by nested @Configuration classes,
-     * each specifying the correct EntityManagerFactory and TransactionManager
-     * for their respective catalogs, matching the structure in JpaConfig.
-     */
     @Configuration
-    // application.properties is auto-loaded by Spring Boot
+    @org.springframework.context.annotation.PropertySource("classpath:application.properties")
     @ComponentScan(
             basePackages = {
                 "org.apache.airavata.registry.services",
@@ -145,198 +131,42 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.credential.services",
                 "org.apache.airavata.credential.utils",
                 "org.apache.airavata.messaging",
-                "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security"
             })
     public static class TestConfiguration {
-        
-        // Spring Data JPA Repository Configuration for each persistence unit
-        // Each configuration uses its own EntityManagerFactory and TransactionManager
-        // These beans are created by JpaConfig which is included in @SpringBootTest classes
-        
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.profile.repositories",
-                entityManagerFactoryRef = "profileServiceEntityManagerFactory",
-                transactionManagerRef = "profileServiceTransactionManager",
-                enableDefaultTransactions = true,
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        @org.springframework.context.annotation.DependsOn({"profileServiceEntityManagerFactoryBean"})
-        static class ProfileServiceJpaRepositoriesConfig {}
 
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.registry.repositories.appcatalog",
-                entityManagerFactoryRef = "appCatalogEntityManagerFactory",
-                transactionManagerRef = "appCatalogTransactionManager",
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class AppCatalogJpaRepositoriesConfig {}
+        /**
+         * Manually bind AiravataServerProperties from Environment using Spring Boot's Binder.
+         * This ensures all nested records are properly constructed from properties.
+         */
+        @Bean
+        @org.springframework.context.annotation.Primary
+        public org.apache.airavata.config.AiravataServerProperties airavataServerProperties(
+                org.springframework.core.env.Environment environment) {
+            return org.springframework.boot.context.properties.bind.Binder.get(environment)
+                    .bind("airavata", org.apache.airavata.config.AiravataServerProperties.class)
+                    .orElseThrow(
+                            () -> new IllegalStateException("Failed to bind AiravataServerProperties from environment"));
+        }
 
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.registry.repositories.replicacatalog",
-                entityManagerFactoryRef = "replicaCatalogEntityManagerFactory",
-                transactionManagerRef = "replicaCatalogTransactionManager",
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class ReplicaCatalogJpaRepositoriesConfig {}
-
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.registry.repositories.workflowcatalog",
-                entityManagerFactoryRef = "workflowCatalogEntityManagerFactory",
-                transactionManagerRef = "workflowCatalogTransactionManager",
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class WorkflowCatalogJpaRepositoriesConfig {}
-
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.sharing.repositories",
-                entityManagerFactoryRef = "sharingRegistryEntityManagerFactory",
-                transactionManagerRef = "sharingRegistryTransactionManager",
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class SharingRegistryJpaRepositoriesConfig {}
-
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.credential.repositories",
-                entityManagerFactoryRef = "credentialStoreEntityManagerFactory",
-                transactionManagerRef = "credentialStoreTransactionManager",
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class CredentialStoreJpaRepositoriesConfig {}
-
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.research.service.model.repo",
-                entityManagerFactoryRef = "researchCatalogEntityManagerFactory",
-                transactionManagerRef = "researchCatalogTransactionManager",
-                considerNestedRepositories = true,
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class ResearchCatalogJpaRepositoriesConfig {}
-
-        // Register expcatalog LAST so its UserRepository (marked as @Primary) overrides sharing's UserRepository
-        // This must be the last @Configuration class to ensure expcatalog repository is the final bean
-        @Configuration
-        @org.springframework.data.jpa.repository.config.EnableJpaRepositories(
-                basePackages = "org.apache.airavata.registry.repositories.expcatalog",
-                entityManagerFactoryRef = "expCatalogEntityManagerFactory",
-                transactionManagerRef = "expCatalogTransactionManager",
-                considerNestedRepositories = true,
-                repositoryImplementationPostfix = "Impl",
-                bootstrapMode = org.springframework.data.repository.config.BootstrapMode.LAZY)
-        static class ExpCatalogJpaRepositoriesConfig {}
         @Bean
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
                 org.apache.airavata.config.AiravataServerProperties properties) {
             return new org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback(properties);
         }
 
-        // ThriftToDomainMapperRegistry removed - all RabbitMQ messages use domain models (never Thrift)
-
+        /**
+         * Explicitly create MessagingFactory bean to ensure proper bean ordering.
+         * This ensures ConnectionFactory is available before MessagingFactory is created.
+         */
         @Bean
-        @Primary
-        public org.apache.airavata.security.AiravataSecurityManager airavataSecurityManager() {
-            return new org.apache.airavata.security.AiravataSecurityManager() {
-                @Override
-                public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData)
-                        throws AiravataSecurityException {
-                    return true;
-                }
-
-                @Override
-                public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId)
-                        throws AiravataSecurityException {
-                    var token = new AuthzToken("test-service-token");
-                    var claims = new HashMap<String, String>();
-                    claims.put("gatewayId", gatewayId);
-                    token.setClaimsMap(claims);
-                    return token;
-                }
-
-                @Override
-                public UserInfo getUserInfoFromAuthzToken(AuthzToken authzToken) throws AiravataSecurityException {
-                    // Extract from token if available, otherwise use defaults
-                    String userId = "test-user";
-                    String gatewayId = "test-gateway";
-                    if (authzToken != null && authzToken.getClaimsMap() != null) {
-                        userId = authzToken.getClaimsMap().getOrDefault("userName", userId);
-                        gatewayId = authzToken.getClaimsMap().getOrDefault("gatewayId", gatewayId);
-                    }
-                    org.apache.airavata.security.UserInfo userInfo = new org.apache.airavata.security.UserInfo();
-                    userInfo.setUsername(userId);
-                    userInfo.setSub(gatewayId + "@" + userId);
-                    userInfo.setEmailAddress(userId + "@example.com");
-                    userInfo.setFirstName("Test");
-                    userInfo.setLastName("User");
-                    return userInfo;
-                }
-            };
-        }
-
-        @Bean(name = "testIamAdminService")
-        @Primary
-        @org.springframework.boot.autoconfigure.condition.ConditionalOnBean({
-            org.apache.airavata.profile.repositories.UserProfileRepository.class,
-            org.apache.airavata.service.registry.RegistryService.class
-        })
-        public org.apache.airavata.service.security.IamAdminService testIamAdminService(
+        @org.springframework.context.annotation.Primary
+        public org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory(
                 org.apache.airavata.config.AiravataServerProperties properties,
-                org.apache.airavata.profile.repositories.UserProfileRepository userProfileRepository,
-                org.apache.airavata.profile.mappers.UserProfileMapper userProfileMapper,
-                org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-                org.apache.airavata.service.registry.RegistryService registryService,
-                org.apache.airavata.messaging.Dispatcher dbEventDispatcher) {
-            // Create a mock implementation that extends IamAdminService behavior
-            return new org.apache.airavata.service.security.IamAdminService(
-                    properties,
-                    userProfileRepository,
-                    userProfileMapper,
-                    credentialStoreService,
-                    registryService,
-                    dbEventDispatcher) {
-                @Override
-                public boolean isUsernameAvailable(AuthzToken authzToken, String username)
-                        throws org.apache.airavata.profile.exception.IamAdminServicesException {
-                    // Return true for test purposes
-                    return true;
-                }
-
-                @Override
-                public boolean registerUser(
-                        AuthzToken authzToken,
-                        String username,
-                        String emailAddress,
-                        String firstName,
-                        String lastName,
-                        String newPassword)
-                        throws org.apache.airavata.profile.exception.IamAdminServicesException {
-                    // Return true for test purposes
-                    return true;
-                }
-
-                @Override
-                public java.util.List<org.apache.airavata.common.model.UserProfile> findUsers(
-                        AuthzToken authzToken, String email, String userId)
-                        throws org.apache.airavata.profile.exception.IamAdminServicesException {
-                    // Return empty list for test purposes
-                    return java.util.Collections.emptyList();
-                }
-
-                @Override
-                public org.apache.airavata.common.model.Gateway setUpGateway(
-                        AuthzToken authzToken, org.apache.airavata.common.model.Gateway gateway)
-                        throws org.apache.airavata.profile.exception.IamAdminServicesException,
-                                org.apache.airavata.credential.exception.CredentialStoreException {
-                    // Return gateway as-is for test purposes
-                    return gateway;
-                }
-            };
+                @org.springframework.beans.factory.annotation.Autowired(required = false)
+                        org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
+            return new org.apache.airavata.messaging.rabbitmq.MessagingFactory(properties, connectionFactory);
         }
     }
 }

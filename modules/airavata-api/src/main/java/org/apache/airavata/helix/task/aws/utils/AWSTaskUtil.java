@@ -21,6 +21,7 @@ package org.apache.airavata.helix.task.aws.utils;
 
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.common.model.AwsComputeResourcePreference;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.helix.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.task.base.TaskContext;
@@ -28,7 +29,6 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;

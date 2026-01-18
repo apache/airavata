@@ -35,8 +35,6 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.StringTokenizer;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;

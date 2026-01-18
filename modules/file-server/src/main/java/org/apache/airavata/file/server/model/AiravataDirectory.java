@@ -33,7 +33,10 @@ public class AiravataDirectory {
     private List<AiravataDirectory> innerDirectories = new ArrayList<>();
 
     public static AiravataDirectory fromMetadata(FileMetadata metadata) {
-        return new AiravataDirectory(metadata.getName(), metadata.getSize(), AiravataUtils.getUniqueTimestamp().getTime());
+        return new AiravataDirectory(
+                metadata.getName(),
+                metadata.getSize(),
+                AiravataUtils.getUniqueTimestamp().getTime());
     }
 
     public AiravataDirectory(String directoryName, long size, long createdTime) {

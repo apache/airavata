@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(
@@ -62,7 +61,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
             "services.parser.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(
         org.apache.airavata.config.AiravataServerProperties.class)
 public class GatewayGroupsInitializerTest {

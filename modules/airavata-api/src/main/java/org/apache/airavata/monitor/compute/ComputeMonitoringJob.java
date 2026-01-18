@@ -230,7 +230,8 @@ public class ComputeMonitoringJob extends ComputeResourceMonitor implements Job 
                 queueStatusModel.setRunningJobs(runningJobs);
                 queueStatusModel.setQueuedJobs(pendingJobs);
                 queueStatusModels.add(queueStatusModel);
-                queueStatusModel.setTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
+                queueStatusModel.setTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
+                        .getTime());
             }
             registryService.registerQueueStatuses(queueStatusModels);
         }

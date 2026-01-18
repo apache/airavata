@@ -37,17 +37,17 @@ import org.springframework.context.annotation.Profile;
 public class KeycloakTestConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTestConfig.class);
-    
+
     // Devcontainer Keycloak settings (from docker-compose.yml)
     private static final String KEYCLOAK_HOST = System.getProperty("test.keycloak.host", "localhost");
     private static final int KEYCLOAK_PORT = Integer.parseInt(System.getProperty("test.keycloak.port", "18080"));
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
-    
+
     // Testcontainers fallback
     private static final String KEYCLOAK_VERSION = "26.0";
     private static KeycloakContainer keycloakContainer;
-    
+
     // Cache for devcontainer detection
     private static volatile Boolean useDevcontainer = null;
     private static String cachedServerUrl = null;
@@ -59,7 +59,7 @@ public class KeycloakTestConfig {
         if (useDevcontainer != null) {
             return useDevcontainer;
         }
-        
+
         // Try Keycloak realms endpoint (works for all Keycloak versions)
         try {
             String realmsUrl = String.format("http://%s:%d/realms/master", KEYCLOAK_HOST, KEYCLOAK_PORT);
@@ -70,7 +70,7 @@ public class KeycloakTestConfig {
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             conn.disconnect();
-            
+
             if (responseCode == 200) {
                 useDevcontainer = true;
                 cachedServerUrl = String.format("http://%s:%d", KEYCLOAK_HOST, KEYCLOAK_PORT);
@@ -80,7 +80,7 @@ public class KeycloakTestConfig {
         } catch (Exception e) {
             logger.debug("Keycloak not accessible at {}:{}: {}", KEYCLOAK_HOST, KEYCLOAK_PORT, e.getMessage());
         }
-        
+
         useDevcontainer = false;
         return false;
     }
@@ -93,7 +93,7 @@ public class KeycloakTestConfig {
         if (isKeycloakAccessible()) {
             return true;
         }
-        
+
         // Then check if Docker is available for Testcontainers
         try {
             org.testcontainers.DockerClientFactory.instance().client();
@@ -117,7 +117,7 @@ public class KeycloakTestConfig {
             // If accessible but URL not cached, construct it
             return String.format("http://%s:%d", KEYCLOAK_HOST, KEYCLOAK_PORT);
         }
-        
+
         // Fall back to Testcontainers
         KeycloakContainer container = getKeycloakContainer();
         if (container != null) {
@@ -135,7 +135,7 @@ public class KeycloakTestConfig {
             logger.info("Using devcontainer Keycloak, skipping Testcontainers");
             return null;
         }
-        
+
         if (keycloakContainer == null || !keycloakContainer.isRunning()) {
             logger.info("Starting Testcontainers Keycloak...");
             keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:" + KEYCLOAK_VERSION)
@@ -186,10 +186,11 @@ public class KeycloakTestConfig {
             conn.setDoOutput(true);
             conn.setConnectTimeout(3000);
             conn.setReadTimeout(3000);
-            
-            String formData = "grant_type=password&client_id=admin-cli&username=" + ADMIN_USERNAME + "&password=" + ADMIN_PASSWORD;
+
+            String formData = "grant_type=password&client_id=admin-cli&username=" + ADMIN_USERNAME + "&password="
+                    + ADMIN_PASSWORD;
             conn.getOutputStream().write(formData.getBytes());
-            
+
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 logger.debug("admin-cli direct access grants are enabled");
@@ -197,8 +198,10 @@ public class KeycloakTestConfig {
             } else {
                 logger.warn("admin-cli direct access grants are NOT enabled. Response code: {}", responseCode);
                 logger.warn("To enable: Restart Keycloak container to import realm-master.json, or run:");
-                logger.warn("  docker exec keycloak /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:18080 --realm master --user admin --password admin");
-                logger.warn("  docker exec keycloak /opt/keycloak/bin/kcadm.sh update clients/master -s '{\"directAccessGrantsEnabled\":true}' -r master");
+                logger.warn(
+                        "  docker exec keycloak /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:18080 --realm master --user admin --password admin");
+                logger.warn(
+                        "  docker exec keycloak /opt/keycloak/bin/kcadm.sh update clients/master -s '{\"directAccessGrantsEnabled\":true}' -r master");
                 return false;
             }
         } catch (Exception e) {
@@ -215,52 +218,65 @@ public class KeycloakTestConfig {
     @ConditionalOnMissingBean(AiravataServerProperties.class)
     public AiravataServerProperties keycloakAiravataServerProperties() {
         String serverUrl = getKeycloakServerUrl();
-        
+
         // Check if admin-cli direct access grants are enabled (for devcontainer)
         if (isKeycloakAccessible()) {
             isAdminCliDirectAccessGrantsEnabled(serverUrl);
         }
-        
+
         var iam = new AiravataServerProperties.Security.Iam(
-            true,  // enabled
-            serverUrl,
-            "airavata-client",  // default client ID
-            "secret",  // will be configured per test
-            new AiravataServerProperties.Security.Iam.Super(ADMIN_USERNAME, ADMIN_PASSWORD)
-        );
-        
+                true, // enabled
+                serverUrl,
+                "airavata-client", // default client ID
+                "secret", // will be configured per test
+                new AiravataServerProperties.Security.Iam.Super(ADMIN_USERNAME, ADMIN_PASSWORD));
+
         var security = new AiravataServerProperties.Security(
-            null,  // tls
-            null,  // authzCache
-            null,  // authentication
-            iam,
-            null   // vault
-        );
-        
+                null, // tls
+                null, // authzCache
+                null, // authentication
+                iam,
+                null // vault
+                );
+
         var services = new AiravataServerProperties.Services(
-            new AiravataServerProperties.Services.Thrift(false, null),
-            new AiravataServerProperties.Services.Rest(false, null),
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
-        );
-        
+                new AiravataServerProperties.Services.Thrift(false, null),
+                new AiravataServerProperties.Services.Rest(false, null),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
         return new AiravataServerProperties(
-            "",                                              // home
-            "default",                                       // defaultGateway
-            true,                                            // validationEnabled
-            null,                                            // sharing
-            1000,                                            // inMemoryCacheSize
-            "/tmp/airavata",                                 // localDataLocation
-            1073741824,                                      // maxArchiveSize
-            null,                                            // streamingTransfer
-            null,                                            // hibernate
-            null,                                            // database
-            security,                                        // security
-            null,                                            // rabbitmq
-            null,                                            // kafka
-            null,                                            // zookeeper
-            null,                                            // helix
-            null,                                            // flyway
-            services                                         // services
-        );
+                "", // home
+                "default", // defaultGateway
+                true, // validationEnabled
+                null, // sharing
+                1000, // inMemoryCacheSize
+                "/tmp/airavata", // localDataLocation
+                1073741824, // maxArchiveSize
+                null, // streamingTransfer
+                null, // hibernate
+                null, // database
+                security, // security
+                null, // rabbitmq
+                null, // kafka
+                null, // zookeeper
+                null, // helix
+                null, // flyway
+                services // services
+                );
     }
 }

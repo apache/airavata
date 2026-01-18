@@ -92,17 +92,15 @@ public class PoolingSSHJClient extends SSHClient {
         });
 
         poolMonitoringService.scheduleWithFixedDelay(
-                this::removeStaleConnections,
-                10,
-                maxConnectionIdleTimeMS * 2,
-                TimeUnit.MILLISECONDS);
+                this::removeStaleConnections, 10, maxConnectionIdleTimeMS * 2, TimeUnit.MILLISECONDS);
     }
 
     ////////////////// client specific operations ///////
 
     private SSHClient newClientWithSessionValidation() throws IOException {
         SSHClient newClient = createNewSSHClient();
-        SSHClientInfo info = new SSHClientInfo(1, AiravataUtils.getUniqueTimestamp().getTime(), clientInfoMap.size());
+        SSHClientInfo info =
+                new SSHClientInfo(1, AiravataUtils.getUniqueTimestamp().getTime(), clientInfoMap.size());
         clientInfoMap.put(newClient, info);
 
         /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
@@ -173,7 +171,9 @@ public class PoolingSSHJClient extends SSHClient {
                                 minEntry.getValue().getClientId(),
                                 host);
                         minEntry.getValue().setSessionCount(minEntry.getValue().getSessionCount() + 1);
-                        minEntry.getValue().setLastAccessedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                        minEntry.getValue()
+                                .setLastAccessedTime(
+                                        AiravataUtils.getUniqueTimestamp().getTime());
 
                         SSHClient sshClient = minEntry.getKey();
 

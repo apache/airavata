@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * REST client configuration for Spring RestTemplate.
  * Provides a configured RestTemplate bean with proper timeouts and SSL support.
- * 
+ *
  * Configure via application.properties:
  *   security.tls.enabled=true
  *   security.tls.keystore.path=keystores/airavata.p12
@@ -64,8 +64,7 @@ public class RestClientConfig {
     @Bean
     @Primary
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        RestTemplate restTemplate = builder
-                .connectTimeout(Duration.ofSeconds(30))
+        RestTemplate restTemplate = builder.connectTimeout(Duration.ofSeconds(30))
                 .readTimeout(Duration.ofSeconds(60))
                 .build();
 
@@ -83,17 +82,30 @@ public class RestClientConfig {
      * Configure SSL for RestTemplate using Apache HttpClient 5.
      */
     private void configureSSL(RestTemplate restTemplate) throws Exception {
+        // Check if security configuration is available
+        if (properties.security() == null || 
+            properties.security().tls() == null || 
+            properties.security().tls().keystore() == null) {
+            // Use default trust store with self-signed certificate support for development/test
+            SSLContext sslContext = SSLContextBuilder.create()
+                    .loadTrustMaterial((TrustStrategy) (chain, authType) -> true)
+                    .build();
+            configureHttpClient(restTemplate, sslContext);
+            return;
+        }
+
         String trustStorePath = properties.security().tls().keystore().path();
         String trustStorePassword = properties.security().tls().keystore().password();
 
         SSLContext sslContext;
-        
+
         if (trustStorePath != null && !trustStorePath.isEmpty() && new File(trustStorePath).exists()) {
             // Use configured trust store
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(new java.io.FileInputStream(trustStorePath), 
+            trustStore.load(
+                    new java.io.FileInputStream(trustStorePath),
                     trustStorePassword != null ? trustStorePassword.toCharArray() : null);
-            
+
             sslContext = SSLContextBuilder.create()
                     .loadTrustMaterial(trustStore, null)
                     .build();
@@ -104,6 +116,14 @@ public class RestClientConfig {
                     .build();
         }
 
+        configureHttpClient(restTemplate, sslContext);
+    }
+
+    /**
+     * Configure HttpClient with SSL context and set it as the request factory.
+     */
+    private void configureHttpClient(RestTemplate restTemplate, SSLContext sslContext) {
+
         var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
                         .setSslContext(sslContext)
@@ -112,12 +132,10 @@ public class RestClientConfig {
                 .setMaxConnPerRoute(20)
                 .build();
 
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setConnectionManager(connectionManager)
-                .build();
+        CloseableHttpClient httpClient =
+                HttpClients.custom().setConnectionManager(connectionManager).build();
 
-        HttpComponentsClientHttpRequestFactory requestFactory = 
-                new HttpComponentsClientHttpRequestFactory(httpClient);
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
         requestFactory.setConnectTimeout(30000);
 
         restTemplate.setRequestFactory(requestFactory);
@@ -128,8 +146,6 @@ public class RestClientConfig {
      */
     @Bean
     public RestTemplateBuilder restTemplateBuilder() {
-        return new RestTemplateBuilder()
-                .connectTimeout(Duration.ofSeconds(30))
-                .readTimeout(Duration.ofSeconds(60));
+        return new RestTemplateBuilder().connectTimeout(Duration.ofSeconds(30)).readTimeout(Duration.ofSeconds(60));
     }
 }

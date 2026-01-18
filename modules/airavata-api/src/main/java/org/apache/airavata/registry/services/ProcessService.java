@@ -33,12 +33,14 @@ import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessMapper;
+import jakarta.persistence.EntityManager;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,18 +54,21 @@ public class ProcessService {
     private final TaskService taskService;
     private final ProcessMapper processMapper;
     private final org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper;
+    private final EntityManager entityManager;
 
     public ProcessService(
             ProcessRepository processRepository,
             ExperimentRepository experimentRepository,
             TaskService taskService,
             ProcessMapper processMapper,
-            org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper) {
+            org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper,
+            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.taskService = taskService;
         this.processMapper = processMapper;
         this.processWorkflowMapper = processWorkflowMapper;
+        this.entityManager = entityManager;
     }
 
     public void populateParentIds(ProcessEntity processEntity) {
@@ -102,9 +107,10 @@ public class ProcessService {
             logger.debug("Populating the Primary Key of Task objects for the Process");
             java.sql.Timestamp currentTimestamp = AiravataUtils.getCurrentTimestamp();
             processEntity.getTasks().forEach(taskEntity -> {
-                // Set parentProcessId for consistency (even though it's insertable=false)
+                // Set parentProcessId for consistency
                 taskEntity.setParentProcessId(processId);
-                // Set process relationship to ensure PARENT_PROCESS_ID is inserted via @JoinColumn
+                // Set process relationship - required for inserts because the @JoinColumn is insertable (default)
+                // while the parentProcessId @Column has insertable=false
                 taskEntity.setProcess(processEntity);
                 // Ensure required timestamps are set
                 if (taskEntity.getCreationTime() == null) {
@@ -347,23 +353,38 @@ public class ProcessService {
                 : null;
         processEntity.setEmailAddresses(emailAddressesStr);
 
-        // Set experiment relationship to ensure EXPERIMENT_ID is set via @JoinColumn
-        // (experimentId field is marked as insertable=false, updatable=false)
-        if (processModel.getExperimentId() != null) {
-            ExperimentEntity experimentEntity = experimentRepository
+        // Set experiment relationship - required for inserts because the @JoinColumn is insertable (default)
+        // while the experimentId @Column has insertable=false
+        if (processModel.getExperimentId() == null) {
+            throw new RegistryException("Process must have an experimentId set");
+        }
+        // Try to find the experiment - first check persistence context, then database
+        // This handles cases where the experiment is in the same transaction but not yet flushed
+        ExperimentEntity experimentEntity = entityManager.find(
+                ExperimentEntity.class, processModel.getExperimentId());
+        if (experimentEntity == null) {
+            // Not in persistence context - flush to ensure any unflushed experiments are persisted
+            entityManager.flush();
+            // Query the database after flush
+            experimentEntity = experimentRepository
                     .findById(processModel.getExperimentId())
                     .orElse(null);
-            if (experimentEntity != null) {
-                processEntity.setExperiment(experimentEntity);
-            } else {
-                // If experiment doesn't exist, create a reference with just the ID
-                experimentEntity = new ExperimentEntity();
-                experimentEntity.setExperimentId(processModel.getExperimentId());
-                processEntity.setExperiment(experimentEntity);
+            if (experimentEntity == null) {
+                // Still not found - use getReferenceById to create a proxy
+                // This will work if the experiment exists but wasn't found due to transaction isolation
+                // If the experiment truly doesn't exist, the foreign key constraint will fail
+                // which provides a clear error message
+                try {
+                    experimentEntity = experimentRepository.getReferenceById(processModel.getExperimentId());
+                } catch (jakarta.persistence.EntityNotFoundException e) {
+                    throw new RegistryException(
+                            "Experiment with id " + processModel.getExperimentId()
+                                    + " does not exist. Ensure the experiment is created and saved before creating a process.",
+                            e);
+                }
             }
-            // Also set experimentId field directly for consistency
-            processEntity.setExperimentId(processModel.getExperimentId());
         }
+        processEntity.setExperiment(experimentEntity);
 
         populateParentIds(processEntity);
 

@@ -196,6 +196,31 @@ The Airavata REST Proxy provides a RESTful API interface to Airavata services. I
 
 ## 🏗️ Getting Started
 
+> **Quick Start:** For a complete step-by-step guide from git clone to running server, see **[QUICKSTART.md](QUICKSTART.md)**.
+
+### Development Mode (exec:java)
+
+For quick development iterations, you can run Airavata directly using Maven:
+
+```bash
+# First, start infrastructure services
+docker compose -f .devcontainer/docker-compose.yml up -d
+
+# Build the project
+mvn clean install -DskipTests
+
+# Run CLI commands from the distribution module
+cd modules/distribution
+
+# Show help
+mvn exec:java -Dexec.args="--help"
+
+# Initialize databases
+mvn exec:java -Dexec.args="init"
+
+# Start server in foreground
+mvn exec:java -Dexec.args="serve --foreground"
+```
 
 ### Option 1 - Build from Source
 

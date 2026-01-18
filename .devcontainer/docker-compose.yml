@@ -18,11 +18,17 @@ services:
       - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
       - ./keycloak/realm-master.json:/opt/keycloak/data/import/realm-master.json
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-    command: [ "start", "--import-realm" ]
+    command: ["start", "--import-realm"]
     networks:
       - airavata-network
     ports:
       - "18080:18080"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/18080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   db:
     image: mariadb:10.4.13
@@ -34,6 +40,7 @@ services:
       MYSQL_PASSWORD: 123456
     volumes:
       - db_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d:ro
     command:
       [
         "mysqld",
@@ -45,58 +52,79 @@ services:
       - airavata-network
     ports:
       - "13306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   rabbitmq:
-    image: rabbitmq:4.0-management
+    image: rabbitmq:3.13-management
     container_name: rabbitmq
     restart: always
     environment:
       RABBITMQ_DEFAULT_VHOST: develop
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     networks:
       - airavata-network
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   zookeeper:
-    image: zookeeper:latest
+    image: zookeeper:3.9
     container_name: zookeeper
     restart: always
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
     networks:
       - airavata-network
     ports:
       - "2181:2181"
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   kafka:
-    image: wurstmeister/kafka:latest
+    image: confluentinc/cp-kafka:7.6.0
     container_name: kafka
     restart: always
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     networks:
       - airavata-network
     ports:
       - "9092:9092"
     depends_on:
-      - zookeeper
-
-  sshd:
-    image: lscr.io/linuxserver/openssh-server:latest
-    container_name: sshd
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: UTC
-      USER_NAME: root
-      PASSWORD_ACCESS: "true"
-    volumes:
-      - ./authorized_keys:/config/.ssh/authorized_keys:ro
-    networks:
-      - airavata-network
-    ports:
-      - "22222:2222"
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   adminer:
     image: adminer:latest
@@ -107,4 +135,5 @@ services:
     ports:
       - "18088:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy

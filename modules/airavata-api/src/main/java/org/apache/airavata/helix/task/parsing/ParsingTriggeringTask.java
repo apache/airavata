@@ -22,6 +22,7 @@ package org.apache.airavata.helix.task.parsing;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.TaskDef;
 import org.apache.airavata.helix.task.TaskHelper;
 import org.apache.airavata.helix.task.base.AiravataTask;
@@ -35,7 +36,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Parsing Triggering Task")
@@ -87,8 +87,11 @@ public class ParsingTriggeringTask extends AiravataTask {
                 }
                 var props = ctx.getBean(AiravataServerProperties.class);
                 Properties kafkaProps = new Properties();
-                kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, props.kafka().brokerUrl());
-                kafkaProps.put(ProducerConfig.CLIENT_ID_CONFIG, props.services().parser().brokerConsumerGroup());
+                kafkaProps.put(
+                        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, props.kafka().brokerUrl());
+                kafkaProps.put(
+                        ProducerConfig.CLIENT_ID_CONFIG,
+                        props.services().parser().brokerConsumerGroup());
                 kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
                 kafkaProps.put(
                         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,

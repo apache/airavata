@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.apache.airavata.common.model.ExperimentModel;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.JobModel;
@@ -37,6 +36,7 @@ import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.repositories.common.TestBase;
@@ -297,10 +297,12 @@ public class JobStatusRepositoryTest extends TestBase {
         // Allow small timing differences (within 1 second) due to timestamp conversion and processing
         assertTrue(
                 retrieved.getTimeOfStateChange() >= beforeTime - 1000,
-                "Time should be set to current or later (expected >= " + beforeTime + ", actual: " + retrieved.getTimeOfStateChange() + ")");
+                "Time should be set to current or later (expected >= " + beforeTime + ", actual: "
+                        + retrieved.getTimeOfStateChange() + ")");
         assertTrue(
                 retrieved.getTimeOfStateChange() <= afterTime + 1000,
-                "Time should be set to current or earlier (expected <= " + afterTime + ", actual: " + retrieved.getTimeOfStateChange() + ")");
+                "Time should be set to current or earlier (expected <= " + afterTime + ", actual: "
+                        + retrieved.getTimeOfStateChange() + ")");
 
         long explicitTime = AiravataUtils.getUniqueTimestamp().getTime() + 1000;
         JobStatus updated = new JobStatus(JobState.ACTIVE);
@@ -311,7 +313,8 @@ public class JobStatusRepositoryTest extends TestBase {
         // Allow small timing differences due to timestamp conversion and processing
         assertTrue(
                 updatedRetrieved.getTimeOfStateChange() >= explicitTime - 100,
-                "Updated time should be set correctly (expected >= " + explicitTime + ", actual: " + updatedRetrieved.getTimeOfStateChange() + ")");
+                "Updated time should be set correctly (expected >= " + explicitTime + ", actual: "
+                        + updatedRetrieved.getTimeOfStateChange() + ")");
     }
 
     @Test
@@ -432,18 +435,31 @@ public class JobStatusRepositoryTest extends TestBase {
 
         List<JobStatus> statuses = job.getJobStatuses();
         // Verify strict timestamp ordering
-        JobStatus s1 = statuses.stream().filter(s -> s.getJobState() == JobState.SUBMITTED).findFirst().orElse(null);
-        JobStatus s2 = statuses.stream().filter(s -> s.getJobState() == JobState.QUEUED).findFirst().orElse(null);
-        JobStatus s3 = statuses.stream().filter(s -> s.getJobState() == JobState.ACTIVE).findFirst().orElse(null);
+        JobStatus s1 = statuses.stream()
+                .filter(s -> s.getJobState() == JobState.SUBMITTED)
+                .findFirst()
+                .orElse(null);
+        JobStatus s2 = statuses.stream()
+                .filter(s -> s.getJobState() == JobState.QUEUED)
+                .findFirst()
+                .orElse(null);
+        JobStatus s3 = statuses.stream()
+                .filter(s -> s.getJobState() == JobState.ACTIVE)
+                .findFirst()
+                .orElse(null);
 
         assertNotNull(s1);
         assertNotNull(s2);
         assertNotNull(s3);
 
-        assertTrue(s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
-                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 (" + s1.getTimeOfStateChange() + ")");
-        assertTrue(s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
-                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 (" + s2.getTimeOfStateChange() + ")");
+        assertTrue(
+                s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
+                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 ("
+                        + s1.getTimeOfStateChange() + ")");
+        assertTrue(
+                s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
+                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 ("
+                        + s2.getTimeOfStateChange() + ")");
     }
 
     private JobPK createNewJob(String jobIdPrefix) throws RegistryException {

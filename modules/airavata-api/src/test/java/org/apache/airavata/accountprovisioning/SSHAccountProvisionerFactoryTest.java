@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(
         classes = {
@@ -44,7 +43,6 @@ import org.springframework.test.context.TestPropertySource;
             "airavata.flyway.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
 public class SSHAccountProvisionerFactoryTest {
 

@@ -37,7 +37,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.BatchQueueResourcePolicyEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourcePolicyEntity;
-import org.apache.airavata.registry.entities.appcatalog.ComputeResourceReservationEntity;
 import org.apache.airavata.registry.entities.appcatalog.GroupComputeResourcePrefEntity;
 import org.apache.airavata.registry.entities.appcatalog.GroupComputeResourcePrefPK;
 import org.apache.airavata.registry.entities.appcatalog.GroupResourceProfileEntity;
@@ -153,7 +152,8 @@ public class GroupResourceProfileService {
     }
 
     public String updateGroupResourceProfile(GroupResourceProfile updatedGroupResourceProfile) {
-        updatedGroupResourceProfile.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+        updatedGroupResourceProfile.setUpdatedTime(
+                AiravataUtils.getUniqueTimestamp().getTime());
         updateChildren(updatedGroupResourceProfile, updatedGroupResourceProfile.getGroupResourceProfileId());
         // Preserve creationTime if not set in the update
         GroupResourceProfileEntity existingEntity = groupResourceProfileRepository

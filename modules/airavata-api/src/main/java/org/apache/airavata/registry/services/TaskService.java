@@ -213,8 +213,8 @@ public class TaskService {
             taskEntity.setLastUpdateTime(new java.sql.Timestamp(lastUpdateTime));
         }
 
-        // Set process relationship to ensure PARENT_PROCESS_ID is set via @JoinColumn
-        // (parentProcessId field is marked as insertable=false, updatable=false)
+        // Set process relationship - required for inserts because the @JoinColumn is insertable (default)
+        // while the parentProcessId @Column has insertable=false
         if (taskModel.getParentProcessId() != null) {
             ProcessEntity processEntity =
                     processRepository.findById(taskModel.getParentProcessId()).orElse(null);
@@ -226,8 +226,6 @@ public class TaskService {
                 processEntity.setProcessId(taskModel.getParentProcessId());
                 taskEntity.setProcess(processEntity);
             }
-            // Also set parentProcessId field directly for consistency
-            taskEntity.setParentProcessId(taskModel.getParentProcessId());
         }
 
         populateParentIds(taskEntity);

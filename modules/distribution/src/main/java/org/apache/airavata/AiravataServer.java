@@ -19,12 +19,8 @@
 */
 package org.apache.airavata;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ThriftMapperImplExcludeFilter;
 import org.slf4j.Logger;

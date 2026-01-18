@@ -28,13 +28,13 @@ import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.model.GroupCardinality;
 import org.apache.airavata.sharing.model.GroupType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.UserGroup;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.springframework.stereotype.Service;
 
 @Service

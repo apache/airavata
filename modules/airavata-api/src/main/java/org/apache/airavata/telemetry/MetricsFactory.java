@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 /**
  * Factory for creating Micrometer-based metrics.
  * Provides a global MeterRegistry that can be accessed from static contexts.
- * 
+ *
  * Spring Boot auto-configures a CompositeMeterRegistry which is injected here
  * and made available globally for legacy static metric usage.
  */

@@ -29,10 +29,10 @@ import org.springframework.context.annotation.Profile;
 
 /**
  * Composite annotation for Helix participant components.
- * 
+ *
  * <p>Combines @Profile("!test") and @ConditionalOnProperty for participant enablement.
  * No matchIfMissing - property MUST be explicitly set.
- * 
+ *
  * <p>Usage:
  * <pre>
  * {@code @Component}
@@ -45,5 +45,4 @@ import org.springframework.context.annotation.Profile;
 @Documented
 @Profile("!test")
 @ConditionalOnProperty(prefix = "airavata.services.participant", name = "enabled", havingValue = "true")
-public @interface ConditionalOnParticipant {
-}
+public @interface ConditionalOnParticipant {}

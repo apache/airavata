@@ -19,15 +19,12 @@
 */
 package org.apache.airavata.registry.services;
 
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessOutputRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class ProcessOutputService {
     private final ProcessOutputRepository processOutputRepository;
-    private final EntityManager entityManager;
     private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public ProcessOutputService(
             ProcessOutputRepository processOutputRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
             OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.processOutputRepository = processOutputRepository;
-        this.entityManager = entityManager;
         this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
@@ -53,13 +47,11 @@ public class ProcessOutputService {
     }
 
     public void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
-        // Get a reference to the process entity (proxy, doesn't fetch from DB)
-        ProcessEntity processEntity = entityManager.getReference(ProcessEntity.class, processId);
         for (OutputDataObjectType output : outputs) {
             ProcessOutputEntity entity = outputDataObjectTypeMapper.toEntityFromProcess(output);
             entity.setProcessId(processId);
-            // Set process relationship to ensure PROCESS_ID is set via @JoinColumn
-            entity.setProcess(processEntity);
+            // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
+            // The processId field is already set and is the only field that gets persisted.
             processOutputRepository.save(entity);
         }
     }

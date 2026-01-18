@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.model.ResourceJobManagerType;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ShutdownFlag;
 import org.apache.airavata.config.AiravataConfigUtils;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -104,7 +104,8 @@ public class EmailBasedMonitor extends ServerLifecycle {
         password = airavataProperties.services().monitor().email().password();
         storeProtocol = airavataProperties.services().monitor().email().storeProtocol();
         folderName = airavataProperties.services().monitor().email().folderName();
-        emailExpirationTimeMinutes = airavataProperties.services().monitor().email().expiryMins();
+        emailExpirationTimeMinutes =
+                airavataProperties.services().monitor().email().expiryMins();
         publisherId = airavataProperties.services().monitor().compute().emailPublisherId();
         if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
             throw new RuntimeException(
@@ -249,7 +250,8 @@ public class EmailBasedMonitor extends ServerLifecycle {
                     SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
                     while (!ShutdownFlag.isStopAllThreads()
                             && !Thread.currentThread().isInterrupted()) {
-                        Thread.sleep(airavataProperties.services().monitor().email().period()); // sleep for long enough
+                        Thread.sleep(
+                                airavataProperties.services().monitor().email().period()); // sleep for long enough
                         if (!store.isConnected()) {
                             store.connect();
                             emailFolder = store.getFolder(folderName);
@@ -286,7 +288,8 @@ public class EmailBasedMonitor extends ServerLifecycle {
                 } catch (MessagingException e) {
                     log.error("[EJM]: Couldn't connect to the store ", e);
                     try {
-                        Thread.sleep(airavataProperties.services().monitor().email().connectionRetryInterval());
+                        Thread.sleep(
+                                airavataProperties.services().monitor().email().connectionRetryInterval());
                     } catch (InterruptedException ie) {
                         log.error("[EJM]: Interrupted while waiting before retry", ie);
                         Thread.currentThread().interrupt();

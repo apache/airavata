@@ -98,7 +98,8 @@ public class ServiceStatusVerifier {
                     return false;
             }
         } catch (Exception e) {
-            logger.error("Error checking if service {} is enabled: {}", serviceName, e.getMessage());
+            // Use DEBUG level since configuration errors in tests are often due to missing/disabled features
+            logger.debug("Error checking if service {} is enabled: {}", serviceName, e.getMessage());
             return false;
         }
     }
@@ -238,7 +239,8 @@ public class ServiceStatusVerifier {
                 logger.info("✓ Service {} is running", serviceName);
             } else {
                 result.addFailure(serviceName, "Service is not running");
-                logger.error("✗ Service {} is not running", serviceName);
+                // Use INFO level since in test context, services not running is often expected
+                logger.info("✗ Service {} is not running (may be expected in test context)", serviceName);
             }
         }
         return result;
@@ -259,7 +261,8 @@ public class ServiceStatusVerifier {
                 logger.info("✓ Service {} is not running (as expected)", serviceName);
             } else {
                 result.addFailure(serviceName, "Service should not be running but is");
-                logger.error("✗ Service {} should not be running but is", serviceName);
+                // Use WARN level since this is a test utility - not a critical error
+                logger.warn("✗ Service {} should not be running but is", serviceName);
             }
         }
         return result;

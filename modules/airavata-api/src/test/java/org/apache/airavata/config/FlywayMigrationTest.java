@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Integration test to verify Flyway migrations run correctly.
@@ -41,7 +40,6 @@ import org.springframework.test.context.TestPropertySource;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
         })
-@TestPropertySource(locations = "classpath:application.properties")
 @ActiveProfiles("test")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class FlywayMigrationTest {

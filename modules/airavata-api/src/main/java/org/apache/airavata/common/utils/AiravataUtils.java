@@ -20,7 +20,6 @@
 package org.apache.airavata.common.utils;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.UUID;
 
 public class AiravataUtils {
@@ -33,7 +32,7 @@ public class AiravataUtils {
      * Gets the current timestamp with microsecond precision.
      * This method uses getUniqueTimestamp() internally to ensure consistency
      * and maximum precision across the codebase.
-     * 
+     *
      * @return A Timestamp with microsecond precision
      */
     public static Timestamp getCurrentTimestamp() {
@@ -44,7 +43,7 @@ public class AiravataUtils {
      * Converts a long time value to a Timestamp.
      * If the time is 0 or negative, returns the current unique timestamp.
      * Otherwise, creates a Timestamp from the provided time value.
-     * 
+     *
      * @param time Time in milliseconds since epoch
      * @return A Timestamp object
      */
@@ -59,7 +58,7 @@ public class AiravataUtils {
      * Gets a unique timestamp with microsecond precision that ensures each call returns a different value.
      * Uses System.currentTimeMillis() with System.nanoTime() for precise microsecond tracking.
      * The database column is TIMESTAMP(6) which supports microsecond precision.
-     * 
+     *
      * @return A Timestamp with microsecond precision that is guaranteed to be unique and monotonically increasing
      */
     public static Timestamp getUniqueTimestamp() {
@@ -71,7 +70,7 @@ public class AiravataUtils {
             // Extract microsecond fraction (0-999) from nanoseconds
             // We use modulo to get a value between 0 and 999999, then divide by 1000 to get microseconds
             int microsecondFraction = (int) ((nanoTime % 1_000_000) / 1000);
-            
+
             // Ensure timestamp is always increasing, even if called in rapid succession
             if (currentTimeMillis < lastTimestampMillis) {
                 // Time went backwards (shouldn't happen, but handle it)
@@ -95,7 +94,7 @@ public class AiravataUtils {
                 lastTimestampMillis = currentTimeMillis;
                 lastMicrosecondFraction = microsecondFraction;
             }
-            
+
             // Create timestamp with microsecond precision
             // Timestamp stores nanoseconds internally, so we multiply microseconds by 1000
             Timestamp timestamp = new Timestamp(lastTimestampMillis);

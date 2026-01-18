@@ -39,7 +39,10 @@ import org.apache.airavata.registry.exception.RegistryServiceException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 /**
@@ -53,13 +56,37 @@ public class ExperimentService {
     private final RegistryService registryService;
     private Publisher statusPublisher;
 
-    public ExperimentService(RegistryService registryService, MessagingFactory messagingFactory) {
+    public ExperimentService(
+            RegistryService registryService,
+            MessagingFactory messagingFactory,
+            @Value("${airavata.rabbitmq.enabled:false}") boolean rabbitmqEnabled,
+            @Autowired(required = false) Environment environment) {
         this.registryService = registryService;
-        try {
-            statusPublisher = messagingFactory.getPublisher(Type.STATUS);
-        } catch (Exception e) {
-            logger.warn("StatusPublisher unavailable: " + e.getMessage());
+        if (rabbitmqEnabled) {
+            try {
+                // Check if RabbitMQ is actually available before attempting to get publisher
+                if (messagingFactory.isRabbitMQAvailable()) {
+                    statusPublisher = messagingFactory.getPublisher(Type.STATUS);
+                } else {
+                    // In test environments, this is expected - use debug level
+                    boolean isTestProfile = environment != null && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+                    if (isTestProfile) {
+                        logger.debug("StatusPublisher unavailable: RabbitMQ not fully configured (test environment)");
+                    } else {
+                        logger.warn("StatusPublisher unavailable: RabbitMQ is not configured. Ensure airavata.rabbitmq.enabled=true and all required RabbitMQ properties are set (broker-url, exchange names, etc.)");
+                    }
+                }
+            } catch (Exception e) {
+                // In test environments, configuration issues are expected - use debug level
+                boolean isTestProfile = environment != null && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+                if (isTestProfile) {
+                    logger.debug("StatusPublisher unavailable: " + e.getMessage() + " (test environment)");
+                } else {
+                    logger.warn("StatusPublisher unavailable: " + e.getMessage());
+                }
+            }
         }
+        // If RabbitMQ is disabled, statusPublisher remains null and no warning is logged
     }
 
     private AiravataSystemException airavataSystemException(

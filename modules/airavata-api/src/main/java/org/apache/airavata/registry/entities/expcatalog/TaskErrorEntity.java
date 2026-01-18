@@ -133,9 +133,8 @@ public class TaskErrorEntity implements Serializable {
         return task;
     }
 
-    public void setTask(TaskEntity task) {
-        this.task = task;
-    }
+    // Note: No setter for 'task' - the relationship is read-only (insertable=false, updatable=false)
+    // The taskId field should be set instead, and Hibernate will resolve the relationship via the @JoinColumn
 
     @PrePersist
     void setCreationTime() {

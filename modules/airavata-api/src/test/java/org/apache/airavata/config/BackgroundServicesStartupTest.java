@@ -29,14 +29,12 @@ import org.apache.airavata.helix.controller.PreWorkflowManager;
 import org.apache.airavata.helix.participant.GlobalParticipant;
 import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Test to verify AiravataApplication startup with background services enabled.
@@ -67,13 +65,8 @@ import org.springframework.test.context.TestPropertySource;
             "services.monitor.email.enabled=true"
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(
         org.apache.airavata.config.AiravataServerProperties.class)
-@EnabledIfSystemProperty(
-        named = "test.startup.enabled",
-        matches = "true",
-        disabledReason = "Startup tests require full infrastructure - run with -Dtest.startup.enabled=true")
 public class BackgroundServicesStartupTest {
 
     @Configuration

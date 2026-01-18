@@ -75,8 +75,11 @@ public class KeycloakRestClient {
     /**
      * Constructor with Spring-injected RestTemplate and ObjectMapper.
      */
-    public KeycloakRestClient(String serverUrl, AiravataServerProperties properties, 
-                              RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public KeycloakRestClient(
+            String serverUrl,
+            AiravataServerProperties properties,
+            RestTemplate restTemplate,
+            ObjectMapper objectMapper) {
         this.serverUrl = serverUrl;
         this.properties = properties;
         this.restTemplate = restTemplate;
@@ -99,15 +102,17 @@ public class KeycloakRestClient {
             if (properties != null
                     && properties.security() != null
                     && properties.security().tls() != null
-                    && properties.security().tls().enabled()) {
+                    && properties.security().tls().enabled()
+                    && properties.security().tls().keystore() != null) {
                 // Configure SSL with keystore
                 SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
                 String configDir =
                         org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
                 String keystorePath = properties.security().tls().keystore().path();
-                if (keystorePath == null) {
-                    throw new IllegalStateException(
-                            "TLS keystore configuration is missing: security.tls.keystore.path is not set in application.properties");
+                if (keystorePath == null || keystorePath.isEmpty()) {
+                    logger.debug("TLS enabled but keystore path not configured, using default HTTP client");
+                    template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+                    return template;
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
                 String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
@@ -120,7 +125,7 @@ public class KeycloakRestClient {
                 template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
                 logger.info("TLS enabled - keystore should be configured via JVM system properties");
             } else {
-                // No TLS - use default HTTP client
+                // No TLS or keystore not configured - use default HTTP client
                 template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
             }
         } catch (Exception e) {
@@ -558,8 +563,13 @@ public class KeycloakRestClient {
     // ==================== Helper Methods ====================
 
     private PasswordCredential getSuperAdminCredentials() throws IamAdminServicesException {
-        if (properties == null || properties.security() == null || properties.security().iam() == null) {
-            throw new IamAdminServicesException("IAM configuration not available");
+        if (properties == null
+                || properties.security() == null
+                || properties.security().iam() == null
+                || properties.security().iam().superAdmin() == null) {
+            throw new IamAdminServicesException(
+                    "IAM super admin configuration not available. "
+                            + "Ensure airavata.security.iam.super-admin.username and password are configured.");
         }
         PasswordCredential creds = new PasswordCredential();
         creds.setLoginUserName(properties.security().iam().superAdmin().username());

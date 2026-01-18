@@ -25,8 +25,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.Properties;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -79,7 +79,7 @@ public class JpaConfig {
         String value = environment.getProperty(key);
         return (value != null && !value.isEmpty()) ? value : defaultValue;
     }
-    
+
     // Helper method to create DataSource from environment properties
     private DataSource createDataSourceFromEnv(String prefix, String poolName) {
         String url = environment.getProperty(prefix + ".url");
@@ -132,28 +132,13 @@ public class JpaConfig {
     }
 
     // Helper method to create JPA properties
-    private Properties createJpaProperties(String url) {
+    // Hibernate 6+ auto-detects dialect from JDBC metadata - no explicit setting needed
+    private Properties createJpaProperties() {
         Properties props = new Properties();
         // Check if we're in test profile - use create-drop for tests, validate for production
         boolean isTestProfile =
                 environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("test"));
 
-        // Set dialect explicitly based on JDBC URL to avoid metadata access issues
-        // Hibernate 6+ requires dialect when jdbc metadata access is disabled
-        if (url != null) {
-            String urlLower = url.toLowerCase();
-            if (urlLower.contains("mariadb")) {
-                props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
-            } else if (urlLower.contains("mysql")) {
-                props.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-            } else if (urlLower.contains("h2")) {
-                props.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-            } else if (urlLower.contains("postgresql")) {
-                props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-            }
-            // If none match, Hibernate will auto-detect (requires metadata access)
-        }
-        
         // Hibernate mode: create-drop for tests (creates schema on startup, drops on shutdown),
         // none for production when database might not be available (skip validation)
         // Can be overridden via airavata.hibernate.hbm2ddl-auto property
@@ -192,10 +177,7 @@ public class JpaConfig {
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         emf.setJpaVendorAdapter(vendorAdapter);
 
-        String url = ((HikariDataSource) dataSource).getJdbcUrl();
-        Properties jpaProps = createJpaProperties(url);
-        // Use new property name instead of deprecated one
-        jpaProps.put("hibernate.boot.allow_jdbc_metadata_access", "false");
+        Properties jpaProps = createJpaProperties();
         // Use physical naming strategy to ensure column names are used as-is
         jpaProps.put(
                 "hibernate.physical_naming_strategy",
@@ -255,11 +237,15 @@ public class JpaConfig {
         if (url == null || url.isEmpty()) {
             url = environment.getProperty("airavata.database.registry.url");
         }
-        String user = getEnvProperty("airavata.database.vault.user", environment.getProperty("airavata.database.registry.user"));
-        String password = getEnvProperty("airavata.database.vault.password", environment.getProperty("airavata.database.registry.password"));
-        String driver = getEnvProperty("airavata.database.vault.driver", getEnvProperty("airavata.database.registry.driver", "org.mariadb.jdbc.Driver"));
+        String user = getEnvProperty(
+                "airavata.database.vault.user", environment.getProperty("airavata.database.registry.user"));
+        String password = getEnvProperty(
+                "airavata.database.vault.password", environment.getProperty("airavata.database.registry.password"));
+        String driver = getEnvProperty(
+                "airavata.database.vault.driver",
+                getEnvProperty("airavata.database.registry.driver", "org.mariadb.jdbc.Driver"));
         String validationQuery = getEnvProperty("airavata.database.validation-query", "SELECT 1");
-        
+
         return createDataSource(driver, url, user, password, validationQuery, "CredentialStorePool");
     }
 

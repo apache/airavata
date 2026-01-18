@@ -32,7 +32,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResourceNotFound(RuntimeException ex) {
         // You can customize the error response here
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(), "Resource not found", ex.getMessage(), AiravataUtils.getUniqueTimestamp().getTime());
+                HttpStatus.NOT_FOUND.value(),
+                "Resource not found",
+                ex.getMessage(),
+                AiravataUtils.getUniqueTimestamp().getTime());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }

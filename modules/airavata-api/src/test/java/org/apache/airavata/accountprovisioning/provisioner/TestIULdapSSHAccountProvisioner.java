@@ -35,11 +35,11 @@ import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Integration test for IU LDAP SSH Account Provisioner.
- * 
+ *
  * This test requires external infrastructure:
  * - SSH tunnel to server with firewall access to bazooka.hps.iu.edu
  * - LDAP_PASSWORD environment variable set
- * 
+ *
  * To run:
  * 1. Set up SSH tunnel: ssh airavata@apidev.scigap.org -L 9000:bazooka.hps.iu.edu:636 -N &
  * 2. Add to /etc/hosts: 127.0.0.1 bazooka.hps.iu.edu
@@ -48,7 +48,10 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-@EnabledIfEnvironmentVariable(named = "LDAP_PASSWORD", matches = ".+", disabledReason = "Requires LDAP_PASSWORD env var and SSH tunnel setup")
+@EnabledIfEnvironmentVariable(
+        named = "LDAP_PASSWORD",
+        matches = ".+",
+        disabledReason = "Requires LDAP_PASSWORD env var and SSH tunnel setup")
 public class TestIULdapSSHAccountProvisioner {
     private static final Logger logger = LoggerFactory.getLogger(TestIULdapSSHAccountProvisioner.class);
     private IULdapSSHAccountProvisioner sshAccountProvisioner;

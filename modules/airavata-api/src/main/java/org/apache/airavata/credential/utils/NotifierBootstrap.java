@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
@@ -38,8 +39,6 @@ import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.credential.model.CredentialStoreNotifier;
 import org.apache.airavata.credential.model.EmailNotificationMessage;
 import org.apache.airavata.credential.model.EmailNotifierConfiguration;
-import org.apache.airavata.credential.model.NotificationMessage;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

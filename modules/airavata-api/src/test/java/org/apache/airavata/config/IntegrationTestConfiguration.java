@@ -1,27 +1,41 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 
 /**
  * Shared Spring configuration for integration tests.
- * 
+ *
  * <p>This configuration:
  * <ul>
  *   <li>Provides a minimal {@link AiravataServerProperties} for testing</li>
  *   <li>Scans only repository-related packages (not security, monitoring, etc.)</li>
  *   <li>Imports JPA and Testcontainers configurations</li>
  * </ul>
- * 
+ *
  * <p>Usage:
  * <pre>
  * {@code
@@ -29,75 +43,33 @@ import org.springframework.context.annotation.Import;
  * class MyTest { ... }
  * }
  * </pre>
- * 
+ *
  * @see JpaConfig
  * @see TestcontainersConfig
  */
 @Configuration
 // application.properties is auto-loaded by Spring Boot
 @Import({JpaConfig.class, TestcontainersConfig.class})
+// Use CGLIB proxies to allow tests to inject concrete class types instead of interfaces
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+// Enable configuration properties binding for AiravataServerProperties
+@EnableConfigurationProperties(AiravataServerProperties.class)
 @ComponentScan(
-    basePackages = {
-        "org.apache.airavata.registry.services",
-        "org.apache.airavata.registry.mappers",
-        "org.apache.airavata.registry.repositories"
-    },
-    // Exclude components that require external dependencies
-    excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.REGEX, 
-            pattern = ".*Credential.*"),
-        @ComponentScan.Filter(type = FilterType.REGEX, 
-            pattern = ".*Security.*"),
-        @ComponentScan.Filter(type = FilterType.REGEX, 
-            pattern = ".*Monitor.*"),
-        @ComponentScan.Filter(type = FilterType.REGEX, 
-            pattern = ".*Kafka.*"),
-        @ComponentScan.Filter(type = FilterType.REGEX, 
-            pattern = ".*Rabbit.*")
-    }
-)
+        basePackages = {
+            "org.apache.airavata.registry.services",
+            "org.apache.airavata.registry.mappers",
+            "org.apache.airavata.registry.repositories"
+        },
+        // Exclude components that require external dependencies
+        excludeFilters = {
+            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Credential.*"),
+            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Security.*"),
+            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Monitor.*"),
+            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Kafka.*"),
+            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Rabbit.*")
+        })
 public class IntegrationTestConfiguration {
-    
-    /**
-     * Provides a minimal AiravataServerProperties for testing.
-     * Uses null-safe defaults for optional fields.
-     * Only created if no other AiravataServerProperties bean exists.
-     */
-    @Bean
-    @ConditionalOnMissingBean(AiravataServerProperties.class)
-    public AiravataServerProperties airavataServerProperties() {
-        // Create minimal nested records for required fields
-        var database = new AiravataServerProperties.Database(
-            null, null, null, null, null, null, null, null, null);
-        
-        var security = new AiravataServerProperties.Security(
-            null, null, null, null, null);
-        
-        var services = new AiravataServerProperties.Services(
-            new AiravataServerProperties.Services.Thrift(true, 
-                new AiravataServerProperties.Services.Thrift.Server(8930)),
-            new AiravataServerProperties.Services.Rest(false,
-                new AiravataServerProperties.Services.Rest.Server(8082)),
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-        
-        return new AiravataServerProperties(
-            "",                                              // home
-            "default",                                       // defaultGateway
-            true,                                            // validationEnabled
-            new AiravataServerProperties.Sharing(true),      // sharing
-            1000,                                            // inMemoryCacheSize
-            "/tmp/airavata",                                 // localDataLocation
-            1073741824,                                      // maxArchiveSize
-            new AiravataServerProperties.StreamingTransfer(false),  // streamingTransfer
-            null,                                            // hibernate
-            database,                                        // database
-            security,                                        // security
-            null,                                            // rabbitmq
-            null,                                            // kafka
-            null,                                            // zookeeper
-            null,                                            // helix
-            null,                                            // flyway
-            services                                         // services
-        );
-    }
+
+    // Note: AiravataServerProperties is provided by @EnableConfigurationProperties
+    // in test classes. This allows @DynamicPropertySource to inject container URLs.
 }

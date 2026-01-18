@@ -67,7 +67,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -86,25 +85,37 @@ import org.springframework.transaction.annotation.Transactional;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "airavata.flyway.enabled=false",
-            "airavata.security.iam.enabled=false",
             "airavata.security.manager.enabled=false",
-            "airavata.security.authzCache.enabled=false",
+            "airavata.security.authzCache.enabled=true",
+            "airavata.rabbitmq.enabled=true",
         })
 @org.springframework.test.context.ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional("expCatalogTransactionManager")
-@org.junit.jupiter.api.condition.EnabledIf("isMessagingContainerRunning")
 public class StateTransitionValidationIntegrationTest extends ServiceIntegrationTestBase {
 
     /**
-     * Check if messaging containers are available (not via SSH tunnel).
+     * Inject messaging container URLs into Spring properties before context loads.
      */
-    static boolean isMessagingContainerRunning() {
-        return !org.apache.airavata.config.TestcontainersConfig.shouldUseExistingContainers();
-    }
+    @org.springframework.test.context.DynamicPropertySource
+    static void configureMessaging(org.springframework.test.context.DynamicPropertyRegistry registry) {
+        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
+        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
+        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
+        String keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
 
-    // Testcontainers setup is handled by @DynamicPropertySource in ServiceIntegrationTestBase
+        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
+        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
+        registry.add("airavata.rabbitmq.experiment-exchange-name", () -> "experiment_exchange");
+        registry.add("airavata.rabbitmq.experiment-launch-queue-name", () -> "experiment.launch.queue");
+        registry.add("airavata.rabbitmq.process-exchange-name", () -> "process_exchange");
+        registry.add("airavata.rabbitmq.status-exchange-name", () -> "status_exchange");
+        registry.add("airavata.rabbitmq.db-event-exchange-name", () -> "dbevent_exchange");
+        registry.add("airavata.rabbitmq.durable-queue", () -> "false");
+        registry.add("airavata.rabbitmq.prefetch-count", () -> "200");
+        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
+        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
+    }
 
     @Configuration
     @ComponentScan(
@@ -115,10 +126,13 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
-                "org.apache.airavata.monitor"
+                "org.apache.airavata.monitor",
+                "org.apache.airavata.messaging"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
     static class TestConfiguration {}
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(StateTransitionValidationIntegrationTest.class);
 
     private final GatewayService gatewayService;
     private final ProjectService projectService;
@@ -346,7 +360,8 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     @Test
     @DisplayName("Should verify messages are published for valid state transitions")
     void shouldVerifyMessagesPublishedForValidTransitions() throws Exception {
-        if (messagingFactory == null) {
+        if (messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
+            logger.warn("RabbitMQ not available, skipping messaging verification");
             return;
         }
 
@@ -370,7 +385,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             // Valid process transition: CREATED -> VALIDATED
             ProcessStatus validated = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
             processStatusService.addProcessStatus(validated, testHierarchy.processId);
-            
+
             ProcessIdentifier processIdentifier =
                     new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
             ProcessStatusChangeEvent processEvent =
@@ -386,7 +401,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             // Valid job transition: SUBMITTED -> QUEUED
             JobStatus queued = StateMachineTestUtils.createJobStatus(JobState.QUEUED, "Queued");
             jobStatusService.addJobStatus(queued, testHierarchy.jobPK);
-            
+
             JobIdentifier jobIdentifier = new JobIdentifier(
                     testHierarchy.jobId,
                     testHierarchy.taskId,

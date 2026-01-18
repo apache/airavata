@@ -33,16 +33,20 @@ import org.springframework.stereotype.Component;
  * Provides thread-safe, high-performance caching for authorization decisions.
  */
 @Component
-@ConditionalOnProperty(prefix = "airavata.security.authzCache", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+        prefix = "airavata.security.authzCache",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class AuthzCache {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthzCache.class);
-    
+
     private final Cache<AuthzCacheIndex, AuthzCacheEntry> cache;
 
     public AuthzCache(AiravataServerProperties serverProperties) {
-        int maxSize = serverProperties.inMemoryCacheSize() > 0 ?  serverProperties.inMemoryCacheSize() : 1000;
-        
+        int maxSize = serverProperties.inMemoryCacheSize() > 0 ? serverProperties.inMemoryCacheSize() : 1000;
+
         this.cache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
                 .expireAfterWrite(Duration.ofMinutes(15))
@@ -53,7 +57,7 @@ public class AuthzCache {
                     }
                 })
                 .build();
-        
+
         logger.info("AuthzCache initialized with max size: {}", maxSize);
     }
 

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.helix.task.factory;
 
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.helix.task.base.AiravataTask;
 import org.apache.airavata.helix.task.completing.CompletingTask;
 import org.apache.airavata.helix.task.env.EnvSetupTask;
@@ -33,7 +34,6 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 

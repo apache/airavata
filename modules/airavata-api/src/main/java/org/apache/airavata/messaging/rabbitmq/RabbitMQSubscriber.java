@@ -76,7 +76,7 @@ public class RabbitMQSubscriber implements Subscriber {
     @Override
     public String listen(BiFunction<Connection, Channel, Consumer> supplier, String queueName, List<String> routingKeys)
             throws AiravataException {
-        
+
         if (connectionFactory == null) {
             throw new AiravataException("Spring AMQP ConnectionFactory not available. Use Spring-managed subscriber.");
         }
@@ -84,29 +84,29 @@ public class RabbitMQSubscriber implements Subscriber {
         try {
             // Generate unique ID for this listener
             String id = UUID.randomUUID().toString();
-            
+
             // Create or declare queue
             String actualQueueName = queueName != null ? queueName : "airavata.queue." + id;
             Queue queue = new Queue(actualQueueName, true, false, false);
             rabbitAdmin.declareQueue(queue);
-            
-            // Declare exchange
-            TopicExchange exchange = new TopicExchange(properties.getExchangeName(), true, false);
+
+            // Declare exchange with same durability setting as publisher for consistency
+            TopicExchange exchange = new TopicExchange(properties.getExchangeName(), properties.isDurable(), false);
             rabbitAdmin.declareExchange(exchange);
-            
+
             // Bind queue to exchange with routing keys
             for (String routingKey : routingKeys) {
                 Binding binding = BindingBuilder.bind(queue).to(exchange).with(routingKey);
                 rabbitAdmin.declareBinding(binding);
             }
-            
+
             // Create message listener container
             SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
             container.setConnectionFactory(connectionFactory);
             container.setQueueNames(actualQueueName);
             container.setPrefetchCount(properties.getPrefetchCount() > 0 ? properties.getPrefetchCount() : 10);
             container.setAcknowledgeMode(properties.isAutoAck() ? AcknowledgeMode.AUTO : AcknowledgeMode.MANUAL);
-            
+
             // Wrap the legacy Consumer in a ChannelAwareMessageListener
             container.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
                 // Get the underlying RabbitMQ connection and channel
@@ -115,40 +115,34 @@ public class RabbitMQSubscriber implements Subscriber {
                     // Create envelope-like object for compatibility
                     com.rabbitmq.client.Envelope envelope = new com.rabbitmq.client.Envelope(
                             message.getMessageProperties().getDeliveryTag(),
-                            message.getMessageProperties().getRedelivered() != null && 
-                                message.getMessageProperties().getRedelivered(),
+                            message.getMessageProperties().getRedelivered() != null
+                                    && message.getMessageProperties().getRedelivered(),
                             properties.getExchangeName(),
-                            message.getMessageProperties().getReceivedRoutingKey()
-                    );
-                    
+                            message.getMessageProperties().getReceivedRoutingKey());
+
                     // Create basic properties
-                    com.rabbitmq.client.AMQP.BasicProperties basicProps = 
+                    com.rabbitmq.client.AMQP.BasicProperties basicProps =
                             new com.rabbitmq.client.AMQP.BasicProperties.Builder()
-                                .contentType(message.getMessageProperties().getContentType())
-                                .deliveryMode(2) // persistent
-                                .build();
-                    
+                                    .contentType(message.getMessageProperties().getContentType())
+                                    .deliveryMode(2) // persistent
+                                    .build();
+
                     try {
-                        consumer.handleDelivery(
-                                properties.getConsumerTag(),
-                                envelope,
-                                basicProps,
-                                message.getBody()
-                        );
+                        consumer.handleDelivery(properties.getConsumerTag(), envelope, basicProps, message.getBody());
                     } catch (Exception e) {
                         log.error("Error handling message delivery", e);
                     }
                 }
             });
-            
+
             container.start();
-            
+
             // Store listener details for later cleanup
             listenerMap.put(id, new ListenerDetail(container, actualQueueName, routingKeys));
-            
+
             log.info("Started listener {} for queue {} with routing keys {}", id, actualQueueName, routingKeys);
             return id;
-            
+
         } catch (Exception e) {
             String msg = "Could not create listener for exchange " + properties.getExchangeName();
             log.error(msg, e);
@@ -163,12 +157,12 @@ public class RabbitMQSubscriber implements Subscriber {
             try {
                 detail.container.stop();
                 detail.container.destroy();
-                
+
                 // Optionally delete queue
                 if (rabbitAdmin != null) {
                     rabbitAdmin.deleteQueue(detail.queueName);
                 }
-                
+
                 log.info("Stopped listener {} for queue {}", id, detail.queueName);
             } catch (Exception e) {
                 log.warn("Error stopping listener {}: {}", id, e.getMessage());

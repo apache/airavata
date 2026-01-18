@@ -411,9 +411,7 @@ public class StringUtil {
     private static final String ARG_DOT_REPLACE = "dot_replacement_value";
 
     private static String[] getChangedList(String[] args) {
-        return Arrays.stream(args)
-                .map(StringUtil::changeOption)
-                .toArray(String[]::new);
+        return Arrays.stream(args).map(StringUtil::changeOption).toArray(String[]::new);
     }
 
     private static String revertOption(String option) {

@@ -24,6 +24,7 @@ import org.apache.airavata.registry.mappers.EntityMapperConfig;
 import org.apache.airavata.sharing.entities.GroupAdminEntity;
 import org.apache.airavata.sharing.model.GroupAdmin;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * MapStruct mapper for converting between GroupAdminEntity and GroupAdmin.
@@ -33,6 +34,7 @@ public interface GroupAdminMapper {
 
     GroupAdmin toModel(GroupAdminEntity entity);
 
+    @Mapping(target = "userGroup", ignore = true) // Immutable JPA relationship (insertable=false, updatable=false)
     GroupAdminEntity toEntity(GroupAdmin model);
 
     List<GroupAdmin> toModelList(List<GroupAdminEntity> entities);

@@ -85,7 +85,7 @@ public class DatabaseCreator {
 
             // check whether the tables are already created with a query
             try (var statement = conn.createStatement();
-                 var _ = statement.executeQuery("select * from " + tableName)) {
+                    var _ = statement.executeQuery("select * from " + tableName)) {
                 // Result set auto-closed by try-with-resources
             }
         } catch (SQLException e) {
@@ -236,7 +236,7 @@ public class DatabaseCreator {
                     .getClassLoader()
                     .getResourceAsStream(getDBScriptFileName(databaseType, dbscriptName));
         }
-        
+
         try (var reader = new BufferedReader(new InputStreamReader(is))) {
             String line;
             while ((line = reader.readLine()) != null) {

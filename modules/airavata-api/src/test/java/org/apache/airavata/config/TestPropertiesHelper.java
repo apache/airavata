@@ -27,9 +27,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Helper class for managing test properties.
  * Provides utilities to get test-specific property overrides for Testcontainers services.
- * 
+ *
  * <p>Note: Since AiravataServerProperties is an immutable record, properties cannot be
- * mutated at runtime. Use @TestPropertySource annotations in tests to override properties.
+ * mutated at runtime. Use {@code @DynamicPropertySource} for Testcontainer-provided services
+ * or inline properties via {@code @SpringBootTest(properties = {...})} for static overrides.
  */
 public class TestPropertiesHelper {
 
@@ -91,7 +92,7 @@ public class TestPropertiesHelper {
             logger.debug("AiravataServerProperties is null");
             return;
         }
-        
+
         if (properties.kafka() != null) {
             logger.debug("kafka.brokerUrl: {}", properties.kafka().brokerUrl());
         }
@@ -99,7 +100,21 @@ public class TestPropertiesHelper {
             logger.debug("rabbitmq.brokerUrl: {}", properties.rabbitmq().brokerUrl());
         }
         if (properties.zookeeper() != null && properties.zookeeper().server() != null) {
-            logger.debug("zookeeper.server.connection: {}", properties.zookeeper().server().connection());
+            logger.debug(
+                    "zookeeper.server.connection: {}",
+                    properties.zookeeper().server().connection());
+        }
+        // Log IAM properties (debug level)
+        if (properties.security() != null && properties.security().iam() != null) {
+            logger.debug(
+                    "security.iam: enabled={}, serverUrl={}",
+                    properties.security().iam().enabled(),
+                    properties.security().iam().serverUrl());
+            if (properties.security().iam().superAdmin() != null) {
+                logger.debug(
+                        "security.iam.superAdmin: username={}",
+                        properties.security().iam().superAdmin().username());
+            }
         }
     }
 }

@@ -149,17 +149,30 @@ public class TaskStatusRepositoryTest extends TestBase {
 
         // Verify strict timestamp ordering
         java.util.List<TaskStatus> statuses = taskService.getTask(taskId).getTaskStatuses();
-        TaskStatus s1 = statuses.stream().filter(s -> s.getState() == TaskState.CREATED).findFirst().orElse(null);
-        TaskStatus s2 = statuses.stream().filter(s -> s.getState() == TaskState.EXECUTING).findFirst().orElse(null);
-        TaskStatus s3 = statuses.stream().filter(s -> s.getState() == TaskState.COMPLETED).findFirst().orElse(null);
+        TaskStatus s1 = statuses.stream()
+                .filter(s -> s.getState() == TaskState.CREATED)
+                .findFirst()
+                .orElse(null);
+        TaskStatus s2 = statuses.stream()
+                .filter(s -> s.getState() == TaskState.EXECUTING)
+                .findFirst()
+                .orElse(null);
+        TaskStatus s3 = statuses.stream()
+                .filter(s -> s.getState() == TaskState.COMPLETED)
+                .findFirst()
+                .orElse(null);
 
         assertNotNull(s1);
         assertNotNull(s2);
         assertNotNull(s3);
 
-        assertTrue(s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
-                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 (" + s1.getTimeOfStateChange() + ")");
-        assertTrue(s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
-                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 (" + s2.getTimeOfStateChange() + ")");
+        assertTrue(
+                s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
+                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 ("
+                        + s1.getTimeOfStateChange() + ")");
+        assertTrue(
+                s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
+                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 ("
+                        + s2.getTimeOfStateChange() + ")");
     }
 }

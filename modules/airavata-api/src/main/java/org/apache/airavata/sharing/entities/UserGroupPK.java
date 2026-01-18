@@ -50,9 +50,10 @@ public class UserGroupPK implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || (o instanceof UserGroupPK that &&
-                Objects.equals(groupId, that.groupId) &&
-                Objects.equals(domainId, that.domainId));
+        return this == o
+                || (o instanceof UserGroupPK that
+                        && Objects.equals(groupId, that.groupId)
+                        && Objects.equals(domainId, that.domainId));
     }
 
     @Override

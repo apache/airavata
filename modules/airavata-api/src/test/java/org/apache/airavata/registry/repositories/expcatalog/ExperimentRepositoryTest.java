@@ -1,21 +1,22 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,7 +95,8 @@ public class ExperimentRepositoryTest extends TestBase {
 
         ExperimentModel retrievedExperiment = experimentService.getExperiment(experimentId);
         int emailCount = retrievedExperiment.getEmailAddresses() != null
-                ? retrievedExperiment.getEmailAddresses().size() : 0;
+                ? retrievedExperiment.getEmailAddresses().size()
+                : 0;
         assertEquals(0, emailCount);
 
         experimentModel.setDescription("description");
@@ -108,7 +110,9 @@ public class ExperimentRepositoryTest extends TestBase {
         assertEquals("gateway-instance-id", retrievedExperimentModel.getGatewayInstanceId());
         assertNotNull(retrievedExperimentModel.getExperimentStatus());
         assertEquals(1, retrievedExperimentModel.getExperimentStatus().size());
-        assertEquals(ExperimentState.CREATED, retrievedExperimentModel.getExperimentStatus().get(0).getState());
+        assertEquals(
+                ExperimentState.CREATED,
+                retrievedExperimentModel.getExperimentStatus().get(0).getState());
         assertNotNull(retrievedExperimentModel.getEmailAddresses());
         assertEquals(2, retrievedExperimentModel.getEmailAddresses().size());
 
@@ -129,7 +133,8 @@ public class ExperimentRepositoryTest extends TestBase {
         computationalResourceSchedulingModel.setTotalPhysicalMemory(1333);
         computationalResourceSchedulingModel.setWallTimeLimit(77);
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
-        assertEquals(experimentId, experimentService.addUserConfigurationData(userConfigurationDataModel, experimentId));
+        assertEquals(
+                experimentId, experimentService.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
         userConfigurationDataModel.setInputStorageResourceId("storage2");
         userConfigurationDataModel.setOutputStorageResourceId("storage2");
@@ -186,7 +191,8 @@ public class ExperimentRepositoryTest extends TestBase {
 
         ExperimentModel retrievedExperimentModel = experimentService.getExperiment(experimentId);
         assertEquals(1, retrievedExperimentModel.getExperimentInputs().size());
-        InputDataObjectType retrievedInput1 = retrievedExperimentModel.getExperimentInputs().get(0);
+        InputDataObjectType retrievedInput1 =
+                retrievedExperimentModel.getExperimentInputs().get(0);
         assertEquals("name1", retrievedInput1.getName());
         assertTrue(retrievedInput1.getIsRequired());
         assertEquals(DataType.STRING, retrievedInput1.getType());

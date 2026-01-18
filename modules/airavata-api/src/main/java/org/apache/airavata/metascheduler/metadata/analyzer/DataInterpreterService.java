@@ -101,7 +101,7 @@ public class DataInterpreterService extends ServerLifecycle {
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }
-        
+
         // Scheduler is already started by Spring Boot
         if (!scheduler.isStarted()) {
             scheduler.start();
@@ -111,7 +111,8 @@ public class DataInterpreterService extends ServerLifecycle {
             try {
                 scheduler.scheduleJob(x, v);
             } catch (SchedulerException e) {
-                throw new RuntimeException("Error occurred while scheduling job " + x.getKey().getName(), e);
+                throw new RuntimeException(
+                        "Error occurred while scheduling job " + x.getKey().getName(), e);
             }
         });
     }

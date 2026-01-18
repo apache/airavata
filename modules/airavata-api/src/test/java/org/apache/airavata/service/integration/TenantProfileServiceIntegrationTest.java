@@ -23,12 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.TenantProfileService;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,6 +42,15 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         this.tenantProfileService = tenantProfileService;
     }
 
+    /**
+     * Generate a unique gateway ID using UUID to prevent collisions across test runs.
+     * @param prefix A prefix describing the test scenario
+     * @return A unique gateway ID
+     */
+    private static String uniqueGatewayId(String prefix) {
+        return prefix + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
+
     @Nested
     @DisplayName("Gateway CRUD Operations")
     class GatewayCRUDTests {
@@ -50,7 +59,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @DisplayName(
                 "Should create gateway with unique ID, name, URL, and approval status, then retrieve it successfully")
         void shouldCreateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-create-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-create");
             String gatewayName = "Test Gateway " + uniqueId;
             String gatewayURL = "https://test-gateway-" + uniqueId + ".example.com";
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
@@ -71,7 +80,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should update gateway name and persist changes while keeping ID unchanged")
         void shouldUpdateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-update-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-update");
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
@@ -93,7 +102,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get gateway by internal ID with all fields including name, URL, and approval status")
         void shouldGetGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-get-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-get");
             String gatewayName = "Test Gateway " + uniqueId;
             String gatewayURL = "https://test-gateway-" + uniqueId + ".example.com";
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
@@ -113,7 +122,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should delete gateway and verify it no longer exists")
         void shouldDeleteGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-delete-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-delete");
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
@@ -139,7 +148,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get all gateways and verify created gateway is in the list")
         void shouldGetAllGateways() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-list-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-list");
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
@@ -159,7 +168,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should get all gateways for user and verify all belong to specified user")
         void shouldGetAllGatewaysForUser() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-user-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-user");
             String requesterUsername = "test-user";
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
@@ -185,7 +194,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should check if gateway exists and verify it can be retrieved")
         void shouldCheckGatewayExists() throws TenantProfileServiceException, CredentialStoreException {
-            String uniqueId = "test-gateway-exists-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String uniqueId = uniqueGatewayId("test-gateway-exists");
             Gateway gateway = TestDataFactory.createTestGateway(uniqueId);
             gateway.setGatewayName("Test Gateway " + uniqueId);
             gateway.setGatewayURL("https://test-gateway-" + uniqueId + ".example.com");
@@ -203,7 +212,7 @@ public class TenantProfileServiceIntegrationTest extends ServiceIntegrationTestB
         @Test
         @DisplayName("Should prevent duplicate gateway creation and keep original gateway unchanged")
         void shouldPreventDuplicateGateway() throws TenantProfileServiceException, CredentialStoreException {
-            String duplicateId = "test-gateway-duplicate-" + AiravataUtils.getUniqueTimestamp().getTime();
+            String duplicateId = uniqueGatewayId("test-gateway-duplicate");
             Gateway gateway = TestDataFactory.createTestGateway(duplicateId);
             gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
             String internalId = tenantProfileService.addGateway(testAuthzToken, gateway);

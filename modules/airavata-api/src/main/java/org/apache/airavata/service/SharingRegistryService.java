@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServiceUtils;
+import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.sharing.entities.EntityPK;
 import org.apache.airavata.sharing.entities.EntityTypePK;
 import org.apache.airavata.sharing.entities.GroupAdminPK;
@@ -65,7 +66,6 @@ import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -156,24 +156,37 @@ public class SharingRegistryService {
     }
 
     public boolean isDomainExists(String domainId) throws SharingRegistryException {
-        return ServiceUtils.executeBool(() -> domainService.isExists(domainId),
-            SharingRegistryException.class, "Error checking if domain exists: domainId=%s", domainId);
+        return ServiceUtils.executeBool(
+                () -> domainService.isExists(domainId),
+                SharingRegistryException.class,
+                "Error checking if domain exists: domainId=%s",
+                domainId);
     }
 
     public boolean deleteDomain(String domainId) throws SharingRegistryException {
-        ServiceUtils.executeVoid(() -> domainService.delete(domainId),
-            SharingRegistryException.class, "Error deleting domain: domainId=%s", domainId);
+        ServiceUtils.executeVoid(
+                () -> domainService.delete(domainId),
+                SharingRegistryException.class,
+                "Error deleting domain: domainId=%s",
+                domainId);
         return true;
     }
 
     public Domain getDomain(String domainId) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> domainService.get(domainId),
-            SharingRegistryException.class, "Error getting domain: domainId=%s", domainId);
+        return ServiceUtils.execute(
+                () -> domainService.get(domainId),
+                SharingRegistryException.class,
+                "Error getting domain: domainId=%s",
+                domainId);
     }
 
     public List<Domain> getDomains(int offset, int limit) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> domainService.getAll(),
-            SharingRegistryException.class, "Error getting domains: offset=%d, limit=%d", offset, limit);
+        return ServiceUtils.execute(
+                () -> domainService.getAll(),
+                SharingRegistryException.class,
+                "Error getting domains: offset=%d, limit=%d",
+                offset,
+                limit);
     }
 
     /**
@@ -206,10 +219,7 @@ public class SharingRegistryService {
 
             Domain domain = domainService.get(user.getDomainId());
             if (domain.getInitialUserGroupId() != null) {
-                addUsersToGroup(
-                        user.getDomainId(),
-                        List.of(user.getUserId()),
-                        domain.getInitialUserGroupId());
+                addUsersToGroup(user.getDomainId(), List.of(user.getUserId()), domain.getInitialUserGroupId());
             }
 
             return user.getUserId();
@@ -249,12 +259,17 @@ public class SharingRegistryService {
     }
 
     public boolean isUserExists(String domainId, String userId) throws SharingRegistryException {
-        return ServiceUtils.executeBool(() -> {
-            UserPK userPK = new UserPK();
-            userPK.setDomainId(domainId);
-            userPK.setUserId(userId);
-            return userService.isExists(userPK);
-        }, SharingRegistryException.class, "Error checking if user exists: domainId=%s, userId=%s", domainId, userId);
+        return ServiceUtils.executeBool(
+                () -> {
+                    UserPK userPK = new UserPK();
+                    userPK.setDomainId(domainId);
+                    userPK.setUserId(userId);
+                    return userService.isExists(userPK);
+                },
+                SharingRegistryException.class,
+                "Error checking if user exists: domainId=%s, userId=%s",
+                domainId,
+                userId);
     }
 
     public boolean deleteUser(String domainId, String userId) throws SharingRegistryException {
@@ -277,20 +292,31 @@ public class SharingRegistryService {
     }
 
     public User getUser(String domainId, String userId) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> {
-            UserPK userPK = new UserPK();
-            userPK.setUserId(userId);
-            userPK.setDomainId(domainId);
-            return userService.get(userPK);
-        }, SharingRegistryException.class, "Error getting user: domainId=%s, userId=%s", domainId, userId);
+        return ServiceUtils.execute(
+                () -> {
+                    UserPK userPK = new UserPK();
+                    userPK.setUserId(userId);
+                    userPK.setDomainId(domainId);
+                    return userService.get(userPK);
+                },
+                SharingRegistryException.class,
+                "Error getting user: domainId=%s, userId=%s",
+                domainId,
+                userId);
     }
 
     public List<User> getUsers(String domain, int offset, int limit) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> {
-            HashMap<String, String> filters = new HashMap<>();
-            filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
-            return userService.select(null, filters, offset, limit);
-        }, SharingRegistryException.class, "Error getting users: domain=%s, offset=%d, limit=%d", domain, offset, limit);
+        return ServiceUtils.execute(
+                () -> {
+                    HashMap<String, String> filters = new HashMap<>();
+                    filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
+                    return userService.select(null, filters, offset, limit);
+                },
+                SharingRegistryException.class,
+                "Error getting users: domain=%s, offset=%d, limit=%d",
+                domain,
+                offset,
+                limit);
     }
 
     /**
@@ -351,40 +377,61 @@ public class SharingRegistryService {
     }
 
     public boolean isGroupExists(String domainId, String groupId) throws SharingRegistryException {
-        return ServiceUtils.executeBool(() -> {
-            UserGroupPK userGroupPK = new UserGroupPK();
-            userGroupPK.setDomainId(domainId);
-            userGroupPK.setGroupId(groupId);
-            return userGroupService.isExists(userGroupPK);
-        }, SharingRegistryException.class, "Error checking if group exists: domainId=%s, groupId=%s", domainId, groupId);
+        return ServiceUtils.executeBool(
+                () -> {
+                    UserGroupPK userGroupPK = new UserGroupPK();
+                    userGroupPK.setDomainId(domainId);
+                    userGroupPK.setGroupId(groupId);
+                    return userGroupService.isExists(userGroupPK);
+                },
+                SharingRegistryException.class,
+                "Error checking if group exists: domainId=%s, groupId=%s",
+                domainId,
+                groupId);
     }
 
     public boolean deleteGroup(String domainId, String groupId) throws SharingRegistryException {
-        ServiceUtils.executeVoid(() -> {
-            UserGroupPK userGroupPK = new UserGroupPK();
-            userGroupPK.setGroupId(groupId);
-            userGroupPK.setDomainId(domainId);
-            userGroupService.delete(userGroupPK);
-        }, SharingRegistryException.class, "Error deleting group: domainId=%s, groupId=%s", domainId, groupId);
+        ServiceUtils.executeVoid(
+                () -> {
+                    UserGroupPK userGroupPK = new UserGroupPK();
+                    userGroupPK.setGroupId(groupId);
+                    userGroupPK.setDomainId(domainId);
+                    userGroupService.delete(userGroupPK);
+                },
+                SharingRegistryException.class,
+                "Error deleting group: domainId=%s, groupId=%s",
+                domainId,
+                groupId);
         return true;
     }
 
     public UserGroup getGroup(String domainId, String groupId) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> {
-            UserGroupPK userGroupPK = new UserGroupPK();
-            userGroupPK.setGroupId(groupId);
-            userGroupPK.setDomainId(domainId);
-            return userGroupService.get(userGroupPK);
-        }, SharingRegistryException.class, "Error getting group: domainId=%s, groupId=%s", domainId, groupId);
+        return ServiceUtils.execute(
+                () -> {
+                    UserGroupPK userGroupPK = new UserGroupPK();
+                    userGroupPK.setGroupId(groupId);
+                    userGroupPK.setDomainId(domainId);
+                    return userGroupService.get(userGroupPK);
+                },
+                SharingRegistryException.class,
+                "Error getting group: domainId=%s, groupId=%s",
+                domainId,
+                groupId);
     }
 
     public List<UserGroup> getGroups(String domain, int offset, int limit) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> {
-            HashMap<String, String> filters = new HashMap<>();
-            filters.put(DBConstants.UserGroupTable.DOMAIN_ID, domain);
-            filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
-            return userGroupService.select(null, filters, offset, limit);
-        }, SharingRegistryException.class, "Error getting groups: domain=%s, offset=%d, limit=%d", domain, offset, limit);
+        return ServiceUtils.execute(
+                () -> {
+                    HashMap<String, String> filters = new HashMap<>();
+                    filters.put(DBConstants.UserGroupTable.DOMAIN_ID, domain);
+                    filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
+                    return userGroupService.select(null, filters, offset, limit);
+                },
+                SharingRegistryException.class,
+                "Error getting groups: domain=%s, offset=%d, limit=%d",
+                domain,
+                offset,
+                limit);
     }
 
     public boolean addUsersToGroup(String domainId, List<String> userIds, String groupId)
@@ -404,8 +451,10 @@ public class SharingRegistryService {
                     groupMembership.setChildId(userIds.get(i));
                     groupMembership.setChildType(GroupChildType.USER);
                     groupMembership.setDomainId(domainId);
-                    groupMembership.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
-                    groupMembership.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                    groupMembership.setCreatedTime(
+                            AiravataUtils.getUniqueTimestamp().getTime());
+                    groupMembership.setUpdatedTime(
+                            AiravataUtils.getUniqueTimestamp().getTime());
                     groupMembershipService.create(groupMembership);
                 }
             }
@@ -545,35 +594,57 @@ public class SharingRegistryService {
     }
 
     public boolean hasAdminAccess(String domainId, String groupId, String adminId) throws SharingRegistryException {
-        return ServiceUtils.executeBool(() -> {
-            GroupAdminPK groupAdminPK = new GroupAdminPK();
-            groupAdminPK.setGroupId(groupId);
-            groupAdminPK.setAdminId(adminId);
-            groupAdminPK.setDomainId(domainId);
-            return groupAdminService.get(groupAdminPK) != null;
-        }, SharingRegistryException.class, "Error checking admin access: domainId=%s, groupId=%s, adminId=%s", domainId, groupId, adminId);
+        return ServiceUtils.executeBool(
+                () -> {
+                    GroupAdminPK groupAdminPK = new GroupAdminPK();
+                    groupAdminPK.setGroupId(groupId);
+                    groupAdminPK.setAdminId(adminId);
+                    groupAdminPK.setDomainId(domainId);
+                    // Use isExists() instead of get() != null to avoid JPA first-level cache issues
+                    // where a recently deleted entity might still be returned from cache
+                    return groupAdminService.isExists(groupAdminPK);
+                },
+                SharingRegistryException.class,
+                "Error checking admin access: domainId=%s, groupId=%s, adminId=%s",
+                domainId,
+                groupId,
+                adminId);
     }
 
     public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException {
-        return ServiceUtils.executeBool(() -> {
-            UserGroupPK userGroupPK = new UserGroupPK();
-            userGroupPK.setGroupId(groupId);
-            userGroupPK.setDomainId(domainId);
-            UserGroup group = userGroupService.get(userGroupPK);
-            return group.getOwnerId().equals(ownerId);
-        }, SharingRegistryException.class, "Error checking owner access: domainId=%s, groupId=%s, ownerId=%s", domainId, groupId, ownerId);
+        return ServiceUtils.executeBool(
+                () -> {
+                    UserGroupPK userGroupPK = new UserGroupPK();
+                    userGroupPK.setGroupId(groupId);
+                    userGroupPK.setDomainId(domainId);
+                    UserGroup group = userGroupService.get(userGroupPK);
+                    return group.getOwnerId().equals(ownerId);
+                },
+                SharingRegistryException.class,
+                "Error checking owner access: domainId=%s, groupId=%s, ownerId=%s",
+                domainId,
+                groupId,
+                ownerId);
     }
 
     public List<User> getGroupMembersOfTypeUser(String domainId, String groupId, int offset, int limit)
             throws SharingRegistryException {
-        return ServiceUtils.execute(() -> groupMembershipService.getAllChildUsers(domainId, groupId),
-            SharingRegistryException.class, "Error getting group members of type user: domainId=%s, groupId=%s", domainId, groupId);
+        return ServiceUtils.execute(
+                () -> groupMembershipService.getAllChildUsers(domainId, groupId),
+                SharingRegistryException.class,
+                "Error getting group members of type user: domainId=%s, groupId=%s",
+                domainId,
+                groupId);
     }
 
     public List<UserGroup> getGroupMembersOfTypeGroup(String domainId, String groupId, int offset, int limit)
             throws SharingRegistryException {
-        return ServiceUtils.execute(() -> groupMembershipService.getAllChildGroups(domainId, groupId),
-            SharingRegistryException.class, "Error getting group members of type group: domainId=%s, groupId=%s", domainId, groupId);
+        return ServiceUtils.execute(
+                () -> groupMembershipService.getAllChildGroups(domainId, groupId),
+                SharingRegistryException.class,
+                "Error getting group members of type group: domainId=%s, groupId=%s",
+                domainId,
+                groupId);
     }
 
     public boolean addChildGroupsToParentGroup(String domainId, List<String> childIds, String groupId)
@@ -586,8 +657,10 @@ public class SharingRegistryService {
                 groupMembership.setChildId(childId);
                 groupMembership.setChildType(GroupChildType.GROUP);
                 groupMembership.setDomainId(domainId);
-                groupMembership.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
-                groupMembership.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                groupMembership.setCreatedTime(
+                        AiravataUtils.getUniqueTimestamp().getTime());
+                groupMembership.setUpdatedTime(
+                        AiravataUtils.getUniqueTimestamp().getTime());
                 groupMembershipService.create(groupMembership);
             }
             return true;
@@ -601,19 +674,29 @@ public class SharingRegistryService {
 
     public boolean removeChildGroupFromParentGroup(String domainId, String childId, String groupId)
             throws SharingRegistryException {
-        ServiceUtils.executeVoid(() -> {
-            GroupMembershipPK groupMembershipPK = new GroupMembershipPK();
-            groupMembershipPK.setParentId(groupId);
-            groupMembershipPK.setChildId(childId);
-            groupMembershipPK.setDomainId(domainId);
-            groupMembershipService.delete(groupMembershipPK);
-        }, SharingRegistryException.class, "Error removing child group from parent: domainId=%s, childId=%s, groupId=%s", domainId, childId, groupId);
+        ServiceUtils.executeVoid(
+                () -> {
+                    GroupMembershipPK groupMembershipPK = new GroupMembershipPK();
+                    groupMembershipPK.setParentId(groupId);
+                    groupMembershipPK.setChildId(childId);
+                    groupMembershipPK.setDomainId(domainId);
+                    groupMembershipService.delete(groupMembershipPK);
+                },
+                SharingRegistryException.class,
+                "Error removing child group from parent: domainId=%s, childId=%s, groupId=%s",
+                domainId,
+                childId,
+                groupId);
         return true;
     }
 
     public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
-        return ServiceUtils.execute(() -> groupMembershipService.getAllMemberGroupsForUser(domainId, userId),
-            SharingRegistryException.class, "Error getting member groups for user: domainId=%s, userId=%s", domainId, userId);
+        return ServiceUtils.execute(
+                () -> groupMembershipService.getAllMemberGroupsForUser(domainId, userId),
+                SharingRegistryException.class,
+                "Error getting member groups for user: domainId=%s, userId=%s",
+                domainId,
+                userId);
     }
 
     /**
@@ -871,7 +954,8 @@ public class SharingRegistryService {
             sharingService.create(newSharing);
 
             // creating records for inherited permissions
-            if (entity.getParentEntityId() != null && !entity.getParentEntityId().isEmpty()) {
+            if (entity.getParentEntityId() != null
+                    && !entity.getParentEntityId().isEmpty()) {
                 addCascadingPermissionsForEntity(entity);
             }
 
@@ -926,7 +1010,8 @@ public class SharingRegistryService {
             // check if parent entity changed and re-add inherited permissions
             if (!Objects.equals(oldEntity.getParentEntityId(), entity.getParentEntityId())) {
                 logger.debug("Parent entity changed for {}, updating inherited permissions", entity.getEntityId());
-                if (oldEntity.getParentEntityId() != null && !oldEntity.getParentEntityId().isEmpty()) {
+                if (oldEntity.getParentEntityId() != null
+                        && !oldEntity.getParentEntityId().isEmpty()) {
                     logger.debug(
                             "Removing inherited permissions from {} that were inherited from parent {}",
                             entity.getEntityId(),
@@ -934,7 +1019,8 @@ public class SharingRegistryService {
                     sharingService.removeAllIndirectCascadingPermissionsForEntity(
                             entity.getDomainId(), entity.getEntityId());
                 }
-                if (entity.getParentEntityId() != null && !entity.getParentEntityId().isEmpty()) {
+                if (entity.getParentEntityId() != null
+                        && !entity.getParentEntityId().isEmpty()) {
                     // re-add INDIRECT_CASCADING permissions
                     logger.debug(
                             "Adding inherited permissions to {} that are inherited from parent {}",
@@ -1148,8 +1234,10 @@ public class SharingRegistryService {
                         sharing.setSharingType(SharingType.INDIRECT_CASCADING);
                         sharing.setInheritedParentId(entityId);
                         sharing.setDomainId(domainId);
-                        sharing.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
-                        sharing.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+                        sharing.setCreatedTime(
+                                AiravataUtils.getUniqueTimestamp().getTime());
+                        sharing.setUpdatedTime(
+                                AiravataUtils.getUniqueTimestamp().getTime());
                         sharings.add(sharing);
                         entityService.getChildEntities(domainId, childEntityId).stream()
                                 .forEach(e -> temp.addLast(e));
@@ -1217,9 +1305,8 @@ public class SharingRegistryService {
             // check whether the user has permission directly or indirectly
             List<GroupMembership> parentMemberships =
                     groupMembershipService.getAllParentMembershipsForChild(domainId, userId);
-            List<String> groupIds = new ArrayList<>(parentMemberships.stream()
-                    .map(GroupMembership::getParentId)
-                    .toList());
+            List<String> groupIds = new ArrayList<>(
+                    parentMemberships.stream().map(GroupMembership::getParentId).toList());
             groupIds.add(userId);
             return sharingService.hasAccess(
                     domainId,

@@ -27,10 +27,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * Telemetry service using Spring Boot Actuator and Micrometer.
- * 
+ *
  * Prometheus metrics are exposed via Spring Boot Actuator at /actuator/prometheus
  * No manual HTTP server is needed - Actuator handles this automatically.
- * 
+ *
  * Configure via application.properties:
  *   services.telemetry.enabled=true
  *   management.endpoints.web.exposure.include=health,info,prometheus

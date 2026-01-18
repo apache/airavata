@@ -32,7 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
@@ -48,8 +47,7 @@ public class DockerServiceStartupTest {
     @Configuration
     // application.properties is auto-loaded by Spring Boot
     @EnableConfigurationProperties(AiravataServerProperties.class)
-    static class MinimalConfig {
-    }
+    static class MinimalConfig {}
 
     @Autowired
     private ApplicationContext applicationContext;

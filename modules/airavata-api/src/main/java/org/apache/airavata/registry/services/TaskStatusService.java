@@ -41,7 +41,8 @@ public class TaskStatusService {
     private final EntityManager entityManager;
 
     // Track last timestamp per task to ensure strict ordering even for rapid additions
-    private static final java.util.Map<String, Timestamp> lastTaskTimestamps = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<String, Timestamp> lastTaskTimestamps =
+            new java.util.concurrent.ConcurrentHashMap<>();
     private static final Object timestampLock = new Object();
 
     public TaskStatusService(
@@ -62,29 +63,28 @@ public class TaskStatusService {
         synchronized (timestampLock) {
             // Get cached timestamp (from previous operations in this JVM)
             Timestamp lastCached = lastTaskTimestamps.get(taskId);
-            
+
             // Query database to get the actual latest timestamp (handles distributed scenarios)
             // Flush first to ensure we see any pending changes in this transaction
             taskStatusRepository.flush();
             entityManager.flush();
-            
+
             // Use native query to get the actual latest timestamp from database
             // This bypasses JPA caching and ensures we see the real persisted data
             // Critical for distributed systems where cache might be stale
             @SuppressWarnings("unchecked")
-            List<Timestamp> timestamps = entityManager.createNativeQuery(
-                    "SELECT TIME_OF_STATE_CHANGE FROM TASK_STATUS " +
-                    "WHERE TASK_ID = ? " +
-                    "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                    "LIMIT 1")
+            List<Timestamp> timestamps = entityManager
+                    .createNativeQuery("SELECT TIME_OF_STATE_CHANGE FROM TASK_STATUS " + "WHERE TASK_ID = ? "
+                            + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                            + "LIMIT 1")
                     .setParameter(1, taskId)
                     .getResultList();
-            
+
             Timestamp dbLatest = null;
             if (!timestamps.isEmpty() && timestamps.get(0) != null) {
                 dbLatest = (Timestamp) timestamps.get(0);
             }
-            
+
             // Use the maximum of cached and database timestamp
             // This handles edge cases where:
             // 1. Cache might be stale (distributed system)
@@ -102,10 +102,10 @@ public class TaskStatusService {
             if (lastCached != null && (dbLatest == null || lastCached.compareTo(dbLatest) >= 0)) {
                 lastTimestamp = lastCached;
             }
-            
+
             // Generate base timestamp
             Timestamp baseTimestamp = AiravataUtils.getUniqueTimestamp();
-            
+
             // CRITICAL: Ensure our new timestamp is STRICTLY greater than the last one
             // This handles edge cases where timestamps might be equal due to:
             // 1. Rapid additions within same millisecond
@@ -114,7 +114,7 @@ public class TaskStatusService {
             if (lastTimestamp != null) {
                 long lastTime = lastTimestamp.getTime();
                 long baseTime = baseTimestamp.getTime();
-                
+
                 // Enforce 1 second (1000ms) gap to handle DBs with low (second) precision
                 // This ensures strict ordering even if DB truncates to seconds
                 if (baseTime < lastTime + 1000) {
@@ -127,12 +127,12 @@ public class TaskStatusService {
                 }
                 // If baseTime >= lastTime + 1000, we're good
             }
-            
+
             // Update cache with the timestamp we'll use (BEFORE returning)
             // This ensures the next call in the same JVM will see this timestamp
             // Note: addTaskStatus/updateTaskStatus will update cache again with persistedTimestamp if different
             lastTaskTimestamps.put(taskId, baseTimestamp);
-            
+
             return baseTimestamp;
         }
     }
@@ -145,18 +145,18 @@ public class TaskStatusService {
         // Get timestamp BEFORE any database operations to ensure it's truly unique
         Timestamp uniqueTimestamp = getUniqueTimestampForTask(taskId);
         taskStatus.setTimeOfStateChange(uniqueTimestamp.getTime());
-        
+
         TaskStatusEntity entity = taskStatusMapper.toEntity(taskStatus);
         entity.setTaskId(taskId);
         // CRITICAL: Set timestamp on entity BEFORE any save operations
         // This ensures our explicit timestamp is used, not database default
         entity.setTimeOfStateChange(uniqueTimestamp);
-        
+
         // Save and flush to ensure immediate persistence
         // The flush ensures the status is immediately visible to queries
         TaskStatusEntity savedEntity = taskStatusRepository.save(entity);
         taskStatusRepository.flush();
-        
+
         // CRITICAL: Verify timestamp was persisted correctly and force it if needed
         // In distributed systems, database defaults might override our timestamp
         // We must ensure our explicit timestamp is used to maintain strict ordering
@@ -164,21 +164,22 @@ public class TaskStatusService {
         if (persistedTimestamp == null || !persistedTimestamp.equals(uniqueTimestamp)) {
             // Database overrode our timestamp - force it via native update
             // This handles edge cases where database defaults interfere
-            entityManager.createNativeQuery(
-                    "UPDATE TASK_STATUS SET TIME_OF_STATE_CHANGE = ? " +
-                    "WHERE STATUS_ID = ? AND TASK_ID = ?")
+            entityManager
+                    .createNativeQuery(
+                            "UPDATE TASK_STATUS SET TIME_OF_STATE_CHANGE = ? " + "WHERE STATUS_ID = ? AND TASK_ID = ?")
                     .setParameter(1, uniqueTimestamp)
                     .setParameter(2, savedEntity.getStatusId())
                     .setParameter(3, savedEntity.getTaskId())
                     .executeUpdate();
             entityManager.flush();
-            // Reload entity to get corrected timestamp
-            entityManager.refresh(savedEntity);
-            persistedTimestamp = uniqueTimestamp; // Use our timestamp since we forced it
+            // Note: We don't call refresh() here to avoid HHH000502 warnings.
+            // The refresh would load the 'task' property which is marked as immutable.
+            // We already know the correct timestamp since we just forced it.
+            persistedTimestamp = uniqueTimestamp;
         } else {
-            persistedTimestamp = uniqueTimestamp; // Use our timestamp
+            persistedTimestamp = uniqueTimestamp;
         }
-        
+
         // CRITICAL: Update cache with the timestamp we actually persisted
         // This ensures the next status will have a timestamp strictly greater than this one
         // This is essential for handling rapid status additions in distributed systems
@@ -202,7 +203,7 @@ public class TaskStatusService {
         if (taskStatus.getStatusId() == null) {
             taskStatus.setStatusId(ExpCatalogUtils.getID("TASK_STATE"));
         }
-        
+
         // Always use unique timestamp to ensure proper ordering
         // Even if a timestamp is provided, we ensure it's greater than previous statuses
         Timestamp uniqueTimestamp;
@@ -231,39 +232,41 @@ public class TaskStatusService {
             uniqueTimestamp = getUniqueTimestampForTask(taskId);
             taskStatus.setTimeOfStateChange(uniqueTimestamp.getTime());
         }
-        
+
         TaskStatusEntity entity = taskStatusMapper.toEntity(taskStatus);
         entity.setTaskId(taskId);
         // Ensure timestamp is set correctly on the entity
         entity.setTimeOfStateChange(uniqueTimestamp);
-        
+
         // Save and flush to ensure immediate persistence
         // The flush ensures the status is immediately visible to queries
         TaskStatusEntity savedEntity = taskStatusRepository.save(entity);
         taskStatusRepository.flush();
-        
+
         // Verify timestamp was persisted correctly
         // In distributed systems, database defaults might override our timestamp
-        if (savedEntity.getTimeOfStateChange() == null || 
-            !savedEntity.getTimeOfStateChange().equals(uniqueTimestamp)) {
+        Timestamp persistedTimestamp = savedEntity.getTimeOfStateChange();
+        if (persistedTimestamp == null || !persistedTimestamp.equals(uniqueTimestamp)) {
             // Database overrode our timestamp - force it via native update
-            entityManager.createNativeQuery(
-                    "UPDATE TASK_STATUS SET TIME_OF_STATE_CHANGE = ? " +
-                    "WHERE STATUS_ID = ? AND TASK_ID = ?")
+            entityManager
+                    .createNativeQuery(
+                            "UPDATE TASK_STATUS SET TIME_OF_STATE_CHANGE = ? " + "WHERE STATUS_ID = ? AND TASK_ID = ?")
                     .setParameter(1, uniqueTimestamp)
                     .setParameter(2, savedEntity.getStatusId())
                     .setParameter(3, savedEntity.getTaskId())
                     .executeUpdate();
             entityManager.flush();
-            // Refresh to get the corrected timestamp
-            entityManager.refresh(savedEntity);
+            // Note: We don't call refresh() here to avoid HHH000502 warnings.
+            // The refresh would load the 'task' property which is marked as immutable.
+            // We already know the correct timestamp since we just forced it.
+            persistedTimestamp = uniqueTimestamp;
         }
-        
+
         // CRITICAL: Update cache with the timestamp we actually persisted
         // This ensures the next status will have a timestamp strictly greater than this one
         // This is essential for handling rapid status additions in distributed systems
         synchronized (timestampLock) {
-            Timestamp persistedTimestamp = savedEntity.getTimeOfStateChange();
+            // Use persistedTimestamp which is either the saved value or the forced uniqueTimestamp
             if (persistedTimestamp != null) {
                 Timestamp lastCached = lastTaskTimestamps.get(taskId);
                 // Always update cache to ensure strict ordering
@@ -285,21 +288,21 @@ public class TaskStatusService {
         // This is critical - flush makes uncommitted changes visible to queries in the same transaction
         taskStatusRepository.flush();
         entityManager.flush();
-        
+
         // Use native query to bypass any JPA caching and ensure we get the latest from database
         // This is critical for seeing the most recent status in the same transaction
         @SuppressWarnings("unchecked")
-        List<Object[]> results = entityManager.createNativeQuery(
-                "SELECT STATUS_ID, TASK_ID, STATE, REASON, TIME_OF_STATE_CHANGE " +
-                "FROM TASK_STATUS " +
-                "WHERE TASK_ID = ? " +
-                "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC " +
-                "LIMIT 1")
+        List<Object[]> results = entityManager
+                .createNativeQuery(
+                        "SELECT STATUS_ID, TASK_ID, STATE, REASON, TIME_OF_STATE_CHANGE " + "FROM TASK_STATUS "
+                                + "WHERE TASK_ID = ? "
+                                + "ORDER BY TIME_OF_STATE_CHANGE DESC, STATUS_ID DESC "
+                                + "LIMIT 1")
                 .setParameter(1, taskId)
                 .getResultList();
-        
+
         if (results.isEmpty()) return null;
-        
+
         // Convert native query result to entity
         Object[] row = results.get(0);
         TaskStatusEntity entity = new TaskStatusEntity();
@@ -310,11 +313,11 @@ public class TaskStatusService {
         // If it's a string in DB, you might need to map it back to enum if model uses enum
         // Assuming TaskStatusEntity uses TaskState enum for state field
         if (row[2] != null) {
-             entity.setState(org.apache.airavata.common.model.TaskState.valueOf((String) row[2]));
+            entity.setState(org.apache.airavata.common.model.TaskState.valueOf((String) row[2]));
         }
         entity.setReason((String) row[3]);
         entity.setTimeOfStateChange((java.sql.Timestamp) row[4]);
-        
+
         return taskStatusMapper.toModel(entity);
     }
 }

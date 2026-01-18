@@ -29,10 +29,10 @@ import org.springframework.context.annotation.Profile;
 
 /**
  * Composite annotation for compute monitor components.
- * 
+ *
  * <p>Combines @Profile("!test") and @ConditionalOnProperty for monitor enablement.
  * No matchIfMissing - property MUST be explicitly set.
- * 
+ *
  * <p>Usage:
  * <pre>
  * {@code @Component}
@@ -45,5 +45,4 @@ import org.springframework.context.annotation.Profile;
 @Documented
 @Profile("!test")
 @ConditionalOnProperty(prefix = "airavata.services.monitor.compute", name = "enabled", havingValue = "true")
-public @interface ConditionalOnMonitor {
-}
+public @interface ConditionalOnMonitor {}

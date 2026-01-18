@@ -66,7 +66,8 @@ public class TaskStatusEntity implements Serializable {
     @Column(name = "REASON")
     private String reason;
 
-    @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // Note: No cascade - this is a read-only relationship (insertable=false, updatable=false)
+    @ManyToOne(targetEntity = TaskEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     private TaskEntity task;
 
@@ -116,7 +117,6 @@ public class TaskStatusEntity implements Serializable {
         return task;
     }
 
-    public void setTask(TaskEntity task) {
-        this.task = task;
-    }
+    // Note: No setter for 'task' - the relationship is read-only (insertable=false, updatable=false)
+    // The taskId field should be set instead, and Hibernate will resolve the relationship via the @JoinColumn
 }

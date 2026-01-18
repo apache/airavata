@@ -102,7 +102,7 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
 
         // Enable gRPC server for agent service
         mappedProperties.put("spring.grpc.server.enabled", "true");
-        
+
         // Map services.agent.grpc.* to spring.grpc.server.*
         mapProperty("services.agent.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
         mapProperty(
@@ -110,7 +110,7 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
                 "spring.grpc.server.max-inbound-message-size",
                 mappedProperties,
                 environment);
-        
+
         // Add keepalive defaults to prevent NullPointerException
         // Note: Spring Boot gRPC requires all Duration properties to be non-null
         mapPropertyWithDefault(
@@ -182,7 +182,7 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
             logger.trace("Mapped {}={} to {}", scopedKey, value, standardKey);
         }
     }
-    
+
     private void mapPropertyWithDefault(
             String scopedKey,
             String standardKey,

@@ -145,7 +145,7 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
                 mappedProperties,
                 environment);
     }
-    
+
     private void mapPropertyWithDefault(
             String scopedKey,
             String standardKey,

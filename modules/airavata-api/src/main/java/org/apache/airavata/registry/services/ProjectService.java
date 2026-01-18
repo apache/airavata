@@ -38,7 +38,9 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
 
-    public ProjectService(@Qualifier("expCatalogProjectRepository") ProjectRepository projectRepository, ProjectMapper projectMapper) {
+    public ProjectService(
+            @Qualifier("expCatalogProjectRepository") ProjectRepository projectRepository,
+            ProjectMapper projectMapper) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
     }

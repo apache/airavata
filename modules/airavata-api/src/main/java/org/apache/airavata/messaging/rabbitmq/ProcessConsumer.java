@@ -34,7 +34,10 @@ import org.slf4j.LoggerFactory;
 
 public class ProcessConsumer extends DefaultConsumer {
     private static final Logger log = LoggerFactory.getLogger(ProcessConsumer.class);
-    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
+
+    private static ObjectMapper objectMapper() {
+        return JacksonConfig.getGlobalMapper();
+    }
 
     private MessageHandler handler;
     private Channel channel;

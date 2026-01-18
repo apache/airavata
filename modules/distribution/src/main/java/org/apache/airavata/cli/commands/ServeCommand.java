@@ -93,7 +93,7 @@ public class ServeCommand implements Runnable {
                     resolvedConfigDir);
             System.setProperty("airavata.cli.enabled", "false");
             System.setProperty("airavata.server.enabled", "true");
-            
+
             // Set ALL gRPC keepalive/duration properties as system properties to prevent NullPointerException
             // Spring Boot gRPC's DefaultServerFactoryPropertyMapper requires ALL Duration fields to be non-null
             System.setProperty("spring.grpc.server.port", "19908");
@@ -110,7 +110,7 @@ public class ServeCommand implements Runnable {
             System.setProperty("spring.grpc.server.max-inbound-metadata-size", "8KB");
             // Disable the property mapper to rely only on ServerBuilderCustomizer
             System.setProperty("spring.boot.grpc.server.property-mapper.enabled", "false");
-            
+
             SpringApplication app = new SpringApplication(AiravataServer.class);
             var defaultProps = new HashMap<String, Object>();
             defaultProps.put("spring.main.allow-bean-definition-overriding", "true");
@@ -118,7 +118,7 @@ public class ServeCommand implements Runnable {
             defaultProps.put("spring.main.lazy-initialization", "true");
             defaultProps.put("airavata.cli.enabled", "false");
             defaultProps.put("airavata.server.enabled", "true");
-            
+
             app.setDefaultProperties(defaultProps);
             app.setRegisterShutdownHook(true);
             // Start the application and keep it running

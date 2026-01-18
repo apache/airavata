@@ -168,18 +168,32 @@ public class ProcessStatusRepositoryTest extends TestBase {
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Latest status should be COMPLETED");
 
         // Verify strict timestamp ordering
-        java.util.List<ProcessStatus> statuses = processService.getProcess(processId).getProcessStatuses();
-        ProcessStatus s1 = statuses.stream().filter(s -> s.getState() == ProcessState.CREATED).findFirst().orElse(null);
-        ProcessStatus s2 = statuses.stream().filter(s -> s.getState() == ProcessState.EXECUTING).findFirst().orElse(null);
-        ProcessStatus s3 = statuses.stream().filter(s -> s.getState() == ProcessState.COMPLETED).findFirst().orElse(null);
+        java.util.List<ProcessStatus> statuses =
+                processService.getProcess(processId).getProcessStatuses();
+        ProcessStatus s1 = statuses.stream()
+                .filter(s -> s.getState() == ProcessState.CREATED)
+                .findFirst()
+                .orElse(null);
+        ProcessStatus s2 = statuses.stream()
+                .filter(s -> s.getState() == ProcessState.EXECUTING)
+                .findFirst()
+                .orElse(null);
+        ProcessStatus s3 = statuses.stream()
+                .filter(s -> s.getState() == ProcessState.COMPLETED)
+                .findFirst()
+                .orElse(null);
 
         assertNotNull(s1);
         assertNotNull(s2);
         assertNotNull(s3);
 
-        assertTrue(s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
-                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 (" + s1.getTimeOfStateChange() + ")");
-        assertTrue(s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
-                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 (" + s2.getTimeOfStateChange() + ")");
+        assertTrue(
+                s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
+                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 ("
+                        + s1.getTimeOfStateChange() + ")");
+        assertTrue(
+                s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
+                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 ("
+                        + s2.getTimeOfStateChange() + ")");
     }
 }

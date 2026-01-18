@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import javax.sql.DataSource;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.flywaydb.core.Flyway;

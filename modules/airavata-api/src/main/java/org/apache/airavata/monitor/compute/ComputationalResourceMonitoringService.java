@@ -112,7 +112,7 @@ public class ComputationalResourceMonitoringService extends ServerLifecycle {
                     .build();
             jobTriggerMap.put(jobC, trigger);
         }
-        
+
         // Scheduler is already started by Spring Boot, just schedule jobs
         if (!scheduler.isStarted()) {
             scheduler.start();

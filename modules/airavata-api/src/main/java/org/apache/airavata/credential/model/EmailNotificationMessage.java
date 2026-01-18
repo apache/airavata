@@ -23,11 +23,7 @@ package org.apache.airavata.credential.model;
  * Email notification message that contains subject and sender info.
  * Uses composition instead of inheritance from NotificationMessage.
  */
-public record EmailNotificationMessage(
-    String subject,
-    String senderEmail,
-    String message
-) {
+public record EmailNotificationMessage(String subject, String senderEmail, String message) {
     /**
      * Alias for message() to maintain backward compatibility with getMessage().
      */

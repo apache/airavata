@@ -47,7 +47,10 @@ import org.springframework.stereotype.Component;
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
-    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
+
+    private static ObjectMapper objectMapper() {
+        return JacksonConfig.getGlobalMapper();
+    }
 
     private final RegistryService registryService;
     private final RegistryServiceDBEventMessagingFactory messagingFactory;

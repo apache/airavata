@@ -31,6 +31,8 @@ import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.DataMovementInterface;
 import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.ExperimentModel;
+import org.apache.airavata.common.model.JobSubmissionInterface;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.common.model.GatewayResourceProfile;
@@ -63,7 +65,8 @@ public class TestDataFactory {
         Gateway gateway = new Gateway();
         gateway.setGatewayId(gatewayId);
         gateway.setGatewayName("Test Gateway " + gatewayId);
-        gateway.setGatewayURL("https://test-gateway.example.com");
+        // Use unique URL based on gatewayId to prevent duplicate detection across tests
+        gateway.setGatewayURL("https://" + gatewayId + ".example.com");
         gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
         gateway.setRequesterUsername("test-admin");
         return gateway;
@@ -187,6 +190,21 @@ public class TestDataFactory {
         batchQueues.add(queue);
 
         computeResource.setBatchQueues(batchQueues);
+
+        // Create JobSubmissionInterface and add to compute resource
+        JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
+        jobSubmissionInterface.setJobSubmissionInterfaceId(sshJobSubmission.getJobSubmissionInterfaceId());
+        jobSubmissionInterface.setJobSubmissionProtocol(JobSubmissionProtocol.SSH);
+        jobSubmissionInterface.setPriorityOrder(0);
+
+        List<JobSubmissionInterface> jobSubmissionInterfaces = new ArrayList<>();
+        jobSubmissionInterfaces.add(jobSubmissionInterface);
+        computeResource.setJobSubmissionInterfaces(jobSubmissionInterfaces);
+
+        // Add data movement interface to compute resource
+        List<DataMovementInterface> dataMovementInterfaces = new ArrayList<>();
+        dataMovementInterfaces.add(dataMovementInterface);
+        computeResource.setDataMovementInterfaces(dataMovementInterfaces);
 
         return computeResource;
     }

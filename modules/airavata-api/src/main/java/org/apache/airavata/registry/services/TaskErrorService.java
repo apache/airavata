@@ -19,17 +19,14 @@
 */
 package org.apache.airavata.registry.services;
 
-import jakarta.persistence.EntityManager;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.apache.airavata.common.model.ErrorModel;
-import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskErrorPK;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ErrorModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.TaskErrorRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,14 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("expCatalogTransactionManager")
 public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErrorRepository, TaskErrorPK> {
 
-    private final EntityManager entityManager;
-
     public TaskErrorService(
             TaskErrorRepository taskErrorRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
             ErrorModelMapper errorModelMapper) {
         super(taskErrorRepository, errorModelMapper);
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -87,9 +80,8 @@ public class TaskErrorService extends BaseErrorService<TaskErrorEntity, TaskErro
         if (entity.getCreationTime() == null) {
             entity.setCreationTime(org.apache.airavata.common.utils.AiravataUtils.getCurrentTimestamp());
         }
-        // Get a reference to the task entity (proxy, doesn't fetch from DB)
-        TaskEntity taskEntity = entityManager.getReference(TaskEntity.class, taskId);
-        entity.setTask(taskEntity);
+        // Note: We don't call entity.setTask() because the @JoinColumn has insertable=false.
+        // The taskId field is already set and is the only field that gets persisted.
         TaskErrorEntity saved = repository.save(entity);
         return getErrorIdExtractor().apply(saved);
     }

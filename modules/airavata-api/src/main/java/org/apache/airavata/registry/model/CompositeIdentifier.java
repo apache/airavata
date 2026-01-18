@@ -24,10 +24,7 @@ package org.apache.airavata.registry.model;
  * For example, workflow node status object can be uniquely identified with experiment id and node id.
  */
 public record CompositeIdentifier(
-        Object topLevelIdentifier,
-        Object secondLevelIdentifier,
-        Object thirdLevelIdentifier
-) {
+        Object topLevelIdentifier, Object secondLevelIdentifier, Object thirdLevelIdentifier) {
     /**
      * Compact constructor for two-level identifiers.
      */
@@ -50,15 +47,17 @@ public record CompositeIdentifier(
 
     @Override
     public String toString() {
-        return switch (this) {
-            case CompositeIdentifier(String top, String second, String third) when third != null ->
-                    top + "," + second + "," + third;
-            case CompositeIdentifier(String top, String second, _) ->
-                    top + "," + second;
-            case CompositeIdentifier(String top, _, _) ->
-                    top;
-            default ->
-                    secondLevelIdentifier != null ? secondLevelIdentifier.toString() : "";
-        };
+        if (topLevelIdentifier instanceof String top) {
+            if (secondLevelIdentifier instanceof String second) {
+                if (thirdLevelIdentifier instanceof String third) {
+                    return top + "," + second + "," + third;
+                } else {
+                    return top + "," + second;
+                }
+            } else {
+                return top;
+            }
+        }
+        return topLevelIdentifier != null ? topLevelIdentifier.toString() : "";
     }
 }

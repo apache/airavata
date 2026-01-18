@@ -50,9 +50,10 @@ public class UserPK implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || (o instanceof UserPK that &&
-                Objects.equals(userId, that.userId) &&
-                Objects.equals(domainId, that.domainId));
+        return this == o
+                || (o instanceof UserPK that
+                        && Objects.equals(userId, that.userId)
+                        && Objects.equals(domainId, that.domainId));
     }
 
     @Override

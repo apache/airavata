@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 /**
  * Integration test to verify Testcontainers setup and database schema creation.
@@ -49,7 +48,6 @@ import org.springframework.test.context.TestPropertySource;
             "security.manager.enabled=false",
             "security.authzCache.enabled=false",
         })
-@TestPropertySource(locations = "classpath:application.properties")
 @ActiveProfiles("test")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class TestcontainersSetupTest {

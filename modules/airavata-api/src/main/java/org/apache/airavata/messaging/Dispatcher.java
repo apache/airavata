@@ -33,7 +33,6 @@ import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.Project;
-import org.apache.airavata.common.model.SharingResourceType;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
@@ -50,6 +49,7 @@ import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -58,41 +58,49 @@ import org.springframework.stereotype.Component;
  * <p>For each database event, the Dispatcher:
  * <ol>
  *   <li>Makes direct service calls to RegistryService and SharingRegistryService (for local database sync)</li>
- *   <li>Always publishes to RabbitMQ (for durability and multi-instance database sync)</li>
+ *   <li>Publishes to RabbitMQ if enabled (for durability and multi-instance database sync)</li>
  * </ol>
+ *
+ * <p>RabbitMQ publishing is conditional on {@code airavata.rabbitmq.enabled=true}.
  */
 @Component
 public class Dispatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
-    private static ObjectMapper objectMapper() { return JacksonConfig.getGlobalMapper(); }
+
+    private static ObjectMapper objectMapper() {
+        return JacksonConfig.getGlobalMapper();
+    }
 
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final MessagingFactory messagingFactory;
+    private final boolean rabbitmqEnabled;
     private Publisher syncQueuePublisher = null;
 
     public Dispatcher(
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
-            MessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory,
+            @Value("${airavata.rabbitmq.enabled:false}") boolean rabbitmqEnabled) {
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.messagingFactory = messagingFactory;
+        this.rabbitmqEnabled = rabbitmqEnabled;
     }
 
     /**
-     * Dispatch DB event by making direct service calls and always publishing to RabbitMQ.
+     * Dispatch DB event by making direct service calls and optionally publishing to RabbitMQ.
      *
      * <p>This method performs two independent operations:
      * <ol>
      *   <li>Makes direct service calls to RegistryService and SharingRegistryService (for local instance)</li>
-     *   <li>Always publishes to RabbitMQ (for other instances to synchronize their databases)</li>
+     *   <li>Publishes to RabbitMQ if enabled (for other instances to synchronize their databases)</li>
      * </ol>
      *
      * <p>Both operations are independent - failures in one don't prevent the other from executing.
      * This enables multi-instance database synchronization where each instance can sync with others
-     * via RabbitMQ messages.
+     * via RabbitMQ messages (when RabbitMQ is enabled).
      *
      * <p>All RabbitMQ messages use Jackson JSON serialization of domain models (never Thrift).
      *
@@ -124,15 +132,36 @@ public class Dispatcher {
             // Continue to publish to RabbitMQ - other instances can still synchronize
         }
 
-        // Step 2: Always publish to RabbitMQ (for other instances to synchronize)
-        try {
-            publishToSyncQueue(entityType, crudType, domainModel);
+        // Step 2: Publish to RabbitMQ (for other instances to synchronize) - only if enabled and available
+        if (rabbitmqEnabled && messagingFactory.isRabbitMQAvailable()) {
+            try {
+                publishToSyncQueue(entityType, crudType, domainModel);
+                rabbitMQPublishSuccess = true;
+                logger.debug(
+                        "RabbitMQ publish completed successfully: entityType={}, crudType={}", entityType, crudType);
+            } catch (Exception e) {
+                // Log at WARN level since this is a recoverable situation - direct calls may have succeeded
+                logger.warn(
+                        "Failed to publish to RabbitMQ for DB event (direct calls may have succeeded): entityType={}, crudType={}, error={}",
+                        entityType,
+                        crudType,
+                        e.getMessage());
+                // Continue - direct calls may have succeeded
+            }
+        } else {
+            // RabbitMQ is disabled or not available - skip publishing but consider it "successful" for logic purposes
             rabbitMQPublishSuccess = true;
-            logger.debug("RabbitMQ publish completed successfully: entityType={}, crudType={}", entityType, crudType);
-        } catch (Exception e) {
-            logger.error(
-                    "Error publishing to RabbitMQ for DB event: entityType={}, crudType={}", entityType, crudType, e);
-            // Continue - direct calls may have succeeded
+            if (rabbitmqEnabled && !messagingFactory.isRabbitMQAvailable()) {
+                logger.debug(
+                        "RabbitMQ enabled but not available (missing configuration), skipping sync queue publish: entityType={}, crudType={}",
+                        entityType,
+                        crudType);
+            } else {
+                logger.debug(
+                        "RabbitMQ disabled, skipping sync queue publish: entityType={}, crudType={}",
+                        entityType,
+                        crudType);
+            }
         }
 
         // Only throw exception if both operations failed (should be rare)
@@ -294,7 +323,7 @@ public class Dispatcher {
                     Entity entity = new Entity();
                     entity.setEntityId(entityId);
                     entity.setDomainId(domainId);
-                    entity.setEntityTypeId(domainId + ":" + SharingResourceType.PROJECT.name());
+                    entity.setEntityTypeId(domainId + ":PROJECT");
                     entity.setOwnerId(project.getOwner() + "@" + domainId);
                     entity.setName(project.getName());
                     entity.setDescription(project.getDescription());
@@ -325,13 +354,14 @@ public class Dispatcher {
     }
 
     private void createEntityTypesForDomain(String domainId) {
+        // Use string literals to avoid class loading issues with SharingResourceType enum
         String[] entityTypeNames = {
             "PROJECT",
             "EXPERIMENT",
             "FILE",
-            SharingResourceType.APPLICATION_DEPLOYMENT.name(),
-            SharingResourceType.GROUP_RESOURCE_PROFILE.name(),
-            SharingResourceType.CREDENTIAL_TOKEN.name()
+            "APPLICATION_DEPLOYMENT",
+            "GROUP_RESOURCE_PROFILE",
+            "CREDENTIAL_TOKEN"
         };
 
         for (String entityTypeName : entityTypeNames) {

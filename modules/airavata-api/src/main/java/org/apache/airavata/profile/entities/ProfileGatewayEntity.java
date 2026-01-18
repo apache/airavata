@@ -241,7 +241,8 @@ public class ProfileGatewayEntity {
 
     @PrePersist
     void createdAt() {
-        this.setRequestCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp().getTime());
+        this.setRequestCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
+                .getTime());
     }
 
     @Override

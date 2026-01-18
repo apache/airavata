@@ -99,27 +99,56 @@ public class EntityService {
             var cb = entityManager.getCriteriaBuilder();
             var query = cb.createQuery(EntityEntity.class);
             var entityRoot = query.from(EntityEntity.class);
-            var sharingRoot = query.from(SharingEntity.class);
 
             var predicates = new ArrayList<Predicate>();
 
             // Domain filter
             predicates.add(cb.equal(entityRoot.get("domainId"), domainId));
-            predicates.add(cb.equal(sharingRoot.get("domainId"), domainId));
 
-            // Join condition: entity.entityId = sharing.entityId AND entity.domainId = sharing.domainId
-            predicates.add(cb.equal(entityRoot.get("entityId"), sharingRoot.get("entityId")));
-            predicates.add(cb.equal(entityRoot.get("domainId"), sharingRoot.get("domainId")));
+            // Extract PERMISSION_TYPE_ID filter for use in subquery (it's on SharingEntity, not EntityEntity)
+            String permissionTypeFilter = null;
+            if (filters != null) {
+                for (var criteria : filters) {
+                    if (criteria.getSearchField() == EntitySearchField.PERMISSION_TYPE_ID
+                            && criteria.getValue() != null) {
+                        permissionTypeFilter = criteria.getValue();
+                        break;
+                    }
+                }
+            }
 
-            // Group access filter - user must have access through one of the groups
-            predicates.add(sharingRoot.get("groupId").in(groupIds));
+            // Use subquery to check for sharing access (Hibernate 6 doesn't allow multiple roots)
+            var sharingSubquery = query.subquery(String.class);
+            var sharingRoot = sharingSubquery.from(SharingEntity.class);
+            sharingSubquery.select(sharingRoot.get("entityId"));
 
-            // Apply search criteria filters
+            // Build subquery conditions
+            var sharingConditions = new ArrayList<Predicate>();
+            sharingConditions.add(cb.equal(sharingRoot.get("domainId"), domainId));
+            sharingConditions.add(cb.equal(sharingRoot.get("entityId"), entityRoot.get("entityId")));
+            sharingConditions.add(sharingRoot.get("groupId").in(groupIds));
+
+            // Add permission type filter to subquery if specified
+            if (permissionTypeFilter != null) {
+                sharingConditions.add(cb.equal(sharingRoot.get("permissionTypeId"), permissionTypeFilter));
+            }
+
+            sharingSubquery.where(cb.and(sharingConditions.toArray(new Predicate[0])));
+
+            // Entity must have a sharing record for one of the user's groups
+            predicates.add(cb.exists(sharingSubquery));
+
+            // Apply search criteria filters (excluding PERMISSION_TYPE_ID which is handled above)
             if (filters != null && !filters.isEmpty()) {
                 for (var criteria : filters) {
                     if (criteria.getSearchField() == null
                             || criteria.getValue() == null
                             || criteria.getSearchCondition() == null) {
+                        continue;
+                    }
+
+                    // Skip PERMISSION_TYPE_ID as it's handled in the subquery
+                    if (criteria.getSearchField() == EntitySearchField.PERMISSION_TYPE_ID) {
                         continue;
                     }
 
@@ -214,7 +243,7 @@ public class EntityService {
             case CREATED_TIME -> root.get("originalEntityCreationTime");
             case UPDATED_TIME -> root.get("updatedTime");
             case ENTITY_TYPE_ID -> root.get("entityTypeId");
-            case SHARED_COUNT -> null; // Will be handled separately - requires a subquery to count sharings
+            case SHARED_COUNT -> root.get("sharedCount");
             default -> null;
         };
     }
