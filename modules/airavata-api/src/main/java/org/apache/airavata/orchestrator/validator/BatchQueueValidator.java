@@ -30,7 +30,7 @@ import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,14 +63,14 @@ public class BatchQueueValidator implements JobMetadataValidator {
                 }
             }
             validationResults.setValidationResultList(validatorResultList);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException("Error while validating", e);
         }
         return validationResults;
     }
 
     private List<ValidatorResult> validateUserConfiguration(ExperimentModel experiment, ProcessModel processModel)
-            throws RegistryServiceException {
+            throws RegistryException {
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
         ComputationalResourceSchedulingModel computationalResourceScheduling =

@@ -24,7 +24,7 @@ services:
     ports:
       - "18080:18080"
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/18080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      test: ["CMD", "curl", "-f", "http://localhost:18080/health/ready"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -59,81 +59,17 @@ services:
       retries: 5
       start_period: 30s
 
-  rabbitmq:
-    image: rabbitmq:3.13-management
-    container_name: rabbitmq
+  redis:
+    image: redis:7-alpine
+    container_name: redis
     restart: always
-    environment:
-      RABBITMQ_DEFAULT_VHOST: develop
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
     networks:
       - airavata-network
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "6379:6379"
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 30s
-
-  zookeeper:
-    image: zookeeper:3.9
-    container_name: zookeeper
-    restart: always
-    environment:
-      ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
-    networks:
-      - airavata-network
-    ports:
-      - "2181:2181"
-    healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-
-  kafka:
-    image: confluentinc/cp-kafka:7.6.0
-    container_name: kafka
-    restart: always
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    networks:
-      - airavata-network
-    ports:
-      - "9092:9092"
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-
-  adminer:
-    image: adminer:latest
-    container_name: adminer
-    restart: always
-    networks:
-      - airavata-network
-    ports:
-      - "18088:8080"
-    depends_on:
-      db:
-        condition: service_healthy
+      start_period: 10s

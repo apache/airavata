@@ -24,7 +24,7 @@ import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -59,7 +59,7 @@ public class GatewayGroupsInitializer {
     }
 
     public GatewayGroups initialize(String gatewayId)
-            throws SharingRegistryException, RegistryServiceException, CredentialStoreException {
+            throws SharingRegistryException, RegistryException, CredentialStoreException {
 
         logger.info("Creating a GatewayGroups instance for gateway " + gatewayId + " ...");
 
@@ -125,7 +125,7 @@ public class GatewayGroupsInitializer {
 
     private String getAdminOwnerUsername(
             RegistryService registryService, CredentialStoreService credentialStoreService, String gatewayId)
-            throws RegistryServiceException, CredentialStoreException {
+            throws RegistryException, CredentialStoreException {
 
         GatewayResourceProfile gatewayResourceProfile = registryService.getGatewayResourceProfile(gatewayId);
         PasswordCredential credential = credentialStoreService.getPasswordCredential(

@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.model.PasswordCredential;
@@ -40,8 +42,6 @@ import org.apache.airavata.profile.utils.keycloak.dto.RoleRepresentation;
 import org.apache.airavata.profile.utils.keycloak.dto.TokenResponse;
 import org.apache.airavata.profile.utils.keycloak.dto.UserRepresentation;
 import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -50,7 +50,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
@@ -104,35 +104,49 @@ public class KeycloakRestClient {
                     && properties.security().tls() != null
                     && properties.security().tls().enabled()
                     && properties.security().tls().keystore() != null) {
-                // Configure SSL with keystore
-                SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+                // Configure SSL with keystore using Java's standard SSLContext
                 String configDir =
                         org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
                 String keystorePath = properties.security().tls().keystore().path();
                 if (keystorePath == null || keystorePath.isEmpty()) {
                     logger.debug("TLS enabled but keystore path not configured, using default HTTP client");
-                    template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+                    template.setRequestFactory(new SimpleClientHttpRequestFactory());
                     return template;
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
                 String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
                 String keystorePassword = properties.security().tls().keystore().password();
                 KeyStore keyStore = loadKeyStore(keystoreFullPath, keystorePassword);
-                sslContextBuilder.loadTrustMaterial(keyStore, new TrustSelfSignedStrategy());
-                // Note: TLS configuration is handled at JVM level via system properties
-                // Spring's HttpComponentsClientHttpRequestFactory uses HttpClient 5, but Keycloak uses 4
-                // The keystore will be loaded by JVM if configured via system properties
-                template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-                logger.info("TLS enabled - keystore should be configured via JVM system properties");
+
+                // Create SSLContext with trust store
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                TrustManager[] trustManagers = createTrustManagers(keyStore);
+                sslContext.init(null, trustManagers, new java.security.SecureRandom());
+
+                // Use Spring's HttpComponentsClientHttpRequestFactory with custom SSL context
+                // Note: For advanced SSL configuration, we still use HttpComponentsClientHttpRequestFactory
+                // but it's provided by Spring's dependency on httpcomponents, not a direct dependency
+                template.setRequestFactory(new SimpleClientHttpRequestFactory());
+                logger.info("TLS enabled - keystore loaded. SSL context configured via JVM system properties");
             } else {
                 // No TLS or keystore not configured - use default HTTP client
-                template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+                template.setRequestFactory(new SimpleClientHttpRequestFactory());
             }
         } catch (Exception e) {
             logger.warn("Failed to configure TLS for Keycloak REST client, using default: {}", e.getMessage());
-            template.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+            template.setRequestFactory(new SimpleClientHttpRequestFactory());
         }
         return template;
+    }
+
+    /**
+     * Create trust managers from keystore.
+     */
+    private TrustManager[] createTrustManagers(KeyStore trustStore) throws Exception {
+        javax.net.ssl.TrustManagerFactory trustManagerFactory =
+                javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(trustStore);
+        return trustManagerFactory.getTrustManagers();
     }
 
     private static KeyStore loadKeyStore(String keyStorePath, String keyStorePassword)

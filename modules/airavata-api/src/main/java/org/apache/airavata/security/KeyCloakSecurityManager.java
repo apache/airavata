@@ -40,7 +40,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.security.authzcache.AuthzCacheEntry;
 import org.apache.airavata.security.authzcache.AuthzCacheIndex;
-import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
+import org.apache.airavata.security.authzcache.AuthzCacheManager;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
@@ -108,7 +108,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final RegistryService registryService;
     private final SharingRegistryService sharingRegistryService;
     private final AiravataServerProperties properties;
-    private final AuthzCacheManagerFactory authzCacheManagerFactory;
+    private final AuthzCacheManager authzCacheManager;
     private final GatewayGroupsInitializer gatewayGroupsInitializer;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
@@ -117,13 +117,13 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             RegistryService registryService,
             SharingRegistryService sharingRegistryService,
             AiravataServerProperties properties,
-            AuthzCacheManagerFactory authzCacheManagerFactory,
+            AuthzCacheManager authzCacheManager,
             GatewayGroupsInitializer gatewayGroupsInitializer)
             throws AiravataSecurityException {
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
         this.properties = properties;
-        this.authzCacheManagerFactory = authzCacheManagerFactory;
+        this.authzCacheManager = authzCacheManager;
         this.gatewayGroupsInitializer = gatewayGroupsInitializer;
         rolePermissionConfig.put("admin", "/airavata/.*");
         rolePermissionConfig.put("gateway-provider", "/airavata/.*");
@@ -205,9 +205,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
             boolean decision;
             if (properties.security().authzCache().enabled()) {
-                var authzCacheManager = authzCacheManagerFactory.getAuthzCacheManager();
                 var cacheIndex = new AuthzCacheIndex(subject, gatewayId, accessToken, action);
-                var authzCachedStatus = authzCacheManager.getAuthzCachedStatus(cacheIndex);
+                var authzCachedStatus = this.authzCacheManager.getAuthzCachedStatus(cacheIndex);
                 switch (authzCachedStatus) {
                     case AUTHORIZED -> decision = true;
                     case NOT_AUTHORIZED -> decision = false;
@@ -216,7 +215,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                         decision = hasPermission(gatewayGroupMembership, action);
                         // TODO get the actual token expiration time
                         var currentTime = AiravataUtils.getUniqueTimestamp().getTime();
-                        authzCacheManager.addToAuthzCache(
+                        this.authzCacheManager.addToAuthzCache(
                                 new AuthzCacheIndex(subject, gatewayId, accessToken, action),
                                 new AuthzCacheEntry(decision, currentTime + 1000 * 60 * 60, currentTime));
                     }

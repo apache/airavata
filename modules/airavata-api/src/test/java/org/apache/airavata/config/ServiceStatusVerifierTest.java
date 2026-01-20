@@ -19,8 +19,12 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -153,23 +157,23 @@ public class ServiceStatusVerifierTest {
     }
 
     @Test
-    public void testIsServiceEnabled_HelixController() {
-        assertTrue(verifier.isServiceEnabled("helix-controller"));
+    public void testIsServiceEnabled_Controller() {
+        assertTrue(verifier.isServiceEnabled("controller"));
 
         var disabledProps =
                 createMockProperties(true, true, false, true, true, true, true, true, true, true, true, true, true);
         var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
-        assertFalse(disabledVerifier.isServiceEnabled("helix-controller"));
+        assertFalse(disabledVerifier.isServiceEnabled("controller"));
     }
 
     @Test
-    public void testIsServiceEnabled_HelixParticipant() {
-        assertTrue(verifier.isServiceEnabled("helix-participant"));
+    public void testIsServiceEnabled_Participant() {
+        assertTrue(verifier.isServiceEnabled("participant"));
 
         var disabledProps =
                 createMockProperties(true, true, true, false, true, true, true, true, true, true, true, true, true);
         var disabledVerifier = new ServiceStatusVerifier(applicationContext, disabledProps);
-        assertFalse(disabledVerifier.isServiceEnabled("helix-participant"));
+        assertFalse(disabledVerifier.isServiceEnabled("participant"));
     }
 
     @Test
@@ -212,7 +216,7 @@ public class ServiceStatusVerifierTest {
         assertTrue(serviceNames.size() > 0);
         assertTrue(serviceNames.contains("thrift-api"));
         assertTrue(serviceNames.contains("rest-api"));
-        assertTrue(serviceNames.contains("helix-controller"));
+        assertTrue(serviceNames.contains("controller"));
     }
 
     @Test

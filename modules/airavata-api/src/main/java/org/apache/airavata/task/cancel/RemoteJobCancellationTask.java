@@ -1,0 +1,240 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.task.cancel;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.common.model.JobStatus;
+import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.task.TaskDef;
+import org.apache.airavata.task.TaskHelper;
+import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.base.AiravataTask;
+import org.apache.airavata.task.base.TaskContext;
+import org.apache.airavata.task.submission.JobFactory;
+import org.apache.airavata.task.submission.JobManagerConfiguration;
+import org.apache.airavata.task.submission.RawCommandInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@TaskDef(name = "Remote Job Cancellation Task")
+@Component
+@ConditionalOnParticipant
+public class RemoteJobCancellationTask extends AiravataTask {
+
+    private static final Logger logger = LoggerFactory.getLogger(RemoteJobCancellationTask.class);
+
+    public static final String JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE = "job-already-cancelled";
+
+    public RemoteJobCancellationTask(
+            org.apache.airavata.task.TaskUtil taskUtil,
+            org.springframework.context.ApplicationContext applicationContext,
+            org.apache.airavata.service.registry.RegistryService registryService,
+            org.apache.airavata.service.profile.UserProfileService userProfileService,
+            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
+            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+        super(
+                taskUtil,
+                applicationContext,
+                registryService,
+                userProfileService,
+                credentialStoreService,
+                messagingFactory);
+    }
+
+    @Override
+    public void init(String workflowName, String jobName, String taskName) {
+        super.init(workflowName, jobName, taskName);
+    }
+
+    @Override
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+        try {
+
+            List<JobModel> jobs = getRegistryService().getJobs("processId", getProcessId());
+
+            logger.info("Fetching jobs for process " + getProcessId());
+
+            if (jobs == null || jobs.size() == 0) {
+                setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
+                return onSuccess("Can not find running jobs for process " + getProcessId());
+            }
+
+            logger.info("Found " + jobs.size() + " jobs for process");
+
+            logger.info("Fetching job manager configuration for process " + getProcessId());
+
+            JobManagerConfiguration jobManagerConfiguration =
+                    JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
+                            getRegistryService(),
+                            getTaskContext().getJobSubmissionProtocol(),
+                            getTaskContext().getPreferredJobSubmissionInterface()));
+
+            AgentAdaptor adaptor = taskHelper
+                    .getAdaptorSupport()
+                    .fetchAdaptor(
+                            getTaskContext().getGatewayId(),
+                            getTaskContext().getComputeResourceId(),
+                            getTaskContext().getJobSubmissionProtocol(),
+                            getTaskContext().getComputeResourceCredentialToken(),
+                            getTaskContext().getComputeResourceLoginUserName());
+
+            for (JobModel job : jobs) {
+
+                try {
+                    logger.info("Fetching current job status for job id " + job.getJobId());
+
+                    if (job.getJobStatuses() != null) {
+                        // first check the monitoring job status
+                        JobStatus lastReceivedStatus = job.getJobStatuses().stream()
+                                .sorted(Comparator.comparing(JobStatus::getTimeOfStateChange)
+                                        .reversed())
+                                .collect(Collectors.toList())
+                                .get(0);
+                        logger.info("Job " + job.getJobId() + " state is "
+                                + lastReceivedStatus.getJobState().name() + " according to monitoring");
+                        switch (lastReceivedStatus.getJobState()) {
+                            case FAILED:
+                            case CANCELED:
+                            case COMPLETE:
+                            case SUSPENDED:
+                                // if the job already is in above states, there is no use of trying cancellation
+                                // setting context variable to be used in the Cancel Completing Task
+                                setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
+                                logger.warn("Job " + job.getJobId()
+                                        + " already is in a saturated state according to monitoring");
+                                continue;
+                            case SUBMITTED:
+                            case ACTIVE:
+                            case UNKNOWN:
+                            case NON_CRITICAL_FAIL:
+                            case QUEUED:
+                            default:
+                                // Continue with cancellation attempt for these states
+                                break;
+                        }
+                    }
+
+                    // if monitoring status is not saturated, got to cluster and check
+                    RawCommandInfo monitorCommand = jobManagerConfiguration.getMonitorCommand(job.getJobId());
+                    CommandOutput jobMonitorOutput = adaptor.executeCommand(monitorCommand.getRawCommand(), null);
+
+                    if (jobMonitorOutput.getExitCode() == 0) {
+                        JobStatus jobStatus = jobManagerConfiguration
+                                .getParser()
+                                .parseJobStatus(job.getJobId(), jobMonitorOutput.getStdOut());
+                        if (jobStatus != null) {
+                            logger.info("Job " + job.getJobId() + " state is "
+                                    + jobStatus.getJobState().name() + " according to cluster");
+                            switch (jobStatus.getJobState()) {
+                                case COMPLETE:
+                                case CANCELED:
+                                case SUSPENDED:
+                                case FAILED:
+                                    // if the job already is in above states, there is no use of trying cancellation
+                                    // setting context variable to be used in the Cancel Completing Task
+                                    setContextVariable(JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE, "true");
+                                    logger.warn("Job " + job.getJobId()
+                                            + " already is in a saturated state according to cluster");
+                                    continue;
+                                case SUBMITTED:
+                                case ACTIVE:
+                                case UNKNOWN:
+                                case NON_CRITICAL_FAIL:
+                                case QUEUED:
+                                default:
+                                    // Continue with cancellation attempt for these states
+                                    break;
+                            }
+                        } else {
+                            logger.warn("Job status for job " + job.getJobId() + " is null. Std out "
+                                    + jobMonitorOutput.getStdOut() + ". Std err " + jobMonitorOutput.getStdError()
+                                    + ". Job monitor command " + monitorCommand.getRawCommand());
+                        }
+                    } else {
+                        logger.warn("Error while fetching the job " + job.getJobId() + " status. Std out "
+                                + jobMonitorOutput.getStdOut() + ". Std err " + jobMonitorOutput.getStdError()
+                                + ". Job monitor command " + monitorCommand.getRawCommand());
+                    }
+                } catch (Exception e) {
+                    logger.error("Unknown error while fetching the job status but continuing..", e);
+                }
+
+                try {
+                    logger.info("Cancelling job " + job.getJobId() + " of process " + getProcessId());
+                    RawCommandInfo cancelCommand = jobManagerConfiguration.getCancelCommand(job.getJobId());
+
+                    logger.info("Command to cancel the job " + job.getJobId() + " : " + cancelCommand.getRawCommand());
+
+                    logger.info("Running cancel command on compute host");
+                    CommandOutput jobCancelOutput = adaptor.executeCommand(cancelCommand.getRawCommand(), null);
+
+                    if (jobCancelOutput.getExitCode() != 0) {
+                        logger.warn("Failed to execute job cancellation command for job " + job.getJobId() + " Sout : "
+                                + jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError());
+                        // return onFail("Failed to execute job cancellation command for job " + jobId + " Sout : " +
+                        //        jobCancelOutput.getStdOut() + ", Serr : " + jobCancelOutput.getStdError(), true,
+                        // null);
+                    }
+                } catch (Exception ex) {
+                    logger.error(
+                            "Unknown error while canceling job " + job.getJobId() + " of process " + getProcessId());
+                    return onFail(
+                            "Unknown error while canceling job " + job.getJobId() + " of process " + getProcessId(),
+                            true,
+                            ex);
+                }
+
+                // TODO: Remove this temporary fix once schedulers are configured to notify when a job is externally
+                // cancelled
+                // This is a workaround until proper job cancellation notification is implemented
+                // forcefully make the job state as cancelled as some schedulers do not notify when the job is
+                // cancelled.
+                saveAndPublishJobStatus(
+                        job.getJobId(),
+                        job.getTaskId(),
+                        getProcessId(),
+                        getExperimentId(),
+                        getGatewayId(),
+                        JobState.CANCELED);
+            }
+
+            logger.info("Successfully completed job cancellation task");
+            return onSuccess("Successfully completed job cancellation task");
+
+        } catch (Exception e) {
+            logger.error("Unknown error while canceling jobs of process " + getProcessId());
+            return onFail("Unknown error while canceling jobs of process " + getProcessId(), true, e);
+        }
+    }
+
+    /**
+     * Called when the task is cancelled.
+     * Cancellation logic is handled in the onRun method's catch block.
+     */
+    @Override
+    public void onCancel(TaskContext taskContext) {}
+}

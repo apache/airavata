@@ -78,7 +78,7 @@ public class ThriftModeStartupTest {
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning",
-                "org.apache.airavata.helix",
+                "org.apache.airavata.dapr",
                 "org.apache.airavata.manager.dbevent"
             })
     static class TestConfiguration {}
@@ -89,7 +89,8 @@ public class ThriftModeStartupTest {
     @Test
     public void testDBEventDispatcherIsEnabled() {
 
-        String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
+        String[] beanNames =
+                applicationContext.getBeanNamesForType(org.apache.airavata.dapr.messaging.Dispatcher.class);
         int dispatcherCount = beanNames.length;
 
         assertTrue(dispatcherCount > 0, "Dispatcher should be available (replaces DBEventManagerRunner)");

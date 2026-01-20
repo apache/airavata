@@ -63,7 +63,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
     }
 
     @BeforeEach
-    public void setUp() throws RegistryException {
+    public void setUp() throws RegistryException, RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
@@ -87,7 +87,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testExperimentStatusRepository_InitialStatusCreation() throws RegistryException {
+    public void testExperimentStatusRepository_InitialStatusCreation() throws RegistryException, RegistryException {
 
         assertEquals(
                 1,
@@ -103,7 +103,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testExperimentStatusRepository_StateTransitions() throws RegistryException {
+    public void testExperimentStatusRepository_StateTransitions() throws RegistryException, RegistryException {
 
         ExperimentStatus validatedStatus = new ExperimentStatus();
         validatedStatus.setState(ExperimentState.VALIDATED);

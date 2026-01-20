@@ -33,24 +33,32 @@ import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.model.JobStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.common.model.ProcessState;
+import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.TaskModel;
+import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.messaging.MessageHandler;
-import org.apache.airavata.messaging.MessageVerificationUtils;
-import org.apache.airavata.messaging.Publisher;
-import org.apache.airavata.messaging.Subscriber;
-import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
-import org.apache.airavata.monitor.JobStateValidator;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.MessageHandler;
+import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
+import org.apache.airavata.dapr.messaging.Publisher;
+import org.apache.airavata.dapr.messaging.Subscriber;
+import org.apache.airavata.dapr.messaging.Type;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
 import org.apache.airavata.registry.services.JobStatusService;
 import org.apache.airavata.registry.services.ProcessService;
+import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
+import org.apache.airavata.statemachine.JobStateValidator;
+import org.apache.airavata.statemachine.ProcessStateValidator;
+import org.apache.airavata.statemachine.StateTransitionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,35 +88,12 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.rabbitmq.enabled=true",
+            "airavata.dapr.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
 public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegrationTestBase {
-
-    /**
-     * Inject messaging container URLs into Spring properties before context loads.
-     */
-    @org.springframework.test.context.DynamicPropertySource
-    static void configureMessaging(org.springframework.test.context.DynamicPropertyRegistry registry) {
-        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-        String keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
-
-        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
-        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
-        registry.add("airavata.rabbitmq.experiment-exchange-name", () -> "experiment_exchange");
-        registry.add("airavata.rabbitmq.experiment-launch-queue-name", () -> "experiment.launch.queue");
-        registry.add("airavata.rabbitmq.process-exchange-name", () -> "process_exchange");
-        registry.add("airavata.rabbitmq.status-exchange-name", () -> "status_exchange");
-        registry.add("airavata.rabbitmq.db-event-exchange-name", () -> "dbevent_exchange");
-        registry.add("airavata.rabbitmq.durable-queue", () -> "false");
-        registry.add("airavata.rabbitmq.prefetch-count", () -> "200");
-        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
-        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
-    }
 
     @Configuration
     @ComponentScan(
@@ -132,12 +117,13 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
+    private final ProcessStatusService processStatusService;
     private final TaskService taskService;
     private final JobService jobService;
     private final JobStatusService jobStatusService;
 
     @Autowired(required = false)
-    private MessagingFactory messagingFactory;
+    private DaprMessagingFactory messagingFactory;
 
     private TestHierarchy testHierarchy;
 
@@ -146,6 +132,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
+            ProcessStatusService processStatusService,
             TaskService taskService,
             JobService jobService,
             JobStatusService jobStatusService) {
@@ -153,6 +140,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
+        this.processStatusService = processStatusService;
         this.taskService = taskService;
         this.jobService = jobService;
         this.jobStatusService = jobStatusService;
@@ -212,7 +200,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
         // state validator allows this transition
         assertTrue(
-                JobStateValidator.isValid(JobState.SUBMITTED, JobState.FAILED),
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.FAILED),
                 "SUBMITTED -> FAILED should be a valid transition");
     }
 
@@ -232,7 +220,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Final state should be ACTIVE");
 
         assertTrue(
-                JobStateValidator.isValid(JobState.QUEUED, JobState.ACTIVE),
+                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.ACTIVE),
                 "QUEUED -> ACTIVE should be a valid transition");
     }
 
@@ -258,7 +246,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Final state should be ACTIVE");
 
         assertTrue(
-                JobStateValidator.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
+                JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
                 "NON_CRITICAL_FAIL -> QUEUED should be a valid transition");
     }
 
@@ -267,17 +255,17 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         // Test that invalid transitions are rejected by JobStateValidator
         // COMPLETE -> SUBMITTED should be invalid
         assertFalse(
-                JobStateValidator.isValid(JobState.COMPLETE, JobState.SUBMITTED),
+                JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.SUBMITTED),
                 "COMPLETE -> SUBMITTED should be an invalid transition");
 
         // FAILED -> SUBMITTED should be invalid
         assertFalse(
-                JobStateValidator.isValid(JobState.FAILED, JobState.SUBMITTED),
+                JobStateValidator.INSTANCE.isValid(JobState.FAILED, JobState.SUBMITTED),
                 "FAILED -> SUBMITTED should be an invalid transition");
 
         // CANCELED -> ACTIVE should be invalid
         assertFalse(
-                JobStateValidator.isValid(JobState.CANCELED, JobState.ACTIVE),
+                JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.ACTIVE),
                 "CANCELED -> ACTIVE should be an invalid transition");
     }
 
@@ -316,8 +304,8 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
     @Test
     @DisplayName("Should verify messages are published when job status changes")
     void shouldVerifyMessagesPublishedOnJobStatusChanges() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
-            logger.warn("RabbitMQ not available, skipping messaging verification");
+        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
+            logger.warn("Dapr not available, skipping messaging verification");
             return;
         }
 
@@ -420,5 +408,102 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
                 // Note: Subscriber cleanup handled by connection close
             }
         }
+    }
+
+    @Test
+    @DisplayName("Test that job state transitions trigger process state updates")
+    public void testJobStateTransitionsTriggerProcessStateUpdates() throws RegistryException {
+        // Test that when job completes, process state is updated correctly
+        // PostWorkflowManager handles job completion and creates post-execution tasks
+
+        // Process is in EXECUTING state
+        ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
+        processStatusService.addProcessStatus(executing, testHierarchy.processId);
+
+        // Create a job for a task
+        TaskModel task = new TaskModel();
+        task.setTaskType(TaskTypes.JOB_SUBMISSION);
+        task.setParentProcessId(testHierarchy.processId);
+        String taskId = taskService.addTask(task, testHierarchy.processId);
+
+        org.apache.airavata.common.model.JobModel jobModel = new org.apache.airavata.common.model.JobModel();
+        jobModel.setJobId("test-job-" + java.util.UUID.randomUUID().toString());
+        jobModel.setTaskId(taskId);
+        jobModel.setJobDescription("Test job");
+        String jobId = jobService.addJob(jobModel, testHierarchy.processId);
+
+        org.apache.airavata.registry.entities.expcatalog.JobPK jobPK =
+                new org.apache.airavata.registry.entities.expcatalog.JobPK();
+        jobPK.setJobId(jobId);
+        jobPK.setTaskId(taskId);
+
+        // Job completes
+        JobStatus jobComplete = StateMachineTestUtils.createJobStatus(JobState.COMPLETE, "Job completed");
+        jobStatusService.addJobStatus(jobComplete, jobPK);
+
+        // When job completes, PostWorkflowManager would create post-execution tasks
+        // Process may transition to COMPLETED after all post-execution tasks complete
+        ProcessStatus completed = StateMachineTestUtils.createProcessStatus(ProcessState.COMPLETED, "Completed");
+        processStatusService.addProcessStatus(completed, testHierarchy.processId);
+
+        // Verify state transition was valid
+        assertTrue(
+                StateTransitionService.isValid(
+                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.COMPLETED),
+                "EXECUTING -> COMPLETED should be valid when job completes");
+
+        // Verify final state
+        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        assertEquals(ProcessState.COMPLETED, latest.getState(), "Process should be in COMPLETED state");
+    }
+
+    @Test
+    @DisplayName("Test that PostWorkflowManager tasks execute based on job state")
+    public void testPostWorkflowManagerTasksExecuteBasedOnJobState() throws RegistryException {
+        // Test that PostWorkflowManager creates correct tasks when job completes or fails
+
+        // Process is in EXECUTING state
+        ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
+        processStatusService.addProcessStatus(executing, testHierarchy.processId);
+
+        // Create job
+        TaskModel task = new TaskModel();
+        task.setTaskType(TaskTypes.JOB_SUBMISSION);
+        task.setParentProcessId(testHierarchy.processId);
+        String taskId = taskService.addTask(task, testHierarchy.processId);
+
+        org.apache.airavata.common.model.JobModel jobModel = new org.apache.airavata.common.model.JobModel();
+        jobModel.setJobId("test-job-" + java.util.UUID.randomUUID().toString());
+        jobModel.setTaskId(taskId);
+        jobModel.setJobDescription("Test job for PostWorkflowManager tasks");
+        String jobId = jobService.addJob(jobModel, testHierarchy.processId);
+
+        org.apache.airavata.registry.entities.expcatalog.JobPK jobPK =
+                new org.apache.airavata.registry.entities.expcatalog.JobPK();
+        jobPK.setJobId(jobId);
+        jobPK.setTaskId(taskId);
+
+        // Job completes -> PostWorkflowManager would create post-execution tasks
+        // JOB_VERIFICATION -> OUTPUT_DATA_STAGING -> COMPLETING -> PARSING_TRIGGERING
+        JobStatus jobComplete = StateMachineTestUtils.createJobStatus(JobState.COMPLETE, "Job completed");
+        jobStatusService.addJobStatus(jobComplete, jobPK);
+
+        // Simulate PostWorkflowManager creating post-execution tasks
+        TaskModel outputStagingTask = new TaskModel();
+        outputStagingTask.setTaskType(TaskTypes.DATA_STAGING);
+        outputStagingTask.setParentProcessId(testHierarchy.processId);
+        String outputTaskId = taskService.addTask(outputStagingTask, testHierarchy.processId);
+
+        // Verify task was created
+        ProcessModel process = processService.getProcess(testHierarchy.processId);
+        assertNotNull(process.getTasks(), "Process should have tasks");
+        assertTrue(
+                process.getTasks().stream().anyMatch(t -> t.getTaskId().equals(outputTaskId)),
+                "Process should have output staging task");
+
+        // Verify job state transition was valid
+        assertTrue(
+                StateTransitionService.isValid(JobStateValidator.INSTANCE, JobState.SUBMITTED, JobState.COMPLETE),
+                "SUBMITTED -> COMPLETE should be valid for jobs");
     }
 }

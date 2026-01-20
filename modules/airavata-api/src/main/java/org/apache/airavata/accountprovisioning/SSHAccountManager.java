@@ -33,7 +33,7 @@ import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.springframework.stereotype.Component;
@@ -80,7 +80,7 @@ public class SSHAccountManager {
         try {
             computeResourcePreference =
                     registryService.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException(
                     "Failed to get ComputeResourcePreference for [" + gatewayId + "] and [" + computeResourceId + "]: "
                             + e.getMessage(),
@@ -134,7 +134,7 @@ public class SSHAccountManager {
                     break;
                 }
             }
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException(
                     "Failed to retrieve compute resource information for [" + gatewayId + "] and " + "["
                             + computeResourceId + "]: " + e.getMessage(),

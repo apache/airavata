@@ -197,6 +197,6 @@ public class DBConstants {
     public static class MetaData {
         public static final String ORCH_TIME = "orchTime";
         public static final String QUEUED_TIME = "queuedTime";
-        public static final String HELIX = "helix";
+        public static final String DAPR = "dapr";
     }
 }

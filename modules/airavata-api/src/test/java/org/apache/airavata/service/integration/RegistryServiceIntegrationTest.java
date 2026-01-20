@@ -39,7 +39,7 @@ import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.exception.AppCatalogException;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.DisplayName;
@@ -68,8 +68,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
     }
 
     @org.junit.jupiter.api.BeforeEach
-    public void setUpRegistryTest()
-            throws RegistryServiceException, org.apache.airavata.registry.exception.RegistryException {
+    public void setUpRegistryTest() throws RegistryException, org.apache.airavata.registry.exception.RegistryException {
         // Ensure gateway exists
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             org.apache.airavata.common.model.Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
@@ -90,7 +89,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should check if gateway exists and return true for existing gateway")
-        void shouldCheckGatewayExists() throws RegistryServiceException {
+        void shouldCheckGatewayExists() throws RegistryException {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
@@ -103,7 +102,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get all gateways and return non-empty list containing test gateway")
-        void shouldGetAllGateways() throws RegistryServiceException {
+        void shouldGetAllGateways() throws RegistryException {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
@@ -117,7 +116,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should create and persist gateway with all fields, then retrieve it successfully")
-        void shouldCreateAndPersistGateway() throws RegistryServiceException {
+        void shouldCreateAndPersistGateway() throws RegistryException {
             String newGatewayId =
                     "test-gateway-" + AiravataUtils.getUniqueTimestamp().getTime();
             Gateway gateway = TestDataFactory.createTestGateway(newGatewayId);
@@ -140,7 +139,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should create project with all required fields and retrieve it successfully")
-        void shouldCreateAndRetrieveProject() throws RegistryServiceException, ProjectNotFoundException {
+        void shouldCreateAndRetrieveProject() throws RegistryException, ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Test Project", TEST_GATEWAY_ID);
 
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
@@ -154,7 +153,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get all user projects filtered by owner and return matching projects")
-        void shouldGetUserProjects() throws RegistryServiceException {
+        void shouldGetUserProjects() throws RegistryException {
             Project project = TestDataFactory.createTestProject("User Project", TEST_GATEWAY_ID);
             project.setOwner(TEST_USERNAME);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
@@ -168,7 +167,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should update project description and persist changes successfully")
-        void shouldUpdateProject() throws RegistryServiceException, ProjectNotFoundException {
+        void shouldUpdateProject() throws RegistryException, ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Original Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 
@@ -182,7 +181,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should delete project and throw exception when retrieving deleted project")
-        void shouldDeleteProject() throws RegistryServiceException, ProjectNotFoundException {
+        void shouldDeleteProject() throws RegistryException, ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("To Delete", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 
@@ -200,7 +199,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should create experiment with project association and retrieve it with all fields")
-        void shouldCreateAndRetrieveExperiment() throws RegistryServiceException {
+        void shouldCreateAndRetrieveExperiment() throws RegistryException {
             Project project = TestDataFactory.createTestProject("Experiment Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             ExperimentModel experiment =
@@ -217,7 +216,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get all experiments in project filtered by project ID with pagination")
-        void shouldGetExperimentsInProject() throws RegistryServiceException {
+        void shouldGetExperimentsInProject() throws RegistryException {
             Project project = TestDataFactory.createTestProject("Project for Experiments", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             ExperimentModel experiment = TestDataFactory.createTestExperiment("Exp 1", projectId, TEST_GATEWAY_ID);
@@ -234,7 +233,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName(
                 "Should create experiment with full hierarchy including gateway, project, status and persist all relationships")
-        void shouldCreateExperimentWithFullHierarchy() throws RegistryServiceException {
+        void shouldCreateExperimentWithFullHierarchy() throws RegistryException {
             Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
                 registryService.addGateway(gateway);
@@ -269,7 +268,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should update experiment description and persist changes successfully")
-        void shouldUpdateExperiment() throws RegistryServiceException {
+        void shouldUpdateExperiment() throws RegistryException {
             Project project = TestDataFactory.createTestProject("Update Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             ExperimentModel experiment =
@@ -286,7 +285,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should search experiments by name filter and return matching experiments")
-        void shouldSearchExperimentsByName() throws RegistryServiceException {
+        void shouldSearchExperimentsByName() throws RegistryException {
             Project project = TestDataFactory.createTestProject("Search Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 
@@ -314,7 +313,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should search experiments by project ID filter and return only experiments from that project")
-        void shouldSearchExperimentsByProject() throws RegistryServiceException {
+        void shouldSearchExperimentsByProject() throws RegistryException {
             Project project = TestDataFactory.createTestProject("Search Project 2", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 
@@ -342,7 +341,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should delete experiment and throw exception when retrieving deleted experiment")
-        void shouldDeleteExperiment() throws RegistryServiceException {
+        void shouldDeleteExperiment() throws RegistryException {
             Project project = TestDataFactory.createTestProject("Delete Project", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
             ExperimentModel experiment = TestDataFactory.createTestExperiment("To Delete", projectId, TEST_GATEWAY_ID);
@@ -352,7 +351,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             assertThat(deleted).isTrue();
             assertThatThrownBy(() -> registryService.getExperiment(experimentId))
-                    .isInstanceOf(RegistryServiceException.class);
+                    .isInstanceOf(RegistryException.class);
         }
     }
 
@@ -423,7 +422,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should check if user exists and return valid boolean value")
-        void shouldCheckUserExists() throws RegistryServiceException {
+        void shouldCheckUserExists() throws RegistryException {
             boolean exists = registryService.isUserExists(TEST_GATEWAY_ID, TEST_USERNAME);
 
             assertThat(exists).isNotNull();
@@ -431,7 +430,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get all users in gateway and return non-null list")
-        void shouldGetAllUsersInGateway() throws RegistryServiceException {
+        void shouldGetAllUsersInGateway() throws RegistryException {
             List<String> users = registryService.getAllUsersInGateway(TEST_GATEWAY_ID);
 
             assertThat(users).isNotNull();
@@ -444,7 +443,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should persist data across transactions and retrieve in new transaction")
-        void shouldPersistDataAcrossTransactions() throws RegistryServiceException, ProjectNotFoundException {
+        void shouldPersistDataAcrossTransactions() throws RegistryException, ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Transaction Test", TEST_GATEWAY_ID);
 
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
@@ -458,7 +457,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should handle transaction rollback scenarios and maintain data integrity")
         void shouldRollbackOnError()
-                throws RegistryServiceException, org.apache.airavata.common.exception.ProjectNotFoundException {
+                throws RegistryException, org.apache.airavata.common.exception.ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Rollback Test", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 

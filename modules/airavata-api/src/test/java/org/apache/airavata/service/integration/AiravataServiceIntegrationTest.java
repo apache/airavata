@@ -35,7 +35,7 @@ import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.AiravataService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +58,7 @@ public class AiravataServiceIntegrationTest extends ServiceIntegrationTestBase {
     }
 
     @BeforeEach
-    void setUp() throws RegistryServiceException {
+    void setUp() throws RegistryException {
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             org.apache.airavata.common.model.Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
             registryService.addGateway(gateway);

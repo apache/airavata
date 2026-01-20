@@ -7,9 +7,7 @@ This directory contains integration tests for state machine transitions in Airav
 Before running these tests, you must start the required background services:
 
 1. **MariaDB** (port 13306) - Database for state persistence
-2. **Zookeeper** (port 2181) - Required for Helix and Kafka
-3. **Kafka** (port 9092) - Messaging for state change events
-4. **RabbitMQ** (port 5672) - Alternative messaging backend
+2. **Redis** (port 6379) - Backend for Dapr Pub/Sub and State Store
 
 ## Starting Services
 
@@ -24,7 +22,7 @@ cd .devcontainer
 
 The script will automatically:
 - Detect and use `nerdctl compose`, `docker compose`, or `docker-compose` (whichever is available)
-- Start services: `db`, `zookeeper`, `kafka`, `rabbitmq`
+- Start services: `db`, `redis`
 - Verify services are running
 - Perform basic health checks
 
@@ -33,13 +31,13 @@ The script will automatically:
 ```bash
 cd .devcontainer
 # Using nerdctl:
-nerdctl compose -f docker-compose.yml up -d db zookeeper kafka rabbitmq
+nerdctl compose -f docker-compose.yml up -d db redis
 
 # Or using docker compose:
-docker compose -f docker-compose.yml up -d db zookeeper kafka rabbitmq
+docker compose -f docker-compose.yml up -d db redis
 
 # Or using docker-compose:
-docker-compose -f docker-compose.yml up -d db zookeeper kafka rabbitmq
+docker-compose -f docker-compose.yml up -d db redis
 ```
 
 ### Verify services are running:
@@ -85,9 +83,7 @@ Tests automatically detect and use existing services from `.devcontainer/docker-
 
 **Service endpoints** (from docker-compose.yml):
 - Database: `localhost:13306` (MariaDB, user: `airavata`, password: `123456`)
-- Kafka broker: `localhost:9092`
-- Zookeeper: `localhost:2181`
-- RabbitMQ: `localhost:5672`
+- Redis: `localhost:6379` (for Dapr Pub/Sub and State Store)
 
 **Note**: The `localhost` hostname resolves to `192.168.100.1` per the docker-compose.yml network configuration when running inside the devcontainer.
 
@@ -129,11 +125,10 @@ Verify MariaDB is accessible:
 mysql -h localhost -P 13306 -u airavata -p123456
 ```
 
-### Kafka/Zookeeper issues
+### Redis issues
 
-Check if services are listening on expected ports:
+Check if Redis is listening on expected port:
 ```bash
-netstat -an | grep 9092  # Kafka
-netstat -an | grep 2181  # Zookeeper
+netstat -an | grep 6379  # Redis
 ```
 

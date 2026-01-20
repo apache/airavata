@@ -27,13 +27,13 @@ import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.helix.task.TaskUtil;
-import org.apache.airavata.helix.task.aws.AWSProcessContextManager;
-import org.apache.airavata.helix.task.staging.OutputDataStagingTask;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.task.TaskUtil;
+import org.apache.airavata.task.aws.AWSProcessContextManager;
+import org.apache.airavata.task.staging.OutputDataStagingTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -54,7 +54,7 @@ public class ProcessDataManager extends OutputDataStagingTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            MessagingFactory messagingFactory,
+            DaprMessagingFactory messagingFactory,
             String processId,
             AdaptorSupport adaptorSupport)
             throws Exception {

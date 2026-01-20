@@ -57,11 +57,11 @@ import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.dapr.job.GFACPassiveJobSubmitter;
+import org.apache.airavata.dapr.job.JobSubmitter;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.job.GFACPassiveJobSubmitter;
-import org.apache.airavata.orchestrator.job.JobSubmitter;
 import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.util.ExperimentModelUtil;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!test")
+@Profile({"!test", "orchestrator-integration"})
 @ConditionalOnApiService
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
@@ -154,7 +154,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             } else {
                 logger.warn("No processes found for experiment {} to cancel", experiment.getExperimentId());
             }
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             logger.error("Failed to fetch process ids for experiment {}", experiment.getExperimentId(), e);
             throw new OrchestratorException(
                     "Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
@@ -273,7 +273,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId,
             ProcessModel processModel,
             ComputeResourceType resourceType)
-            throws RegistryServiceException, AiravataException, OrchestratorException {
+            throws RegistryException, AiravataException, OrchestratorException {
         List<String> envTaskIds = new ArrayList<>();
 
         TaskModel envSetupTask = new TaskModel();
@@ -357,7 +357,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public List<String> createAndSaveOutputDataStagingTasks(
             ProcessModel processModel, String gatewayId, ComputeResourceType resourceType)
-            throws AiravataException, RegistryServiceException, OrchestratorException {
+            throws AiravataException, RegistryException, OrchestratorException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         try {
@@ -425,7 +425,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public List<String> createAndSaveIntermediateOutputDataStagingTasks(
             ProcessModel processModel, String gatewayId, ProcessModel parentProcess, ComputeResourceType resourceType)
-            throws AiravataException, RegistryServiceException, OrchestratorException {
+            throws AiravataException, RegistryException, OrchestratorException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         try {
@@ -486,8 +486,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         return dataStagingTaskIds;
     }
 
-    private boolean isArchive(RegistryService registryService, ProcessModel processModel)
-            throws RegistryServiceException {
+    private boolean isArchive(RegistryService registryService, ProcessModel processModel) throws RegistryException {
         var appInterface = registryService.getApplicationInterface(processModel.getApplicationInterfaceId());
         return appInterface.getArchiveWorkingDirectory();
     }
@@ -498,11 +497,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId,
             List<String> dataStagingTaskIds,
             ComputeResourceType resourceType)
-            throws AiravataException, RegistryServiceException, OrchestratorException {
+            throws AiravataException, RegistryException, OrchestratorException {
         TaskModel archiveTask;
         try {
             archiveTask = getOutputDataStagingTask(registryService, processModel, null, gatewayId, null, resourceType);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new AiravataException("Error! DataStaging sub task serialization failed", e);
         }
         String taskId = registryService.addTask(archiveTask, processModel.getProcessId());
@@ -524,7 +523,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String taskId = registryService.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new AiravataException("Error while serializing data staging sub task model", e);
         }
     }
@@ -545,7 +544,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String taskId = registryService.addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new AiravataException("Error while serializing data staging sub task model", e);
         }
     }
@@ -555,7 +554,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             JobSubmissionInterface jobSubmissionInterface,
             ProcessModel processModel,
             int wallTime)
-            throws RegistryServiceException, OrchestratorException {
+            throws RegistryException, OrchestratorException {
 
         JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
         MonitorMode monitorMode;
@@ -656,7 +655,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             InputDataObjectType processInput,
             String gatewayId,
             ComputeResourceType resourceType)
-            throws RegistryServiceException, AiravataException, OrchestratorException {
+            throws RegistryException, AiravataException, OrchestratorException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
@@ -724,7 +723,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             String gatewayId,
             ProcessModel parentProcess,
             ComputeResourceType resourceType)
-            throws RegistryServiceException, AiravataException, OrchestratorException {
+            throws RegistryException, AiravataException, OrchestratorException {
         try {
             // create new task model for this task
             TaskStatus taskStatus = new TaskStatus();

@@ -22,14 +22,11 @@ package org.apache.airavata.agents.ssh;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +38,20 @@ public final class SSHUtil {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Generate SSH public key from private key PEM using SSHJ.
+     * Replaces BouncyCastle implementation with standard Java/SSHJ.
+     */
     public static String generatePublicKey(String privateKeyPEM) throws Exception {
-        try (PEMParser pemParser = new PEMParser(new StringReader(privateKeyPEM))) {
-            Object pemObject = pemParser.readObject();
-            PEMKeyPair keyPair = (PEMKeyPair) pemObject;
-            SubjectPublicKeyInfo spki = keyPair.getPublicKeyInfo();
+        try {
+            // Use SSHJ to load the private key and extract the public key
+            SSHClient tempClient = new SSHClient();
+            KeyProvider keyProvider = tempClient.loadKeys(privateKeyPEM, null, null);
+            PublicKey publicKey = keyProvider.getPublic();
 
-            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-            PublicKey publicKey = converter.getPublicKey(spki);
+            if (!(publicKey instanceof RSAPublicKey)) {
+                throw new Exception("Only RSA keys are supported");
+            }
 
             var rsaPublicKey = (RSAPublicKey) publicKey;
 
@@ -63,8 +66,8 @@ public final class SSHUtil {
 
             return "ssh-rsa " + Base64.getEncoder().encodeToString(byteOs.toByteArray()) + " airavata-generated";
         } catch (IOException e) {
-            LOGGER.error("Error while generating the public", e);
-            throw new Exception("Error while generating the public key");
+            LOGGER.error("Error while generating the public key", e);
+            throw new Exception("Error while generating the public key", e);
         }
     }
 }

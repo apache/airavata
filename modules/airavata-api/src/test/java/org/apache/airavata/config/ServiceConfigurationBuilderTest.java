@@ -19,7 +19,8 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
 import java.util.Properties;
@@ -130,8 +131,8 @@ public class ServiceConfigurationBuilderTest {
         ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder()
                 .enableThriftApi()
                 .disableRestApi()
-                .enableHelixController()
-                .disableHelixParticipant()
+                .enableDaprController()
+                .disableDaprParticipant()
                 .enablePreWorkflowManager()
                 .disablePostWorkflowManager();
 

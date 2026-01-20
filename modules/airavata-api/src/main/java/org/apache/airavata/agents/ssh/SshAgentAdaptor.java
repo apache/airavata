@@ -19,22 +19,20 @@
 */
 package org.apache.airavata.agents.ssh;
 
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.UIKeyboardInteractive;
-import com.jcraft.jsch.UserInfo;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
+import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import org.apache.airavata.agents.api.AdaptorParams;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
@@ -52,7 +50,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
- * TODO: Class level comments please
+ * SSH Agent Adaptor using SSHJ library.
+ * Migrated from JSCH to SSHJ for better Java compatibility and maintenance.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
@@ -63,7 +62,10 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);
 
-    private Session session = null;
+    private SSHClient client = null;
+    private String remoteHostname;
+    private int remotePort;
+    private String remoteUsername;
 
     protected final RegistryService registryService;
     protected final CredentialStoreService credentialService;
@@ -76,31 +78,41 @@ public class SshAgentAdaptor implements AgentAdaptor {
     public void init(AdaptorParams adaptorParams) throws AgentException {
 
         if (adaptorParams instanceof SshAdaptorParams params) {
-            JSch jSch = new JSch();
             try {
+                client = new SSHClient();
 
+                // Configure host key verification
+                if (params.isStrictHostKeyChecking() && params.getKnownHostsFilePath() != null) {
+                    // Load known hosts file
+                    try {
+                        client.loadKnownHosts(new File(params.getKnownHostsFilePath()));
+                    } catch (IOException e) {
+                        logger.warn("Could not load known hosts file: {}", params.getKnownHostsFilePath(), e);
+                        // Fall back to promiscuous verifier
+                        client.addHostKeyVerifier(new PromiscuousVerifier());
+                    }
+                } else {
+                    // Disable strict host key checking (equivalent to StrictHostKeyChecking=no)
+                    client.addHostKeyVerifier(new PromiscuousVerifier());
+                }
+
+                client.connect(params.getHostName(), params.getPort());
+
+                // Store connection info for logging
+                this.remoteHostname = params.getHostName();
+                this.remotePort = params.getPort();
+                this.remoteUsername = params.getUserName();
+
+                // Authenticate
                 if (params.getPassword() != null) {
-                    this.session = jSch.getSession(params.getUserName(), params.getHostName(), params.getPort());
-                    session.setPassword(params.getPassword());
-                    session.setUserInfo(new SftpUserInfo(params.getPassword()));
+                    client.authPassword(params.getUserName(), params.getPassword());
                 } else {
-                    jSch.addIdentity(
-                            UUID.randomUUID().toString(),
-                            params.getPrivateKey(),
-                            params.getPublicKey(),
-                            params.getPassphrase().getBytes());
-                    this.session = jSch.getSession(params.getUserName(), params.getHostName(), params.getPort());
-                    session.setUserInfo(new DefaultUserInfo(params.getUserName(), null, params.getPassphrase()));
+                    // Use key-based authentication
+                    KeyProvider keyProvider = loadKeyProvider(params);
+                    client.authPublickey(params.getUserName(), keyProvider);
                 }
 
-                if (params.isStrictHostKeyChecking()) {
-                    jSch.setKnownHosts(params.getKnownHostsFilePath());
-                } else {
-                    session.setConfig("StrictHostKeyChecking", "no");
-                }
-                session.connect(); // 0 connection timeout
-
-            } catch (JSchException e) {
+            } catch (IOException e) {
                 throw new AgentException("Could not create ssh session for host " + params.getHostName(), e);
             }
         } else {
@@ -145,29 +157,50 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        if (client != null && client.isConnected()) {
+            try {
+                client.disconnect();
+            } catch (IOException e) {
+                logger.warn("Error disconnecting SSH client", e);
+            }
+        }
+    }
 
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         StandardOutReader commandOutput = new StandardOutReader();
-        ChannelExec channelExec = null;
+        Session session = null;
         try {
-            channelExec = ((ChannelExec) session.openChannel("exec"));
-            channelExec.setCommand((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
-            channelExec.setInputStream(null);
-            InputStream out = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
-            channelExec.connect();
+            session = client.startSession();
+            String fullCommand = (workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command;
+            Session.Command cmd = session.exec(fullCommand);
 
-            commandOutput.readStdOutFromStream(out);
-            commandOutput.readStdErrFromStream(err);
+            // Read stdout
+            try (InputStream out = cmd.getInputStream()) {
+                commandOutput.readStdOutFromStream(out);
+            }
+
+            // Read stderr
+            try (InputStream err = cmd.getErrorStream()) {
+                commandOutput.readStdErrFromStream(err);
+            }
+
+            // Wait for command to complete
+            cmd.join(30, TimeUnit.SECONDS);
+            Integer exitStatus = cmd.getExitStatus();
+            commandOutput.setExitCode(exitStatus != null ? exitStatus : -1);
+
             return commandOutput;
-        } catch (JSchException | IOException e) {
+        } catch (IOException e) {
             logger.error("Failed to execute command {}", command, e);
             throw new AgentException("Failed to execute command " + command, e);
         } finally {
-            if (channelExec != null) {
-                commandOutput.setExitCode(channelExec.getExitStatus());
-                channelExec.disconnect();
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    logger.warn("Error closing session", e);
+                }
             }
         }
     }
@@ -179,35 +212,39 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public void createDirectory(String path, boolean recursive) throws AgentException {
         String command = (recursive ? "mkdir -p " : "mkdir ") + path;
-        ChannelExec channelExec = null;
+        Session session = null;
         try {
-            channelExec = (ChannelExec) session.openChannel("exec");
+            session = client.startSession();
             StandardOutReader stdOutReader = new StandardOutReader();
 
-            channelExec.setCommand(command);
-            InputStream out = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
-            channelExec.connect();
+            Session.Command cmd = session.exec(command);
 
-            stdOutReader.readStdOutFromStream(out);
-            stdOutReader.readStdErrFromStream(err);
+            try (InputStream out = cmd.getInputStream()) {
+                stdOutReader.readStdOutFromStream(out);
+            }
+
+            try (InputStream err = cmd.getErrorStream()) {
+                stdOutReader.readStdErrFromStream(err);
+            }
+
+            cmd.join(30, TimeUnit.SECONDS);
 
             if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("mkdir:")) {
                 throw new AgentException(stdOutReader.getStdError());
             }
-        } catch (JSchException e) {
+        } catch (IOException e) {
             String msg = String.format(
                     "Unable to retrieve command output for command=%s on server=%s:%s connecting username=%s",
-                    command, session.getHost(), session.getPort(), session.getUserName());
-            logger.error(msg, e);
-            throw new AgentException(msg, e);
-        } catch (IOException e) {
-            String msg = String.format("Failed to create directory %s", path);
+                    command, remoteHostname, remotePort, remoteUsername);
             logger.error(msg, e);
             throw new AgentException(msg, e);
         } finally {
-            if (channelExec != null) {
-                channelExec.disconnect();
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    logger.warn("Error closing session", e);
+                }
             }
         }
     }
@@ -219,145 +256,54 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
         String escapedPath = path.replace("'", "'\"'\"'");
         String command = "rm -rf '" + escapedPath + "'";
-        ChannelExec channelExec = null;
+        Session session = null;
         try {
-            channelExec = (ChannelExec) session.openChannel("exec");
+            session = client.startSession();
             StandardOutReader stdOutReader = new StandardOutReader();
 
-            channelExec.setCommand(command);
-            InputStream out = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
-            channelExec.connect();
+            Session.Command cmd = session.exec(command);
 
-            stdOutReader.readStdOutFromStream(out);
-            stdOutReader.readStdErrFromStream(err);
+            try (InputStream out = cmd.getInputStream()) {
+                stdOutReader.readStdOutFromStream(out);
+            }
+
+            try (InputStream err = cmd.getErrorStream()) {
+                stdOutReader.readStdErrFromStream(err);
+            }
+
+            cmd.join(30, TimeUnit.SECONDS);
 
             if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("rm:")) {
                 throw new AgentException(stdOutReader.getStdError());
             }
-        } catch (JSchException e) {
+        } catch (IOException e) {
             logger.error(
                     "Unable to retrieve command output. Command - {} on server - {}:{} connecting user name - {}",
                     command,
-                    session.getHost(),
-                    session.getPort(),
-                    session.getUserName(),
+                    remoteHostname,
+                    remotePort,
+                    remoteUsername,
                     e);
             throw new AgentException(e);
-        } catch (IOException e) {
-            logger.error("Failed to delete directory {}", path, e);
-            throw new AgentException("Failed to delete directory " + path, e);
         } finally {
-            if (channelExec != null) {
-                channelExec.disconnect();
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    logger.warn("Error closing session", e);
+                }
             }
         }
     }
 
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
-
-        FileInputStream fis;
-        boolean ptimestamp = true;
-
-        ChannelExec channelExec = null;
         try {
-            // exec 'scp -t rfile' remotely
-            String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + remoteFile;
-            channelExec = (ChannelExec) session.openChannel("exec");
-
-            StandardOutReader stdOutReader = new StandardOutReader();
-            // channelExec.setErrStream(stdOutReader.getStandardError());
-            channelExec.setCommand(command);
-
-            // get I/O streams for remote scp
-            OutputStream out = channelExec.getOutputStream();
-            InputStream in = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
-
-            channelExec.connect();
-
-            if (checkAck(in) != 0) {
-                String error = "Error Reading input Stream";
-                // log.error(error);
-                throw new AgentException(error);
-            }
-
-            File _lfile = new File(localFile);
-
-            if (ptimestamp) {
-                command = "T" + (_lfile.lastModified() / 1000) + " 0";
-                // The access time should be sent here,
-                // but it is not accessible with JavaAPI ;-<
-                command += (" " + (_lfile.lastModified() / 1000) + " 0\n");
-                out.write(command.getBytes());
-                out.flush();
-                if (checkAck(in) != 0) {
-                    String error = "Error Reading input Stream";
-                    throw new AgentException(error);
-                }
-            }
-
-            // send "C0644 filesize filename", where filename should not include '/'
-            long filesize = _lfile.length();
-            command = "C0644 " + filesize + " ";
-            if (localFile.lastIndexOf('/') > 0) {
-                command += localFile.substring(localFile.lastIndexOf('/') + 1);
-            } else {
-                command += localFile;
-            }
-            command += "\n";
-            out.write(command.getBytes());
-            out.flush();
-            if (checkAck(in) != 0) {
-                String error = "Error Reading input Stream";
-                // log.error(error);
-                throw new AgentException(error);
-            }
-
-            // send a content of localFile
-            fis = new FileInputStream(localFile);
-            byte[] buf = new byte[1024];
-            while (true) {
-                int len = fis.read(buf, 0, buf.length);
-                if (len <= 0) break;
-                out.write(buf, 0, len); // out.flush();
-            }
-            fis.close();
-            fis = null;
-            // send '\0'
-            buf[0] = 0;
-            out.write(buf, 0, 1);
-            out.flush();
-            if (checkAck(in) != 0) {
-                String error = "Error Reading input Stream";
-                // log.error(error);
-                throw new AgentException(error);
-            }
-            out.close();
-            stdOutReader.readStdErrFromStream(err);
-
-            if (stdOutReader.getStdError().contains("scp:")) {
-                throw new AgentException(stdOutReader.getStdError());
-            }
-            // since remote file is always a file  we just return the file
-            // return remoteFile;
-        } catch (JSchException e) {
+            SCPFileTransfer scp = client.newSCPFileTransfer();
+            scp.upload(new net.schmizz.sshj.xfer.FileSystemFile(localFile), remoteFile);
+        } catch (IOException e) {
             logger.error("Failed to transfer file from {} to remote location {}", localFile, remoteFile, e);
             throw new AgentException(
                     "Failed to transfer file from " + localFile + " to remote location " + remoteFile, e);
-
-        } catch (FileNotFoundException e) {
-            logger.error("Failed to find local file {}", localFile, e);
-            throw new AgentException("Failed to find local file " + localFile, e);
-
-        } catch (IOException e) {
-            logger.error("Error while handling streams", e);
-            throw new AgentException("Error while handling streams", e);
-
-        } finally {
-            if (channelExec != null) {
-                channelExec.disconnect();
-            }
         }
     }
 
@@ -366,133 +312,16 @@ public class SshAgentAdaptor implements AgentAdaptor {
         throw new AgentException("Operation not implemented");
     }
 
-    // TODO file not found does not return exception
     public void downloadFile(String remoteFile, String localFile) throws AgentException {
-        FileOutputStream fos = null;
-        ChannelExec channelExec = null;
         try {
-            String prefix = null;
-            if (new File(localFile).isDirectory()) {
-                prefix = localFile + File.separator;
-            }
-
-            StandardOutReader stdOutReader = new StandardOutReader();
-
-            // exec 'scp -f remotefile' remotely
-            String command = "scp -f " + remoteFile;
-            channelExec = (ChannelExec) session.openChannel("exec");
-            channelExec.setCommand(command);
-
-            // channelExec.setErrStream(stdOutReader.getStandardError());
-            // get I/O streams for remote scp
-            OutputStream out = channelExec.getOutputStream();
-            InputStream in = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
-
-            if (!channelExec.isClosed()) {
-                channelExec.connect();
-            }
-
-            byte[] buf = new byte[1024];
-
-            // send '\0'
-            buf[0] = 0;
-            out.write(buf, 0, 1);
-            out.flush();
-
-            while (true) {
-                int c = checkAck(in);
-                if (c != 'C') {
-                    break;
-                }
-
-                // read '0644 '
-                in.read(buf, 0, 5);
-
-                long filesize = 0L;
-                while (true) {
-                    if (in.read(buf, 0, 1) < 0) {
-                        // error
-                        break;
-                    }
-                    if (buf[0] == ' ') break;
-                    filesize = filesize * 10L + (long) (buf[0] - '0');
-                }
-
-                String file = null;
-                for (int i = 0; ; i++) {
-                    in.read(buf, i, 1);
-                    if (buf[i] == (byte) 0x0a) {
-                        file = new String(buf, 0, i);
-                        break;
-                    }
-                }
-
-                logger.debug("filesize={}, file={}", filesize, file);
-
-                // send '\0'
-                buf[0] = 0;
-                out.write(buf, 0, 1);
-                out.flush();
-
-                // read a content of lfile
-                fos = new FileOutputStream(prefix == null ? localFile : prefix + file);
-                int foo;
-                while (true) {
-                    if (buf.length < filesize) foo = buf.length;
-                    else foo = (int) filesize;
-                    foo = in.read(buf, 0, foo);
-                    if (foo < 0) {
-                        // error
-                        break;
-                    }
-                    fos.write(buf, 0, foo);
-                    filesize -= foo;
-                    if (filesize == 0L) break;
-                }
-                fos.close();
-                fos = null;
-
-                if (checkAck(in) != 0) {
-                    String error = "Error transfering the file content";
-                    // log.error(error);
-                    throw new AgentException(error);
-                }
-
-                // send '\0'
-                buf[0] = 0;
-                out.write(buf, 0, 1);
-                out.flush();
-            }
-
-            stdOutReader.readStdErrFromStream(err);
-            if (stdOutReader.getStdError().contains("scp:")) {
-                throw new AgentException(stdOutReader.getStdError());
-            }
-
-        } catch (JSchException e) {
-            logger.error("Failed to transfer file remote from file " + remoteFile + " to location " + remoteFile, e);
-            throw new AgentException(
-                    "Failed to transfer remote file from " + localFile + " to location " + remoteFile, e);
-
+            SCPFileTransfer scp = client.newSCPFileTransfer();
+            scp.download(remoteFile, new net.schmizz.sshj.xfer.FileSystemFile(localFile));
         } catch (FileNotFoundException e) {
             logger.error("Failed to find local file " + localFile, e);
             throw new AgentException("Failed to find local file " + localFile, e);
-
         } catch (IOException e) {
             logger.error("Error while handling streams", e);
             throw new AgentException("Error while handling streams", e);
-
-        } finally {
-            try {
-                if (fos != null) fos.close();
-            } catch (Exception ee) {
-                logger.warn("Failed to close file output stream to " + localFile);
-            }
-
-            if (channelExec != null) {
-                channelExec.disconnect();
-            }
         }
     }
 
@@ -505,42 +334,46 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public List<String> listDirectory(String path) throws AgentException {
         String command = "ls " + path;
-        ChannelExec channelExec = null;
+        Session session = null;
         try {
-            channelExec = (ChannelExec) session.openChannel("exec");
+            session = client.startSession();
             StandardOutReader stdOutReader = new StandardOutReader();
 
-            channelExec.setCommand(command);
+            Session.Command cmd = session.exec(command);
 
-            InputStream out = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
+            try (InputStream out = cmd.getInputStream()) {
+                stdOutReader.readStdOutFromStream(out);
+            }
 
-            channelExec.connect();
+            try (InputStream err = cmd.getErrorStream()) {
+                stdOutReader.readStdErrFromStream(err);
+            }
 
-            stdOutReader.readStdOutFromStream(out);
-            stdOutReader.readStdErrFromStream(err);
-            if (stdOutReader.getStdError().contains("ls:")) {
+            cmd.join(30, TimeUnit.SECONDS);
+
+            if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("ls:")) {
                 throw new AgentException(stdOutReader.getStdError());
             }
             return Arrays.asList(stdOutReader.getStdOut().split("\n"));
 
-        } catch (JSchException e) {
+        } catch (IOException e) {
             logger.error(
                     "Unable to retrieve command output. Command - " + command + " on server - "
-                            + session.getHost() + ":" + session.getPort() + " connecting user name - "
-                            + session.getUserName(),
+                            + remoteHostname + ":" + remotePort + " connecting user name - "
+                            + remoteUsername,
                     e);
             throw new AgentException(
                     "Unable to retrieve command output. Command - " + command + " on server - "
-                            + session.getHost() + ":" + session.getPort() + " connecting user name - "
-                            + session.getUserName(),
+                            + remoteHostname + ":" + remotePort + " connecting user name - "
+                            + remoteUsername,
                     e);
-        } catch (IOException e) {
-            logger.error("Error while handling streams", e);
-            throw new AgentException("Error while handling streams", e);
         } finally {
-            if (channelExec != null) {
-                channelExec.disconnect();
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    logger.warn("Error closing session", e);
+                }
             }
         }
     }
@@ -548,21 +381,24 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public Boolean doesFileExist(String filePath) throws AgentException {
         String command = "ls " + filePath;
-        ChannelExec channelExec = null;
+        Session session = null;
         try {
-            channelExec = (ChannelExec) session.openChannel("exec");
+            session = client.startSession();
             StandardOutReader stdOutReader = new StandardOutReader();
 
-            channelExec.setCommand(command);
+            Session.Command cmd = session.exec(command);
 
-            InputStream out = channelExec.getInputStream();
-            InputStream err = channelExec.getErrStream();
+            try (InputStream out = cmd.getInputStream()) {
+                stdOutReader.readStdOutFromStream(out);
+            }
 
-            channelExec.connect();
+            try (InputStream err = cmd.getErrorStream()) {
+                stdOutReader.readStdErrFromStream(err);
+            }
 
-            stdOutReader.readStdOutFromStream(out);
-            stdOutReader.readStdErrFromStream(err);
-            if (stdOutReader.getStdError().contains("ls:")) {
+            cmd.join(30, TimeUnit.SECONDS);
+
+            if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("ls:")) {
                 logger.info("Invalid file path " + filePath + ". stderr : " + stdOutReader.getStdError());
                 return false;
             } else {
@@ -583,23 +419,24 @@ public class SshAgentAdaptor implements AgentAdaptor {
                     }
                 }
             }
-        } catch (JSchException e) {
+        } catch (IOException e) {
             logger.error(
                     "Unable to retrieve command output. Command - " + command + " on server - "
-                            + session.getHost() + ":" + session.getPort() + " connecting user name - "
-                            + session.getUserName(),
+                            + remoteHostname + ":" + remotePort + " connecting user name - "
+                            + remoteUsername,
                     e);
             throw new AgentException(
                     "Unable to retrieve command output. Command - " + command + " on server - "
-                            + session.getHost() + ":" + session.getPort() + " connecting user name - "
-                            + session.getUserName(),
+                            + remoteHostname + ":" + remotePort + " connecting user name - "
+                            + remoteUsername,
                     e);
-        } catch (IOException e) {
-            logger.error("Error while handling streams", e);
-            throw new AgentException("Error while handling streams", e);
         } finally {
-            if (channelExec != null) {
-                channelExec.disconnect();
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    logger.warn("Error closing session", e);
+                }
             }
         }
     }
@@ -626,115 +463,19 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 "Operation not supported by SshAgentAdaptor. Use SSHJAgentAdaptor instead.");
     }
 
-    private static class DefaultUserInfo implements UserInfo, UIKeyboardInteractive {
+    /**
+     * Load KeyProvider from SshAdaptorParams.
+     */
+    private KeyProvider loadKeyProvider(SshAdaptorParams params) throws IOException {
+        String privateKeyStr = new String(params.getPrivateKey(), StandardCharsets.UTF_8);
+        String passphrase = params.getPassphrase();
 
-        private String userName;
-        private String password;
-        private String passphrase;
-
-        DefaultUserInfo(String userName, String password, String passphrase) {
-            this.userName = userName;
-            this.password = password;
-            this.passphrase = passphrase;
+        // Use SSHClient.loadKeys() to load key from string
+        net.schmizz.sshj.userauth.password.PasswordFinder passwordFinder = null;
+        if (passphrase != null && !passphrase.isEmpty()) {
+            passwordFinder = net.schmizz.sshj.userauth.password.PasswordUtils.createOneOff(passphrase.toCharArray());
         }
 
-        @Override
-        public String getPassphrase() {
-            return passphrase;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
-        }
-
-        @Override
-        public boolean promptPassword(String s) {
-            return true;
-        }
-
-        @Override
-        public boolean promptPassphrase(String s) {
-            return false;
-        }
-
-        @Override
-        public boolean promptYesNo(String s) {
-            return false;
-        }
-
-        @Override
-        public void showMessage(String s) {}
-
-        @Override
-        public String[] promptKeyboardInteractive(
-                String destination, String name, String instruction, String[] prompt, boolean[] echo) {
-            return new String[0];
-        }
-    }
-
-    class SftpUserInfo implements UserInfo {
-
-        String password = null;
-
-        public SftpUserInfo(String password) {
-            this.password = password;
-        }
-
-        @Override
-        public String getPassphrase() {
-            return null;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String passwd) {
-            password = passwd;
-        }
-
-        @Override
-        public boolean promptPassphrase(String message) {
-            return false;
-        }
-
-        @Override
-        public boolean promptPassword(String message) {
-            return false;
-        }
-
-        @Override
-        public boolean promptYesNo(String message) {
-            return true;
-        }
-
-        @Override
-        public void showMessage(String message) {}
-    }
-
-    private static int checkAck(InputStream in) throws IOException {
-        int b = in.read();
-        if (b == 0) return b;
-        if (b == -1) return b;
-
-        if (b == 1 || b == 2) {
-            StringBuilder sb = new StringBuilder();
-            int c;
-            do {
-                c = in.read();
-                sb.append((char) c);
-            } while (c != '\n');
-            // FIXME: Redundant
-            if (b == 1) { // error
-                logger.error(sb.toString());
-            }
-            if (b == 2) { // fatal error
-                logger.error(sb.toString());
-            }
-            // log.warn(sb.toString());
-        }
-        return b;
+        return client.loadKeys(privateKeyStr, null, passwordFinder);
     }
 }

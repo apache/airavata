@@ -42,7 +42,7 @@ import org.apache.airavata.registry.services.ApplicationDeploymentService;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.airavata.test.util.ReflectionEquals;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
@@ -76,7 +76,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         String moduleId = applicationInterfaceService.addApplicationModule(applicationModule, gatewayId);
 
         ApplicationModule savedAppModule = applicationInterfaceService.getApplicationModule(moduleId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(applicationModule, savedAppModule));
+        Assertions.assertTrue(ReflectionEquals.reflectionEquals(applicationModule, savedAppModule));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         String moduleId = applicationInterfaceService.addApplicationModule(applicationModule, gatewayId);
 
         ApplicationModule savedAppModule = applicationInterfaceService.getApplicationModule(moduleId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(applicationModule, savedAppModule));
+        Assertions.assertTrue(ReflectionEquals.reflectionEquals(applicationModule, savedAppModule));
 
         savedAppModule.setAppModuleName("Updated Name");
         savedAppModule.setAppModuleDescription("Updated Description");
@@ -127,7 +127,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         applicationInterfaceService.updateApplicationModule("appMod1", savedAppModule);
 
         ApplicationModule updatedAppModule = applicationInterfaceService.getApplicationModule(moduleId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(savedAppModule, updatedAppModule));
+        Assertions.assertTrue(ReflectionEquals.reflectionEquals(savedAppModule, updatedAppModule));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         ApplicationInterfaceDescription savedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
         Assertions.assertTrue(
-                EqualsBuilder.reflectionEquals(applicationInterfaceDescription, savedInterface, "__isset_bitfield"));
+                ReflectionEquals.reflectionEquals(applicationInterfaceDescription, savedInterface, "__isset_bitfield"));
     }
 
     @Test
@@ -645,7 +645,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
             Assertions.assertEquals(moduleStore.get(gateway).size(), allApplicationModules.size());
             for (int i = 0; i < allApplicationModules.size(); i++) {
-                Assertions.assertTrue(EqualsBuilder.reflectionEquals(
+                Assertions.assertTrue(ReflectionEquals.reflectionEquals(
                         moduleStore.get(gateway).get(i), allApplicationModules.get(i), "__isset_bitfield"));
             }
         }
@@ -678,7 +678,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
             Assertions.assertEquals(interfaceStore.get(gateway).size(), allApplicationInterfaces.size());
             for (int i = 0; i < allApplicationInterfaces.size(); i++) {
-                Assertions.assertTrue(EqualsBuilder.reflectionEquals(
+                Assertions.assertTrue(ReflectionEquals.reflectionEquals(
                         interfaceStore.get(gateway).get(i), allApplicationInterfaces.get(i), "__isset_bitfield"));
             }
         }

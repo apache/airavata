@@ -31,12 +31,17 @@ import org.apache.airavata.sharing.mappers.PermissionTypeMapper;
 import org.apache.airavata.sharing.model.PermissionType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.PermissionTypeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class PermissionTypeService {
+    private static final Logger logger = LoggerFactory.getLogger(PermissionTypeService.class);
+    private static final String OWNER_PERMISSION_NAME = "OWNER";
+
     private final PermissionTypeRepository permissionTypeRepository;
     private final PermissionTypeMapper permissionTypeMapper;
     private final EntityManager entityManager;
@@ -75,14 +80,42 @@ public class PermissionTypeService {
         return permissionTypeRepository.existsById(pk);
     }
 
+    /**
+     * Gets the OWNER permission type ID for a domain.
+     * <p>
+     * The OWNER permission must be created when the domain is created via
+     * {@link org.apache.airavata.service.SharingRegistryService#createDomain(Domain)}.
+     * If no OWNER permission exists, this indicates a data inconsistency that needs to be resolved.
+     *
+     * @param domainId The domain ID
+     * @return The permission type ID for the OWNER permission
+     * @throws SharingRegistryException If no OWNER permission exists or if there are multiple
+     *                                  OWNER permissions (data inconsistency)
+     */
     public String getOwnerPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
-        String ownerPermissionName = "OWNER"; // Constant moved from SharingRegistryServerHandler
         List<PermissionTypeEntity> entities =
-                permissionTypeRepository.findByDomainIdAndName(domainId, ownerPermissionName);
-        if (entities.size() != 1) {
-            throw new SharingRegistryException("GLOBAL Permission inconsistency. Found " + entities.size()
-                    + " records with " + ownerPermissionName + " name");
+                permissionTypeRepository.findByDomainIdAndName(domainId, OWNER_PERMISSION_NAME);
+
+        if (entities.isEmpty()) {
+            String message = String.format(
+                    "OWNER permission not found for domain '%s'. "
+                            + "This indicates the domain was not created properly. "
+                            + "Domains must be created via SharingRegistryService.createDomain() "
+                            + "which automatically creates the OWNER permission.",
+                    domainId);
+            logger.error(message);
+            throw new SharingRegistryException(message);
         }
+
+        if (entities.size() > 1) {
+            String message = String.format(
+                    "Data inconsistency detected: Found %d OWNER permission records for domain '%s'. "
+                            + "Expected exactly 1. This indicates duplicate permission creation.",
+                    entities.size(), domainId);
+            logger.error(message);
+            throw new SharingRegistryException(message);
+        }
+
         return entities.get(0).getPermissionTypeId();
     }
 

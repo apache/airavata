@@ -40,7 +40,7 @@ import org.apache.airavata.registry.services.ApplicationDeploymentService;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.airavata.test.util.ReflectionEquals;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
@@ -81,7 +81,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     private boolean deepCompareDeployment(
             ApplicationDeploymentDescription expected, ApplicationDeploymentDescription actual) {
         // Compare basic fields first, excluding collections and internal fields
-        boolean equals = EqualsBuilder.reflectionEquals(
+        boolean equals = ReflectionEquals.reflectionEquals(
                 expected,
                 actual,
                 "moduleLoadCmds",
@@ -143,7 +143,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         for (int i = 0; i < expectedCopy.size(); i++) {
             T expectedItem = expectedCopy.get(i);
             T actualItem = actualCopy.get(i);
-            if (!EqualsBuilder.reflectionEquals(expectedItem, actualItem, "__isset_bitfield")) {
+            if (!ReflectionEquals.reflectionEquals(expectedItem, actualItem, "__isset_bitfield")) {
                 return false;
             }
         }
@@ -166,7 +166,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         for (int i = 0; i < expectedCopy.size(); i++) {
             SetEnvPaths expectedItem = expectedCopy.get(i);
             SetEnvPaths actualItem = actualCopy.get(i);
-            if (!EqualsBuilder.reflectionEquals(expectedItem, actualItem, "__isset_bitfield", "envPathOrder")) {
+            if (!ReflectionEquals.reflectionEquals(expectedItem, actualItem, "__isset_bitfield", "envPathOrder")) {
                 return false;
             }
         }

@@ -19,7 +19,9 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -165,43 +167,6 @@ public class PropertiesBindingTest {
         void testFlywayEnabled() {
             assertFalse(properties.flyway().enabled());
         }
-
-        @Test
-        @DisplayName("helix properties")
-        void testHelixProperties() {
-            assertEquals("AiravataCluster", properties.helix().cluster().name());
-            assertEquals("AiravataController", properties.helix().controller().name());
-            assertEquals("AiravataParticipant", properties.helix().participant().name());
-        }
-
-        @Test
-        @DisplayName("kafka properties")
-        void testKafkaProperties() {
-            assertFalse(properties.kafka().enabled());
-            assertEquals("localhost:9092", properties.kafka().brokerUrl());
-        }
-
-        @Test
-        @DisplayName("rabbitmq properties")
-        void testRabbitMQProperties() {
-            var rabbitmq = properties.rabbitmq();
-            assertFalse(rabbitmq.enabled());
-            assertEquals("amqp://guest:guest@localhost:5672/develop", rabbitmq.brokerUrl());
-            assertEquals("dbevent_exchange", rabbitmq.dbEventExchangeName());
-            assertFalse(rabbitmq.durableQueue());
-            assertEquals("experiment_exchange", rabbitmq.experimentExchangeName());
-            assertEquals("experiment.launch.queue", rabbitmq.experimentLaunchQueueName());
-            assertEquals(200, rabbitmq.prefetchCount());
-            assertEquals("process_exchange", rabbitmq.processExchangeName());
-            assertEquals("status_exchange", rabbitmq.statusExchangeName());
-        }
-
-        @Test
-        @DisplayName("zookeeper properties")
-        void testZookeeperProperties() {
-            assertFalse(properties.zookeeper().embedded());
-            assertEquals("localhost:2181", properties.zookeeper().server().connection());
-        }
     }
 
     // ==================== Services Properties ====================
@@ -279,15 +244,12 @@ public class PropertiesBindingTest {
         void testComputeMonitor() {
             var compute = properties.services().monitor().compute();
             assertTrue(compute.enabled());
-            assertEquals("MonitoringConsumer", compute.brokerConsumerGroup());
-            assertEquals("AiravataMonitorPublisher", compute.brokerPublisherId());
-            assertEquals("monitoring-data", compute.brokerTopic());
             assertEquals(18000, compute.clusterCheckRepeatTime());
             assertEquals(300, compute.clusterCheckTimeWindow());
             assertEquals("EmailBasedProducer", compute.emailPublisherId());
+            assertEquals("", compute.jobStatusCallbackUrl());
             assertEquals("", compute.notification().emailIds());
             assertEquals("RealtimeProducer", compute.realtimePublisherId());
-            assertEquals("http://localhost:8082/topics/helix-airavata-mq", compute.statusPublishEndpoint());
             assertEquals("BatchQueueValidator,ExperimentStatusValidator", compute.validators());
         }
 
@@ -311,8 +273,6 @@ public class PropertiesBindingTest {
         void testRealtimeMonitor() {
             var realtime = properties.services().monitor().realtime();
             assertTrue(realtime.enabled());
-            assertEquals("monitor", realtime.brokerConsumerGroup());
-            assertEquals("helix-airavata-mq", realtime.brokerTopic());
         }
 
         @Test
@@ -320,16 +280,13 @@ public class PropertiesBindingTest {
         void testParserService() {
             var parser = properties.services().parser();
             assertFalse(parser.enabled());
-            assertEquals("ParsingConsumer", parser.brokerConsumerGroup());
             assertTrue(parser.deleteContainer());
             assertEquals("", parser.enabledGateways());
             assertFalse(parser.loadBalanceClusters());
-            assertEquals("AiravataParserWM", parser.name());
             assertEquals(3600.0, parser.scanningInterval());
             assertEquals(1, parser.scanningParallelJobs());
             assertEquals("CHANGE_ME", parser.storageResourceId());
             assertEquals(5, parser.timeStepSeconds());
-            assertEquals("parsing-data", parser.topic());
         }
 
         @Test
@@ -344,7 +301,6 @@ public class PropertiesBindingTest {
             var postwm = properties.services().postwm();
             assertTrue(postwm.enabled());
             assertFalse(postwm.loadBalanceClusters());
-            assertEquals("AiravataPostWM", postwm.name());
         }
 
         @Test
@@ -353,7 +309,6 @@ public class PropertiesBindingTest {
             var prewm = properties.services().prewm();
             assertTrue(prewm.enabled());
             assertFalse(prewm.loadBalanceClusters());
-            assertEquals("AiravataPreWM", prewm.name());
         }
 
         @Test

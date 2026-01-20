@@ -67,7 +67,6 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseMigratorCommand.class);
     private static final String delimiter = ";";
-    private static final String MIGRATE_SQL_DERBY = "migrate_derby.sql";
     private static final String MIGRATE_SQL_MYSQL = "migrate_mysql.sql";
     private static final String REGISTRY_VERSION = "registry.version";
     private static final String AIRAVATA_VERSION = "0.5";
@@ -131,15 +130,14 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
         Connection connection = null;
         InputStream sqlStream = null;
         try {
-            if (dbType != null && dbType.contains("derby")) {
-                jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
-                migrationScriptName = MIGRATE_SQL_DERBY;
-            } else if (dbType != null && dbType.contains("mysql")) {
-                jdbcDriver = "com.mysql.jdbc.Driver";
+            // Only support MariaDB/MySQL - Derby and H2 have been removed
+            if (dbType != null && (dbType.contains("mysql") || dbType.contains("mariadb"))) {
+                jdbcDriver = "org.mariadb.jdbc.Driver";
                 migrationScriptName = MIGRATE_SQL_MYSQL;
             } else {
-                logger.error("Unsupported database type: {}", dbType);
-                throw new RuntimeException("Unsupported database type: " + dbType);
+                logger.error("Unsupported database type: {}. Only MariaDB/MySQL is supported.", dbType);
+                throw new RuntimeException(
+                        "Unsupported database type: " + dbType + ". Only MariaDB/MySQL is supported.");
             }
 
             // Find migration script in dev-tools/migrations

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * Base class for all messaging events.
  * Uses Jackson polymorphic type handling to support JSON serialization/deserialization
- * of event subclasses through message brokers (RabbitMQ, Kafka).
+ * of event subclasses through Dapr Pub/Sub.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 @JsonSubTypes({
@@ -39,7 +39,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = JobStatusChangeRequestEvent.class, name = "jobStatusRequest"),
     @JsonSubTypes.Type(value = TaskStatusChangeEvent.class, name = "taskStatus"),
     @JsonSubTypes.Type(value = TaskStatusChangeRequestEvent.class, name = "taskStatusRequest"),
-    @JsonSubTypes.Type(value = TaskOutputChangeEvent.class, name = "taskOutput"),
-    @JsonSubTypes.Type(value = DBEventMessage.class, name = "dbEvent")
+    @JsonSubTypes.Type(value = TaskOutputChangeEvent.class, name = "taskOutput")
 })
 public class MessagingEvent {}

@@ -37,33 +37,15 @@ public class TestPropertiesHelper {
     private static final Logger logger = LoggerFactory.getLogger(TestPropertiesHelper.class);
 
     /**
-     * Gets test property overrides for messaging services.
-     * These properties should be used to override default messaging configuration
-     * when using Testcontainers.
+     * Gets test property overrides for messaging/state backends.
+     * Kafka, RabbitMQ, and Zookeeper have been replaced by Redis for Dapr.
+     * Use {@link TestcontainersConfig#getRedisHost()} when a test needs Redis.
      *
-     * @return Map of property keys to values for Kafka, RabbitMQ, and Zookeeper
+     * @return Map of property overrides; currently empty. Dapr component metadata
+     *         (redisHost) is configured via component YAML or --resources-path.
      */
     public static Map<String, String> getMessagingTestProperties() {
-        Map<String, String> properties = new HashMap<>();
-
-        // Initialize containers and get connection strings
-        String kafkaBootstrapServers = TestcontainersConfig.getKafkaBootstrapServers();
-        String rabbitMQUrl = TestcontainersConfig.getRabbitMQUrl();
-        String zookeeperConnection = TestcontainersConfig.getZookeeperConnectionString();
-
-        // Set Kafka properties
-        properties.put("kafka.broker-url", kafkaBootstrapServers);
-        logger.debug("Test property: kafka.broker-url={}", kafkaBootstrapServers);
-
-        // Set RabbitMQ properties
-        properties.put("rabbitmq.broker-url", rabbitMQUrl);
-        logger.debug("Test property: rabbitmq.broker-url={}", rabbitMQUrl);
-
-        // Set Zookeeper properties
-        properties.put("zookeeper.server.connection", zookeeperConnection);
-        logger.debug("Test property: zookeeper.server.connection={}", zookeeperConnection);
-
-        return properties;
+        return new HashMap<>();
     }
 
     /**
@@ -93,17 +75,6 @@ public class TestPropertiesHelper {
             return;
         }
 
-        if (properties.kafka() != null) {
-            logger.debug("kafka.brokerUrl: {}", properties.kafka().brokerUrl());
-        }
-        if (properties.rabbitmq() != null) {
-            logger.debug("rabbitmq.brokerUrl: {}", properties.rabbitmq().brokerUrl());
-        }
-        if (properties.zookeeper() != null && properties.zookeeper().server() != null) {
-            logger.debug(
-                    "zookeeper.server.connection: {}",
-                    properties.zookeeper().server().connection());
-        }
         // Log IAM properties (debug level)
         if (properties.security() != null && properties.security().iam() != null) {
             logger.debug(

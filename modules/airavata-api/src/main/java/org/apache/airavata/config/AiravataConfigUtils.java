@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * Utility class for Airavata configuration directory and file access.
  * Provides static methods for resolving config directory, loading files, and accessing properties.
  *
- * <p>These utilities are used by tools, Helix tasks, and other non-Spring contexts
+ * <p>These utilities are used by tools, Dapr tasks, and other non-Spring contexts
  * that need to access configuration files directly.
  */
 public class AiravataConfigUtils {
@@ -179,7 +179,7 @@ public class AiravataConfigUtils {
     }
 
     /**
-     * Lightweight, non-Spring property access for tools/Helix tasks.
+     * Lightweight, non-Spring property access for tools/Dapr tasks.
      * Order: system props -> env vars -> loaded application.properties.
      */
     public static String getSetting(String key, String defaultValue) {

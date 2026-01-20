@@ -19,7 +19,11 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -120,34 +124,34 @@ public class ServiceStartupRangeTest {
                                 .disableAllBackgroundServices()
                                 .enableRestApi()),
                 Arguments.of(
-                        "Helix Controller",
+                        "Dapr Controller",
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixParticipant()
+                                .disableDaprParticipant()
                                 .disablePreWorkflowManager()
                                 .disablePostWorkflowManager()
                                 .disableParserWorkflowManager()
                                 .disableAllMonitors()
-                                .enableHelixController()),
+                                .enableDaprController()),
                 Arguments.of(
-                        "Helix Participant",
+                        "Dapr Participant",
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixController()
+                                .disableDaprController()
                                 .disablePreWorkflowManager()
                                 .disablePostWorkflowManager()
                                 .disableParserWorkflowManager()
                                 .disableAllMonitors()
-                                .enableHelixParticipant()),
+                                .enableDaprParticipant()),
                 Arguments.of(
                         "Pre Workflow Manager",
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixController()
-                                .disableHelixParticipant()
+                                .disableDaprController()
+                                .disableDaprParticipant()
                                 .disablePostWorkflowManager()
                                 .disableParserWorkflowManager()
                                 .disableAllMonitors()
@@ -157,8 +161,8 @@ public class ServiceStartupRangeTest {
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixController()
-                                .disableHelixParticipant()
+                                .disableDaprController()
+                                .disableDaprParticipant()
                                 .disablePreWorkflowManager()
                                 .disableParserWorkflowManager()
                                 .disableAllMonitors()
@@ -168,8 +172,8 @@ public class ServiceStartupRangeTest {
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixController()
-                                .disableHelixParticipant()
+                                .disableDaprController()
+                                .disableDaprParticipant()
                                 .disablePreWorkflowManager()
                                 .disablePostWorkflowManager()
                                 .disableAllMonitors()
@@ -179,8 +183,8 @@ public class ServiceStartupRangeTest {
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixController()
-                                .disableHelixParticipant()
+                                .disableDaprController()
+                                .disableDaprParticipant()
                                 .disablePreWorkflowManager()
                                 .disablePostWorkflowManager()
                                 .disableParserWorkflowManager()
@@ -191,8 +195,8 @@ public class ServiceStartupRangeTest {
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableRestApi()
-                                .disableHelixController()
-                                .disableHelixParticipant()
+                                .disableDaprController()
+                                .disableDaprParticipant()
                                 .disablePreWorkflowManager()
                                 .disablePostWorkflowManager()
                                 .disableParserWorkflowManager()
@@ -248,73 +252,73 @@ public class ServiceStartupRangeTest {
                         "2 services: Controller + Participant",
                         2,
                         ServiceConfigurationBuilder.minimal()
-                                .enableHelixController()
-                                .enableHelixParticipant()),
+                                .enableDaprController()
+                                .enableDaprParticipant()),
                 Arguments.of(
                         "3 services: Thrift + Controller + Participant",
                         3,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()),
+                                .enableDaprController()
+                                .enableDaprParticipant()),
                 Arguments.of(
-                        "4 services: Thrift + Helix + Pre-WM",
+                        "4 services: Thrift + Dapr + Pre-WM",
                         4,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()
+                                .enableDaprController()
+                                .enableDaprParticipant()
                                 .enablePreWorkflowManager()),
                 Arguments.of(
-                        "5 services: Thrift + Helix + Pre-WM + Post-WM",
+                        "5 services: Thrift + Dapr + Pre-WM + Post-WM",
                         5,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()
+                                .enableDaprController()
+                                .enableDaprParticipant()
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()),
                 Arguments.of(
-                        "6 services: Thrift + Helix + All Workflow Managers",
+                        "6 services: Thrift + Dapr + All Workflow Managers",
                         6,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()
+                                .enableDaprController()
+                                .enableDaprParticipant()
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()
                                 .enableParserWorkflowManager()),
                 Arguments.of(
-                        "7 services: Thrift + Helix + Workflow Managers + Realtime Monitor",
+                        "7 services: Thrift + Dapr + Workflow Managers + Realtime Monitor",
                         7,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()
+                                .enableDaprController()
+                                .enableDaprParticipant()
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()
                                 .enableParserWorkflowManager()
                                 .enableRealtimeMonitor()),
                 Arguments.of(
-                        "8 services: Thrift + Helix + Workflow Managers + Realtime + Email",
+                        "8 services: Thrift + Dapr + Workflow Managers + Realtime + Email",
                         8,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()
+                                .enableDaprController()
+                                .enableDaprParticipant()
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()
                                 .enableParserWorkflowManager()
                                 .enableRealtimeMonitor()
                                 .enableEmailMonitor()),
                 Arguments.of(
-                        "9 services: Thrift + REST + Helix + Workflow Managers + Monitors",
+                        "9 services: Thrift + REST + Dapr + Workflow Managers + Monitors",
                         9,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
                                 .enableRestApi()
-                                .enableHelixController()
-                                .enableHelixParticipant()
+                                .enableDaprController()
+                                .enableDaprParticipant()
                                 .enablePreWorkflowManager()
                                 .enablePostWorkflowManager()
                                 .enableParserWorkflowManager()
@@ -402,7 +406,7 @@ public class ServiceStartupRangeTest {
                         "Both APIs",
                         ServiceConfigurationBuilder.minimal().enableThriftApi().enableRestApi()),
                 Arguments.of(
-                        "Only Helix",
+                        "Only Dapr",
                         ServiceConfigurationBuilder.minimal()
                                 .enableAllBackgroundServices()
                                 .disablePreWorkflowManager()
@@ -410,7 +414,7 @@ public class ServiceStartupRangeTest {
                                 .disableParserWorkflowManager()
                                 .disableAllMonitors()),
                 Arguments.of(
-                        "Helix + Workflow Managers",
+                        "Dapr + Workflow Managers",
                         ServiceConfigurationBuilder.minimal()
                                 .enableAllBackgroundServices()
                                 .disableAllMonitors()),

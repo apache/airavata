@@ -90,9 +90,9 @@ public abstract class ServiceStartupTestBase {
                     return properties.services().thrift().enabled();
                 case "rest-api":
                     return properties.services().rest().enabled();
-                case "helix-controller":
+                case "dapr-controller":
                     return properties.services().controller().enabled();
-                case "helix-participant":
+                case "dapr-participant":
                     return properties.services().participant().enabled();
                 case "pre-workflow-manager":
                     return properties.services().prewm().enabled();

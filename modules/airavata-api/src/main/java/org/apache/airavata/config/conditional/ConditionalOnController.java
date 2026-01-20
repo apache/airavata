@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Composite annotation for Helix controller components.
+ * Composite annotation for Dapr controller components.
  *
  * <p>Combines @Profile("!test") and @ConditionalOnProperty for controller enablement.
  * No matchIfMissing - property MUST be explicitly set.
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Profile;
  * <pre>
  * {@code @Component}
  * {@code @ConditionalOnController}
- * public class HelixController extends ServerLifecycle { }
+ * public class DaprController extends ServerLifecycle { }
  * </pre>
  */
 @Target(ElementType.TYPE)

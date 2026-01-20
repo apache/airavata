@@ -19,7 +19,10 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,10 +71,6 @@ public class ConditionalPropertyValidationTest {
         assertNotNull(properties.services().controller(), "Controller properties should be configured");
         assertNotNull(properties.services().monitor(), "Monitor properties should be configured");
         assertNotNull(properties.services().scheduler(), "Scheduler properties should be configured");
-
-        // Messaging properties
-        assertNotNull(properties.rabbitmq(), "RabbitMQ properties should be configured");
-        assertNotNull(properties.kafka(), "Kafka properties should be configured");
     }
 
     @Test
@@ -105,14 +104,6 @@ public class ConditionalPropertyValidationTest {
                 properties.security().authentication().enabled(),
                 "airavata.security.authentication.enabled should be true");
         assertTrue(properties.security().authzCache().enabled(), "airavata.security.authzCache.enabled should be true");
-    }
-
-    @Test
-    @DisplayName("Verify messaging beans respect enabled flags")
-    void testMessagingEnabledFlags() {
-        // RabbitMQ and Kafka should both be disabled in test properties
-        assertFalse(properties.rabbitmq().enabled(), "rabbitmq.enabled should be false in test");
-        assertFalse(properties.kafka().enabled(), "kafka.enabled should be false in test");
     }
 
     @Test
@@ -165,10 +156,6 @@ public class ConditionalPropertyValidationTest {
         // API services
         assertNotNull(properties.services().rest(), "services.rest must be set");
         assertNotNull(properties.services().thrift(), "services.thrift must be set");
-
-        // Messaging
-        assertNotNull(properties.rabbitmq(), "rabbitmq must be set");
-        assertNotNull(properties.kafka(), "kafka must be set");
 
         // Database migration
         assertNotNull(properties.flyway(), "flyway must be set");

@@ -194,6 +194,18 @@ public class TaskStatusService {
                 lastTaskTimestamps.put(taskId, incremented);
             }
         }
+
+        // CRITICAL: Detach TaskEntity from EntityManager cache to ensure status collection is refreshed
+        // This ensures that when getTask() is called, it sees the newly added status
+        try {
+            org.apache.airavata.registry.entities.expcatalog.TaskEntity taskEntity =
+                    entityManager.find(org.apache.airavata.registry.entities.expcatalog.TaskEntity.class, taskId);
+            if (taskEntity != null) {
+                entityManager.detach(taskEntity);
+            }
+        } catch (Exception e) {
+            // Ignore if entity not found - it's not critical
+        }
     }
 
     public void updateTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
@@ -277,6 +289,18 @@ public class TaskStatusService {
                     lastTaskTimestamps.put(taskId, incremented);
                 }
             }
+        }
+
+        // CRITICAL: Detach TaskEntity from EntityManager cache to ensure status collection is refreshed
+        // This ensures that when getTask() is called, it sees the newly added status
+        try {
+            org.apache.airavata.registry.entities.expcatalog.TaskEntity taskEntity =
+                    entityManager.find(org.apache.airavata.registry.entities.expcatalog.TaskEntity.class, taskId);
+            if (taskEntity != null) {
+                entityManager.detach(taskEntity);
+            }
+        } catch (Exception e) {
+            // Ignore if entity not found - it's not critical
         }
     }
 

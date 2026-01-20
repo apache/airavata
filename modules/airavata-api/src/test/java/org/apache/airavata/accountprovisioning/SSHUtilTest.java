@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.accountprovisioning;
 
-import com.jcraft.jsch.JSchException;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -49,7 +48,7 @@ public class SSHUtilTest {
     public SSHUtilTest() {}
 
     @Test
-    public void testValidate() throws JSchException {
+    public void testValidate() {
 
         String username = "testuser";
         String passphrase = "";

@@ -31,7 +31,7 @@ mvn test -pl airavata-api -Dtest="ServiceConfigurationBuilderTest" -Djacoco.skip
 **Location**: `airavata-api/src/test/java/org/apache/airavata/config/ServiceStatusVerifierTest.java`
 
 **Test Coverage**:
-- ✅ Check if services are enabled (Thrift, REST, Helix, Workflow Managers, Monitors)
+- ✅ Check if services are enabled (Thrift, REST, Dapr, Workflow Managers, Monitors)
 - ✅ Check if services are running (based on enabled state)
 - ✅ Port listening checks
 - ✅ Get all service names

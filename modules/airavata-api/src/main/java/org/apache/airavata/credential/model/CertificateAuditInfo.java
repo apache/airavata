@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.credential.model;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.airavata.credential.AuditInfo;
 
 /**

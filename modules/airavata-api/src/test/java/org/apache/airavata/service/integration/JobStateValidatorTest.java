@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.airavata.common.model.JobState;
-import org.apache.airavata.monitor.JobStateValidator;
+import org.apache.airavata.statemachine.JobStateValidator;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,34 +37,49 @@ public class JobStateValidatorTest {
         // Test all valid JobState transitions according to JobStateValidator
         // SUBMITTED can transition to all other states
         assertTrue(
-                JobStateValidator.isValid(JobState.SUBMITTED, JobState.QUEUED), "SUBMITTED -> QUEUED should be valid");
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.QUEUED),
+                "SUBMITTED -> QUEUED should be valid");
         assertTrue(
-                JobStateValidator.isValid(JobState.SUBMITTED, JobState.ACTIVE), "SUBMITTED -> ACTIVE should be valid");
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.ACTIVE),
+                "SUBMITTED -> ACTIVE should be valid");
         assertTrue(
-                JobStateValidator.isValid(JobState.SUBMITTED, JobState.COMPLETE),
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.COMPLETE),
                 "SUBMITTED -> COMPLETE should be valid");
         assertTrue(
-                JobStateValidator.isValid(JobState.SUBMITTED, JobState.FAILED), "SUBMITTED -> FAILED should be valid");
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.FAILED),
+                "SUBMITTED -> FAILED should be valid");
         assertTrue(
-                JobStateValidator.isValid(JobState.SUBMITTED, JobState.CANCELED),
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.CANCELED),
                 "SUBMITTED -> CANCELED should be valid");
 
         // QUEUED can transition to multiple states
-        assertTrue(JobStateValidator.isValid(JobState.QUEUED, JobState.ACTIVE), "QUEUED -> ACTIVE should be valid");
-        assertTrue(JobStateValidator.isValid(JobState.QUEUED, JobState.COMPLETE), "QUEUED -> COMPLETE should be valid");
-        assertTrue(JobStateValidator.isValid(JobState.QUEUED, JobState.FAILED), "QUEUED -> FAILED should be valid");
+        assertTrue(
+                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.ACTIVE),
+                "QUEUED -> ACTIVE should be valid");
+        assertTrue(
+                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.COMPLETE),
+                "QUEUED -> COMPLETE should be valid");
+        assertTrue(
+                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.FAILED),
+                "QUEUED -> FAILED should be valid");
 
         // ACTIVE can transition to terminal states
-        assertTrue(JobStateValidator.isValid(JobState.ACTIVE, JobState.COMPLETE), "ACTIVE -> COMPLETE should be valid");
-        assertTrue(JobStateValidator.isValid(JobState.ACTIVE, JobState.FAILED), "ACTIVE -> FAILED should be valid");
-        assertTrue(JobStateValidator.isValid(JobState.ACTIVE, JobState.CANCELED), "ACTIVE -> CANCELED should be valid");
+        assertTrue(
+                JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.COMPLETE),
+                "ACTIVE -> COMPLETE should be valid");
+        assertTrue(
+                JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.FAILED),
+                "ACTIVE -> FAILED should be valid");
+        assertTrue(
+                JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.CANCELED),
+                "ACTIVE -> CANCELED should be valid");
 
         // NON_CRITICAL_FAIL can recover
         assertTrue(
-                JobStateValidator.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
+                JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
                 "NON_CRITICAL_FAIL -> QUEUED should be valid");
         assertTrue(
-                JobStateValidator.isValid(JobState.NON_CRITICAL_FAIL, JobState.ACTIVE),
+                JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.ACTIVE),
                 "NON_CRITICAL_FAIL -> ACTIVE should be valid");
     }
 
@@ -73,21 +88,24 @@ public class JobStateValidatorTest {
         // Test invalid JobState transitions
         // COMPLETE cannot transition to other states
         assertFalse(
-                JobStateValidator.isValid(JobState.COMPLETE, JobState.SUBMITTED),
+                JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.SUBMITTED),
                 "COMPLETE -> SUBMITTED should be invalid");
         assertFalse(
-                JobStateValidator.isValid(JobState.COMPLETE, JobState.ACTIVE), "COMPLETE -> ACTIVE should be invalid");
+                JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.ACTIVE),
+                "COMPLETE -> ACTIVE should be invalid");
 
         // FAILED cannot transition to SUBMITTED
         assertFalse(
-                JobStateValidator.isValid(JobState.FAILED, JobState.SUBMITTED),
+                JobStateValidator.INSTANCE.isValid(JobState.FAILED, JobState.SUBMITTED),
                 "FAILED -> SUBMITTED should be invalid");
 
         // CANCELED cannot transition to active states
         assertFalse(
-                JobStateValidator.isValid(JobState.CANCELED, JobState.ACTIVE), "CANCELED -> ACTIVE should be invalid");
+                JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.ACTIVE),
+                "CANCELED -> ACTIVE should be invalid");
         assertFalse(
-                JobStateValidator.isValid(JobState.CANCELED, JobState.QUEUED), "CANCELED -> QUEUED should be invalid");
+                JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.QUEUED),
+                "CANCELED -> QUEUED should be invalid");
     }
 
     @Test
@@ -95,13 +113,14 @@ public class JobStateValidatorTest {
         // Test that JobStateValidator handles null states correctly
         // null -> any state should be valid (initial state)
         assertTrue(
-                JobStateValidator.isValid(null, JobState.SUBMITTED),
+                JobStateValidator.INSTANCE.isValid(null, JobState.SUBMITTED),
                 "null -> SUBMITTED should be valid (initial state)");
 
         // any state -> null should be invalid
-        assertFalse(JobStateValidator.isValid(JobState.SUBMITTED, null), "SUBMITTED -> null should be invalid");
+        assertFalse(
+                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, null), "SUBMITTED -> null should be invalid");
 
         // null -> null should be invalid
-        assertFalse(JobStateValidator.isValid(null, null), "null -> null should be invalid");
+        assertFalse(JobStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
     }
 }

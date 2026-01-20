@@ -19,18 +19,35 @@
 */
 package org.apache.airavata.registry.exception;
 
+/**
+ * Domain exception: RegistryServiceException
+ * Exception thrown by registry service operations.
+ */
 public class RegistryException extends Exception {
-    private static final long serialVersionUID = -2849422320139467602L;
+    private static final long serialVersionUID = 1L;
 
-    public RegistryException(Throwable e) {
-        super(e);
+    private String message;
+
+    public RegistryException() {
+        super();
     }
 
     public RegistryException(String message) {
-        super(message, null);
+        super(message);
+        this.message = message;
     }
 
-    public RegistryException(String message, Throwable e) {
-        super(message, e);
+    public RegistryException(String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

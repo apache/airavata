@@ -70,9 +70,9 @@ public class ServiceStatusVerifier {
                     return properties.services().thrift().enabled();
                 case "rest-api":
                     return properties.services().rest().enabled();
-                case "helix-controller":
+                case "controller":
                     return properties.services().controller().enabled();
-                case "helix-participant":
+                case "participant":
                     return properties.services().participant().enabled();
                 case "pre-workflow-manager":
                     return properties.services().prewm().enabled();
@@ -277,8 +277,8 @@ public class ServiceStatusVerifier {
         return java.util.Arrays.asList(
                 "thrift-api",
                 "rest-api",
-                "helix-controller",
-                "helix-participant",
+                "controller",
+                "participant",
                 "pre-workflow-manager",
                 "post-workflow-manager",
                 "parser-workflow-manager",

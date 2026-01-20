@@ -25,7 +25,4 @@ import org.slf4j.LoggerFactory;
 public class TestDbEventManagerZkUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(TestDbEventManagerZkUtils.class);
-
-    // Test functionality has been removed as it was all commented out.
-    // If Zookeeper utility testing is needed, create proper JUnit tests with Testcontainers.
 }

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;

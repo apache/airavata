@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.config;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,13 +81,8 @@ public class DockerServiceStartupTest {
         assertNotNull(applicationContext, "Application context should load");
 
         String dbHost = System.getenv("DB_HOST");
-        String rabbitmqHost = System.getenv("RABBITMQ_HOST");
-        String zookeeperHost = System.getenv("ZOOKEEPER_HOST");
-        logger.info(
-                "Docker environment variables - DB_HOST: {}, RABBITMQ_HOST: {}, ZOOKEEPER_HOST: {}",
-                dbHost,
-                rabbitmqHost,
-                zookeeperHost);
+        String redisHost = System.getenv("REDIS_HOST");
+        logger.info("Docker environment variables - DB_HOST: {}, REDIS_HOST: {}", dbHost, redisHost);
     }
 
     @Test

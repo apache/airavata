@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.thriftapi.client;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;

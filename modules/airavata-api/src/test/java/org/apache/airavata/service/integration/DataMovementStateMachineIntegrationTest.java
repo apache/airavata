@@ -32,13 +32,13 @@ import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.messaging.MessageHandler;
-import org.apache.airavata.messaging.MessageVerificationUtils;
-import org.apache.airavata.messaging.Publisher;
-import org.apache.airavata.messaging.Subscriber;
-import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.MessageHandler;
+import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
+import org.apache.airavata.dapr.messaging.Publisher;
+import org.apache.airavata.dapr.messaging.Subscriber;
+import org.apache.airavata.dapr.messaging.Type;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
@@ -75,35 +75,12 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.rabbitmq.enabled=true",
+            "airavata.dapr.enabled=false",
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @Transactional
 public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationTestBase {
-
-    /**
-     * Inject messaging container URLs into Spring properties before context loads.
-     */
-    @org.springframework.test.context.DynamicPropertySource
-    static void configureMessaging(org.springframework.test.context.DynamicPropertyRegistry registry) {
-        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-        String keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
-
-        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
-        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
-        registry.add("airavata.rabbitmq.experiment-exchange-name", () -> "experiment_exchange");
-        registry.add("airavata.rabbitmq.experiment-launch-queue-name", () -> "experiment.launch.queue");
-        registry.add("airavata.rabbitmq.process-exchange-name", () -> "process_exchange");
-        registry.add("airavata.rabbitmq.status-exchange-name", () -> "status_exchange");
-        registry.add("airavata.rabbitmq.db-event-exchange-name", () -> "dbevent_exchange");
-        registry.add("airavata.rabbitmq.durable-queue", () -> "false");
-        registry.add("airavata.rabbitmq.prefetch-count", () -> "200");
-        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
-        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
-    }
 
     @Configuration
     @ComponentScan(
@@ -129,7 +106,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
     private final ProcessStatusService processStatusService;
 
     @Autowired(required = false)
-    private MessagingFactory messagingFactory;
+    private DaprMessagingFactory messagingFactory;
 
     private TestHierarchy testHierarchy;
 
@@ -335,8 +312,8 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
     @Test
     @DisplayName("Should verify messages are published for data staging state transitions")
     void shouldVerifyMessagesPublishedForDataStaging() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
-            logger.warn("RabbitMQ not available, skipping messaging verification");
+        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
+            logger.warn("Dapr not available, skipping messaging verification");
             return;
         }
 
@@ -424,7 +401,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
 
             // Only verify message reception if we successfully published at least one message
             if (publishSuccessCount > 0) {
-                // Wait for messages with longer timeout for RabbitMQ in test environment
+                // Wait for messages with longer timeout for Dapr in test environment
                 boolean received = messageReceived.await(15, TimeUnit.SECONDS);
 
                 // If messages weren't received, skip verification instead of failing

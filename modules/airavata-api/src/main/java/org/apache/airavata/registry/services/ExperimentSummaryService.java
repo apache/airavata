@@ -380,8 +380,11 @@ public class ExperimentSummaryService {
 
             return experimentStatistics;
         } catch (RegistryException e) {
-            logger.error("Error while retrieving experiment statistics from registry", e);
-            throw new RegistryException(e);
+            String message =
+                    String.format("Error while retrieving experiment statistics from registry: %s", e.getMessage());
+            logger.error(message, e);
+            e.setMessage(message);
+            throw e;
         }
     }
 

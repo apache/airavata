@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.airavata.common.exception.ProjectNotFoundException;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +51,7 @@ public class ProjectHandler {
             String projectId = registryService.createProject(gatewayId, project);
             System.out.println("✓ Project created: " + projectId + " (" + name + ")");
             return projectId;
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             throw new RuntimeException("Failed to create project: " + e.getMessage(), e);
         }
     }
@@ -75,7 +75,7 @@ public class ProjectHandler {
 
             registryService.updateProject(projectId, project);
             System.out.println("✓ Project updated: " + projectId);
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to update project: " + e.getMessage(), e);
         }
     }
@@ -88,7 +88,7 @@ public class ProjectHandler {
             } else {
                 System.out.println("⚠ Project not found or could not be deleted: " + projectId);
             }
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to delete project: " + e.getMessage(), e);
         }
     }
@@ -136,7 +136,7 @@ public class ProjectHandler {
                 System.out.println("  Shared Groups: " + String.join(", ", project.getSharedGroups()));
             }
             return project;
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to get project: " + e.getMessage(), e);
         }
     }
@@ -159,7 +159,7 @@ public class ProjectHandler {
             } else {
                 System.out.println("User " + userId + " is already in project " + projectId);
             }
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to add user to project: " + e.getMessage(), e);
         }
     }
@@ -179,7 +179,7 @@ public class ProjectHandler {
             } else {
                 System.out.println("User " + userId + " is not in project " + projectId);
             }
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to remove user from project: " + e.getMessage(), e);
         }
     }
@@ -201,7 +201,7 @@ public class ProjectHandler {
             } else {
                 System.out.println("Group " + groupId + " is already in project " + projectId);
             }
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to add group to project: " + e.getMessage(), e);
         }
     }
@@ -220,7 +220,7 @@ public class ProjectHandler {
             } else {
                 System.out.println("Group " + groupId + " is not in project " + projectId);
             }
-        } catch (RegistryServiceException | ProjectNotFoundException e) {
+        } catch (RegistryException | ProjectNotFoundException e) {
             throw new RuntimeException("Failed to remove group from project: " + e.getMessage(), e);
         }
     }

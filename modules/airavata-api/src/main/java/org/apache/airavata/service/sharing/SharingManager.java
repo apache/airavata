@@ -27,7 +27,7 @@ import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
@@ -93,14 +93,13 @@ public class SharingManager {
                     java.util.Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
                     domainId + ":READ",
                     true);
-        } catch (SharingRegistryException | RegistryServiceException e) {
+        } catch (SharingRegistryException | RegistryException e) {
             logger.error("Error sharing entity with admin gateway groups: " + e.getMessage(), e);
             throw new SharingRegistryException("Error sharing entity with admin gateway groups: " + e.getMessage());
         }
     }
 
-    private GatewayGroups retrieveGatewayGroups(String gatewayId)
-            throws RegistryServiceException, SharingRegistryException {
+    private GatewayGroups retrieveGatewayGroups(String gatewayId) throws RegistryException, SharingRegistryException {
         try {
             if (isGatewayGroupsExists(gatewayId)) {
                 return registryService.getGatewayGroups(gatewayId);
@@ -110,7 +109,7 @@ public class SharingManager {
         } catch (Exception e) {
             String msg = "Error while initializing gateway groups: " + gatewayId + " " + e.getMessage();
             logger.error(msg, e);
-            throw new RegistryServiceException(msg);
+            throw new RegistryException(msg);
         }
     }
 

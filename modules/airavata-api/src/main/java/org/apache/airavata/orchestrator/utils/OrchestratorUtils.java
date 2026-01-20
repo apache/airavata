@@ -48,7 +48,7 @@ import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.orchestrator.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ import org.springframework.stereotype.Component;
  * This contains orchestrator specific utilities
  */
 @Component
-@Profile("!test")
+@Profile({"!test", "orchestrator-integration"})
 @ConditionalOnApiService
 public class OrchestratorUtils {
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorUtils.class);
@@ -90,25 +90,24 @@ public class OrchestratorUtils {
     }
 
     public JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model, String gatewayId)
-            throws RegistryServiceException, OrchestratorException {
+            throws RegistryException, OrchestratorException {
         return getPreferredJobSubmissionInterface(model, gatewayId).getJobSubmissionProtocol();
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model)
-            throws RegistryServiceException {
+            throws RegistryException {
         return registryService.getGroupComputeResourcePreference(
                 model.getComputeResourceId(), model.getGroupResourceProfileId());
     }
 
-    public String getApplicationInterfaceName(ProcessModel model)
-            throws RegistryServiceException, OrchestratorException {
+    public String getApplicationInterfaceName(ProcessModel model) throws RegistryException, OrchestratorException {
         ApplicationInterfaceDescription appInterface =
                 registryService.getApplicationInterface(model.getApplicationInterfaceId());
         return appInterface.getApplicationName();
     }
 
     public DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model, String gatewayId)
-            throws RegistryServiceException, OrchestratorException {
+            throws RegistryException, OrchestratorException {
         return getPreferredDataMovementInterface(model, gatewayId).getDataMovementProtocol();
     }
 
@@ -124,7 +123,7 @@ public class OrchestratorUtils {
     }
 
     public String getLoginUserName(ProcessModel processModel, String gatewayId)
-            throws AiravataException, RegistryServiceException {
+            throws AiravataException, RegistryException {
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         if (processModel.getUseUserCRPref()) {
@@ -160,7 +159,7 @@ public class OrchestratorUtils {
     }
 
     public String getScratchLocation(ProcessModel processModel, String gatewayId)
-            throws AiravataException, RegistryServiceException {
+            throws AiravataException, RegistryException {
         GroupComputeResourcePreference computeResourcePreference = getGroupComputeResourcePreference(processModel);
         ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
         String scratchLocation = computeResourcePreference.getScratchLocation();
@@ -237,7 +236,7 @@ public class OrchestratorUtils {
     }
 
     public int getDataMovementPort(ProcessModel processModel, String gatewayId)
-            throws RegistryServiceException, ApplicationSettingsException, OrchestratorException {
+            throws RegistryException, ApplicationSettingsException, OrchestratorException {
         try {
             DataMovementProtocol protocol = getPreferredDataMovementProtocol(processModel, gatewayId);
             DataMovementInterface dataMovementInterface = getPreferredDataMovementInterface(processModel, gatewayId);
@@ -255,7 +254,7 @@ public class OrchestratorUtils {
     }
 
     public SecurityProtocol getSecurityProtocol(ProcessModel processModel, String gatewayId)
-            throws RegistryServiceException, ApplicationSettingsException, OrchestratorException {
+            throws RegistryException, ApplicationSettingsException, OrchestratorException {
         try {
             JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processModel, gatewayId);
             JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processModel, gatewayId);

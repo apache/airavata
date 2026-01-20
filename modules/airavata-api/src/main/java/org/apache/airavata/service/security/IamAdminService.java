@@ -35,7 +35,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.messaging.Dispatcher;
+import org.apache.airavata.dapr.messaging.Dispatcher;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.mappers.UserProfileMapper;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
@@ -43,7 +43,7 @@ import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.profile.utils.keycloak.KeycloakRestClient;
 import org.apache.airavata.profile.utils.keycloak.dto.RoleRepresentation;
 import org.apache.airavata.profile.utils.keycloak.dto.UserRepresentation;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -345,7 +345,7 @@ public class IamAdminService {
     }
 
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
-            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
+            throws IamAdminServicesException, RegistryException, CredentialStoreException {
         try {
             KeycloakRestClient client = createKeycloakRestClient();
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -376,7 +376,7 @@ public class IamAdminService {
     }
 
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
-            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
+            throws IamAdminServicesException, RegistryException, CredentialStoreException {
         try {
             KeycloakRestClient client = createKeycloakRestClient();
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -407,7 +407,7 @@ public class IamAdminService {
     }
 
     public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
-            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
+            throws IamAdminServicesException, RegistryException, CredentialStoreException {
         try {
             KeycloakRestClient client = createKeycloakRestClient();
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -505,7 +505,7 @@ public class IamAdminService {
     }
 
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId)
-            throws IamAdminServicesException, RegistryServiceException, CredentialStoreException {
+            throws IamAdminServicesException, RegistryException, CredentialStoreException {
         GatewayResourceProfile gwrp = registryService.getGatewayResourceProfile(tenantId);
         return credentialStoreService.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }

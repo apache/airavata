@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.thriftapi.mapper;
 
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -34,10 +34,10 @@ public interface RegistryServiceExceptionMapper extends ModelMapper {
     /**
      * Convert domain exception to thrift exception.
      */
-    org.apache.airavata.thriftapi.registry.exception.RegistryServiceException toThrift(RegistryServiceException domain);
+    org.apache.airavata.thriftapi.registry.exception.RegistryServiceException toThrift(RegistryException domain);
 
     /**
      * Convert thrift exception to domain exception.
      */
-    RegistryServiceException toDomain(org.apache.airavata.thriftapi.registry.exception.RegistryServiceException thrift);
+    RegistryException toDomain(org.apache.airavata.thriftapi.registry.exception.RegistryServiceException thrift);
 }

@@ -379,4 +379,199 @@ public class StateMachineTestUtils {
         sequence.add(ProcessState.COMPLETED);
         return sequence;
     }
+
+    /**
+     * Gets all experiment states in the expected transition order for a successful experiment.
+     */
+    public static List<ExperimentState> getSuccessfulExperimentStateSequence() {
+        List<ExperimentState> sequence = new ArrayList<>();
+        sequence.add(ExperimentState.CREATED);
+        sequence.add(ExperimentState.SCHEDULED);
+        sequence.add(ExperimentState.LAUNCHED);
+        sequence.add(ExperimentState.EXECUTING);
+        sequence.add(ExperimentState.COMPLETED);
+        return sequence;
+    }
+
+    /**
+     * Gets all task states in the expected transition order for a successful task.
+     */
+    public static List<org.apache.airavata.common.model.TaskState> getSuccessfulTaskStateSequence() {
+        List<org.apache.airavata.common.model.TaskState> sequence = new ArrayList<>();
+        sequence.add(org.apache.airavata.common.model.TaskState.CREATED);
+        sequence.add(org.apache.airavata.common.model.TaskState.EXECUTING);
+        sequence.add(org.apache.airavata.common.model.TaskState.COMPLETED);
+        return sequence;
+    }
+
+    /**
+     * Creates an experiment status with the specified state and reason.
+     * Timestamps are automatically set to ensure uniqueness.
+     */
+    public static ExperimentStatus createExperimentStatus(ExperimentState state, String reason) {
+        ExperimentStatus status = new ExperimentStatus();
+        status.setState(state);
+        status.setReason(reason);
+        status.setTimeOfStateChange(getUniqueTimestamp());
+        return status;
+    }
+
+    /**
+     * Creates a task status with the specified state and reason.
+     * Timestamps are automatically set to ensure uniqueness.
+     */
+    public static org.apache.airavata.common.model.TaskStatus createTaskStatus(
+            org.apache.airavata.common.model.TaskState state, String reason) {
+        org.apache.airavata.common.model.TaskStatus status = new org.apache.airavata.common.model.TaskStatus();
+        status.setState(state);
+        status.setReason(reason);
+        status.setTimeOfStateChange(getUniqueTimestamp());
+        return status;
+    }
+
+    /**
+     * Verifies that an experiment has transitioned through the expected states in order.
+     */
+    public static void verifyExperimentStateTransition(
+            ExperimentService experimentService,
+            org.apache.airavata.registry.services.ExperimentStatusService experimentStatusService,
+            String experimentId,
+            List<ExperimentState> expectedStates)
+            throws RegistryException {
+        ExperimentModel experiment = experimentService.getExperiment(experimentId);
+        assertNotNull(experiment, "Experiment should exist");
+        assertNotNull(experiment.getExperimentStatus(), "Experiment should have status history");
+
+        List<ExperimentStatus> statuses = experiment.getExperimentStatus();
+        assertTrue(
+                statuses.size() >= expectedStates.size(),
+                "Experiment should have at least " + expectedStates.size() + " status entries");
+
+        // Verify latest status matches last expected state
+        ExperimentStatus latestStatus = experimentStatusService.getExperimentStatus(experimentId);
+        assertNotNull(latestStatus, "Latest status should exist");
+        assertEquals(
+                expectedStates.get(expectedStates.size() - 1),
+                latestStatus.getState(),
+                "Latest experiment state should match expected final state");
+
+        // Verify all expected states are present in history
+        for (ExperimentState expectedState : expectedStates) {
+            boolean found = statuses.stream().anyMatch(s -> s.getState() == expectedState);
+            assertTrue(found, "Experiment state history should contain " + expectedState);
+        }
+    }
+
+    /**
+     * Verifies that a task has transitioned through the expected states in order.
+     */
+    public static void verifyTaskStateTransition(
+            TaskService taskService,
+            org.apache.airavata.registry.services.TaskStatusService taskStatusService,
+            String taskId,
+            List<org.apache.airavata.common.model.TaskState> expectedStates)
+            throws RegistryException {
+        org.apache.airavata.common.model.TaskModel task = taskService.getTask(taskId);
+        assertNotNull(task, "Task should exist");
+        assertNotNull(task.getTaskStatuses(), "Task should have status history");
+
+        var statuses = task.getTaskStatuses();
+        assertTrue(
+                statuses.size() >= expectedStates.size(),
+                "Task should have at least " + expectedStates.size() + " status entries");
+
+        // Verify latest status matches last expected state
+        var latestStatus = taskStatusService.getTaskStatus(taskId);
+        assertNotNull(latestStatus, "Latest status should exist");
+        assertEquals(
+                expectedStates.get(expectedStates.size() - 1),
+                latestStatus.getState(),
+                "Latest task state should match expected final state");
+
+        // Verify all expected states are present in history
+        for (org.apache.airavata.common.model.TaskState expectedState : expectedStates) {
+            boolean found = statuses.stream().anyMatch(s -> s.getState() == expectedState);
+            assertTrue(found, "Task state history should contain " + expectedState);
+        }
+    }
+
+    /**
+     * Verifies that experiment state transitions have proper timestamps (increasing order).
+     */
+    public static void verifyExperimentStateTimestamps(List<ExperimentStatus> statuses) {
+        assertNotNull(statuses, "Status list should not be null");
+        assertTrue(statuses.size() > 0, "Should have at least one status");
+
+        long previousTimestamp = 0;
+        for (ExperimentStatus status : statuses) {
+            assertTrue(
+                    status.getTimeOfStateChange() > 0,
+                    "Status should have a valid timestamp: " + status.getClass().getSimpleName());
+            assertTrue(
+                    status.getTimeOfStateChange() >= previousTimestamp,
+                    "Status timestamps should be in increasing order");
+            previousTimestamp = status.getTimeOfStateChange();
+        }
+    }
+
+    /**
+     * Verifies that task state transitions have proper timestamps (increasing order).
+     */
+    public static void verifyTaskStateTimestamps(List<org.apache.airavata.common.model.TaskStatus> statuses) {
+        assertNotNull(statuses, "Status list should not be null");
+        assertTrue(statuses.size() > 0, "Should have at least one status");
+
+        long previousTimestamp = 0;
+        for (org.apache.airavata.common.model.TaskStatus status : statuses) {
+            assertTrue(
+                    status.getTimeOfStateChange() > 0,
+                    "Status should have a valid timestamp: " + status.getClass().getSimpleName());
+            assertTrue(
+                    status.getTimeOfStateChange() >= previousTimestamp,
+                    "Status timestamps should be in increasing order");
+            previousTimestamp = status.getTimeOfStateChange();
+        }
+    }
+
+    /**
+     * Helper method to test all valid transitions for a validator.
+     * This method verifies that all transitions defined in the validator are actually valid.
+     */
+    public static <S extends Enum<S>> void testAllValidTransitions(
+            org.apache.airavata.statemachine.StateValidator<S> validator) {
+        java.util.Set<org.apache.airavata.statemachine.StateTransition<S>> validTransitions =
+                validator.getValidTransitions();
+        assertNotNull(validTransitions, "Valid transitions should not be null");
+        assertTrue(validTransitions.size() > 0, "Should have at least one valid transition");
+
+        for (org.apache.airavata.statemachine.StateTransition<S> transition : validTransitions) {
+            assertTrue(
+                    validator.isValid(transition.from(), transition.to()),
+                    "Transition " + transition.from() + " -> " + transition.to() + " should be valid");
+        }
+    }
+
+    /**
+     * Helper method to test that invalid transitions are rejected.
+     * This method tests common invalid transitions (terminal states, skipping states, etc.).
+     */
+    public static <S extends Enum<S>> void testInvalidTransitions(
+            org.apache.airavata.statemachine.StateValidator<S> validator,
+            java.util.Set<S> terminalStates,
+            S sampleState) {
+        // Test that terminal states cannot transition to any other state
+        for (S terminalState : terminalStates) {
+            for (S targetState : sampleState.getDeclaringClass().getEnumConstants()) {
+                if (!targetState.equals(terminalState)) {
+                    assertFalse(
+                            validator.isValid(terminalState, targetState),
+                            "Terminal state " + terminalState + " should not transition to " + targetState);
+                }
+            }
+        }
+
+        // Test null handling
+        assertFalse(validator.isValid(sampleState, null), "Any state -> null should be invalid");
+        assertFalse(validator.isValid(null, null), "null -> null should be invalid");
+    }
 }

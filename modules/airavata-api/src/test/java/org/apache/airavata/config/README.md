@@ -16,7 +16,7 @@ The test framework systematically verifies that:
 ### Base Classes
 
 - **`ServiceStartupTestBase`**: Base class for all service startup tests
-  - Provides Testcontainers setup for infrastructure (MySQL, RabbitMQ, Zookeeper, Kafka)
+  - Provides Testcontainers setup for infrastructure (MySQL, Redis for Dapr)
   - Utility methods for service status checking
   - Configuration property management
 
@@ -37,8 +37,8 @@ The test framework systematically verifies that:
   - Tests all services enabled, minimal configuration, individual services, etc.
 
 - **`ServiceDependencyTest`**: Tests for service dependencies and startup order
-  - Verifies Helix Controller starts before Participant
-  - Tests workflow managers with/without Helix
+  - Verifies Dapr Controller starts before Participant
+  - Tests workflow managers with/without Dapr
   - Verifies graceful handling of missing dependencies
 
 - **`ServiceToggleTest`**: Tests for enabling/disabling services via properties
@@ -107,8 +107,8 @@ Run specific test class:
 5. **Both APIs**: Verify both Thrift and REST can run simultaneously
 
 ### Background Service Scenarios
-6. **Helix Only**: Controller + Participant, no workflow managers
-7. **Workflow Managers Only**: Pre/Post/Parser without Helix (should fail gracefully)
+6. **Dapr Only**: Controller + Participant, no workflow managers
+7. **Workflow Managers Only**: Pre/Post/Parser without Dapr (should fail gracefully)
 8. **Monitors Only**: Realtime/Email monitors without dependencies
 9. **Each Service Individually**: Test each service in isolation
 

@@ -33,7 +33,7 @@ import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.QueueStatusModel;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
@@ -52,87 +52,86 @@ public class OrchestratorRegistryService {
         return registryService;
     }
 
-    public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryServiceException {
+    public ExperimentModel getExperiment(String airavataExperimentId) throws RegistryException {
         return getRegistryService().getExperiment(airavataExperimentId);
     }
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourceId, String groupResourceProfileId) throws RegistryServiceException {
+            String computeResourceId, String groupResourceProfileId) throws RegistryException {
         return getRegistryService().getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
     }
 
-    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException {
+    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryException {
         return getRegistryService().getGroupResourceProfile(groupResourceProfileId);
     }
 
-    public DataProductModel getDataProduct(String productUri) throws RegistryServiceException {
+    public DataProductModel getDataProduct(String productUri) throws RegistryException {
         return getRegistryService().getDataProduct(productUri);
     }
 
-    public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException {
+    public void updateProcess(ProcessModel processModel, String processId) throws RegistryException {
         getRegistryService().updateProcess(processModel, processId);
     }
 
-    public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryServiceException {
+    public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryException {
         getRegistryService().addErrors(errorType, errorModel, id);
     }
 
-    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryServiceException {
+    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws RegistryException {
         return getRegistryService().getExperimentStatus(airavataExperimentId);
     }
 
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
-            throws RegistryServiceException {
+            throws RegistryException {
         getRegistryService().updateExperimentStatus(experimentStatus, experimentId);
     }
 
-    public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException {
+    public String addProcess(ProcessModel processModel, String experimentId) throws RegistryException {
         return getRegistryService().addProcess(processModel, experimentId);
     }
 
-    public ProcessModel getProcess(String processId) throws RegistryServiceException {
+    public ProcessModel getProcess(String processId) throws RegistryException {
         return getRegistryService().getProcess(processId);
     }
 
-    public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException {
+    public List<ProcessModel> getProcessList(String experimentId) throws RegistryException {
         return getRegistryService().getProcessList(experimentId);
     }
 
-    public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException {
+    public ProcessStatus getProcessStatus(String processId) throws RegistryException {
         return getRegistryService().getProcessStatus(processId);
     }
 
-    public List<String> getProcessIds(String experimentId) throws RegistryServiceException {
+    public List<String> getProcessIds(String experimentId) throws RegistryException {
         return getRegistryService().getProcessIds(experimentId);
     }
 
-    public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException {
+    public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
         getRegistryService().addProcessStatus(processStatus, processId);
     }
 
-    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws RegistryServiceException {
+    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws RegistryException {
         return getRegistryService().getApplicationOutputs(appInterfaceId);
     }
 
-    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId)
-            throws RegistryServiceException {
+    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryException {
         return getRegistryService().getApplicationInterface(appInterfaceId);
     }
 
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
-            throws RegistryServiceException {
+            throws RegistryException {
         return getRegistryService().getApplicationDeployments(appModuleId);
     }
 
-    public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryServiceException {
+    public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryException {
         return getRegistryService().getComputeResource(computeResourceId);
     }
 
-    public void deleteTasks(String processId) throws RegistryServiceException {
+    public void deleteTasks(String processId) throws RegistryException {
         getRegistryService().deleteTasks(processId);
     }
 
-    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException {
+    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
         getRegistryService().registerQueueStatuses(queueStatuses);
     }
 }

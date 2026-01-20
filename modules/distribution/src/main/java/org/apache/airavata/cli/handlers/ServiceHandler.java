@@ -47,8 +47,8 @@ public class ServiceHandler {
         SERVICE_MAP.put("rest-api", new ServiceInfo("RESTAPI", "services.rest.enabled"));
 
         // Background Services
-        SERVICE_MAP.put("helix-controller", new ServiceInfo("HelixController", "services.controller.enabled"));
-        SERVICE_MAP.put("helix-participant", new ServiceInfo("GlobalParticipant", "services.participant.enabled"));
+        SERVICE_MAP.put("dapr-controller", new ServiceInfo("DaprController", "services.controller.enabled"));
+        SERVICE_MAP.put("dapr-participant", new ServiceInfo("GlobalParticipant", "services.participant.enabled"));
         SERVICE_MAP.put("pre-workflow-manager", new ServiceInfo("PreWorkflowManager", "services.prewm.enabled"));
         SERVICE_MAP.put("parser-workflow-manager", new ServiceInfo("ParserWorkflowManager", "services.parser.enabled"));
         SERVICE_MAP.put("post-workflow-manager", new ServiceInfo("PostWorkflowManager", "services.postwm.enabled"));
@@ -150,8 +150,8 @@ public class ServiceHandler {
             return switch (serviceName) {
                 case "thrift-api" -> properties.services().thrift().enabled();
                 case "rest-api" -> properties.services().rest().enabled();
-                case "helix-controller" -> properties.services().controller().enabled();
-                case "helix-participant" -> properties.services().participant().enabled();
+                case "dapr-controller" -> properties.services().controller().enabled();
+                case "dapr-participant" -> properties.services().participant().enabled();
                 case "pre-workflow-manager" -> properties.services().prewm().enabled();
                 case "parser-workflow-manager" -> properties.services().parser().enabled();
                 case "post-workflow-manager" -> properties.services().postwm().enabled();

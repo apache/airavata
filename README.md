@@ -71,15 +71,10 @@ docker compose -f .devcontainer/docker-compose.yml ps
 |---------|------|---------|
 | MariaDB | 13306 | Database (8 catalogs) |
 | Keycloak | 18080 | Identity/Access Management |
-| RabbitMQ | 5672, 15672 | Messaging (AMQP) |
-| Kafka | 9092 | Event streaming |
-| Zookeeper | 2181 | Coordination |
-| Adminer | 18088 | Database UI |
+| Redis | 6379 | Dapr Pub/Sub and State Store |
 
 **Access points:**
 - Keycloak Admin: http://localhost:18080 (admin/admin)
-- RabbitMQ Management: http://localhost:15672 (guest/guest)
-- Database Admin (Adminer): http://localhost:18088
 
 ### Step 3: Initialize Databases
 

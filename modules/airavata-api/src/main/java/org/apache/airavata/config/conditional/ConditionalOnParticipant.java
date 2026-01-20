@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Composite annotation for Helix participant components.
+ * Composite annotation for Dapr participant components.
  *
  * <p>Combines @Profile("!test") and @ConditionalOnProperty for participant enablement.
  * No matchIfMissing - property MUST be explicitly set.

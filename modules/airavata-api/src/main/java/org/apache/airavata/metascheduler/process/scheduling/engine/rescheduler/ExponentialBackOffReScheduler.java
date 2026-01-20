@@ -36,7 +36,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.metascheduler.core.utils.Utils;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +145,7 @@ public class ExponentialBackOffReScheduler implements ReScheduler {
 
     private void updateResourceSchedulingModel(
             ProcessModel processModel, ExperimentModel experimentModel, RegistryService registryService)
-            throws ExperimentNotFoundException, ApplicationSettingsException, RegistryServiceException {
+            throws ExperimentNotFoundException, ApplicationSettingsException, RegistryException {
         // Get policy bean from Spring context - all policies are Spring beans now
         ComputeResourceSelectionPolicy policy =
                 applicationContext.getBeansOfType(ComputeResourceSelectionPolicy.class).values().stream()

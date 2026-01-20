@@ -67,6 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @ConditionalOnApiService
@@ -110,9 +111,18 @@ public class SharingRegistryService {
     public static String OWNER_PERMISSION_NAME = "OWNER";
 
     /**
-     * * Domain Operations
-     * *
+     * Creates a domain and automatically creates the OWNER permission for that domain.
+     * <p>
+     * This method is transactional, ensuring that both the domain and OWNER permission
+     * are created atomically. If the OWNER permission creation fails, the domain creation
+     * will be rolled back.
+     *
+     * @param domain The domain to create
+     * @return The domain ID
+     * @throws SharingRegistryException If domain or OWNER permission creation fails
+     * @throws DuplicateEntryException If a domain with the same ID already exists
      */
+    @Transactional
     public String createDomain(Domain domain) throws SharingRegistryException, DuplicateEntryException {
         try {
             if (domainService.get(domain.getDomainId()) != null)
@@ -218,7 +228,7 @@ public class SharingRegistryService {
             userGroupService.create(userGroup);
 
             Domain domain = domainService.get(user.getDomainId());
-            if (domain.getInitialUserGroupId() != null) {
+            if (domain != null && domain.getInitialUserGroupId() != null) {
                 addUsersToGroup(user.getDomainId(), List.of(user.getUserId()), domain.getInitialUserGroupId());
             }
 
@@ -934,7 +944,9 @@ public class SharingRegistryService {
             entity.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             entity.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
 
-            if (entity.getOriginalEntityCreationTime() == 0) {
+            // Handle null case - getOriginalEntityCreationTime() returns Long (boxed), which can be null
+            Long originalTime = entity.getOriginalEntityCreationTime();
+            if (originalTime == null || originalTime == 0) {
                 entity.setOriginalEntityCreationTime(entity.getCreatedTime());
             }
             entityService.create(entity);

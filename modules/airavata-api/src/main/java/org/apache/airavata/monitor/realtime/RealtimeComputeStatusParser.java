@@ -28,7 +28,7 @@ import java.util.Optional;
 import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class RealtimeComputeStatusParser {
     private static final Logger logger = LoggerFactory.getLogger(RealtimeComputeStatusParser.class);
 
     private String getJobIdIdByJobNameWithRetry(String jobName, String taskId, RegistryService registryService)
-            throws RegistryServiceException, InterruptedException {
+            throws RegistryException, InterruptedException {
         for (int i = 0; i < 3; i++) {
 
             List<JobModel> jobsOfTask = registryService.getJobs("taskId", taskId);

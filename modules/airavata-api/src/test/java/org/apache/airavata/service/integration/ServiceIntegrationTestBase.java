@@ -20,6 +20,7 @@
 package org.apache.airavata.service.integration;
 
 import java.util.concurrent.TimeUnit;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.security.model.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Timeout;
@@ -50,8 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.services.rest.enabled=false",
             "airavata.services.thrift.enabled=true",
-            "airavata.kafka.enabled=false",
-            "airavata.rabbitmq.enabled=true"
+            "airavata.dapr.enabled=false"
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -87,29 +87,14 @@ public abstract class ServiceIntegrationTestBase {
 
     @org.springframework.test.context.DynamicPropertySource
     static void configureProperties(org.springframework.test.context.DynamicPropertyRegistry registry) {
-        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
         keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
 
-        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
-        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
-        registry.add("airavata.rabbitmq.experiment-exchange-name", () -> "experiment_exchange");
-        registry.add("airavata.rabbitmq.experiment-launch-queue-name", () -> "experiment.launch.queue");
-        registry.add("airavata.rabbitmq.process-exchange-name", () -> "process_exchange");
-        registry.add("airavata.rabbitmq.status-exchange-name", () -> "status_exchange");
-        registry.add("airavata.rabbitmq.db-event-exchange-name", () -> "dbevent_exchange");
-        registry.add("airavata.rabbitmq.durable-queue", () -> "false");
-        registry.add("airavata.rabbitmq.prefetch-count", () -> "200");
-        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
-
-        // Override IAM server URL with Keycloak testcontainer URL
         registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
         System.setProperty("airavata.security.iam.server-url", keycloakUrl);
     }
 
     @BeforeEach
-    public void setUpBase() throws org.apache.airavata.registry.exception.RegistryException {
+    public void setUpBase() throws RegistryException {
         // Ensure test gateway exists in EXPCATALOG_GATEWAY table
         // This is required because USERS table has FK to EXPCATALOG_GATEWAY
         if (gatewayService != null && !gatewayService.isGatewayExist(TEST_GATEWAY_ID)) {
@@ -175,19 +160,6 @@ public abstract class ServiceIntegrationTestBase {
         public org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback defaultKeyStorePasswordCallback(
                 org.apache.airavata.config.AiravataServerProperties properties) {
             return new org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback(properties);
-        }
-
-        /**
-         * Explicitly create MessagingFactory bean to ensure proper bean ordering.
-         * This ensures ConnectionFactory is available before MessagingFactory is created.
-         */
-        @Bean
-        @org.springframework.context.annotation.Primary
-        public org.apache.airavata.messaging.rabbitmq.MessagingFactory messagingFactory(
-                org.apache.airavata.config.AiravataServerProperties properties,
-                @org.springframework.beans.factory.annotation.Autowired(required = false)
-                        org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
-            return new org.apache.airavata.messaging.rabbitmq.MessagingFactory(properties, connectionFactory);
         }
     }
 }

@@ -19,13 +19,14 @@
 */
 package org.apache.airavata.monitor.compute;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.ComputeResourcePreference;
 import org.apache.airavata.common.model.JobSubmissionInterface;
@@ -33,7 +34,7 @@ import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.common.model.QueueStatusModel;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.quartz.Job;
@@ -137,7 +138,7 @@ public class ClusterStatusMonitorJob implements Job {
                                 computeResourceProfiles.add(computeResourceProfile);
                             }
                         }
-                    } catch (RegistryServiceException e) {
+                    } catch (RegistryException e) {
                         logger.error(e.getMessage());
                     }
                 });
@@ -151,24 +152,22 @@ public class ClusterStatusMonitorJob implements Job {
                 String hostName = computeResourceProfile.getHostName();
                 int port = computeResourceProfile.getPort();
 
+                SSHClient client = null;
                 try {
-                    JSch jsch = new JSch();
+                    client = new SSHClient();
+                    // Disable strict host key checking
+                    client.addHostKeyVerifier(new PromiscuousVerifier());
+                    client.connect(hostName, port);
+
                     SSHCredential sshCredential = credentialStoreService.getSSHCredential(
                             computeResourceProfile.getCredentialStoreToken(), superTenantGatewayId);
-                    jsch.addIdentity(
-                            hostName,
-                            sshCredential.getPrivateKey().getBytes(),
-                            sshCredential.getPublicKey().getBytes(),
-                            sshCredential.getPassphrase().getBytes());
 
-                    Session session = jsch.getSession(userName, hostName, port);
-                    java.util.Properties config = new java.util.Properties();
-                    config.put("StrictHostKeyChecking", "no");
-                    session.setConfig(config);
+                    // Load private key
+                    KeyProvider keyProvider = loadKeyProvider(sshCredential);
+                    client.authPublickey(userName, keyProvider);
 
                     logger.debug("Connected to " + hostName);
 
-                    session.connect();
                     for (String queue : computeResourceProfile.getQueueNames()) {
                         String command = "";
                         if (computeResourceProfile.getResourceManagerType().equals("SLURM"))
@@ -182,75 +181,80 @@ public class ClusterStatusMonitorJob implements Job {
                             continue;
                         }
 
-                        Channel channel = session.openChannel("exec");
-                        ((ChannelExec) channel).setCommand(command);
-                        channel.setInputStream(null);
-                        ((ChannelExec) channel).setErrStream(System.err);
-                        InputStream in = channel.getInputStream();
-                        channel.connect();
-                        byte[] tmp = new byte[1024];
-                        String result = "";
-                        while (true) {
-                            while (in.available() > 0) {
-                                int i = in.read(tmp, 0, 1024);
-                                if (i < 0) break;
-                                result += new String(tmp, 0, i);
-                            }
-                            if (channel.isClosed()) {
-                                if (in.available() > 0) continue;
-                                logger.debug(hostName + " " + queue + " " + "exit-status: " + channel.getExitStatus());
-                                break;
-                            }
-                            try {
-                                Thread.sleep(1000);
-                            } catch (Exception ee) {
-                            }
-                        }
-                        channel.disconnect();
+                        // Execute command using SSHJ
+                        try (net.schmizz.sshj.connection.channel.direct.Session session = client.startSession()) {
+                            net.schmizz.sshj.connection.channel.direct.Session.Command cmd = session.exec(command);
 
-                        if (result != null && result.length() > 0) {
-                            QueueStatusModel queueStatus = null;
-                            if (computeResourceProfile.getResourceManagerType().equals("SLURM")) {
-                                String[] sparts = result.split(" ");
-                                boolean isUp = sparts[0].equalsIgnoreCase("up");
-                                String knts = sparts[1];
-                                sparts = knts.split("/");
-                                int running = Integer.parseInt(sparts[0].trim());
-                                int queued = Integer.parseInt(sparts[1].trim());
-                                queueStatus = new QueueStatusModel(
-                                        hostName,
-                                        queue,
-                                        isUp,
-                                        running,
-                                        queued,
-                                        org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
-                                                .getTime());
-
-                            } else if (computeResourceProfile
-                                    .getResourceManagerType()
-                                    .equals("PBS")) {
-                                result = result.replaceAll("\\s+", " ");
-                                String[] sparts = result.split(" ");
-                                boolean isUp = sparts[3].equalsIgnoreCase("yes");
-                                int running = Integer.parseInt(sparts[6].trim());
-                                int queued = Integer.parseInt(sparts[5].trim());
-                                queueStatus = new QueueStatusModel(
-                                        hostName,
-                                        queue,
-                                        isUp,
-                                        running,
-                                        queued,
-                                        org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
-                                                .getTime());
+                            // Read stdout
+                            StringBuilder resultBuilder = new StringBuilder();
+                            try (InputStream stdout = cmd.getInputStream()) {
+                                byte[] tmp = new byte[1024];
+                                int bytesRead;
+                                while ((bytesRead = stdout.read(tmp)) != -1) {
+                                    resultBuilder.append(new String(tmp, 0, bytesRead, StandardCharsets.UTF_8));
+                                }
                             }
 
-                            if (queueStatus != null) queueStatuses.add(queueStatus);
+                            // Wait for command to complete
+                            cmd.join(30, TimeUnit.SECONDS);
+                            Integer exitStatus = cmd.getExitStatus();
+                            logger.debug(hostName + " " + queue + " " + "exit-status: " + exitStatus);
+
+                            String result = resultBuilder.toString();
+
+                            if (result != null && result.length() > 0) {
+                                QueueStatusModel queueStatus = null;
+                                if (computeResourceProfile
+                                        .getResourceManagerType()
+                                        .equals("SLURM")) {
+                                    String[] sparts = result.split(" ");
+                                    boolean isUp = sparts[0].equalsIgnoreCase("up");
+                                    String knts = sparts[1];
+                                    sparts = knts.split("/");
+                                    int running = Integer.parseInt(sparts[0].trim());
+                                    int queued = Integer.parseInt(sparts[1].trim());
+                                    queueStatus = new QueueStatusModel(
+                                            hostName,
+                                            queue,
+                                            isUp,
+                                            running,
+                                            queued,
+                                            org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
+                                                    .getTime());
+
+                                } else if (computeResourceProfile
+                                        .getResourceManagerType()
+                                        .equals("PBS")) {
+                                    result = result.replaceAll("\\s+", " ");
+                                    String[] sparts = result.split(" ");
+                                    boolean isUp = sparts[3].equalsIgnoreCase("yes");
+                                    int running = Integer.parseInt(sparts[6].trim());
+                                    int queued = Integer.parseInt(sparts[5].trim());
+                                    queueStatus = new QueueStatusModel(
+                                            hostName,
+                                            queue,
+                                            isUp,
+                                            running,
+                                            queued,
+                                            org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
+                                                    .getTime());
+                                }
+
+                                if (queueStatus != null) queueStatuses.add(queueStatus);
+                            }
                         }
                     }
-                    session.disconnect();
                 } catch (Exception ex) {
                     logger.error("Failed to get cluster status from " + computeResourceProfile.getHostName());
                     logger.error(ex.getMessage(), ex);
+                } finally {
+                    if (client != null && client.isConnected()) {
+                        try {
+                            client.disconnect();
+                        } catch (Exception e) {
+                            logger.warn("Error disconnecting SSH client", e);
+                        }
+                    }
                 }
             }
             if (queueStatuses != null && !queueStatuses.isEmpty()) {
@@ -350,5 +354,21 @@ public class ClusterStatusMonitorJob implements Job {
             this.resourceManagerType = resourceManagerType;
         }
         */
+    }
+
+    /**
+     * Load KeyProvider from SSHCredential bytes.
+     */
+    private static KeyProvider loadKeyProvider(SSHCredential sshCredential) throws java.io.IOException {
+        String privateKeyStr = sshCredential.getPrivateKey();
+        String passphrase = sshCredential.getPassphrase();
+
+        // Use SSHClient.loadKeys() to load key from string
+        SSHClient tempClient = new SSHClient();
+        net.schmizz.sshj.userauth.password.PasswordFinder passwordFinder = null;
+        if (passphrase != null && !passphrase.isEmpty()) {
+            passwordFinder = net.schmizz.sshj.userauth.password.PasswordUtils.createOneOff(passphrase.toCharArray());
+        }
+        return tempClient.loadKeys(privateKeyStr, null, passwordFinder);
     }
 }

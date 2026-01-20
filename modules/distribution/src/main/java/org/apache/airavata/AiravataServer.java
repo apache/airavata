@@ -73,7 +73,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.messaging",
             "org.apache.airavata.monitor",
             "org.apache.airavata.orchestrator",
-            "org.apache.airavata.helix",
+            "org.apache.airavata.dapr",
             "org.apache.airavata.config",
             "org.apache.airavata.thriftapi",
             "org.apache.airavata.manager.dbevent",

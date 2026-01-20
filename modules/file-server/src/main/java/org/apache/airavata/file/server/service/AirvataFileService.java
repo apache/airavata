@@ -27,13 +27,13 @@ import java.util.List;
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.FileMetadata;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
-import org.apache.airavata.helix.task.TaskUtil;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.task.TaskUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +50,7 @@ public class AirvataFileService {
     private final ApplicationContext applicationContext;
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
-    private final MessagingFactory messagingFactory;
+    private final DaprMessagingFactory messagingFactory;
     private final TaskUtil taskUtil;
 
     public AirvataFileService(
@@ -59,7 +59,7 @@ public class AirvataFileService {
             ApplicationContext applicationContext,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            MessagingFactory messagingFactory,
+            DaprMessagingFactory messagingFactory,
             TaskUtil taskUtil) {
         this.adaptorSupport = adaptorSupport;
         this.registryService = registryService;

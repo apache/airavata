@@ -89,7 +89,7 @@ public class JobStatusRepositoryTest extends TestBase {
     }
 
     @BeforeEach
-    public void setUp() throws RegistryException {
+    public void setUp() throws RegistryException, RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");

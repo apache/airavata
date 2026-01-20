@@ -98,9 +98,8 @@ import org.springframework.transaction.annotation.Transactional;
             "security.iam.enabled=false",
             "security.authzCache.enabled=false",
 
-            // Disable messaging
-            "kafka.enabled=false",
-            "rabbitmq.enabled=false"
+            // Disable messaging (Dapr disabled in tests)
+            "airavata.dapr.enabled=false"
         })
 @ActiveProfiles("test")
 @Transactional

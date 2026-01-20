@@ -44,12 +44,8 @@ public record AiravataServerProperties(
         long maxArchiveSize,
         StreamingTransfer streamingTransfer,
         Hibernate hibernate,
-        // Subsystem configuration
+        // Subsystem configuration (RabbitMQ, Kafka, Zookeeper, Helix removed; use Dapr)
         Security security,
-        RabbitMQ rabbitmq,
-        Kafka kafka,
-        Zookeeper zookeeper,
-        Helix helix,
         Flyway flyway,
         Services services) {
     // ==================== Helper Methods ====================
@@ -60,22 +56,6 @@ public record AiravataServerProperties(
      */
     public boolean isSharingEnabled() {
         return sharing != null && sharing.enabled();
-    }
-
-    /**
-     * Safely check if RabbitMQ is enabled.
-     * Returns false if rabbitmq configuration is null or not enabled.
-     */
-    public boolean isRabbitMQEnabled() {
-        return rabbitmq != null && rabbitmq.enabled();
-    }
-
-    /**
-     * Safely get the RabbitMQ broker URL.
-     * Returns null if rabbitmq configuration is null.
-     */
-    public String getRabbitMQBrokerUrl() {
-        return rabbitmq != null ? rabbitmq.brokerUrl() : null;
     }
 
     // ==================== Core Airavata Settings ====================
@@ -103,34 +83,6 @@ public record AiravataServerProperties(
         public record Vault(Keystore keystore) {
             public record Keystore(String url, String password, String alias) {}
         }
-    }
-
-    // ==================== Messaging Configuration ====================
-    public record RabbitMQ(
-            boolean enabled,
-            String brokerUrl,
-            String experimentExchangeName,
-            String experimentLaunchQueueName,
-            String processExchangeName,
-            String statusExchangeName,
-            String dbEventExchangeName,
-            boolean durableQueue,
-            int prefetchCount) {}
-
-    public record Kafka(boolean enabled, String brokerUrl) {}
-
-    // ==================== Infrastructure Configuration ====================
-    public record Zookeeper(Server server, boolean embedded) {
-        public record Server(String connection) {}
-    }
-
-    // ==================== Helix Configuration ====================
-    public record Helix(Cluster cluster, Controller controller, Participant participant) {
-        public record Cluster(String name) {}
-
-        public record Controller(String name) {}
-
-        public record Participant(String name) {}
     }
 
     // ==================== Flyway Configuration ====================
@@ -174,16 +126,13 @@ public record AiravataServerProperties(
 
         public record Controller(boolean enabled) {}
 
-        public record PreWm(boolean enabled, boolean loadBalanceClusters, String name) {}
+        public record PreWm(boolean enabled, boolean loadBalanceClusters) {}
 
-        public record PostWm(boolean enabled, boolean loadBalanceClusters, String name) {}
+        public record PostWm(boolean enabled, boolean loadBalanceClusters) {}
 
         public record Parser(
                 boolean enabled,
                 boolean loadBalanceClusters,
-                String name,
-                String brokerConsumerGroup,
-                String topic,
                 String storageResourceId,
                 boolean deleteContainer,
                 double scanningInterval,
@@ -220,17 +169,16 @@ public record AiravataServerProperties(
                     int connectionRetryInterval,
                     int expiryMins) {}
 
-            public record Realtime(boolean enabled, String brokerConsumerGroup, String brokerTopic) {}
+            /** Realtime: Dapr delivers monitoring-data-topic to /api/v1/dapr/pubsub/monitoring-data-topic. */
+            public record Realtime(boolean enabled) {}
 
+            /** Compute: Dapr for status; job-status-callback-url for job script curl when set. */
             public record Compute(
                     boolean enabled,
-                    String brokerPublisherId,
                     String emailPublisherId,
                     String realtimePublisherId,
-                    String brokerTopic,
-                    String brokerConsumerGroup,
                     Notification notification,
-                    String statusPublishEndpoint,
+                    String jobStatusCallbackUrl,
                     String validators,
                     int clusterCheckTimeWindow,
                     int clusterCheckRepeatTime) {

@@ -30,7 +30,7 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
-import org.apache.airavata.messaging.Dispatcher;
+import org.apache.airavata.dapr.messaging.Dispatcher;
 import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.exception.UserProfileServiceException;

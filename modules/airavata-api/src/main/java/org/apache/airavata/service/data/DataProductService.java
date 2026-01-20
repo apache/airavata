@@ -24,7 +24,7 @@ import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class DataProductService {
     public String registerDataProduct(DataProductModel dataProductModel) throws AiravataSystemException {
         try {
             return registryService.registerDataProduct(dataProductModel);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             var msg = "Error in registering the data resource" + dataProductModel.getProductName() + ".";
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -64,7 +64,7 @@ public class DataProductService {
     public DataProductModel getDataProduct(String productUri) throws AiravataSystemException {
         try {
             return registryService.getDataProduct(productUri);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving data product: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -75,7 +75,7 @@ public class DataProductService {
             throws AiravataSystemException {
         try {
             return registryService.registerReplicaLocation(replicaLocationModel);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             var msg = "Error in retreiving the replica " + replicaLocationModel.getReplicaName() + "." + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -85,7 +85,7 @@ public class DataProductService {
     public DataProductModel getParentDataProduct(String productUri) throws AiravataSystemException {
         try {
             return registryService.getParentDataProduct(productUri);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             var msg = "Error in retreiving the parent data product for " + productUri + "." + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -95,7 +95,7 @@ public class DataProductService {
     public List<DataProductModel> getChildDataProducts(String productUri) throws AiravataSystemException {
         try {
             return registryService.getChildDataProducts(productUri);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             var msg = "Error in retreiving the child products for " + productUri + "." + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);

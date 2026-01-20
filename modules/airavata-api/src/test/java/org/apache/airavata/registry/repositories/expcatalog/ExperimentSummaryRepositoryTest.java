@@ -79,7 +79,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
     private void saveExperimentSummary(ExperimentModel experimentModel, String status) {}
 
     @Test
-    public void testExperimentSummaryRepository() throws RegistryException {
+    public void testExperimentSummaryRepository() throws RegistryException, RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway");
         gateway.setDomain("SEAGRID");

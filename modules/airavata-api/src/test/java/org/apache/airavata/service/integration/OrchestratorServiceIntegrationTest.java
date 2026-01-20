@@ -35,16 +35,15 @@ import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.messaging.MessageHandler;
-import org.apache.airavata.messaging.Subscriber;
-import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.MessageHandler;
+import org.apache.airavata.dapr.messaging.Subscriber;
+import org.apache.airavata.dapr.messaging.Type;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -76,54 +75,34 @@ import org.springframework.test.context.TestConstructor;
             // Enable IAM/security components via Keycloak testcontainer
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.rabbitmq.enabled=true"
+            "airavata.dapr.enabled=false"
         })
 @ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @DisplayName("OrchestratorService Integration Tests")
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
 
-    /**
-     * Inject messaging container URLs into Spring properties before context loads.
-     */
-    @org.springframework.test.context.DynamicPropertySource
-    static void configureMessaging(org.springframework.test.context.DynamicPropertyRegistry registry) {
-        String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        String rabbitMQUrl = org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        String zookeeperUrl = org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-        String keycloakUrl = org.apache.airavata.config.TestcontainersConfig.getKeycloakUrl();
-
-        registry.add("airavata.kafka.broker-url", () -> kafkaUrl);
-        registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
-        registry.add("airavata.zookeeper.server.connection", () -> zookeeperUrl);
-        registry.add("airavata.security.iam.server-url", () -> keycloakUrl);
-    }
-
     @Autowired(required = false)
     private OrchestratorService orchestratorService;
 
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
-    private final MessagingFactory messagingFactory;
+    private final DaprMessagingFactory messagingFactory;
 
     private static final Logger logger = LoggerFactory.getLogger(OrchestratorServiceIntegrationTest.class);
 
     public OrchestratorServiceIntegrationTest(
-            RegistryService registryService, AiravataServerProperties properties, MessagingFactory messagingFactory) {
+            RegistryService registryService,
+            AiravataServerProperties properties,
+            DaprMessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.properties = properties;
         this.messagingFactory = messagingFactory;
     }
 
-    @BeforeEach
-    void setUp() {
-        // Ensure Zookeeper is initialized via TestcontainersConfig
-        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
-    }
-
     @Test
     @DisplayName("Should create experiment and verify persistence")
-    void shouldCreateExperimentAndVerifyPersistence() throws RegistryServiceException {
+    void shouldCreateExperimentAndVerifyPersistence() throws RegistryException {
         Project project = TestDataFactory.createTestProject("Orchestrator Test Project", TEST_GATEWAY_ID);
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 
@@ -158,7 +137,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
 
     @Test
     @DisplayName("Should verify experiment status transitions when launching")
-    void shouldVerifyExperimentStatusTransitions() throws RegistryServiceException, OrchestratorException {
+    void shouldVerifyExperimentStatusTransitions() throws RegistryException, OrchestratorException {
         if (orchestratorService == null) {
             logger.warn("OrchestratorService not available in test profile, skipping test");
             return;
@@ -183,8 +162,8 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify messages are published on state changes")
     void shouldVerifyMessagesPublishedOnStateChanges() throws Exception {
-        if (orchestratorService == null || messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
-            logger.warn("OrchestratorService or MessagingFactory not available, skipping test");
+        if (orchestratorService == null || messagingFactory == null || !messagingFactory.isDaprAvailable()) {
+            logger.warn("OrchestratorService or DaprMessagingFactory not available, skipping test");
             return;
         }
 

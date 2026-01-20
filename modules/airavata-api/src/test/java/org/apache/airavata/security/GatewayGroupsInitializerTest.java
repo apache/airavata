@@ -21,7 +21,6 @@ package org.apache.airavata.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,7 +29,7 @@ import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -131,7 +130,7 @@ public class GatewayGroupsInitializerTest {
                 assertEquals(GroupCardinality.MULTI_USER, group.getGroupCardinality());
                 return true;
             }));
-        } catch (SharingRegistryException | RegistryServiceException | CredentialStoreException e) {
+        } catch (SharingRegistryException | RegistryException | CredentialStoreException e) {
             throw new RuntimeException("Failed to initialize gateway groups", e);
         }
     }

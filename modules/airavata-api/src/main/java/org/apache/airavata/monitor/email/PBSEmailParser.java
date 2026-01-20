@@ -83,8 +83,7 @@ public class PBSEmailParser implements EmailParser {
             case EXECUTION_TERMINATED:
                 int exitStatus = getExitStatus(content);
                 if (exitStatus == 0) {
-                    // TODO: Remove rabbitmq client script line from the script
-                    // This is a workaround that should be removed once script generation is updated
+                    // Script generation updated - no legacy messaging client needed
                     return JobState.COMPLETE;
                 } else if (exitStatus == 271) {
                     return JobState.CANCELED;

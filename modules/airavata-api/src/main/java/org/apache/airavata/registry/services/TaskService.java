@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.services;
 
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
@@ -46,16 +47,19 @@ public class TaskService {
     private final ProcessRepository processRepository;
     private final JobService jobService;
     private final TaskModelMapper taskModelMapper;
+    private final EntityManager entityManager;
 
     public TaskService(
             TaskRepository taskRepository,
             ProcessRepository processRepository,
             JobService jobService,
-            TaskModelMapper taskModelMapper) {
+            TaskModelMapper taskModelMapper,
+            EntityManager entityManager) {
         this.taskRepository = taskRepository;
         this.processRepository = processRepository;
         this.jobService = jobService;
         this.taskModelMapper = taskModelMapper;
+        this.entityManager = entityManager;
     }
 
     public void populateParentIds(TaskEntity taskEntity) {
@@ -103,6 +107,10 @@ public class TaskService {
     public TaskModel getTask(String taskId) throws RegistryException {
         TaskEntity entity = taskRepository.findById(taskId).orElse(null);
         if (entity == null) return null;
+        // Force initialization of taskStatuses collection to ensure all statuses are loaded
+        if (entity.getTaskStatuses() != null) {
+            entity.getTaskStatuses().size(); // Force initialization
+        }
         TaskModel taskModel = taskModelMapper.toModel(entity);
         // Handle subTaskModel conversion: byte[] to Object
         if (entity.getSubTaskModel() != null) {
@@ -230,6 +238,24 @@ public class TaskService {
 
         populateParentIds(taskEntity);
 
-        return taskRepository.save(taskEntity);
+        TaskEntity savedTask = taskRepository.save(taskEntity);
+        taskRepository.flush();
+
+        // CRITICAL: Detach ProcessEntity from EntityManager cache to ensure tasks collection is refreshed
+        // This ensures that when getProcess() is called, it sees the newly added task
+        if (taskModel.getParentProcessId() != null) {
+            try {
+                ProcessEntity processEntity = entityManager.find(ProcessEntity.class, taskModel.getParentProcessId());
+                if (processEntity != null) {
+                    // Detach the entity from cache so it will be reloaded fresh on next findById() call
+                    entityManager.detach(processEntity);
+                }
+            } catch (Exception e) {
+                // Ignore if entity not found - it's not critical
+                logger.debug("Could not detach ProcessEntity {}: {}", taskModel.getParentProcessId(), e.getMessage());
+            }
+        }
+
+        return savedTask;
     }
 }

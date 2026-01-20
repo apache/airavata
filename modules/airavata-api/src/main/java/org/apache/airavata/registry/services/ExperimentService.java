@@ -93,6 +93,10 @@ public class ExperimentService {
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
+        // Force initialization of experimentStatus collection to ensure all statuses are loaded
+        if (entity.getExperimentStatus() != null) {
+            entity.getExperimentStatus().size(); // Force initialization
+        }
         ExperimentModel model = experimentMapper.toModel(entity);
         // Manually map processWorkflows for each process after mapping to avoid LazyInitializationException
         if (entity.getProcesses() != null && model.getProcesses() != null) {

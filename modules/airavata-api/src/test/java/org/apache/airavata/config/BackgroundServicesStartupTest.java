@@ -22,12 +22,10 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.helix.controller.HelixController;
-import org.apache.airavata.helix.controller.ParserWorkflowManager;
-import org.apache.airavata.helix.controller.PostWorkflowManager;
-import org.apache.airavata.helix.controller.PreWorkflowManager;
-import org.apache.airavata.helix.participant.GlobalParticipant;
-import org.apache.airavata.monitor.realtime.RealtimeMonitor;
+import org.apache.airavata.dapr.monitor.RealtimeMonitor;
+import org.apache.airavata.workflow.ParserWorkflowManager;
+import org.apache.airavata.workflow.PostWorkflowManager;
+import org.apache.airavata.workflow.PreWorkflowManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,8 +38,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * Test to verify AiravataApplication startup with background services enabled.
  *
  * Background services include:
- * - Helix Controller
- * - Global Participant
  * - Pre/Post/Parser Workflow Managers
  * - Realtime Monitor
  * - Email Monitor
@@ -93,7 +89,7 @@ public class BackgroundServicesStartupTest {
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning",
-                "org.apache.airavata.helix",
+                "org.apache.airavata.dapr",
                 "org.apache.airavata.monitor",
                 "org.apache.airavata.manager.dbevent"
             })
@@ -101,19 +97,6 @@ public class BackgroundServicesStartupTest {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Test
-    public void testHelixComponentsAreAvailable() {
-
-        int controllerCount =
-                applicationContext.getBeansOfType(HelixController.class).size();
-        int participantCount =
-                applicationContext.getBeansOfType(GlobalParticipant.class).size();
-
-        assertTrue(
-                controllerCount >= 0 && participantCount >= 0,
-                "Helix components configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
-    }
 
     @Test
     public void testWorkflowManagersAreAvailable() {

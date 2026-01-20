@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Timeout;
 /**
  * Integration tests for SFTP connectivity.
  * These tests verify SFTP connection and file transfer operations against the SFTP container.
- * The SFTP container is fully managed by Testcontainers.
+ * The SFTP container is fully managed by Testcontainers using emberstack/sftp image.
  */
 @DisplayName("SFTP Connectivity Integration Tests")
 @Timeout(value = 2, unit = TimeUnit.MINUTES) // Prevent tests from hanging indefinitely
@@ -103,7 +103,8 @@ public class SftpConnectivityIntegrationTest {
     @DisplayName("File Transfer Tests")
     class FileTransferTests {
 
-        // The atmoz/sftp container uses chroot, so paths are relative to user's home
+        // The emberstack/sftp container uses chroot, so paths are relative to user's home
+        // The upload directory is created at /home/testuser/upload
         private static final String UPLOAD_DIR = "/upload";
 
         @Test
@@ -294,7 +295,8 @@ public class SftpConnectivityIntegrationTest {
     @DisplayName("File Attribute Tests")
     class FileAttributeTests {
 
-        // The atmoz/sftp container uses chroot, so paths are relative to user's home
+        // The emberstack/sftp container uses chroot, so paths are relative to user's home
+        // The upload directory is created at /home/testuser/upload
         private static final String UPLOAD_DIR = "/upload";
 
         @Test

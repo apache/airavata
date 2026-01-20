@@ -27,7 +27,7 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.security.IamAdminService;
@@ -171,7 +171,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should add role to user")
-        void shouldAddRoleToUser() throws IamAdminServicesException, RegistryServiceException {
+        void shouldAddRoleToUser() throws IamAdminServicesException, RegistryException {
             String username = "test-role-user";
             String roleName = "test-role";
 
@@ -184,7 +184,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
-                                RegistryServiceException.class,
+                                RegistryException.class,
                                 NullPointerException.class,
                                 org.apache.airavata.credential.exception.CredentialStoreException.class);
             }
@@ -192,7 +192,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should remove role from user")
-        void shouldRemoveRoleFromUser() throws IamAdminServicesException, RegistryServiceException {
+        void shouldRemoveRoleFromUser() throws IamAdminServicesException, RegistryException {
             String username = "test-role-user";
             String roleName = "test-role";
 
@@ -205,7 +205,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
-                                RegistryServiceException.class,
+                                RegistryException.class,
                                 NullPointerException.class,
                                 org.apache.airavata.credential.exception.CredentialStoreException.class);
             }
@@ -213,7 +213,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 
         @Test
         @DisplayName("Should get users with role")
-        void shouldGetUsersWithRole() throws IamAdminServicesException, RegistryServiceException {
+        void shouldGetUsersWithRole() throws IamAdminServicesException, RegistryException {
             String roleName = "test-role";
 
             try {
@@ -225,7 +225,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
-                                RegistryServiceException.class,
+                                RegistryException.class,
                                 NullPointerException.class,
                                 org.apache.airavata.credential.exception.CredentialStoreException.class);
             }

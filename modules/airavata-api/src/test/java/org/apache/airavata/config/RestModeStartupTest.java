@@ -88,7 +88,8 @@ public class RestModeStartupTest {
     @Test
     public void testDBEventDispatcherIsAvailable() {
 
-        String[] beanNames = applicationContext.getBeanNamesForType(org.apache.airavata.messaging.Dispatcher.class);
+        String[] beanNames =
+                applicationContext.getBeanNamesForType(org.apache.airavata.dapr.messaging.Dispatcher.class);
         int count = beanNames.length;
 
         assertTrue(count > 0, "Dispatcher should be available in REST mode (replaces DBEventManagerRunner)");

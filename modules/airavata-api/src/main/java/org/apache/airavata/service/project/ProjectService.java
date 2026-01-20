@@ -26,7 +26,7 @@ import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.exception.ProjectNotFoundException;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.ProjectSearchFields;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class ProjectService {
     public String createProject(String gatewayId, Project project) throws AiravataSystemException {
         try {
             return registryService.createProject(gatewayId, project);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error occurred while creating project: " + project.getName() + " " + project.getDescription()
                     + " " + e.getMessage();
             logger.error(msg, e);
@@ -69,7 +69,7 @@ public class ProjectService {
             return registryService.getProject(projectId);
         } catch (ProjectNotFoundException e) {
             throw e;
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving the project: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -79,7 +79,7 @@ public class ProjectService {
     public void updateProject(String projectId, Project updatedProject) throws AiravataSystemException {
         try {
             registryService.updateProject(projectId, updatedProject);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while updating project: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -91,7 +91,7 @@ public class ProjectService {
             return registryService.deleteProject(projectId);
         } catch (ProjectNotFoundException e) {
             throw e;
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while removing the project: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -104,7 +104,7 @@ public class ProjectService {
         try {
             Map<ProjectSearchFields, String> filters = searchFields != null ? Map.of(searchFields, "") : Map.of();
             return registryService.searchProjects(gatewayId, userName, List.of(), filters, limit, offset);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving projects: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);

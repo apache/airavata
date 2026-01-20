@@ -31,11 +31,12 @@ import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.messaging.Publisher;
-import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.dapr.config.DaprConfigConstants;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.Publisher;
+import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,29 +59,26 @@ public class ExperimentService {
 
     public ExperimentService(
             RegistryService registryService,
-            MessagingFactory messagingFactory,
-            @Value("${airavata.rabbitmq.enabled:false}") boolean rabbitmqEnabled,
+            DaprMessagingFactory messagingFactory,
+            @Value("${" + org.apache.airavata.dapr.config.DaprConfigConstants.DAPR_ENABLED + ":false}") boolean daprEnabled,
             @Autowired(required = false) Environment environment) {
         this.registryService = registryService;
-        if (rabbitmqEnabled) {
+        if (daprEnabled) {
             try {
-                // Check if RabbitMQ is actually available before attempting to get publisher
-                if (messagingFactory.isRabbitMQAvailable()) {
+                if (messagingFactory.isDaprAvailable()) {
                     statusPublisher = messagingFactory.getPublisher(Type.STATUS);
                 } else {
-                    // In test environments, this is expected - use debug level
                     boolean isTestProfile = environment != null
                             && java.util.Arrays.asList(environment.getActiveProfiles())
                                     .contains("test");
                     if (isTestProfile) {
-                        logger.debug("StatusPublisher unavailable: RabbitMQ not fully configured (test environment)");
+                        logger.debug("StatusPublisher unavailable: Dapr not fully configured (test environment)");
                     } else {
                         logger.warn(
-                                "StatusPublisher unavailable: RabbitMQ is not configured. Ensure airavata.rabbitmq.enabled=true and all required RabbitMQ properties are set (broker-url, exchange names, etc.)");
+                                "StatusPublisher unavailable: Dapr is not configured. Ensure airavata.dapr.enabled=true and Dapr sidecar is running.");
                     }
                 }
             } catch (Exception e) {
-                // In test environments, configuration issues are expected - use debug level
                 boolean isTestProfile = environment != null
                         && java.util.Arrays.asList(environment.getActiveProfiles())
                                 .contains("test");
@@ -91,7 +89,6 @@ public class ExperimentService {
                 }
             }
         }
-        // If RabbitMQ is disabled, statusPublisher remains null and no warning is logged
     }
 
     private AiravataSystemException airavataSystemException(
@@ -115,7 +112,7 @@ public class ExperimentService {
                 statusPublisher.publish(messageContext);
             }
             return experimentId;
-        } catch (RegistryServiceException | AiravataException e) {
+        } catch (RegistryException | AiravataException e) {
             String msg = "Error while creating experiment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -125,7 +122,7 @@ public class ExperimentService {
     public ExperimentModel getExperiment(String airavataExperimentId) throws AiravataSystemException {
         try {
             return registryService.getExperiment(airavataExperimentId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving experiment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -136,7 +133,7 @@ public class ExperimentService {
             throws AiravataSystemException {
         try {
             registryService.updateExperiment(airavataExperimentId, experiment);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while updating experiment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -146,7 +143,7 @@ public class ExperimentService {
     public boolean deleteExperiment(String experimentId) throws AiravataSystemException {
         try {
             return registryService.deleteExperiment(experimentId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while deleting experiment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -164,7 +161,7 @@ public class ExperimentService {
             throws AiravataSystemException {
         try {
             return registryService.getUserExperiments(gatewayId, userName, limit, offset);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error occurred while getting user experiments: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -175,7 +172,7 @@ public class ExperimentService {
             throws AiravataSystemException {
         try {
             return registryService.getExperimentsInProject(gatewayId, projectId, limit, offset);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving the experiments: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -187,7 +184,7 @@ public class ExperimentService {
         try {
             return registryService.getExperimentStatistics(
                     gatewayId, fromTime, toTime, userName, null, null, List.of(), 0, 0);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while getting experiment statistics: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -200,7 +197,7 @@ public class ExperimentService {
         try {
             Map<ExperimentSearchFields, String> filters = searchFields != null ? Map.of(searchFields, "") : Map.of();
             return registryService.searchExperiments(gatewayId, userName, List.of(), filters, limit, offset);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while searching experiments: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);

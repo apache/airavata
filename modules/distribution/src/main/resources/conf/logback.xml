@@ -25,7 +25,7 @@
     </encoder>
   </appender>
   <logger name="ch.qos.logback" level="WARN" />
-  <logger name="org.apache.helix" level="WARN" />
+  <!-- org.apache.helix logger removed - Helix framework no longer used -->
   <logger name="org.apache.zookeeper" level="ERROR" />
   <logger name="org.apache.airavata" level="INFO" />
   <logger name="org.hibernate" level="ERROR" />

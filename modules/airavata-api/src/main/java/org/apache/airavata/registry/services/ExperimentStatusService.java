@@ -221,6 +221,11 @@ public class ExperimentStatusService {
         //    which causes HHH000502 warnings because the 'experiment' property is immutable
         // 3. The collection will be correctly populated when the parent is reloaded/queried
 
+        // CRITICAL: Refresh the experiment entity to ensure status collection is updated
+        // This ensures that when getExperiment() is called, it sees the newly added status
+        // We need to clear the entity from cache and reload it to see the new status
+        entityManager.detach(experimentEntity);
+
         return savedEntity.getStatusId();
     }
 
@@ -349,6 +354,11 @@ public class ExperimentStatusService {
         // 2. Adding to the collection triggers Hibernate to sync the bidirectional relationship,
         //    which causes HHH000502 warnings because the 'experiment' property is immutable
         // 3. The collection will be correctly populated when the parent is reloaded/queried
+
+        // CRITICAL: Refresh the experiment entity to ensure status collection is updated
+        // This ensures that when getExperiment() is called, it sees the newly added status
+        // We need to clear the entity from cache and reload it to see the new status
+        entityManager.detach(experimentEntity);
 
         return savedEntity.getStatusId();
     }

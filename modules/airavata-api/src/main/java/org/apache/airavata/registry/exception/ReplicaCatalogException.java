@@ -22,7 +22,7 @@ package org.apache.airavata.registry.exception;
 public class ReplicaCatalogException extends RegistryException {
 
     public ReplicaCatalogException(Throwable e) {
-        super(e);
+        super(e.getMessage(), e);
     }
 
     public ReplicaCatalogException(String message) {

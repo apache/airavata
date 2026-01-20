@@ -24,18 +24,12 @@ import org.apache.airavata.common.model.SetEnvPaths;
 
 public class AppDeploymentUtil {
     public static ApplicationDeploymentDescription createAppDeployment(
-            String moduleId,
-            String computeHost,
-            String executablePath,
-            String appDepDescription,
-            String moduleLoadCmd) {
+            String moduleId, String computeHost, String executablePath, String appDepDescription) {
         ApplicationDeploymentDescription description = new ApplicationDeploymentDescription();
         description.setAppModuleId(moduleId);
         description.setComputeHostId(computeHost);
         description.setExecutablePath(executablePath);
         description.setAppDeploymentDescription(appDepDescription);
-        // TODO
-        //        description.setModuleLoadCmd(moduleLoadCmd);
         return description;
     }
 

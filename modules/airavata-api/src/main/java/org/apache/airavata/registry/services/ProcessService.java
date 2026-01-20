@@ -151,6 +151,10 @@ public class ProcessService {
     public ProcessModel getProcess(String processId) throws RegistryException {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
+        // Force initialization of tasks collection to ensure all tasks are loaded
+        if (entity.getTasks() != null) {
+            entity.getTasks().size(); // Force initialization
+        }
         ProcessModel model = processMapper.toModel(entity);
 
         // Always load processStatuses from repository to ensure they're loaded

@@ -87,7 +87,7 @@ public class EmailBasedMonitor extends ServerLifecycle {
         this.registryService = registryService;
         this.airavataProperties = airavataProperties;
         this.applicationContext = applicationContext;
-        this.abstractMonitor = new AbstractMonitor(registryService, airavataProperties);
+        this.abstractMonitor = new AbstractMonitor(registryService, airavataProperties, null);
         // Don't initialize here - wait for @PostConstruct when properties are injected
     }
 

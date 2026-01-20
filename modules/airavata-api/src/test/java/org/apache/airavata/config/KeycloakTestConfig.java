@@ -270,10 +270,6 @@ public class KeycloakTestConfig {
                 null, // streamingTransfer
                 null, // hibernate
                 security, // security
-                null, // rabbitmq
-                null, // kafka
-                null, // zookeeper
-                null, // helix
                 null, // flyway
                 services // services
                 );

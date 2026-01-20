@@ -174,16 +174,6 @@ public class PropertiesValidationConfig {
             }
         }
 
-        // Log messaging settings
-        if (properties.kafka() != null) {
-            logger.info("  Kafka:");
-            logger.info("    enabled = {}", properties.kafka().enabled());
-        }
-        if (properties.rabbitmq() != null) {
-            logger.info("  RabbitMQ:");
-            logger.info("    enabled = {}", properties.rabbitmq().enabled());
-        }
-
         logger.info("=== Configuration Logging Complete ===");
     }
 }

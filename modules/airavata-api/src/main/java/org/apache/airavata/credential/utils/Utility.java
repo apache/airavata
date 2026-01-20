@@ -19,15 +19,21 @@
 */
 package org.apache.airavata.credential.utils;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.KeyPair;
-import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import net.schmizz.sshj.common.Buffer;
+import net.schmizz.sshj.common.KeyType;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,23 +75,87 @@ public class Utility {
     }
 
     public static SSHCredential generateKeyPair(SSHCredential credential) throws Exception {
-        JSch jsch = new JSch();
         try {
-            KeyPair kpair = KeyPair.genKeyPair(jsch, KeyPair.RSA, 2048);
-            File file = File.createTempFile("id_rsa", "");
-            String fileName = file.getAbsolutePath();
+            // Generate RSA key pair using Java's KeyPairGenerator
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            keyGen.initialize(2048);
+            KeyPair keyPair = keyGen.generateKeyPair();
 
-            kpair.writePrivateKey(fileName, credential.getPassphrase().getBytes());
-            kpair.writePublicKey(fileName + ".pub", "");
-            kpair.dispose();
-            byte[] priKey = Files.readAllBytes(new File(fileName).toPath());
-            byte[] pubKey = Files.readAllBytes(new File(fileName + ".pub").toPath());
-            credential.setPrivateKey(new String(priKey));
-            credential.setPublicKey(new String(pubKey));
+            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+            RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+
+            // Convert to OpenSSH format
+            String privateKeyPEM = convertPrivateKeyToOpenSSH(privateKey, credential.getPassphrase());
+            String publicKeySSH = convertPublicKeyToSSH(publicKey);
+
+            credential.setPrivateKey(privateKeyPEM);
+            credential.setPublicKey(publicKeySSH);
             return credential;
         } catch (Exception e) {
             log.error("Error while creating key pair", e);
             throw new Exception("Error while creating key pair", e);
         }
+    }
+
+    /**
+     * Convert RSA private key to OpenSSH PEM format using standard Java PKCS8 encoding.
+     */
+    private static String convertPrivateKeyToOpenSSH(RSAPrivateKey privateKey, String passphrase) throws IOException {
+        try {
+            // Use Java's standard PKCS8 encoding
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKey.getEncoded());
+            byte[] keyBytes = keySpec.getEncoded();
+
+            // Encode to base64
+            String base64Key = java.util.Base64.getEncoder().encodeToString(keyBytes);
+
+            // Format as OpenSSH private key (PKCS8 format)
+            StringBuilder pem = new StringBuilder();
+            pem.append("-----BEGIN PRIVATE KEY-----\n");
+            // Split into 64-character lines
+            for (int i = 0; i < base64Key.length(); i += 64) {
+                int end = Math.min(i + 64, base64Key.length());
+                pem.append(base64Key.substring(i, end)).append("\n");
+            }
+            pem.append("-----END PRIVATE KEY-----\n");
+
+            return pem.toString();
+        } catch (Exception e) {
+            throw new IOException("Failed to encode private key", e);
+        }
+    }
+
+    /**
+     * Convert RSA public key to SSH format (ssh-rsa ...) using SSHJ Buffer.
+     */
+    private static String convertPublicKeyToSSH(RSAPublicKey publicKey) throws IOException {
+        try {
+            // Use SSHJ's Buffer to encode public key in SSH format
+            Buffer.PlainBuffer buf = new Buffer.PlainBuffer();
+            buf.putString(KeyType.RSA.toString());
+            // Encode BigInteger as mpint (4-byte length + bytes)
+            putMPInt(buf, publicKey.getModulus());
+            putMPInt(buf, publicKey.getPublicExponent());
+
+            byte[] keyBytes = buf.getCompactData();
+            String base64Key = java.util.Base64.getEncoder().encodeToString(keyBytes);
+
+            return "ssh-rsa " + base64Key;
+        } catch (Exception e) {
+            throw new IOException("Failed to encode public key", e);
+        }
+    }
+
+    /**
+     * Helper method to encode BigInteger as SSH mpint format (RFC 4251).
+     * Writes 4-byte length followed by the BigInteger's byte array.
+     */
+    private static void putMPInt(Buffer.PlainBuffer buf, java.math.BigInteger value) {
+        byte[] bytes = value.toByteArray();
+        // Write 4-byte length (unsigned int, big-endian) using putUInt32
+        buf.putUInt32(bytes.length);
+        // Write the bytes using putRawBytes
+        buf.putRawBytes(bytes);
     }
 }

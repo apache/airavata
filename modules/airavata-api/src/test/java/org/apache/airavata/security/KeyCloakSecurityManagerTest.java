@@ -38,7 +38,6 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.security.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.authzcache.AuthzCacheManager;
-import org.apache.airavata.security.authzcache.AuthzCacheManagerFactory;
 import org.apache.airavata.security.authzcache.AuthzCachedStatus;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
@@ -82,9 +81,6 @@ public class KeyCloakSecurityManagerTest {
 
     @MockitoBean
     private SharingRegistryService mockSharingRegistryService;
-
-    @MockitoBean
-    private AuthzCacheManagerFactory mockAuthzCacheManagerFactory;
 
     @MockitoBean
     private AuthzCacheManager mockAuthzCacheManager;
@@ -149,23 +145,17 @@ public class KeyCloakSecurityManagerTest {
                 org.apache.airavata.service.registry.RegistryService registryService,
                 org.apache.airavata.service.SharingRegistryService sharingRegistryService,
                 org.apache.airavata.config.AiravataServerProperties properties,
-                org.apache.airavata.security.authzcache.AuthzCacheManagerFactory authzCacheManagerFactory,
+                org.apache.airavata.security.authzcache.AuthzCacheManager authzCacheManager,
                 org.apache.airavata.security.GatewayGroupsInitializer gatewayGroupsInitializer)
                 throws org.apache.airavata.security.AiravataSecurityException {
             return new org.apache.airavata.security.KeyCloakSecurityManager(
-                    registryService,
-                    sharingRegistryService,
-                    properties,
-                    authzCacheManagerFactory,
-                    gatewayGroupsInitializer);
+                    registryService, sharingRegistryService, properties, authzCacheManager, gatewayGroupsInitializer);
         }
     }
 
     @BeforeEach
     public void setUp() throws AiravataSecurityException, ApplicationSettingsException {
-        reset(mockRegistryService, mockSharingRegistryService, mockAuthzCacheManagerFactory, mockAuthzCacheManager);
-
-        when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
+        reset(mockRegistryService, mockSharingRegistryService, mockAuthzCacheManager);
 
         GatewayResourceProfile mockGwrp = new GatewayResourceProfile();
         mockGwrp.setGatewayID(TEST_GATEWAY);
@@ -343,8 +333,6 @@ public class KeyCloakSecurityManagerTest {
     private void createExpectationsForAuthzCache(
             boolean cacheEnabled, String apiMethod, AuthzCachedStatus authzCachedStatus)
             throws ApplicationSettingsException, AiravataSecurityException {
-
-        when(mockAuthzCacheManagerFactory.getAuthzCacheManager()).thenReturn(mockAuthzCacheManager);
 
         if (cacheEnabled && apiMethod != null && authzCachedStatus != null) {
             when(mockAuthzCacheManager.getAuthzCachedStatus(any(AuthzCacheIndex.class)))

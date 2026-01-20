@@ -188,11 +188,6 @@ public class CLIInfrastructureTest {
 
         sb.append(String.format("airavata.zookeeper.server.connection=%s%n", zookeeperUrl));
 
-        // Helix properties
-        sb.append("airavata.helix.cluster.name=AiravataCluster\n");
-        sb.append("airavata.helix.controller.name=AiravataController\n");
-        sb.append("airavata.helix.participant.name=AiravataParticipant\n");
-
         // Security properties (disabled for tests)
         sb.append("airavata.security.iam.enabled=false\n");
         sb.append("airavata.security.iam.server-url=http://localhost:18080\n");

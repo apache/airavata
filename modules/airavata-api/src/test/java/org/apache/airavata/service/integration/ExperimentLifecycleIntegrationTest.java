@@ -37,17 +37,16 @@ import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.messaging.MessageHandler;
-import org.apache.airavata.messaging.MessageVerificationUtils;
-import org.apache.airavata.messaging.Subscriber;
-import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.MessageHandler;
+import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
+import org.apache.airavata.dapr.messaging.Subscriber;
+import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -66,7 +65,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
     private OrchestratorService orchestratorService;
 
     @Autowired(required = false)
-    private MessagingFactory messagingFactory;
+    private DaprMessagingFactory messagingFactory;
 
     @Autowired
     private AiravataServerProperties properties;
@@ -75,13 +74,6 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             RegistryService registryService, ComputeResourceService computeResourceService) {
         this.registryService = registryService;
         this.computeResourceService = computeResourceService;
-    }
-
-    @BeforeEach
-    void setUp() {
-        org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
-        org.apache.airavata.config.TestcontainersConfig.getRabbitMQUrl();
-        org.apache.airavata.config.TestcontainersConfig.getZookeeperConnectionString();
     }
 
     @Test
@@ -194,8 +186,8 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify messages are published during experiment lifecycle")
     void shouldVerifyMessagesPublishedDuringLifecycle() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isRabbitMQAvailable()) {
-            logger.warn("RabbitMQ not available, skipping messaging verification");
+        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
+            logger.warn("Dapr not available, skipping messaging verification");
             return;
         }
 
@@ -233,7 +225,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
 
             // Manually publish messages to simulate real flow (since status updates don't auto-publish)
             // In a real scenario, these would be published by OrchestratorService or WorkflowManager
-            org.apache.airavata.messaging.Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
+            org.apache.airavata.dapr.messaging.Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
             // Publish VALIDATED state
             ExperimentStatus validatedStatus = new ExperimentStatus();
@@ -241,7 +233,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             validatedStatus.setTimeOfStateChange(
                     AiravataUtils.getUniqueTimestamp().getTime());
             registryService.updateExperimentStatus(validatedStatus, experimentId);
-            org.apache.airavata.messaging.TestMessagingUtils.createExperimentStatusChangeMessage(
+            org.apache.airavata.dapr.messaging.TestMessagingUtils.createExperimentStatusChangeMessage(
                     experimentId, TEST_GATEWAY_ID, ExperimentState.VALIDATED);
 
             // Publish LAUNCHED state
@@ -273,7 +265,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
 
     @Test
     @DisplayName("Should verify experiment state transitions are persisted correctly")
-    void shouldVerifyExperimentStateTransitionsPersisted() throws RegistryServiceException {
+    void shouldVerifyExperimentStateTransitionsPersisted() throws RegistryException {
         Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             registryService.addGateway(gateway);

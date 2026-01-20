@@ -61,16 +61,6 @@ public class PropertiesVerification implements CommandLineRunner {
                 properties.security().iam().superAdmin().username());
         // Verify Sharing
         logger.info("Sharing - Enabled: {}", properties.sharing().enabled());
-        // Verify Zookeeper
-        logger.info(
-                "Zookeeper - Embedded: {}, Connection: {}",
-                properties.zookeeper().embedded(),
-                properties.zookeeper().server().connection());
-        // Verify RabbitMQ
-        logger.info(
-                "RabbitMQ - Broker URL: {}, Experiment Queue: {}",
-                properties.rabbitmq().brokerUrl(),
-                properties.rabbitmq().experimentLaunchQueueName());
         logger.info("=== Properties verification complete ===");
     }
 }

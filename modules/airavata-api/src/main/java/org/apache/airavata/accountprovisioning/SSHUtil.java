@@ -19,121 +19,133 @@
 */
 package org.apache.airavata.accountprovisioning;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by machrist on 2/10/17.
+ * Migrated from JSCH to SSHJ.
  */
 public class SSHUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHUtil.class);
 
     public static boolean validate(String hostname, int port, String username, SSHCredential sshCredential) {
-
-        JSch jSch = new JSch();
-        Session session = null;
+        SSHClient client = null;
         try {
-            jSch.addIdentity(
-                    UUID.randomUUID().toString(),
-                    sshCredential.getPrivateKey().getBytes(),
-                    sshCredential.getPublicKey().getBytes(),
-                    sshCredential.getPassphrase().getBytes());
-            session = jSch.getSession(username, hostname, port);
-            java.util.Properties config = new java.util.Properties();
-            config.put("StrictHostKeyChecking", "no");
-            session.setConfig(config);
-            session.connect();
+            client = new SSHClient();
+            // Disable strict host key checking (equivalent to JSCH's StrictHostKeyChecking=no)
+            client.addHostKeyVerifier(new PromiscuousVerifier());
+            client.connect(hostname, port);
+
+            // Load private key from bytes
+            KeyProvider keyProvider = loadKeyProvider(sshCredential);
+            client.authPublickey(username, keyProvider);
+
             return true;
-        } catch (JSchException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (session != null && session.isConnected()) {
-                session.disconnect();
+            if (client != null && client.isConnected()) {
+                try {
+                    client.disconnect();
+                } catch (IOException e) {
+                    logger.warn("Error disconnecting SSH client", e);
+                }
             }
         }
     }
 
     public static String execute(
             String hostname, int port, String username, SSHCredential sshCredential, String command) {
-        JSch jSch = new JSch();
-        Session session = null;
-        Channel channel = null;
+        SSHClient client = null;
         try {
-            jSch.addIdentity(
-                    UUID.randomUUID().toString(),
-                    sshCredential.getPrivateKey().getBytes(),
-                    sshCredential.getPublicKey().getBytes(),
-                    sshCredential.getPassphrase().getBytes());
-            session = jSch.getSession(username, hostname, port);
-            java.util.Properties config = new java.util.Properties();
-            config.put("StrictHostKeyChecking", "no");
-            session.setConfig(config);
-            session.connect();
+            client = new SSHClient();
+            // Disable strict host key checking
+            client.addHostKeyVerifier(new PromiscuousVerifier());
+            client.connect(hostname, port);
 
-            channel = session.openChannel("exec");
-            ((ChannelExec) channel).setCommand(command);
-            ByteArrayOutputStream errOutputStream = new ByteArrayOutputStream();
-            ((ChannelExec) channel).setErrStream(errOutputStream);
-            channel.connect();
+            // Load private key from bytes
+            KeyProvider keyProvider = loadKeyProvider(sshCredential);
+            client.authPublickey(username, keyProvider);
 
-            try (InputStream in = channel.getInputStream()) {
-                byte[] tmp = new byte[1024];
-                String result = "";
-                Integer exitStatus;
+            // Execute command
+            try (net.schmizz.sshj.connection.channel.direct.Session session = client.startSession()) {
+                net.schmizz.sshj.connection.channel.direct.Session.Command cmd = session.exec(command);
 
-                while (true) {
-                    while (in.available() > 0) {
-                        int i = in.read(tmp, 0, 1024);
-                        if (i < 0) break;
-                        result += new String(tmp, 0, i);
-                    }
-                    if (channel.isClosed()) {
-                        if (in.available() > 0) continue;
-                        exitStatus = channel.getExitStatus();
-                        break;
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
+                // Read stdout
+                StringBuilder result = new StringBuilder();
+                try (InputStream stdout = cmd.getInputStream()) {
+                    byte[] tmp = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = stdout.read(tmp)) != -1) {
+                        result.append(new String(tmp, 0, bytesRead, StandardCharsets.UTF_8));
                     }
                 }
 
-                logger.debug("Output from command: " + result);
+                // Read stderr
+                StringBuilder stderr = new StringBuilder();
+                try (InputStream stderrStream = cmd.getErrorStream()) {
+                    byte[] tmp = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = stderrStream.read(tmp)) != -1) {
+                        stderr.append(new String(tmp, 0, bytesRead, StandardCharsets.UTF_8));
+                    }
+                }
+
+                // Wait for command to complete
+                cmd.join(30, TimeUnit.SECONDS);
+                Integer exitStatus = cmd.getExitStatus();
+
+                logger.debug("Output from command: " + result.toString());
                 logger.debug("Exit status: " + exitStatus);
 
                 if (exitStatus == null || exitStatus != 0) {
-                    String stderr = errOutputStream.toString("UTF-8");
-                    if (stderr != null && stderr.length() > 0) {
-                        logger.error("STDERR for command [" + command + "]: " + stderr);
+                    String stderrStr = stderr.toString();
+                    if (stderrStr != null && stderrStr.length() > 0) {
+                        logger.error("STDERR for command [" + command + "]: " + stderrStr);
                     }
                     throw new RuntimeException("SSH command [" + command + "] exited with exit status: " + exitStatus
-                            + ", STDERR=" + stderr);
+                            + ", STDERR=" + stderrStr);
                 }
 
-                return result;
+                return result.toString();
             }
-        } catch (JSchException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (channel != null && channel.isConnected()) {
-                channel.disconnect();
-            }
-            if (session != null && session.isConnected()) {
-                session.disconnect();
+            if (client != null && client.isConnected()) {
+                try {
+                    client.disconnect();
+                } catch (IOException e) {
+                    logger.warn("Error disconnecting SSH client", e);
+                }
             }
         }
+    }
+
+    /**
+     * Load KeyProvider from SSHCredential bytes.
+     */
+    private static KeyProvider loadKeyProvider(SSHCredential sshCredential) throws IOException {
+        String privateKeyStr = sshCredential.getPrivateKey();
+        String passphrase = sshCredential.getPassphrase();
+
+        // Create a temporary SSHClient to use loadKeys() method
+        SSHClient tempClient = new SSHClient();
+        net.schmizz.sshj.userauth.password.PasswordFinder passwordFinder = null;
+        if (passphrase != null && !passphrase.isEmpty()) {
+            passwordFinder = net.schmizz.sshj.userauth.password.PasswordUtils.createOneOff(passphrase.toCharArray());
+        }
+
+        return tempClient.loadKeys(privateKeyStr, null, passwordFinder);
     }
 }

@@ -30,18 +30,12 @@ import java.time.Duration;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
@@ -53,7 +47,7 @@ import org.testcontainers.utility.DockerImageName;
  * previous 8 separate databases. All entities from all packages are stored in a single
  * MariaDB container for simplicity and consistency.
  *
- * <p>Messaging services (Kafka, RabbitMQ) are shared across tests for performance.
+ * <p>Redis is provided for Dapr Pub/Sub and State Store in tests that enable Dapr.
  * SLURM and SFTP containers are available for connectivity tests.
  *
  * <h2>Expected Warnings</h2>
@@ -77,17 +71,13 @@ public class TestcontainersConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(TestcontainersConfig.class);
     private static final String MARIADB_VERSION = "10.4.13";
-    private static final String KAFKA_VERSION = "7.6.0";
-    private static final String RABBITMQ_VERSION = "3.13-management";
-    private static final String ZOOKEEPER_VERSION = "3.9";
+    private static final String REDIS_IMAGE = "redis:7-alpine";
 
     // Unified database container - all entities in one database
     private static MariaDBContainer<?> unifiedDatabaseContainer;
 
-    // Messaging service containers - shared across all tests
-    private static KafkaContainer kafkaContainer;
-    private static RabbitMQContainer rabbitMQContainer;
-    private static GenericContainer<?> zookeeperContainer;
+    // Redis for Dapr Pub/Sub and State Store in tests
+    private static GenericContainer<?> redisContainer;
 
     // Infrastructure containers for connectivity tests
     private static GenericContainer<?> slurmContainer;
@@ -239,7 +229,7 @@ public class TestcontainersConfig {
         if (sftpContainer == null || !sftpContainer.isRunning()) {
             logger.info("Starting SFTP container (emberstack/sftp - multi-arch support)");
             sftpUploadDirVerified = false; // Reset verification flag when starting new container
-            
+
             // Load SFTP configuration file from test resources
             Path sftpConfigPath = null;
             try {
@@ -253,16 +243,15 @@ public class TestcontainersConfig {
             } catch (Exception e) {
                 throw new IllegalStateException("Failed to load SFTP configuration file", e);
             }
-            
+
             final Path configPath = sftpConfigPath;
             // Use emberstack/sftp which supports both ARM64 and AMD64 architectures
             sftpContainer = new GenericContainer<>(DockerImageName.parse("emberstack/sftp:latest"))
                     .withExposedPorts(22)
                     .withFileSystemBind(configPath.toString(), "/app/config/sftp.json")
                     .withReuse(true)
-                    // Wait for the SSH server to be fully ready (indicated by log message)
-                    .waitingFor(
-                            Wait.forLogMessage(".*Server listening on.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
+                    // Wait for port 22 to be listening (more reliable than log message)
+                    .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
             sftpContainer.start();
             logger.info("SFTP container started at {}:{}", sftpContainer.getHost(), sftpContainer.getMappedPort(22));
         }
@@ -356,63 +345,29 @@ public class TestcontainersConfig {
     }
 
     /**
-     * Get or create Kafka container. Always starts a fresh container managed by Testcontainers.
+     * Get or create Redis container for Dapr Pub/Sub and State Store.
+     * Returns host:port (e.g. localhost:32768) for use in Dapr component metadata.
      */
-    public static synchronized String getKafkaBootstrapServers() {
-        if (kafkaContainer == null || !kafkaContainer.isRunning()) {
-            logger.info("Creating new Kafka container");
-            kafkaContainer =
-                    new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:" + KAFKA_VERSION)).withReuse(true);
-            kafkaContainer.start();
-            logger.info("Kafka container started at {}", kafkaContainer.getBootstrapServers());
-        }
-        return kafkaContainer.getBootstrapServers();
-    }
-
-    /**
-     * Get or create RabbitMQ container. Always starts a fresh container managed by Testcontainers.
-     */
-    public static synchronized String getRabbitMQUrl() {
-        if (rabbitMQContainer == null || !rabbitMQContainer.isRunning()) {
-            logger.info("Creating new RabbitMQ container");
-            rabbitMQContainer = new RabbitMQContainer(DockerImageName.parse("rabbitmq:" + RABBITMQ_VERSION))
+    public static synchronized String getRedisHost() {
+        if (redisContainer == null || !redisContainer.isRunning()) {
+            logger.info("Creating Redis container");
+            redisContainer = new GenericContainer<>(DockerImageName.parse(REDIS_IMAGE))
+                    .withExposedPorts(6379)
                     .withReuse(true)
-                    .waitingFor(Wait.forLogMessage(".*Server startup complete.*", 1)
+                    .waitingFor(Wait.forLogMessage(".*Ready to accept connections.*", 1)
                             .withStartupTimeout(Duration.ofMinutes(2)));
-            rabbitMQContainer.start();
-            logger.info("RabbitMQ container started at {}", rabbitMQContainer.getAmqpUrl());
-        }
-        return rabbitMQContainer.getAmqpUrl();
-    }
-
-    /**
-     * Get or create Zookeeper container. Always starts a fresh container managed by Testcontainers.
-     */
-    public static synchronized String getZookeeperConnectionString() {
-        if (zookeeperContainer == null || !zookeeperContainer.isRunning()) {
-            logger.info("Creating new Zookeeper container");
-            zookeeperContainer = new GenericContainer<>(DockerImageName.parse("zookeeper:" + ZOOKEEPER_VERSION))
-                    .withExposedPorts(2181)
-                    .withReuse(true)
-                    .waitingFor(Wait.forLogMessage(".*binding to port.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
-            zookeeperContainer.start();
+            redisContainer.start();
             logger.info(
-                    "Zookeeper container started at {}:{}",
-                    zookeeperContainer.getHost(),
-                    zookeeperContainer.getMappedPort(2181));
+                    "Redis container started at {}:{}", redisContainer.getHost(), redisContainer.getMappedPort(6379));
         }
-        return zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181);
+        return redisContainer.getHost() + ":" + redisContainer.getMappedPort(6379);
     }
 
     /**
-     * Health check utility to verify all services are running.
+     * Health check: Redis is available when Dapr-backed tests need it.
      */
     public static boolean areAllServicesHealthy() {
-        boolean kafkaHealthy = kafkaContainer != null && kafkaContainer.isRunning();
-        boolean rabbitMQHealthy = rabbitMQContainer != null && rabbitMQContainer.isRunning();
-        boolean zookeeperHealthy = zookeeperContainer != null && zookeeperContainer.isRunning();
-
-        return kafkaHealthy && rabbitMQHealthy && zookeeperHealthy;
+        return redisContainer != null && redisContainer.isRunning();
     }
 
     private static DataSource createDataSource(MariaDBContainer<?> container, String poolName) {
@@ -440,83 +395,11 @@ public class TestcontainersConfig {
     }
 
     /**
-     * Bean to provide Kafka bootstrap servers configuration.
-     * Can be injected into tests that need Kafka connectivity.
+     * Bean to provide Redis host:port for Dapr component metadata in tests.
      */
-    @Bean(name = "kafkaBootstrapServers")
-    public String kafkaBootstrapServers() {
-        return getKafkaBootstrapServers();
-    }
-
-    /**
-     * Bean to provide RabbitMQ connection URL.
-     * Can be injected into tests that need RabbitMQ connectivity.
-     */
-    @Bean(name = "rabbitMQUrl")
-    public String rabbitMQUrl() {
-        return getRabbitMQUrl();
-    }
-
-    /**
-     * Bean to provide Spring AMQP ConnectionFactory.
-     * Required for MessagingFactory to create Spring-managed subscribers.
-     * Eagerly initialized to ensure it's available for dependency injection.
-     */
-    @Bean
-    @Primary
-    public ConnectionFactory rabbitConnectionFactory() {
-        String rabbitUrl = getRabbitMQUrl();
-        logger.info("Creating Spring AMQP ConnectionFactory for: {}", rabbitUrl);
-
-        // Parse the AMQP URL to extract host and port
-        // URL format: amqp://guest:guest@host:port
-        try {
-            java.net.URI uri = new java.net.URI(rabbitUrl);
-            String host = uri.getHost();
-            int port = uri.getPort();
-
-            org.springframework.amqp.rabbit.connection.CachingConnectionFactory connectionFactory =
-                    new org.springframework.amqp.rabbit.connection.CachingConnectionFactory(host, port);
-            connectionFactory.setUsername("guest");
-            connectionFactory.setPassword("guest");
-
-            logger.info("Created Spring AMQP ConnectionFactory for {}:{}", host, port);
-            return connectionFactory;
-        } catch (Exception e) {
-            logger.error("Failed to create RabbitMQ ConnectionFactory: {}", e.getMessage());
-            throw new RuntimeException("Failed to create RabbitMQ ConnectionFactory", e);
-        }
-    }
-
-    /**
-     * Bean to provide RabbitAdmin for exchange/queue declarations.
-     * Required for Spring AMQP-based messaging operations.
-     */
-    @Bean
-    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
-        logger.info("Creating RabbitAdmin for test context");
-        return new RabbitAdmin(connectionFactory);
-    }
-
-    /**
-     * Bean to provide RabbitTemplate for message publishing.
-     * Required for Spring AMQP-based message publishing.
-     */
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        logger.info("Creating RabbitTemplate for test context");
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(new Jackson2JsonMessageConverter());
-        return template;
-    }
-
-    /**
-     * Bean to provide Zookeeper connection string.
-     * Can be injected into tests that need Zookeeper connectivity.
-     */
-    @Bean(name = "zookeeperConnectionString")
-    public String zookeeperConnectionString() {
-        return getZookeeperConnectionString();
+    @Bean(name = "redisHost")
+    public String redisHost() {
+        return getRedisHost();
     }
 
     /**

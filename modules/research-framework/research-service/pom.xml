@@ -119,10 +119,7 @@ under the License.
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
+            <!-- javax.validation removed - hibernate-validator provides jakarta.validation (managed by Spring Boot BOM) -->
     <dependency>
       <groupId>org.apache.airavata</groupId>
       <artifactId>airavata-api</artifactId>

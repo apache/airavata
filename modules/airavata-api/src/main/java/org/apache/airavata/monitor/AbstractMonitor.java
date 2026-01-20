@@ -22,11 +22,12 @@ package org.apache.airavata.monitor;
 import java.util.List;
 import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.monitor.realtime.MessageProducer;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.dapr.monitor.MessageProducer;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -36,20 +37,17 @@ public class AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);
 
-    private MessageProducer messageProducer;
-
+    private final MessageProducer messageProducer;
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
 
-    public AbstractMonitor(RegistryService registryService, AiravataServerProperties properties) {
+    public AbstractMonitor(
+            RegistryService registryService,
+            AiravataServerProperties properties,
+            @Autowired(required = false) MessageProducer messageProducer) {
         this.registryService = registryService;
         this.properties = properties;
-        // MessageProducer will be initialized in @PostConstruct
-    }
-
-    @jakarta.annotation.PostConstruct
-    public void init() {
-        messageProducer = new MessageProducer(properties);
+        this.messageProducer = messageProducer;
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
@@ -93,13 +91,17 @@ public class AbstractMonitor {
             }
             return validated;
 
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             log.error("Error at validating job status {}", jobStatusResult.getJobId(), e);
             return false;
         }
     }
 
     public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
+        if (messageProducer == null) {
+            throw new MonitoringException(
+                    "MessageProducer is not available. Enable airavata.dapr.enabled and ensure Dapr is configured for monitoring.");
+        }
         try {
             if (validateJobStatus(jobStatusResult)) {
                 messageProducer.submitMessageToQueue(jobStatusResult);

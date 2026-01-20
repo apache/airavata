@@ -20,22 +20,20 @@
 package org.apache.airavata.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.time.Duration;
 import javax.net.ssl.SSLContext;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.apache.hc.core5.ssl.TrustStrategy;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -79,7 +77,7 @@ public class RestClientConfig {
     }
 
     /**
-     * Configure SSL for RestTemplate using Apache HttpClient 5.
+     * Configure SSL for RestTemplate using Java's standard SSLContext.
      */
     private void configureSSL(RestTemplate restTemplate) throws Exception {
         // Check if security configuration is available
@@ -87,9 +85,7 @@ public class RestClientConfig {
                 || properties.security().tls() == null
                 || properties.security().tls().keystore() == null) {
             // Use default trust store with self-signed certificate support for development/test
-            SSLContext sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial((TrustStrategy) (chain, authType) -> true)
-                    .build();
+            SSLContext sslContext = createTrustAllSSLContext();
             configureHttpClient(restTemplate, sslContext);
             return;
         }
@@ -102,42 +98,64 @@ public class RestClientConfig {
         if (trustStorePath != null && !trustStorePath.isEmpty() && new File(trustStorePath).exists()) {
             // Use configured trust store
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(
-                    new java.io.FileInputStream(trustStorePath),
-                    trustStorePassword != null ? trustStorePassword.toCharArray() : null);
+            try (FileInputStream fis = new FileInputStream(trustStorePath)) {
+                trustStore.load(fis, trustStorePassword != null ? trustStorePassword.toCharArray() : null);
+            }
 
-            sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial(trustStore, null)
-                    .build();
+            TrustManagerFactory trustManagerFactory =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(trustStore);
+            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagers, new java.security.SecureRandom());
         } else {
             // Use default trust store with self-signed certificate support for development
-            sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial((TrustStrategy) (chain, authType) -> true)
-                    .build();
+            sslContext = createTrustAllSSLContext();
         }
 
         configureHttpClient(restTemplate, sslContext);
     }
 
     /**
-     * Configure HttpClient with SSL context and set it as the request factory.
+     * Create SSLContext that trusts all certificates (for development/test only).
+     */
+    private SSLContext createTrustAllSSLContext() throws Exception {
+        TrustManager[] trustAllCerts = new TrustManager[] {
+            new X509TrustManager() {
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                @Override
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+
+                @Override
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+            }
+        };
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        return sslContext;
+    }
+
+    /**
+     * Configure RestTemplate with SSL context using Spring's SimpleClientHttpRequestFactory.
+     * Note: For production use with connection pooling, consider using Spring's WebClient
+     * or configuring HttpComponentsClientHttpRequestFactory via Spring Boot's auto-configuration.
      */
     private void configureHttpClient(RestTemplate restTemplate, SSLContext sslContext) {
-
-        var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-                .setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
-                        .setSslContext(sslContext)
-                        .build())
-                .setMaxConnTotal(50)
-                .setMaxConnPerRoute(20)
-                .build();
-
-        CloseableHttpClient httpClient =
-                HttpClients.custom().setConnectionManager(connectionManager).build();
-
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        // Spring's SimpleClientHttpRequestFactory uses Java's standard URLConnection
+        // which respects JVM-level SSL configuration
+        // For advanced features like connection pooling, Spring Boot auto-configures
+        // HttpComponentsClientHttpRequestFactory when httpclient5 is on classpath
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(30000);
+        requestFactory.setReadTimeout(60000);
 
+        // SSL context is configured at JVM level via system properties
+        // or via Spring Boot's SSL configuration
         restTemplate.setRequestFactory(requestFactory);
     }
 

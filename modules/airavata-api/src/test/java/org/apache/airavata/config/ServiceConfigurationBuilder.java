@@ -35,8 +35,8 @@ import java.util.Properties;
  * ServiceConfigurationBuilder builder = new ServiceConfigurationBuilder()
  *     .enableThriftApi()
  *     .disableRestApi()
- *     .enableHelixController()
- *     .enableHelixParticipant()
+ *     .enableDaprController()
+ *     .enableDaprParticipant()
  *     .disableAllMonitors();
  *
  * Map&lt;String, String&gt; properties = builder.build();
@@ -46,8 +46,8 @@ public class ServiceConfigurationBuilder {
 
     private boolean thriftApi = true; // Default enabled
     private boolean restApi = false; // Default disabled
-    private boolean helixController = true;
-    private boolean helixParticipant = true;
+    private boolean daprController = true;
+    private boolean daprParticipant = true;
     private boolean preWorkflowManager = true;
     private boolean postWorkflowManager = true;
     private boolean parserWorkflowManager = false;
@@ -98,34 +98,34 @@ public class ServiceConfigurationBuilder {
     }
 
     /**
-     * Enable Helix Controller.
+     * Enable Dapr Controller.
      */
-    public ServiceConfigurationBuilder enableHelixController() {
-        this.helixController = true;
+    public ServiceConfigurationBuilder enableDaprController() {
+        this.daprController = true;
         return this;
     }
 
     /**
-     * Disable Helix Controller.
+     * Disable Dapr Controller.
      */
-    public ServiceConfigurationBuilder disableHelixController() {
-        this.helixController = false;
+    public ServiceConfigurationBuilder disableDaprController() {
+        this.daprController = false;
         return this;
     }
 
     /**
-     * Enable Helix Participant.
+     * Enable Dapr Participant.
      */
-    public ServiceConfigurationBuilder enableHelixParticipant() {
-        this.helixParticipant = true;
+    public ServiceConfigurationBuilder enableDaprParticipant() {
+        this.daprParticipant = true;
         return this;
     }
 
     /**
-     * Disable Helix Participant.
+     * Disable Dapr Participant.
      */
-    public ServiceConfigurationBuilder disableHelixParticipant() {
-        this.helixParticipant = false;
+    public ServiceConfigurationBuilder disableDaprParticipant() {
+        this.daprParticipant = false;
         return this;
     }
 
@@ -222,8 +222,8 @@ public class ServiceConfigurationBuilder {
      * Enable all background services.
      */
     public ServiceConfigurationBuilder enableAllBackgroundServices() {
-        this.helixController = true;
-        this.helixParticipant = true;
+        this.daprController = true;
+        this.daprParticipant = true;
         this.preWorkflowManager = true;
         this.postWorkflowManager = true;
         this.parserWorkflowManager = true;
@@ -236,8 +236,8 @@ public class ServiceConfigurationBuilder {
      * Disable all background services.
      */
     public ServiceConfigurationBuilder disableAllBackgroundServices() {
-        this.helixController = false;
-        this.helixParticipant = false;
+        this.daprController = false;
+        this.daprParticipant = false;
         this.preWorkflowManager = false;
         this.postWorkflowManager = false;
         this.parserWorkflowManager = false;
@@ -252,8 +252,8 @@ public class ServiceConfigurationBuilder {
     public ServiceConfigurationBuilder minimalConfiguration() {
         this.thriftApi = false;
         this.restApi = false;
-        this.helixController = false;
-        this.helixParticipant = false;
+        this.daprController = false;
+        this.daprParticipant = false;
         this.preWorkflowManager = false;
         this.postWorkflowManager = false;
         this.parserWorkflowManager = false;
@@ -273,8 +273,8 @@ public class ServiceConfigurationBuilder {
     public ServiceConfigurationBuilder allServicesEnabled() {
         this.thriftApi = true;
         this.restApi = true;
-        this.helixController = true;
-        this.helixParticipant = true;
+        this.daprController = true;
+        this.daprParticipant = true;
         this.preWorkflowManager = true;
         this.postWorkflowManager = true;
         this.parserWorkflowManager = true;
@@ -303,10 +303,6 @@ public class ServiceConfigurationBuilder {
         this.restPort = port;
         return this;
     }
-
-    // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
-    // services.thrift.server.port
-    // Individual port setters removed - use withThriftPort() instead
 
     /**
      * Enable Research Service.
@@ -397,8 +393,8 @@ public class ServiceConfigurationBuilder {
         Map<String, String> props = new HashMap<>();
         props.put("airavata.services.thrift.enabled", String.valueOf(thriftApi));
         props.put("airavata.services.rest.enabled", String.valueOf(restApi));
-        props.put("airavata.services.controller.enabled", String.valueOf(helixController));
-        props.put("airavata.services.participant.enabled", String.valueOf(helixParticipant));
+        props.put("airavata.services.controller.enabled", String.valueOf(daprController));
+        props.put("airavata.services.participant.enabled", String.valueOf(daprParticipant));
         props.put("airavata.services.prewm.enabled", String.valueOf(preWorkflowManager));
         props.put("airavata.services.postwm.enabled", String.valueOf(postWorkflowManager));
         props.put("airavata.services.parser.enabled", String.valueOf(parserWorkflowManager));
@@ -429,8 +425,8 @@ public class ServiceConfigurationBuilder {
         Properties props = new Properties();
         props.setProperty("airavata.services.thrift.enabled", String.valueOf(thriftApi));
         props.setProperty("airavata.services.rest.enabled", String.valueOf(restApi));
-        props.setProperty("airavata.services.controller.enabled", String.valueOf(helixController));
-        props.setProperty("airavata.services.participant.enabled", String.valueOf(helixParticipant));
+        props.setProperty("airavata.services.controller.enabled", String.valueOf(daprController));
+        props.setProperty("airavata.services.participant.enabled", String.valueOf(daprParticipant));
         props.setProperty("airavata.services.prewm.enabled", String.valueOf(preWorkflowManager));
         props.setProperty("airavata.services.postwm.enabled", String.valueOf(postWorkflowManager));
         props.setProperty("airavata.services.parser.enabled", String.valueOf(parserWorkflowManager));

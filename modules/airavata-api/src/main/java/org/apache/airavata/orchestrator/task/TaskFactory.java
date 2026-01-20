@@ -22,7 +22,7 @@ package org.apache.airavata.orchestrator.task;
 import java.util.List;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 
 /**
  * Factory interface for creating orchestration tasks.
@@ -31,34 +31,32 @@ public interface TaskFactory {
     /**
      * Creates and saves environment setup tasks for a process.
      */
-    List<String> createAndSaveEnvSetupTasks(ProcessModel processModel)
-            throws OrchestratorException, RegistryServiceException;
+    List<String> createAndSaveEnvSetupTasks(ProcessModel processModel) throws OrchestratorException, RegistryException;
 
     /**
      * Creates archive data staging tasks.
      */
-    void createArchiveDataStagingTasks(ProcessModel processModel)
-            throws OrchestratorException, RegistryServiceException;
+    void createArchiveDataStagingTasks(ProcessModel processModel) throws OrchestratorException, RegistryException;
 
     /**
      * Creates output data staging tasks.
      */
-    void createOutputDataStagingTasks(ProcessModel processModel) throws OrchestratorException, RegistryServiceException;
+    void createOutputDataStagingTasks(ProcessModel processModel) throws OrchestratorException, RegistryException;
 
     /**
      * Creates intermediate output data staging tasks.
      */
     void createIntermediateOutputDataStagingTasks(ProcessModel processModel)
-            throws OrchestratorException, RegistryServiceException;
+            throws OrchestratorException, RegistryException;
 
     /**
      * Creates and saves job submission tasks.
      */
     List<String> createAndSaveSubmissionTasks(ProcessModel processModel)
-            throws OrchestratorException, RegistryServiceException;
+            throws OrchestratorException, RegistryException;
 
     /**
      * Creates monitor tasks.
      */
-    void createMonitorTasks(ProcessModel processModel) throws OrchestratorException, RegistryServiceException;
+    void createMonitorTasks(ProcessModel processModel) throws OrchestratorException, RegistryException;
 }

@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessStatusMapper;
@@ -209,18 +208,12 @@ public class ProcessStatusService {
         entity.setTimeOfStateChange(uniqueTimestamp);
 
         // Verify process exists before saving status
-        ProcessEntity processEntity = processRepository
-                .findById(processId)
-                .orElseThrow(() -> new RegistryException("Process with ID " + processId + " does not exist"));
-
-        // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
-        // The processId field is already set and is the only field that gets persisted.
-        // Also, we don't call processEntity.setExperiment() to avoid HHH000502 warning
-        // since the experiment relationship is marked updatable=false.
-
-        // Ensure the processStatuses collection is initialized
-        if (processEntity.getProcessStatuses() == null) {
-            processEntity.setProcessStatuses(new java.util.ArrayList<>());
+        // CRITICAL: Use existsById() instead of findById() to avoid loading the ProcessEntity
+        // with its EAGER collections (tasks). Loading the ProcessEntity with EAGER tasks
+        // can cause issues during flush when the native query in getUniqueTimestampForProcess()
+        // triggers an automatic flush - the tasks might be in a state that causes duplicate key violations.
+        if (!processRepository.existsById(processId)) {
+            throw new RegistryException("Process with ID " + processId + " does not exist");
         }
 
         // Save and flush to ensure immediate persistence
@@ -313,18 +306,12 @@ public class ProcessStatusService {
         entity.setTimeOfStateChange(uniqueTimestamp);
 
         // Verify process exists before saving status
-        ProcessEntity processEntity = processRepository
-                .findById(processId)
-                .orElseThrow(() -> new RegistryException("Process with ID " + processId + " does not exist"));
-
-        // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
-        // The processId field is already set and is the only field that gets persisted.
-        // Also, we don't call processEntity.setExperiment() to avoid HHH000502 warning
-        // since the experiment relationship is marked updatable=false.
-
-        // Ensure the processStatuses collection is initialized
-        if (processEntity.getProcessStatuses() == null) {
-            processEntity.setProcessStatuses(new java.util.ArrayList<>());
+        // CRITICAL: Use existsById() instead of findById() to avoid loading the ProcessEntity
+        // with its EAGER collections (tasks). Loading the ProcessEntity with EAGER tasks
+        // can cause issues during flush when the native query in getUniqueTimestampForProcess()
+        // triggers an automatic flush - the tasks might be in a state that causes duplicate key violations.
+        if (!processRepository.existsById(processId)) {
+            throw new RegistryException("Process with ID " + processId + " does not exist");
         }
 
         // Save and flush to ensure immediate persistence

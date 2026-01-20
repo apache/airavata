@@ -31,8 +31,7 @@ public enum MessageType {
     LAUNCHPROCESS(5),
     TERMINATEPROCESS(6),
     PROCESSOUTPUT(7),
-    DB_EVENT(8),
-    INTERMEDIATE_OUTPUTS(9);
+    INTERMEDIATE_OUTPUTS(8);
 
     private final int value;
 
@@ -63,8 +62,6 @@ public enum MessageType {
             case 7:
                 return PROCESSOUTPUT;
             case 8:
-                return DB_EVENT;
-            case 9:
                 return INTERMEDIATE_OUTPUTS;
             default:
                 return null;

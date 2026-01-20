@@ -64,7 +64,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
     }
 
     @BeforeEach
-    public void setUp() throws RegistryException {
+    public void setUp() throws RegistryException, RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
@@ -88,7 +88,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testExperimentErrorRepository_CreateAndUpdate() throws RegistryException {
+    public void testExperimentErrorRepository_CreateAndUpdate() throws RegistryException, RegistryException {
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setErrorId("error-1");
@@ -123,7 +123,8 @@ public class ExperimentErrorRepositoryTest extends TestBase {
     }
 
     @Test
-    public void testExperimentErrorRepository_MultipleErrorsPerExperiment() throws RegistryException {
+    public void testExperimentErrorRepository_MultipleErrorsPerExperiment()
+            throws RegistryException, RegistryException {
 
         ErrorModel error1 = new ErrorModel();
         error1.setErrorId("error-1");

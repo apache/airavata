@@ -48,7 +48,7 @@ import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.airavata.test.util.ReflectionEquals;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
@@ -386,7 +386,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
         String jobManagerId = computeResourceService.addResourceJobManager(resourceJobManager);
         ResourceJobManager savedJobManager = computeResourceService.getResourceJobManager(jobManagerId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
+        Assertions.assertTrue(
+                ReflectionEquals.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
     }
 
     @Test
@@ -413,7 +414,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
         ResourceJobManager updatedJobManager = computeResourceService.getResourceJobManager(jobManagerId);
 
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(savedJobManager, updatedJobManager, "__isset_bitfield"));
+        Assertions.assertTrue(
+                ReflectionEquals.reflectionEquals(savedJobManager, updatedJobManager, "__isset_bitfield"));
     }
 
     @Test
@@ -423,7 +425,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String savedSubmissionId = computeResourceService.addCloudJobSubmission(cloudJobSubmission);
         CloudJobSubmission savedSubmission = computeResourceService.getCloudJobSubmission(savedSubmissionId);
 
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(cloudJobSubmission, savedSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(
+                ReflectionEquals.reflectionEquals(cloudJobSubmission, savedSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -435,7 +438,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String jobSubmissionId = computeResourceService.addSSHJobSubmission(sshJobSubmission);
         SSHJobSubmission savedJobSubmission = computeResourceService.getSSHJobSubmission(jobSubmissionId);
 
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(sshJobSubmission, savedJobSubmission, "__isset_bitfield"));
+        Assertions.assertTrue(
+                ReflectionEquals.reflectionEquals(sshJobSubmission, savedJobSubmission, "__isset_bitfield"));
     }
 
     @Test
@@ -444,7 +448,8 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId = computeResourceService.addScpDataMovement(scpDataMovement);
 
         SCPDataMovement savedDataMovement = computeResourceService.getSCPDataMovement(dataMovementId);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
+        Assertions.assertTrue(
+                ReflectionEquals.reflectionEquals(scpDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
     @Test
@@ -453,13 +458,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
         String dataMovementId1 = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement1);
         GridFTPDataMovement savedDataMovement1 = computeResourceService.getGridFTPDataMovement(dataMovementId1);
         Assertions.assertTrue(
-                EqualsBuilder.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
+                ReflectionEquals.reflectionEquals(gridFTPDataMovement1, savedDataMovement1, "__isset_bitfield"));
 
         GridFTPDataMovement gridFTPDataMovement2 = prepareGridFTPDataMovement("222.33.43.445", "23.344.44.400");
         String dataMovementId2 = computeResourceService.addGridFTPDataMovement(gridFTPDataMovement2);
         GridFTPDataMovement savedDataMovement2 = computeResourceService.getGridFTPDataMovement(dataMovementId2);
         Assertions.assertTrue(
-                EqualsBuilder.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
+                ReflectionEquals.reflectionEquals(gridFTPDataMovement2, savedDataMovement2, "__isset_bitfield"));
     }
 
     @Test
@@ -612,7 +617,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
 
     private boolean deepCompareComputeResourceDescription(
             ComputeResourceDescription expected, ComputeResourceDescription actual) {
-        boolean equals = EqualsBuilder.reflectionEquals(
+        boolean equals = ReflectionEquals.reflectionEquals(
                 expected,
                 actual,
                 "__isset_bitfield",
@@ -720,7 +725,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                         expectedDmi.getDataMovementProtocol(), actualDmi.getDataMovementProtocol());
                         equals = equals & dmiEquals;
                     } else {
-                        equals = equals & EqualsBuilder.reflectionEquals(expectedItem, actualItem, excludeFields);
+                        equals = equals & ReflectionEquals.reflectionEquals(expectedItem, actualItem, excludeFields);
                     }
                 }
             } else {
@@ -784,7 +789,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
                                     && Objects.equals(
                                             expectedDmi.getDataMovementProtocol(), actualDmi.getDataMovementProtocol());
                         } else {
-                            equals = EqualsBuilder.reflectionEquals(expectedItem, actualItem, excludeFields);
+                            equals = ReflectionEquals.reflectionEquals(expectedItem, actualItem, excludeFields);
                         }
                         if (equals) {
                             checked[j] = true;

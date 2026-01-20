@@ -26,11 +26,11 @@ import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.messaging.MessageContext;
-import org.apache.airavata.messaging.Publisher;
-import org.apache.airavata.messaging.Type;
-import org.apache.airavata.messaging.rabbitmq.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.Publisher;
+import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.stereotype.Component;
 
@@ -41,12 +41,12 @@ import org.springframework.stereotype.Component;
 public class Utils {
 
     private final RegistryService registryService;
-    private final MessagingFactory messagingFactory;
+    private final DaprMessagingFactory messagingFactory;
 
     private Publisher statusPublisher;
     private static Utils staticInstance;
 
-    public Utils(RegistryService registryService, MessagingFactory messagingFactory) {
+    public Utils(RegistryService registryService, DaprMessagingFactory messagingFactory) {
         this.registryService = registryService;
         this.messagingFactory = messagingFactory;
         Utils.staticInstance = this;
@@ -54,7 +54,7 @@ public class Utils {
 
     public static void saveAndPublishProcessStatus(
             ProcessState processState, String processId, String experimentId, String gatewayId)
-            throws RegistryServiceException, AiravataException {
+            throws RegistryException, AiravataException {
         Utils instance = getInstance();
         RegistryService registryService = instance.registryService;
         ProcessStatus processStatus = new ProcessStatus(processState);
@@ -74,7 +74,7 @@ public class Utils {
 
     public static void updateProcessStatusAndPublishStatus(
             ProcessState processState, String processId, String experimentId, String gatewayId)
-            throws RegistryServiceException, AiravataException {
+            throws RegistryException, AiravataException {
         Utils instance = getInstance();
         RegistryService registryService = instance.registryService;
         ProcessStatus processStatus = new ProcessStatus(processState);

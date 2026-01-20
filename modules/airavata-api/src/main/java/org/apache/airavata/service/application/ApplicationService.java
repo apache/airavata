@@ -25,7 +25,7 @@ import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class ApplicationService {
             throws AiravataSystemException {
         try {
             return registryService.registerApplicationInterface(gatewayId, applicationInterface);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while adding application interface: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -67,7 +67,7 @@ public class ApplicationService {
             throws AiravataSystemException {
         try {
             return registryService.getApplicationInterface(appInterfaceId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving application interface: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -78,7 +78,7 @@ public class ApplicationService {
             throws AiravataSystemException {
         try {
             return registryService.getAllApplicationInterfaces(gatewayId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving all application interfaces: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -89,7 +89,7 @@ public class ApplicationService {
             String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws AiravataSystemException {
         try {
             return registryService.registerApplicationDeployment(gatewayId, applicationDeployment);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while adding application deployment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -100,7 +100,7 @@ public class ApplicationService {
             throws AiravataSystemException {
         try {
             return registryService.getApplicationDeployment(appDeploymentId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving application deployment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -111,7 +111,7 @@ public class ApplicationService {
             throws AiravataSystemException {
         try {
             return registryService.getApplicationDeployments(appModuleId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving application deployments: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -122,7 +122,7 @@ public class ApplicationService {
             throws AiravataSystemException {
         try {
             return registryService.registerApplicationModule(gatewayId, applicationModule);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while adding application module: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -132,7 +132,7 @@ public class ApplicationService {
     public ApplicationModule getApplicationModule(String appModuleId) throws AiravataSystemException {
         try {
             return registryService.getApplicationModule(appModuleId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving application module: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -142,7 +142,7 @@ public class ApplicationService {
     public List<ApplicationModule> getAllAppModules(String gatewayId) throws AiravataSystemException {
         try {
             return registryService.getAllAppModules(gatewayId);
-        } catch (RegistryServiceException e) {
+        } catch (RegistryException e) {
             String msg = "Error while retrieving all application modules: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);

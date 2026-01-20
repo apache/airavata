@@ -35,7 +35,7 @@ import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.validation.ValidationService;
 import org.apache.airavata.orchestrator.validator.JobMetadataValidator;
-import org.apache.airavata.registry.exception.RegistryServiceException;
+import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ import org.springframework.stereotype.Service;
  * Implementation of ValidationService.
  */
 @Service
-@Profile("!test")
+@Profile({"!test", "orchestrator-integration"})
 @ConditionalOnApiService
 public class ValidationServiceImpl implements ValidationService {
     private static final Logger logger = LoggerFactory.getLogger(ValidationServiceImpl.class);
@@ -121,7 +121,7 @@ public class ValidationServiceImpl implements ValidationService {
                     details.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
                     try {
                         registryService.addErrors(errorType, details, entityId);
-                    } catch (RegistryServiceException e) {
+                    } catch (RegistryException e) {
                         logger.error("Error while saving error details to registry", e);
                         throw new OrchestratorException("Error while saving error details to registry", e);
                     }
