@@ -23,8 +23,10 @@ import java.util.List;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.registry.mappers.EntityMapperConfig;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 /**
  * MapStruct mapper for converting between UserProfileEntity and UserProfile model.
@@ -55,6 +57,17 @@ public interface UserProfileMapper {
             expression = "java(model.getValidUntil() > 0 ? new java.util.Date(model.getValidUntil()) : null)")
     @Mapping(target = "customizedDashboardEntity", source = "customDashboard")
     UserProfileEntity toEntity(UserProfile model);
+
+    /**
+     * After mapping, ensure the CustomizedDashboardEntity has the same ID as the parent UserProfileEntity.
+     * This is required because they share a @PrimaryKeyJoinColumn.
+     */
+    @AfterMapping
+    default void setCustomizedDashboardEntityId(@MappingTarget UserProfileEntity entity, UserProfile model) {
+        if (entity.getCustomizedDashboardEntity() != null && entity.getAiravataInternalUserId() != null) {
+            entity.getCustomizedDashboardEntity().setAiravataInternalUserId(entity.getAiravataInternalUserId());
+        }
+    }
 
     List<UserProfile> toModelList(List<UserProfileEntity> entities);
 

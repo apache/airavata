@@ -110,6 +110,8 @@ public class ProcessOutputRepositoryTest extends TestBase {
         outputDataObjectTypeProList.add(outputDataObjectProType);
 
         processOutputService.addProcessOutputs(outputDataObjectTypeProList, processId);
+        // Clear JPA cache to ensure fresh load with the newly added output
+        flushAndClear();
         assertEquals(
                 1, processService.getProcess(processId).getProcessOutputs().size(), "Process should have one output");
 

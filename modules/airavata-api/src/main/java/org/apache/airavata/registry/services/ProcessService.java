@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.services;
 
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,19 +34,17 @@ import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessMapper;
-import jakarta.persistence.EntityManager;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ProcessService {
     private static final Logger logger = LoggerFactory.getLogger(ProcessService.class);
 
@@ -55,6 +54,8 @@ public class ProcessService {
     private final ProcessMapper processMapper;
     private final org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper;
     private final EntityManager entityManager;
+    private final org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository processStatusRepository;
+    private final org.apache.airavata.registry.mappers.ProcessStatusMapper processStatusMapper;
 
     public ProcessService(
             ProcessRepository processRepository,
@@ -62,13 +63,17 @@ public class ProcessService {
             TaskService taskService,
             ProcessMapper processMapper,
             org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+            EntityManager entityManager,
+            org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository processStatusRepository,
+            org.apache.airavata.registry.mappers.ProcessStatusMapper processStatusMapper) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.taskService = taskService;
         this.processMapper = processMapper;
         this.processWorkflowMapper = processWorkflowMapper;
         this.entityManager = entityManager;
+        this.processStatusRepository = processStatusRepository;
+        this.processStatusMapper = processStatusMapper;
     }
 
     public void populateParentIds(ProcessEntity processEntity) {
@@ -147,6 +152,31 @@ public class ProcessService {
         ProcessEntity entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
         ProcessModel model = processMapper.toModel(entity);
+
+        // Always load processStatuses from repository to ensure they're loaded
+        // The entity's processStatuses collection might be lazy-loaded and appear non-empty
+        // but may not contain actual data when accessed outside of transaction
+        // Use ascending order so statuses are in chronological order (oldest first)
+        try {
+            List<org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity> loadedStatuses =
+                    processStatusRepository.findByProcessIdOrderByTimeOfStateChangeAsc(processId);
+            if (loadedStatuses != null && !loadedStatuses.isEmpty()) {
+                // Convert to model list and set on the model
+                List<ProcessStatus> statusModels = new ArrayList<>();
+                for (org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity statusEntity :
+                        loadedStatuses) {
+                    ProcessStatus statusModel = processStatusMapper.toModel(statusEntity);
+                    statusModels.add(statusModel);
+                }
+                model.setProcessStatuses(statusModels);
+            } else {
+                model.setProcessStatuses(new ArrayList<>());
+            }
+        } catch (Exception e) {
+            logger.debug("Could not load processStatuses for process {}: {}", processId, e.getMessage());
+            model.setProcessStatuses(new ArrayList<>());
+        }
+
         // Manually map processWorkflows after mapping to avoid LazyInitializationException
         // Access the collection to force initialization within the transaction
         try {
@@ -360,8 +390,7 @@ public class ProcessService {
         }
         // Try to find the experiment - first check persistence context, then database
         // This handles cases where the experiment is in the same transaction but not yet flushed
-        ExperimentEntity experimentEntity = entityManager.find(
-                ExperimentEntity.class, processModel.getExperimentId());
+        ExperimentEntity experimentEntity = entityManager.find(ExperimentEntity.class, processModel.getExperimentId());
         if (experimentEntity == null) {
             // Not in persistence context - flush to ensure any unflushed experiments are persisted
             entityManager.flush();

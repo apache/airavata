@@ -199,6 +199,9 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         Assertions.assertTrue(sharingService.addGroupAdmins(domainId, "test-group-1", List.of("test-user-7")));
         Assertions.assertTrue(sharingService.hasAdminAccess(domainId, "test-group-1", "test-user-7"));
 
+        // Clear JPA cache to ensure fresh load with the newly added admin
+        flushAndClear();
+
         UserGroup getGroup = sharingService.getGroup(domainId, "test-group-1");
         Assertions.assertEquals(1, getGroup.getGroupAdmins().size());
 
@@ -319,15 +322,16 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         sharingService.createEntity(entity4);
         Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-file-1"), "Entity 4 should exist");
 
-        Long initialSharedCount = sharingService.getEntity(domainId, "test-project-1").getSharedCount();
+        Long initialSharedCount =
+                sharingService.getEntity(domainId, "test-project-1").getSharedCount();
         // Shared count may be null or 0 initially
         Assertions.assertTrue(
-                initialSharedCount == null || initialSharedCount == 0L,
-                "Initial shared count should be null or 0");
+                initialSharedCount == null || initialSharedCount == 0L, "Initial shared count should be null or 0");
         boolean sharedWithUsers =
                 sharingService.shareEntityWithUsers(domainId, "test-project-1", List.of("test-user-2"), "WRITE", true);
         Assertions.assertTrue(sharedWithUsers, "Entity should be shared with users");
-        Long updatedSharedCount = sharingService.getEntity(domainId, "test-project-1").getSharedCount();
+        Long updatedSharedCount =
+                sharingService.getEntity(domainId, "test-project-1").getSharedCount();
         Assertions.assertNotNull(updatedSharedCount, "Shared count should not be null after sharing");
         Assertions.assertTrue(updatedSharedCount >= 1L, "Shared count should be at least 1 after sharing");
         ArrayList<SearchCriteria> filters = new ArrayList<>();

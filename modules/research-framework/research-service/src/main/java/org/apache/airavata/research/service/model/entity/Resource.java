@@ -48,8 +48,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
-@Table(name = "RESOURCE")
+@Entity(name = "ResearchResourceEntity")
+@Table(name = "RESEARCH_RESOURCE")
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Resource {
@@ -70,13 +70,13 @@ public abstract class Resource {
     private String headerImage;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "resource_authors", joinColumns = @JoinColumn(name = "resource_id"))
+    @CollectionTable(name = "RESEARCH_RESOURCE_AUTHORS", joinColumns = @JoinColumn(name = "resource_id"))
     @Column(name = "author_id")
     private Set<String> authors = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(
-            name = "resource_tags",
+            name = "RESEARCH_RESOURCE_TAGS",
             joinColumns = @JoinColumn(name = "resource_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();

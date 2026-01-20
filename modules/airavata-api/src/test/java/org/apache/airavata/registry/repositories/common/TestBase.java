@@ -106,15 +106,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class TestBase {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    protected jakarta.persistence.EntityManager entityManager;
+
     /**
-     * Database type enum for backward compatibility.
-     * With Testcontainers, all databases are auto-configured.
+     * Flush pending changes to the database and clear the JPA first-level cache.
+     * Use this before fetching entities that were modified via child entity saves
+     * to ensure fresh data is loaded from the database.
      */
-    public enum Database {
-        APP_CATALOG,
-        EXP_CATALOG,
-        REPLICA_CATALOG,
-        WORKFLOW_CATALOG
+    protected void flushAndClear() {
+        entityManager.flush();
+        entityManager.clear();
     }
 
     /**
@@ -122,16 +124,5 @@ public abstract class TestBase {
      */
     protected TestBase() {
         // No initialization needed - Spring handles everything
-    }
-
-    /**
-     * Constructor with database specification (backward compatibility).
-     *
-     * @param databases the databases needed for this test (ignored - all are available)
-     * @deprecated Use default constructor; all databases are auto-configured
-     */
-    @Deprecated
-    protected TestBase(Database... databases) {
-        // Databases are now auto-configured via TestcontainersConfig
     }
 }

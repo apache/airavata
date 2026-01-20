@@ -24,8 +24,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 
-@Entity
-@Table(name = "MODEL_RESOURCE")
+@Entity(name = "ResearchModelResourceEntity")
+@Table(name = "RESEARCH_MODEL_RESOURCE")
 public class ModelResource extends Resource {
 
     @Column(nullable = false)

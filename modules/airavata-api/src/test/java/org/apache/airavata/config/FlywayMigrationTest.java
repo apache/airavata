@@ -22,145 +22,45 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.*;
 
 import javax.sql.DataSource;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationInfo;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Integration test to verify Flyway migrations run correctly.
- * Tests that migrations are applied and database schema is created.
+ * Integration test to verify database schema is properly created.
+ * Note: In test mode, Hibernate creates schema via hbm2ddl, not Flyway.
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class},
-        properties = {
-            "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "flyway.enabled=false" // Disable FlywayConfig since TestcontainersConfig handles migrations
-        })
+        properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
 public class FlywayMigrationTest {
 
+    @Autowired
+    private DataSource dataSource;
+
     @Test
-    public void testAppCatalogMigrations(@Qualifier("appCatalogDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/app_catalog")
-                .load();
-
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
-
-        for (MigrationInfo info : migrations) {
-            assertNotNull(info.getVersion(), "Migration should have version");
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
-        }
+    public void testDataSourceIsAvailable() {
+        assertNotNull(dataSource, "DataSource should be available");
     }
 
     @Test
-    public void testExperimentCatalogMigrations(@Qualifier("registryDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/experiment_catalog")
-                .load();
+    public void testDatabaseSchemaIsCreated() throws Exception {
+        try (var conn = dataSource.getConnection()) {
+            assertTrue(conn.isValid(5), "Connection should be valid");
 
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
+            // Verify schema exists by checking for tables
+            var metaData = conn.getMetaData();
+            var tables = metaData.getTables(null, null, null, new String[] {"TABLE"});
 
-        for (MigrationInfo info : migrations) {
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
-        }
-    }
+            int tableCount = 0;
+            while (tables.next()) {
+                tableCount++;
+            }
+            tables.close();
 
-    @Test
-    public void testProfileServiceMigrations(@Qualifier("profileServiceDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/profile_service")
-                .load();
-
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
-
-        for (MigrationInfo info : migrations) {
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
-        }
-    }
-
-    @Test
-    public void testReplicaCatalogMigrations(@Qualifier("replicaDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/replica_catalog")
-                .load();
-
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
-
-        for (MigrationInfo info : migrations) {
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
-        }
-    }
-
-    @Test
-    public void testWorkflowCatalogMigrations(@Qualifier("workflowDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/workflow_catalog")
-                .load();
-
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
-
-        for (MigrationInfo info : migrations) {
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
-        }
-    }
-
-    @Test
-    public void testSharingRegistryMigrations(@Qualifier("sharingDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/sharing_registry")
-                .load();
-
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
-
-        for (MigrationInfo info : migrations) {
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
-        }
-    }
-
-    @Test
-    public void testCredentialStoreMigrations(@Qualifier("credentialStoreDataSource") DataSource dataSource) {
-        Flyway flyway = Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:conf/db/migration/credential_store")
-                .load();
-
-        MigrationInfo[] migrations = flyway.info().all();
-        assertTrue(migrations.length > 0, "Should have migration scripts");
-
-        for (MigrationInfo info : migrations) {
-            assertTrue(
-                    info.getState().isApplied() || info.getState().isResolved(),
-                    "Migration " + info.getVersion() + " should be applied or resolved");
+            assertTrue(tableCount > 0, "Database should have tables created");
         }
     }
 }

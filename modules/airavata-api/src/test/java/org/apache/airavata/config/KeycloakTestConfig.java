@@ -269,7 +269,6 @@ public class KeycloakTestConfig {
                 1073741824, // maxArchiveSize
                 null, // streamingTransfer
                 null, // hibernate
-                null, // database
                 security, // security
                 null, // rabbitmq
                 null, // kafka

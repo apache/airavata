@@ -83,40 +83,86 @@ public class GwyResourceProfileService {
     @Transactional
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         String gatewayId = gatewayResourceProfile.getGatewayID();
+        if (gatewayId == null || gatewayId.trim().isEmpty()) {
+            throw new IllegalArgumentException("GatewayID is required for GatewayResourceProfile");
+        }
         GatewayProfileEntity gatewayProfileEntity = gatewayResourceProfileMapper.toEntity(gatewayResourceProfile);
+        // Ensure gatewayId is set on the entity (mapper field name mismatch: model uses gatewayID, entity uses
+        // gatewayId)
+        gatewayProfileEntity.setGatewayId(gatewayId);
         if (gwyResourceProfileRepository.findById(gatewayId).isPresent()) {
             gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         } else {
             gatewayProfileEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
         }
 
-        if (gatewayProfileEntity.getComputeResourcePreferences() != null)
-            gatewayProfileEntity.getComputeResourcePreferences().forEach(pref -> pref.setGatewayId(gatewayId));
+        // Manually map compute resource preferences (mapper ignores them)
+        if (gatewayResourceProfile.getComputeResourcePreferences() != null
+                && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
+            List<ComputeResourcePreferenceEntity> computePrefs = computeResourcePreferenceMapper.toEntityList(
+                    gatewayResourceProfile.getComputeResourcePreferences());
+            for (ComputeResourcePreferenceEntity pref : computePrefs) {
+                pref.setGatewayId(gatewayId);
+                // Set the back-reference for proper cascade behavior
+                // Even though JoinColumn has insertable=false, updatable=false,
+                // the back-reference is needed for Hibernate's cascade management
+                pref.setGatewayProfileResource(gatewayProfileEntity);
+            }
+            gatewayProfileEntity.setComputeResourcePreferences(computePrefs);
+        }
 
-        if (gatewayProfileEntity.getStoragePreferences() != null)
-            gatewayProfileEntity.getStoragePreferences().forEach(pref -> pref.setGatewayId(gatewayId));
+        // Manually map storage preferences (mapper ignores them)
+        if (gatewayResourceProfile.getStoragePreferences() != null
+                && !gatewayResourceProfile.getStoragePreferences().isEmpty()) {
+            List<StoragePreferenceEntity> storagePrefs =
+                    storagePreferenceMapper.toEntityList(gatewayResourceProfile.getStoragePreferences());
+            for (StoragePreferenceEntity pref : storagePrefs) {
+                pref.setGatewayId(gatewayId);
+                // Set the back-reference for proper cascade behavior
+                pref.setGatewayProfileResource(gatewayProfileEntity);
+            }
+            gatewayProfileEntity.setStoragePreferences(storagePrefs);
+        }
 
         GatewayProfileEntity persistedCopy = gwyResourceProfileRepository.save(gatewayProfileEntity);
 
+        // Handle SSH Account Provisioner Configurations for compute resource preferences
         List<ComputeResourcePreference> computeResourcePreferences =
                 gatewayResourceProfile.getComputeResourcePreferences();
         if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
             for (ComputeResourcePreference preference : computeResourcePreferences) {
                 if (preference.getSshAccountProvisionerConfig() != null
                         && !preference.getSshAccountProvisionerConfig().isEmpty()) {
-                    ComputeResourcePreferenceEntity computeResourcePreferenceEntity =
-                            computeResourcePreferenceMapper.toEntity(preference);
-                    computeResourcePreferenceEntity.setGatewayId(gatewayId);
-                    List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
-                    for (String sshAccountProvisionerConfigName :
-                            preference.getSshAccountProvisionerConfig().keySet()) {
-                        String value =
-                                preference.getSshAccountProvisionerConfig().get(sshAccountProvisionerConfigName);
-                        configurations.add(new SSHAccountProvisionerConfiguration(
-                                sshAccountProvisionerConfigName, value, computeResourcePreferenceEntity));
+                    // Look up the existing persisted compute resource preference
+                    ComputeResourcePreferencePK prefPK = new ComputeResourcePreferencePK();
+                    prefPK.setGatewayId(gatewayId);
+                    prefPK.setComputeResourceId(preference.getComputeResourceId());
+                    ComputeResourcePreferenceEntity existingPref =
+                            computeResourcePrefRepository.findById(prefPK).orElse(null);
+
+                    if (existingPref != null) {
+                        // Delete existing SSH configs first
+                        if (existingPref.getSshAccountProvisionerConfigurations() != null) {
+                            sshAccountProvisionerConfigurationRepository.deleteAll(
+                                    existingPref.getSshAccountProvisionerConfigurations());
+                        }
+
+                        // Create new SSH configs using the explicit fields, not the relationship
+                        List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
+                        for (String configName :
+                                preference.getSshAccountProvisionerConfig().keySet()) {
+                            String configValue =
+                                    preference.getSshAccountProvisionerConfig().get(configName);
+                            SSHAccountProvisionerConfiguration sshConfig = new SSHAccountProvisionerConfiguration();
+                            sshConfig.setGatewayId(gatewayId);
+                            sshConfig.setResourceId(preference.getComputeResourceId());
+                            sshConfig.setConfigName(configName);
+                            sshConfig.setConfigValue(configValue);
+                            // Don't set computeResourcePreference - foreign key is managed by explicit fields
+                            configurations.add(sshConfig);
+                        }
+                        sshAccountProvisionerConfigurationRepository.saveAll(configurations);
                     }
-                    computeResourcePreferenceEntity.setSshAccountProvisionerConfigurations(configurations);
-                    computeResourcePrefRepository.save(computeResourcePreferenceEntity);
                 }
             }
         }

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
@@ -35,7 +36,6 @@ import net.schmizz.sshj.xfer.InMemoryDestFile;
 import net.schmizz.sshj.xfer.InMemorySourceFile;
 import org.apache.airavata.config.TestcontainersConfig;
 import org.apache.airavata.config.TestcontainersConfig.SftpConnectionInfo;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Timeout;
  * The SFTP container is fully managed by Testcontainers.
  */
 @DisplayName("SFTP Connectivity Integration Tests")
-@Timeout(value = 2, unit = TimeUnit.MINUTES)  // Prevent tests from hanging indefinitely
+@Timeout(value = 2, unit = TimeUnit.MINUTES) // Prevent tests from hanging indefinitely
 public class SftpConnectivityIntegrationTest {
 
     private SSHClient sshClient;
@@ -63,8 +63,8 @@ public class SftpConnectivityIntegrationTest {
         sshClient = new SSHClient();
         sshClient.addHostKeyVerifier(new PromiscuousVerifier());
         // Set connection timeout to prevent hanging on connection issues
-        sshClient.setConnectTimeout(10000);  // 10 seconds
-        sshClient.setTimeout(30000);          // 30 seconds for socket operations
+        sshClient.setConnectTimeout(10000); // 10 seconds
+        sshClient.setTimeout(30000); // 30 seconds for socket operations
         sshClient.connect(sftp.host(), sftp.port());
         sshClient.authPassword(sftp.user(), sftp.password());
         sftpClient = sshClient.newSFTPClient();
@@ -114,22 +114,24 @@ public class SftpConnectivityIntegrationTest {
             String remotePath = UPLOAD_DIR + "/" + fileName;
 
             // Upload file
-            sftpClient.put(new InMemorySourceFile() {
-                @Override
-                public String getName() {
-                    return fileName;
-                }
+            sftpClient.put(
+                    new InMemorySourceFile() {
+                        @Override
+                        public String getName() {
+                            return fileName;
+                        }
 
-                @Override
-                public long getLength() {
-                    return fileContent.getBytes(StandardCharsets.UTF_8).length;
-                }
+                        @Override
+                        public long getLength() {
+                            return fileContent.getBytes(StandardCharsets.UTF_8).length;
+                        }
 
-                @Override
-                public java.io.InputStream getInputStream() {
-                    return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
-                }
-            }, remotePath);
+                        @Override
+                        public java.io.InputStream getInputStream() {
+                            return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
+                        }
+                    },
+                    remotePath);
 
             // Verify file exists
             assertThat(sftpClient.statExistence(remotePath)).isNotNull();
@@ -146,22 +148,24 @@ public class SftpConnectivityIntegrationTest {
             String remotePath = UPLOAD_DIR + "/" + fileName;
 
             // First upload a file
-            sftpClient.put(new InMemorySourceFile() {
-                @Override
-                public String getName() {
-                    return fileName;
-                }
+            sftpClient.put(
+                    new InMemorySourceFile() {
+                        @Override
+                        public String getName() {
+                            return fileName;
+                        }
 
-                @Override
-                public long getLength() {
-                    return fileContent.getBytes(StandardCharsets.UTF_8).length;
-                }
+                        @Override
+                        public long getLength() {
+                            return fileContent.getBytes(StandardCharsets.UTF_8).length;
+                        }
 
-                @Override
-                public java.io.InputStream getInputStream() {
-                    return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
-                }
-            }, remotePath);
+                        @Override
+                        public java.io.InputStream getInputStream() {
+                            return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
+                        }
+                    },
+                    remotePath);
 
             // Download the file
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -198,29 +202,32 @@ public class SftpConnectivityIntegrationTest {
             String remotePath = UPLOAD_DIR + "/" + fileName;
 
             // Upload a test file
-            sftpClient.put(new InMemorySourceFile() {
-                @Override
-                public String getName() {
-                    return fileName;
-                }
+            sftpClient.put(
+                    new InMemorySourceFile() {
+                        @Override
+                        public String getName() {
+                            return fileName;
+                        }
 
-                @Override
-                public long getLength() {
-                    return fileContent.getBytes(StandardCharsets.UTF_8).length;
-                }
+                        @Override
+                        public long getLength() {
+                            return fileContent.getBytes(StandardCharsets.UTF_8).length;
+                        }
 
-                @Override
-                public java.io.InputStream getInputStream() {
-                    return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
-                }
-            }, remotePath);
+                        @Override
+                        public java.io.InputStream getInputStream() {
+                            return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
+                        }
+                    },
+                    remotePath);
 
             // List directory
             List<RemoteResourceInfo> files = sftpClient.ls(UPLOAD_DIR);
 
             // Verify our file is in the list
             assertThat(files).isNotEmpty();
-            assertThat(files.stream().anyMatch(f -> f.getName().equals(fileName))).isTrue();
+            assertThat(files.stream().anyMatch(f -> f.getName().equals(fileName)))
+                    .isTrue();
 
             // Cleanup
             sftpClient.rm(remotePath);
@@ -234,22 +241,24 @@ public class SftpConnectivityIntegrationTest {
             String remotePath = UPLOAD_DIR + "/" + fileName;
 
             // Upload a file
-            sftpClient.put(new InMemorySourceFile() {
-                @Override
-                public String getName() {
-                    return fileName;
-                }
+            sftpClient.put(
+                    new InMemorySourceFile() {
+                        @Override
+                        public String getName() {
+                            return fileName;
+                        }
 
-                @Override
-                public long getLength() {
-                    return fileContent.getBytes(StandardCharsets.UTF_8).length;
-                }
+                        @Override
+                        public long getLength() {
+                            return fileContent.getBytes(StandardCharsets.UTF_8).length;
+                        }
 
-                @Override
-                public java.io.InputStream getInputStream() {
-                    return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
-                }
-            }, remotePath);
+                        @Override
+                        public java.io.InputStream getInputStream() {
+                            return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
+                        }
+                    },
+                    remotePath);
 
             // Verify file exists
             assertThat(sftpClient.statExistence(remotePath)).isNotNull();
@@ -296,22 +305,24 @@ public class SftpConnectivityIntegrationTest {
             String remotePath = UPLOAD_DIR + "/" + fileName;
 
             // Upload a file
-            sftpClient.put(new InMemorySourceFile() {
-                @Override
-                public String getName() {
-                    return fileName;
-                }
+            sftpClient.put(
+                    new InMemorySourceFile() {
+                        @Override
+                        public String getName() {
+                            return fileName;
+                        }
 
-                @Override
-                public long getLength() {
-                    return fileContent.getBytes(StandardCharsets.UTF_8).length;
-                }
+                        @Override
+                        public long getLength() {
+                            return fileContent.getBytes(StandardCharsets.UTF_8).length;
+                        }
 
-                @Override
-                public java.io.InputStream getInputStream() {
-                    return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
-                }
-            }, remotePath);
+                        @Override
+                        public java.io.InputStream getInputStream() {
+                            return new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8));
+                        }
+                    },
+                    remotePath);
 
             // Get file attributes
             var attrs = sftpClient.stat(remotePath);

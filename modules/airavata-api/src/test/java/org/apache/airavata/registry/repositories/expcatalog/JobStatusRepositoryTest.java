@@ -53,7 +53,7 @@ import org.springframework.test.context.TestConstructor;
 
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@org.springframework.transaction.annotation.Transactional("expCatalogTransactionManager")
+@org.springframework.transaction.annotation.Transactional
 public class JobStatusRepositoryTest extends TestBase {
 
     private final GatewayService gatewayService;

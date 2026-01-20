@@ -98,7 +98,9 @@ public class ConditionalPropertyValidationTest {
     @DisplayName("Verify security enabled flags are bound correctly")
     void testSecurityEnabledFlagsAreBound() {
         // IAM is enabled for tests via Keycloak testcontainer
-        assertTrue(properties.security().iam().enabled(), "airavata.security.iam.enabled should be true for tests with Keycloak");
+        assertTrue(
+                properties.security().iam().enabled(),
+                "airavata.security.iam.enabled should be true for tests with Keycloak");
         assertTrue(
                 properties.security().authentication().enabled(),
                 "airavata.security.authentication.enabled should be true");

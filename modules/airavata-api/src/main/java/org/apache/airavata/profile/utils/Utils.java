@@ -20,20 +20,23 @@
 package org.apache.airavata.profile.utils;
 
 import java.net.URI;
-import org.apache.airavata.config.AiravataServerProperties;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component("profileUtils")
 public class Utils {
 
-    private final AiravataServerProperties properties;
+    private final DataSourceProperties dataSourceProperties;
+    private final Environment environment;
 
-    public Utils(AiravataServerProperties properties) {
-        this.properties = properties;
+    public Utils(DataSourceProperties dataSourceProperties, Environment environment) {
+        this.dataSourceProperties = dataSourceProperties;
+        this.environment = environment;
     }
 
     public String getJDBCURL() {
-        return properties.database().profile().url();
+        return dataSourceProperties.getUrl();
     }
 
     public String getHost() {
@@ -65,18 +68,18 @@ public class Utils {
     }
 
     public String getJDBCUser() {
-        return properties.database().profile().user();
+        return dataSourceProperties.getUsername();
     }
 
     public String getValidationQuery() {
-        return properties.database().profile().validationQuery();
+        return environment.getProperty("spring.datasource.hikari.connection-test-query", "SELECT 1");
     }
 
     public String getJDBCPassword() {
-        return properties.database().profile().password();
+        return dataSourceProperties.getPassword();
     }
 
     public String getJDBCDriver() {
-        return properties.database().profile().driver();
+        return dataSourceProperties.getDriverClassName();
     }
 }

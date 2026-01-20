@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.config.AiravataServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -199,11 +198,9 @@ public class DBUtil {
      *
      * <p>Note: JDBC 4.0+ automatically loads drivers via ServiceLoader mechanism
      * when DriverManager.getConnection() is called, so manual driver loading
-     * is no longer needed. This method is kept for backward compatibility but
-     * no longer performs any action.
+     * is no longer needed.
      *
      * @throws ApplicationSettingsException
-     *             (Never thrown - kept for backward compatibility)
      */
     private void loadDriver() throws ApplicationSettingsException {
         // JDBC 4.0+ auto-loads drivers when DriverManager.getConnection() is called.
@@ -345,32 +342,18 @@ public class DBUtil {
     }
 
     /**
-     * Creates a DBUtil object based on servlet context configurations.
+     * Get DBUtil using Spring Boot standard datasource properties.
      *
-     * @return DBUtil object.
-     * @throws Exception
-     * If an error occurred while reading configurations or while creating database object.
+     * @param jdbcUrl the JDBC URL from spring.datasource.url
+     * @param userName the username from spring.datasource.username
+     * @param password the password from spring.datasource.password
+     * @param driverName the driver from spring.datasource.driver-class-name
+     * @return DBUtil object
+     * @throws Exception if an error occurred
      */
-    public static DBUtil getCredentialStoreDBUtil(AiravataServerProperties properties)
+    public static DBUtil getCredentialStoreDBUtil(String jdbcUrl, String userName, String password, String driverName)
             throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
                     InstantiationException {
-        var db = properties.database().vault();
-        String jdbcUrl = db.url();
-        if (jdbcUrl == null || jdbcUrl.isEmpty()) {
-            jdbcUrl = properties.database().registry().url();
-        }
-        String userName = db.user();
-        if (userName == null || userName.isEmpty()) {
-            userName = properties.database().registry().user();
-        }
-        String password = db.password();
-        if (password == null || password.isEmpty()) {
-            password = properties.database().registry().password();
-        }
-        String driverName = db.driver();
-        if (driverName == null || driverName.isEmpty()) {
-            driverName = properties.database().registry().driver();
-        }
 
         StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
         stringBuilder

@@ -70,7 +70,7 @@ import org.springframework.test.context.DynamicPropertySource;
         properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
 @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
-@Timeout(value = 2, unit = TimeUnit.MINUTES)  // Prevent tests from hanging indefinitely
+@Timeout(value = 2, unit = TimeUnit.MINUTES) // Prevent tests from hanging indefinitely
 public class KafkaIntegrationTest {
 
     @DynamicPropertySource
@@ -137,7 +137,7 @@ public class KafkaIntegrationTest {
 
             // Subscribe to topic
             consumer.subscribe(Collections.singletonList(topicName));
-            
+
             // Force partition assignment by doing an initial poll
             consumer.poll(Duration.ofMillis(100));
             logger.info("Consumer subscribed and partition assignment triggered");
@@ -206,7 +206,7 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
-            
+
             // Force partition assignment by doing an initial poll
             consumer.poll(Duration.ofMillis(100));
             logger.info("Consumer subscribed and partition assignment triggered");
@@ -295,7 +295,7 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
-            
+
             // Force partition assignment by doing an initial poll
             consumer.poll(Duration.ofMillis(100));
             logger.info("Consumer subscribed and partition assignment triggered");
@@ -364,7 +364,7 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
-            
+
             // Force partition assignment by doing an initial poll
             consumer.poll(Duration.ofMillis(100));
             logger.info("Consumer subscribed and partition assignment triggered");
@@ -435,7 +435,7 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
-            
+
             // Force partition assignment by doing an initial poll
             consumer.poll(Duration.ofMillis(100));
             logger.info("Consumer subscribed and partition assignment triggered");
@@ -509,7 +509,7 @@ public class KafkaIntegrationTest {
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
 
             consumer.subscribe(Collections.singletonList(topicName));
-            
+
             // Force partition assignment by doing an initial poll
             consumer.poll(Duration.ofMillis(100));
             logger.info("Consumer subscribed and partition assignment triggered");
@@ -534,8 +534,7 @@ public class KafkaIntegrationTest {
                             objectMapper.readValue(consumerRecord.value(), MessageContext.Wrapper.class);
                     MessageContext ctx = wrapper.toMessageContext();
                     if (ctx.getType() == MessageType.EXPERIMENT) {
-                        ExperimentStatusChangeEvent event =
-                                (ExperimentStatusChangeEvent) ctx.getEvent();
+                        ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) ctx.getEvent();
                         receivedStates.add(event.getState());
                         messagesReceived.countDown();
                     }

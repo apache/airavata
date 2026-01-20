@@ -38,6 +38,9 @@ public interface ApplicationDeploymentMapper {
     @Mapping(target = "libPrependPaths", ignore = true) // Handled manually in service layer
     @Mapping(target = "libAppendPaths", ignore = true) // Handled manually in service layer
     @Mapping(target = "setEnvironment", ignore = true) // Handled manually in service layer
+    @Mapping(
+            source = "defaultWallTime",
+            target = "defaultWalltime") // Field name mismatch: entity uses defaultWallTime, model uses defaultWalltime
     ApplicationDeploymentDescription toModel(ApplicationDeploymentEntity entity);
 
     @Mapping(target = "moduleLoadCmds", ignore = true) // Handled manually in service layer
@@ -46,6 +49,9 @@ public interface ApplicationDeploymentMapper {
     @Mapping(target = "libPrependPaths", ignore = true) // Handled manually in service layer
     @Mapping(target = "libAppendPaths", ignore = true) // Handled manually in service layer
     @Mapping(target = "setEnvironment", ignore = true) // Handled manually in service layer
+    @Mapping(
+            source = "defaultWalltime",
+            target = "defaultWallTime") // Field name mismatch: model uses defaultWalltime, entity uses defaultWallTime
     ApplicationDeploymentEntity toEntity(ApplicationDeploymentDescription model);
 
     List<ApplicationDeploymentDescription> toModelList(List<ApplicationDeploymentEntity> entities);

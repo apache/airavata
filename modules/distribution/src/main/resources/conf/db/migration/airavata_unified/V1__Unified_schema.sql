@@ -1,0 +1,264 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ * Unified Schema Migration
+ * 
+ * This migration consolidates all 8 separate databases into a single unified database.
+ * Entity naming conflicts have been resolved with prefixes:
+ * - profile_service: GATEWAY -> GATEWAY (profile entities)
+ * - experiment_catalog: GATEWAY -> EXPCATALOG_GATEWAY, PROJECT -> PROJECT 
+ * - research_catalog: PROJECT -> RESEARCH_PROJECT
+ * - sharing_registry: SHARING_USER (already prefixed)
+ *
+ * Tables are created with Hibernate's auto DDL. This file documents the schema consolidation.
+ */
+
+-- ============================================
+-- PROFILE SERVICE TABLES
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS GATEWAY (
+  AIRAVATA_INTERNAL_GATEWAY_ID varchar(255) NOT NULL,
+  DECLINED_REASON varchar(255) DEFAULT NULL,
+  GATEWAY_DOMAIN varchar(255) DEFAULT NULL,
+  EMAIL_ADDRESS varchar(255) DEFAULT NULL,
+  GATEWAY_ACRONYM varchar(255) DEFAULT NULL,
+  GATEWAY_ADMIN_EMAIL varchar(255) DEFAULT NULL,
+  GATEWAY_ADMIN_FIRST_NAME varchar(255) DEFAULT NULL,
+  GATEWAY_ADMIN_LAST_NAME varchar(255) DEFAULT NULL,
+  GATEWAY_APPROVAL_STATUS varchar(255) DEFAULT NULL,
+  GATEWAY_ID varchar(255) DEFAULT NULL,
+  GATEWAY_NAME varchar(255) DEFAULT NULL,
+  GATEWAY_PUBLIC_ABSTRACT varchar(255) DEFAULT NULL,
+  GATEWAY_URL varchar(255) DEFAULT NULL,
+  IDENTITY_SERVER_PASSWORD_TOKEN varchar(255) DEFAULT NULL,
+  IDENTITY_SERVER_USERNAME varchar(255) DEFAULT NULL,
+  OAUTH_CLIENT_ID varchar(255) DEFAULT NULL,
+  OAUTH_CLIENT_SECRET varchar(255) DEFAULT NULL,
+  REQUEST_CREATION_TIME BIGINT DEFAULT NULL,
+  REQUESTER_USERNAME varchar(255) DEFAULT NULL,
+  GATEWAY_REVIEW_PROPOSAL_DESCRIPTION varchar(255) DEFAULT NULL,
+  PRIMARY KEY (AIRAVATA_INTERNAL_GATEWAY_ID)
+);
+
+CREATE TABLE IF NOT EXISTS USER_PROFILE (
+    AIRAVATA_INTERNAL_USER_ID VARCHAR (255) NOT NULL,
+    USER_ID VARCHAR (255) NOT NULL,
+    GATEWAY_ID VARCHAR (255) NOT NULL,
+    USER_MODEL_VERSION VARCHAR (255),
+    FIRST_NAME VARCHAR (255),
+    LAST_NAME VARCHAR (255),
+    MIDDLE_NAME VARCHAR (255),
+    NAME_PREFIX VARCHAR (255),
+    NAME_SUFFIX VARCHAR (255),
+    ORCID_ID VARCHAR (255),
+    COUNTRY VARCHAR (255),
+    HOME_ORGANIZATION VARCHAR (255),
+    ORIGINATION_AFFILIATION VARCHAR (255),
+    CREATION_TIME TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    LAST_ACCESS_TIME TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    VALID_UNTIL DATETIME,
+    STATE VARCHAR (255),
+    COMMENTS LONGTEXT,
+    GPG_KEY LONGTEXT,
+    TIME_ZONE VARCHAR (255),
+    PRIMARY KEY (AIRAVATA_INTERNAL_USER_ID)
+);
+
+-- ============================================
+-- EXPERIMENT CATALOG TABLES
+-- (Some tables renamed to avoid conflicts with profile service)
+-- ============================================
+
+-- Note: experiment_catalog GATEWAY table mapped to different table name
+-- to avoid conflict with profile_service GATEWAY
+
+CREATE TABLE IF NOT EXISTS EXPCATALOG_GATEWAY (
+    GATEWAY_ID VARCHAR(255) NOT NULL,
+    GATEWAY_NAME VARCHAR(255),
+    DOMAIN VARCHAR(255),
+    EMAIL_ADDRESS VARCHAR(255),
+    GATEWAY_ACRONYM varchar(255),
+    GATEWAY_ADMIN_EMAIL varchar(255),
+    GATEWAY_ADMIN_FIRST_NAME varchar(255),
+    GATEWAY_APPROVAL_STATUS varchar(255),
+    GATEWAY_PUBLIC_ABSTRACT varchar(255),
+    GATEWAY_URL varchar(255),
+    GATEWAY_ADMIN_LAST_NAME varchar(255),
+    IDENTITY_SERVER_PASSWORD_TOKEN varchar(255),
+    IDENTITY_SERVER_USERNAME varchar(255),
+    GATEWAY_REVIEW_PROPOSAL_DESCRIPTION varchar(255),
+    DECLINED_REASON varchar(255),
+    OAUTH_CLIENT_SECRET varchar(255),
+    OAUTH_CLIENT_ID varchar(255),
+    REQUEST_CREATION_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    REQUESTER_USERNAME VARCHAR(255),
+    PRIMARY KEY (GATEWAY_ID)
+);
+
+CREATE TABLE IF NOT EXISTS USERS (
+    AIRAVATA_INTERNAL_USER_ID VARCHAR(255) NOT NULL,
+    USER_NAME VARCHAR(255) NOT NULL,
+    PASSWORD VARCHAR(255),
+    GATEWAY_ID VARCHAR(255) NOT NULL,
+    PRIMARY KEY (GATEWAY_ID, USER_NAME),
+    UNIQUE (AIRAVATA_INTERNAL_USER_ID)
+);
+
+CREATE TABLE IF NOT EXISTS PROJECT (
+    GATEWAY_ID VARCHAR(255) NOT NULL,
+    USER_NAME VARCHAR(255),
+    PROJECT_NAME VARCHAR(255),
+    PROJECT_ID VARCHAR(255) NOT NULL,
+    DESCRIPTION VARCHAR(255),
+    CREATION_TIME TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (PROJECT_ID)
+);
+
+-- ============================================
+-- SHARING REGISTRY TABLES
+-- (Already have unique prefixes)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS DOMAIN (
+  DOMAIN_ID VARCHAR(255) NOT NULL,
+  NAME VARCHAR(255) NOT NULL,
+  DESCRIPTION VARCHAR(255),
+  CREATED_TIME BIGINT NOT NULL,
+  UPDATED_TIME BIGINT NOT NULL,
+  INITIAL_USER_GROUP_ID VARCHAR(255),
+  PRIMARY KEY (DOMAIN_ID)
+);
+
+CREATE TABLE IF NOT EXISTS SHARING_USER (
+  USER_ID VARCHAR(255) NOT NULL,
+  DOMAIN_ID VARCHAR(255) NOT NULL,
+  USER_NAME VARCHAR(255) NOT NULL,
+  FIRST_NAME VARCHAR (255),
+  LAST_NAME VARCHAR (255),
+  EMAIL VARCHAR (255),
+  ICON BLOB,
+  CREATED_TIME BIGINT NOT NULL,
+  UPDATED_TIME BIGINT NOT NULL,
+  PRIMARY KEY (USER_ID, DOMAIN_ID)
+);
+
+CREATE TABLE IF NOT EXISTS USER_GROUP (
+  GROUP_ID VARCHAR(255) NOT NULL,
+  DOMAIN_ID VARCHAR(255) NOT NULL,
+  NAME VARCHAR(255) NOT NULL,
+  DESCRIPTION VARCHAR(255),
+  OWNER_ID VARCHAR(255) NOT NULL,
+  GROUP_TYPE VARCHAR(255) NOT NULL,
+  GROUP_CARDINALITY VARCHAR(255) NOT NULL,
+  CREATED_TIME BIGINT NOT NULL,
+  UPDATED_TIME BIGINT NOT NULL,
+  PRIMARY KEY (GROUP_ID, DOMAIN_ID)
+);
+
+-- ============================================
+-- CREDENTIAL STORE TABLES
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS COMMUNITY_USER (
+  GATEWAY_ID VARCHAR(256) NOT NULL,
+  COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,
+  TOKEN_ID VARCHAR(256) NOT NULL,
+  COMMUNITY_USER_EMAIL VARCHAR(256) NOT NULL,
+  PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID)
+);
+
+CREATE TABLE IF NOT EXISTS CREDENTIALS (
+  GATEWAY_ID VARCHAR(256) NOT NULL,
+  TOKEN_ID VARCHAR(256) NOT NULL,
+  CREDENTIAL LONGBLOB NOT NULL,
+  PORTAL_USER_ID VARCHAR(256) NOT NULL,
+  TIME_PERSISTED TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  DESCRIPTION VARCHAR(500),
+  CREDENTIAL_OWNER_TYPE VARCHAR(50) DEFAULT 'GATEWAY' NOT NULL,
+  PRIMARY KEY (GATEWAY_ID, TOKEN_ID)
+);
+
+-- ============================================
+-- RESEARCH CATALOG TABLES
+-- (All prefixed with RESEARCH_ to avoid conflicts)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS RESEARCH_RESOURCE (
+    id VARCHAR(48) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    headerImage VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL,
+    privacy VARCHAR(255) NOT NULL,
+    createdAt TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS RESEARCH_PROJECT (
+    id VARCHAR(48) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    owner_id VARCHAR(255) NOT NULL,
+    repository_resource_id VARCHAR(48) NOT NULL,
+    createdAt TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP NOT NULL,
+    state VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS RESEARCH_SESSION (
+    id VARCHAR(48) NOT NULL,
+    sessionName VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
+    project_id VARCHAR(48) NOT NULL,
+    createdAt TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS RESEARCH_TAG (
+    id VARCHAR(48) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS RESEARCH_RESOURCE_STAR (
+    id VARCHAR(48) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
+    resource_id VARCHAR(48) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+-- ============================================
+-- UNIFIED CONFIGURATION TABLE
+-- (Combines all individual CONFIGURATION tables)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS CONFIGURATION (
+    CONFIG_KEY VARCHAR(255) NOT NULL,
+    CONFIG_VAL VARCHAR(255) NOT NULL,
+    CONFIG_DOMAIN VARCHAR(255) NOT NULL DEFAULT 'default',
+    PRIMARY KEY (CONFIG_KEY, CONFIG_VAL, CONFIG_DOMAIN)
+);
+
+-- Note: Full schema is managed by Hibernate auto DDL (create-drop in tests, validate in production)
+-- This migration serves as documentation and can be used for initial schema setup

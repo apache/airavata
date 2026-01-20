@@ -37,8 +37,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
-@Table(name = "SESSION")
+@Entity(name = "ResearchSessionEntity")
+@Table(name = "RESEARCH_SESSION")
 @EntityListeners(AuditingEntityListener.class)
 public class Session {
 

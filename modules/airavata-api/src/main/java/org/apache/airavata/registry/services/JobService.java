@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.registry.services;
 
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
@@ -37,16 +38,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class JobService {
     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
 
     private final JobRepository jobRepository;
     private final JobModelMapper jobModelMapper;
+    private final EntityManager entityManager;
 
-    public JobService(JobRepository jobRepository, JobModelMapper jobModelMapper) {
+    public JobService(JobRepository jobRepository, JobModelMapper jobModelMapper, EntityManager entityManager) {
         this.jobRepository = jobRepository;
         this.jobModelMapper = jobModelMapper;
+        this.entityManager = entityManager;
     }
 
     public void populateParentIds(JobEntity jobEntity) {
@@ -77,6 +80,9 @@ public class JobService {
     public JobModel getJob(JobPK jobPK) throws RegistryException {
         JobEntity entity = jobRepository.findById(jobPK).orElse(null);
         if (entity == null) return null;
+        // Refresh entity to get latest data from database, including any statuses
+        // added via JobStatusService in the same transaction
+        entityManager.refresh(entity);
         return jobModelMapper.toModel(entity);
     }
 
@@ -137,33 +143,64 @@ public class JobService {
         }
 
         long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
-        // Always ensure creationTime is set on the model before mapping
-        if (!isJobExist(jobPK)) {
-            logger.debug("Setting creation time to current time if does not exist");
+
+        // Use entityManager.find() to get managed entity for proper update
+        JobEntity existingEntity = entityManager.find(JobEntity.class, jobPK);
+
+        if (existingEntity == null) {
+            // New job - create entity from model
+            logger.debug("Creating new job");
             jobModel.setCreationTime(currentTime);
+            JobEntity jobEntity = jobModelMapper.toEntity(jobModel);
+            if (jobEntity.getCreationTime() == null) {
+                jobEntity.setCreationTime(AiravataUtils.getTime(currentTime));
+            }
+            populateParentIds(jobEntity);
+            return jobRepository.save(jobEntity);
         } else {
-            // For updates, preserve existing creation time if set, otherwise use current time
-            if (jobModel.getCreationTime() <= 0) {
-                // Try to get existing job to preserve its creation time
-                JobModel existingJob = getJob(jobPK);
-                if (existingJob != null && existingJob.getCreationTime() > 0) {
-                    jobModel.setCreationTime(existingJob.getCreationTime());
-                } else {
-                    jobModel.setCreationTime(currentTime);
+            // Existing job - update fields on the existing entity
+            logger.debug("Updating existing job");
+
+            // Update fields from model
+            existingEntity.setJobDescription(jobModel.getJobDescription());
+            existingEntity.setJobName(jobModel.getJobName());
+            existingEntity.setWorkingDir(jobModel.getWorkingDir());
+            existingEntity.setStdOut(jobModel.getStdOut());
+            existingEntity.setStdErr(jobModel.getStdErr());
+            existingEntity.setExitCode(jobModel.getExitCode());
+            existingEntity.setComputeResourceConsumed(jobModel.getComputeResourceConsumed());
+
+            // Update job statuses if provided
+            if (jobModel.getJobStatuses() != null && !jobModel.getJobStatuses().isEmpty()) {
+                if (existingEntity.getJobStatuses() == null) {
+                    existingEntity.setJobStatuses(new ArrayList<>());
+                }
+                // Add new statuses (don't replace existing ones)
+                for (org.apache.airavata.common.model.JobStatus statusModel : jobModel.getJobStatuses()) {
+                    boolean exists = existingEntity.getJobStatuses().stream()
+                            .anyMatch(s ->
+                                    s.getStatusId() != null && s.getStatusId().equals(statusModel.getStatusId()));
+                    if (!exists) {
+                        org.apache.airavata.registry.entities.expcatalog.JobStatusEntity statusEntity =
+                                new org.apache.airavata.registry.entities.expcatalog.JobStatusEntity();
+                        statusEntity.setStatusId(statusModel.getStatusId());
+                        statusEntity.setJobState(statusModel.getJobState());
+                        statusEntity.setReason(statusModel.getReason());
+                        if (statusModel.getTimeOfStateChange() > 0) {
+                            statusEntity.setTimeOfStateChange(
+                                    AiravataUtils.getTime(statusModel.getTimeOfStateChange()));
+                        }
+                        statusEntity.setJobId(jobPK.getJobId());
+                        statusEntity.setTaskId(jobPK.getTaskId());
+                        existingEntity.getJobStatuses().add(statusEntity);
+                    }
                 }
             }
+
+            populateParentIds(existingEntity);
+            // Flush to ensure changes are persisted
+            entityManager.flush();
+            return existingEntity;
         }
-
-        JobEntity jobEntity = jobModelMapper.toEntity(jobModel);
-
-        // Ensure CREATION_TIME is set if mapper didn't set it (mapper returns null if model time is 0 or negative)
-        if (jobEntity.getCreationTime() == null) {
-            long creationTime = (jobModel.getCreationTime() > 0) ? jobModel.getCreationTime() : currentTime;
-            jobEntity.setCreationTime(AiravataUtils.getTime(creationTime));
-        }
-
-        populateParentIds(jobEntity);
-
-        return jobRepository.save(jobEntity);
     }
 }

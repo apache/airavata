@@ -36,10 +36,16 @@ public interface GatewayResourceProfileMapper {
 
     @Mapping(target = "computeResourcePreferences", ignore = true) // Handled by service layer
     @Mapping(target = "storagePreferences", ignore = true) // Handled by service layer
+    @Mapping(
+            source = "gatewayId",
+            target = "gatewayID") // Field name mismatch: entity uses gatewayId, model uses gatewayID
     GatewayResourceProfile toModel(GatewayProfileEntity entity);
 
     @Mapping(target = "computeResourcePreferences", ignore = true) // Handled by service layer
     @Mapping(target = "storagePreferences", ignore = true) // Handled by service layer
+    @Mapping(
+            source = "gatewayID",
+            target = "gatewayId") // Field name mismatch: model uses gatewayID, entity uses gatewayId
     GatewayProfileEntity toEntity(GatewayResourceProfile model);
 
     List<GatewayResourceProfile> toModelList(List<GatewayProfileEntity> entities);

@@ -179,12 +179,14 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 boolean added = iamAdminService.addRoleToUser(testAuthzToken, username, roleName);
                 assertThat(added).isNotNull();
             } catch (Exception e) {
-                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null)
+                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null,
+                // or CredentialStoreException when credentials not found)
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
                                 RegistryServiceException.class,
-                                NullPointerException.class);
+                                NullPointerException.class,
+                                org.apache.airavata.credential.exception.CredentialStoreException.class);
             }
         }
 
@@ -198,12 +200,14 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 boolean removed = iamAdminService.removeRoleFromUser(testAuthzToken, username, roleName);
                 assertThat(removed).isNotNull();
             } catch (Exception e) {
-                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null)
+                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null,
+                // or CredentialStoreException when credentials not found)
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
                                 RegistryServiceException.class,
-                                NullPointerException.class);
+                                NullPointerException.class,
+                                org.apache.airavata.credential.exception.CredentialStoreException.class);
             }
         }
 
@@ -216,12 +220,14 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
                 List<UserProfile> users = iamAdminService.getUsersWithRole(testAuthzToken, roleName);
                 assertThat(users).isNotNull();
             } catch (Exception e) {
-                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null)
+                // Expected if gateway/credentials not set up (NPE when GatewayResourceProfile is null,
+                // or CredentialStoreException when credentials not found)
                 assertThat(e)
                         .isInstanceOfAny(
                                 IamAdminServicesException.class,
                                 RegistryServiceException.class,
-                                NullPointerException.class);
+                                NullPointerException.class,
+                                org.apache.airavata.credential.exception.CredentialStoreException.class);
             }
         }
     }

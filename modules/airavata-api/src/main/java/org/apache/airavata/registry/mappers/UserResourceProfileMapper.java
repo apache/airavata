@@ -36,10 +36,16 @@ public interface UserResourceProfileMapper {
 
     @Mapping(target = "userComputeResourcePreferences", ignore = true) // Handled manually in service layer
     @Mapping(target = "userStoragePreferences", ignore = true) // Handled manually in service layer
+    @Mapping(
+            source = "gatewayId",
+            target = "gatewayID") // Field name mismatch: entity uses gatewayId, model uses gatewayID
     UserResourceProfile toModel(UserResourceProfileEntity entity);
 
     @Mapping(target = "userComputeResourcePreferences", ignore = true) // Handled manually in service layer
     @Mapping(target = "userStoragePreferences", ignore = true) // Handled manually in service layer
+    @Mapping(
+            source = "gatewayID",
+            target = "gatewayId") // Field name mismatch: model uses gatewayID, entity uses gatewayId
     UserResourceProfileEntity toEntity(UserResourceProfile model);
 
     List<UserResourceProfile> toModelList(List<UserResourceProfileEntity> entities);

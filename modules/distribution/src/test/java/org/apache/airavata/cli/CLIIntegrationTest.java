@@ -43,7 +43,7 @@ import picocli.CommandLine;
 
 /**
  * CLI Integration Tests for all Airavata command variations.
- * 
+ *
  * These tests verify that all CLI commands parse correctly and display
  * proper help output. Infrastructure-dependent tests (init, serve) are
  * tested separately with Testcontainers.
@@ -132,7 +132,7 @@ public class CLIIntegrationTest {
             assertThat(exitCode).isGreaterThanOrEqualTo(0);
         }
     }
-    
+
     /**
      * Creates a standalone CommandLine for testing CLI structure without Spring context.
      * This uses a simple factory that creates command instances with default constructors.

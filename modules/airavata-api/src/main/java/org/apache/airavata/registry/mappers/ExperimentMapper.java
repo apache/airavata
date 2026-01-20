@@ -48,6 +48,11 @@ public interface ExperimentMapper {
     @Mapping(target = "emailAddresses", ignore = true) // Handled separately
     @Mapping(target = "workflow", ignore = true) // Not mapped from entity
     @Mapping(target = "cleanUpStrategy", ignore = true) // Not mapped from entity
+    @Mapping(target = "experimentStatus", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "errors", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "experimentInputs", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "experimentOutputs", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "processes", defaultExpression = "java(new java.util.ArrayList<>())")
     ExperimentModel toModel(ExperimentEntity entity);
 
     @Mapping(

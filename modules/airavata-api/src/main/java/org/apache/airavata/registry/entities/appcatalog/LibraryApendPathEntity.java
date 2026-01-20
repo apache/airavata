@@ -52,7 +52,7 @@ public class LibraryApendPathEntity implements Serializable {
     private String name;
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DEPLOYMENT_ID")
+    @JoinColumn(name = "DEPLOYMENT_ID", insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 

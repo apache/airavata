@@ -121,6 +121,8 @@ public class TaskErrorRepositoryTest extends TestBase {
         assertNotNull(taskErrorId, "Task error ID should not be null");
         assertEquals("error-1", taskErrorId, "Error ID should match");
 
+        // Clear JPA cache to ensure fresh load with the newly added error
+        flushAndClear();
         assertTrue(taskService.getTask(taskId).getTaskErrors().size() == 1, "Task should have one error");
 
         errorModel.setActualErrorMessage("Updated error message");

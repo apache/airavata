@@ -188,45 +188,4 @@ public interface TenantManagementInterface {
      * @throws IamAdminServicesException
      */
     boolean deleteUser(String accessToken, String tenantId, String username) throws IamAdminServicesException;
-
-    /**
-     * Add the given role to the user.
-     *
-     * @param realmAdminCreds
-     * @param tenantId
-     * @param username
-     * @param roleName
-     * @return
-     * @throws IamAdminServicesException
-     */
-    @Deprecated
-    boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName)
-            throws IamAdminServicesException;
-
-    /**
-     * Remove the given role from the user.
-     *
-     * @param realmAdminCreds
-     * @param tenantId
-     * @param username
-     * @param roleName
-     * @return
-     * @throws IamAdminServicesException
-     */
-    @Deprecated
-    boolean removeRoleFromUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName)
-            throws IamAdminServicesException;
-
-    /**
-     * Get all users having the given role.
-     *
-     * @param realmAdminCreds
-     * @param tenantId
-     * @param roleName
-     * @return
-     * @throws IamAdminServicesException
-     */
-    @Deprecated
-    List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName)
-            throws IamAdminServicesException;
 }

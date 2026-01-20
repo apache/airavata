@@ -24,20 +24,16 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 /**
- * Configuration for Flyway database migrations using Spring Boot's Flyway integration.
- * Each persistence unit has its own Flyway instance that manages migrations
- * for its corresponding database.
+ * Configuration for Flyway database migrations.
  *
- * <p>Migration files are loaded from {airavataHome}/conf/db/migration/{database_name}/
+ * <p>Migration files are loaded from {airavataHome}/conf/db/migration/airavata/
  * where {airavataHome} is resolved from:
  * <ul>
  *   <li>System property -Dairavata.home=XXX (highest priority)</li>
@@ -46,7 +42,7 @@ import org.springframework.context.annotation.DependsOn;
  * </ul>
  *
  * <p>Flyway is enabled by default in production but can be disabled via
- * flyway.enabled=false property.
+ * airavata.flyway.enabled=false property.
  */
 @Configuration
 @ConditionalOnProperty(prefix = "airavata.flyway", name = "enabled", havingValue = "true")
@@ -55,138 +51,25 @@ public class FlywayConfig {
     private static final Logger logger = LoggerFactory.getLogger(FlywayConfig.class);
 
     /**
-     * Get the migration location path for a given database.
-     * Uses filesystem path: {configDir}/db/migration/{databaseName}
-     * getConfigDir() handles both production and IDE modes automatically.
+     * Get the migration location path for the unified database.
      */
-    private static String getMigrationLocation(String databaseName) {
-        // getConfigDir() now handles both production and IDE modes
+    private static String getMigrationLocation() {
         String configDir = AiravataConfigUtils.getConfigDir();
         String migrationPath =
-                configDir + File.separator + "db" + File.separator + "migration" + File.separator + databaseName;
-        logger.debug("Flyway migration location for {}: {}", databaseName, migrationPath);
+                configDir + File.separator + "db" + File.separator + "migration" + File.separator + "airavata";
+        logger.debug("Flyway migration location: {}", migrationPath);
         return "filesystem:" + migrationPath;
     }
 
     /**
-     * Common Flyway configuration customizer that can be shared across all datasources.
-     * Uses Spring Boot's FlywayConfigurationCustomizer for consistent configuration.
+     * Configure Flyway for the unified Airavata database.
      */
-    private FlywayConfigurationCustomizer createFlywayCustomizer(String databaseName) {
-        return config -> {
-            config.baselineOnMigrate(true);
-            config.validateOnMigrate(true);
-            config.locations(getMigrationLocation(databaseName));
-        };
-    }
-
-    /**
-     * Configure Flyway for profile service database using Spring Boot's approach.
-     */
-    @Bean(name = "profileServiceFlyway", initMethod = "migrate")
-    @DependsOn("profileServiceDataSource")
-    public Flyway profileServiceFlyway(@Qualifier("profileServiceDataSource") DataSource dataSource) {
+    @Bean(name = "flyway", initMethod = "migrate")
+    @DependsOn("dataSource")
+    public Flyway flyway(DataSource dataSource) {
         return Flyway.configure()
                 .dataSource(dataSource)
-                .locations(getMigrationLocation("profile_service"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for app catalog database.
-     */
-    @Bean(name = "appCatalogFlyway", initMethod = "migrate")
-    @DependsOn("appCatalogDataSource")
-    public Flyway appCatalogFlyway(@Qualifier("appCatalogDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("app_catalog"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for experiment catalog database.
-     */
-    @Bean(name = "expCatalogFlyway", initMethod = "migrate")
-    @DependsOn("registryDataSource")
-    public Flyway expCatalogFlyway(@Qualifier("registryDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("experiment_catalog"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for replica catalog database.
-     */
-    @Bean(name = "replicaCatalogFlyway", initMethod = "migrate")
-    @DependsOn("replicaDataSource")
-    public Flyway replicaCatalogFlyway(@Qualifier("replicaDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("replica_catalog"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for workflow catalog database.
-     */
-    @Bean(name = "workflowCatalogFlyway", initMethod = "migrate")
-    @DependsOn("workflowDataSource")
-    public Flyway workflowCatalogFlyway(@Qualifier("workflowDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("workflow_catalog"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for sharing registry database.
-     */
-    @Bean(name = "sharingRegistryFlyway", initMethod = "migrate")
-    @DependsOn("sharingDataSource")
-    public Flyway sharingRegistryFlyway(@Qualifier("sharingDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("sharing_registry"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for credential store database.
-     */
-    @Bean(name = "credentialStoreFlyway", initMethod = "migrate")
-    @DependsOn("credentialStoreDataSource")
-    public Flyway credentialStoreFlyway(@Qualifier("credentialStoreDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("credential_store"))
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true)
-                .load();
-    }
-
-    /**
-     * Configure Flyway for research catalog database.
-     */
-    @Bean(name = "researchCatalogFlyway", initMethod = "migrate")
-    @DependsOn("researchCatalogDataSource")
-    public Flyway researchCatalogFlyway(@Qualifier("researchCatalogDataSource") DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .locations(getMigrationLocation("research_catalog"))
+                .locations(getMigrationLocation())
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .load();
@@ -194,14 +77,9 @@ public class FlywayConfig {
 
     /**
      * Flyway migration strategy bean for Spring Boot autoconfiguration.
-     * This allows Spring Boot to manage Flyway lifecycle if needed.
      */
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
-        return flyway -> {
-            // Custom migration strategy if needed
-            // For now, just run migrate (default behavior)
-            flyway.migrate();
-        };
+        return Flyway::migrate;
     }
 }

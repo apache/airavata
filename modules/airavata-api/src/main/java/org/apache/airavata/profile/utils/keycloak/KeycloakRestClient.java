@@ -567,9 +567,8 @@ public class KeycloakRestClient {
                 || properties.security() == null
                 || properties.security().iam() == null
                 || properties.security().iam().superAdmin() == null) {
-            throw new IamAdminServicesException(
-                    "IAM super admin configuration not available. "
-                            + "Ensure airavata.security.iam.super-admin.username and password are configured.");
+            throw new IamAdminServicesException("IAM super admin configuration not available. "
+                    + "Ensure airavata.security.iam.super-admin.username and password are configured.");
         }
         PasswordCredential creds = new PasswordCredential();
         creds.setLoginUserName(properties.security().iam().superAdmin().username());

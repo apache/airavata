@@ -167,8 +167,7 @@ public class RabbitMQPublisher implements Publisher {
             // Publish message
             channel.basicPublish(properties.getExchangeName(), routingKey, propsBuilder.build(), jsonMessageBody);
 
-            log.debug(
-                    "Published message to exchange={}, routingKey={}", properties.getExchangeName(), routingKey);
+            log.debug("Published message to exchange={}, routingKey={}", properties.getExchangeName(), routingKey);
         }
     }
 

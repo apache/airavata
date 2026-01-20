@@ -60,7 +60,6 @@ public class ServiceHandler {
         SERVICE_MAP.put("research-service", new ServiceInfo("ResearchService", "services.research.enabled"));
         SERVICE_MAP.put("agent-service", new ServiceInfo("AgentService", "services.agent.enabled"));
         SERVICE_MAP.put("file-service", new ServiceInfo("FileService", "services.fileserver.enabled"));
-        // DBEventManager removed - replaced with direct service calls
     }
 
     private static class ServiceInfo {
@@ -311,11 +310,6 @@ public class ServiceHandler {
 
         public String getDisplayName() {
             return displayName;
-        }
-
-        @Deprecated
-        public String getThreadName() {
-            return displayName; // For backward compatibility
         }
 
         public boolean isEnabled() {

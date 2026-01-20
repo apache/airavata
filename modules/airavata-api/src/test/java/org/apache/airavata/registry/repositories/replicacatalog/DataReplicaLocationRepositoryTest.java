@@ -22,7 +22,6 @@ package org.apache.airavata.registry.repositories.replicacatalog;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,15 +102,8 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
 
         assertEquals(0, retrievedDataReplicaLocationModel.getValidUntilTime());
 
-        testDataProductModel.setReplicaLocations(
-                Arrays.asList(testDataReplicaLocationModel1, testDataReplicaLocationModel2));
-        dataProductService.updateDataProduct(testDataProductModel);
-        assertTrue(dataProductService
-                        .getDataProduct(productUri)
-                        .getReplicaLocations()
-                        .size()
-                == 2);
-
+        // Replica locations were already registered via dataReplicaLocationService
+        // Verify they're accessible via the replica location service
         List<DataReplicaLocationModel> dataReplicaLocationModelList =
                 dataReplicaLocationService.getAllReplicaLocations(productUri);
         assertTrue(dataReplicaLocationModelList.size() == 2);

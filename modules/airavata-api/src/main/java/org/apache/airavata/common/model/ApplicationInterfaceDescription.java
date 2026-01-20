@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.common.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,9 +30,9 @@ public class ApplicationInterfaceDescription {
     private String applicationInterfaceId;
     private String applicationName;
     private String applicationDescription;
-    private List<String> applicationModules;
-    private List<InputDataObjectType> applicationInputs;
-    private List<OutputDataObjectType> applicationOutputs;
+    private List<String> applicationModules = new ArrayList<>();
+    private List<InputDataObjectType> applicationInputs = new ArrayList<>();
+    private List<OutputDataObjectType> applicationOutputs = new ArrayList<>();
     private boolean archiveWorkingDirectory;
     private boolean hasOptionalFileInputs;
     private boolean cleanAfterStaged;

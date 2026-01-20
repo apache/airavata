@@ -71,7 +71,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
     private static final String MIGRATE_SQL_MYSQL = "migrate_mysql.sql";
     private static final String REGISTRY_VERSION = "registry.version";
     private static final String AIRAVATA_VERSION = "0.5";
-    private static final String MIGRATION_DIR = "dev-tools/db-migration";
+    private static final String MIGRATION_DIR = "dev-tools/migrations";
 
     @Override
     public void run(String... args) throws Exception {
@@ -142,7 +142,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 throw new RuntimeException("Unsupported database type: " + dbType);
             }
 
-            // Find migration script in dev-tools/db-migration
+            // Find migration script in dev-tools/migrations
             String versionDir = getIncrementedVersion(currentAiravataVersion);
             Path migrationScriptPath = findMigrationScript(versionDir, migrationScriptName);
 

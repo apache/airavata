@@ -76,6 +76,8 @@ public class UserResourceProfileRepositoryTest extends TestBase {
 
         UserResourceProfile retrievedUserResourceProfile =
                 userResourceProfileService.getUserResourceProfile(userId, gatewayId);
+        assertTrue(retrievedUserResourceProfile != null);
+        assertTrue(retrievedUserResourceProfile.getUserStoragePreferences() != null);
         assertTrue(retrievedUserResourceProfile.getUserStoragePreferences().size() == 1);
         assertEquals(
                 userResourceProfile.getIdentityServerTenant(), retrievedUserResourceProfile.getIdentityServerTenant());

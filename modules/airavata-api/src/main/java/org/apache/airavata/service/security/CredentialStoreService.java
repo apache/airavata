@@ -69,44 +69,6 @@ public class CredentialStoreService {
     @jakarta.annotation.PostConstruct
     public void init() {
         logger.info("[BEAN-INIT] CredentialStoreService.init() called");
-
-        // Fail-fast validation: ensure properties are correctly bound
-        // Skip validation in test profile as testcontainers dynamically provides database config
-        if (properties.database() == null) {
-            logger.debug("database.* properties not bound - skipping validation (test environment)");
-            return;
-        }
-
-        var vaultDb = properties.database().vault();
-        var registryDb = properties.database().registry();
-
-        // Use vault database if available, otherwise fall back to registry database
-        String jdbcUrl =
-                (vaultDb != null && vaultDb.url() != null && !vaultDb.url().isEmpty())
-                        ? vaultDb.url()
-                        : (registryDb != null ? registryDb.url() : null);
-        String userName =
-                (vaultDb != null && vaultDb.user() != null && !vaultDb.user().isEmpty())
-                        ? vaultDb.user()
-                        : (registryDb != null ? registryDb.user() : null);
-        String password = (vaultDb != null
-                        && vaultDb.password() != null
-                        && !vaultDb.password().isEmpty())
-                ? vaultDb.password()
-                : (registryDb != null ? registryDb.password() : null);
-        String driverName = (vaultDb != null
-                        && vaultDb.driver() != null
-                        && !vaultDb.driver().isEmpty())
-                ? vaultDb.driver()
-                : (registryDb != null ? registryDb.driver() : null);
-
-        logger.debug(
-                "Starting credential store, connecting to database - {} DB user - {} driver name - {}",
-                jdbcUrl,
-                userName,
-                driverName);
-        // Database migrations are handled automatically by Flyway on application startup
-        // See FlywayConfig for migration configuration
     }
 
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {

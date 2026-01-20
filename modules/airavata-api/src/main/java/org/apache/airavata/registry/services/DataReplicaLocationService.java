@@ -22,7 +22,6 @@ package org.apache.airavata.registry.services;
 import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
@@ -30,12 +29,11 @@ import org.apache.airavata.registry.exception.ReplicaCatalogException;
 import org.apache.airavata.registry.mappers.DataReplicaLocationMapper;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.repositories.replicacatalog.DataReplicaLocationRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("replicaCatalogTransactionManager")
+@Transactional
 public class DataReplicaLocationService {
     private final DataReplicaLocationRepository dataReplicaLocationRepository;
     private final DataProductRepository dataProductRepository;
@@ -45,7 +43,7 @@ public class DataReplicaLocationService {
     public DataReplicaLocationService(
             DataReplicaLocationRepository dataReplicaLocationRepository,
             DataProductRepository dataProductRepository,
-            @Qualifier("replicaCatalogEntityManager") EntityManager entityManager,
+            EntityManager entityManager,
             DataReplicaLocationMapper dataReplicaLocationMapper) {
         this.dataReplicaLocationRepository = dataReplicaLocationRepository;
         this.dataProductRepository = dataProductRepository;
@@ -76,76 +74,74 @@ public class DataReplicaLocationService {
         return saved.getReplicaId();
     }
 
-    @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public DataReplicaLocationModel getReplicaLocation(String replicaId) throws ReplicaCatalogException {
-        DataReplicaLocationEntity entity =
+        DataReplicaLocationEntity e =
                 dataReplicaLocationRepository.findById(replicaId).orElse(null);
-        if (entity == null) return null;
+        if (e == null) return null;
 
-        // Force initialization of replicaMetadata by iterating over it
-        // This ensures the metadata is fully loaded within the transaction
-        Map<String, String> metadataCopy = new HashMap<>();
-        if (entity.getReplicaMetadata() != null) {
-            try {
-                // Iterate over the map to force loading of all entries
-                for (Map.Entry<String, String> entry :
-                        entity.getReplicaMetadata().entrySet()) {
-                    metadataCopy.put(entry.getKey(), entry.getValue());
-                }
-            } catch (Exception e) {
-                // If metadata access fails, use empty map
-                metadataCopy = new HashMap<>();
-            }
+        // Manual mapping to avoid session issues with PersistentMap
+        DataReplicaLocationModel model = new DataReplicaLocationModel();
+        model.setReplicaId(e.getReplicaId());
+        model.setProductUri(e.getProductUri());
+        model.setReplicaName(e.getReplicaName());
+        model.setReplicaDescription(e.getReplicaDescription());
+        model.setStorageResourceId(e.getStorageResourceId());
+        model.setFilePath(e.getFilePath());
+        model.setReplicaLocationCategory(e.getReplicaLocationCategory());
+        model.setReplicaPersistentType(e.getReplicaPersistentType());
+        if (e.getCreationTime() != null) {
+            model.setCreationTime(e.getCreationTime().getTime());
+        }
+        if (e.getLastModifiedTime() != null) {
+            model.setLastModifiedTime(e.getLastModifiedTime().getTime());
+        }
+        if (e.getValidUntilTime() != null) {
+            model.setValidUntilTime(e.getValidUntilTime().getTime());
         }
 
-        // Detach the entity to convert PersistentMap to regular HashMap
-        // This prevents mapper from accessing the lazy collection
-        entityManager.detach(entity);
+        // Copy metadata to a regular HashMap
+        if (e.getReplicaMetadata() != null && !e.getReplicaMetadata().isEmpty()) {
+            model.setReplicaMetadata(new HashMap<>(e.getReplicaMetadata()));
+        }
 
-        // Replace PersistentMap with regular HashMap
-        entity.setReplicaMetadata(new HashMap<>(metadataCopy));
-
-        // Now perform MapStruct mapping - the metadata is a regular HashMap, not a PersistentMap
-        DataReplicaLocationModel model = dataReplicaLocationMapper.toModel(entity);
-
-        // Always set the metadata copy on the model to ensure it's available after transaction ends
-        model.setReplicaMetadata(metadataCopy);
         return model;
     }
 
-    @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException {
         List<DataReplicaLocationEntity> entities = dataReplicaLocationRepository.findByProductUri(productUri);
-        return entities.stream()
-                .map(e -> {
-                    // Force initialization of replicaMetadata by iterating over it
-                    Map<String, String> metadataCopy = new HashMap<>();
-                    if (e.getReplicaMetadata() != null) {
-                        try {
-                            // Iterate over the map to force loading of all entries
-                            for (Map.Entry<String, String> entry :
-                                    e.getReplicaMetadata().entrySet()) {
-                                metadataCopy.put(entry.getKey(), entry.getValue());
-                            }
-                        } catch (Exception ex) {
-                            metadataCopy = new HashMap<>();
-                        }
-                    }
+        List<DataReplicaLocationModel> result = new java.util.ArrayList<>();
 
-                    // Detach the entity to convert PersistentMap to regular HashMap
-                    entityManager.detach(e);
+        for (DataReplicaLocationEntity e : entities) {
+            DataReplicaLocationModel model = new DataReplicaLocationModel();
+            model.setReplicaId(e.getReplicaId());
+            model.setProductUri(e.getProductUri());
+            model.setReplicaName(e.getReplicaName());
+            model.setReplicaDescription(e.getReplicaDescription());
+            model.setStorageResourceId(e.getStorageResourceId());
+            model.setFilePath(e.getFilePath());
+            model.setReplicaLocationCategory(e.getReplicaLocationCategory());
+            model.setReplicaPersistentType(e.getReplicaPersistentType());
+            if (e.getCreationTime() != null) {
+                model.setCreationTime(e.getCreationTime().getTime());
+            }
+            if (e.getLastModifiedTime() != null) {
+                model.setLastModifiedTime(e.getLastModifiedTime().getTime());
+            }
+            if (e.getValidUntilTime() != null) {
+                model.setValidUntilTime(e.getValidUntilTime().getTime());
+            }
 
-                    // Replace PersistentMap with regular HashMap
-                    e.setReplicaMetadata(new HashMap<>(metadataCopy));
+            // Copy metadata to a regular HashMap
+            if (e.getReplicaMetadata() != null && !e.getReplicaMetadata().isEmpty()) {
+                model.setReplicaMetadata(new HashMap<>(e.getReplicaMetadata()));
+            }
 
-                    // Now perform MapStruct mapping
-                    DataReplicaLocationModel model = dataReplicaLocationMapper.toModel(e);
+            result.add(model);
+        }
 
-                    // Always set the metadata copy on the model
-                    model.setReplicaMetadata(metadataCopy);
-                    return model;
-                })
-                .toList();
+        return result;
     }
 
     public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws ReplicaCatalogException {

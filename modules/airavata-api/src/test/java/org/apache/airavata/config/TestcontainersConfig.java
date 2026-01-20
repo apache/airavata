@@ -22,9 +22,12 @@ package org.apache.airavata.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import javax.sql.DataSource;
-import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -45,9 +48,12 @@ import org.testcontainers.utility.DockerImageName;
 /**
  * Test configuration using Testcontainers to provide infrastructure services for testing.
  * All services are fully managed by Testcontainers - no external dependencies required.
- * Each persistence unit gets its own database container.
- * Flyway migrations are applied automatically to each database.
- * Messaging services (Kafka, RabbitMQ) are shared across tests for performance.
+ *
+ * <p>This configuration provides a UNIFIED database for all entity packages, replacing the
+ * previous 8 separate databases. All entities from all packages are stored in a single
+ * MariaDB container for simplicity and consistency.
+ *
+ * <p>Messaging services (Kafka, RabbitMQ) are shared across tests for performance.
  * SLURM and SFTP containers are available for connectivity tests.
  *
  * <h2>Expected Warnings</h2>
@@ -74,17 +80,9 @@ public class TestcontainersConfig {
     private static final String KAFKA_VERSION = "7.6.0";
     private static final String RABBITMQ_VERSION = "3.13-management";
     private static final String ZOOKEEPER_VERSION = "3.9";
-    private static final String TEST_DATABASE_PREFIX = "test_";
 
-    // Shared database containers - reused across tests for performance
-    private static MariaDBContainer<?> profileServiceContainer;
-    private static MariaDBContainer<?> appCatalogContainer;
-    private static MariaDBContainer<?> expCatalogContainer;
-    private static MariaDBContainer<?> replicaCatalogContainer;
-    private static MariaDBContainer<?> workflowCatalogContainer;
-    private static MariaDBContainer<?> sharingRegistryContainer;
-    private static MariaDBContainer<?> credentialStoreContainer;
-    private static MariaDBContainer<?> researchCatalogContainer;
+    // Unified database container - all entities in one database
+    private static MariaDBContainer<?> unifiedDatabaseContainer;
 
     // Messaging service containers - shared across all tests
     private static KafkaContainer kafkaContainer;
@@ -110,62 +108,73 @@ public class TestcontainersConfig {
 
     /**
      * Get or create SLURM container. Always starts a fresh container managed by Testcontainers.
-     * Uses giovtorres/slurm-docker-cluster:latest which is more commonly available.
-     * For ARM64 systems, uses a longer timeout due to emulation overhead.
+     * Uses csniper/slurm-lab which supports both arm64 and amd64 architectures.
      * Falls back gracefully if container cannot be started.
      */
     public static synchronized SlurmConnectionInfo getSlurmContainer() {
         if (slurmContainer == null || !slurmContainer.isRunning()) {
             logger.info("Starting SLURM container");
-            
-            // Detect system architecture
-            String arch = System.getProperty("os.arch", "").toLowerCase();
-            boolean isArm64 = arch.equals("aarch64") || arch.equals("arm64");
-            
-            if (isArm64) {
-                logger.warn("ARM64 architecture detected. SLURM container will run under emulation and may be slow.");
-                logger.warn("Consider using an ARM64-native SLURM image or skipping SLURM tests on ARM64 systems.");
-            }
-            
+
             try {
-                // Use giovtorres/slurm-docker-cluster which is more commonly available
+                // Use csniper/slurm-lab which supports both arm64 and amd64 architectures
                 // This image runs slurmd with SSH enabled on port 22
-                // For ARM64, use longer timeout due to emulation overhead
-                Duration startupTimeout = isArm64 ? Duration.ofMinutes(15) : Duration.ofMinutes(5);
-                
-                slurmContainer = new GenericContainer<>(DockerImageName.parse("giovtorres/slurm-docker-cluster:latest"))
+                Duration startupTimeout = Duration.ofMinutes(5);
+
+                slurmContainer = new GenericContainer<>(DockerImageName.parse("csniper/slurm-lab:latest"))
                         .withExposedPorts(22)
                         .withPrivilegedMode(true)
                         .withReuse(true)
-                        // Wait for SSH to be ready using log message - the container logs "sshd" when SSH starts
-                        // This is more reliable than port listening on slow emulated containers
-                        .waitingFor(Wait.forLogMessage(".*sshd.*", 1)
-                                .withStartupTimeout(startupTimeout));
+                        // Wait for any log output to indicate container has started
+                        // The waitForSshReady method will handle SSH-specific readiness
+                        .waitingFor(Wait.forLogMessage(".*", 1).withStartupTimeout(startupTimeout));
                 slurmContainer.start();
-                
+
+                // Configure SSH to allow root password authentication
+                // The csniper/slurm-lab image may have root login disabled by default
+                try {
+                    // Set root password
+                    slurmContainer.execInContainer("bash", "-c", "echo 'root:root' | chpasswd");
+                    // Enable password authentication and root login in SSH config
+                    slurmContainer.execInContainer(
+                            "bash",
+                            "-c",
+                            "sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && "
+                                    + "sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && "
+                                    + "sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config");
+                    // Restart SSH service
+                    try {
+                        slurmContainer.execInContainer("systemctl", "restart", "sshd");
+                    } catch (Exception e) {
+                        // Try alternative restart methods
+                        try {
+                            slurmContainer.execInContainer("service", "ssh", "restart");
+                        } catch (Exception e2) {
+                            slurmContainer.execInContainer("service", "sshd", "restart");
+                        }
+                    }
+                    logger.info("Configured SSH for password authentication");
+                } catch (Exception e) {
+                    logger.warn("Could not configure SSH settings, continuing anyway: {}", e.getMessage());
+                }
+
                 // Additional wait for SSH service to fully initialize after container reports ready
-                // The SSH daemon may take additional time to accept connections even after logging startup
-                // On ARM64 emulation, wait much longer since everything is slow
-                int sshWaitSeconds = isArm64 ? 120 : 45;
+                // The SSH daemon may take additional time to accept connections even after port is listening
+                int sshWaitSeconds = 45;
                 waitForSshReady(slurmContainer.getHost(), slurmContainer.getMappedPort(22), sshWaitSeconds);
-                
-                logger.info("SLURM container started at {}:{}", slurmContainer.getHost(), slurmContainer.getMappedPort(22));
+
+                logger.info(
+                        "SLURM container started at {}:{}", slurmContainer.getHost(), slurmContainer.getMappedPort(22));
             } catch (Exception e) {
                 logger.error("Failed to start SLURM container: {}", e.getMessage());
-                if (isArm64) {
-                    logger.error("SLURM container failed on ARM64. This is likely due to architecture mismatch.");
-                    logger.error("The giovtorres/slurm-docker-cluster image is amd64-only and requires emulation on ARM64.");
-                    logger.error("Consider using an ARM64-compatible alternative or skipping SLURM connectivity tests.");
-                }
                 throw new RuntimeException("SLURM container unavailable: " + e.getMessage(), e);
             }
         }
         return new SlurmConnectionInfo(
                 slurmContainer.getHost(),
                 slurmContainer.getMappedPort(22),
-                "root", // default user in slurm-docker-cluster
+                "root", // default user in csniper/slurm-lab
                 "root" // default password (or empty in some versions)
-        );
+                );
     }
 
     /**
@@ -178,7 +187,7 @@ public class TestcontainersConfig {
         long startTime = System.currentTimeMillis();
         long maxWaitMillis = maxWaitSeconds * 1000L;
         int retryDelayMs = 3000; // 3 seconds between retries
-        
+
         while (System.currentTimeMillis() - startTime < maxWaitMillis) {
             try (java.net.Socket socket = new java.net.Socket()) {
                 socket.connect(new java.net.InetSocketAddress(host, port), 10000);
@@ -197,7 +206,7 @@ public class TestcontainersConfig {
             } catch (Exception e) {
                 logger.debug("SSH not ready yet: {}", e.getMessage());
             }
-            
+
             try {
                 Thread.sleep(retryDelayMs);
             } catch (InterruptedException e) {
@@ -205,7 +214,7 @@ public class TestcontainersConfig {
                 throw new RuntimeException("Interrupted while waiting for SSH", e);
             }
         }
-        
+
         logger.warn("SSH service may not be fully ready after {} seconds", maxWaitSeconds);
     }
 
@@ -224,18 +233,36 @@ public class TestcontainersConfig {
     /**
      * Get or create SFTP container. Always starts a fresh container managed by Testcontainers.
      * The container is configured with a testuser that has an upload directory at /home/testuser/upload.
+     * Uses emberstack/sftp which supports both ARM64 and AMD64 architectures.
      */
     public static synchronized SftpConnectionInfo getSftpContainer() {
         if (sftpContainer == null || !sftpContainer.isRunning()) {
-            logger.info("Starting SFTP container");
+            logger.info("Starting SFTP container (emberstack/sftp - multi-arch support)");
             sftpUploadDirVerified = false; // Reset verification flag when starting new container
-            sftpContainer = new GenericContainer<>(DockerImageName.parse("atmoz/sftp:latest"))
+            
+            // Load SFTP configuration file from test resources
+            Path sftpConfigPath = null;
+            try {
+                InputStream configStream = TestcontainersConfig.class.getResourceAsStream("/sftp.json");
+                if (configStream == null) {
+                    throw new IllegalStateException("SFTP configuration file /sftp.json not found in test resources");
+                }
+                sftpConfigPath = Files.createTempFile("sftp-config", ".json");
+                Files.copy(configStream, sftpConfigPath, StandardCopyOption.REPLACE_EXISTING);
+                configStream.close();
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to load SFTP configuration file", e);
+            }
+            
+            final Path configPath = sftpConfigPath;
+            // Use emberstack/sftp which supports both ARM64 and AMD64 architectures
+            sftpContainer = new GenericContainer<>(DockerImageName.parse("emberstack/sftp:latest"))
                     .withExposedPorts(22)
-                    .withCommand("testuser:testpass:1001:1001:upload")
+                    .withFileSystemBind(configPath.toString(), "/app/config/sftp.json")
                     .withReuse(true)
                     // Wait for the SSH server to be fully ready (indicated by log message)
-                    .waitingFor(Wait.forLogMessage(".*Server listening on.*", 1)
-                            .withStartupTimeout(Duration.ofMinutes(2)));
+                    .waitingFor(
+                            Wait.forLogMessage(".*Server listening on.*", 1).withStartupTimeout(Duration.ofMinutes(2)));
             sftpContainer.start();
             logger.info("SFTP container started at {}:{}", sftpContainer.getHost(), sftpContainer.getMappedPort(22));
         }
@@ -246,11 +273,7 @@ public class TestcontainersConfig {
             sftpUploadDirVerified = true;
         }
 
-        return new SftpConnectionInfo(
-                sftpContainer.getHost(),
-                sftpContainer.getMappedPort(22),
-                "testuser",
-                "testpass");
+        return new SftpConnectionInfo(sftpContainer.getHost(), sftpContainer.getMappedPort(22), "testuser", "testpass");
     }
 
     /**
@@ -311,88 +334,25 @@ public class TestcontainersConfig {
         return keycloakContainer != null && keycloakContainer.isRunning();
     }
 
-    private static synchronized MariaDBContainer<?> getOrCreateContainer(String databaseName) {
-        MariaDBContainer<?> container = null;
-        switch (databaseName) {
-            case "profile_service":
-                container = profileServiceContainer;
-                break;
-            case "app_catalog":
-                container = appCatalogContainer;
-                break;
-            case "experiment_catalog":
-                container = expCatalogContainer;
-                break;
-            case "replica_catalog":
-                container = replicaCatalogContainer;
-                break;
-            case "workflow_catalog":
-                container = workflowCatalogContainer;
-                break;
-            case "sharing_registry":
-                container = sharingRegistryContainer;
-                break;
-            case "credential_store":
-                container = credentialStoreContainer;
-                break;
-            case "research_catalog":
-                container = researchCatalogContainer;
-                break;
-        }
-
-        if (container == null || !container.isRunning()) {
-            logger.info("Creating new MariaDB container for {}", databaseName);
+    /**
+     * Get or create unified database container.
+     * All entities from all packages are stored in this single database.
+     */
+    private static synchronized MariaDBContainer<?> getOrCreateUnifiedContainer() {
+        if (unifiedDatabaseContainer == null || !unifiedDatabaseContainer.isRunning()) {
+            logger.info("Creating unified MariaDB container for all entities");
             @SuppressWarnings("resource") // Container is stored in static variable and reused across tests
             MariaDBContainer<?> newContainer = new MariaDBContainer<>(
                             DockerImageName.parse("mariadb:" + MARIADB_VERSION))
-                    .withDatabaseName(TEST_DATABASE_PREFIX + databaseName)
+                    .withDatabaseName("airavata_unified")
                     .withUsername("test")
                     .withPassword("test")
                     .withReuse(true);
             newContainer.start();
-            container = newContainer;
-
-            // Apply Flyway migrations
-            @SuppressWarnings("resource") // Flyway doesn't implement AutoCloseable and doesn't need to be closed
-            Flyway flyway = Flyway.configure()
-                    .dataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword())
-                    .locations("classpath:conf/db/migration/" + databaseName)
-                    .baselineOnMigrate(true)
-                    .validateOnMigrate(true)
-                    .load();
-            flyway.migrate();
-            logger.info("Applied Flyway migrations to {}", databaseName);
-
-            // Cache the container
-            switch (databaseName) {
-                case "profile_service":
-                    profileServiceContainer = container;
-                    break;
-                case "app_catalog":
-                    appCatalogContainer = container;
-                    break;
-                case "experiment_catalog":
-                    expCatalogContainer = container;
-                    break;
-                case "replica_catalog":
-                    replicaCatalogContainer = container;
-                    break;
-                case "workflow_catalog":
-                    workflowCatalogContainer = container;
-                    break;
-                case "sharing_registry":
-                    sharingRegistryContainer = container;
-                    break;
-                case "credential_store":
-                    credentialStoreContainer = container;
-                    break;
-                case "research_catalog":
-                    researchCatalogContainer = container;
-                    break;
-            }
+            unifiedDatabaseContainer = newContainer;
+            logger.info("Unified database container started at {}", unifiedDatabaseContainer.getJdbcUrl());
         }
-
-        return container;
+        return unifiedDatabaseContainer;
     }
 
     /**
@@ -455,59 +415,28 @@ public class TestcontainersConfig {
         return kafkaHealthy && rabbitMQHealthy && zookeeperHealthy;
     }
 
-    private static DataSource createDataSource(MariaDBContainer<?> container, String dbName) {
+    private static DataSource createDataSource(MariaDBContainer<?> container, String poolName) {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.mariadb.jdbc.Driver");
         config.setJdbcUrl(container.getJdbcUrl());
         config.setUsername(container.getUsername());
         config.setPassword(container.getPassword());
         config.setConnectionTestQuery("SELECT 1");
-        config.setMinimumIdle(1);
-        config.setMaximumPoolSize(5);
+        config.setMinimumIdle(2);
+        config.setMaximumPoolSize(20); // Increased pool size for unified database
         config.setConnectionTimeout(30000);
-        logger.info("Creating DataSource for {} at {}", dbName, container.getJdbcUrl());
+        config.setPoolName(poolName);
+        logger.info("Creating DataSource '{}' at {}", poolName, container.getJdbcUrl());
         return new HikariDataSource(config);
     }
 
+    /**
+     * Primary DataSource for all entities.
+     */
     @Bean
     @Primary
-    public DataSource profileServiceDataSource() {
-        return createDataSource(getOrCreateContainer("profile_service"), "profile_service");
-    }
-
-    @Bean
-    public DataSource appCatalogDataSource() {
-        return createDataSource(getOrCreateContainer("app_catalog"), "app_catalog");
-    }
-
-    @Bean
-    public DataSource registryDataSource() {
-        return createDataSource(getOrCreateContainer("experiment_catalog"), "experiment_catalog");
-    }
-
-    @Bean
-    public DataSource replicaDataSource() {
-        return createDataSource(getOrCreateContainer("replica_catalog"), "replica_catalog");
-    }
-
-    @Bean
-    public DataSource workflowDataSource() {
-        return createDataSource(getOrCreateContainer("workflow_catalog"), "workflow_catalog");
-    }
-
-    @Bean
-    public DataSource sharingDataSource() {
-        return createDataSource(getOrCreateContainer("sharing_registry"), "sharing_registry");
-    }
-
-    @Bean
-    public DataSource credentialStoreDataSource() {
-        return createDataSource(getOrCreateContainer("credential_store"), "credential_store");
-    }
-
-    @Bean
-    public DataSource researchCatalogDataSource() {
-        return createDataSource(getOrCreateContainer("research_catalog"), "research_catalog");
+    public DataSource dataSource() {
+        return createDataSource(getOrCreateUnifiedContainer(), "AiravataTestPool");
     }
 
     /**
@@ -588,5 +517,53 @@ public class TestcontainersConfig {
     @Bean(name = "zookeeperConnectionString")
     public String zookeeperConnectionString() {
         return getZookeeperConnectionString();
+    }
+
+    /**
+     * Creates the EXPERIMENT_SUMMARY database view after Hibernate DDL runs.
+     * Hibernate's ddl-auto=create-drop creates a TABLE for ExperimentSummaryEntity,
+     * but it should be a VIEW that aggregates data from EXPERIMENT, EXPERIMENT_STATUS,
+     * and USER_CONFIGURATION_DATA tables.
+     */
+    @Bean
+    public org.springframework.boot.ApplicationRunner createExperimentSummaryView(DataSource dataSource) {
+        return args -> {
+            logger.info("Creating EXPERIMENT_SUMMARY view for tests");
+            try (java.sql.Connection conn = dataSource.getConnection();
+                    java.sql.Statement stmt = conn.createStatement()) {
+                // Drop the table Hibernate created
+                stmt.execute("DROP TABLE IF EXISTS EXPERIMENT_SUMMARY");
+                // Drop the view if it exists (for reusable containers)
+                stmt.execute("DROP VIEW IF EXISTS LATEST_EXPERIMENT_STATUS");
+                stmt.execute("DROP VIEW IF EXISTS EXPERIMENT_SUMMARY");
+
+                // Create LATEST_EXPERIMENT_STATUS view first (EXPERIMENT_SUMMARY depends on it)
+                stmt.execute("CREATE VIEW LATEST_EXPERIMENT_STATUS AS "
+                        + "SELECT ES1.EXPERIMENT_ID AS EXPERIMENT_ID, ES1.STATE AS STATE, "
+                        + "ES1.TIME_OF_STATE_CHANGE AS TIME_OF_STATE_CHANGE "
+                        + "FROM EXPERIMENT_STATUS ES1 LEFT JOIN EXPERIMENT_STATUS ES2 "
+                        + "ON (ES1.EXPERIMENT_ID = ES2.EXPERIMENT_ID "
+                        + "AND ES1.TIME_OF_STATE_CHANGE < ES2.TIME_OF_STATE_CHANGE) "
+                        + "WHERE ES2.TIME_OF_STATE_CHANGE IS NULL");
+
+                // Create EXPERIMENT_SUMMARY view
+                stmt.execute("CREATE VIEW EXPERIMENT_SUMMARY AS "
+                        + "SELECT E.EXPERIMENT_ID AS EXPERIMENT_ID, E.PROJECT_ID AS PROJECT_ID, "
+                        + "E.GATEWAY_ID AS GATEWAY_ID, E.USER_NAME AS USER_NAME, "
+                        + "E.EXECUTION_ID AS EXECUTION_ID, E.EXPERIMENT_NAME AS EXPERIMENT_NAME, "
+                        + "E.CREATION_TIME AS CREATION_TIME, E.DESCRIPTION AS DESCRIPTION, "
+                        + "ES.STATE AS STATE, UD.RESOURCE_HOST_ID AS RESOURCE_HOST_ID, "
+                        + "ES.TIME_OF_STATE_CHANGE AS TIME_OF_STATE_CHANGE "
+                        + "FROM ((EXPERIMENT E LEFT JOIN LATEST_EXPERIMENT_STATUS ES "
+                        + "ON (E.EXPERIMENT_ID = ES.EXPERIMENT_ID)) "
+                        + "LEFT JOIN USER_CONFIGURATION_DATA UD "
+                        + "ON (E.EXPERIMENT_ID = UD.EXPERIMENT_ID)) WHERE 1");
+
+                logger.info("Successfully created EXPERIMENT_SUMMARY view");
+            } catch (Exception e) {
+                logger.error("Failed to create EXPERIMENT_SUMMARY view: {}", e.getMessage(), e);
+                throw new RuntimeException("Failed to create EXPERIMENT_SUMMARY view", e);
+            }
+        };
     }
 }

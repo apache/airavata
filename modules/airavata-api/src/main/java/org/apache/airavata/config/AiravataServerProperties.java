@@ -45,7 +45,6 @@ public record AiravataServerProperties(
         StreamingTransfer streamingTransfer,
         Hibernate hibernate,
         // Subsystem configuration
-        Database database,
         Security security,
         RabbitMQ rabbitmq,
         Kafka kafka,
@@ -54,7 +53,7 @@ public record AiravataServerProperties(
         Flyway flyway,
         Services services) {
     // ==================== Helper Methods ====================
-    
+
     /**
      * Safely check if sharing is enabled.
      * Returns false if sharing configuration is null or not enabled.
@@ -78,43 +77,13 @@ public record AiravataServerProperties(
     public String getRabbitMQBrokerUrl() {
         return rabbitmq != null ? rabbitmq.brokerUrl() : null;
     }
-    
+
     // ==================== Core Airavata Settings ====================
     public record Sharing(boolean enabled) {}
 
     public record StreamingTransfer(boolean enabled) {}
 
     public record Hibernate(String hbm2ddlAuto) {}
-    // ==================== Database Configuration ====================
-    public record Database(
-            Registry registry,
-            Catalog catalog,
-            Vault vault,
-            Profile profile,
-            Sharing sharing,
-            Replica replica,
-            Workflow workflow,
-            Research research,
-            String validationQuery) {
-        public record Registry(String driver, String url, String user, String password, String validationQuery) {}
-
-        public record Catalog(
-                String driver, String url, String user, String password, String validationQuery, Hikari hikari) {
-            public record Hikari(long leakDetectionThreshold, String poolName) {}
-        }
-
-        public record Vault(String driver, String url, String user, String password, String validationQuery) {}
-
-        public record Profile(String driver, String url, String user, String password, String validationQuery) {}
-
-        public record Sharing(String driver, String url, String user, String password, String validationQuery) {}
-
-        public record Replica(String driver, String url, String user, String password, String validationQuery) {}
-
-        public record Workflow(String driver, String url, String user, String password, String validationQuery) {}
-
-        public record Research(String driver, String url, String user, String password, String validationQuery) {}
-    }
 
     // ==================== Security Configuration ====================
     public record Security(Tls tls, AuthzCache authzCache, Authentication authentication, Iam iam, Vault vault) {

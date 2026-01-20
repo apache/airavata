@@ -327,6 +327,11 @@ public class UserProfileEntity {
         Date date = new Date(timestamp.getTime());
         this.setCreationTime(date);
         this.setLastAccessTime(date);
+        // Ensure CustomizedDashboardEntity has the same ID as this UserProfileEntity
+        // since they share a @PrimaryKeyJoinColumn
+        if (this.customizedDashboardEntity != null && this.airavataInternalUserId != null) {
+            this.customizedDashboardEntity.setAiravataInternalUserId(this.airavataInternalUserId);
+        }
     }
 
     @PreUpdate

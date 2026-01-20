@@ -74,6 +74,8 @@ public class DataProductRepositoryTest extends TestBase {
 
         String productUri2 = dataProductService.registerDataProduct(testDataProductModel2);
         assertTrue(dataProductService.isDataProductExists(productUri2));
+        // Set the generated productUri back on the model for subsequent updates
+        testDataProductModel2.setProductUri(productUri2);
 
         DataProductMetadataEntity dataProductMetadataEntity = new DataProductMetadataEntity();
         dataProductMetadataEntity.setProductUri(productUri2);

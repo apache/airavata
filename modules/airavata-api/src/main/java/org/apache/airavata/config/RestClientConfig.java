@@ -83,9 +83,9 @@ public class RestClientConfig {
      */
     private void configureSSL(RestTemplate restTemplate) throws Exception {
         // Check if security configuration is available
-        if (properties.security() == null || 
-            properties.security().tls() == null || 
-            properties.security().tls().keystore() == null) {
+        if (properties.security() == null
+                || properties.security().tls() == null
+                || properties.security().tls().keystore() == null) {
             // Use default trust store with self-signed certificate support for development/test
             SSLContext sslContext = SSLContextBuilder.create()
                     .loadTrustMaterial((TrustStrategy) (chain, authType) -> true)

@@ -30,22 +30,16 @@ import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Test to verify AiravataApplication startup with minimal configuration.
- *
- * Minimal configuration:
- * - Thrift disabled
- * - REST disabled
- * - Background services disabled
- * - Only core services enabled
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class, MinimalStartupTest.TestConfiguration.class},
@@ -53,21 +47,11 @@ import org.springframework.context.annotation.FilterType;
             "spring.main.allow-bean-definition-overriding=true",
             "spring.main.banner-mode=off",
             "spring.main.log-startup-info=false",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "spring.main.lazy-initialization=true",
-            "flyway.enabled=false",
-            "security.iam.enabled=false",
-            "security.manager.enabled=false",
-            "security.authzCache.enabled=false",
-            "services.scheduler.enabled=false",
-            "services.scheduler.rescheduler.enabled=false",
-            "services.thrift.enabled=false",
-            "services.rest.enabled=false",
-            "helix.enabled=false",
+            "airavata.flyway.enabled=false",
         })
-@org.springframework.test.context.ActiveProfiles("test")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@ActiveProfiles("test")
 public class MinimalStartupTest {
 
     @Configuration
@@ -90,7 +74,6 @@ public class MinimalStartupTest {
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning"
             },
-            // Exclude components that require external dependencies or lifecycle management
             excludeFilters = {
                 @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*KeyCloak.*"),
                 @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Lifecycle.*"),
@@ -104,16 +87,7 @@ public class MinimalStartupTest {
     private ApplicationContext applicationContext;
 
     @Autowired
-    @Qualifier("profileServiceEntityManagerFactory")
-    private EntityManagerFactory profileServiceEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("appCatalogEntityManagerFactory")
-    private EntityManagerFactory appCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("expCatalogEntityManagerFactory")
-    private EntityManagerFactory expCatalogEntityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
     @Autowired
     private RegistryService registryService;
@@ -136,10 +110,9 @@ public class MinimalStartupTest {
     }
 
     @Test
-    public void testEntityManagerFactoriesAreCreated() {
-        assertNotNull(profileServiceEntityManagerFactory, "Profile service EntityManagerFactory should be created");
-        assertNotNull(appCatalogEntityManagerFactory, "App catalog EntityManagerFactory should be created");
-        assertNotNull(expCatalogEntityManagerFactory, "Exp catalog EntityManagerFactory should be created");
+    public void testEntityManagerFactoryIsCreated() {
+        assertNotNull(entityManagerFactory, "EntityManagerFactory should be created");
+        assertTrue(entityManagerFactory.isOpen(), "EntityManagerFactory should be open");
     }
 
     @Test
@@ -159,16 +132,12 @@ public class MinimalStartupTest {
     public void testPropertiesAreLoaded() {
         AiravataServerProperties properties = applicationContext.getBean(AiravataServerProperties.class);
         assertNotNull(properties, "AiravataServerProperties should be loaded");
-        // Note: In test profile, database properties may be null because TestcontainersConfig
-        // provides DataSource beans directly. Check that the properties bean exists.
-        // The actual database connectivity is verified in testEntityManagerFactoriesAreCreated.
     }
 
     @Test
     public void testJpaConfigIsLoaded() {
-
         assertTrue(
-                applicationContext.getBeansOfType(EntityManagerFactory.class).size() >= 7,
-                "All EntityManagerFactory beans should be created (at least 7 catalogs)");
+                applicationContext.getBeansOfType(EntityManagerFactory.class).size() >= 1,
+                "EntityManagerFactory bean should be created");
     }
 }

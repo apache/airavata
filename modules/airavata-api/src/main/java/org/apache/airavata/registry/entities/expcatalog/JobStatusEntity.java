@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.entities.expcatalog;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -135,5 +134,6 @@ public class JobStatusEntity implements Serializable {
     }
 
     // Note: No setter for 'job' - the relationship is read-only (insertable=false, updatable=false)
-    // The jobId and taskId fields should be set instead, and Hibernate will resolve the relationship via the @JoinColumns
+    // The jobId and taskId fields should be set instead, and Hibernate will resolve the relationship via the
+    // @JoinColumns
 }

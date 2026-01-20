@@ -54,7 +54,7 @@ public class AppEnvironmentEntity implements Serializable {
     private int envPathOrder;
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class)
-    @JoinColumn(name = "DEPLOYMENT_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "DEPLOYMENT_ID", nullable = false, insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 

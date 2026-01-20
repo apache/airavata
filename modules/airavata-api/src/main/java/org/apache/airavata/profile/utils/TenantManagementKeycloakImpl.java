@@ -79,24 +79,24 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 && !properties.security().iam().serverUrl().isEmpty()) {
             return properties.security().iam().serverUrl();
         }
-        
+
         // Fallback to environment variable (useful for testing with dynamic URLs)
         String envUrl = System.getenv("IAM_SERVER_URL");
         if (envUrl != null && !envUrl.isEmpty()) {
             logger.info("Using IAM server URL from environment: {}", envUrl);
             return envUrl;
         }
-        
+
         // Fallback to system property (can be set by tests)
         String sysPropUrl = System.getProperty("airavata.security.iam.server-url");
         if (sysPropUrl != null && !sysPropUrl.isEmpty()) {
             logger.info("Using IAM server URL from system property: {}", sysPropUrl);
             return sysPropUrl;
         }
-        
+
         throw new IamAdminServicesException(
                 "IAM server URL is not configured. Check application.properties for security.iam.server-url, "
-                + "or set IAM_SERVER_URL environment variable");
+                        + "or set IAM_SERVER_URL environment variable");
     }
 
     private KeycloakRestClient getRestClient() throws IamAdminServicesException {
@@ -623,118 +623,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error deleting user in keycloak server, reason: " + ex.getMessage());
             throw exception;
-        }
-    }
-
-    @Override
-    public boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName)
-            throws IamAdminServicesException {
-
-        try {
-            KeycloakRestClient client = getRestClient();
-            String adminToken = client.obtainAdminToken(tenantId, realmAdminCreds);
-            List<UserRepresentation> retrieveCreatedUserList =
-                    client.searchUsers(tenantId, username, null, null, null, 0, 1, adminToken);
-            if (!retrieveCreatedUserList.isEmpty()) {
-                UserRepresentation user = retrieveCreatedUserList.get(0);
-                // Add user to the role
-                RoleRepresentation roleResource = client.getRole(tenantId, roleName, adminToken);
-                if (roleResource != null) {
-                    client.addRealmRolesToUser(tenantId, user.getId(), Arrays.asList(roleResource), adminToken);
-                    return true;
-                } else {
-                    logger.error("Role not found: " + roleName);
-                    return false;
-                }
-            } else {
-                logger.error("User not found: " + username);
-                return false;
-            }
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IamAdminServicesException("Error adding role to user: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public boolean removeRoleFromUser(
-            PasswordCredential realmAdminCreds, String tenantId, String username, String roleName)
-            throws IamAdminServicesException {
-
-        try {
-            KeycloakRestClient client = getRestClient();
-            String adminToken = client.obtainAdminToken(tenantId, realmAdminCreds);
-            List<UserRepresentation> retrieveCreatedUserList =
-                    client.searchUsers(tenantId, username, null, null, null, 0, 1, adminToken);
-            if (!retrieveCreatedUserList.isEmpty()) {
-                UserRepresentation user = retrieveCreatedUserList.get(0);
-                // Remove role from user
-                RoleRepresentation roleResource = client.getRole(tenantId, roleName, adminToken);
-                if (roleResource != null) {
-                    client.removeRealmRolesFromUser(tenantId, user.getId(), Arrays.asList(roleResource), adminToken);
-                    return true;
-                } else {
-                    logger.error("Role not found: " + roleName);
-                    return false;
-                }
-            } else {
-                logger.error("User not found: " + username);
-                return false;
-            }
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IamAdminServicesException("Error removing role from user: " + e.getMessage(), e);
-        }
-    }
-
-    // TODO: Remove after migration to group-based auth is complete
-    // This method is needed for backward compatibility during migration from role-based to group-based authentication
-    @Override
-    public List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName)
-            throws IamAdminServicesException {
-        try {
-            KeycloakRestClient client = getRestClient();
-            String adminToken = client.obtainAdminToken(tenantId, realmAdminCreds);
-            // FIXME: this only searches through the most recent 100 users for the given role (assuming there are no
-            // more than 10,000 users in the gateway)
-            int totalUserCount = client.getUserCount(tenantId, adminToken);
-            logger.debug("getUsersWithRole: totalUserCount=" + totalUserCount);
-            // Load all users in batches
-            List<UserRepresentation> allUsers = new ArrayList<>();
-            int userBatchSize = 100;
-            for (int start = 0; start < totalUserCount; start = start + userBatchSize) {
-                logger.debug("getUsersWithRole: fetching " + userBatchSize + " users...");
-                allUsers.addAll(client.searchUsers(tenantId, null, null, null, null, start, userBatchSize, adminToken));
-            }
-            logger.debug("getUsersWithRole: all users count=" + allUsers.size());
-            allUsers.sort((a, b) -> {
-                Long aTime = a.getCreatedTimestamp() != null ? a.getCreatedTimestamp() : 0L;
-                Long bTime = b.getCreatedTimestamp() != null ? b.getCreatedTimestamp() : 0L;
-                return Long.compare(bTime, aTime); // Sort descending (most recent first)
-            });
-            // The 100 most recently created users
-            List<UserRepresentation> mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
-            logger.debug("getUsersWithRole: most recent users count=" + mostRecentUsers.size());
-
-            List<UserProfile> usersWithRole = new ArrayList<>();
-            for (UserRepresentation user : mostRecentUsers) {
-                List<RoleRepresentation> roleRepresentations =
-                        client.getUserRealmRoles(tenantId, user.getId(), adminToken);
-                for (RoleRepresentation roleRepresentation : roleRepresentations) {
-                    if (roleRepresentation.getName().equals(roleName)) {
-                        usersWithRole.add(convertUserRepresentationToUserProfile(user, tenantId));
-                        break;
-                    }
-                }
-            }
-            logger.debug("getUsersWithRole: most recent users with role count=" + usersWithRole.size());
-            return usersWithRole;
-        } catch (IamAdminServicesException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IamAdminServicesException("Error getting users with role: " + e.getMessage(), e);
         }
     }
 

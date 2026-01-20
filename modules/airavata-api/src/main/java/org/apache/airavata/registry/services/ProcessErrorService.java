@@ -31,12 +31,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ProcessErrorService extends BaseErrorService<ProcessErrorEntity, ProcessErrorRepository, ProcessErrorPK> {
 
-    public ProcessErrorService(
-            ProcessErrorRepository processErrorRepository,
-            ErrorModelMapper errorModelMapper) {
+    public ProcessErrorService(ProcessErrorRepository processErrorRepository, ErrorModelMapper errorModelMapper) {
         super(processErrorRepository, errorModelMapper);
     }
 

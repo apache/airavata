@@ -99,101 +99,9 @@ public class PropertiesBindingTest {
     }
 
     // ==================== Database Properties ====================
-
-    @Nested
-    @DisplayName("Database Properties")
-    class DatabaseProperties {
-
-        @Test
-        @DisplayName("database.catalog properties")
-        void testCatalogDatabase() {
-            var catalog = properties.database().catalog();
-            assertEquals("org.mariadb.jdbc.Driver", catalog.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/app_catalog", catalog.url());
-            assertEquals("airavata", catalog.user());
-            assertEquals("123456", catalog.password());
-            assertEquals("SELECT 1", catalog.validationQuery());
-            assertEquals(20000L, catalog.hikari().leakDetectionThreshold());
-            assertEquals("AppCatalogPool", catalog.hikari().poolName());
-        }
-
-        @Test
-        @DisplayName("database.profile properties")
-        void testProfileDatabase() {
-            var profile = properties.database().profile();
-            assertEquals("org.mariadb.jdbc.Driver", profile.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/profile_service", profile.url());
-            assertEquals("airavata", profile.user());
-            assertEquals("123456", profile.password());
-            assertEquals("SELECT 1", profile.validationQuery());
-        }
-
-        @Test
-        @DisplayName("database.registry properties")
-        void testRegistryDatabase() {
-            var registry = properties.database().registry();
-            assertEquals("org.mariadb.jdbc.Driver", registry.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/experiment_catalog", registry.url());
-            assertEquals("airavata", registry.user());
-            assertEquals("123456", registry.password());
-            assertEquals("SELECT 1", registry.validationQuery());
-        }
-
-        @Test
-        @DisplayName("database.replica properties")
-        void testReplicaDatabase() {
-            var replica = properties.database().replica();
-            assertEquals("org.mariadb.jdbc.Driver", replica.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/replica_catalog", replica.url());
-            assertEquals("airavata", replica.user());
-            assertEquals("123456", replica.password());
-            assertEquals("SELECT 1", replica.validationQuery());
-        }
-
-        @Test
-        @DisplayName("database.research properties")
-        void testResearchDatabase() {
-            var research = properties.database().research();
-            assertEquals("org.mariadb.jdbc.Driver", research.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/research_catalog", research.url());
-            assertEquals("airavata", research.user());
-            assertEquals("123456", research.password());
-            assertEquals("SELECT 1", research.validationQuery());
-        }
-
-        @Test
-        @DisplayName("database.sharing properties")
-        void testSharingDatabase() {
-            var sharing = properties.database().sharing();
-            assertEquals("org.mariadb.jdbc.Driver", sharing.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/sharing_registry", sharing.url());
-            assertEquals("airavata", sharing.user());
-            assertEquals("123456", sharing.password());
-            assertEquals("SELECT 1", sharing.validationQuery());
-        }
-
-        @Test
-        @DisplayName("database.vault properties")
-        void testVaultDatabase() {
-            var vault = properties.database().vault();
-            assertEquals("org.mariadb.jdbc.Driver", vault.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/credential_store", vault.url());
-            assertEquals("airavata", vault.user());
-            assertEquals("123456", vault.password());
-            assertEquals("SELECT 1", vault.validationQuery());
-        }
-
-        @Test
-        @DisplayName("database.workflow properties")
-        void testWorkflowDatabase() {
-            var workflow = properties.database().workflow();
-            assertEquals("org.mariadb.jdbc.Driver", workflow.driver());
-            assertEquals("jdbc:mariadb://localhost:13306/workflow_catalog", workflow.url());
-            assertEquals("airavata", workflow.user());
-            assertEquals("123456", workflow.password());
-            assertEquals("SELECT 1", workflow.validationQuery());
-        }
-    }
+    // Note: Database properties have been consolidated to standard Spring Boot
+    // properties (spring.datasource.*) instead of per-service databases.
+    // The old airavata.database.* properties are no longer used.
 
     // ==================== Security Properties ====================
 
@@ -222,8 +130,8 @@ public class PropertiesBindingTest {
             assertEquals("http://localhost:18080", iam.serverUrl());
             assertEquals("pga", iam.oauthClientId());
             assertEquals("m36BXQIxX3j3VILadeHMK5IvbOeRlCCc", iam.oauthClientSecret());
-            assertEquals("default-admin", iam.superAdmin().username());
-            assertEquals("admin123", iam.superAdmin().password());
+            assertEquals("admin", iam.superAdmin().username());
+            assertEquals("admin", iam.superAdmin().password());
         }
 
         @Test

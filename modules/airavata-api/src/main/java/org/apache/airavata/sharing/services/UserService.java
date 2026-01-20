@@ -50,7 +50,7 @@ public class UserService {
             @Qualifier("sharingUserRepository") UserRepository userRepository,
             PermissionTypeService permissionTypeService,
             UserMapper userMapper,
-            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.userRepository = userRepository;
         this.permissionTypeService = permissionTypeService;
         this.userMapper = userMapper;

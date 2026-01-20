@@ -51,6 +51,11 @@ public interface ProcessMapper {
             expression = "java(entity.getLastUpdateTime() != null ? entity.getLastUpdateTime().getTime() : 0L)")
     @Mapping(target = "emailAddresses", ignore = true) // Handled separately
     @Mapping(target = "processWorkflows", ignore = true) // Handled separately to avoid LazyInitializationException
+    @Mapping(target = "processStatuses", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "processErrors", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "processInputs", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "processOutputs", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "tasks", defaultExpression = "java(new java.util.ArrayList<>())")
     ProcessModel toModel(ProcessEntity entity);
 
     @Mapping(

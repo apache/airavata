@@ -356,12 +356,7 @@ public class Dispatcher {
     private void createEntityTypesForDomain(String domainId) {
         // Use string literals to avoid class loading issues with SharingResourceType enum
         String[] entityTypeNames = {
-            "PROJECT",
-            "EXPERIMENT",
-            "FILE",
-            "APPLICATION_DEPLOYMENT",
-            "GROUP_RESOURCE_PROFILE",
-            "CREDENTIAL_TOKEN"
+            "PROJECT", "EXPERIMENT", "FILE", "APPLICATION_DEPLOYMENT", "GROUP_RESOURCE_PROFILE", "CREDENTIAL_TOKEN"
         };
 
         for (String entityTypeName : entityTypeNames) {

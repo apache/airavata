@@ -57,8 +57,7 @@ public class MessagingFactory {
      */
     @Autowired
     public MessagingFactory(
-            AiravataServerProperties properties,
-            @Autowired(required = false) ConnectionFactory connectionFactory) {
+            AiravataServerProperties properties, @Autowired(required = false) ConnectionFactory connectionFactory) {
         this.properties = properties;
         this.connectionFactory = connectionFactory;
         if (connectionFactory != null) {
@@ -245,12 +244,16 @@ public class MessagingFactory {
     }
 
     private RabbitMQSubscriber getProcessSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(getProcessExchangeName()).setQueueName("process_launch").setAutoAck(false);
+        sp.setExchangeName(getProcessExchangeName())
+                .setQueueName("process_launch")
+                .setAutoAck(false);
         return createSubscriber(sp);
     }
 
     private Subscriber getExperimentSubscriber(RabbitMQProperties sp) throws AiravataException {
-        sp.setExchangeName(getExperimentExchangeName()).setQueueName("experiment_launch").setAutoAck(false);
+        sp.setExchangeName(getExperimentExchangeName())
+                .setQueueName("experiment_launch")
+                .setAutoAck(false);
         return createSubscriber(sp);
     }
 

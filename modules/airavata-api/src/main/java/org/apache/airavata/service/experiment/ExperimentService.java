@@ -69,16 +69,21 @@ public class ExperimentService {
                     statusPublisher = messagingFactory.getPublisher(Type.STATUS);
                 } else {
                     // In test environments, this is expected - use debug level
-                    boolean isTestProfile = environment != null && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+                    boolean isTestProfile = environment != null
+                            && java.util.Arrays.asList(environment.getActiveProfiles())
+                                    .contains("test");
                     if (isTestProfile) {
                         logger.debug("StatusPublisher unavailable: RabbitMQ not fully configured (test environment)");
                     } else {
-                        logger.warn("StatusPublisher unavailable: RabbitMQ is not configured. Ensure airavata.rabbitmq.enabled=true and all required RabbitMQ properties are set (broker-url, exchange names, etc.)");
+                        logger.warn(
+                                "StatusPublisher unavailable: RabbitMQ is not configured. Ensure airavata.rabbitmq.enabled=true and all required RabbitMQ properties are set (broker-url, exchange names, etc.)");
                     }
                 }
             } catch (Exception e) {
                 // In test environments, configuration issues are expected - use debug level
-                boolean isTestProfile = environment != null && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+                boolean isTestProfile = environment != null
+                        && java.util.Arrays.asList(environment.getActiveProfiles())
+                                .contains("test");
                 if (isTestProfile) {
                     logger.debug("StatusPublisher unavailable: " + e.getMessage() + " (test environment)");
                 } else {

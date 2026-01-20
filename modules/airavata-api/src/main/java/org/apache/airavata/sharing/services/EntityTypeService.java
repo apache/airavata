@@ -30,7 +30,6 @@ import org.apache.airavata.sharing.mappers.EntityTypeMapper;
 import org.apache.airavata.sharing.model.EntityType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityTypeRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +41,7 @@ public class EntityTypeService {
     private final EntityManager entityManager;
 
     public EntityTypeService(
-            EntityTypeRepository entityTypeRepository,
-            EntityTypeMapper entityTypeMapper,
-            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+            EntityTypeRepository entityTypeRepository, EntityTypeMapper entityTypeMapper, EntityManager entityManager) {
         this.entityTypeRepository = entityTypeRepository;
         this.entityTypeMapper = entityTypeMapper;
         this.entityManager = entityManager;

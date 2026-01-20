@@ -142,7 +142,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
                     }
 
                     default:
-                        logger.error("Unsupported field name for app deployment in filters: {}", filters);
+                        logger.warn("Unsupported field name for app deployment in filters: {}", filters);
                         throw new IllegalArgumentException(
                                 "Unsupported field name for app deployment in filters: " + filters);
                 }
@@ -165,6 +165,9 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
                     deploymentDescriptions.addAll(tmp2Descriptions);
                 }
             }
+        } catch (IllegalArgumentException e) {
+            // Validation error - just rethrow without logging at ERROR level
+            throw e;
         } catch (Exception e) {
             logger.error("Error while retrieving app deployment list...", e);
             throw new AppCatalogException(e);

@@ -20,7 +20,6 @@
 package org.apache.airavata.config;
 
 import jakarta.annotation.PostConstruct;
-import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -63,16 +62,8 @@ public class PropertiesValidationConfig {
         List<String> warnings = new ArrayList<>();
 
         // Validate top-level properties (all under airavata.* prefix)
-        validateNotNull(properties.database(), "airavata.database", errors);
         validateNotNull(properties.security(), "airavata.security", errors);
         validateNotNull(properties.services(), "airavata.services", errors);
-
-        // Validate database properties if database section exists
-        if (properties.database() != null) {
-            validateDatabaseConfig(properties.database().registry(), "airavata.database.registry", errors, warnings);
-            validateDatabaseConfig(properties.database().catalog(), "airavata.database.catalog", errors, warnings);
-            validateDatabaseConfig(properties.database().profile(), "airavata.database.profile", errors, warnings);
-        }
 
         // Validate security properties
         if (properties.security() != null) {
@@ -128,28 +119,6 @@ public class PropertiesValidationConfig {
     private void validateNotEmpty(String value, String propertyPath, List<String> errors) {
         if (value == null || value.isBlank()) {
             errors.add(propertyPath + " is required but empty or not set");
-        }
-    }
-
-    private void validateDatabaseConfig(Object dbConfig, String prefix, List<String> errors, List<String> warnings) {
-        if (dbConfig == null) {
-            warnings.add(prefix + " is not configured - database will not be available");
-            return;
-        }
-
-        // Use reflection to check required fields
-        if (dbConfig instanceof Record record) {
-            for (RecordComponent component : record.getClass().getRecordComponents()) {
-                try {
-                    Object value = component.getAccessor().invoke(record);
-                    if ("url".equals(component.getName())
-                            && (value == null || value.toString().isBlank())) {
-                        errors.add(prefix + ".url is required");
-                    }
-                } catch (Exception e) {
-                    logger.debug("Could not validate {}.{}: {}", prefix, component.getName(), e.getMessage());
-                }
-            }
         }
     }
 

@@ -29,7 +29,7 @@ import java.sql.Timestamp;
 /**
  * The persistent class for the project database table.
  */
-@Entity
+@Entity(name = "ExpCatalogProjectEntity")
 @Table(name = "PROJECT")
 public class ProjectEntity implements Serializable {
     private static final long serialVersionUID = 1L;

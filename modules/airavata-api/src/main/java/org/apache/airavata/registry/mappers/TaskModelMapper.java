@@ -42,6 +42,9 @@ public interface TaskModelMapper {
             target = "lastUpdateTime",
             expression = "java(entity.getLastUpdateTime() != null ? entity.getLastUpdateTime().getTime() : 0L)")
     @Mapping(target = "subTaskModel", ignore = true) // byte[] to Object conversion handled manually
+    @Mapping(target = "taskStatuses", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "taskErrors", defaultExpression = "java(new java.util.ArrayList<>())")
+    @Mapping(target = "jobs", defaultExpression = "java(new java.util.ArrayList<>())")
     TaskModel toModel(TaskEntity entity);
 
     @Mapping(

@@ -79,7 +79,7 @@ public interface UserConfigurationDataMapper {
     default void setEntityFieldsFromComputationalResourceScheduling(
             @MappingTarget UserConfigurationDataEntity entity, UserConfigurationDataModel model) {
         // Map computationalResourceScheduling nested object to entity fields
-        if (model.getComputationalResourceScheduling() != null) {
+        if (model != null && model.getComputationalResourceScheduling() != null) {
             ComputationalResourceSchedulingModel crs = model.getComputationalResourceScheduling();
             entity.setResourceHostId(crs.getResourceHostId());
             entity.setTotalCPUCount(crs.getTotalCPUCount());

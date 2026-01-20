@@ -111,6 +111,8 @@ public class ProcessInputRepositoryTest extends TestBase {
 
         String returnedProcessId = processInputService.addProcessInputs(inputDataObjectTypeProList, processId);
         assertEquals(processId, returnedProcessId, "Returned process ID should match");
+        // Clear JPA cache to ensure fresh load with the newly added input
+        flushAndClear();
         assertEquals(
                 1, processService.getProcess(processId).getProcessInputs().size(), "Process should have one input");
 

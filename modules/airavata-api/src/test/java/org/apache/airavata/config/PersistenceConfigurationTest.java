@@ -19,99 +19,45 @@
 */
 package org.apache.airavata.config;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Test to verify that persistence configuration loads correctly
- * and all EntityManagerFactory beans can be created without errors.
+ * Test to verify that persistence configuration loads correctly.
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "flyway.enabled=false",
+            "airavata.flyway.enabled=false",
         })
-@org.springframework.test.context.ActiveProfiles("test")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@ActiveProfiles("test")
 public class PersistenceConfigurationTest {
 
     @Autowired
-    @Qualifier("profileServiceEntityManagerFactory")
-    private EntityManagerFactory profileServiceEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("appCatalogEntityManagerFactory")
-    private EntityManagerFactory appCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("expCatalogEntityManagerFactory")
-    private EntityManagerFactory expCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("replicaCatalogEntityManagerFactory")
-    private EntityManagerFactory replicaCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("workflowCatalogEntityManagerFactory")
-    private EntityManagerFactory workflowCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManagerFactory")
-    private EntityManagerFactory sharingRegistryEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("credentialStoreEntityManagerFactory")
-    private EntityManagerFactory credentialStoreEntityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
     @Test
-    public void testPersistenceUnitsCanBeCreated() {
-
-        assertNotNull(profileServiceEntityManagerFactory, "Profile service EntityManagerFactory should be created");
-        assertNotNull(appCatalogEntityManagerFactory, "App catalog EntityManagerFactory should be created");
-        assertNotNull(expCatalogEntityManagerFactory, "Exp catalog EntityManagerFactory should be created");
-        assertNotNull(replicaCatalogEntityManagerFactory, "Replica catalog EntityManagerFactory should be created");
-        assertNotNull(workflowCatalogEntityManagerFactory, "Workflow catalog EntityManagerFactory should be created");
-        assertNotNull(sharingRegistryEntityManagerFactory, "Sharing registry EntityManagerFactory should be created");
-        assertNotNull(credentialStoreEntityManagerFactory, "Credential store EntityManagerFactory should be created");
+    public void testEntityManagerFactoryCanBeCreated() {
+        assertNotNull(entityManagerFactory, "EntityManagerFactory should be created");
     }
 
     @Test
-    public void testPersistenceUnitsAreOpen() {
-        if (profileServiceEntityManagerFactory != null) {
-            assertTrue(
-                    profileServiceEntityManagerFactory.isOpen(), "Profile service EntityManagerFactory should be open");
-        }
-        if (appCatalogEntityManagerFactory != null) {
-            assertTrue(appCatalogEntityManagerFactory.isOpen(), "App catalog EntityManagerFactory should be open");
-        }
-        if (expCatalogEntityManagerFactory != null) {
-            assertTrue(expCatalogEntityManagerFactory.isOpen(), "Exp catalog EntityManagerFactory should be open");
-        }
-        if (replicaCatalogEntityManagerFactory != null) {
-            assertTrue(
-                    replicaCatalogEntityManagerFactory.isOpen(), "Replica catalog EntityManagerFactory should be open");
-        }
-        if (workflowCatalogEntityManagerFactory != null) {
-            assertTrue(
-                    workflowCatalogEntityManagerFactory.isOpen(),
-                    "Workflow catalog EntityManagerFactory should be open");
-        }
-        if (sharingRegistryEntityManagerFactory != null) {
-            assertTrue(
-                    sharingRegistryEntityManagerFactory.isOpen(),
-                    "Sharing registry EntityManagerFactory should be open");
-        }
-        if (credentialStoreEntityManagerFactory != null) {
-            assertTrue(
-                    credentialStoreEntityManagerFactory.isOpen(),
-                    "Credential store EntityManagerFactory should be open");
-        }
+    public void testEntityManagerFactoryIsOpen() {
+        assertTrue(entityManagerFactory.isOpen(), "EntityManagerFactory should be open");
+    }
+
+    @Test
+    public void testEntitiesAreLoaded() {
+        var entities = entityManagerFactory.getMetamodel().getEntities();
+        assertNotNull(entities, "Entities should be available");
+        assertFalse(entities.isEmpty(), "Entities should be loaded");
     }
 }

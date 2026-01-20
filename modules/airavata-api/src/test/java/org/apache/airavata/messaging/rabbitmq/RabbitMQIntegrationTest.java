@@ -59,14 +59,14 @@ import org.springframework.test.context.DynamicPropertySource;
         properties = {"spring.main.allow-bean-definition-overriding=true", "airavata.flyway.enabled=false"})
 @ActiveProfiles("test")
 @org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
-@Timeout(value = 2, unit = TimeUnit.MINUTES)  // Prevent tests from hanging indefinitely
+@Timeout(value = 2, unit = TimeUnit.MINUTES) // Prevent tests from hanging indefinitely
 public class RabbitMQIntegrationTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         // Initialize Testcontainers services and get URLs
         String rabbitMQUrl = TestcontainersConfig.getRabbitMQUrl();
-        
+
         // Register complete RabbitMQ properties - ALL fields must be set for Spring to bind the record
         registry.add("airavata.rabbitmq.broker-url", () -> rabbitMQUrl);
         registry.add("airavata.rabbitmq.enabled", () -> true);

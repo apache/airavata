@@ -130,6 +130,8 @@ public class JobRepositoryTest extends TestBase {
 
         String jobId = jobService.addJob(jobModel, processId);
         assertNotNull(jobId);
+        // Clear JPA cache to ensure fresh load with the newly added job
+        flushAndClear();
         assertEquals(1, taskService.getTask(taskId).getJobs().size());
 
         JobPK jobPK = new JobPK();

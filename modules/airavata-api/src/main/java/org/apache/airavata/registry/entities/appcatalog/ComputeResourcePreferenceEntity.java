@@ -80,10 +80,10 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     @Column(name = "RESERVATION")
     private String reservation;
 
-    @Column(name = "RESERVATION_END_TIME", nullable = false)
+    @Column(name = "RESERVATION_END_TIME")
     private Timestamp reservationEndTime;
 
-    @Column(name = "RESERVATION_START_TIME", nullable = false)
+    @Column(name = "RESERVATION_START_TIME")
     private Timestamp reservationStartTime;
 
     @Column(name = "RESOURCE_CS_TOKEN")
@@ -110,7 +110,7 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     private List<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations;
 
     @ManyToOne(targetEntity = GatewayProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_ID")
+    @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
     private GatewayProfileEntity gatewayProfileResource;
 
     public ComputeResourcePreferenceEntity() {}

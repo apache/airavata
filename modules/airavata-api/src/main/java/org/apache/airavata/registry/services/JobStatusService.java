@@ -33,12 +33,11 @@ import org.apache.airavata.registry.mappers.JobStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
 import org.apache.airavata.registry.repositories.expcatalog.JobStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class JobStatusService {
     private final JobStatusRepository jobStatusRepository;
     private final JobStatusMapper jobStatusMapper;
@@ -219,7 +218,7 @@ public class JobStatusService {
             JobStatusRepository jobStatusRepository,
             JobStatusMapper jobStatusMapper,
             JobRepository jobRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.jobStatusRepository = jobStatusRepository;
         this.jobStatusMapper = jobStatusMapper;
         this.jobRepository = jobRepository;
@@ -292,9 +291,11 @@ public class JobStatusService {
         }
 
         // Save the entity - it will be persisted when the transaction commits
-        // Note: Avoid flushing here to prevent triggering persistence of unrelated entities
-        // (like Process) that might not be fully initialized
         JobStatusEntity savedEntity = jobStatusRepository.save(entity);
+
+        // CRITICAL: Flush to ensure the status is visible when getJob() is called in the same transaction
+        // This is necessary because getJob() uses entityManager.refresh() which queries the database
+        entityManager.flush();
 
         // CRITICAL: Verify timestamp was persisted correctly and force it if needed
         // In distributed systems, database defaults might override our timestamp
@@ -394,9 +395,11 @@ public class JobStatusService {
         }
 
         // Save the entity - it will be persisted when the transaction commits
-        // Note: Avoid flushing here to prevent triggering persistence of unrelated entities
-        // (like Process) that might not be fully initialized
         JobStatusEntity savedEntity = jobStatusRepository.save(entity);
+
+        // CRITICAL: Flush to ensure the status is visible when getJob() is called in the same transaction
+        // This is necessary because getJob() uses entityManager.refresh() which queries the database
+        entityManager.flush();
 
         // Verify timestamp was persisted correctly
         // In distributed systems, database defaults might override our timestamp

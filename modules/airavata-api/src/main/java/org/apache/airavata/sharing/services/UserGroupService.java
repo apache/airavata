@@ -35,7 +35,6 @@ import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.SharingType;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.apache.airavata.sharing.repositories.UserGroupRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +50,7 @@ public class UserGroupService {
             UserGroupRepository userGroupRepository,
             PermissionTypeService permissionTypeService,
             UserGroupMapper userGroupMapper,
-            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.userGroupRepository = userGroupRepository;
         this.permissionTypeService = permissionTypeService;
         this.userGroupMapper = userGroupMapper;

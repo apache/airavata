@@ -43,7 +43,6 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -74,8 +73,8 @@ public class UserProfileService {
             IamAdminService iamAdminService,
             UserProfileMapper userProfileMapper,
             AiravataSecurityManager securityManager,
-            @Qualifier("profileServiceEntityManager") EntityManager entityManager,
-            @Qualifier("profileServiceTransactionManager") PlatformTransactionManager transactionManager,
+            EntityManager entityManager,
+            PlatformTransactionManager transactionManager,
             Dispatcher dbEventDispatcher) {
         this.userProfileRepository = userProfileRepository;
         this.iamAdminService = iamAdminService;
@@ -88,7 +87,7 @@ public class UserProfileService {
         this.iamUpdateTransactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -135,7 +134,7 @@ public class UserProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
             throws UserProfileServiceException, IamAdminServicesException {
         try {
@@ -182,7 +181,7 @@ public class UserProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
             throws UserProfileServiceException, IamAdminServicesException {
         try {
@@ -329,7 +328,7 @@ public class UserProfileService {
         };
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId)
             throws UserProfileServiceException {
         try {
@@ -345,7 +344,7 @@ public class UserProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public boolean deleteUserProfile(AuthzToken authzToken, String userId, String gatewayId)
             throws UserProfileServiceException {
         try {
@@ -372,7 +371,7 @@ public class UserProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit)
             throws UserProfileServiceException {
         var usersInGateway = getAllUserProfilesInGateway(gatewayId, offset, limit);
@@ -380,7 +379,7 @@ public class UserProfileService {
         else throw new UserProfileServiceException(String.format("No user profiles found for gatewayId=%s", gatewayId));
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public boolean doesUserExist(AuthzToken authzToken, String userId, String gatewayId)
             throws UserProfileServiceException {
         try {

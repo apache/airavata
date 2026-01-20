@@ -31,6 +31,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,7 +81,7 @@ public class ApplicationInterfaceEntity implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "APP_MODULE_MAPPING", joinColumns = @JoinColumn(name = "INTERFACE_ID"))
     @Column(name = "MODULE_ID")
-    private List<String> applicationModules;
+    private List<String> applicationModules = new ArrayList<>();
 
     @OneToMany(
             targetEntity = ApplicationInputEntity.class,
@@ -88,7 +89,7 @@ public class ApplicationInterfaceEntity implements Serializable {
             orphanRemoval = true,
             mappedBy = "applicationInterface",
             fetch = FetchType.EAGER)
-    private List<ApplicationInputEntity> applicationInputs;
+    private List<ApplicationInputEntity> applicationInputs = new ArrayList<>();
 
     @OneToMany(
             targetEntity = ApplicationOutputEntity.class,
@@ -96,7 +97,7 @@ public class ApplicationInterfaceEntity implements Serializable {
             orphanRemoval = true,
             mappedBy = "applicationInterface",
             fetch = FetchType.EAGER)
-    private List<ApplicationOutputEntity> applicationOutputs;
+    private List<ApplicationOutputEntity> applicationOutputs = new ArrayList<>();
 
     public ApplicationInterfaceEntity() {}
 

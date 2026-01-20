@@ -99,6 +99,8 @@ public class ExperimentErrorRepositoryTest extends TestBase {
         assertNotNull(experimentErrorId, "Experiment error ID should not be null");
         assertEquals("error-1", experimentErrorId, "Error ID should match");
 
+        // Clear JPA cache to ensure fresh load with the newly added error
+        flushAndClear();
         assertEquals(
                 1,
                 experimentService.getExperiment(experimentId).getErrors().size(),

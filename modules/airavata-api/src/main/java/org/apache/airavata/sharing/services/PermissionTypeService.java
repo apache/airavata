@@ -31,7 +31,6 @@ import org.apache.airavata.sharing.mappers.PermissionTypeMapper;
 import org.apache.airavata.sharing.model.PermissionType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.PermissionTypeRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +44,7 @@ public class PermissionTypeService {
     public PermissionTypeService(
             PermissionTypeRepository permissionTypeRepository,
             PermissionTypeMapper permissionTypeMapper,
-            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.permissionTypeRepository = permissionTypeRepository;
         this.permissionTypeMapper = permissionTypeMapper;
         this.entityManager = entityManager;

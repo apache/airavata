@@ -25,8 +25,4 @@ import org.springframework.transaction.annotation.Transactional;
 @org.springframework.test.context.ActiveProfiles("test")
 @Transactional
 public class WorkspaceRepositoryTest extends TestBase {
-
-    public WorkspaceRepositoryTest() {
-        super(TestBase.Database.EXP_CATALOG, TestBase.Database.APP_CATALOG);
-    }
 }

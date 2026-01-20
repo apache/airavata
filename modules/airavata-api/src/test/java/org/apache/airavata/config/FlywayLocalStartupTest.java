@@ -24,41 +24,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Test to verify Flyway configuration is correct for local/production startup.
- * This test verifies that FlywayConfig is properly configured and will run
- * migrations when the application starts (when flyway.enabled=true).
- *
- * Note: This test does not actually run migrations - it only verifies the
- * configuration is correct. Actual migration testing requires a real database.
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class, FlywayConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
-            "flyway.enabled=false", // Disable FlywayConfig since TestcontainersConfig handles migrations
+            "airavata.flyway.enabled=false",
         })
-@org.springframework.test.context.ActiveProfiles("test")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@ActiveProfiles("test")
 public class FlywayLocalStartupTest {
+
+    @Autowired(required = false)
+    private Flyway flyway;
 
     @Test
     public void testFlywayConfigLoaded() {
-
-        assertTrue(true, "FlywayConfig should be loaded");
+        // Flyway is disabled in test mode, so bean may be null
+        // This test just verifies the context loads without errors
+        assertTrue(true, "FlywayConfig should be loaded without errors");
     }
-
-    @Test
-    public void testFlywayBeansExist(
-            @Autowired(required = false) @Qualifier("profileServiceFlyway") Flyway profileServiceFlyway,
-            @Autowired(required = false) @Qualifier("appCatalogFlyway") Flyway appCatalogFlyway,
-            @Autowired(required = false) @Qualifier("expCatalogFlyway") Flyway expCatalogFlyway,
-            @Autowired(required = false) @Qualifier("replicaCatalogFlyway") Flyway replicaCatalogFlyway,
-            @Autowired(required = false) @Qualifier("workflowCatalogFlyway") Flyway workflowCatalogFlyway,
-            @Autowired(required = false) @Qualifier("sharingRegistryFlyway") Flyway sharingRegistryFlyway,
-            @Autowired(required = false) @Qualifier("credentialStoreFlyway") Flyway credentialStoreFlyway) {}
 }

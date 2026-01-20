@@ -82,7 +82,7 @@ public class ApplicationOutputEntity implements Serializable {
     private String metaData;
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
-    @JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "INTERFACE_ID", nullable = false, insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationInterfaceEntity applicationInterface;
 

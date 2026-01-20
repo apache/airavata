@@ -83,7 +83,7 @@ public class AiravataCommandLine implements CommandLineRunner {
     public AiravataCommandLine(IFactory factory) {
         this.commandLine = new CommandLine(this, factory);
     }
-    
+
     /**
      * No-arg constructor for standalone CLI usage (e.g., testing).
      */

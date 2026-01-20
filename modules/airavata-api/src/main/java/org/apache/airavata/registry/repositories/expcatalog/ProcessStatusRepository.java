@@ -36,6 +36,10 @@ public interface ProcessStatusRepository extends JpaRepository<ProcessStatusEnti
             "SELECT p FROM ProcessStatusEntity p WHERE p.processId = :processId ORDER BY p.timeOfStateChange DESC, p.statusId DESC")
     List<ProcessStatusEntity> findByProcessIdOrderByTimeOfStateChangeDesc(@Param("processId") String processId);
 
+    @Query(
+            "SELECT p FROM ProcessStatusEntity p WHERE p.processId = :processId ORDER BY p.timeOfStateChange ASC, p.statusId ASC")
+    List<ProcessStatusEntity> findByProcessIdOrderByTimeOfStateChangeAsc(@Param("processId") String processId);
+
     @Query("SELECT p FROM ProcessStatusEntity p WHERE p.state = :state")
     List<ProcessStatusEntity> findByState(@Param("state") ProcessState state, Pageable pageable);
 }

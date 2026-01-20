@@ -31,12 +31,11 @@ import org.apache.airavata.registry.mappers.ExperimentStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ExperimentStatusService {
     private final ExperimentStatusRepository experimentStatusRepository;
     private final ExperimentStatusMapper experimentStatusMapper;
@@ -52,7 +51,7 @@ public class ExperimentStatusService {
             ExperimentStatusRepository experimentStatusRepository,
             ExperimentStatusMapper experimentStatusMapper,
             ExperimentRepository experimentRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.experimentStatusRepository = experimentStatusRepository;
         this.experimentStatusMapper = experimentStatusMapper;
         this.experimentRepository = experimentRepository;

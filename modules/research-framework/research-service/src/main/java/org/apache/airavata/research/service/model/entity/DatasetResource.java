@@ -24,8 +24,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 
-@Entity
-@Table(name = "DATASET_RESOURCE")
+@Entity(name = "ResearchDatasetResourceEntity")
+@Table(name = "RESEARCH_DATASET_RESOURCE")
 public class DatasetResource extends Resource {
 
     @Column(nullable = false)

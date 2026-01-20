@@ -20,8 +20,6 @@
 package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,6 +173,9 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         ExperimentStatus finalStatus = registryService.getExperimentStatus(experimentId);
         assertThat(finalStatus.getState()).isEqualTo(ExperimentState.COMPLETED);
 
+        // Clear JPA cache to ensure fresh load with all child entities
+        flushAndClear();
+
         // Step 13: Verify all entities are persisted
         ExperimentModel finalExperiment = registryService.getExperiment(experimentId);
         assertThat(finalExperiment).isNotNull();
@@ -300,6 +301,9 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
             status.setReason("State: " + state.name());
             registryService.updateExperimentStatus(status, experimentId);
         }
+
+        // Clear JPA cache to ensure fresh load with all statuses
+        flushAndClear();
 
         ExperimentModel retrieved = registryService.getExperiment(experimentId);
         assertThat(retrieved.getExperimentStatus()).isNotNull().isNotEmpty();

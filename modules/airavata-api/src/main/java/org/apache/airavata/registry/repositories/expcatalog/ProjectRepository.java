@@ -30,10 +30,10 @@ import org.springframework.stereotype.Repository;
 @Repository("expCatalogProjectRepository")
 public interface ProjectRepository extends JpaRepository<ProjectEntity, String> {
 
-    @Query("SELECT p FROM ProjectEntity p WHERE p.owner LIKE :owner")
+    @Query("SELECT p FROM ExpCatalogProjectEntity p WHERE p.owner LIKE :owner")
     List<ProjectEntity> findByOwner(@Param("owner") String owner, Pageable pageable);
 
-    @Query("SELECT p FROM ProjectEntity p WHERE p.gatewayId LIKE :gatewayId")
+    @Query("SELECT p FROM ExpCatalogProjectEntity p WHERE p.gatewayId LIKE :gatewayId")
     List<ProjectEntity> findByGatewayId(@Param("gatewayId") String gatewayId);
 
     // Note: Complex search methods (searchProjects, searchAllAccessibleProjects) with dynamic queries

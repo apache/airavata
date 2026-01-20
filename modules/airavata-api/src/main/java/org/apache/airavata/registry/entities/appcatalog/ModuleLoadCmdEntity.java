@@ -52,7 +52,7 @@ public class ModuleLoadCmdEntity implements Serializable {
     private int commandOrder;
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "APP_DEPLOYMENT_ID")
+    @JoinColumn(name = "APP_DEPLOYMENT_ID", insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 

@@ -89,25 +89,42 @@ public class UserResourceProfileService {
             throws AppCatalogException {
         String userId = userResourceProfile.getUserId();
         String gatewayId = userResourceProfile.getGatewayID();
+        if (gatewayId == null || gatewayId.trim().isEmpty()) {
+            throw new AppCatalogException("GatewayID is required for UserResourceProfile");
+        }
         UserResourceProfileEntity userResourceProfileEntity = userResourceProfileMapper.toEntity(userResourceProfile);
 
-        if (userResourceProfileEntity.getUserComputeResourcePreferences() != null) {
-            logger.debug(
-                    "Populating the Primary Key UserComputeResourcePreferences objects for the User Resource Profile");
-            userResourceProfileEntity
-                    .getUserComputeResourcePreferences()
-                    .forEach(userComputeResourcePreferenceEntity -> {
-                        userComputeResourcePreferenceEntity.setUserId(userId);
-                        userComputeResourcePreferenceEntity.setGatewayId(gatewayId);
-                    });
+        // Ensure gatewayId is set on the entity (mapper might not handle it correctly)
+        userResourceProfileEntity.setGatewayId(gatewayId);
+
+        // Manually map compute resource preferences (mapper ignores them)
+        if (userResourceProfile.getUserComputeResourcePreferences() != null
+                && !userResourceProfile.getUserComputeResourcePreferences().isEmpty()) {
+            logger.debug("Mapping UserComputeResourcePreferences for the User Resource Profile");
+            List<UserComputeResourcePreferenceEntity> computePrefs = userComputeResourcePreferenceMapper.toEntityList(
+                    userResourceProfile.getUserComputeResourcePreferences());
+            computePrefs.forEach(pref -> {
+                pref.setUserId(userId);
+                pref.setGatewayId(gatewayId);
+                // Note: Don't set userResourceProfile - the JoinColumns have insertable=false, updatable=false
+                // The foreign keys are managed by the explicit userId and gatewayId fields
+            });
+            userResourceProfileEntity.setUserComputeResourcePreferences(computePrefs);
         }
 
-        if (userResourceProfileEntity.getUserStoragePreferences() != null) {
-            logger.debug("Populating the Primary Key UserStoragePreferences objects for the User Resource Profile");
-            userResourceProfileEntity.getUserStoragePreferences().forEach(userStoragePreferenceEntity -> {
-                userStoragePreferenceEntity.setUserId(userId);
-                userStoragePreferenceEntity.setGatewayId(gatewayId);
+        // Manually map storage preferences (mapper ignores them)
+        if (userResourceProfile.getUserStoragePreferences() != null
+                && !userResourceProfile.getUserStoragePreferences().isEmpty()) {
+            logger.debug("Mapping UserStoragePreferences for the User Resource Profile");
+            List<UserStoragePreferenceEntity> storagePrefs =
+                    userStoragePreferenceMapper.toEntityList(userResourceProfile.getUserStoragePreferences());
+            storagePrefs.forEach(pref -> {
+                pref.setUserId(userId);
+                pref.setGatewayId(gatewayId);
+                // Note: Don't set userResourceProfile - the JoinColumns have insertable=false, updatable=false
+                // The foreign keys are managed by the explicit userId and gatewayId fields
             });
+            userResourceProfileEntity.setUserStoragePreferences(storagePrefs);
         }
 
         if (!isUserResourceProfileExists(userId, gatewayId)) {
@@ -127,7 +144,28 @@ public class UserResourceProfileService {
         UserResourceProfileEntity entity =
                 userResourceProfileRepository.findById(userResourceProfilePK).orElse(null);
         if (entity == null) return null;
-        return userResourceProfileMapper.toModel(entity);
+
+        UserResourceProfile model = userResourceProfileMapper.toModel(entity);
+
+        // Manually load preferences from repositories to ensure they're loaded
+        // The entity's collections might not be initialized due to lazy loading
+        List<UserComputeResourcePreferenceEntity> computePrefs =
+                userComputeResourcePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
+        if (computePrefs != null && !computePrefs.isEmpty()) {
+            model.setUserComputeResourcePreferences(userComputeResourcePreferenceMapper.toModelList(computePrefs));
+        } else {
+            model.setUserComputeResourcePreferences(new ArrayList<>());
+        }
+
+        List<UserStoragePreferenceEntity> storagePrefs =
+                userStoragePreferenceRepository.findByUserIdAndGatewayId(userId, gatewayId);
+        if (storagePrefs != null && !storagePrefs.isEmpty()) {
+            model.setUserStoragePreferences(userStoragePreferenceMapper.toModelList(storagePrefs));
+        } else {
+            model.setUserStoragePreferences(new ArrayList<>());
+        }
+
+        return model;
     }
 
     @Transactional(readOnly = true)

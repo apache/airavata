@@ -109,6 +109,8 @@ public class ExperimentStatusRepositoryTest extends TestBase {
         validatedStatus.setState(ExperimentState.VALIDATED);
         String statusId = experimentStatusService.addExperimentStatus(validatedStatus, experimentId);
         assertNotNull(statusId, "Status ID should not be null");
+        // Clear JPA cache to ensure fresh load with the newly added status
+        flushAndClear();
         assertEquals(
                 2,
                 experimentService

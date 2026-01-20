@@ -44,7 +44,6 @@ import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +63,7 @@ public class TenantProfileService {
             TenantProfileRepository tenantProfileRepository,
             CredentialStoreService credentialStoreService,
             GatewayMapper gatewayMapper,
-            @Qualifier("profileServiceEntityManager") EntityManager entityManager,
+            EntityManager entityManager,
             Dispatcher dbEventDispatcher) {
         this.tenantProfileRepository = tenantProfileRepository;
         this.credentialStoreService = credentialStoreService;
@@ -73,7 +72,7 @@ public class TenantProfileService {
         this.dbEventDispatcher = dbEventDispatcher;
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public String addGateway(AuthzToken authzToken, Gateway gateway)
             throws TenantProfileServiceException, CredentialStoreException {
         try {
@@ -120,7 +119,7 @@ public class TenantProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway)
             throws TenantProfileServiceException, CredentialStoreException {
         try {
@@ -168,7 +167,7 @@ public class TenantProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId)
             throws TenantProfileServiceException {
         try {
@@ -192,7 +191,7 @@ public class TenantProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager")
+    @Transactional
     public boolean deleteGateway(AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId)
             throws TenantProfileServiceException {
         try {
@@ -223,7 +222,7 @@ public class TenantProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws TenantProfileServiceException {
         try {
             try {
@@ -240,7 +239,7 @@ public class TenantProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException {
         try {
             Gateway gateway;
@@ -259,7 +258,7 @@ public class TenantProfileService {
         }
     }
 
-    @Transactional(transactionManager = "profileServiceTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername)
             throws TenantProfileServiceException {
         try {

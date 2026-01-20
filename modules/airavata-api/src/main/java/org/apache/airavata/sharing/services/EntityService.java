@@ -38,7 +38,6 @@ import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.repositories.EntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +50,7 @@ public class EntityService {
     private final EntityMapper entityMapper;
     private final EntityManager entityManager;
 
-    public EntityService(
-            EntityRepository entityRepository,
-            EntityMapper entityMapper,
-            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+    public EntityService(EntityRepository entityRepository, EntityMapper entityMapper, EntityManager entityManager) {
         this.entityRepository = entityRepository;
         this.entityMapper = entityMapper;
         this.entityManager = entityManager;

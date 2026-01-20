@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ExperimentErrorService
         extends BaseErrorService<ExperimentErrorEntity, ExperimentErrorRepository, ExperimentErrorPK> {
 

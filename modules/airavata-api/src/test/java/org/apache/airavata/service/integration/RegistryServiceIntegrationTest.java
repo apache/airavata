@@ -54,9 +54,9 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
     private final ComputeResourceService computeResourceService;
     private final org.apache.airavata.registry.services.UserService userService;
 
-    // Inject EntityManager for the experiment catalog to enable flushing before search operations
-    @PersistenceContext(unitName = "expCatalogEntityManagerFactory")
-    private EntityManager expCatalogEntityManager;
+    // Inject EntityManager for flushing before search operations
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public RegistryServiceIntegrationTest(
             RegistryService registryService,

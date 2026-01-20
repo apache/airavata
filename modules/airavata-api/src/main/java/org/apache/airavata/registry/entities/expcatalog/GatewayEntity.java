@@ -31,9 +31,12 @@ import org.apache.airavata.common.model.GatewayApprovalStatus;
 
 /**
  * The persistent class for the gateway database table.
+ *
+ * <p>Note: Renamed to EXPCATALOG_GATEWAY to avoid conflict with ProfileGatewayEntity
+ * which uses the GATEWAY table in the unified database.
  */
-@Entity
-@Table(name = "GATEWAY")
+@Entity(name = "ExpCatalogGatewayEntity")
+@Table(name = "EXPCATALOG_GATEWAY")
 public class GatewayEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

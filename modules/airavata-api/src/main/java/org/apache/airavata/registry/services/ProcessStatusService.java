@@ -32,14 +32,13 @@ import org.apache.airavata.registry.mappers.ProcessStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ProcessStatusService {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ProcessStatusService.class);
     private final ProcessStatusRepository processStatusRepository;
@@ -56,7 +55,7 @@ public class ProcessStatusService {
             ProcessStatusRepository processStatusRepository,
             ProcessStatusMapper processStatusMapper,
             ProcessRepository processRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.processStatusRepository = processStatusRepository;
         this.processStatusMapper = processStatusMapper;
         this.processRepository = processRepository;

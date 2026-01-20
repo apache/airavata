@@ -115,6 +115,8 @@ public class TaskStatusRepositoryTest extends TestBase {
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setState(TaskState.EXECUTING);
         taskStatusService.addTaskStatus(taskStatus, taskId);
+        // Clear JPA cache to ensure fresh load with the newly added status
+        flushAndClear();
         assertEquals(1, taskService.getTask(taskId).getTaskStatuses().size(), "Task should have one status");
 
         taskStatus.setState(TaskState.CREATED);
@@ -140,6 +142,8 @@ public class TaskStatusRepositoryTest extends TestBase {
         status3.setState(TaskState.COMPLETED);
         taskStatusService.addTaskStatus(status3, taskId);
 
+        // Clear JPA cache to ensure fresh load with the newly added statuses
+        flushAndClear();
         assertTrue(
                 taskService.getTask(taskId).getTaskStatuses().size() >= 3,
                 "Task should have at least 3 statuses in history");

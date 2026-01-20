@@ -29,14 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ProcessInputService {
     private final ProcessInputRepository processInputRepository;
     private final InputDataObjectTypeMapper inputDataObjectTypeMapper;
 
     public ProcessInputService(
-            ProcessInputRepository processInputRepository,
-            InputDataObjectTypeMapper inputDataObjectTypeMapper) {
+            ProcessInputRepository processInputRepository, InputDataObjectTypeMapper inputDataObjectTypeMapper) {
         this.processInputRepository = processInputRepository;
         this.inputDataObjectTypeMapper = inputDataObjectTypeMapper;
     }

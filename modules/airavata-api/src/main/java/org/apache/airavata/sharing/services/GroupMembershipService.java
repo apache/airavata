@@ -62,7 +62,7 @@ public class GroupMembershipService {
             GroupMembershipMapper groupMembershipMapper,
             UserMapper userMapper,
             UserGroupMapper userGroupMapper,
-            @Qualifier("sharingRegistryEntityManager") EntityManager entityManager) {
+            EntityManager entityManager) {
         this.groupMembershipRepository = groupMembershipRepository;
         this.userService = userService;
         this.userGroupService = userGroupService;

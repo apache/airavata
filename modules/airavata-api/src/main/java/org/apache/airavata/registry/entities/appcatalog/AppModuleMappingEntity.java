@@ -47,11 +47,11 @@ public class AppModuleMappingEntity implements Serializable {
     private String moduleId;
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
-    @JoinColumn(name = "INTERFACE_ID")
+    @JoinColumn(name = "INTERFACE_ID", insertable = false, updatable = false)
     private ApplicationInterfaceEntity applicationInterface;
 
     @ManyToOne(targetEntity = ApplicationModuleEntity.class)
-    @JoinColumn(name = "MODULE_ID")
+    @JoinColumn(name = "MODULE_ID", insertable = false, updatable = false)
     private ApplicationModuleEntity applicationModule;
 
     public AppModuleMappingEntity() {}

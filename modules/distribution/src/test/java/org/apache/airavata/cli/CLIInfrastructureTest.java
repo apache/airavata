@@ -26,9 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +46,7 @@ import org.testcontainers.utility.DockerImageName;
 
 /**
  * CLI Infrastructure Tests for Airavata commands requiring external services.
- * 
+ *
  * These tests use Testcontainers to spin up required infrastructure
  * (MariaDB, Kafka, RabbitMQ, Zookeeper) for testing init and serve commands.
  */
@@ -66,15 +64,15 @@ public class CLIInfrastructureTest {
             .withCommand("--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci");
 
     @Container
-    static RabbitMQContainer rabbitMQContainer = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management"))
-            .withVhost("develop");
+    static RabbitMQContainer rabbitMQContainer =
+            new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management")).withVhost("develop");
 
     @Container
     static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.0"));
 
     @Container
-    static GenericContainer<?> zookeeperContainer = new GenericContainer<>(DockerImageName.parse("zookeeper:3.9"))
-            .withExposedPorts(2181);
+    static GenericContainer<?> zookeeperContainer =
+            new GenericContainer<>(DockerImageName.parse("zookeeper:3.9")).withExposedPorts(2181);
 
     private static String mariaDBUrl;
     private static String rabbitMQUrl;
@@ -84,8 +82,8 @@ public class CLIInfrastructureTest {
     @BeforeAll
     static void setupContainers() {
         mariaDBUrl = mariaDBContainer.getJdbcUrl();
-        rabbitMQUrl = String.format("amqp://guest:guest@%s:%d/develop",
-                rabbitMQContainer.getHost(), rabbitMQContainer.getAmqpPort());
+        rabbitMQUrl = String.format(
+                "amqp://guest:guest@%s:%d/develop", rabbitMQContainer.getHost(), rabbitMQContainer.getAmqpPort());
         kafkaUrl = kafkaContainer.getBootstrapServers();
         zookeeperUrl = String.format("%s:%d", zookeeperContainer.getHost(), zookeeperContainer.getMappedPort(2181));
 
@@ -163,7 +161,7 @@ public class CLIInfrastructureTest {
      */
     private String generateTestProperties() {
         StringBuilder sb = new StringBuilder();
-        
+
         // Database properties - use same URL for all catalogs (test mode)
         String[] catalogs = {"catalog", "registry", "profile", "sharing", "replica", "workflow", "vault", "research"};
         for (String catalog : catalogs) {
@@ -233,10 +231,10 @@ public class CLIInfrastructureTest {
             // The init command requires a running Spring context with database
             // This test verifies that the init command class exists and is properly configured
             assertThat(org.apache.airavata.cli.commands.InitCommand.class).isNotNull();
-            
+
             // Verify the command has the expected annotations
-            picocli.CommandLine.Command cmd = org.apache.airavata.cli.commands.InitCommand.class
-                    .getAnnotation(picocli.CommandLine.Command.class);
+            picocli.CommandLine.Command cmd =
+                    org.apache.airavata.cli.commands.InitCommand.class.getAnnotation(picocli.CommandLine.Command.class);
             assertThat(cmd).isNotNull();
             assertThat(cmd.name()).isEqualTo("init");
             // Description should mention database/migration
@@ -254,10 +252,10 @@ public class CLIInfrastructureTest {
         @DisplayName("Serve command should have foreground option")
         void serveCommandShouldHaveForegroundOption() throws NoSuchFieldException {
             // Verify the serve command has the foreground option
-            java.lang.reflect.Field foregroundField = 
+            java.lang.reflect.Field foregroundField =
                     org.apache.airavata.cli.commands.ServeCommand.class.getDeclaredField("foreground");
             assertThat(foregroundField).isNotNull();
-            
+
             picocli.CommandLine.Option option = foregroundField.getAnnotation(picocli.CommandLine.Option.class);
             assertThat(option).isNotNull();
             assertThat(option.names()).contains("--foreground");
@@ -268,8 +266,8 @@ public class CLIInfrastructureTest {
         void serveCommandShouldCheckAiravataHome() {
             // The serve command checks for airavata.home system property or AIRAVATA_HOME env
             // This test verifies the command structure
-            picocli.CommandLine.Command cmd = org.apache.airavata.cli.commands.ServeCommand.class
-                    .getAnnotation(picocli.CommandLine.Command.class);
+            picocli.CommandLine.Command cmd = org.apache.airavata.cli.commands.ServeCommand.class.getAnnotation(
+                    picocli.CommandLine.Command.class);
             assertThat(cmd).isNotNull();
             assertThat(cmd.name()).isEqualTo("serve");
             assertThat(cmd.description()).contains("Start all Airavata services");

@@ -28,12 +28,11 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentInputRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ExperimentInputService {
     private final ExperimentInputRepository experimentInputRepository;
     private final ExperimentRepository experimentRepository;
@@ -43,7 +42,7 @@ public class ExperimentInputService {
     public ExperimentInputService(
             ExperimentInputRepository experimentInputRepository,
             ExperimentRepository experimentRepository,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager,
+            EntityManager entityManager,
             InputDataObjectTypeMapper inputDataObjectTypeMapper) {
         this.experimentInputRepository = experimentInputRepository;
         this.experimentRepository = experimentRepository;

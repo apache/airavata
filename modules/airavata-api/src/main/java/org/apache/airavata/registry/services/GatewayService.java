@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("profileServiceTransactionManager")
+@Transactional
 public class GatewayService {
     private final GatewayRepository gatewayRepository;
     private final GatewayMapper gatewayMapper;

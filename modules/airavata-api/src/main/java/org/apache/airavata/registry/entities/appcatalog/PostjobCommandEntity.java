@@ -52,7 +52,7 @@ public class PostjobCommandEntity implements Serializable {
     private int commandOrder;
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "APPDEPLOYMENT_ID")
+    @JoinColumn(name = "APPDEPLOYMENT_ID", insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ApplicationDeploymentEntity applicationDeployment;
 

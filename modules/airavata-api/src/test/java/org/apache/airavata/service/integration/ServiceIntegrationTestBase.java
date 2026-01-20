@@ -69,6 +69,22 @@ public abstract class ServiceIntegrationTestBase {
     @org.springframework.beans.factory.annotation.Autowired
     protected org.apache.airavata.config.AiravataServerProperties properties;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    protected org.apache.airavata.registry.services.GatewayService gatewayService;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    protected jakarta.persistence.EntityManager entityManager;
+
+    /**
+     * Flush pending changes to the database and clear the JPA first-level cache.
+     * Use this before fetching entities that were modified via child entity saves
+     * to ensure fresh data is loaded from the database.
+     */
+    protected void flushAndClear() {
+        entityManager.flush();
+        entityManager.clear();
+    }
+
     @org.springframework.test.context.DynamicPropertySource
     static void configureProperties(org.springframework.test.context.DynamicPropertyRegistry registry) {
         String kafkaUrl = org.apache.airavata.config.TestcontainersConfig.getKafkaBootstrapServers();
@@ -93,7 +109,18 @@ public abstract class ServiceIntegrationTestBase {
     }
 
     @BeforeEach
-    public void setUpBase() {
+    public void setUpBase() throws org.apache.airavata.registry.exception.RegistryException {
+        // Ensure test gateway exists in EXPCATALOG_GATEWAY table
+        // This is required because USERS table has FK to EXPCATALOG_GATEWAY
+        if (gatewayService != null && !gatewayService.isGatewayExist(TEST_GATEWAY_ID)) {
+            org.apache.airavata.common.model.Gateway gateway = new org.apache.airavata.common.model.Gateway();
+            gateway.setGatewayId(TEST_GATEWAY_ID);
+            gateway.setGatewayName("Default Test Gateway");
+            gateway.setDomain(TEST_GATEWAY_ID);
+            gateway.setEmailAddress("test@" + TEST_GATEWAY_ID + ".org");
+            gatewayService.addGateway(gateway);
+        }
+
         testAuthzToken = createRealAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
         if (properties != null) {
             org.apache.airavata.config.TestPropertiesHelper.logProperties(properties);
@@ -103,12 +130,6 @@ public abstract class ServiceIntegrationTestBase {
     protected AuthzToken createRealAuthzToken(String gatewayId, String username) {
         return org.apache.airavata.config.KeycloakTokenHelper.createRealAuthzToken(
                 keycloakUrl, properties, gatewayId, username);
-    }
-
-    /** @deprecated Use createRealAuthzToken instead */
-    @Deprecated
-    protected AuthzToken createTestAuthzToken(String gatewayId, String username) {
-        return createRealAuthzToken(gatewayId, username);
     }
 
     @Configuration
@@ -146,8 +167,8 @@ public abstract class ServiceIntegrationTestBase {
                 org.springframework.core.env.Environment environment) {
             return org.springframework.boot.context.properties.bind.Binder.get(environment)
                     .bind("airavata", org.apache.airavata.config.AiravataServerProperties.class)
-                    .orElseThrow(
-                            () -> new IllegalStateException("Failed to bind AiravataServerProperties from environment"));
+                    .orElseThrow(() ->
+                            new IllegalStateException("Failed to bind AiravataServerProperties from environment"));
         }
 
         @Bean

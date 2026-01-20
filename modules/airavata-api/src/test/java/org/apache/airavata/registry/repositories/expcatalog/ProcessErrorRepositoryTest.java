@@ -115,6 +115,8 @@ public class ProcessErrorRepositoryTest extends TestBase {
         assertNotNull(errorId2, "Error 2 ID should not be null");
         assertNotNull(errorId3, "Error 3 ID should not be null");
 
+        // Clear JPA cache to ensure fresh load with the newly added errors
+        flushAndClear();
         ProcessModel process = processService.getProcess(processId);
         assertNotNull(process.getProcessErrors(), "Process errors list should not be null");
         assertEquals(3, process.getProcessErrors().size(), "Process should have 3 errors");
@@ -230,6 +232,8 @@ public class ProcessErrorRepositoryTest extends TestBase {
         String errorId1 = processErrorService.addProcessError(error1, processId);
         String errorId2 = processErrorService.addProcessError(error2, processId);
 
+        // Clear JPA cache to ensure fresh load with the newly added errors
+        flushAndClear();
         ProcessModel process = processService.getProcess(processId);
         assertEquals(2, process.getProcessErrors().size(), "Process should have 2 errors before deletion");
 

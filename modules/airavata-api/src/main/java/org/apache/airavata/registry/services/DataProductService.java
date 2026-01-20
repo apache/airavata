@@ -30,12 +30,11 @@ import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationE
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
 import org.apache.airavata.registry.mappers.DataProductMapper;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("replicaCatalogTransactionManager")
+@Transactional
 public class DataProductService {
     private final DataProductRepository dataProductRepository;
     private final EntityManager entityManager;
@@ -43,59 +42,76 @@ public class DataProductService {
 
     public DataProductService(
             DataProductRepository dataProductRepository,
-            @Qualifier("replicaCatalogEntityManager") EntityManager entityManager,
+            EntityManager entityManager,
             DataProductMapper dataProductMapper) {
         this.dataProductRepository = dataProductRepository;
         this.entityManager = entityManager;
         this.dataProductMapper = dataProductMapper;
     }
 
-    @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException {
         DataProductEntity entity = dataProductRepository.findById(productUri).orElse(null);
         if (entity == null) return null;
 
-        // Process replica locations to convert PersistentMap to regular HashMap
-        if (entity.getReplicaLocations() != null) {
-            for (DataReplicaLocationEntity replicaEntity : entity.getReplicaLocations()) {
-                // Force initialization of replicaMetadata by iterating over it
-                Map<String, String> metadataCopy = new HashMap<>();
-                if (replicaEntity.getReplicaMetadata() != null) {
-                    try {
-                        // Iterate over the map to force loading of all entries
-                        for (Map.Entry<String, String> entry :
-                                replicaEntity.getReplicaMetadata().entrySet()) {
-                            metadataCopy.put(entry.getKey(), entry.getValue());
-                        }
-                    } catch (Exception e) {
-                        metadataCopy = new HashMap<>();
-                    }
-                }
-
-                // Detach the replica entity to convert PersistentMap to regular HashMap
-                entityManager.detach(replicaEntity);
-
-                // Replace PersistentMap with regular HashMap
-                replicaEntity.setReplicaMetadata(new HashMap<>(metadataCopy));
-            }
+        // Manual mapping to avoid session issues
+        DataProductModel model = new DataProductModel();
+        model.setProductUri(entity.getProductUri());
+        model.setGatewayId(entity.getGatewayId());
+        model.setOwnerName(entity.getOwnerName());
+        model.setProductName(entity.getProductName());
+        model.setProductDescription(entity.getProductDescription());
+        model.setProductSize(entity.getProductSize());
+        model.setDataProductType(entity.getDataProductType());
+        model.setParentProductUri(entity.getParentProductUri());
+        if (entity.getCreationTime() != null) {
+            model.setCreationTime(entity.getCreationTime().getTime());
+        }
+        if (entity.getLastModifiedTime() != null) {
+            model.setLastModifiedTime(entity.getLastModifiedTime().getTime());
         }
 
-        // Detach the main entity as well
-        entityManager.detach(entity);
-
-        DataProductModel model = dataProductMapper.toModel(entity);
-        // Set productUri on replica locations (mapper ignores it)
-        if (model.getReplicaLocations() != null && entity.getReplicaLocations() != null) {
-            for (int i = 0; i < model.getReplicaLocations().size(); i++) {
-                if (i < entity.getReplicaLocations().size()) {
-                    model.getReplicaLocations().get(i).setProductUri(productUri);
-                }
-            }
+        // Copy metadata to regular HashMap
+        if (entity.getProductMetadata() != null && !entity.getProductMetadata().isEmpty()) {
+            model.setProductMetadata(new HashMap<>(entity.getProductMetadata()));
         }
+
+        // Map replica locations
+        if (entity.getReplicaLocations() != null
+                && !entity.getReplicaLocations().isEmpty()) {
+            List<org.apache.airavata.common.model.DataReplicaLocationModel> replicaModels = new java.util.ArrayList<>();
+            for (DataReplicaLocationEntity re : entity.getReplicaLocations()) {
+                org.apache.airavata.common.model.DataReplicaLocationModel rm =
+                        new org.apache.airavata.common.model.DataReplicaLocationModel();
+                rm.setReplicaId(re.getReplicaId());
+                rm.setProductUri(productUri);
+                rm.setReplicaName(re.getReplicaName());
+                rm.setReplicaDescription(re.getReplicaDescription());
+                rm.setStorageResourceId(re.getStorageResourceId());
+                rm.setFilePath(re.getFilePath());
+                rm.setReplicaLocationCategory(re.getReplicaLocationCategory());
+                rm.setReplicaPersistentType(re.getReplicaPersistentType());
+                if (re.getCreationTime() != null) {
+                    rm.setCreationTime(re.getCreationTime().getTime());
+                }
+                if (re.getLastModifiedTime() != null) {
+                    rm.setLastModifiedTime(re.getLastModifiedTime().getTime());
+                }
+                if (re.getValidUntilTime() != null) {
+                    rm.setValidUntilTime(re.getValidUntilTime().getTime());
+                }
+                if (re.getReplicaMetadata() != null && !re.getReplicaMetadata().isEmpty()) {
+                    rm.setReplicaMetadata(new HashMap<>(re.getReplicaMetadata()));
+                }
+                replicaModels.add(rm);
+            }
+            model.setReplicaLocations(replicaModels);
+        }
+
         return model;
     }
 
-    @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public DataProductModel getParentDataProduct(String productUri) throws ReplicaCatalogException {
         DataProductEntity entity = dataProductRepository.findById(productUri).orElse(null);
         if (entity == null || entity.getParentProductUri() == null) return null;
@@ -126,7 +142,7 @@ public class DataProductService {
         return dataProductMapper.toModel(parentEntity);
     }
 
-    @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException {
         List<DataProductEntity> entities = dataProductRepository.findByParentProductUri(productUri);
         return entities.stream()
@@ -155,7 +171,7 @@ public class DataProductService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(value = "replicaCatalogTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<DataProductModel> searchDataProductsByName(
             String gatewayId, String userId, String productName, int limit, int offset) throws ReplicaCatalogException {
         String searchPattern = "%" + productName + "%";
@@ -234,8 +250,77 @@ public class DataProductService {
     }
 
     public boolean updateDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
-        DataProductEntity entity = dataProductMapper.toEntity(dataProductModel);
-        dataProductRepository.save(entity);
+        // Fetch existing entity first to properly merge changes
+        DataProductEntity existing =
+                dataProductRepository.findById(dataProductModel.getProductUri()).orElse(null);
+        if (existing == null) {
+            return false;
+        }
+
+        // Update fields from the model
+        if (dataProductModel.getProductName() != null) {
+            existing.setProductName(dataProductModel.getProductName());
+        }
+        if (dataProductModel.getProductDescription() != null) {
+            existing.setProductDescription(dataProductModel.getProductDescription());
+        }
+        if (dataProductModel.getOwnerName() != null) {
+            existing.setOwnerName(dataProductModel.getOwnerName());
+        }
+        if (dataProductModel.getParentProductUri() != null) {
+            existing.setParentProductUri(dataProductModel.getParentProductUri());
+        }
+        if (dataProductModel.getProductSize() > 0) {
+            existing.setProductSize(dataProductModel.getProductSize());
+        }
+        if (dataProductModel.getDataProductType() != null) {
+            existing.setDataProductType(dataProductModel.getDataProductType());
+        }
+        if (dataProductModel.getProductMetadata() != null) {
+            existing.setProductMetadata(dataProductModel.getProductMetadata());
+        }
+        if (dataProductModel.getLastModifiedTime() > 0) {
+            existing.setLastModifiedTime(new java.sql.Timestamp(dataProductModel.getLastModifiedTime()));
+        }
+
+        // Handle replica locations update - merge existing with new
+        if (dataProductModel.getReplicaLocations() != null
+                && !dataProductModel.getReplicaLocations().isEmpty()) {
+            // Clear existing and add updated ones
+            if (existing.getReplicaLocations() != null) {
+                existing.getReplicaLocations().clear();
+            } else {
+                existing.setReplicaLocations(new java.util.ArrayList<>());
+            }
+            for (org.apache.airavata.common.model.DataReplicaLocationModel replicaModel :
+                    dataProductModel.getReplicaLocations()) {
+                org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity replicaEntity =
+                        new org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity();
+                replicaEntity.setReplicaId(replicaModel.getReplicaId());
+                replicaEntity.setProductUri(dataProductModel.getProductUri());
+                replicaEntity.setReplicaName(replicaModel.getReplicaName());
+                replicaEntity.setReplicaDescription(replicaModel.getReplicaDescription());
+                replicaEntity.setFilePath(replicaModel.getFilePath());
+                replicaEntity.setStorageResourceId(replicaModel.getStorageResourceId());
+                replicaEntity.setReplicaLocationCategory(replicaModel.getReplicaLocationCategory());
+                replicaEntity.setReplicaPersistentType(replicaModel.getReplicaPersistentType());
+                if (replicaModel.getCreationTime() > 0) {
+                    replicaEntity.setCreationTime(new java.sql.Timestamp(replicaModel.getCreationTime()));
+                }
+                if (replicaModel.getLastModifiedTime() > 0) {
+                    replicaEntity.setLastModifiedTime(new java.sql.Timestamp(replicaModel.getLastModifiedTime()));
+                }
+                if (replicaModel.getValidUntilTime() > 0) {
+                    replicaEntity.setValidUntilTime(new java.sql.Timestamp(replicaModel.getValidUntilTime()));
+                }
+                replicaEntity.setReplicaMetadata(replicaModel.getReplicaMetadata());
+                replicaEntity.setDataProduct(existing);
+                existing.getReplicaLocations().add(replicaEntity);
+            }
+        }
+
+        dataProductRepository.save(existing);
+        entityManager.flush(); // Ensure changes are persisted
         return true;
     }
 

@@ -29,12 +29,11 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.TaskStatusMapper;
 import org.apache.airavata.registry.repositories.expcatalog.TaskStatusRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class TaskStatusService {
     private final TaskStatusRepository taskStatusRepository;
     private final TaskStatusMapper taskStatusMapper;
@@ -46,9 +45,7 @@ public class TaskStatusService {
     private static final Object timestampLock = new Object();
 
     public TaskStatusService(
-            TaskStatusRepository taskStatusRepository,
-            TaskStatusMapper taskStatusMapper,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+            TaskStatusRepository taskStatusRepository, TaskStatusMapper taskStatusMapper, EntityManager entityManager) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskStatusMapper = taskStatusMapper;
         this.entityManager = entityManager;

@@ -463,8 +463,9 @@ public class ComputeResourceService {
                     .collect(Collectors.toList());
             return result;
         } else {
-            String unsupportedField =
-                    filters.keySet().isEmpty() ? "empty filters" : filters.keySet().iterator().next();
+            String unsupportedField = filters.keySet().isEmpty()
+                    ? "empty filters"
+                    : filters.keySet().iterator().next();
             throw new IllegalArgumentException("Unsupported field name for compute resource: " + unsupportedField);
         }
     }

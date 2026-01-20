@@ -42,12 +42,11 @@ import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional("expCatalogTransactionManager")
+@Transactional
 public class ExperimentSummaryService {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryService.class);
     private static final int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
@@ -55,9 +54,7 @@ public class ExperimentSummaryService {
     private final ExperimentSummaryMapper experimentSummaryMapper;
     private final EntityManager entityManager;
 
-    public ExperimentSummaryService(
-            ExperimentSummaryMapper experimentSummaryMapper,
-            @Qualifier("expCatalogEntityManager") EntityManager entityManager) {
+    public ExperimentSummaryService(ExperimentSummaryMapper experimentSummaryMapper, EntityManager entityManager) {
         this.experimentSummaryMapper = experimentSummaryMapper;
         this.entityManager = entityManager;
     }

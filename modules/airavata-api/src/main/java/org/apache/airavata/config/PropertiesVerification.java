@@ -52,15 +52,8 @@ public class PropertiesVerification implements CommandLineRunner {
                 properties.services().thrift().server().port());
         logger.info(
                 "REST Server - Port: {}", properties.services().rest().server().port());
-        // Verify Database configurations
-        logger.info(
-                "AppCatalog DB - URL: {}, Driver: {}",
-                properties.database().catalog().url(),
-                properties.database().catalog().driver());
-        logger.info(
-                "Registry DB - URL: {}, Driver: {}",
-                properties.database().registry().url(),
-                properties.database().registry().driver());
+        // Database configuration is now managed by Spring Boot standard properties
+        // (spring.datasource.*) and is configured via JpaConfig
         // Verify Default Registry
         logger.info(
                 "Default Registry - Gateway: {}, User: {}",

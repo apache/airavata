@@ -31,6 +31,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +41,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity(name = "PROJECT")
+@Entity(name = "ResearchProjectEntity")
+@Table(name = "RESEARCH_PROJECT")
 @EntityListeners(AuditingEntityListener.class)
 public class Project {
 
@@ -62,7 +64,7 @@ public class Project {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "project_dataset",
+            name = "RESEARCH_PROJECT_DATASET",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "dataset_resource_id"))
     private Set<DatasetResource> datasetResources = new HashSet<>();

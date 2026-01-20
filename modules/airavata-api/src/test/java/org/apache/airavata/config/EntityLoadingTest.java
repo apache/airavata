@@ -28,203 +28,42 @@ import jakarta.persistence.metamodel.EntityType;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Test to validate that all JPA entities are properly loaded and accessible
- * through their respective EntityManagerFactories.
+ * Test to validate that all JPA entities are properly loaded.
  */
 @SpringBootTest(
         classes = {JpaConfig.class, TestcontainersConfig.class},
         properties = {
             "spring.main.allow-bean-definition-overriding=true",
-            "flyway.enabled=false",
+            "airavata.flyway.enabled=false",
         })
-@org.springframework.test.context.ActiveProfiles("test")
-@org.springframework.boot.context.properties.EnableConfigurationProperties(AiravataServerProperties.class)
+@ActiveProfiles("test")
 public class EntityLoadingTest {
 
-    @Autowired(required = false)
-    @Qualifier("profileServiceEntityManagerFactory")
-    private EntityManagerFactory profileServiceEntityManagerFactory;
-
     @Autowired
-    @Qualifier("appCatalogEntityManagerFactory")
-    private EntityManagerFactory appCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("expCatalogEntityManagerFactory")
-    private EntityManagerFactory expCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("replicaCatalogEntityManagerFactory")
-    private EntityManagerFactory replicaCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("workflowCatalogEntityManagerFactory")
-    private EntityManagerFactory workflowCatalogEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("sharingRegistryEntityManagerFactory")
-    private EntityManagerFactory sharingRegistryEntityManagerFactory;
-
-    @Autowired
-    @Qualifier("credentialStoreEntityManagerFactory")
-    private EntityManagerFactory credentialStoreEntityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
     @Test
-    public void testProfileServiceEntitiesAreLoaded() {
-        if (profileServiceEntityManagerFactory == null) {
-
-            return;
-        }
-        EntityManager em = profileServiceEntityManagerFactory.createEntityManager();
+    public void testEntitiesAreLoaded() {
+        EntityManager em = entityManagerFactory.createEntityManager();
         try {
             Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
+            assertFalse(entities.isEmpty(), "Entities should be loaded");
 
-            assertFalse(entities.isEmpty(), "Profile service should have entities loaded");
-
-            boolean hasUserProfile = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("UserProfileEntity"));
-            assertTrue(hasUserProfile, "UserProfileEntity should be loaded");
+            // Verify key entities from different packages are loaded
+            assertTrue(hasEntity(entities, "ComputeResourceEntity"), "ComputeResourceEntity should be loaded");
+            assertTrue(hasEntity(entities, "ExperimentEntity"), "ExperimentEntity should be loaded");
+            assertTrue(hasEntity(entities, "DomainEntity"), "DomainEntity should be loaded");
+            assertTrue(hasEntity(entities, "CredentialEntity"), "CredentialEntity should be loaded");
         } finally {
             em.close();
         }
     }
 
-    @Test
-    public void testAppCatalogEntitiesAreLoaded() {
-        EntityManager em = appCatalogEntityManagerFactory.createEntityManager();
-        try {
-            Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "App catalog should have entities loaded");
-
-            boolean hasComputeResource = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("ComputeResourceEntity"));
-
-            assertTrue(hasComputeResource, "ComputeResourceEntity should be loaded");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Test
-    public void testExpCatalogEntitiesAreLoaded() {
-        EntityManager em = expCatalogEntityManagerFactory.createEntityManager();
-        try {
-            Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "Exp catalog should have entities loaded");
-
-            boolean hasExperiment = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("ExperimentEntity"));
-
-            assertTrue(hasExperiment, "ExperimentEntity should be loaded");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Test
-    public void testReplicaCatalogEntitiesAreLoaded() {
-        EntityManager em = replicaCatalogEntityManagerFactory.createEntityManager();
-        try {
-            Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "Replica catalog should have entities loaded");
-
-            boolean hasDataProduct = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("DataProductEntity"));
-
-            assertTrue(hasDataProduct, "DataProductEntity should be loaded");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Test
-    public void testWorkflowCatalogEntitiesAreLoaded() {
-        EntityManager em = workflowCatalogEntityManagerFactory.createEntityManager();
-        try {
-            Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "Workflow catalog should have entities loaded");
-
-            boolean hasAiravataWorkflow = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("AiravataWorkflowEntity"));
-
-            assertTrue(hasAiravataWorkflow, "AiravataWorkflowEntity should be loaded");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Test
-    public void testSharingRegistryEntitiesAreLoaded() {
-        EntityManager em = sharingRegistryEntityManagerFactory.createEntityManager();
-        try {
-            Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "Sharing registry should have entities loaded");
-
-            boolean hasDomain = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("DomainEntity"));
-            boolean hasEntity = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("EntityEntity"));
-            boolean hasUser = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("UserEntity"));
-
-            assertTrue(hasDomain, "DomainEntity should be loaded");
-            assertTrue(hasEntity, "EntityEntity should be loaded");
-            assertTrue(hasUser, "UserEntity should be loaded");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Test
-    public void testCredentialStoreEntitiesAreLoaded() {
-        EntityManager em = credentialStoreEntityManagerFactory.createEntityManager();
-        try {
-            Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-            assertFalse(entities.isEmpty(), "Credential store should have entities loaded");
-
-            boolean hasCredential = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("CredentialEntity"));
-            boolean hasCommunityUser = entities.stream()
-                    .anyMatch(e -> e.getJavaType().getSimpleName().equals("CommunityUserEntity"));
-
-            assertTrue(hasCredential, "CredentialEntity should be loaded");
-            assertTrue(hasCommunityUser, "CommunityUserEntity should be loaded");
-        } finally {
-            em.close();
-        }
-    }
-
-    @Test
-    public void testAllPersistenceUnitsHaveEntities() {
-        EntityManagerFactory[] factories = {
-            profileServiceEntityManagerFactory,
-            appCatalogEntityManagerFactory,
-            expCatalogEntityManagerFactory,
-            replicaCatalogEntityManagerFactory,
-            workflowCatalogEntityManagerFactory,
-            sharingRegistryEntityManagerFactory,
-            credentialStoreEntityManagerFactory
-        };
-
-        for (EntityManagerFactory factory : factories) {
-            if (factory == null) {
-
-                continue;
-            }
-            EntityManager em = factory.createEntityManager();
-            try {
-                Set<EntityType<?>> entities = em.getMetamodel().getEntities();
-                assertFalse(
-                        entities.isEmpty(),
-                        "Persistence unit " + factory + " should have entities loaded. Found: " + entities.size());
-            } finally {
-                em.close();
-            }
-        }
+    private boolean hasEntity(Set<EntityType<?>> entities, String simpleName) {
+        return entities.stream().anyMatch(e -> e.getJavaType().getSimpleName().equals(simpleName));
     }
 }

@@ -19,10 +19,15 @@
 */
 package org.apache.airavata.registry.repositories.appcatalog;
 
+import java.util.List;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingEntity;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AppModuleMappingRepository extends JpaRepository<AppModuleMappingEntity, AppModuleMappingPK> {}
+public interface AppModuleMappingRepository extends JpaRepository<AppModuleMappingEntity, AppModuleMappingPK> {
+    List<AppModuleMappingEntity> findByInterfaceId(String interfaceId);
+
+    boolean existsByInterfaceIdAndModuleId(String interfaceId, String moduleId);
+}

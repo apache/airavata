@@ -26,9 +26,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.UuidGenerator;
 
-@Entity(name = "RESOURCE_STAR")
+@Entity(name = "ResearchResourceStarEntity")
+@Table(name = "RESEARCH_RESOURCE_STAR")
 public class ResourceStar {
 
     @Id

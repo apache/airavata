@@ -30,6 +30,7 @@ import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingEntity;
+import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingPK;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationInputEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationModuleEntity;
@@ -102,16 +103,37 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     @Override
     public void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException {
-        ApplicationModule applicationModule = getApplicationModule(moduleId);
-        ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(interfaceId);
-        ApplicationModuleEntity applicationModuleEntity = applicationModuleMapper.toEntity(applicationModule);
-        ApplicationInterfaceEntity applicationInterfaceEntity =
-                applicationInterfaceMapper.toEntity(applicationInterfaceDescription);
+        // Check if mapping already exists
+        AppModuleMappingPK mappingPK = new AppModuleMappingPK();
+        mappingPK.setInterfaceId(interfaceId);
+        mappingPK.setModuleId(moduleId);
+        if (appModuleMappingRepository.existsById(mappingPK)) {
+            logger.debug("Module mapping already exists for moduleId: {} and interfaceId: {}", moduleId, interfaceId);
+            return;
+        }
+
+        // Also check using the query method
+        if (appModuleMappingRepository.existsByInterfaceIdAndModuleId(interfaceId, moduleId)) {
+            logger.debug(
+                    "Module mapping already exists (via query) for moduleId: {} and interfaceId: {}",
+                    moduleId,
+                    interfaceId);
+            return;
+        }
+
+        // Create and save the mapping entity with just the IDs
+        // Avoid loading full entities to prevent cascade issues
         AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
         appModuleMappingEntity.setModuleId(moduleId);
         appModuleMappingEntity.setInterfaceId(interfaceId);
-        appModuleMappingEntity.setApplicationModule(applicationModuleEntity);
-        appModuleMappingEntity.setApplicationInterface(applicationInterfaceEntity);
+
+        // Use references instead of loading full entities
+        ApplicationModuleEntity moduleRef = applicationModuleRepository.getReferenceById(moduleId);
+        ApplicationInterfaceEntity interfaceRef = applicationInterfaceRepository.getReferenceById(interfaceId);
+        appModuleMappingEntity.setApplicationModule(moduleRef);
+        appModuleMappingEntity.setApplicationInterface(interfaceRef);
+
+        // Save the mapping
         appModuleMappingRepository.save(appModuleMappingEntity);
     }
 
@@ -141,6 +163,16 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         ApplicationInterfaceEntity entity =
                 applicationInterfaceRepository.findById(interfaceId).orElse(null);
         if (entity == null) return null;
+
+        // Load application modules from AppModuleMapping table
+        // The ElementCollection might not be automatically synced when AppModuleMappingEntity is saved separately
+        List<AppModuleMappingEntity> mappings = appModuleMappingRepository.findByInterfaceId(interfaceId);
+        List<String> moduleIds = mappings.stream()
+                .map(AppModuleMappingEntity::getModuleId)
+                .distinct()
+                .collect(java.util.stream.Collectors.toList());
+        entity.setApplicationModules(moduleIds);
+
         return applicationInterfaceMapper.toModel(entity);
     }
 
@@ -264,12 +296,16 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId)
             throws AppCatalogException {
 
-        if (applicationInterfaceDescription.getApplicationInterfaceId().trim().equals("")
+        if (applicationInterfaceDescription.getApplicationInterfaceId() == null
+                || applicationInterfaceDescription
+                        .getApplicationInterfaceId()
+                        .trim()
+                        .equals("")
                 || applicationInterfaceDescription
                         .getApplicationInterfaceId()
                         .equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug(
-                    "If Application Interface ID is empty or DEFAULT, set it as the Application Interface Name plus random UUID");
+                    "If Application Interface ID is null, empty or DEFAULT, set it as the Application Interface Name plus random UUID");
             applicationInterfaceDescription.setApplicationInterfaceId(
                     AiravataUtils.getId(applicationInterfaceDescription.getApplicationName()));
         }
@@ -315,10 +351,11 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     private ApplicationModuleEntity saveApplicationModule(ApplicationModule applicationModule, String gatewayId)
             throws AppCatalogException {
 
-        if (applicationModule.getAppModuleId().trim().equals("")
+        if (applicationModule.getAppModuleId() == null
+                || applicationModule.getAppModuleId().trim().equals("")
                 || applicationModule.getAppModuleId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             logger.debug(
-                    "If Application Module ID is empty or DEFAULT, set it as the Application Module Name plus random UUID");
+                    "If Application Module ID is null, empty or DEFAULT, set it as the Application Module Name plus random UUID");
             applicationModule.setAppModuleId(AiravataUtils.getId(applicationModule.getAppModuleName()));
         }
 

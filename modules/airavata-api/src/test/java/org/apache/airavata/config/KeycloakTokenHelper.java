@@ -63,12 +63,7 @@ public class KeycloakTokenHelper {
      * @throws RuntimeException if authentication fails
      */
     public static String getAccessToken(
-            String keycloakUrl,
-            String realm,
-            String clientId,
-            String clientSecret,
-            String username,
-            String password) {
+            String keycloakUrl, String realm, String clientId, String clientSecret, String username, String password) {
 
         // Check cache
         if (cachedAccessToken != null && System.currentTimeMillis() < tokenExpiry) {
@@ -140,7 +135,9 @@ public class KeycloakTokenHelper {
         // Use OAuth client credentials from properties if available
         // Note: superAdmin credentials are for Keycloak server admin, NOT realm users
         // We use the realm's default-admin user credentials for token acquisition
-        if (properties != null && properties.security() != null && properties.security().iam() != null) {
+        if (properties != null
+                && properties.security() != null
+                && properties.security().iam() != null) {
             var iam = properties.security().iam();
             if (iam.oauthClientId() != null && !iam.oauthClientId().isEmpty()) {
                 clientId = iam.oauthClientId();
@@ -152,13 +149,8 @@ public class KeycloakTokenHelper {
             // Realm user credentials are fixed from realm-default.json: default-admin/admin123
         }
 
-        String accessToken = getAccessToken(
-                keycloakUrl,
-                DEFAULT_REALM,
-                clientId,
-                clientSecret,
-                adminUsername,
-                adminPassword);
+        String accessToken =
+                getAccessToken(keycloakUrl, DEFAULT_REALM, clientId, clientSecret, adminUsername, adminPassword);
 
         AuthzToken authzToken = new AuthzToken();
         authzToken.setAccessToken(accessToken);

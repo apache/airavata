@@ -22,68 +22,48 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Test to validate persistence.xml configuration.
- * Verifies that all entity classes are correctly referenced.
+ * Test to validate JPA entity configuration.
+ * Note: persistence.xml is no longer used - entities are discovered via package scanning.
  */
+@SpringBootTest(
+        classes = {JpaConfig.class, TestcontainersConfig.class},
+        properties = {
+            "spring.main.allow-bean-definition-overriding=true",
+            "airavata.flyway.enabled=false",
+        })
+@ActiveProfiles("test")
 public class ValidatePersistenceXml {
 
-    private static final String[] PERSISTENCE_UNITS = {
-        "profile_service",
-        "app_catalog",
-        "experiment_catalog",
-        "replica_catalog",
-        "workflow_catalog",
-        "sharing_registry",
-        "credential_store"
-    };
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Test
-    public void testAllPersistenceUnits() {
-        int errors = 0;
-        StringBuilder errorMessages = new StringBuilder();
+    public void testEntitiesAreDiscovered() {
+        assertNotNull(entityManagerFactory, "EntityManagerFactory should be created");
 
-        for (String puName : PERSISTENCE_UNITS) {
-            try {
-                // Use in-memory H2 database to avoid connection issues
-                Map<String, String> properties = new HashMap<>();
-                properties.put("jakarta.persistence.jdbc.driver", "org.h2.Driver");
-                properties.put("jakarta.persistence.jdbc.url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
-                properties.put("jakarta.persistence.jdbc.user", "sa");
-                properties.put("jakarta.persistence.jdbc.password", "");
-                properties.put("hibernate.hbm2ddl.auto", "create");
+        var entities = entityManagerFactory.getMetamodel().getEntities();
+        assertNotNull(entities, "Entities should be available");
+        assertFalse(entities.isEmpty(), "Entities should be discovered via package scanning");
 
-                EntityManagerFactory emf = Persistence.createEntityManagerFactory(puName, properties);
-                if (emf != null) {
-                    emf.close();
-                } else {
-                    errorMessages.append("Persistence unit ").append(puName).append(": EntityManagerFactory is null\n");
-                    errors++;
-                }
-            } catch (Exception e) {
-                errorMessages
-                        .append("Persistence unit ")
-                        .append(puName)
-                        .append(": ")
-                        .append(e.getMessage());
-                if (e.getCause() != null) {
-                    errorMessages
-                            .append(" (Caused by: ")
-                            .append(e.getCause().getMessage())
-                            .append(")");
-                }
-                errorMessages.append("\n");
-                errors++;
-            }
-        }
+        // Verify key entities from different packages are present
+        boolean hasComputeResource =
+                entities.stream().anyMatch(e -> e.getJavaType().getSimpleName().equals("ComputeResourceEntity"));
+        boolean hasExperiment =
+                entities.stream().anyMatch(e -> e.getJavaType().getSimpleName().equals("ExperimentEntity"));
+        boolean hasDomain =
+                entities.stream().anyMatch(e -> e.getJavaType().getSimpleName().equals("DomainEntity"));
+        boolean hasCredential =
+                entities.stream().anyMatch(e -> e.getJavaType().getSimpleName().equals("CredentialEntity"));
 
-        if (errors > 0) {
-            fail("Validation failed with " + errors + " error(s):\n" + errorMessages.toString());
-        }
+        assertTrue(hasComputeResource, "ComputeResourceEntity should be discovered");
+        assertTrue(hasExperiment, "ExperimentEntity should be discovered");
+        assertTrue(hasDomain, "DomainEntity should be discovered");
+        assertTrue(hasCredential, "CredentialEntity should be discovered");
     }
 }
