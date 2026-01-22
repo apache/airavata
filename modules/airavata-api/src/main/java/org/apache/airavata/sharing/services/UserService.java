@@ -58,7 +58,7 @@ public class UserService {
     }
 
     public User get(UserPK pk) throws SharingRegistryException {
-        UserEntity entity = userRepository.findById(pk).orElse(null);
+        var entity = userRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return userMapper.toModel(entity);
     }
@@ -68,8 +68,8 @@ public class UserService {
     }
 
     public User update(User user) throws SharingRegistryException {
-        UserEntity entity = userMapper.toEntity(user);
-        UserEntity saved = userRepository.save(entity);
+        var entity = userMapper.toEntity(user);
+        var saved = userRepository.save(entity);
         return userMapper.toModel(saved);
     }
 
@@ -147,7 +147,7 @@ public class UserService {
         predicates.add(cb.equal(sharingRoot.get("permissionTypeId"), permissionTypeId));
 
         if (sharingTypes.length > 0) {
-            List<String> sharingTypeNames =
+            var sharingTypeNames =
                     Arrays.stream(sharingTypes).map(SharingType::name).toList();
             predicates.add(sharingRoot.get("sharingType").in(sharingTypeNames));
         }
@@ -156,7 +156,7 @@ public class UserService {
         query.distinct(true);
         query.orderBy(cb.desc(sharingRoot.get("createdTime")));
 
-        List<UserEntity> entities = entityManager.createQuery(query).getResultList();
+        var entities = entityManager.createQuery(query).getResultList();
         return userMapper.toModelList(entities);
     }
 }

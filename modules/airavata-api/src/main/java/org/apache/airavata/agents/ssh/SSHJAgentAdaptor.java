@@ -33,17 +33,13 @@ import java.util.stream.Collectors;
 import net.schmizz.keepalive.KeepAliveProvider;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.connection.ConnectionException;
-import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode.Type;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.AuthMethod;
 import net.schmizz.sshj.userauth.method.AuthPublickey;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
-import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.PasswordUtils;
 import net.schmizz.sshj.userauth.password.Resource;
 import net.schmizz.sshj.xfer.FilePermission;
@@ -57,13 +53,9 @@ import org.apache.airavata.agents.api.FileMetadata;
 import org.apache.airavata.agents.ssh.PoolingSSHJClient.SCPFileTransferResource;
 import org.apache.airavata.agents.ssh.PoolingSSHJClient.SFTPClientResource;
 import org.apache.airavata.agents.ssh.PoolingSSHJClient.SessionResource;
-import org.apache.airavata.common.model.ComputeResourceDescription;
-import org.apache.airavata.common.model.JobSubmissionInterface;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
-import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.StorageDirectoryInfo;
 import org.apache.airavata.common.model.StorageVolumeInfo;
-import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
@@ -90,7 +82,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     protected void createPoolingSSHJClient(
             String user, String host, int port, String publicKey, String privateKey, String passphrase)
             throws IOException {
-        DefaultConfig defaultConfig = new DefaultConfig();
+        var defaultConfig = new DefaultConfig();
         defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
 
         sshjClient = new PoolingSSHJClient(defaultConfig, host, port == 0 ? 22 : port);
@@ -109,10 +101,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
         sshjClient.setMaxSessionsForConnection(1);
 
-        PasswordFinder passwordFinder =
-                passphrase != null ? PasswordUtils.createOneOff(passphrase.toCharArray()) : null;
+        var passwordFinder = passphrase != null ? PasswordUtils.createOneOff(passphrase.toCharArray()) : null;
 
-        KeyProvider keyProvider = sshjClient.loadKeys(privateKey, publicKey, passwordFinder);
+        var keyProvider = sshjClient.loadKeys(privateKey, publicKey, passwordFinder);
 
         final List<AuthMethod> am = new LinkedList<>();
         am.add(new AuthPublickey(keyProvider));
@@ -162,32 +153,30 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             logger.info("Initializing Compute Resource SSH Adaptor for compute resource : " + computeResource
                     + ", gateway : " + gatewayId + ", user " + userId + ", token : " + token);
 
-            ComputeResourceDescription computeResourceDescription = registryService.getComputeResource(computeResource);
+            var computeResourceDescription = registryService.getComputeResource(computeResource);
 
             logger.info("Fetching job submission interfaces for compute resource " + computeResource);
 
-            Optional<JobSubmissionInterface> jobSubmissionInterfaceOp =
-                    computeResourceDescription.getJobSubmissionInterfaces().stream()
-                            .filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH)
-                            .findFirst();
+            var jobSubmissionInterfaceOp = computeResourceDescription.getJobSubmissionInterfaces().stream()
+                    .filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH)
+                    .findFirst();
 
-            JobSubmissionInterface sshInterface = jobSubmissionInterfaceOp.orElseThrow(
+            var sshInterface = jobSubmissionInterfaceOp.orElseThrow(
                     () -> new AgentException("Could not find a SSH interface for compute resource " + computeResource));
 
-            SSHJobSubmission sshJobSubmission =
-                    registryService.getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
+            var sshJobSubmission = registryService.getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
+            var sshCredential = credentialService.getSSHCredential(token, gatewayId);
 
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            String alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
-            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))
+            var alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
+            var selectedHostName = (alternateHostName == null || "".equals(alternateHostName))
                     ? computeResourceDescription.getHostName()
                     : alternateHostName;
 
@@ -237,10 +226,10 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         SessionResource sessionResource = null;
         try {
             sessionResource = sshjClient.startSessionResource();
-            Session.Command exec = sessionResource
+            var exec = sessionResource
                     .getSession()
                     .exec((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
-            StandardOutReader standardOutReader = new StandardOutReader();
+            var standardOutReader = new StandardOutReader();
 
             try {
                 standardOutReader.readStdOutFromStream(exec.getInputStream());
@@ -523,7 +512,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         SFTPClientResource sftpClientResource = null;
         try {
             sftpClientResource = sshjClient.newSFTPClientResource();
-            List<RemoteResourceInfo> ls = sftpClientResource.getSFTPClient().ls(path);
+            var ls = sftpClientResource.getSFTPClient().ls(path);
             return ls.stream().map(RemoteResourceInfo::getName).collect(Collectors.toList());
         } catch (Exception e) {
             if (e instanceof ConnectionException) {
@@ -580,11 +569,10 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         }
         */
 
-        CommandOutput commandOutput =
-                executeCommand("ls " + fileName, parentPath); // This has a risk of returning folders also
-        String[] filesTmp = commandOutput.getStdOut().split("\n");
-        List<String> files = new ArrayList<>();
-        for (String f : filesTmp) {
+        var commandOutput = executeCommand("ls " + fileName, parentPath); // This has a risk of returning folders also
+        var filesTmp = commandOutput.getStdOut().split("\n");
+        var files = new ArrayList<String>();
+        for (var f : filesTmp) {
             if (!f.isEmpty()) {
                 files.add(f);
             }
@@ -597,8 +585,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         SFTPClientResource sftpClientResource = null;
         try {
             sftpClientResource = sshjClient.newSFTPClientResource();
-            FileAttributes stat = sftpClientResource.getSFTPClient().stat(remoteFile);
-            FileMetadata metadata = new FileMetadata();
+            var stat = sftpClientResource.getSFTPClient().stat(remoteFile);
+            var metadata = new FileMetadata();
             metadata.setName(new File(remoteFile).getName());
             metadata.setSize(stat.getSize());
             metadata.setPermissions(FilePermission.toMask(stat.getPermissions()));
@@ -624,9 +612,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     @Override
     public StorageVolumeInfo getStorageVolumeInfo(String location) throws AgentException {
         try {
-            String targetLocation = location;
+            var targetLocation = location;
             if (targetLocation == null || targetLocation.trim().isEmpty()) {
-                CommandOutput homeOutput = executeCommand("echo $HOME", null);
+                var homeOutput = executeCommand("echo $HOME", null);
 
                 if (homeOutput.getExitCode() != 0
                         || homeOutput.getStdOut() == null
@@ -638,12 +626,12 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             }
 
             // Escape location to prevent command injection and handle spaces
-            String escapedLocation = targetLocation.replace("'", "'\"'\"'");
-            String dfCommand = "df -P -T -h '" + escapedLocation + "'";
-            String dfBytesCommand = "df -P -T '" + escapedLocation + "'";
+            var escapedLocation = targetLocation.replace("'", "'\"'\"'");
+            var dfCommand = "df -P -T -h '" + escapedLocation + "'";
+            var dfBytesCommand = "df -P -T '" + escapedLocation + "'";
 
-            CommandOutput dfHumanOutput = executeCommand(dfCommand, null);
-            CommandOutput dfBytesOutput = executeCommand(dfBytesCommand, null);
+            var dfHumanOutput = executeCommand(dfCommand, null);
+            var dfBytesOutput = executeCommand(dfBytesCommand, null);
 
             if (dfHumanOutput.getExitCode() != 0) {
                 logger.error(
@@ -674,9 +662,9 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     @Override
     public StorageDirectoryInfo getStorageDirectoryInfo(String location) throws AgentException {
         try {
-            String targetLocation = location;
+            var targetLocation = location;
             if (targetLocation == null || targetLocation.trim().isEmpty()) {
-                CommandOutput homeOutput = executeCommand("echo $HOME", null);
+                var homeOutput = executeCommand("echo $HOME", null);
 
                 if (homeOutput.getExitCode() != 0
                         || homeOutput.getStdOut() == null
@@ -688,10 +676,10 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             }
 
             // Escape location to prevent command injection and handle spaces
-            String escapedLocation = targetLocation.replace("'", "'\"'\"'");
-            String duKBytesCommand = "du -sk '" + escapedLocation + "'";
+            var escapedLocation = targetLocation.replace("'", "'\"'\"'");
+            var duKBytesCommand = "du -sk '" + escapedLocation + "'";
 
-            CommandOutput duKBytesOutput = executeCommand(duKBytesCommand, null);
+            var duKBytesOutput = executeCommand(duKBytesCommand, null);
 
             if (duKBytesOutput.getExitCode() != 0) {
                 logger.error(
@@ -702,13 +690,13 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                         + duKBytesOutput.getStdError());
             }
 
-            String outputKbStr = duKBytesOutput.getStdOut().trim();
+            var outputKbStr = duKBytesOutput.getStdOut().trim();
             logger.info("OutputKbStr: for du -ku {} is {}", location, outputKbStr);
-            String numberOfKBytesStr = outputKbStr.split(" ")[0];
+            var numberOfKBytesStr = outputKbStr.split(" ")[0];
 
             long numberOfKBytes = Long.parseLong(numberOfKBytesStr);
 
-            StorageDirectoryInfo storageDirectoryInfo = new StorageDirectoryInfo();
+            var storageDirectoryInfo = new StorageDirectoryInfo();
             storageDirectoryInfo.setTotalSizeBytes(numberOfKBytes * 1024);
             storageDirectoryInfo.setTotalSize(numberOfKBytes + "kb");
             return storageDirectoryInfo;
@@ -723,8 +711,8 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             throws AgentException {
         try {
             // Parse df -P -T -h output (POSIX format with filesystem type)
-            String[] humanLines = dfHumanOutput.split("\n");
-            String[] bytesLines = dfBytesOutput.split("\n");
+            var humanLines = dfHumanOutput.split("\n");
+            var bytesLines = dfBytesOutput.split("\n");
 
             if (humanLines.length < 2 || bytesLines.length < 2) {
                 logger.error(
@@ -735,12 +723,12 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             }
 
             // Skip the header line and get the data line
-            String humanDataLine = humanLines[1].trim();
-            String bytesDataLine = bytesLines[1].trim();
+            var humanDataLine = humanLines[1].trim();
+            var bytesDataLine = bytesLines[1].trim();
 
             // Split by whitespace. POSIX format uses fixed width columns separated by spaces
-            String[] humanFields = humanDataLine.split("\\s+");
-            String[] bytesFields = bytesDataLine.split("\\s+");
+            var humanFields = humanDataLine.split("\\s+");
+            var bytesFields = bytesDataLine.split("\\s+");
 
             if (humanFields.length < 7 || bytesFields.length < 7) {
                 logger.error(
@@ -751,26 +739,26 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
                                 + targetLocation);
             }
 
-            String filesystemType = humanFields[1]; // ext4, xfs, etc.
-            String totalSizeHuman = humanFields[2];
-            String usedSizeHuman = humanFields[3];
-            String availableSizeHuman = humanFields[4];
-            String capacityStr = humanFields[5].replace("%", "");
+            var filesystemType = humanFields[1]; // ext4, xfs, etc.
+            var totalSizeHuman = humanFields[2];
+            var usedSizeHuman = humanFields[3];
+            var availableSizeHuman = humanFields[4];
+            var capacityStr = humanFields[5].replace("%", "");
 
             // If Mount point contains spaces
-            StringBuilder mountPointBuilder = new StringBuilder();
+            var mountPointBuilder = new StringBuilder();
             for (int i = 6; i < humanFields.length; i++) {
                 if (i > 6) {
                     mountPointBuilder.append(" ");
                 }
                 mountPointBuilder.append(humanFields[i]);
             }
-            String mountPoint = mountPointBuilder.toString();
+            var mountPoint = mountPointBuilder.toString();
 
             // Parse bytes output. Same format but in 1024-byte blocks
-            long totalSizeBlocks = Long.parseLong(bytesFields[2]);
-            long usedSizeBlocks = Long.parseLong(bytesFields[3]);
-            long availableSizeBlocks = Long.parseLong(bytesFields[4]);
+            var totalSizeBlocks = Long.parseLong(bytesFields[2]);
+            var usedSizeBlocks = Long.parseLong(bytesFields[3]);
+            var availableSizeBlocks = Long.parseLong(bytesFields[4]);
 
             // Convert 1024-byte blocks to bytes
             long totalSizeBytes = totalSizeBlocks * 1024L;
@@ -779,7 +767,7 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
 
             double percentageUsed = Double.parseDouble(capacityStr);
 
-            StorageVolumeInfo volumeInfo = new StorageVolumeInfo();
+            var volumeInfo = new StorageVolumeInfo();
             volumeInfo.setTotalSize(totalSizeHuman);
             volumeInfo.setUsedSize(usedSizeHuman);
             volumeInfo.setAvailableSize(availableSizeHuman);

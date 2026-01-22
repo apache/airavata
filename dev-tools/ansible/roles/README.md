@@ -56,6 +56,18 @@ MariaDB installation and database setup:
 - `users.yml`: Database and user creation
 - `firewall.yml`: Port access configuration
 
+### redis
+
+Redis installation and configuration:
+- Redis installation (OS-specific packages)
+- Configuration to listen on all interfaces
+- Service startup and enablement
+- Firewall port configuration
+
+**Task files:**
+- `install.yml`: Package installation, configuration, and service setup
+- `firewall.yml`: Port access configuration (port 6379)
+
 ### apiserver
 
 Airavata API server deployment (includes build and deployment):
@@ -92,6 +104,12 @@ Keycloak 25.0 (Quarkus-based) IAM server deployment:
 Roles are used in the main deployment playbook (`deploy.yml`):
 
 ```yaml
+- name: Redis
+  hosts: redis
+  roles:
+    - base
+    - redis
+
 - name: API Server
   hosts: apiserver
   roles:

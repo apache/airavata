@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.common.utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NameValidator {
@@ -30,14 +29,12 @@ public class NameValidator {
      */
     public static boolean validate(String name) {
         // Set the name pattern string
-        Pattern p = Pattern.compile("([a-zA-Z]){1,}([0-9]|_|\\.|[a-zA-Z]){0,}$");
+        var p = Pattern.compile("([a-zA-Z]){1,}([0-9]|_|\\.|[a-zA-Z]){0,}$");
 
         // Match the given string with the pattern
-        Matcher m = p.matcher(name);
+        var m = p.matcher(name);
 
         // Check whether match is found
-        boolean matchFound = m.matches();
-
-        return matchFound;
+        return m.matches();
     }
 }

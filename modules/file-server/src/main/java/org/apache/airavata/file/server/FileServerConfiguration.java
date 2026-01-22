@@ -57,11 +57,9 @@ public class FileServerConfiguration implements ApplicationListener<ApplicationE
     }
 
     private void mapScopedProperties(ConfigurableEnvironment environment) {
-        Map<String, Object> mappedProperties = new HashMap<>();
+        var mappedProperties = new HashMap<String, Object>();
 
-        // Map services.fileserver.server.* to server.*
-        mapProperty("services.fileserver.server.port", "server.port", mappedProperties, environment);
-
+        // Note: server.port is now configured by unified HttpServerConfig
         // Map services.fileserver.spring.servlet.multipart.* to spring.servlet.multipart.*
         mapProperty(
                 "services.fileserver.spring.servlet.multipart.max-file-size",

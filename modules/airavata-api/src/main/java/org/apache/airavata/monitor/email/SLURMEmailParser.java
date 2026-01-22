@@ -21,7 +21,6 @@ package org.apache.airavata.monitor.email;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.JobState;
@@ -53,13 +52,13 @@ public class SLURMEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message, RegistryService registryService)
             throws MessagingException, AiravataException {
-        JobStatusResult jobStatusResult = new JobStatusResult();
+        var jobStatusResult = new JobStatusResult();
         parseSubject(message.getSubject(), jobStatusResult);
         return jobStatusResult;
     }
 
     private void parseSubject(String subject, JobStatusResult jobStatusResult) throws MessagingException {
-        Matcher matcher = pattern.matcher(subject);
+        var matcher = pattern.matcher(subject);
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setJobName(matcher.group(JOBNAME));
@@ -75,7 +74,7 @@ public class SLURMEmailParser implements EmailParser {
             case STAGE_OUT:
                 return JobState.ACTIVE;
             case ENDED:
-                Matcher matcher = cancelledStatePattern.matcher(subject);
+                var matcher = cancelledStatePattern.matcher(subject);
                 if (matcher.find()) {
                     return JobState.CANCELED;
                 }

@@ -73,7 +73,7 @@ public class IULdapSSHAccountProvisionerProvider implements SSHAccountProvisione
 
     @Override
     public SSHAccountProvisioner createSSHAccountProvisioner(Map<ConfigParam, String> config) {
-        SSHAccountProvisioner sshAccountProvisioner = new IULdapSSHAccountProvisioner();
+        var sshAccountProvisioner = new IULdapSSHAccountProvisioner();
         sshAccountProvisioner.init(config);
         return sshAccountProvisioner;
     }

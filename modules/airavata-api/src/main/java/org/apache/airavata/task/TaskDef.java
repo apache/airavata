@@ -25,10 +25,26 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: Class level comments please
+ * Annotation for defining task metadata, particularly the human-readable task name.
+ *
+ * <p>This annotation is used to mark task classes and provide a display name
+ * for the task. The name is used for logging, monitoring, and user-facing
+ * interfaces to identify tasks.
+ *
+ * <p>Usage example:
+ * <pre>{@code
+ * @TaskDef(name = "Job Submission Task")
+ * public class JobSubmissionTask extends AiravataTask {
+ *     // Task implementation
+ * }
+ * }</pre>
+ *
+ * <p>The task name should be descriptive and human-readable, as it may be
+ * displayed in user interfaces, logs, and monitoring dashboards.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
+ * @see org.apache.airavata.task.base.AbstractTask
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

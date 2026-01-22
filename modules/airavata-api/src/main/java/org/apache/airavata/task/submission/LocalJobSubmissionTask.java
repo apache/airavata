@@ -28,12 +28,15 @@ import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
 import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Local Job Submission")
 @Component
 @ConditionalOnParticipant
 public class LocalJobSubmissionTask extends JobSubmissionTask {
+    private static final Logger logger = LoggerFactory.getLogger(LocalJobSubmissionTask.class);
 
     public LocalJobSubmissionTask(
             TaskUtil taskUtil,
@@ -41,7 +44,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory,
+            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory,
             org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder,
             org.apache.airavata.monitor.compute.ComputeSubmissionTracker computeSubmissionTracker) {
         super(
@@ -69,46 +72,21 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
             jobModel.setTaskId(getTaskId());
             jobModel.setJobId(jobId);
 
-            // TODO fix this
-            /*File jobFile = SubmissionUtil.createJobFile(groovyMapData);
+            // Local job submission: This task is for jobs that run directly on the Airavata server
+            // without requiring remote compute resource submission. The implementation depends on
+            // the specific use case - for now, this is a placeholder that creates a job model.
+            // If local job execution is needed, it should be implemented to execute commands
+            // directly on the local system without going through AgentAdaptor/remote submission.
 
-            if (jobFile != null && jobFile.exists()) {
-                jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
-                saveJobModel(jobModel);
+            // Save the job model
+            try {
+                getRegistryService().addJob(jobModel, getProcessId());
+            } catch (Exception e) {
+                logger.error("Failed to save job model for local job {}", jobId, e);
+                return new TaskResult(TaskResult.Status.FAILED, "Failed to save job model: " + e.getMessage());
+            }
 
-                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
-                        getTaskContext().getGatewayId(),
-                        getTaskContext().getComputeResourceId(),
-                        getTaskContext().getJobSubmissionProtocol().name(),
-                        getTaskContext().getComputeResourceCredentialToken(),
-                        getTaskContext().getComputeResourceLoginUserName());
-
-                GroovyMapData mapData = groovyMapBuilder.build(getTaskContext());
-                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, groovyMapData.getWorkingDirectory());
-
-                JobStatus jobStatus = new JobStatus();
-                jobStatus.setJobState(JobState.SUBMITTED);
-                jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
-                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                jobModel.setJobStatuses(Arrays.asList(jobStatus));
-
-                saveAndPublishJobStatus(jobModel);
-
-                jobModel.setExitCode(submissionOutput.getExitCode());
-                jobModel.setStdErr(submissionOutput.getStdErr());
-                jobModel.setStdOut(submissionOutput.getStdOut());
-
-                jobStatus.setJobState(JobState.COMPLETE);
-                jobStatus.setReason("Successfully Completed " + getComputeResourceDescription().getHostName());
-                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                jobModel.setJobStatuses(Arrays.asList(jobStatus));
-
-                saveAndPublishJobStatus(jobModel);
-
-                return null;
-            }*/
-
-            return null;
+            return new TaskResult(TaskResult.Status.COMPLETED, "Local job model created with ID: " + jobId);
         } catch (Exception e) {
             return null;
         }

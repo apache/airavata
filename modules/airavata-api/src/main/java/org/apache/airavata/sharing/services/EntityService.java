@@ -57,7 +57,7 @@ public class EntityService {
     }
 
     public Entity get(EntityPK pk) throws SharingRegistryException {
-        EntityEntity entity = entityRepository.findById(pk).orElse(null);
+        var entity = entityRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return entityMapper.toModel(entity);
     }
@@ -67,8 +67,8 @@ public class EntityService {
     }
 
     public Entity update(Entity entity) throws SharingRegistryException {
-        EntityEntity entityEntity = entityMapper.toEntity(entity);
-        EntityEntity saved = entityRepository.save(entityEntity);
+        var entityEntity = entityMapper.toEntity(entity);
+        var saved = entityRepository.save(entityEntity);
         return entityMapper.toModel(saved);
     }
 
@@ -82,9 +82,8 @@ public class EntityService {
     }
 
     public List<Entity> getChildEntities(String domainId, String parentId) throws SharingRegistryException {
-        List<EntityEntity> entities =
-                entityRepository.findByDomainIdAndParentEntityIdOrderByOriginalEntityCreationTimeDesc(
-                        domainId, parentId);
+        var entities = entityRepository.findByDomainIdAndParentEntityIdOrderByOriginalEntityCreationTimeDesc(
+                domainId, parentId);
         return entityMapper.toModelList(entities);
     }
 

@@ -22,7 +22,7 @@ package org.apache.airavata.thriftapi.handler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.orchestrator.utils.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.orchestrator.internal.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.thriftapi.mapper.ProcessModelMapper;
 import org.apache.thrift.TException;

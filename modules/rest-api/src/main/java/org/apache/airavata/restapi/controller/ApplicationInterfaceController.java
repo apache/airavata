@@ -19,12 +19,9 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
-import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -53,8 +50,7 @@ public class ApplicationInterfaceController {
     @GetMapping("/{interfaceId}")
     public ResponseEntity<?> getApplicationInterface(@PathVariable String interfaceId) {
         try {
-            ApplicationInterfaceDescription appInterface =
-                    applicationInterfaceService.getApplicationInterface(interfaceId);
+            var appInterface = applicationInterfaceService.getApplicationInterface(interfaceId);
             if (appInterface == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -68,7 +64,7 @@ public class ApplicationInterfaceController {
     public ResponseEntity<?> createApplicationInterface(
             @RequestParam String gatewayId, @RequestBody ApplicationInterfaceDescription appInterface) {
         try {
-            String interfaceId = applicationInterfaceService.addApplicationInterface(appInterface, gatewayId);
+            var interfaceId = applicationInterfaceService.addApplicationInterface(appInterface, gatewayId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("interfaceId", interfaceId));
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -103,14 +99,13 @@ public class ApplicationInterfaceController {
     @GetMapping
     public ResponseEntity<?> getAllApplicationInterfaces(@RequestParam(required = false) String gatewayId) {
         try {
-            List<ApplicationInterfaceDescription> interfaces;
             if (gatewayId != null) {
-                interfaces = applicationInterfaceService.getAllApplicationInterfaces(gatewayId);
+                var interfaces = applicationInterfaceService.getAllApplicationInterfaces(gatewayId);
+                return ResponseEntity.ok(interfaces);
             } else {
-                List<String> interfaceIds = applicationInterfaceService.getAllApplicationInterfaceIds();
+                var interfaceIds = applicationInterfaceService.getAllApplicationInterfaceIds();
                 return ResponseEntity.ok(interfaceIds);
             }
-            return ResponseEntity.ok(interfaces);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -119,7 +114,7 @@ public class ApplicationInterfaceController {
     @GetMapping("/{interfaceId}/inputs")
     public ResponseEntity<?> getApplicationInputs(@PathVariable String interfaceId) {
         try {
-            List<InputDataObjectType> inputs = applicationInterfaceService.getApplicationInputs(interfaceId);
+            var inputs = applicationInterfaceService.getApplicationInputs(interfaceId);
             return ResponseEntity.ok(inputs);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -129,7 +124,7 @@ public class ApplicationInterfaceController {
     @GetMapping("/{interfaceId}/outputs")
     public ResponseEntity<?> getApplicationOutputs(@PathVariable String interfaceId) {
         try {
-            List<OutputDataObjectType> outputs = applicationInterfaceService.getApplicationOutputs(interfaceId);
+            var outputs = applicationInterfaceService.getApplicationOutputs(interfaceId);
             return ResponseEntity.ok(outputs);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -150,7 +145,7 @@ class ApplicationModuleController {
     @GetMapping("/{moduleId}")
     public ResponseEntity<?> getApplicationModule(@PathVariable String moduleId) {
         try {
-            ApplicationModule module = applicationInterfaceService.getApplicationModule(moduleId);
+            var module = applicationInterfaceService.getApplicationModule(moduleId);
             if (module == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -164,7 +159,7 @@ class ApplicationModuleController {
     public ResponseEntity<?> createApplicationModule(
             @RequestParam String gatewayId, @RequestBody ApplicationModule module) {
         try {
-            String moduleId = applicationInterfaceService.addApplicationModule(module, gatewayId);
+            var moduleId = applicationInterfaceService.addApplicationModule(module, gatewayId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("moduleId", moduleId));
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -199,7 +194,7 @@ class ApplicationModuleController {
     @GetMapping
     public ResponseEntity<?> getAllApplicationModules(@RequestParam String gatewayId) {
         try {
-            List<ApplicationModule> modules = applicationInterfaceService.getAllApplicationModules(gatewayId);
+            var modules = applicationInterfaceService.getAllApplicationModules(gatewayId);
             return ResponseEntity.ok(modules);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

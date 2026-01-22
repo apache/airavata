@@ -50,12 +50,12 @@ fi
 # ================================
 # Backup Configuration Files
 # ================================
-if [ -d "./vault" ]; then
+if [ -d "./conf" ]; then
     log "Backing up configuration files..."
-    cp -r ./vault $BACKUP_DIR/
+    cp -r ./conf $BACKUP_DIR/
     log "Configuration files backed up."
 else
-    log "WARNING: vault directory not found. No configuration files to backup."
+    log "WARNING: conf directory not found. No configuration files to backup."
 fi
 
 # ================================

@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("researchProjectController")
 @RequestMapping("/api/v1/rf/projects")
 @Tag(name = "Projects", description = "Projects are comprised of dataset and repository resources")
 public class ProjectController {

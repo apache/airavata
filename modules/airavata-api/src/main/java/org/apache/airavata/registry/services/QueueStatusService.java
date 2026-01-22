@@ -49,8 +49,8 @@ public class QueueStatusService {
     }
 
     public boolean createQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
-        for (QueueStatusModel status : queueStatuses) {
-            QueueStatusEntity entity = queueStatusMapper.toEntity(status);
+        for (var status : queueStatuses) {
+            var entity = queueStatusMapper.toEntity(status);
             queueStatusRepository.save(entity);
         }
         return true;

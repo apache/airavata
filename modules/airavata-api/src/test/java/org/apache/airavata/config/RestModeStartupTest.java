@@ -31,11 +31,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
- * Test to verify AiravataApplication startup in REST mode.
+ * Test to verify AiravataApplication startup in HTTP mode.
  *
- * In REST mode:
- * - Thrift servers should be disabled
- * - REST Proxy should be configured
+ * In HTTP mode:
+ * - Thrift Server should be disabled
+ * - Airavata API (HTTP) should be configured
  * - Background services should still work
  */
 @SpringBootTest(
@@ -78,7 +78,8 @@ public class RestModeStartupTest {
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security",
-                "org.apache.airavata.accountprovisioning"
+                "org.apache.airavata.accountprovisioning",
+                "org.apache.airavata.orchestrator"
             })
     static class TestConfiguration {}
 
@@ -88,16 +89,16 @@ public class RestModeStartupTest {
     @Test
     public void testDBEventDispatcherIsAvailable() {
 
-        String[] beanNames =
-                applicationContext.getBeanNamesForType(org.apache.airavata.dapr.messaging.Dispatcher.class);
+        String[] beanNames = applicationContext.getBeanNamesForType(
+                org.apache.airavata.orchestrator.internal.messaging.Dispatcher.class);
         int count = beanNames.length;
 
-        assertTrue(count > 0, "Dispatcher should be available in REST mode (replaces DBEventManagerRunner)");
+        assertTrue(count > 0, "Dispatcher should be available in HTTP mode (replaces DBEventManagerRunner)");
     }
 
     @Test
     public void testApplicationContextLoads() {
-        assertNotNull(applicationContext, "Application context should be loaded in REST mode");
+        assertNotNull(applicationContext, "Application context should be loaded in HTTP mode");
     }
 
     @Test
@@ -108,12 +109,12 @@ public class RestModeStartupTest {
                                 .getBeansOfType(org.apache.airavata.service.registry.RegistryService.class)
                                 .size()
                         > 0,
-                "RegistryService should be available in REST mode");
+                "RegistryService should be available in HTTP mode");
         assertTrue(
                 applicationContext
                                 .getBeansOfType(org.apache.airavata.service.security.CredentialStoreService.class)
                                 .size()
                         > 0,
-                "CredentialStoreService should be available in REST mode");
+                "CredentialStoreService should be available in HTTP mode");
     }
 }

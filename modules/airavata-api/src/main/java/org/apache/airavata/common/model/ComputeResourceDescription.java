@@ -20,6 +20,7 @@
 package org.apache.airavata.common.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -33,7 +34,7 @@ public class ComputeResourceDescription {
     private String resourceDescription;
     private boolean enabled;
     private List<BatchQueue> batchQueues;
-    private java.util.Map<FileSystems, java.lang.String> fileSystems;
+    private Map<FileSystems, String> fileSystems;
     private List<JobSubmissionInterface> jobSubmissionInterfaces;
     private List<DataMovementInterface> dataMovementInterfaces;
     private int maxMemoryPerNode;
@@ -103,11 +104,11 @@ public class ComputeResourceDescription {
         this.batchQueues = batchQueues;
     }
 
-    public java.util.Map<FileSystems, java.lang.String> getFileSystems() {
+    public Map<FileSystems, String> getFileSystems() {
         return fileSystems;
     }
 
-    public void setFileSystems(java.util.Map<FileSystems, java.lang.String> fileSystems) {
+    public void setFileSystems(Map<FileSystems, String> fileSystems) {
         this.fileSystems = fileSystems;
     }
 

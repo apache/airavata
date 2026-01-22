@@ -61,7 +61,7 @@ public class CacheConfig {
     @Bean
     @Primary
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        var cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(defaultCacheBuilder());
         cacheManager.setCacheNames(java.util.List.of(AUTHZ_CACHE, USER_PROFILE_CACHE, GATEWAY_CACHE));
         return cacheManager;

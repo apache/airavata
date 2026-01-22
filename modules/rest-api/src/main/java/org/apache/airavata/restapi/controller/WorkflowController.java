@@ -26,9 +26,11 @@ import org.apache.airavata.registry.services.WorkflowService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,10 +46,20 @@ public class WorkflowController {
         this.workflowService = workflowService;
     }
 
+    @GetMapping
+    public ResponseEntity<?> getAllWorkflows() {
+        try {
+            var workflows = workflowService.getAllWorkflows();
+            return ResponseEntity.ok(workflows);
+        } catch (WorkflowCatalogException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{workflowId}")
     public ResponseEntity<?> getWorkflow(@PathVariable String workflowId) {
         try {
-            AiravataWorkflow workflow = workflowService.getWorkflow(workflowId);
+            var workflow = workflowService.getWorkflow(workflowId);
             if (workflow == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -62,9 +74,36 @@ public class WorkflowController {
             @RequestParam String experimentId, @RequestBody AiravataWorkflow workflow) {
         try {
             workflowService.registerWorkflow(workflow, experimentId);
-            String workflowId = workflowService.getWorkflowId(experimentId);
+            var workflowId = workflowService.getWorkflowId(experimentId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("workflowId", workflowId));
         } catch (WorkflowCatalogException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{workflowId}")
+    public ResponseEntity<?> updateWorkflow(
+            @PathVariable String workflowId, @RequestBody AiravataWorkflow workflow) {
+        try {
+            workflowService.updateWorkflow(workflowId, workflow);
+            return ResponseEntity.ok().build();
+        } catch (WorkflowCatalogException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{workflowId}")
+    public ResponseEntity<?> deleteWorkflow(@PathVariable String workflowId) {
+        try {
+            workflowService.deleteWorkflow(workflowId);
+            return ResponseEntity.ok(Map.of("deleted", true));
+        } catch (WorkflowCatalogException e) {
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -72,11 +111,11 @@ public class WorkflowController {
     @GetMapping("/experiment/{experimentId}")
     public ResponseEntity<?> getWorkflowByExperiment(@PathVariable String experimentId) {
         try {
-            String workflowId = workflowService.getWorkflowId(experimentId);
+            var workflowId = workflowService.getWorkflowId(experimentId);
             if (workflowId == null) {
                 return ResponseEntity.notFound().build();
             }
-            AiravataWorkflow workflow = workflowService.getWorkflow(workflowId);
+            var workflow = workflowService.getWorkflow(workflowId);
             return ResponseEntity.ok(workflow);
         } catch (WorkflowCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

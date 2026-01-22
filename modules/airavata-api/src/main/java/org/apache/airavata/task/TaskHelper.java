@@ -22,10 +22,29 @@ package org.apache.airavata.task;
 import org.apache.airavata.agents.api.AdaptorSupport;
 
 /**
- * TODO: Class level comments please
+ * Helper interface providing access to adaptor support for task execution.
+ *
+ * <p>Tasks use {@code TaskHelper} to access adaptor support, which provides
+ * connections to compute resources, storage resources, and other infrastructure
+ * needed for task execution.
+ *
+ * <p>Tasks receive a {@code TaskHelper} instance through their {@code onRun(TaskHelper)}
+ * method, allowing them to interact with compute resources, transfer data, and
+ * perform other operations required for task execution.
+ *
+ * <p>Example usage:
+ * <pre>{@code
+ * public TaskResult onRun(TaskHelper helper) {
+ *     AdaptorSupport adaptorSupport = helper.getAdaptorSupport();
+ *     // Use adaptorSupport to interact with compute resources
+ *     return onSuccess("Task completed");
+ * }
+ * }</pre>
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
+ * @see org.apache.airavata.task.base.AbstractTask
+ * @see org.apache.airavata.agents.api.AdaptorSupport
  */
 public interface TaskHelper {
     public AdaptorSupport getAdaptorSupport();

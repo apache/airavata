@@ -53,7 +53,7 @@ public class EnvironmentSpecificPreferences {
      * Static factory method to create a slurm preference.
      */
     public static EnvironmentSpecificPreferences slurm(SlurmComputeResourcePreference slurm) {
-        EnvironmentSpecificPreferences prefs = new EnvironmentSpecificPreferences();
+        var prefs = new EnvironmentSpecificPreferences();
         prefs.setSlurm(slurm);
         return prefs;
     }
@@ -62,7 +62,7 @@ public class EnvironmentSpecificPreferences {
      * Static factory method to create an aws preference.
      */
     public static EnvironmentSpecificPreferences aws(AwsComputeResourcePreference aws) {
-        EnvironmentSpecificPreferences prefs = new EnvironmentSpecificPreferences();
+        var prefs = new EnvironmentSpecificPreferences();
         prefs.setAws(aws);
         return prefs;
     }

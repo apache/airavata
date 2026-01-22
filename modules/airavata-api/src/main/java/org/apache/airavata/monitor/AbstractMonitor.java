@@ -19,10 +19,8 @@
 */
 package org.apache.airavata.monitor;
 
-import java.util.List;
-import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.dapr.monitor.MessageProducer;
+import org.apache.airavata.orchestrator.JobStatusHandler;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -37,24 +35,24 @@ public class AbstractMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMonitor.class);
 
-    private final MessageProducer messageProducer;
+    private final JobStatusHandler jobStatusHandler;
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
 
     public AbstractMonitor(
             RegistryService registryService,
             AiravataServerProperties properties,
-            @Autowired(required = false) MessageProducer messageProducer) {
+            @Autowired(required = false) JobStatusHandler jobStatusHandler) {
         this.registryService = registryService;
         this.properties = properties;
-        this.messageProducer = messageProducer;
+        this.jobStatusHandler = jobStatusHandler;
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
         boolean validated = true;
         try {
             log.info("Fetching matching jobs for job id {} from registry", jobStatusResult.getJobId());
-            List<JobModel> jobs = registryService.getJobs("jobId", jobStatusResult.getJobId());
+            var jobs = registryService.getJobs("jobId", jobStatusResult.getJobId());
 
             if (!jobs.isEmpty()) {
                 log.info("Filtering total {} with target job name {}", jobs.size(), jobStatusResult.getJobName());
@@ -72,10 +70,10 @@ public class AbstractMonitor {
                 validated = false;
 
             } else {
-                JobModel jobModel = jobs.get(0);
+                var jobModel = jobs.get(0);
 
-                String processId = jobModel.getProcessId();
-                String experimentId = registryService.getProcess(processId).getExperimentId();
+                var processId = jobModel.getProcessId();
+                var experimentId = registryService.getProcess(processId).getExperimentId();
 
                 if (experimentId != null && processId != null) {
                     log.info(
@@ -98,19 +96,18 @@ public class AbstractMonitor {
     }
 
     public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
-        if (messageProducer == null) {
+        if (jobStatusHandler == null) {
             throw new MonitoringException(
-                    "MessageProducer is not available. Enable airavata.dapr.enabled and ensure Dapr is configured for monitoring.");
+                    "JobStatusHandler (e.g. PostWorkflowManager) is not available. Enable airavata.services.postwm for direct job-status handling.");
         }
         try {
             if (validateJobStatus(jobStatusResult)) {
-                messageProducer.submitMessageToQueue(jobStatusResult);
+                jobStatusHandler.onJobStatusMessage(jobStatusResult);
             } else {
                 throw new MonitoringException("Failed to validate job status for job id " + jobStatusResult.getJobId());
             }
         } catch (Exception e) {
-            throw new MonitoringException(
-                    "Failed to submit job status for job id " + jobStatusResult.getJobId() + " to status queue", e);
+            throw new MonitoringException("Failed to submit job status for job id " + jobStatusResult.getJobId(), e);
         }
     }
 

@@ -58,8 +58,8 @@ public class PropertiesValidationConfig {
     public void validateProperties() {
         logger.info("=== Airavata Configuration Validation ===");
 
-        List<String> errors = new ArrayList<>();
-        List<String> warnings = new ArrayList<>();
+        var errors = new ArrayList<String>();
+        var warnings = new ArrayList<String>();
 
         // Validate top-level properties (all under airavata.* prefix)
         validateNotNull(properties.security(), "airavata.security", errors);
@@ -80,9 +80,14 @@ public class PropertiesValidationConfig {
                     && properties.services().thrift().enabled()) {
                 validateNotNull(properties.services().thrift().server(), "airavata.services.thrift.server", errors);
             }
-            if (properties.services().rest() != null
-                    && properties.services().rest().enabled()) {
-                validateNotNull(properties.services().rest().server(), "airavata.services.rest.server", errors);
+            // Validate unified HTTP and gRPC servers
+            validateNotNull(properties.services().http(), "airavata.services.http", errors);
+            if (properties.services().http() != null) {
+                validateNotNull(properties.services().http().server(), "airavata.services.http.server", errors);
+            }
+            validateNotNull(properties.services().grpc(), "airavata.services.grpc", errors);
+            if (properties.services().grpc() != null) {
+                validateNotNull(properties.services().grpc().server(), "airavata.services.grpc.server", errors);
             }
         }
 
@@ -93,7 +98,7 @@ public class PropertiesValidationConfig {
 
         // If there are validation errors, fail fast
         if (!errors.isEmpty()) {
-            StringBuilder sb = new StringBuilder("\n\n");
+            var sb = new StringBuilder("\n\n");
             sb.append("=== CONFIGURATION VALIDATION FAILED ===\n");
             sb.append("The following required properties are missing or invalid:\n\n");
             for (String error : errors) {
@@ -130,6 +135,14 @@ public class PropertiesValidationConfig {
             logger.info(
                     "    thrift.enabled = {}",
                     services.thrift() != null && services.thrift().enabled());
+            if (services.http() != null && services.http().server() != null) {
+                logger.info(
+                        "    http.server.port = {}", services.http().server().port());
+            }
+            if (services.grpc() != null && services.grpc().server() != null) {
+                logger.info(
+                        "    grpc.server.port = {}", services.grpc().server().port());
+            }
             logger.info(
                     "    rest.enabled = {}",
                     services.rest() != null && services.rest().enabled());

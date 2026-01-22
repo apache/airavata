@@ -33,7 +33,8 @@ import org.springframework.context.annotation.DependsOn;
 /**
  * Configuration for Flyway database migrations.
  *
- * <p>Migration files are loaded from {airavataHome}/conf/db/migration/airavata/
+ * <p>All Airavata data is stored in a single unified 'airavata' database.
+ * Migration files are loaded from {airavataHome}/conf/db/migration/airavata/
  * where {airavataHome} is resolved from:
  * <ul>
  *   <li>System property -Dairavata.home=XXX (highest priority)</li>
@@ -41,8 +42,7 @@ import org.springframework.context.annotation.DependsOn;
  *   <li>Resources root (IDE mode: modules/distribution/src/main/resources)</li>
  * </ul>
  *
- * <p>Flyway is enabled by default in production but can be disabled via
- * airavata.flyway.enabled=false property.
+ * <p>Flyway can be disabled via airavata.flyway.enabled=false property.
  */
 @Configuration
 @ConditionalOnProperty(prefix = "airavata.flyway", name = "enabled", havingValue = "true")
@@ -54,8 +54,8 @@ public class FlywayConfig {
      * Get the migration location path for the unified database.
      */
     private static String getMigrationLocation() {
-        String configDir = AiravataConfigUtils.getConfigDir();
-        String migrationPath =
+        var configDir = AiravataConfigUtils.getConfigDir();
+        var migrationPath =
                 configDir + File.separator + "db" + File.separator + "migration" + File.separator + "airavata";
         logger.debug("Flyway migration location: {}", migrationPath);
         return "filesystem:" + migrationPath;

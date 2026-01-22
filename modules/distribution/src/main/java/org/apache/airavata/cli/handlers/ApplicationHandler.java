@@ -46,7 +46,7 @@ public class ApplicationHandler {
             String gatewayId, String name, String moduleName, String executable, String computeId, String description) {
         try {
             // Create application module
-            ApplicationModule appModule = new ApplicationModule();
+            var appModule = new ApplicationModule();
             appModule.setAppModuleName(moduleName);
             appModule.setAppModuleVersion("1.0");
             appModule.setAppModuleDescription(description);
@@ -55,13 +55,13 @@ public class ApplicationHandler {
             System.out.println("✓ Application module created: " + applicationModuleId);
 
             // Create application interface
-            ApplicationInterfaceDescription appInterface = new ApplicationInterfaceDescription();
+            var appInterface = new ApplicationInterfaceDescription();
             appInterface.setApplicationName(name);
             appInterface.setApplicationDescription(description);
             appInterface.setApplicationModules(Arrays.asList(applicationModuleId));
 
             // Add input
-            InputDataObjectType input = new InputDataObjectType();
+            var input = new InputDataObjectType();
             input.setName("input");
             input.setType(DataType.STRING);
             input.setInputOrder(1);
@@ -70,12 +70,12 @@ public class ApplicationHandler {
             appInterface.setApplicationInputs(Arrays.asList(input));
 
             // Add outputs
-            OutputDataObjectType stdout = new OutputDataObjectType();
+            var stdout = new OutputDataObjectType();
             stdout.setName("STDOUT");
             stdout.setType(DataType.STDOUT);
             stdout.setIsRequired(false);
 
-            OutputDataObjectType stderr = new OutputDataObjectType();
+            var stderr = new OutputDataObjectType();
             stderr.setName("STDERR");
             stderr.setType(DataType.STDERR);
             stderr.setIsRequired(false);
@@ -86,7 +86,7 @@ public class ApplicationHandler {
             System.out.println("✓ Application interface created: " + applicationInterfaceId);
 
             // Create application deployment
-            ApplicationDeploymentDescription appDeployment = new ApplicationDeploymentDescription();
+            var appDeployment = new ApplicationDeploymentDescription();
             appDeployment.setAppModuleId(applicationModuleId);
             appDeployment.setComputeHostId(computeId);
             appDeployment.setExecutablePath(executable);

@@ -26,13 +26,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@ConditionalOnProperty(name = "services.research.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "airavata.services.research.enabled", havingValue = "true", matchIfMissing = true)
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    @Value("${services.research.portal.url}")
+    @Value("${airavata.services.research.portal.url}")
     private String deployedOrigin;
 
-    @Value("${services.research.portal.dev-url}")
+    @Value("${airavata.services.research.portal.dev-url}")
     private String devOrigin;
 
     @Override

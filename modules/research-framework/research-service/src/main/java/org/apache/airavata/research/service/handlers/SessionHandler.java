@@ -58,7 +58,7 @@ public class SessionHandler {
         sessionName = StringUtils.isNotBlank(sessionName)
                 ? sessionName
                 : UUID.randomUUID().toString().substring(0, 6);
-        Session session = new Session(sessionName, UserContext.userId(), project);
+        var session = new Session(sessionName, UserContext.userId(), project);
         session.setStatus(SessionStatusEnum.CREATED);
         session = sessionRepository.save(session);
         LOGGER.debug("Created session with Id: {}, Name: {}", session.getId(), sessionName);
@@ -74,9 +74,9 @@ public class SessionHandler {
     }
 
     public Session updateSessionStatus(String sessionId, SessionStatusEnum status) {
-        Session session = findSession(sessionId);
+        var session = findSession(sessionId);
 
-        String userId = UserContext.userId();
+        var userId = UserContext.userId();
         if (!session.getUserId().equals(userId)) {
             LOGGER.error("User " + userId + " is not authorized to update session " + session.getId());
             throw new RuntimeException("User " + userId + " is not authorized to update session " + session.getId());
@@ -101,7 +101,7 @@ public class SessionHandler {
     }
 
     public boolean deleteSession(String sessionId) {
-        Session session = findSession(sessionId);
+        var session = findSession(sessionId);
         if (!session.getUserId().equals(UserContext.userId())) {
             LOGGER.error("Invalid session id {} for user {}", sessionId, session.getUserId());
             throw new RuntimeException("Invalid session ID");

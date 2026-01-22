@@ -56,17 +56,17 @@ public class AiravataServiceClientFactory {
                 }
                 String keystorePath = properties.security().tls().keystore().path();
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
-                String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
+                var keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
                 params.setKeyStore(
                         keystoreFullPath, properties.security().tls().keystore().password());
                 transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             }
 
             var protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, AIRAVATA_SERVICE_NAME);
+            var multiplexedProtocol = new TMultiplexedProtocol(protocol, AIRAVATA_SERVICE_NAME);
             return new Airavata.Client(multiplexedProtocol);
         } catch (TTransportException e) {
-            AiravataClientException exception = new AiravataClientException();
+            var exception = new AiravataClientException();
             exception.setParameter("Unable to connect to the server at " + serverHost + ":" + serverPort);
             throw exception;
         }

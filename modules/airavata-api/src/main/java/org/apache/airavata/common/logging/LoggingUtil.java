@@ -89,12 +89,8 @@ public class LoggingUtil {
      * @param context Context parameters to include in the log message (key-value pairs)
      */
     public static void logErrorWithContext(
-            Logger logger,
-            String operation,
-            String reason,
-            Throwable exception,
-            java.util.Map<String, String> context) {
-        StringBuilder message = new StringBuilder();
+            Logger logger, String operation, String reason, Throwable exception, Map<String, String> context) {
+        var message = new StringBuilder();
         message.append(String.format("[%s] failed: %s", operation, reason));
 
         if (context != null && !context.isEmpty()) {
@@ -131,8 +127,8 @@ public class LoggingUtil {
      * @param context Context parameters to include in the log message
      */
     public static void logWarningWithContext(
-            Logger logger, String operation, String message, java.util.Map<String, String> context) {
-        StringBuilder logMessage = new StringBuilder();
+            Logger logger, String operation, String message, Map<String, String> context) {
+        var logMessage = new StringBuilder();
         logMessage.append(String.format("[%s] warning: %s", operation, message));
 
         if (context != null && !context.isEmpty()) {
@@ -164,8 +160,8 @@ public class LoggingUtil {
      * @param context Context parameters to include in the log message
      */
     public static void logInfoWithContext(
-            Logger logger, String operation, String message, java.util.Map<String, String> context) {
-        StringBuilder logMessage = new StringBuilder();
+            Logger logger, String operation, String message, Map<String, String> context) {
+        var logMessage = new StringBuilder();
         logMessage.append(String.format("[%s]: %s", operation, message));
 
         if (context != null && !context.isEmpty()) {

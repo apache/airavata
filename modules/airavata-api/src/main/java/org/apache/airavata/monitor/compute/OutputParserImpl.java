@@ -31,14 +31,14 @@ public class OutputParserImpl implements OutputParser {
     public boolean isComputeResourceAvailable(CommandOutput commandOutput, String type) {
         if (commandOutput.getStdOut() != null && !commandOutput.getStdOut().isEmpty()) {
             if (type.equals(ComputeMonitorConstants.JOB_SUBMISSION_PROTOCOL_SLURM)) {
-                try (Scanner scanner = new Scanner(commandOutput.getStdOut())) {
+                try (var scanner = new Scanner(commandOutput.getStdOut())) {
                     if (scanner.hasNextLine()) {
                         scanner.nextLine();
                     }
                     while (scanner.hasNextLine()) {
-                        String line = scanner.nextLine();
-                        String[] splittedString = line.split(" ");
-                        for (String splitted : splittedString) {
+                        var line = scanner.nextLine();
+                        var splittedString = line.split(" ");
+                        for (var splitted : splittedString) {
                             if (splitted.trim().equals("up")) {
                                 return true;
                             }

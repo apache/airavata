@@ -76,7 +76,7 @@ public class ThriftMapperConfiguration {
             GatewayMapper gatewayMapper,
             ProjectMapper projectMapper,
             ExperimentModelMapper experimentModelMapper) {
-        Map<EntityType, Function<Object, Object>> converters = new HashMap<>();
+        var converters = new HashMap<EntityType, Function<Object, Object>>();
 
         converters.put(
                 EntityType.USER_PROFILE,

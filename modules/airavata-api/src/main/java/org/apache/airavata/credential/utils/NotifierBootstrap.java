@@ -24,17 +24,13 @@ package org.apache.airavata.credential.utils;
  * Date: 12/27/13
  * Time: 2:22 PM
  */
-import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
-import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.credential.model.CredentialStoreNotifier;
 import org.apache.airavata.credential.model.EmailNotificationMessage;
@@ -66,7 +62,7 @@ public class NotifierBootstrap extends TimerTask {
 
         // bootstrap
         if (enabled) {
-            Timer timer = new Timer();
+            var timer = new Timer();
             timer.scheduleAtFixedRate(this, 0, period);
         }
 
@@ -98,22 +94,22 @@ public class NotifierBootstrap extends TimerTask {
 
         // retrieve OA4MP credentials
         try {
-            List<Credential> credentials = credentialReader.getAllCredentials();
+            var credentials = credentialReader.getAllCredentials();
 
-            for (Credential credential : credentials) {
+            for (var credential : credentials) {
                 if (credential instanceof CertificateCredential certificateCredential) {
 
-                    Date date = Utility.convertStringToDate(certificateCredential.getNotAfter());
-                    Instant expiryWithGap = date.toInstant().plus(1, ChronoUnit.DAYS);
+                    var date = Utility.convertStringToDate(certificateCredential.getNotAfter());
+                    var expiryWithGap = date.toInstant().plus(1, ChronoUnit.DAYS);
 
-                    Instant currentInstant = AiravataUtils.getUniqueTimestamp().toInstant();
+                    var currentInstant = AiravataUtils.getUniqueTimestamp().toInstant();
                     if (currentInstant.isAfter(expiryWithGap)) {
                         // Send an email
-                        CommunityUser communityUser = certificateCredential.getCommunityUser();
-                        String body = String.format(
+                        var communityUser = certificateCredential.getCommunityUser();
+                        var body = String.format(
                                 MESSAGE, communityUser.getUsername(), certificateCredential.getNotAfter());
-                        String subject = String.format(SUBJECT, communityUser.getUsername());
-                        EmailNotificationMessage notificationMessage =
+                        var subject = String.format(SUBJECT, communityUser.getUsername());
+                        var notificationMessage =
                                 new EmailNotificationMessage(subject, communityUser.getUserEmail(), body);
 
                         this.credentialStoreNotifier.notifyEmail(notificationMessage);
@@ -123,7 +119,7 @@ public class NotifierBootstrap extends TimerTask {
 
         } catch (CredentialStoreException e) {
             log.error("Error sending emails about credential expiring.", e);
-        } catch (java.time.format.DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             log.error("Error parsing date time when sending emails", e);
         }
     }

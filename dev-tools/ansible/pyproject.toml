@@ -24,7 +24,7 @@ version = "0.21.0"
 description = "Ansible deployment scripts for Apache Airavata"
 requires-python = ">=3.9"
 dependencies = [
-    "ansible-core>=2.15.0",
+    "ansible-core>=2.20.1",
 ]
 
 [project.optional-dependencies]

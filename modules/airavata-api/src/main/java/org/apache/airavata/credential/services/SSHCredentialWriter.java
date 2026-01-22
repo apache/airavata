@@ -42,7 +42,7 @@ public class SSHCredentialWriter implements CredentialWriter {
     }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
-        SSHCredential sshCredential = (SSHCredential) credential;
+        var sshCredential = (SSHCredential) credential;
 
         // Delete existing credentials and add the new one
         credentialEntityService.deleteCredential(sshCredential.getGatewayId(), sshCredential.getToken());

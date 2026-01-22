@@ -1,6 +1,8 @@
 # Dapr Workflow and Experiment State Machine Spec
 
-This document specifies: (1) all state transitions for Experiment, Process, Task, and Job and the conditions under which they occur; (2) the Dapr-based reimplementation of the experiment flow so the state machine is properly encoded and Helix can be fully removed.
+This document specifies: (1) all state transitions for Experiment, Process, Task, and Job and the conditions under which they occur; (2) the Dapr-based implementation of the experiment flow with proper state machine encoding.
+
+**Status:** ✅ Implementation Complete - All Dapr workflows and activities are implemented. Helix has been fully removed.
 
 ---
 
@@ -17,7 +19,7 @@ This document specifies: (1) all state transitions for Experiment, Process, Task
 | EXECUTING  | 4     | At least one process in STARTED or beyond        |
 | CANCELING  | 5     | User requested cancel; waiting for workflows     |
 | CANCELED   | 6     | Cancel completed or process canceled             |
-| COMPLETED  | 7    | All processes completed successfully             |
+| COMPLETED  | 7     | All processes completed successfully             |
 | FAILED     | 8     | Validation/registry error or process failed      |
 
 **Experiment transition rules (from `OrchestratorService` and `handleProcessStatusChange`):**
@@ -55,25 +57,25 @@ This document specifies: (1) all state transitions for Experiment, Process, Task
 
 ### 1.2 ProcessState
 
-| State               | Value | Description                                  |
-|---------------------|-------|----------------------------------------------|
-| CREATED             | 0     | Initial after process create                 |
-| VALIDATED           | 1     | Validation passed                            |
-| STARTED             | 2     | Pre-workflow launched (PreWorkflowManager)   |
-| PRE_PROCESSING      | 3     | Env / config / staging (pre-workflow tasks)  |
-| CONFIGURING_WORKSPACE | 4   | (substep)                                    |
-| INPUT_DATA_STAGING  | 5     | Input staging task                           |
-| EXECUTING           | 6     | Job submitted and running                    |
-| MONITORING          | 7     | Job monitored                                |
-| OUTPUT_DATA_STAGING | 8     | Output staging (post-workflow)               |
-| POST_PROCESSING     | 9     | Completing / parsing (post-workflow)         |
-| COMPLETED           | 10    | Process finished successfully                |
-| FAILED              | 11    | Process failed                               |
-| CANCELLING          | 12    | Cancel workflow running                      |
-| CANCELED            | 13    | Cancel completed                             |
-| QUEUED              | 14    | Compute not ready; queued                    |
-| DEQUEUING           | 15    | About to launch from queue                   |
-| REQUEUED            | 16    | Job requeued for resubmit                    |
+| State                 | Value | Description                                  |
+|-----------------------|-------|----------------------------------------------|
+| CREATED               | 0     | Initial after process create                 |
+| VALIDATED             | 1     | Validation passed                            |
+| STARTED               | 2     | Pre-workflow launched (PreWorkflowManager)   |
+| PRE_PROCESSING        | 3     | Env / config / staging (pre-workflow tasks)  |
+| CONFIGURING_WORKSPACE | 4     | (substep)                                    |
+| INPUT_DATA_STAGING    | 5     | Input staging task                           |
+| EXECUTING             | 6     | Job submitted and running                    |
+| MONITORING            | 7     | Job monitored                                |
+| OUTPUT_DATA_STAGING   | 8     | Output staging (post-workflow)               |
+| POST_PROCESSING       | 9     | Completing / parsing (post-workflow)         |
+| COMPLETED             | 10    | Process finished successfully                |
+| FAILED                | 11    | Process failed                               |
+| CANCELLING            | 12    | Cancel workflow running                      |
+| CANCELED              | 13    | Cancel completed                             |
+| QUEUED                | 14    | Compute not ready; queued                    |
+| DEQUEUING             | 15    | About to launch from queue                   |
+| REQUEUED              | 16    | Job requeued for resubmit                    |
 
 **Process transition rules (from WorkflowManagers, OrchestratorService, PostWorkflowManager):**
 
@@ -150,16 +152,15 @@ PostWorkflowManager enforces these via `JobStateValidator.isValid(prev, next)` b
 
 ---
 
-## 2. Current Helix-Based Flow (Summary)
+## 2. Current Dapr-Based Flow (Implemented)
 
-- **HelixController:** starts `HelixControllerMain` (ZkHelixManager) for the cluster; manages cluster state in ZK.
-- **HelixParticipant:** connects to same cluster, runs `TaskStateModelFactory`; receives tasks by `@TaskDef name`, deserializes `AbstractTask`, runs `task.run()`.
-- **WorkflowManager:** holds `WorkflowOperator`(s). `WorkflowOperator` uses Helix `TaskDriver` to submit a `Workflow` of `JobConfig`(s); each job has `TaskConfig` with `command=TaskDef.name` and serialized task params. Parent-child dependencies via `OutPort`/`addParentChildDependency`.
-- **PreWorkflowManager:** subscribes to `process-topic` (Type.PROCESS_LAUNCH). On `ProcessSubmitEvent` builds a chain of `AiravataTask` (EnvSetup, InputDataStaging, JobSubmission, optional Completing for intermediate); calls `getWorkflowOperator().launchWorkflow(..., tasks, ...)` and `publishProcessStatus(STARTED)`.
-- **PostWorkflowManager:** implements `DaprJobStatusHandler`; receives `monitoring-job-status-topic`. On `JobState.COMPLETE` or `FAILED` runs `executePostWorkflow`: JobVerification → OutputDataStaging/Archive → Completing → ParsingTriggering; each step is a Helix workflow via `getWorkflowOperator().launchWorkflow`.
-- **ParserWorkflowManager:** subscribes to `parsing-data-topic`; runs parsing workflow (Helix) for `ProcessCompletionMessage`.
-- **WorkflowCleanupAgent:** periodically cleans finished Helix workflows.
-- **Experiment status:** `OrchestratorService` subscribes to `status-topic`; on `ProcessStatusChangeEvent` runs `handleProcessStatusChange` and maps ProcessState to ExperimentState per the table in §1.1.
+- **Dapr Workflow Runtime:** Started via `DaprWorkflowRuntimeConfig` when `airavata.services.controller.enabled=true`. Registers all workflows and activities, manages workflow execution.
+- **Dapr Activities:** Execute task logic (EnvSetup, InputDataStaging, JobSubmission, etc.) as Dapr activities. Activities are registered with the workflow runtime and called by workflows.
+- **PreWorkflowManager:** Subscribes to `process-topic` (Type.PROCESS_LAUNCH). On `ProcessSubmitEvent`, schedules `ProcessPreWorkflow` via `DaprWorkflowClient.scheduleNewWorkflow()` and publishes `ProcessStatus(STARTED)`.
+- **PostWorkflowManager:** Implements `DaprJobStatusHandler`; receives `monitoring-job-status-topic`. On `JobState.COMPLETE` or `FAILED`, schedules `ProcessPostWorkflow` via `DaprWorkflowClient.scheduleNewWorkflow()`.
+- **ParserWorkflowManager:** Subscribes to `parsing-data-topic`; schedules `ParsingWorkflow` via `DaprWorkflowClient.scheduleNewWorkflow()` for `ProcessCompletionMessage`.
+- **ProcessCancelWorkflow:** Scheduled by `PreWorkflowManager` on `ProcessTerminateEvent` to cancel running workflows and jobs.
+- **Experiment status:** `OrchestratorService` subscribes to `status-topic`; on `ProcessStatusChangeEvent` runs `handleProcessStatusChange` and maps ProcessState to ExperimentState per the table in §1.1. State transitions are validated using `ExperimentStateValidator` and `ProcessStateValidator`.
 
 ---
 
@@ -192,29 +193,33 @@ Each current `AiravataTask` (or equivalent) becomes an **Activity** that:
 - Reuses the core logic of the existing task (e.g. `JobSubmissionTask.run()`, `OutputDataStagingTask.run()`).
 - Updates process/task status and publishes to status-topic only when the **state machine** allows the transition. If a transition is invalid, the activity can throw or return a failure and let the workflow retry or fail.
 
-**Activity name** can match `@TaskDef name` for easier mapping:
+**Activity mapping** (task → activity):
 
-- `EnvSetupActivity` ← EnvSetupTask  
-- `InputDataStagingActivity` ← InputDataStagingTask  
-- `JobSubmissionActivity` ← JobSubmissionTask (SLURM, etc.)  
-- `OutputDataStagingActivity` ← OutputDataStagingTask  
-- `ArchiveActivity` ← ArchiveTask  
-- `JobVerificationActivity` ← JobVerificationTask  
-- `CompletingActivity` ← CompletingTask  
-- `ParsingTriggeringActivity` ← ParsingTriggeringTask  
-- `DataParsingActivity` ← DataParsingTask (parser)  
-- `WorkflowCancellationActivity` ← WorkflowCancellationTask (target: Dapr workflow instance IDs)  
-- `RemoteJobCancellationActivity` ← RemoteJobCancellationTask  
-- `CancelCompletingActivity` ← CancelCompletingTask  
+| Activity | Source Task | Package |
+|----------|-------------|---------|
+| `EnvSetupActivity` | EnvSetupTask | `org.apache.airavata.activities.process.pre` |
+| `InputDataStagingActivity` | InputDataStagingTask | `org.apache.airavata.activities.process.pre` |
+| `JobSubmissionActivity` | JobSubmissionTask (SLURM, etc.) | `org.apache.airavata.activities.process.pre` |
+| `OutputDataStagingActivity` | OutputDataStagingTask | `org.apache.airavata.activities.process.post` |
+| `ArchiveActivity` | ArchiveTask | `org.apache.airavata.activities.process.post` |
+| `JobVerificationActivity` | JobVerificationTask | `org.apache.airavata.activities.process.post` |
+| `ParsingTriggeringActivity` | ParsingTriggeringTask | `org.apache.airavata.activities.process.post` |
+| `CompletingActivity` | CompletingTask | `org.apache.airavata.activities.shared` |
+| `DataParsingActivity` | DataParsingTask (parser) | `org.apache.airavata.activities.parsing` |
+| `WorkflowCancellationActivity` | WorkflowCancellationTask (Dapr workflow IDs) | `org.apache.airavata.activities.process.cancel` |
+| `RemoteJobCancellationActivity` | RemoteJobCancellationTask | `org.apache.airavata.activities.process.cancel` |
+| `CancelCompletingActivity` | CancelCompletingTask | `org.apache.airavata.activities.process.cancel` |
 
-Activities must be registered with `WorkflowRuntimeBuilder.registerActivity(...)`.
+Activities are registered with `WorkflowRuntimeBuilder.registerActivity(...)` in `DaprWorkflowRuntimeConfig` (`org.apache.airavata.orchestrator.internal.workflow`).
 
 ### 3.4 State Machine Enforcement in Dapr Layer
 
-- **Experiment:** `OrchestratorService.handleProcessStatusChange` already encodes the ExperimentState rules. No change to the rules; ensure it remains the single place that applies experiment transitions from process events. Optionally introduce `ExperimentStateValidator.isValid(prev, next)` and call it before `updateAndPublishExperimentStatus`.
-- **Process:** Before `publishProcessStatus(processId, experimentId, gatewayId, state)` or `registry.updateProcessStatus`, call `ProcessStateValidator.isValid(currentProcessState, state)`. Add `ProcessStateValidator` with a transition matrix derived from §1.2 (and `StateMachineTestUtils.getSuccessfulProcessStateSequence`). If invalid, log and skip or fail the activity.
-- **Job:** Already enforced by `JobStateValidator.isValid` in PostWorkflowManager before `saveAndPublishJobStatus`; keep as-is.
-- **Task:** Optionally add `TaskStateValidator` for CREATED→EXECUTING→COMPLETED|FAILED|CANCELED. Less critical if workflow structure guarantees order.
+All state validators are in `org.apache.airavata.orchestrator.state`:
+
+- **Experiment:** `ExperimentStateValidator.isValid(prev, next)` enforces experiment state transitions. Called via `OrchestratorService.handleProcessStatusChange` before `updateAndPublishExperimentStatus`.
+- **Process:** `ProcessStateValidator.isValid(currentProcessState, state)` enforces process state transitions. Called before `publishProcessStatus(processId, experimentId, gatewayId, state)` or `registry.updateProcessStatus`. Transition matrix derived from §1.2.
+- **Job:** `JobStateValidator.isValid` enforced in PostWorkflowManager before `saveAndPublishJobStatus`.
+- **Task:** `TaskStateValidator` enforces CREATED→EXECUTING→COMPLETED|FAILED|CANCELED transitions.
 
 ### 3.5 Workflow Stub Examples (Pseudocode)
 
@@ -251,48 +256,87 @@ Input: ProcessTerminateEvent { processId, gatewayId }
 4. ctx.complete()
 ```
 
-### 3.6 Scheduling and Entry Points
+### 3.6 Scheduling and Entry Points (Implemented)
 
 - **ProcessPreWorkflow:**  
-  - **Option A:** process-topic subscriber (replacing `PreWorkflowManager.ProcessLaunchMessageHandler`): on `ProcessSubmitEvent`, call `DaprWorkflowClient.scheduleNewWorkflow(ProcessPreWorkflow.class, event)` and ack.  
-  - **Option B:** Keep a thin `ProcessLaunchMessageHandler` in a new `DaprProcessLaunchHandler` that only translates pub/sub → `DaprWorkflowClient.scheduleNewWorkflow`.
+  - Implemented in `PreWorkflowManager.createAndLaunchPreWorkflow()`: on `ProcessSubmitEvent` from `ProcessLaunchMessageHandler`, calls `DaprWorkflowClient.scheduleNewWorkflow(ProcessPreWorkflow.class, workflowInstanceId, event)`.
 
 - **ProcessPostWorkflow:**  
-  - From `PostWorkflowManager` (or a renamed `DaprJobStatusHandler` implementation): when `JobState.COMPLETE` or `FAILED`, after `JobStateValidator.isValid` and `saveAndPublishJobStatus`, call `DaprWorkflowClient.scheduleNewWorkflow(ProcessPostWorkflow.class, new ProcessPostInput(processId, experimentId, gatewayId, forceRun))`.
+  - Implemented in `PostWorkflowManager.executePostWorkflow()`: when `JobState.COMPLETE` or `FAILED`, after `JobStateValidator.isValid` and `saveAndPublishJobStatus`, calls `DaprWorkflowClient.scheduleNewWorkflow(ProcessPostWorkflow.class, workflowInstanceId, input)`.
 
 - **ProcessCancelWorkflow:**  
-  - process-topic handler for `ProcessTerminateEvent`: `DaprWorkflowClient.scheduleNewWorkflow(ProcessCancelWorkflow.class, event)`.
+  - Implemented in `PreWorkflowManager.createAndLaunchCancelWorkflow()`: process-topic handler for `ProcessTerminateEvent` calls `DaprWorkflowClient.scheduleNewWorkflow(ProcessCancelWorkflow.class, workflowInstanceId, event)`.
 
 - **ParsingWorkflow:**  
-  - parsing-data-topic handler (or `DaprParsingHandler`): on `ProcessCompletionMessage`, `DaprWorkflowClient.scheduleNewWorkflow(ParsingWorkflow.class, message)`.
+  - Implemented in `ParserWorkflowManager.process()`: on `ProcessCompletionMessage` from `DaprParsingHandler`, calls `DaprWorkflowClient.scheduleNewWorkflow(ParsingWorkflow.class, workflowInstanceId, message)`.
 
-### 3.7 WorkflowRuntime and DaprWorkflowClient
+### 3.7 WorkflowRuntime and DaprWorkflowClient (Implemented)
 
-- **WorkflowRuntime:** Built with `WorkflowRuntimeBuilder`, register all workflows and activities. Start in the same process as the API (e.g. in a `@PostConstruct` or `ApplicationRunner` when `airavata.services.controller` and prewm/postwm are enabled). `runtime.start(false)` to pull and run workflows.
-- **DaprWorkflowClient:** One per app or injectable; used by process-topic handler, `DaprJobStatusHandler`, and `DaprParsingHandler` to `scheduleNewWorkflow`. Instance ID can be `"pre-" + processId + "-" + UUID` etc., for idempotency and cleanup.
-- **Cleanup:** Replace `WorkflowCleanupAgent` with a simple scheduler that queries Dapr for completed workflow instances (if Dapr exposes it) or maintains a TTL in Redis/Dapr state for instance IDs and forgets them. Optional and can be done in a follow-up.
+- **WorkflowRuntime:** Implemented in `DaprWorkflowRuntimeConfig`. Built with `WorkflowRuntimeBuilder`, registers all workflows and activities. Started via `@PostConstruct` when `airavata.services.controller.enabled=true`. `runtime.start(false)` runs workflows non-blocking.
+- **DaprWorkflowClient:** Implemented in `DaprWorkflowClientHolder` as a Spring bean. Injected into workflow managers and used to `scheduleNewWorkflow`. Instance IDs use `WorkflowNaming` utility (e.g., `processId-PRE-uuid`, `processId-POST-uuid`).
+- **Cleanup:** WorkflowCleanupAgent removed. Dapr workflows are self-managing; completed workflows can be queried via Dapr API if needed. Workflow instance IDs are registered with processes via `registerWorkflowForProcess()` for tracking.
 
-### 3.8 Configuration and Feature Flags
+### 3.8 Configuration and Feature Flags (Implemented)
 
-- `airavata.services.controller.enabled`: when true, start WorkflowRuntime and Dapr workflow/activity registration; when false, do not.
-- `airavata.services.prewm.enabled` / `airavata.services.postwm.enabled`: as today, gate Pre/Post behavior. In Dapr design, they gate whether we subscribe to process-topic and run ProcessPreWorkflow, and whether we run ProcessPostWorkflow from job-status.
-- Remove all `airavata.helix.*` (or leave unused and deprecated): `airavata.helix.zookeeper-connection`, `airavata.helix.cluster.name`, etc. Remove `Helix` record from `AiravataServerProperties` once Helix is gone.
+- `airavata.services.controller.enabled`: when true, starts WorkflowRuntime and Dapr workflow/activity registration via `DaprWorkflowRuntimeConfig`; when false, workflows are not available.
+- `airavata.services.prewm.enabled` / `airavata.services.postwm.enabled`: gate Pre/Post behavior. When enabled, managers subscribe to topics and schedule Dapr workflows.
+- `airavata.dapr.enabled`: enables Dapr client and state management.
+- `airavata.dapr.state.name`: Dapr state store component name (default: `redis-state`).
+- All `airavata.helix.*` properties removed. Helix dependencies removed from `pom.xml`.
 
 ---
 
-## 4. Files to Create
+## 4. Files Created (Implementation Complete)
 
-| Path | Purpose |
-|------|---------|
-| `org.apache.airavata.workflow.dapr.ProcessPreWorkflow` | Dapr Workflow for pre-process (env, input staging, job submission). |
-| `org.apache.airavata.workflow.dapr.ProcessPostWorkflow` | Dapr Workflow for post-process (verify, output staging, completing, parsing trigger). |
-| `org.apache.airavata.workflow.dapr.ProcessCancelWorkflow` | Dapr Workflow for process cancel. |
-| `org.apache.airavata.workflow.dapr.ParsingWorkflow` | Dapr Workflow for parsing. |
-| `org.apache.airavata.workflow.dapr.activities.*` | One class per activity (EnvSetup, InputDataStaging, JobSubmission, OutputDataStaging, Archive, JobVerification, Completing, ParsingTriggering, DataParsing, WorkflowCancellation, RemoteJobCancellation, CancelCompleting). |
-| `org.apache.airavata.workflow.dapr.DaprWorkflowRuntimeConfig` | `@Configuration` to build `WorkflowRuntime`, register workflows/activities, and start runtime when controller is enabled. |
-| `org.apache.airavata.workflow.dapr.DaprWorkflowClientHolder` or `@Bean DaprWorkflowClient` | Bean for `DaprWorkflowClient` used by handlers. |
-| `org.apache.airavata.orchestrator.validator.ProcessStateValidator` | `isValid(ProcessState from, ProcessState to)`; used before process status updates. |
-| `org.apache.airavata.orchestrator.validator.ExperimentStateValidator` | Optional: `isValid(ExperimentState from, ExperimentState to)` per §1.1; call before `updateAndPublishExperimentStatus`. |
+### Dapr Workflows
+
+| Class | Package | Status |
+|-------|---------|--------|
+| `ProcessPreWorkflow` | `org.apache.airavata.workflow.process.pre` | ✅ Implemented |
+| `ProcessPostWorkflow` | `org.apache.airavata.workflow.process.post` | ✅ Implemented |
+| `ProcessCancelWorkflow` | `org.apache.airavata.workflow.process.cancel` | ✅ Implemented |
+| `ParsingWorkflow` | `org.apache.airavata.workflow.process.parsing` | ✅ Implemented |
+
+### Workflow Managers
+
+| Class | Package | Status |
+|-------|---------|--------|
+| `PreWorkflowManager` | `org.apache.airavata.workflow.process.pre` | ✅ Implemented |
+| `PostWorkflowManager` | `org.apache.airavata.workflow.process.post` | ✅ Implemented |
+| `ParserWorkflowManager` | `org.apache.airavata.workflow.process.parsing` | ✅ Implemented |
+| `WorkflowManager` | `org.apache.airavata.workflow.common` | ✅ Implemented |
+
+### Dapr Activities
+
+Activities are organized by function in `org.apache.airavata.activities.*`:
+
+| Category | Activities | Package |
+|----------|-----------|---------|
+| **Pre-Processing** | `EnvSetupActivity`, `InputDataStagingActivity`, `JobSubmissionActivity` | `org.apache.airavata.activities.process.pre` |
+| **Post-Processing** | `OutputDataStagingActivity`, `ArchiveActivity`, `JobVerificationActivity`, `ParsingTriggeringActivity` | `org.apache.airavata.activities.process.post` |
+| **Cancellation** | `WorkflowCancellationActivity`, `RemoteJobCancellationActivity`, `CancelCompletingActivity` | `org.apache.airavata.activities.process.cancel` |
+| **Parsing** | `DataParsingActivity` | `org.apache.airavata.activities.parsing` |
+| **Monitoring** | `ClusterStatusMonitorActivity`, `ComputeMonitorActivity`, `DataAnalyzerActivity` | `org.apache.airavata.activities.monitoring.*` |
+| **Scheduling** | `ProcessScannerActivity` | `org.apache.airavata.activities.scheduling` |
+| **Shared** | `CompletingActivity`, `TaskExecutorHelper`, `BaseActivityInput` | `org.apache.airavata.activities.shared` |
+
+### Dapr Runtime Configuration
+
+| Class | Package | Status |
+|-------|---------|--------|
+| `DaprWorkflowRuntimeConfig` | `org.apache.airavata.orchestrator.internal.workflow` | ✅ Implemented |
+| `DaprWorkflowClientHolder` | `org.apache.airavata.orchestrator.internal.workflow` | ✅ Implemented |
+| `ProcessStatusUpdateHelper` | `org.apache.airavata.orchestrator.internal.workflow` | ✅ Implemented |
+
+### State Validators
+
+| Class | Package | Status |
+|-------|---------|--------|
+| `ProcessStateValidator` | `org.apache.airavata.orchestrator.state` | ✅ Implemented |
+| `ExperimentStateValidator` | `org.apache.airavata.orchestrator.state` | ✅ Implemented |
+| `JobStateValidator` | `org.apache.airavata.orchestrator.state` | ✅ Implemented |
+| `TaskStateValidator` | `org.apache.airavata.orchestrator.state` | ✅ Implemented |
+| `StateValidator` | `org.apache.airavata.orchestrator.state` | ✅ Implemented (interface) |
 
 ---
 
@@ -312,18 +356,17 @@ Input: ProcessTerminateEvent { processId, gatewayId }
 
 ---
 
-## 6. Files to Delete
+## 6. Files Deleted (Cleanup Complete)
 
-| Path | Note |
-|------|------|
-| `HelixController.java` | Replaced by Dapr Workflow runtime (no cluster controller). |
-| `HelixParticipant.java` | Replaced by Dapr Activities. |
-| `GlobalParticipant.java` | Same. |
-| `WorkflowOperator.java` | Replaced by `DaprWorkflowClient` + Dapr Workflow definitions. |
-| `WorkflowCleanupAgent.java` | Replace with optional Dapr/Redis-based cleanup or remove. |
-| `QueueOperator.java` | If it only wraps Helix; else adapt. |
+| Path | Status |
+|------|--------|
+| `HelixController.java` | ✅ Removed (replaced by Dapr Workflow runtime) |
+| `HelixParticipant.java` | ✅ Removed (replaced by Dapr Activities) |
+| `GlobalParticipant.java` | ✅ Removed (replaced by Dapr Activities) |
+| `WorkflowOperator.java` | ✅ Removed (replaced by `DaprWorkflowClient` + Dapr Workflow definitions) |
+| `WorkflowCleanupAgent.java` | ✅ Removed (Dapr workflows are self-managing) |
 
-All `org.apache.helix` and `org.apache.helix.zookeeper` and Curator dependencies: remove from `pom.xml`. Remove Zookeeper/Helix from Ansible and deployment docs.
+All `org.apache.helix` and `org.apache.helix.zookeeper` and Curator dependencies: ✅ Removed from `pom.xml`. Zookeeper/Helix references removed from Ansible and deployment docs.
 
 ---
 
@@ -336,9 +379,10 @@ All `org.apache.helix` and `org.apache.helix.zookeeper` and Curator dependencies
 
 ---
 
-## 8. Summary
+## 8. Implementation Summary (Completed)
 
-- **State machines:** Experiment and Process transitions are documented in §1; Job is already in `JobStateValidator`. Introduce `ProcessStateValidator` and optionally `ExperimentStateValidator` and call them before persisting.
-- **Helix removal:** Delete HelixController, HelixParticipant, GlobalParticipant, WorkflowOperator, WorkflowCleanupAgent, and all Helix/ZK/Curator deps.
-- **Dapr replacement:** ProcessPreWorkflow, ProcessPostWorkflow, ProcessCancelWorkflow, ParsingWorkflow as Dapr Workflows; current tasks as Dapr Activities; `DaprWorkflowClient.scheduleNewWorkflow` from process-topic, job-status, and parsing-data-topic handlers. `WorkflowRuntime` started when controller is enabled.
-- **State machine in Dapr:** Validators gate all status writes; workflow and activity logic remains the source of *when* a transition is attempted, and validators enforce *whether* it is allowed.
+- **State machines:** ✅ Experiment and Process transitions documented in §1. `ProcessStateValidator` and `ExperimentStateValidator` implemented and integrated. `JobStateValidator` already existed. All validators called before status persistence.
+- **Helix removal:** ✅ HelixController, HelixParticipant, GlobalParticipant, WorkflowOperator, WorkflowCleanupAgent deleted. All Helix/ZK/Curator dependencies removed from `pom.xml`.
+- **Dapr replacement:** ✅ ProcessPreWorkflow, ProcessPostWorkflow, ProcessCancelWorkflow, ParsingWorkflow implemented as Dapr Workflows. All tasks implemented as Dapr Activities. `DaprWorkflowClient.scheduleNewWorkflow` called from process-topic, job-status, and parsing-data-topic handlers. `WorkflowRuntime` started via `DaprWorkflowRuntimeConfig` when controller is enabled.
+- **State machine enforcement:** ✅ Validators (`ProcessStateValidator`, `ExperimentStateValidator`, `JobStateValidator`) gate all status writes. Workflow and activity logic determines *when* a transition is attempted; validators enforce *whether* it is allowed.
+- **State management:** ✅ UserContentStore now uses Dapr State Store. Workflow instance tracking via DaprStateKeys. Process and experiment state persisted in Dapr State Store.

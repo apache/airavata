@@ -58,23 +58,36 @@ mvn clean install -DskipTests
 ### Step 2: Start Infrastructure
 
 ```bash
-# Start all infrastructure services
+# Start core infrastructure services
 docker compose -f .devcontainer/docker-compose.yml up -d
 
 # Wait for services to be healthy (~60 seconds)
 docker compose -f .devcontainer/docker-compose.yml ps
+
+# (Optional) Start with test infrastructure (SLURM + SFTP)
+docker compose -f .devcontainer/docker-compose.yml --profile test up -d
 ```
 
-**Services started:**
+**Core Services (always started):**
 
 | Service | Port | Version | Purpose |
 |---------|------|---------|---------|
-| MariaDB | 13306 | 10.4.13 | Database (8 catalogs) |
-| Keycloak | 18080 | 25.0 | Identity/Access Management (Quarkus-based) |
+| MariaDB | 13306 | 10.4.13 | Unified Airavata Database |
+| Keycloak | 18080 | 25.0 | Identity/Access Management |
 | Redis | 6379 | 7 | Dapr Pub/Sub and State Store |
+
+**Test Profile Services (optional, `--profile test`):**
+
+| Service | Port | Purpose |
+|---------|------|---------|
+| SLURM Cluster | 10022 (SSH), 6817-6818 | Test batch job submission |
+| SFTP Server | 10023 | Test file transfers |
+
+Test credentials: `testuser` / `testpass`
 
 **Access points:**
 - Keycloak Admin: http://localhost:18080 (admin/admin)
+- Keycloak Realm: http://localhost:18080/realms/default
 
 ### Step 3: Initialize Databases
 
@@ -88,7 +101,7 @@ mvn exec:java -Dexec.args="init"
 mvn exec:java -Dexec.args="init --clean"
 ```
 
-This creates and migrates 8 databases: `app_catalog`, `experiment_catalog`, `profile_service`, `sharing_registry`, `replica_catalog`, `workflow_catalog`, `credential_store`, `research_catalog`.
+This initializes the unified `airavata` database with all required tables.
 
 ### Step 4: Start Server
 
@@ -103,7 +116,7 @@ mvn exec:java -Dexec.args="serve --foreground"
 
 | Port | Service |
 |------|---------|
-| 8930 | Thrift API (main external interface) |
+| 8930 | Thrift Endpoints for Airavata API functions |
 
 ### Step 5: Verify Installation
 
@@ -160,14 +173,16 @@ airavata <command> [options]
 
 Airavata is composed of 5 top-level services that work together to facilitate the full lifecycle of computational jobs. All services run in a unified Spring Boot application (`AiravataServer`) within a single JVM process.
 
+> For detailed architecture documentation including Dapr workflows, activities, state machines, and package structure, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ![image](assets/airavata-dataflow.png)
 
 ### Unified Distribution
 
 Airavata provides a **unified distribution bundle** that includes all services in a single Spring Boot application:
 
-- **Thrift Mode** (default): Enables Thrift API Server along with all background services
-- **REST Mode**: Enables REST Proxy instead of Thrift API, along with all background services
+- **Thrift Mode** (default): Enables Thrift Server (Thrift Endpoints for Airavata API functions) along with all background services
+- **HTTP Mode**: Enables Airavata API (HTTP protocol) along with all background services. Both Thrift and HTTP modes can be enabled simultaneously to serve the same core API functionalities through different protocols.
 
 **Bundle Structure:**
 ```
@@ -189,29 +204,84 @@ airavata-0.21-SNAPSHOT/
 
 ### Services
 
-| Service | Description |
-|---------|-------------|
-| **Thrift API Server** | Public-facing API on port 8930 (main external interface) |
-| **REST API Server** | Alternative RESTful API interface (optional, disabled by default) |
-| **Profile Service** | Manages users, tenants, compute resources (internal component) |
-| **Registry Service** | Manages metadata and application definitions (internal component) |
-| **Credential Store** | Secure storage of credentials (internal component) |
-| **Sharing Registry** | Handles permissions and sharing (internal component) |
-| **Orchestrator** | Constructs workflow DAGs (internal component) |
-| **DB Event Manager** | Syncs task events to database (internal component) |
+All services run in a unified Spring Boot application with the following server ports:
+
+| Server | Port | Description |
+|--------|------|-------------|
+| **Thrift Server** | 8930 | Thrift Endpoints for Airavata API functions |
+| **HTTP Server** | 8080 | HTTP Endpoints for Airavata API functions, File API, Agent API, and Research API |
+| **gRPC Server** | 9090 | For airavata binaries to open persistent channels with airavata APIs |
+| **Dapr gRPC** | 50001 | Sidecar for pub/sub, state, and workflow execution |
+
+**Internal Services** (not separate servers, accessible via the above ports):
+- **Profile Service** - Manages users, tenants, compute resources (accessible via Thrift Server on port 8930)
+- **Registry Service** - Manages metadata and application definitions (accessible via Thrift Server on port 8930)
+- **Credential Store** - Secure storage of credentials (accessible via Thrift Server on port 8930)
+- **Sharing Registry** - Handles permissions and sharing (accessible via Thrift Server on port 8930)
+- **Orchestrator** - Constructs workflow DAGs (accessible via Thrift Server on port 8930)
+- **DB Event Manager** - Syncs task events to database (internal component)
+
+**Note:** Profile Service, Registry Service, Credential Store, Sharing Registry, and Orchestrator are **not separate servers**. They are multiplexed services accessible through the unified Thrift Server on port 8930 using service name prefixes (e.g., `ProfileService.UserProfileService`, `SharingRegistryService`).
 
 ### Background Services
 
 | Service | Purpose |
 |---------|---------|
-| **Dapr Workflows** | Manages task state transitions and workflow orchestration |
-| **Task Executors** | Executes tasks (EnvSetup, DataStaging, JobSubmission, etc.) |
+| **Dapr Workflows** | Manages task state transitions and workflow orchestration (ProcessPreWorkflow, ProcessPostWorkflow, ProcessCancelWorkflow, ParsingWorkflow) |
+| **Dapr Activities** | Executes tasks as Dapr activities (EnvSetup, InputDataStaging, JobSubmission, OutputDataStaging, etc.) |
+| **Dapr Pub/Sub** | Messaging for experiment/process events and status updates (backed by Redis) |
+| **Dapr State Store** | Persistent state management for workflows and process state (backed by Redis) |
 | **Email Monitor** | Monitors email for job status updates |
 | **Realtime Monitor** | Listens for state-change messages via Dapr Pub/Sub |
-| **Pre Workflow Manager** | Handles pre-execution phases |
-| **Post Workflow Manager** | Handles post-execution phases |
+| **Pre Workflow Manager** | Handles pre-execution phases (schedules ProcessPreWorkflow via Dapr) |
+| **Post Workflow Manager** | Handles post-execution phases (schedules ProcessPostWorkflow via Dapr) |
+| **Parser Workflow Manager** | Handles data parsing (schedules ParsingWorkflow via Dapr) |
 
 ![image](assets/airavata-components.png)
+
+---
+
+## Standard Configuration
+
+### Server Ports
+
+All Airavata services use the following standardized ports:
+
+| Server | Port | Configuration Property | Description |
+|--------|------|------------------------|-------------|
+| **Thrift Server** | 8930 | `airavata.services.thrift.server.port` | Thrift Endpoints for Airavata API functions |
+| **HTTP Server** (unified) | 8080 | `airavata.services.http.server.port` | HTTP Endpoints for Airavata API functions, File API, Agent API, and Research API |
+| **gRPC Server** (unified) | 9090 | `airavata.services.grpc.server.port` | For airavata binaries to open persistent channels with airavata APIs |
+| **Dapr gRPC** | 50001 | `airavata.dapr.grpc-port` | Sidecar for pub/sub, state, and workflow execution |
+
+### Agent Tunnel Server Configuration
+
+The Agent Tunnel Server is **not a service started by Airavata**. It is a configuration property that points to a **remote server location** where agents connect for TCP tunneling. The Airavata server only reads these properties and passes them to agents via gRPC messages.
+
+| Configuration Property | Description |
+|------------------------|-------------|
+| `airavata.services.agent.tunnelserver.host` | Remote tunnel server hostname |
+| `airavata.services.agent.tunnelserver.port` | Remote tunnel server port (typically 17000) |
+| `airavata.services.agent.tunnelserver.url` | Remote tunnel server API URL |
+| `airavata.services.agent.tunnelserver.token` | Authentication token for tunnel server |
+
+### Standard Paths
+
+| Path | Environment Variable | Description |
+|------|---------------------|-------------|
+| `/opt/apache-airavata` | `AIRAVATA_HOME` | Installation directory |
+| `/opt/apache-airavata/conf` | `AIRAVATA_CONFIG_DIR` | Configuration directory (defaults to `AIRAVATA_HOME/conf` if not explicitly set) |
+| `/opt/apache-airavata/logs` | - | Logs directory |
+
+### Configuration Files
+
+| File | Location | Description |
+|------|----------|-------------|
+| `airavata.properties` | `/opt/apache-airavata/conf/airavata.properties` or `conf/application.properties` | Main configuration file |
+| `airavata.sym.p12` | `/opt/apache-airavata/conf/airavata.sym.p12` or `conf/keystores/airavata.sym.p12` | Keystore file |
+| `logback.xml` | `/opt/apache-airavata/conf/logback.xml` or `conf/logback.xml` | Logging configuration |
+
+**Note:** Spring Boot also recognizes `application.properties` as the configuration file name. All deployments use `/opt/apache-airavata/conf/` (or `conf/` in distribution bundle) as the configuration directory.
 
 ---
 
@@ -224,11 +294,11 @@ cd distribution
 tar -xzf airavata-0.21-SNAPSHOT.tar.gz
 cd airavata-0.21-SNAPSHOT
 
-# Copy configuration files from vault
-cp ../../vault/airavata.properties conf/
-cp ../../vault/airavata.sym.p12 conf/keystores/
-cp ../../vault/*.yml conf/
-cp ../../vault/logback.xml conf/
+# Copy configuration files from conf directory
+cp ../../conf/airavata.properties conf/
+cp ../../conf/airavata.sym.p12 conf/keystores/
+cp ../../conf/*.yml conf/
+cp ../../conf/logback.xml conf/
 
 # Start all services
 ./bin/airavata.sh -d start      # daemon mode
@@ -238,6 +308,12 @@ cp ../../vault/logback.xml conf/
 ./bin/airavata.sh -d stop
 ./bin/airavata.sh -d restart
 ```
+
+**Standard Paths:**
+- Installation directory: `/opt/apache-airavata` (set as `AIRAVATA_HOME` environment variable)
+- Configuration directory: `/opt/apache-airavata/conf` (defaults to `AIRAVATA_HOME/conf` if `AIRAVATA_CONFIG_DIR` is not explicitly set)
+- Logs directory: `/opt/apache-airavata/logs`
+- Configuration file: `/opt/apache-airavata/conf/airavata.properties` (or `conf/application.properties` in distribution bundle)
 
 ### Option 2: Docker (Experimental)
 
@@ -391,6 +467,20 @@ mvn clean install -DskipTests
 - [`airavata-docs`](https://github.com/apache/airavata-docs) – Developer documentation
 - [`airavata-user-docs`](https://github.com/apache/airavata-user-docs) – End-user guides
 - [`airavata-site`](https://github.com/apache/airavata-site) – Project website
+
+### Powered by Airavata
+
+Research software and projects using Airavata:
+
+- [Cybershuttle](https://cybershuttle.org/) – Research computing platform
+- [Bio-realistic multiscale simulations of cortical circuits](https://github.com/cyber-shuttle/allenai-v1)
+- [Computational neuroscience models from brain atlases](https://github.com/cyber-shuttle/airavata-cerebrum)
+- [Large-scale brain model simulations](https://github.com/cyber-shuttle/whole-brain-public)
+- [Neural data analysis with torch_brain](https://github.com/cyber-shuttle/neurodata25_torchbrain_notebooks)
+- [NAMD Workshop examples](https://github.com/cyber-shuttle/namd-workshop-2024)
+- [OpenFold Attention Visualization](https://github.com/vizfold/attention-viz-demo)
+
+See more projects at [cybershuttle.org/resources](https://cybershuttle.org/resources).
 
 ---
 

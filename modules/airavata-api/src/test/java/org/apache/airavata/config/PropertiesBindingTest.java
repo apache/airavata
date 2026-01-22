@@ -184,8 +184,6 @@ public class PropertiesBindingTest {
                     "AiravataAgent_f4313e4d-20c2-4bf6-bff1-8aa0f0b0c1d6",
                     agent.appinterface().id());
             assertEquals(20971520L, agent.grpc().maxInboundMessageSize());
-            assertEquals(19900, agent.grpc().port());
-            assertEquals(18880, agent.server().port());
             assertEquals("validate", agent.spring().jpa().hibernate().ddlAuto());
             assertFalse(agent.spring().jpa().openInView());
             assertEquals("200MB", agent.spring().servlet().multipart().maxFileSize());
@@ -234,7 +232,6 @@ public class PropertiesBindingTest {
         void testFileserverService() {
             var fileserver = properties.services().fileserver();
             assertTrue(fileserver.enabled());
-            assertEquals(8050, fileserver.server().port());
             assertEquals("10MB", fileserver.spring().servlet().multipart().maxFileSize());
             assertEquals("10MB", fileserver.spring().servlet().multipart().maxRequestSize());
         }
@@ -316,10 +313,10 @@ public class PropertiesBindingTest {
         void testResearchService() {
             var research = properties.services().research();
             assertFalse(research.enabled());
-            assertEquals(19908, research.grpc().port());
             assertEquals("30s", research.grpc().keepaliveTime());
             assertEquals("5s", research.grpc().keepaliveTimeout());
             assertTrue(research.grpc().permitKeepaliveWithoutCalls());
+            assertEquals(20971520L, research.grpc().maxInboundMessageSize());
             assertEquals("JUPYTER_ADMIN_API_KEY", research.hub().adminApiKey());
             assertEquals(10, research.hub().limit());
             assertEquals("http://localhost:20000", research.hub().url());
@@ -327,7 +324,6 @@ public class PropertiesBindingTest {
                     "http://localhost:18080/realms/default", research.openid().url());
             assertEquals("http://localhost:5173", research.portal().devUrl());
             assertEquals("http://localhost:5173", research.portal().url());
-            assertEquals(18889, research.server().port());
             assertEquals("200MB", research.spring().servlet().multipart().maxFileSize());
             assertEquals("200MB", research.spring().servlet().multipart().maxRequestSize());
             assertTrue(research.springdoc().apiDocs().enabled());
@@ -346,7 +342,6 @@ public class PropertiesBindingTest {
         void testRestService() {
             var rest = properties.services().rest();
             assertFalse(rest.enabled());
-            assertEquals(8082, rest.server().port());
         }
 
         @Test
@@ -370,7 +365,20 @@ public class PropertiesBindingTest {
         void testTelemetryService() {
             var telemetry = properties.services().telemetry();
             assertTrue(telemetry.enabled());
-            assertEquals(9090, telemetry.server().port());
+        }
+
+        @Test
+        @DisplayName("services.http properties")
+        void testHttpService() {
+            var http = properties.services().http();
+            assertEquals(8080, http.server().port());
+        }
+
+        @Test
+        @DisplayName("services.grpc properties")
+        void testGrpcService() {
+            var grpc = properties.services().grpc();
+            assertEquals(9090, grpc.server().port());
         }
 
         @Test

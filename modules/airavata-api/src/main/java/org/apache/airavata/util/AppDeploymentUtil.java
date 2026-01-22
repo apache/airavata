@@ -25,7 +25,7 @@ import org.apache.airavata.common.model.SetEnvPaths;
 public class AppDeploymentUtil {
     public static ApplicationDeploymentDescription createAppDeployment(
             String moduleId, String computeHost, String executablePath, String appDepDescription) {
-        ApplicationDeploymentDescription description = new ApplicationDeploymentDescription();
+        var description = new ApplicationDeploymentDescription();
         description.setAppModuleId(moduleId);
         description.setComputeHostId(computeHost);
         description.setExecutablePath(executablePath);
@@ -34,7 +34,7 @@ public class AppDeploymentUtil {
     }
 
     public static SetEnvPaths createEnvPath(String name, String val) {
-        SetEnvPaths setEnvPaths = new SetEnvPaths();
+        var setEnvPaths = new SetEnvPaths();
         setEnvPaths.setName(name);
         setEnvPaths.setValue(val);
         return setEnvPaths;

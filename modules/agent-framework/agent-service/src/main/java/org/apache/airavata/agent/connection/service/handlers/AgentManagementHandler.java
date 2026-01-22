@@ -21,7 +21,6 @@ package org.apache.airavata.agent.connection.service.handlers;
 
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.airavata.agent.connection.service.UserContext;
@@ -32,13 +31,10 @@ import org.apache.airavata.agent.connection.service.models.AgentTerminateRespons
 import org.apache.airavata.common.exception.AiravataSystemException;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ComputeResourceType;
-import org.apache.airavata.common.model.EnvironmentSpecificPreferences;
 import org.apache.airavata.common.model.ExperimentModel;
-import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
-import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
@@ -57,10 +53,10 @@ public class AgentManagementHandler {
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
 
-    @Value("${services.agent.storage.id}")
+    @Value("${airavata.services.agent.storage.id}")
     private String storageResourceId;
 
-    @Value("${services.agent.storage.path}")
+    @Value("${airavata.services.agent.storage.path}")
     private String storagePath;
 
     // no longer configurable; keep local default (used for the "server_url" app input)
@@ -73,7 +69,7 @@ public class AgentManagementHandler {
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
-            ExperimentModel experiment = airavataService.getExperiment(UserContext.authzToken(), experimentId);
+            var experiment = airavataService.getExperiment(UserContext.authzToken(), experimentId);
             airavataService.terminateExperiment(experiment.getExperimentId(), experiment.getGatewayId());
             return new AgentTerminateResponse(experimentId, true);
         } catch (Exception e) {
@@ -84,14 +80,14 @@ public class AgentManagementHandler {
 
     public ExperimentModel getExperiment(String experimentId) {
         try {
-            ExperimentModel experiment = airavataService.getExperiment(UserContext.authzToken(), experimentId);
-            GroupResourceProfile groupResourceProfile = airavataService.getGroupResourceProfile(
+            var experiment = airavataService.getExperiment(UserContext.authzToken(), experimentId);
+            var groupResourceProfile = airavataService.getGroupResourceProfile(
                     UserContext.authzToken(),
                     experiment.getUserConfigurationData().getGroupResourceProfileId());
 
             // Always get the Default allocation
             if (!"Default".equalsIgnoreCase(groupResourceProfile.getGroupResourceProfileName())) {
-                List<GroupResourceProfile> groupResourceList =
+                var groupResourceList =
                         airavataService.getGroupResourceList(UserContext.authzToken(), experiment.getGatewayId());
 
                 groupResourceList.stream()
@@ -118,11 +114,11 @@ public class AgentManagementHandler {
      */
     public AgentLaunchRequest filterOptimumLaunchRequest(List<AgentLaunchRequest> launchRequests) throws Exception {
         int leastRunningExpCount = Integer.MAX_VALUE;
-        AgentLaunchRequest sortedLaunchRequest = launchRequests.get(0);
+        var sortedLaunchRequest = launchRequests.get(0);
 
-        for (AgentLaunchRequest req : launchRequests) {
-            String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
-            ExperimentStatistics experimentStatistics = airavataService.getExperimentStatistics(
+        for (var req : launchRequests) {
+            var appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
+            var experimentStatistics = airavataService.getExperimentStatistics(
                     UserContext.gatewayId(),
                     AiravataUtils.getUniqueTimestamp().getTime() - 60 * 60 * 1000,
                     AiravataUtils.getUniqueTimestamp().getTime(),
@@ -149,18 +145,18 @@ public class AgentManagementHandler {
     }
 
     private String generateEnvName(List<String> libraries, List<String> pip) {
-        String key = String.join(",", libraries) + "|" + String.join(",", pip);
+        var key = String.join(",", libraries) + "|" + String.join(",", pip);
         return Integer.toHexString(key.hashCode());
     }
 
     public AgentLaunchResponse createAndLaunchExperiment(AgentLaunchRequest req) {
         try {
-            String agentId = "agent_" + UUID.randomUUID().toString();
-            String envName = generateEnvName(req.getLibraries(), req.getPip());
+            var agentId = "agent_" + UUID.randomUUID().toString();
+            var envName = generateEnvName(req.getLibraries(), req.getPip());
             LOGGER.info("Creating an Airavata Experiment for {} with agent id {}", req.getExperimentName(), agentId);
-            ExperimentModel experiment = generateExperiment(req, agentId, envName);
+            var experiment = generateExperiment(req, agentId, envName);
 
-            String experimentId = airavataService.createExperiment(experiment.getGatewayId(), experiment);
+            var experimentId = airavataService.createExperiment(experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
             airavataService.launchExperiment(UserContext.authzToken(), experiment.getGatewayId(), experimentId);
             return new AgentLaunchResponse(agentId, experimentId, envName);
@@ -185,7 +181,7 @@ public class AgentManagementHandler {
     public ProcessModel getEnvProcessModel(String expId) {
         try {
             LOGGER.info("Extracting the process model for experiment id: {}", expId);
-            ExperimentModel expModel = airavataService.getDetailedExperimentTree(expId);
+            var expModel = airavataService.getDetailedExperimentTree(expId);
             if (expModel.getProcesses() != null && !expModel.getProcesses().isEmpty()) {
                 return expModel.getProcesses().get(0);
             } else {
@@ -200,24 +196,22 @@ public class AgentManagementHandler {
 
     private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName)
             throws AiravataSystemException {
-        String experimentName = req.getExperimentName();
-        String projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";
-        String projectDir = projectName.replace(" ", "_");
-        String projectId = getProjectId(projectName);
-        String userName = UserContext.username();
-        String gatewayId = UserContext.gatewayId();
-        String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
-        ExperimentModel experimentModel = new ExperimentModel();
+        var experimentName = req.getExperimentName();
+        var projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";
+        var projectDir = projectName.replace(" ", "_");
+        var projectId = getProjectId(projectName);
+        var userName = UserContext.username();
+        var gatewayId = UserContext.gatewayId();
+        var appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
+        var experimentModel = new ExperimentModel();
         experimentModel.setExperimentName(experimentName);
         experimentModel.setProjectId(projectId);
         experimentModel.setUserName(userName);
         experimentModel.setGatewayId(gatewayId);
         experimentModel.setExecutionId(appInterfaceId);
 
-        ComputationalResourceSchedulingModel computationalResourceSchedulingModel =
-                new ComputationalResourceSchedulingModel();
-        GroupComputeResourcePreference groupCompResourcePref =
-                extractGroupComputeResourcePreference(req.getGroup(), req.getRemoteCluster());
+        var computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
+        var groupCompResourcePref = extractGroupComputeResourcePreference(req.getGroup(), req.getRemoteCluster());
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
@@ -230,7 +224,7 @@ public class AgentManagementHandler {
                 extractSlurmAllocationProject(groupCompResourcePref));
         computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
 
-        UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
+        var userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
@@ -238,15 +232,15 @@ public class AgentManagementHandler {
                 StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : storageResourceId);
         userConfigurationDataModel.setOutputStorageResourceId(
                 StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : storageResourceId);
-        String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
+        var experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
                 .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
         userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
-        List<InputDataObjectType> applicationInputs = airavataService.getApplicationInputs(appInterfaceId);
-        List<InputDataObjectType> experimentInputs = applicationInputs.stream()
+        var applicationInputs = airavataService.getApplicationInputs(appInterfaceId);
+        var experimentInputs = applicationInputs.stream()
                 .peek(input -> {
                     if (input != null && input.getName() != null) {
                         switch (input.getName()) {
@@ -265,8 +259,7 @@ public class AgentManagementHandler {
                 .collect(Collectors.toList());
 
         experimentModel.setExperimentInputs(experimentInputs);
-        List<org.apache.airavata.common.model.OutputDataObjectType> applicationOutputs =
-                airavataService.getApplicationOutputs(appInterfaceId);
+        var applicationOutputs = airavataService.getApplicationOutputs(appInterfaceId);
         experimentModel.setExperimentOutputs(applicationOutputs);
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         LOGGER.info("Generated the experiment: {}", experimentModel.getExperimentId());
@@ -276,7 +269,7 @@ public class AgentManagementHandler {
 
     private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
         if (pref.getResourceType() == ComputeResourceType.SLURM && pref.getSpecificPreferences() != null) {
-            EnvironmentSpecificPreferences esp = pref.getSpecificPreferences();
+            var esp = pref.getSpecificPreferences();
             if (esp.isSlurm()) {
                 return esp.getSlurm().getAllocationProjectNumber();
             }
@@ -301,7 +294,7 @@ public class AgentManagementHandler {
                 throw new RuntimeException(msg, e);
             }
 
-            Optional<Project> defaultProject = userProjects.stream()
+            var defaultProject = userProjects.stream()
                     .filter(project -> projectName.equals(project.getName()))
                     .findFirst();
 
@@ -330,7 +323,7 @@ public class AgentManagementHandler {
             throw new RuntimeException(msg, e);
         }
 
-        String groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
+        var groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
 
         return groupResourceList.stream()
                 .filter(profile -> groupProfileName.equalsIgnoreCase(profile.getGroupResourceProfileName()))

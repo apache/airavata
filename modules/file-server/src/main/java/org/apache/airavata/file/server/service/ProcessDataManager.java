@@ -26,8 +26,7 @@ import org.apache.airavata.agents.ssh.SSHJAgentAdaptor;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -86,14 +85,14 @@ public class ProcessDataManager extends OutputDataStagingTask {
         if (getTaskContext().getGroupComputeResourcePreference().getResourceType() == ComputeResourceType.AWS) {
             logger.info("Using AWS adaptor for process {}", processId);
 
-            AWSProcessContextManager awsContext = new AWSProcessContextManager(getRegistryService(), getTaskContext());
+            var awsContext = new AWSProcessContextManager(getRegistryService(), getTaskContext());
             // Use CredentialStoreService from parent class (AiravataTask)
-            SSHCredential sshCredential =
+            var sshCredential =
                     getCredentialStoreService().getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
 
             logger.info("Using SSHCredential {} for AWS process {}", sshCredential.getPublicKey(), processId);
             logger.info("AWS public ip is {}", awsContext.getPublicIp());
-            SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor(getRegistryService(), getCredentialStoreService());
+            var adaptor = new SSHJAgentAdaptor(getRegistryService(), getCredentialStoreService());
             adaptor.init(
                     getTaskContext().getComputeResourceLoginUserName(),
                     awsContext.getPublicIp(),

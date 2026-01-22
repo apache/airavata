@@ -65,7 +65,8 @@ public class ServiceStartupRangeTest {
         assertEquals("false", props.get("airavata.services.monitor.email.enabled"));
 
         assertNotNull(props.get("airavata.services.thrift.server.port"));
-        assertNotNull(props.get("airavata.services.rest.server.port"));
+        assertNotNull(props.get("airavata.services.http.server.port"));
+        assertNotNull(props.get("airavata.services.grpc.server.port"));
     }
 
     /**
@@ -87,7 +88,8 @@ public class ServiceStartupRangeTest {
         assertEquals("true", props.get("airavata.services.monitor.email.enabled"));
 
         assertNotNull(props.get("airavata.services.thrift.server.port"));
-        assertNotNull(props.get("airavata.services.rest.server.port"));
+        assertNotNull(props.get("airavata.services.http.server.port"));
+        assertNotNull(props.get("airavata.services.grpc.server.port"));
     }
 
     /**
@@ -112,13 +114,13 @@ public class ServiceStartupRangeTest {
     static Stream<Arguments> singleServiceConfigurations() {
         return Stream.of(
                 Arguments.of(
-                        "Thrift API",
+                        "Thrift Server",
                         ServiceConfigurationBuilder.defaults()
                                 .disableRestApi()
                                 .disableAllBackgroundServices()
                                 .enableThriftApi()),
                 Arguments.of(
-                        "REST API",
+                        "Airavata API",
                         ServiceConfigurationBuilder.defaults()
                                 .disableThriftApi()
                                 .disableAllBackgroundServices()
@@ -245,7 +247,7 @@ public class ServiceStartupRangeTest {
                         1,
                         ServiceConfigurationBuilder.minimal().enableThriftApi()),
                 Arguments.of(
-                        "2 services: Thrift + REST",
+                        "2 services: Thrift Server + Airavata API (HTTP)",
                         2,
                         ServiceConfigurationBuilder.minimal().enableThriftApi().enableRestApi()),
                 Arguments.of(
@@ -312,7 +314,7 @@ public class ServiceStartupRangeTest {
                                 .enableRealtimeMonitor()
                                 .enableEmailMonitor()),
                 Arguments.of(
-                        "9 services: Thrift + REST + Dapr + Workflow Managers + Monitors",
+                        "9 services: Thrift Server + Airavata API (HTTP) + Dapr + Workflow Managers + Monitors",
                         9,
                         ServiceConfigurationBuilder.minimal()
                                 .enableThriftApi()
@@ -348,7 +350,8 @@ public class ServiceStartupRangeTest {
         Map<String, String> props = builder.build();
 
         assertEquals("8930", props.get("airavata.services.thrift.server.port"));
-        assertEquals("8082", props.get("airavata.services.rest.server.port"));
+        assertEquals("8080", props.get("airavata.services.http.server.port"));
+        assertEquals("9090", props.get("airavata.services.grpc.server.port"));
     }
 
     /**
@@ -401,7 +404,9 @@ public class ServiceStartupRangeTest {
                 Arguments.of("No services", ServiceConfigurationBuilder.minimal()),
                 Arguments.of(
                         "Only Thrift", ServiceConfigurationBuilder.minimal().enableThriftApi()),
-                Arguments.of("Only REST", ServiceConfigurationBuilder.minimal().enableRestApi()),
+                Arguments.of(
+                        "Only Airavata API (HTTP)",
+                        ServiceConfigurationBuilder.minimal().enableRestApi()),
                 Arguments.of(
                         "Both APIs",
                         ServiceConfigurationBuilder.minimal().enableThriftApi().enableRestApi()),

@@ -54,14 +54,14 @@ public class ProjectService {
         if (project.getProjectID() == null || project.getProjectID().isEmpty()) {
             project.setProjectID(org.apache.airavata.common.utils.AiravataUtils.getId(project.getName()));
         }
-        ProjectEntity entity = projectMapper.toEntity(project);
+        var entity = projectMapper.toEntity(project);
         entity.setGatewayId(gatewayId);
-        ProjectEntity saved = projectRepository.save(entity);
+        var saved = projectRepository.save(entity);
         return saved.getProjectID();
     }
 
     public Project getProject(String projectId) throws RegistryException {
-        ProjectEntity entity = projectRepository.findById(projectId).orElse(null);
+        var entity = projectRepository.findById(projectId).orElse(null);
         if (entity == null) return null;
         return projectMapper.toModel(entity);
     }
@@ -72,11 +72,11 @@ public class ProjectService {
 
     public void updateProject(Project project, String projectId) throws RegistryException {
         // Load existing entity to preserve required fields like gatewayId and creationTime
-        ProjectEntity existingEntity = projectRepository
+        var existingEntity = projectRepository
                 .findById(projectId)
                 .orElseThrow(() -> new RegistryException("Project not found: " + projectId));
 
-        ProjectEntity entity = projectMapper.toEntity(project);
+        var entity = projectMapper.toEntity(project);
         entity.setProjectID(projectId);
         // Preserve gatewayId if not set in the update
         if (entity.getGatewayId() == null || entity.getGatewayId().isEmpty()) {
@@ -117,9 +117,9 @@ public class ProjectService {
             throws RegistryException {
         // TODO: Implement complex search using Criteria API with accessibleProjectIds filter
         // For now, return projects from accessibleProjectIds
-        List<Project> result = new ArrayList<>();
-        for (String projectId : accessibleProjectIds) {
-            ProjectEntity entity = projectRepository.findById(projectId).orElse(null);
+        var result = new ArrayList<Project>();
+        for (var projectId : accessibleProjectIds) {
+            var entity = projectRepository.findById(projectId).orElse(null);
             if (entity != null) {
                 result.add(projectMapper.toModel(entity));
             }

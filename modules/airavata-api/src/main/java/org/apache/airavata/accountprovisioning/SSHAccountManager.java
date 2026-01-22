@@ -20,7 +20,6 @@
 package org.apache.airavata.accountprovisioning;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,7 +30,6 @@ import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.credential.exception.CredentialStoreException;
-import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
@@ -60,7 +58,7 @@ public class SSHAccountManager {
      */
     public boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String userId)
             throws InvalidSetupException, InvalidUsernameException {
-        SSHAccountProvisioner sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
+        var sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
 
         try {
             return sshAccountProvisioner.hasAccount(userId);
@@ -74,7 +72,7 @@ public class SSHAccountManager {
     private SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
             throws InvalidSetupException {
         // get registry service
-        RegistryService registryService = this.registryService;
+        var registryService = this.registryService;
         // get compute resource preferences for the gateway and hostname
         ComputeResourcePreference computeResourcePreference = null;
         try {
@@ -98,7 +96,7 @@ public class SSHAccountManager {
     public boolean isSSHAccountSetupComplete(
             String gatewayId, String computeResourceId, String userId, SSHCredential sshCredential)
             throws InvalidSetupException, InvalidUsernameException {
-        SSHAccountProvisioner sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
+        var sshAccountProvisioner = getSshAccountProvisioner(gatewayId, computeResourceId);
         return sshAccountProvisioner.isSSHAccountProvisioningComplete(userId, sshCredential.getPublicKey());
     }
 
@@ -117,7 +115,7 @@ public class SSHAccountManager {
             throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
-        RegistryService registryService = this.registryService;
+        var registryService = this.registryService;
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
@@ -153,8 +151,8 @@ public class SSHAccountManager {
         }
 
         // instantiate and init the account provisioner
-        SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
-        boolean canCreateAccount =
+        var sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
+        var canCreateAccount =
                 SSHAccountProvisionerFactory.canCreateAccount(computeResourcePreference.getSshAccountProvisioner());
 
         // First check if userId has an account
@@ -184,9 +182,9 @@ public class SSHAccountManager {
         }
 
         // Verify can authenticate to host
-        String sshHostname = getSSHHostname(computeResourceDescription, sshJobSubmission);
-        int sshPort = sshJobSubmission.getSshPort();
-        boolean validated = false;
+        var sshHostname = getSSHHostname(computeResourceDescription, sshJobSubmission);
+        var sshPort = sshJobSubmission.getSshPort();
+        var validated = false;
         try {
             validated = SSHUtil.validate(sshHostname, sshPort, username, sshCredential);
         } catch (Exception e) {
@@ -202,7 +200,7 @@ public class SSHAccountManager {
         }
 
         // create the scratch location on the host
-        String scratchLocation = sshAccountProvisioner.getScratchLocation(userId);
+        var scratchLocation = sshAccountProvisioner.getScratchLocation(userId);
         try {
             SSHUtil.execute(sshHostname, sshPort, username, sshCredential, "mkdir -p " + scratchLocation);
         } catch (Exception e) {
@@ -212,7 +210,7 @@ public class SSHAccountManager {
                     e);
         }
 
-        UserComputeResourcePreference userComputeResourcePreference = new UserComputeResourcePreference();
+        var userComputeResourcePreference = new UserComputeResourcePreference();
         userComputeResourcePreference.setComputeResourceId(computeResourceId);
         userComputeResourcePreference.setLoginUserName(username);
         userComputeResourcePreference.setScratchLocation(scratchLocation);
@@ -222,7 +220,7 @@ public class SSHAccountManager {
 
     private String getSSHHostname(
             ComputeResourceDescription computeResourceDescription, SSHJobSubmission sshJobSubmission) {
-        String alternativeSSHHostName = sshJobSubmission.getAlternativeSSHHostName();
+        var alternativeSSHHostName = sshJobSubmission.getAlternativeSSHHostName();
         if (alternativeSSHHostName != null && !"".equals(alternativeSSHHostName.trim())) {
             return alternativeSSHHostName;
         } else {
@@ -232,12 +230,11 @@ public class SSHAccountManager {
 
     private SSHAccountProvisioner createSshAccountProvisioner(
             String gatewayId, ComputeResourcePreference computeResourcePreference) throws InvalidSetupException {
-        String provisionerName = computeResourcePreference.getSshAccountProvisioner();
-        Map<ConfigParam, String> provisionerConfig =
+        var provisionerName = computeResourcePreference.getSshAccountProvisioner();
+        var provisionerConfig =
                 convertConfigParams(provisionerName, computeResourcePreference.getSshAccountProvisionerConfig());
 
-        Map<ConfigParam, String> resolvedConfig =
-                resolveProvisionerConfig(gatewayId, provisionerName, provisionerConfig);
+        var resolvedConfig = resolveProvisionerConfig(gatewayId, provisionerName, provisionerConfig);
 
         // instantiate and init the account provisioner
         return SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, resolvedConfig);
@@ -246,14 +243,13 @@ public class SSHAccountManager {
     private Map<ConfigParam, String> resolveProvisionerConfig(
             String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig)
             throws InvalidSetupException {
-        CredentialStoreService credentialStoreService = this.credentialStoreService;
+        var credentialStoreService = this.credentialStoreService;
         // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
-        Map<ConfigParam, String> resolvedConfig = new HashMap<>();
+        var resolvedConfig = new HashMap<ConfigParam, String>();
         for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
             if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
                 try {
-                    PasswordCredential password =
-                            credentialStoreService.getPasswordCredential(configEntry.getValue(), gatewayId);
+                    var password = credentialStoreService.getPasswordCredential(configEntry.getValue(), gatewayId);
                     if (password == null) {
                         throw new InvalidSetupException("Password credential doesn't exist for config param ["
                                 + configEntry.getKey().getName() + "] for token [" + configEntry.getValue()
@@ -272,12 +268,10 @@ public class SSHAccountManager {
 
     private Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams)
             throws InvalidSetupException {
-        List<ConfigParam> configParams =
-                SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
-        Map<String, ConfigParam> configParamMap =
-                configParams.stream().collect(Collectors.toMap(ConfigParam::getName, Function.identity()));
+        var configParams = SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
+        var configParamMap = configParams.stream().collect(Collectors.toMap(ConfigParam::getName, Function.identity()));
 
-        Map<ConfigParam, String> result = thriftConfigParams.entrySet().stream()
+        var result = thriftConfigParams.entrySet().stream()
                 .collect(Collectors.toMap(entry -> configParamMap.get(entry.getKey()), entry -> entry.getValue()));
         for (ConfigParam configParam : configParams) {
             if (!configParam.isOptional() && !result.containsKey(configParam)) {

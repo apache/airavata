@@ -45,12 +45,11 @@ public class AgentStore {
 
     public Optional<AgentAdaptor> getAgentAdaptor(
             String computeResource, JobSubmissionProtocol submissionProtocol, String authToken, String userId) {
-        Map<JobSubmissionProtocol, Map<String, Map<String, AgentAdaptor>>> protoToTokenMap =
-                agentAdaptorCache.get(computeResource);
+        var protoToTokenMap = agentAdaptorCache.get(computeResource);
         if (protoToTokenMap != null) {
-            Map<String, Map<String, AgentAdaptor>> tokenToUserMap = protoToTokenMap.get(submissionProtocol);
+            var tokenToUserMap = protoToTokenMap.get(submissionProtocol);
             if (tokenToUserMap != null) {
-                Map<String, AgentAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);
+                var userToAdaptorMap = tokenToUserMap.get(authToken);
                 if (userToAdaptorMap != null) {
                     return Optional.ofNullable(userToAdaptorMap.get(userId));
                 } else {
@@ -70,22 +69,19 @@ public class AgentStore {
             String authToken,
             String userId,
             AgentAdaptor agentAdaptor) {
-        Map<JobSubmissionProtocol, Map<String, Map<String, AgentAdaptor>>> protoToTokenMap =
-                agentAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
-        Map<String, Map<String, AgentAdaptor>> tokenToUserMap =
-                protoToTokenMap.computeIfAbsent(submissionProtocol, k -> new HashMap<>());
-        Map<String, AgentAdaptor> userToAdaptorMap = tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
+        var protoToTokenMap = agentAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
+        var tokenToUserMap = protoToTokenMap.computeIfAbsent(submissionProtocol, k -> new HashMap<>());
+        var userToAdaptorMap = tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
         userToAdaptorMap.put(userId, agentAdaptor);
     }
 
     public Optional<StorageResourceAdaptor> getStorageAdaptor(
             String computeResource, DataMovementProtocol dataMovementProtocol, String authToken, String userId) {
-        Map<DataMovementProtocol, Map<String, Map<String, StorageResourceAdaptor>>> protoToTokenMap =
-                storageAdaptorCache.get(computeResource);
+        var protoToTokenMap = storageAdaptorCache.get(computeResource);
         if (protoToTokenMap != null) {
-            Map<String, Map<String, StorageResourceAdaptor>> tokenToUserMap = protoToTokenMap.get(dataMovementProtocol);
+            var tokenToUserMap = protoToTokenMap.get(dataMovementProtocol);
             if (tokenToUserMap != null) {
-                Map<String, StorageResourceAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);
+                var userToAdaptorMap = tokenToUserMap.get(authToken);
                 if (userToAdaptorMap != null) {
                     return Optional.ofNullable(userToAdaptorMap.get(userId));
                 } else {
@@ -105,24 +101,21 @@ public class AgentStore {
             String authToken,
             String userId,
             StorageResourceAdaptor storageResourceAdaptor) {
-        Map<DataMovementProtocol, Map<String, Map<String, StorageResourceAdaptor>>> protoToTokenMap =
-                storageAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
-        Map<String, Map<String, StorageResourceAdaptor>> tokenToUserMap =
-                protoToTokenMap.computeIfAbsent(dataMovementProtocol, k -> new HashMap<>());
-        Map<String, StorageResourceAdaptor> userToAdaptorMap =
-                tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
+        var protoToTokenMap = storageAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
+        var tokenToUserMap = protoToTokenMap.computeIfAbsent(dataMovementProtocol, k -> new HashMap<>());
+        var userToAdaptorMap = tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
         userToAdaptorMap.put(userId, storageResourceAdaptor);
     }
 
     public Optional<AgentAdaptor> getSSHAdaptor(
             String resourceId, String authToken, String gatewayUserId, String loginUserName) {
-        Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap = sshAdaptorCache.get(resourceId);
+        var tokenToGatewayUserMap = sshAdaptorCache.get(resourceId);
 
         if (tokenToGatewayUserMap != null) {
-            Map<String, Map<String, AgentAdaptor>> gatewayUserToLoginUserMap = tokenToGatewayUserMap.get(authToken);
+            var gatewayUserToLoginUserMap = tokenToGatewayUserMap.get(authToken);
 
             if (gatewayUserToLoginUserMap != null) {
-                Map<String, AgentAdaptor> loginUserToAdaptorMap = gatewayUserToLoginUserMap.get(gatewayUserId);
+                var loginUserToAdaptorMap = gatewayUserToLoginUserMap.get(gatewayUserId);
 
                 if (loginUserToAdaptorMap != null) {
                     return Optional.ofNullable(loginUserToAdaptorMap.get(loginUserName));
@@ -140,12 +133,9 @@ public class AgentStore {
     public void putSSHAdaptor(
             String resourceId, String authToken, String gatewayUserId, String loginUserName, AgentAdaptor adaptor) {
 
-        Map<String, Map<String, Map<String, AgentAdaptor>>> tokenToGatewayUserMap =
-                sshAdaptorCache.computeIfAbsent(resourceId, k -> new HashMap<>());
-        Map<String, Map<String, AgentAdaptor>> gatewayUserToLoginUserMap =
-                tokenToGatewayUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
-        Map<String, AgentAdaptor> loginUserToAdaptorMap =
-                gatewayUserToLoginUserMap.computeIfAbsent(gatewayUserId, k -> new HashMap<>());
+        var tokenToGatewayUserMap = sshAdaptorCache.computeIfAbsent(resourceId, k -> new HashMap<>());
+        var gatewayUserToLoginUserMap = tokenToGatewayUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
+        var loginUserToAdaptorMap = gatewayUserToLoginUserMap.computeIfAbsent(gatewayUserId, k -> new HashMap<>());
 
         loginUserToAdaptorMap.put(loginUserName, adaptor);
     }

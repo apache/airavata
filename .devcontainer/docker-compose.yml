@@ -1,12 +1,31 @@
+# Unified Docker Compose for Airavata Development
+# 
+# Profiles:
+#   - (none/default): Core services (keycloak, db, redis)
+#   - test: Additional test infrastructure (slurm, sftp)
+#
+# Usage:
+#   docker compose up                           # Start core services
+#   docker compose --profile test up            # Start core + test services
+#   docker compose --profile test up --build    # Build and start all
+
 networks:
   airavata-network:
     driver: bridge
 
 volumes:
   db_data:
-    driver: local
+  slurm-data:
+  slurm-config:
+  slurm-logs:
+  sftp-data:
+  sftp-keys:
 
 services:
+  # ===========================================
+  # CORE SERVICES (always started)
+  # ===========================================
+
   keycloak:
     image: keycloak/keycloak:25.0
     container_name: keycloak
@@ -15,20 +34,50 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
-      - ./keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json
-      - ./keycloak/realm-master.json:/opt/keycloak/data/import/realm-master.json
       - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
-    command: ["start", "--import-realm"]
+    command: ["start"]
     networks:
       - airavata-network
     ports:
       - "18080:18080"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:18080/health/ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/18080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  keycloak-setup:
+    image: alpine:3.19
+    container_name: keycloak-setup
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      # Required - these must match keycloak service above
+      KEYCLOAK_URL: http://keycloak:18080
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Required - realm and client configuration
+      REALM_NAME: default
+      PGA_CLIENT_SECRET: m36BXQIxX3j3VILadeHMK5IvbOeRlCCc
+      DEFAULT_ADMIN_USERNAME: default-admin
+      DEFAULT_ADMIN_PASSWORD: admin123
+      # Optional - uncomment to enable CILogon identity provider
+      # INCLUDE_CILOGON: "true"
+      # CILOGON_CLIENT_ID: "cilogon:/client_id/392446d1fe4981d3eab8adb6da2a1952"
+      # CILOGON_CLIENT_SECRET: "xNgIF3suP5NFRiBnyDdBnJRP5XG3D5fgCfg5jxdkMlBUOe735UDXayX3OpOh2ra-zXY1VZKV4uou2qYw4WvAOg"
+      # Optional - uncomment to enable additional clients
+      # INCLUDE_SIDECAR_AGENT: "true"
+      # INCLUDE_JUPYTERLAB: "true"
+      # JUPYTERLAB_CLIENT_SECRET: "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1"
+    volumes:
+      - ./keycloak/setup-keycloak.sh:/setup-keycloak.sh:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["apk add --no-cache bash curl jq >/dev/null 2>&1 && bash /setup-keycloak.sh"]
+    networks:
+      - airavata-network
+    restart: "no"
 
   db:
     image: mariadb:10.4.13
@@ -42,12 +91,10 @@ services:
       - db_data:/var/lib/mysql
       - ./init-db:/docker-entrypoint-initdb.d:ro
     command:
-      [
-        "mysqld",
-        "--character-set-server=utf8mb4",
-        "--collation-server=utf8mb4_unicode_ci",
-        "--sql-mode=NO_ENGINE_SUBSTITUTION",
-      ]
+      - mysqld
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --sql-mode=NO_ENGINE_SUBSTITUTION
     networks:
       - airavata-network
     ports:
@@ -73,3 +120,62 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  # ===========================================
+  # TEST PROFILE SERVICES
+  # ===========================================
+  # Start with: docker compose --profile test up
+
+  slurm-test-cluster:
+    build:
+      context: ./test-infra/slurm
+      dockerfile: Dockerfile
+    image: airavata-test-slurm:latest
+    container_name: airavata-test-slurm
+    hostname: slurm-test-cluster
+    profiles:
+      - test
+    ports:
+      - "10022:22"
+      - "6817:6817"
+      - "6818:6818"
+    environment:
+      SLURM_CONF: /etc/slurm/slurm.conf
+    volumes:
+      - slurm-data:/var/lib/slurm
+      - slurm-config:/etc/slurm
+      - slurm-logs:/var/log/slurm
+    networks:
+      - airavata-network
+    healthcheck:
+      test: ["CMD", "sinfo", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: /usr/sbin/slurmd -D
+
+  sftp-test-server:
+    build:
+      context: ./test-infra/sftp
+      dockerfile: Dockerfile
+    image: airavata-test-sftp:latest
+    container_name: airavata-test-sftp
+    hostname: sftp-test-server
+    profiles:
+      - test
+    ports:
+      - "10023:22"
+    environment:
+      SFTP_USER: testuser
+      SFTP_PASSWORD: testpass
+      SFTP_ROOT: /home/testuser/data
+    volumes:
+      - sftp-data:/home/testuser/data
+      - sftp-keys:/home/testuser/.ssh
+    networks:
+      - airavata-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "22"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

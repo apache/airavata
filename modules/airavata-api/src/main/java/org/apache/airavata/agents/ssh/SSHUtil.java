@@ -22,11 +22,9 @@ package org.apache.airavata.agents.ssh;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +43,9 @@ public final class SSHUtil {
     public static String generatePublicKey(String privateKeyPEM) throws Exception {
         try {
             // Use SSHJ to load the private key and extract the public key
-            SSHClient tempClient = new SSHClient();
-            KeyProvider keyProvider = tempClient.loadKeys(privateKeyPEM, null, null);
-            PublicKey publicKey = keyProvider.getPublic();
+            var tempClient = new SSHClient();
+            var keyProvider = tempClient.loadKeys(privateKeyPEM, null, null);
+            var publicKey = keyProvider.getPublic();
 
             if (!(publicKey instanceof RSAPublicKey)) {
                 throw new Exception("Only RSA keys are supported");
@@ -55,8 +53,8 @@ public final class SSHUtil {
 
             var rsaPublicKey = (RSAPublicKey) publicKey;
 
-            ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(byteOs);
+            var byteOs = new ByteArrayOutputStream();
+            var dos = new DataOutputStream(byteOs);
             dos.writeInt("ssh-rsa".getBytes().length);
             dos.write("ssh-rsa".getBytes());
             dos.writeInt(rsaPublicKey.getPublicExponent().toByteArray().length);

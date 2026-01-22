@@ -15,15 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 
 # Set working directory
 WORKDIR /opt
 
 # Copy the extracted distribution files
 COPY ${api.server.dist.name}.tar.gz /opt/
-RUN tar -xzf /opt/${api.server.dist.name}-bin.tar.gz && \
-    rm /opt/${api.server.dist.name}-bin.tar.gz && \
+RUN tar -xzf /opt/${api.server.dist.name}.tar.gz && \
+    rm /opt/${api.server.dist.name}.tar.gz && \
     mv /opt/${api.server.dist.name} /opt/apache-airavata
 
 # Copy server start scripts
@@ -35,29 +35,13 @@ ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ENV AIRAVATA_HOME=/opt/apache-airavata
 
-# sharing registry service
-EXPOSE 7878
-# tunnel service
-EXPOSE 8000
-# tunnel service (ingress)
-EXPOSE 17000
-# file service
-EXPOSE 8050
-# api service
+# Dapr gRPC (DaprClient uses gRPC-only mode)
+EXPOSE 50001
+# Thrift Server
 EXPOSE 8930
-# cred store service
-EXPOSE 8960
-# profile service
-EXPOSE 8962
-# registry service
-EXPOSE 8970
-# agent service (http)
-EXPOSE 18800
-# agent service (gRPC)
-EXPOSE 19900
-# research service (http)
-EXPOSE 18889
-# research service (gRPC)
-EXPOSE 19908
+# Unified HTTP server
+EXPOSE 8080
+# Unified gRPC server
+EXPOSE 9090
 
 CMD ["/opt/apache-airavata/services_up.sh && sleep infinity"]

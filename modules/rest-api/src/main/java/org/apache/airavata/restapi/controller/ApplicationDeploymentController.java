@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.exception.AppCatalogException;
@@ -49,8 +49,7 @@ public class ApplicationDeploymentController {
     @GetMapping("/{deploymentId}")
     public ResponseEntity<?> getApplicationDeployment(@PathVariable String deploymentId) {
         try {
-            ApplicationDeploymentDescription deployment =
-                    applicationDeploymentService.getApplicationDeployement(deploymentId);
+            var deployment = applicationDeploymentService.getApplicationDeployement(deploymentId);
             if (deployment == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -64,7 +63,7 @@ public class ApplicationDeploymentController {
     public ResponseEntity<?> createApplicationDeployment(
             @RequestParam String gatewayId, @RequestBody ApplicationDeploymentDescription deployment) {
         try {
-            String deploymentId = applicationDeploymentService.addApplicationDeployment(deployment, gatewayId);
+            var deploymentId = applicationDeploymentService.addApplicationDeployment(deployment, gatewayId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("deploymentId", deploymentId));
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -87,15 +86,14 @@ public class ApplicationDeploymentController {
     public ResponseEntity<?> getApplicationDeployments(
             @RequestParam(required = false) String appModuleId, @RequestParam(required = false) String computeHostId) {
         try {
-            Map<String, String> filters = new java.util.HashMap<>();
+            var filters = new HashMap<String, String>();
             if (appModuleId != null) {
                 filters.put("APPLICATION_MODULE_ID", appModuleId);
             }
             if (computeHostId != null) {
                 filters.put("COMPUTE_HOST_ID", computeHostId);
             }
-            List<ApplicationDeploymentDescription> deployments =
-                    applicationDeploymentService.getApplicationDeployments(filters);
+            var deployments = applicationDeploymentService.getApplicationDeployments(filters);
             return ResponseEntity.ok(deployments);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

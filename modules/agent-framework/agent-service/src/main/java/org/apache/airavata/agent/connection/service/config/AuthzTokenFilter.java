@@ -39,16 +39,16 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
-        String xClaimsHeader = request.getHeader("X-Claims");
+        var authorizationHeader = request.getHeader("Authorization");
+        var xClaimsHeader = request.getHeader("X-Claims");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ") && xClaimsHeader != null) {
             try {
-                String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
-                ObjectMapper objectMapper = new ObjectMapper();
-                Map<String, String> claimsMap = objectMapper.readValue(xClaimsHeader, new TypeReference<>() {});
+                var accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+                var objectMapper = new ObjectMapper();
+                var claimsMap = objectMapper.readValue(xClaimsHeader, new TypeReference<Map<String, String>>() {});
 
-                AuthzToken authzToken = new AuthzToken();
+                var authzToken = new AuthzToken();
                 authzToken.setAccessToken(accessToken);
                 authzToken.setClaimsMap(claimsMap);
 

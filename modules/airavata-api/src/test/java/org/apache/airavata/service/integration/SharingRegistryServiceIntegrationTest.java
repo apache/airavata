@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.service.integration;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -38,6 +40,8 @@ import org.apache.airavata.sharing.model.SharingRegistryException;
 import org.apache.airavata.sharing.model.User;
 import org.apache.airavata.sharing.model.UserGroup;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @org.junit.jupiter.api.DisplayName("SharingRegistryService Integration Tests")
@@ -417,5 +421,151 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
                 sharingService
                         .searchEntities(domainId, "test-user-2", filters, 0, -1)
                         .size());
+    }
+
+    @Nested
+    @DisplayName("Group Hierarchy and Cyclic Dependency Checks")
+    class GroupHierarchyTests {
+
+        @Test
+        @DisplayName("Should reject self-reference when adding group as its own child")
+        void shouldRejectSelfReferenceWhenAddingGroupAsChild()
+                throws SharingRegistryException, DuplicateEntryException {
+            String testDomainId = "test-domain-cyclic-" + System.currentTimeMillis();
+            Domain domain = new Domain();
+            domain.setDomainId(testDomainId);
+            domain.setName("Cyclic Test Domain");
+            sharingService.createDomain(domain);
+
+            UserGroup group = new UserGroup();
+            group.setGroupId("self-ref-group");
+            group.setName("Self Reference Group");
+            group.setDomainId(testDomainId);
+            group.setOwnerId("test-user-1");
+            String groupId = sharingService.createGroup(group);
+
+            assertThatThrownBy(
+                            () -> sharingService.addChildGroupsToParentGroup(testDomainId, List.of(groupId), groupId))
+                    .isInstanceOf(SharingRegistryException.class)
+                    .hasMessageContaining("Cannot add group")
+                    .hasMessageContaining("as its own child");
+        }
+
+        @Test
+        @DisplayName("Should reject cyclic dependency when adding ancestor as child")
+        void shouldRejectCyclicDependencyWhenAddingAncestorAsChild()
+                throws SharingRegistryException, DuplicateEntryException {
+            String testDomainId = "test-domain-cyclic2-" + System.currentTimeMillis();
+            Domain domain = new Domain();
+            domain.setDomainId(testDomainId);
+            domain.setName("Cyclic Test Domain 2");
+            sharingService.createDomain(domain);
+
+            // Create parent group
+            UserGroup parentGroup = new UserGroup();
+            parentGroup.setGroupId("parent-group");
+            parentGroup.setName("Parent Group");
+            parentGroup.setDomainId(testDomainId);
+            parentGroup.setOwnerId("test-user-1");
+            String parentId = sharingService.createGroup(parentGroup);
+
+            // Create child group
+            UserGroup childGroup = new UserGroup();
+            childGroup.setGroupId("child-group");
+            childGroup.setName("Child Group");
+            childGroup.setDomainId(testDomainId);
+            childGroup.setOwnerId("test-user-1");
+            String childId = sharingService.createGroup(childGroup);
+
+            // Add child to parent (valid)
+            sharingService.addChildGroupsToParentGroup(testDomainId, List.of(childId), parentId);
+
+            // Try to add parent as child of child (creates cycle) - should fail
+            assertThatThrownBy(
+                            () -> sharingService.addChildGroupsToParentGroup(testDomainId, List.of(parentId), childId))
+                    .isInstanceOf(SharingRegistryException.class)
+                    .hasMessageContaining("would create cyclic dependency");
+        }
+
+        @Test
+        @DisplayName("Should reject cyclic dependency in multi-level hierarchy")
+        void shouldRejectCyclicDependencyInMultiLevelHierarchy()
+                throws SharingRegistryException, DuplicateEntryException {
+            String testDomainId = "test-domain-cyclic3-" + System.currentTimeMillis();
+            Domain domain = new Domain();
+            domain.setDomainId(testDomainId);
+            domain.setName("Cyclic Test Domain 3");
+            sharingService.createDomain(domain);
+
+            // Create groups A, B, C
+            UserGroup groupA = new UserGroup();
+            groupA.setGroupId("group-a");
+            groupA.setName("Group A");
+            groupA.setDomainId(testDomainId);
+            groupA.setOwnerId("test-user-1");
+            String groupAId = sharingService.createGroup(groupA);
+
+            UserGroup groupB = new UserGroup();
+            groupB.setGroupId("group-b");
+            groupB.setName("Group B");
+            groupB.setDomainId(testDomainId);
+            groupB.setOwnerId("test-user-1");
+            String groupBId = sharingService.createGroup(groupB);
+
+            UserGroup groupC = new UserGroup();
+            groupC.setGroupId("group-c");
+            groupC.setName("Group C");
+            groupC.setDomainId(testDomainId);
+            groupC.setOwnerId("test-user-1");
+            String groupCId = sharingService.createGroup(groupC);
+
+            // Create hierarchy: A -> B -> C
+            sharingService.addChildGroupsToParentGroup(testDomainId, List.of(groupBId), groupAId);
+            sharingService.addChildGroupsToParentGroup(testDomainId, List.of(groupCId), groupBId);
+
+            // Try to create cycle: C -> A (would create A->B->C->A)
+            assertThatThrownBy(
+                            () -> sharingService.addChildGroupsToParentGroup(testDomainId, List.of(groupAId), groupCId))
+                    .isInstanceOf(SharingRegistryException.class)
+                    .hasMessageContaining("would create cyclic dependency");
+        }
+
+        @Test
+        @DisplayName("Should allow valid non-cyclic group hierarchy")
+        void shouldAllowValidGroupHierarchy() throws SharingRegistryException, DuplicateEntryException {
+            String testDomainId = "test-domain-valid-" + System.currentTimeMillis();
+            Domain domain = new Domain();
+            domain.setDomainId(testDomainId);
+            domain.setName("Valid Hierarchy Domain");
+            sharingService.createDomain(domain);
+
+            // Create groups in a tree structure
+            UserGroup rootGroup = new UserGroup();
+            rootGroup.setGroupId("root-group");
+            rootGroup.setName("Root Group");
+            rootGroup.setDomainId(testDomainId);
+            rootGroup.setOwnerId("test-user-1");
+            String rootId = sharingService.createGroup(rootGroup);
+
+            UserGroup child1 = new UserGroup();
+            child1.setGroupId("child1-group");
+            child1.setName("Child 1");
+            child1.setDomainId(testDomainId);
+            child1.setOwnerId("test-user-1");
+            String child1Id = sharingService.createGroup(child1);
+
+            UserGroup child2 = new UserGroup();
+            child2.setGroupId("child2-group");
+            child2.setName("Child 2");
+            child2.setDomainId(testDomainId);
+            child2.setOwnerId("test-user-1");
+            String child2Id = sharingService.createGroup(child2);
+
+            // Add both children to root (valid, no cycle)
+            boolean added =
+                    sharingService.addChildGroupsToParentGroup(testDomainId, List.of(child1Id, child2Id), rootId);
+
+            Assertions.assertTrue(added, "Should successfully add children to parent in valid hierarchy");
+        }
     }
 }

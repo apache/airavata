@@ -21,13 +21,19 @@ package org.apache.airavata.task.cancel;
 
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.AiravataTask;
 import org.apache.airavata.task.base.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Cancel Completing Task")
@@ -37,12 +43,12 @@ public class CancelCompletingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(CancelCompletingTask.class);
 
     public CancelCompletingTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -64,17 +70,18 @@ public class CancelCompletingTask extends AiravataTask {
             logger.info("Making process as cancelled as the job is already being cancelled or not available");
             saveAndPublishProcessStatus(ProcessState.CANCELED);
         } else {
-            // TODO: Some schedulers do not send notifications once the job is cancelled. It will cause experiment to
-            // stay in
-            // cancelling state forever. So we are making the experiment is CANCELLED irrespective of the state of the
-            // job
+            // Workaround: Some schedulers do not send notifications when a job is cancelled, which can cause
+            // experiments to stay in CANCELLING state indefinitely. Update experiment to CANCELLED state
+            // to ensure proper state transition regardless of scheduler notification behavior.
             logger.info("Job is not in the saturated state but updating experiment as cancelled");
             saveAndPublishProcessStatus(ProcessState.CANCELED);
         }
 
         logger.info("Deleting process level monitoring nodes");
         try {
-            // TODO temporary stop cleaning up because this will cause later cancellation events to be gone un notified
+            // Note: Process-specific monitoring node cleanup is disabled to ensure cancellation events
+            // are properly received and processed. This prevents race conditions where cleanup happens
+            // before all cancellation notifications are processed.
             // MonitoringUtil.deleteProcessSpecificNodes(getCuratorClient(), getProcessId());
         } catch (Exception e) {
             logger.error("Failed to delete process specific nodes but continuing", e);

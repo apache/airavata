@@ -35,12 +35,12 @@ import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.MessageHandler;
-import org.apache.airavata.dapr.messaging.Subscriber;
-import org.apache.airavata.dapr.messaging.Type;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
@@ -76,9 +76,10 @@ import org.springframework.test.context.TestConstructor;
             // Enable IAM/security components via Keycloak testcontainer
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.dapr.enabled=false"
+            "airavata.dapr.enabled=false",
+            "airavata.services.controller.enabled=false"
         })
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "orchestrator-integration"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @DisplayName("OrchestratorService Integration Tests")
 public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBase {
@@ -165,7 +166,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     void shouldVerifyMessagesPublishedOnStateChanges() throws Exception {
         // Fail fast if required services are not available
         Assumptions.assumeTrue(
-                orchestratorService != null && messagingFactory != null && messagingFactory.isDaprAvailable(),
+                orchestratorService != null && messagingFactory != null && messagingFactory.isAvailable(),
                 "OrchestratorService and DaprMessagingFactory are required for this test but are not available.");
 
         CountDownLatch messageReceived = new CountDownLatch(1);
@@ -216,6 +217,7 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
             basePackages = {
                 "org.apache.airavata.service.orchestrator",
                 "org.apache.airavata.orchestrator",
+                "org.apache.airavata.workflow",
                 "org.apache.airavata.messaging",
                 "org.apache.airavata.metascheduler"
             })

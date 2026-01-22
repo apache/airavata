@@ -19,25 +19,34 @@
 */
 package org.apache.airavata.registry.services;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import org.apache.airavata.common.model.AiravataWorkflow;
+import org.apache.airavata.common.model.ApplicationState;
 import org.apache.airavata.common.model.ApplicationStatus;
+import org.apache.airavata.common.model.ComponentType;
 import org.apache.airavata.common.model.DataBlock;
+import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.ErrorModel;
+import org.apache.airavata.common.model.HandlerState;
 import org.apache.airavata.common.model.HandlerStatus;
+import org.apache.airavata.common.model.HandlerType;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.WorkflowApplication;
 import org.apache.airavata.common.model.WorkflowConnection;
+import org.apache.airavata.common.model.WorkflowExecutionState;
 import org.apache.airavata.common.model.WorkflowHandler;
 import org.apache.airavata.common.model.WorkflowStatus;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowStatusEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.ApplicationErrorEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.ApplicationStatusEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerErrorEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerInputEntity;
+import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerOutputEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerStatusEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowApplicationEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowConnectionEntity;
@@ -75,24 +84,24 @@ public class WorkflowService {
     }
 
     public void registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException {
-        AiravataWorkflowEntity entity = airavataWorkflowMapper.toEntity(workflow);
+        var entity = airavataWorkflowMapper.toEntity(workflow);
         entity.setExperimentId(experimentId);
         // Generate workflow ID if not already set
         if (entity.getId() == null || entity.getId().isEmpty()) {
-            String workflowId = org.apache.airavata.common.utils.AiravataUtils.getId(
-                    workflow.getDescription() != null ? workflow.getDescription() : "workflow");
-            entity.setId(workflowId);
+            var generatedWorkflowId =
+                    AiravataUtils.getId(workflow.getDescription() != null ? workflow.getDescription() : "workflow");
+            entity.setId(generatedWorkflowId);
         }
-        final String workflowId = entity.getId();
+        final var workflowId = entity.getId();
         // Manually convert applications from model to entity (mapper ignores them)
         if (workflow.getApplications() != null) {
-            List<WorkflowApplicationEntity> applicationEntities = new ArrayList<>();
-            for (WorkflowApplication app : workflow.getApplications()) {
-                WorkflowApplicationEntity applicationEntity = convertApplicationToEntity(app);
+            var applicationEntities = new ArrayList<WorkflowApplicationEntity>();
+            for (var app : workflow.getApplications()) {
+                var applicationEntity = convertApplicationToEntity(app);
                 // Generate application ID if not set
                 if (applicationEntity.getId() == null
                         || applicationEntity.getId().isEmpty()) {
-                    String applicationId = org.apache.airavata.common.utils.AiravataUtils.getId("application");
+                    var applicationId = AiravataUtils.getId("application");
                     applicationEntity.setId(applicationId);
                 }
                 // Set workflowId to match the workflow's ID (required for composite key)
@@ -103,12 +112,12 @@ public class WorkflowService {
         }
         // Manually convert handlers from model to entity (mapper ignores them)
         if (workflow.getHandlers() != null) {
-            List<WorkflowHandlerEntity> handlerEntities = new ArrayList<>();
-            for (WorkflowHandler handler : workflow.getHandlers()) {
-                WorkflowHandlerEntity handlerEntity = convertHandlerToEntity(handler);
+            var handlerEntities = new ArrayList<WorkflowHandlerEntity>();
+            for (var handler : workflow.getHandlers()) {
+                var handlerEntity = convertHandlerToEntity(handler);
                 // Generate handler ID if not set
                 if (handlerEntity.getId() == null || handlerEntity.getId().isEmpty()) {
-                    String handlerId = org.apache.airavata.common.utils.AiravataUtils.getId("handler");
+                    var handlerId = AiravataUtils.getId("handler");
                     handlerEntity.setId(handlerId);
                 }
                 // Set workflowId to match the workflow's ID (required for composite key)
@@ -119,12 +128,12 @@ public class WorkflowService {
         }
         // Manually convert connections from model to entity (mapper ignores them)
         if (workflow.getConnections() != null) {
-            List<WorkflowConnectionEntity> connectionEntities = new ArrayList<>();
-            for (WorkflowConnection connection : workflow.getConnections()) {
-                WorkflowConnectionEntity connectionEntity = convertConnectionToEntity(connection);
+            var connectionEntities = new ArrayList<WorkflowConnectionEntity>();
+            for (var connection : workflow.getConnections()) {
+                var connectionEntity = convertConnectionToEntity(connection);
                 // Generate connection ID if not set
                 if (connectionEntity.getId() == null || connectionEntity.getId().isEmpty()) {
-                    String connectionId = org.apache.airavata.common.utils.AiravataUtils.getId("connection");
+                    var connectionId = AiravataUtils.getId("connection");
                     connectionEntity.setId(connectionId);
                 }
                 // Set workflowId to match the workflow's ID (required for composite key)
@@ -137,15 +146,15 @@ public class WorkflowService {
     }
 
     public String getWorkflowId(String experimentId) throws WorkflowCatalogException {
-        List<AiravataWorkflowEntity> entities = workflowRepository.findByExperimentId(experimentId);
+        var entities = workflowRepository.findByExperimentId(experimentId);
         if (entities.isEmpty()) return null;
         return entities.get(0).getId();
     }
 
     public AiravataWorkflow getWorkflow(String workflowId) throws WorkflowCatalogException {
-        AiravataWorkflowEntity entity = workflowRepository.findById(workflowId).orElse(null);
+        var entity = workflowRepository.findById(workflowId).orElse(null);
         if (entity == null) return null;
-        AiravataWorkflow workflow = airavataWorkflowMapper.toModel(entity);
+        var workflow = airavataWorkflowMapper.toModel(entity);
         // Manually map nested lists (applications, handlers, connections, statuses, errors)
         if (entity.getApplications() != null) {
             workflow.setApplications(entity.getApplications().stream()
@@ -173,8 +182,84 @@ public class WorkflowService {
         return workflow;
     }
 
+    public java.util.List<AiravataWorkflow> getAllWorkflows() throws WorkflowCatalogException {
+        var entities = workflowRepository.findAll();
+        return entities.stream()
+                .map(entity -> {
+                    try {
+                        return getWorkflow(entity.getId());
+                    } catch (WorkflowCatalogException e) {
+                        return null;
+                    }
+                })
+                .filter(w -> w != null)
+                .toList();
+    }
+
+    public void updateWorkflow(String workflowId, AiravataWorkflow workflow) throws WorkflowCatalogException {
+        var existingEntity = workflowRepository.findById(workflowId).orElse(null);
+        if (existingEntity == null) {
+            throw new WorkflowCatalogException("Workflow not found: " + workflowId);
+        }
+        
+        // Update the entity with new values
+        var entity = airavataWorkflowMapper.toEntity(workflow);
+        entity.setId(workflowId);
+        entity.setExperimentId(existingEntity.getExperimentId());
+        
+        // Preserve relationships
+        if (workflow.getApplications() != null) {
+            var applicationEntities = new ArrayList<WorkflowApplicationEntity>();
+            for (var app : workflow.getApplications()) {
+                var applicationEntity = convertApplicationToEntity(app);
+                if (applicationEntity.getId() == null || applicationEntity.getId().isEmpty()) {
+                    applicationEntity.setId(AiravataUtils.getId("application"));
+                }
+                applicationEntity.setWorkflowId(workflowId);
+                applicationEntities.add(applicationEntity);
+            }
+            entity.setApplications(applicationEntities);
+        }
+        
+        if (workflow.getHandlers() != null) {
+            var handlerEntities = new ArrayList<WorkflowHandlerEntity>();
+            for (var handler : workflow.getHandlers()) {
+                var handlerEntity = convertHandlerToEntity(handler);
+                if (handlerEntity.getId() == null || handlerEntity.getId().isEmpty()) {
+                    handlerEntity.setId(AiravataUtils.getId("handler"));
+                }
+                handlerEntity.setWorkflowId(workflowId);
+                handlerEntities.add(handlerEntity);
+            }
+            entity.setHandlers(handlerEntities);
+        }
+        
+        if (workflow.getConnections() != null) {
+            var connectionEntities = new ArrayList<WorkflowConnectionEntity>();
+            for (var connection : workflow.getConnections()) {
+                var connectionEntity = convertConnectionToEntity(connection);
+                if (connectionEntity.getId() == null || connectionEntity.getId().isEmpty()) {
+                    connectionEntity.setId(AiravataUtils.getId("connection"));
+                }
+                connectionEntity.setWorkflowId(workflowId);
+                connectionEntities.add(connectionEntity);
+            }
+            entity.setConnections(connectionEntities);
+        }
+        
+        workflowRepository.save(entity);
+    }
+
+    public void deleteWorkflow(String workflowId) throws WorkflowCatalogException {
+        var entity = workflowRepository.findById(workflowId).orElse(null);
+        if (entity == null) {
+            throw new WorkflowCatalogException("Workflow not found: " + workflowId);
+        }
+        workflowRepository.delete(entity);
+    }
+
     private WorkflowApplication convertApplication(WorkflowApplicationEntity entity) {
-        WorkflowApplication model = new WorkflowApplication();
+        var model = new WorkflowApplication();
         model.setId(entity.getId());
         model.setProcessId(entity.getProcessId());
         model.setApplicationInterfaceId(entity.getApplicationInterfaceId());
@@ -200,11 +285,10 @@ public class WorkflowService {
     }
 
     private ApplicationStatus convertApplicationStatus(ApplicationStatusEntity entity) {
-        ApplicationStatus model = new ApplicationStatus();
+        var model = new ApplicationStatus();
         model.setId(entity.getId());
         if (entity.getState() != null) {
-            model.setState(org.apache.airavata.common.model.ApplicationState.valueOf(
-                    entity.getState().name()));
+            model.setState(ApplicationState.valueOf(entity.getState().name()));
         }
         model.setDescription(entity.getDescription());
         model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
@@ -212,7 +296,7 @@ public class WorkflowService {
     }
 
     private ErrorModel convertApplicationError(ApplicationErrorEntity entity) {
-        ErrorModel model = new ErrorModel();
+        var model = new ErrorModel();
         model.setErrorId(entity.getErrorId());
         model.setCreationTime(
                 entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L);
@@ -221,18 +305,16 @@ public class WorkflowService {
         model.setTransientOrPersistent(entity.isTransientOrPersistent());
         model.setRootCauseErrorIdList(
                 entity.getRootCauseErrorIdList() != null
-                        ? java.util.Arrays.asList(
-                                entity.getRootCauseErrorIdList().split(","))
+                        ? Arrays.asList(entity.getRootCauseErrorIdList().split(","))
                         : null);
         return model;
     }
 
     private WorkflowHandler convertHandler(WorkflowHandlerEntity entity) {
-        WorkflowHandler model = new WorkflowHandler();
+        var model = new WorkflowHandler();
         model.setId(entity.getId());
         if (entity.getType() != null) {
-            model.setType(org.apache.airavata.common.model.HandlerType.valueOf(
-                    entity.getType().name()));
+            model.setType(HandlerType.valueOf(entity.getType().name()));
         }
         model.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().getTime() : 0L);
         model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
@@ -257,11 +339,11 @@ public class WorkflowService {
     }
 
     private HandlerStatus convertHandlerStatus(HandlerStatusEntity entity) {
-        HandlerStatus model = new HandlerStatus();
+        var model = new HandlerStatus();
         model.setId(entity.getId());
         if (entity.getState() != null) {
             try {
-                model.setState(org.apache.airavata.common.model.HandlerState.valueOf(entity.getState()));
+                model.setState(HandlerState.valueOf(entity.getState()));
             } catch (IllegalArgumentException e) {
                 // If the state string doesn't match enum, leave it null
             }
@@ -272,7 +354,7 @@ public class WorkflowService {
     }
 
     private ErrorModel convertHandlerError(HandlerErrorEntity entity) {
-        ErrorModel model = new ErrorModel();
+        var model = new ErrorModel();
         model.setErrorId(entity.getErrorId());
         model.setCreationTime(
                 entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L);
@@ -281,42 +363,41 @@ public class WorkflowService {
         model.setTransientOrPersistent(entity.isTransientOrPersistent());
         model.setRootCauseErrorIdList(
                 entity.getRootCauseErrorIdList() != null
-                        ? java.util.Arrays.asList(
-                                entity.getRootCauseErrorIdList().split(","))
+                        ? Arrays.asList(entity.getRootCauseErrorIdList().split(","))
                         : null);
         return model;
     }
 
     private WorkflowStatus convertWorkflowStatus(AiravataWorkflowStatusEntity entity) {
-        WorkflowStatus model = new WorkflowStatus();
+        var model = new WorkflowStatus();
         model.setId(entity.getId());
         if (entity.getState() != null) {
             // Convert WorkflowRuntimeState to WorkflowExecutionState
             try {
-                String stateName = entity.getState().name();
+                var stateName = entity.getState().name();
                 // Map WorkflowRuntimeState to WorkflowExecutionState
-                org.apache.airavata.common.model.WorkflowExecutionState executionState = null;
+                WorkflowExecutionState executionState = null;
                 switch (stateName) {
                     case "CREATED":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.CREATED;
+                        executionState = WorkflowExecutionState.CREATED;
                         break;
                     case "STARTED":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.LAUNCHED;
+                        executionState = WorkflowExecutionState.LAUNCHED;
                         break;
                     case "EXECUTING":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.EXECUTING;
+                        executionState = WorkflowExecutionState.EXECUTING;
                         break;
                     case "COMPLETED":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.COMPLETED;
+                        executionState = WorkflowExecutionState.COMPLETED;
                         break;
                     case "FAILED":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.FAILED;
+                        executionState = WorkflowExecutionState.FAILED;
                         break;
                     case "CANCELLING":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.CANCELING;
+                        executionState = WorkflowExecutionState.CANCELING;
                         break;
                     case "CANCELED":
-                        executionState = org.apache.airavata.common.model.WorkflowExecutionState.CANCELED;
+                        executionState = WorkflowExecutionState.CANCELED;
                         break;
                 }
                 model.setState(executionState);
@@ -330,7 +411,7 @@ public class WorkflowService {
     }
 
     private ErrorModel convertWorkflowError(AiravataWorkflowErrorEntity entity) {
-        ErrorModel model = new ErrorModel();
+        var model = new ErrorModel();
         model.setErrorId(entity.getErrorId());
         model.setCreationTime(
                 entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L);
@@ -339,24 +420,21 @@ public class WorkflowService {
         model.setTransientOrPersistent(entity.isTransientOrPersistent());
         model.setRootCauseErrorIdList(
                 entity.getRootCauseErrorIdList() != null
-                        ? java.util.Arrays.asList(
-                                entity.getRootCauseErrorIdList().split(","))
+                        ? Arrays.asList(entity.getRootCauseErrorIdList().split(","))
                         : null);
         return model;
     }
 
     private WorkflowConnection convertConnection(WorkflowConnectionEntity entity) {
-        WorkflowConnection model = new WorkflowConnection();
+        var model = new WorkflowConnection();
         model.setId(entity.getId());
         if (entity.getFromType() != null) {
-            model.setFromType(org.apache.airavata.common.model.ComponentType.valueOf(
-                    entity.getFromType().name()));
+            model.setFromType(ComponentType.valueOf(entity.getFromType().name()));
         }
         model.setFromId(entity.getFromId());
         model.setFromOutputName(entity.getFromOutputName());
         if (entity.getToType() != null) {
-            model.setToType(org.apache.airavata.common.model.ComponentType.valueOf(
-                    entity.getToType().name()));
+            model.setToType(ComponentType.valueOf(entity.getToType().name()));
         }
         model.setToId(entity.getToId());
         model.setToInputName(entity.getToInputName());
@@ -369,12 +447,12 @@ public class WorkflowService {
     }
 
     private DataBlock convertDataBlock(WorkflowDataBlockEntity entity) {
-        DataBlock model = new DataBlock();
+        var model = new DataBlock();
         model.setId(entity.getId());
         model.setValue(entity.getValue());
         if (entity.getDataType() != null) {
             try {
-                model.setType(org.apache.airavata.common.model.DataType.valueOf(entity.getDataType()));
+                model.setType(DataType.valueOf(entity.getDataType()));
             } catch (IllegalArgumentException e) {
                 // If the data type string doesn't match enum, leave it null
             }
@@ -384,8 +462,7 @@ public class WorkflowService {
         return model;
     }
 
-    private InputDataObjectType convertHandlerInput(
-            org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerInputEntity entity) {
+    private InputDataObjectType convertHandlerInput(HandlerInputEntity entity) {
         var model = new InputDataObjectType();
         model.setName(entity.getName());
         model.setValue(entity.getValue());
@@ -405,8 +482,7 @@ public class WorkflowService {
         return model;
     }
 
-    private OutputDataObjectType convertHandlerOutput(
-            org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerOutputEntity entity) {
+    private OutputDataObjectType convertHandlerOutput(HandlerOutputEntity entity) {
         var model = new OutputDataObjectType();
         model.setName(entity.getName());
         model.setValue(entity.getValue());
@@ -425,7 +501,7 @@ public class WorkflowService {
     }
 
     private WorkflowApplicationEntity convertApplicationToEntity(WorkflowApplication model) {
-        WorkflowApplicationEntity entity = new WorkflowApplicationEntity();
+        var entity = new WorkflowApplicationEntity();
         entity.setId(model.getId());
         entity.setProcessId(model.getProcessId());
         entity.setApplicationInterfaceId(model.getApplicationInterfaceId());
@@ -435,41 +511,39 @@ public class WorkflowService {
         entity.setCoreCount(model.getCoreCount());
         entity.setWallTimeLimit(model.getWallTimeLimit());
         entity.setPhysicalMemory(model.getPhysicalMemory());
-        entity.setCreatedAt(model.getCreatedAt() > 0 ? new java.sql.Timestamp(model.getCreatedAt()) : null);
-        entity.setUpdatedAt(model.getUpdatedAt() > 0 ? new java.sql.Timestamp(model.getUpdatedAt()) : null);
+        entity.setCreatedAt(model.getCreatedAt() > 0 ? new Timestamp(model.getCreatedAt()) : null);
+        entity.setUpdatedAt(model.getUpdatedAt() > 0 ? new Timestamp(model.getUpdatedAt()) : null);
         // Note: statuses and errors are handled separately if needed
         return entity;
     }
 
     private WorkflowHandlerEntity convertHandlerToEntity(WorkflowHandler model) {
-        WorkflowHandlerEntity entity = new WorkflowHandlerEntity();
+        var entity = new WorkflowHandlerEntity();
         entity.setId(model.getId());
         if (model.getType() != null) {
             entity.setType(model.getType());
         }
-        entity.setCreatedAt(model.getCreatedAt() > 0 ? new java.sql.Timestamp(model.getCreatedAt()) : null);
-        entity.setUpdatedAt(model.getUpdatedAt() > 0 ? new java.sql.Timestamp(model.getUpdatedAt()) : null);
+        entity.setCreatedAt(model.getCreatedAt() > 0 ? new Timestamp(model.getCreatedAt()) : null);
+        entity.setUpdatedAt(model.getUpdatedAt() > 0 ? new Timestamp(model.getUpdatedAt()) : null);
         // Note: inputs, outputs, statuses, and errors are handled separately if needed
         return entity;
     }
 
     private WorkflowConnectionEntity convertConnectionToEntity(WorkflowConnection model) {
-        WorkflowConnectionEntity entity = new WorkflowConnectionEntity();
+        var entity = new WorkflowConnectionEntity();
         entity.setId(model.getId());
         if (model.getFromType() != null) {
-            entity.setFromType(org.apache.airavata.common.model.ComponentType.valueOf(
-                    model.getFromType().name()));
+            entity.setFromType(ComponentType.valueOf(model.getFromType().name()));
         }
         entity.setFromId(model.getFromId());
         entity.setFromOutputName(model.getFromOutputName());
         if (model.getToType() != null) {
-            entity.setToType(org.apache.airavata.common.model.ComponentType.valueOf(
-                    model.getToType().name()));
+            entity.setToType(ComponentType.valueOf(model.getToType().name()));
         }
         entity.setToId(model.getToId());
         entity.setToInputName(model.getToInputName());
-        entity.setCreatedAt(model.getCreatedAt() > 0 ? new java.sql.Timestamp(model.getCreatedAt()) : null);
-        entity.setUpdatedAt(model.getUpdatedAt() > 0 ? new java.sql.Timestamp(model.getUpdatedAt()) : null);
+        entity.setCreatedAt(model.getCreatedAt() > 0 ? new Timestamp(model.getCreatedAt()) : null);
+        entity.setUpdatedAt(model.getUpdatedAt() > 0 ? new Timestamp(model.getUpdatedAt()) : null);
         // Note: dataBlock is handled separately if needed
         return entity;
     }

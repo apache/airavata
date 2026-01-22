@@ -62,7 +62,7 @@ public class WorkflowContext {
      */
     public static synchronized String getRequestUser() {
 
-        RequestContext requestContext = userThreadLocal.get();
+        var requestContext = userThreadLocal.get();
 
         if (requestContext != null) {
             return requestContext.getUserIdentity();
@@ -73,7 +73,7 @@ public class WorkflowContext {
 
     public static synchronized String getGatewayId() {
 
-        RequestContext requestContext = userThreadLocal.get();
+        var requestContext = userThreadLocal.get();
 
         if (requestContext != null) {
             return requestContext.getGatewayId();

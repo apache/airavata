@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UGEOutputParser implements OutputParser {
-    private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
+    private static final Logger log = LoggerFactory.getLogger(UGEOutputParser.class);
     public static final String JOB_ID = "jobId";
 
     public String parseJobSubmission(String rawOutput) {
@@ -52,13 +52,70 @@ public class UGEOutputParser implements OutputParser {
     }
 
     public JobStatus parseJobStatus(String jobID, String rawOutput) {
-        Pattern pattern = Pattern.compile("job_number:[\\s]+" + jobID);
-        Matcher matcher = pattern.matcher(rawOutput);
-        if (matcher.find()) {
+        log.debug("Parsing job status for jobID {}: {}", jobID, rawOutput);
+        if (rawOutput == null || rawOutput.trim().isEmpty()) {
             var jobStatus = new JobStatus();
-            jobStatus.setJobState(JobState.QUEUED); // fixme; return correct status.
+            jobStatus.setJobState(JobState.UNKNOWN);
             return jobStatus;
         }
+
+        // Parse qstat output format - find the line containing this jobID
+        // Format is typically: job_number state priority name owner ...
+        String[] lines = rawOutput.split("\n");
+        for (String line : lines) {
+            String[] lineParts = line.split(" ");
+            // Filter out empty strings
+            List<String> columnList = new java.util.ArrayList<>(
+                    java.util.Arrays.stream(lineParts).filter(s -> !s.isEmpty()).toList());
+
+            // Check if this line contains our jobID
+            // JobID might be in column 0 or we need to match "job_number: <jobID>" pattern
+            if (columnList.size() > 0) {
+                String firstColumn = columnList.get(0);
+                // Check for "job_number: <jobID>" pattern
+                if (firstColumn.contains("job_number:")) {
+                    String jobNumberPart =
+                            firstColumn.substring(firstColumn.indexOf(":") + 1).trim();
+                    if (jobNumberPart.equals(jobID)) {
+                        // Found the job, extract status from column 4 (similar to parseJobStatuses)
+                        if (columnList.size() > 4) {
+                            String status = columnList.get(4);
+                            // Handle special case: "E" might conflict, map to "Er"
+                            if ("E".equals(status)) {
+                                status = "Er";
+                            }
+                            try {
+                                var jobStatus = new JobStatus();
+                                jobStatus.setJobState(JobState.valueOf(status));
+                                log.info("Parsed job status for jobID {}: {}", jobID, jobStatus.getJobState());
+                                return jobStatus;
+                            } catch (IllegalArgumentException e) {
+                                log.warn("Unknown UGE status: {} for jobID {}", status, jobID);
+                            }
+                        }
+                    }
+                } else if (firstColumn.equals(jobID)) {
+                    // JobID is in first column directly
+                    if (columnList.size() > 4) {
+                        String status = columnList.get(4);
+                        if ("E".equals(status)) {
+                            status = "Er";
+                        }
+                        try {
+                            var jobStatus = new JobStatus();
+                            jobStatus.setJobState(JobState.valueOf(status));
+                            log.info("Parsed job status for jobID {}: {}", jobID, jobStatus.getJobState());
+                            return jobStatus;
+                        } catch (IllegalArgumentException e) {
+                            log.warn("Unknown UGE status: {} for jobID {}", status, jobID);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Job not found in output
+        log.warn("JobID {} not found in qstat output", jobID);
         var jobStatus = new JobStatus();
         jobStatus.setJobState(JobState.UNKNOWN);
         return jobStatus;

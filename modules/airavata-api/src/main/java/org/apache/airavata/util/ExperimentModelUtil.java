@@ -24,9 +24,7 @@ import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.common.model.UserConfigurationDataModel;
 
 public class ExperimentModelUtil {
 
@@ -38,7 +36,7 @@ public class ExperimentModelUtil {
             String expDescription,
             String applicationId,
             List<InputDataObjectType> experimentInputList) {
-        ExperimentModel experiment = new ExperimentModel();
+        var experiment = new ExperimentModel();
         experiment.setGatewayId(gatewayId);
         experiment.setProjectId(projectID);
         experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
@@ -59,7 +57,7 @@ public class ExperimentModelUtil {
             int wallTimeLimit,
             int totalPhysicalMemory) {
 
-        ComputationalResourceSchedulingModel cmRS = new ComputationalResourceSchedulingModel();
+        var cmRS = new ComputationalResourceSchedulingModel();
         cmRS.setResourceHostId(resourceHostId);
         cmRS.setTotalCPUCount(cpuCount);
         cmRS.setNodeCount(nodeCount);
@@ -71,33 +69,33 @@ public class ExperimentModelUtil {
     }
 
     public static ProcessModel cloneProcessFromExperiment(ExperimentModel experiment) {
-        ProcessModel processModel = new ProcessModel();
+        var processModel = new ProcessModel();
         processModel.setCreationTime(experiment.getCreationTime());
         processModel.setExperimentId(experiment.getExperimentId());
         processModel.setApplicationInterfaceId(experiment.getExecutionId());
         processModel.setEnableEmailNotification(experiment.getEnableEmailNotification());
-        List<String> emailAddresses = experiment.getEmailAddresses();
+        var emailAddresses = experiment.getEmailAddresses();
         if (emailAddresses != null && !emailAddresses.isEmpty()) {
             processModel.setEmailAddresses(emailAddresses);
         }
-        List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
+        var experimentInputs = experiment.getExperimentInputs();
         if (experimentInputs != null) {
             processModel.setProcessInputs(experimentInputs);
         }
 
-        List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+        var experimentOutputs = experiment.getExperimentOutputs();
         if (experimentOutputs != null) {
             processModel.setProcessOutputs(experimentOutputs);
         }
 
-        UserConfigurationDataModel configData = experiment.getUserConfigurationData();
+        var configData = experiment.getUserConfigurationData();
         if (configData != null) {
             processModel.setInputStorageResourceId(configData.getInputStorageResourceId());
             processModel.setOutputStorageResourceId(configData.getOutputStorageResourceId());
             processModel.setExperimentDataDir(configData.getExperimentDataDir());
             processModel.setGenerateCert(configData.getGenerateCert());
             processModel.setUserDn(configData.getUserDN());
-            ComputationalResourceSchedulingModel scheduling = configData.getComputationalResourceScheduling();
+            var scheduling = configData.getComputationalResourceScheduling();
             if (scheduling != null) {
                 processModel.setProcessResourceSchedule(scheduling);
                 processModel.setComputeResourceId(scheduling.getResourceHostId());

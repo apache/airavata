@@ -21,15 +21,11 @@ package org.apache.airavata.common.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.Statement;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,12 +103,11 @@ public class DatabaseCreator {
             return;
         }
 
-        try (Statement statement = conn.createStatement()) {
+        try (var statement = conn.createStatement()) {
             log.debug("SQL : " + sql);
 
-            boolean ret;
+            var ret = statement.execute(sql);
             int updateCount, updateCountTotal = 0;
-            ret = statement.execute(sql);
             updateCount = statement.getUpdateCount();
             do {
                 if (!ret && updateCount != -1) {
@@ -152,8 +147,8 @@ public class DatabaseCreator {
     public static DatabaseType getDatabaseType(Connection conn) throws Exception {
         try {
             if (conn != null && (!conn.isClosed())) {
-                DatabaseMetaData metaData = conn.getMetaData();
-                String databaseProductName = metaData.getDatabaseProductName();
+                var metaData = conn.getMetaData();
+                var databaseProductName = metaData.getDatabaseProductName();
                 return checkType(databaseProductName);
             }
         } catch (SQLException e) {
@@ -228,10 +223,10 @@ public class DatabaseCreator {
     private static void executeSQLScript(String dbscriptName, Connection conn) throws Exception {
         var sql = new StringBuilder();
 
-        InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
+        var is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
         if (is == null) {
             logger.info("Script file not found at {}. Uses default database script file", dbscriptName);
-            DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
+            var databaseType = DatabaseCreator.getDatabaseType(conn);
             is = DatabaseCreator.class
                     .getClassLoader()
                     .getResourceAsStream(getDBScriptFileName(databaseType, dbscriptName));
@@ -311,9 +306,9 @@ public class DatabaseCreator {
     private static String getDBScriptFileName(DatabaseType databaseType, String scriptFilePath) {
         // pattern: {dir_name}/{scriptfile_name}-{dbtype}.sql".
         // Eg: database_scripts/expcatalog-derby.sql
-        final String scriptFilePattern = "(\\w*)(-" + databaseType.toString() + ".sql)";
-        final Pattern pattern = Pattern.compile(scriptFilePattern);
-        final Matcher matcher = pattern.matcher(scriptFilePath);
+        final var scriptFilePattern = "(\\w*)(-" + databaseType.toString() + ".sql)";
+        final var pattern = Pattern.compile(scriptFilePattern);
+        final var matcher = pattern.matcher(scriptFilePath);
         String dbScriptFileName = null;
         // find a match
         if (matcher.find()) {

@@ -34,6 +34,7 @@ public class AuthorizationException extends Exception {
 
     public AuthorizationException(String message) {
         super(message);
+        this.message = message;
     }
 
     public AuthorizationException(String message, Throwable cause) {

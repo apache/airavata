@@ -620,8 +620,8 @@ public class RegistryService {
                 processList.forEach(p -> {
                     p.getTasks().forEach(t -> {
                         try {
-                            var jobList = jobService.getJobList(
-                                    Constants.FieldConstants.JobConstants.TASK_ID, ((TaskModel) t).getTaskId());
+                            var jobList =
+                                    jobService.getJobList(Constants.FieldConstants.JobConstants.TASK_ID, t.getTaskId());
                             if (jobList != null) {
                                 jobList.sort(Comparator.comparingLong(JobModel::getCreationTime));
                                 t.setJobs(jobList);

@@ -33,7 +33,7 @@ log() {
 log "Starting Airavata API Server (unified service)..."
 
 # The unified server includes:
-# - Thrift API Server
+# - Thrift Server
 # - Orchestrator
 # - Registry
 # - Profile Service

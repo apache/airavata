@@ -43,10 +43,10 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-        ConfigurableEnvironment environment = event.getEnvironment();
+        var environment = event.getEnvironment();
         // Check if research service is enabled
-        String enabled = environment.getProperty("services.research.enabled", "true");
-        Map<String, Object> mappedProperties = new HashMap<>();
+        var enabled = environment.getProperty("services.research.enabled", "true");
+        var mappedProperties = new HashMap<String, Object>();
 
         if ("true".equalsIgnoreCase(enabled)) {
             // Enable gRPC server and map properties when research service is enabled
@@ -72,9 +72,7 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
     }
 
     private void mapScopedProperties(ConfigurableEnvironment environment, Map<String, Object> mappedProperties) {
-        // Map services.research.grpc.* to spring.grpc.server.*
-        mapProperty("services.research.grpc.port", "spring.grpc.server.port", mappedProperties, environment);
-
+        // Note: spring.grpc.server.port is now configured by unified GrpcServerConfig
         // Map keepalive properties with defaults to prevent NullPointerException
         // Only map the properties that Spring Boot gRPC's DefaultServerFactoryPropertyMapper expects
         mapPropertyWithDefault(
@@ -152,7 +150,7 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
             String defaultValue,
             Map<String, Object> mappedProperties,
             ConfigurableEnvironment environment) {
-        String value = environment.getProperty(scopedKey, defaultValue);
+        var value = environment.getProperty(scopedKey, defaultValue);
         mappedProperties.put(standardKey, value);
         logger.trace("Mapped {}={} to {} (default: {})", scopedKey, value, standardKey, defaultValue);
     }
@@ -162,7 +160,7 @@ public class ResearchServiceConfiguration implements ApplicationListener<Applica
             String standardKey,
             Map<String, Object> mappedProperties,
             ConfigurableEnvironment environment) {
-        String value = environment.getProperty(scopedKey);
+        var value = environment.getProperty(scopedKey);
         if (value != null) {
             mappedProperties.put(standardKey, value);
             logger.trace("Mapped {}={} to {}", scopedKey, value, standardKey);

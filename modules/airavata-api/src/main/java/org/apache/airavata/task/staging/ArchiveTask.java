@@ -22,23 +22,25 @@ package org.apache.airavata.task.staging;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.FileMetadata;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.TaskContext;
 import org.apache.airavata.task.base.TaskOnFailException;
 import org.apache.airavata.telemetry.CounterMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Archival Task")
@@ -51,12 +53,12 @@ public class ArchiveTask extends DataStagingTask {
     private static final CounterMetric archiveTaskCounter = new CounterMetric("archive_task_counter");
 
     public ArchiveTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -75,7 +77,7 @@ public class ArchiveTask extends DataStagingTask {
         try {
 
             // Get and validate data staging task model
-            DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();
+            var dataStagingTaskModel = getDataStagingTaskModel();
 
             // Fetch and validate source and destination URLS
             URI sourceURI;
@@ -104,9 +106,9 @@ public class ArchiveTask extends DataStagingTask {
             }
 
             // Fetch and validate storage adaptor (uses output storage if configured, otherwise default)
-            StorageResourceAdaptor storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
+            var storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
             // Fetch and validate compute resource adaptor
-            AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
+            var adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
             // Creating the tar file in the output path of the compute resource
             // Finds the list of files that do not include directories and symlinks
@@ -131,7 +133,7 @@ public class ArchiveTask extends DataStagingTask {
             }
 
             try {
-                FileMetadata fileMetadata = adaptor.getFileMetadata(tarCreationAbsPath);
+                var fileMetadata = adaptor.getFileMetadata(tarCreationAbsPath);
                 long maxArchiveSize = MAX_ARCHIVE_SIZE; // default
                 try {
                     var ctx = getApplicationContext();

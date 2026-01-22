@@ -39,13 +39,16 @@ import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.MessageHandler;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.dapr.messaging.Publisher;
-import org.apache.airavata.dapr.messaging.Subscriber;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.state.JobStateValidator;
+import org.apache.airavata.orchestrator.state.ProcessStateValidator;
+import org.apache.airavata.orchestrator.state.StateTransitionService;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
@@ -56,10 +59,6 @@ import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
-import org.apache.airavata.statemachine.JobStateValidator;
-import org.apache.airavata.statemachine.ProcessStateValidator;
-import org.apache.airavata.statemachine.StateTransitionService;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -305,7 +304,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
     @Test
     @DisplayName("Should verify messages are published when job status changes")
     void shouldVerifyMessagesPublishedOnJobStatusChanges() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
+        if (messagingFactory == null || !messagingFactory.isAvailable()) {
             logger.warn("Dapr not available, skipping messaging verification");
             return;
         }

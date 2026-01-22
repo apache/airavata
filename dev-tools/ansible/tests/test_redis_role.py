@@ -38,51 +38,14 @@ def _test_redis_role(container, ansible_runner, inventory_generator, test_ssh_ke
         },
     )
     
-    # Use the Redis tasks from deploy.yml
+    # Use the Redis role
     playbook_content = """---
 - name: Redis Test
   hosts: redis
-  become: true
-  vars:
-    redis_package: "{{ 'redis-server' if ansible_os_family == 'Debian' else 'redis' }}"
-    redis_config_path: "{{ '/etc/redis/redis.conf' if ansible_os_family == 'Debian' else '/etc/redis.conf' }}"
-    redis_service_name: "{{ 'redis-server' if ansible_os_family == 'Debian' else 'redis' }}"
-  tasks:
-    - name: Install Redis
-      ansible.builtin.package:
-        name: "{{ redis_package }}"
-        state: present
-
-    - name: Configure Redis to listen on all interfaces
-      ansible.builtin.lineinfile:
-        path: "{{ redis_config_path }}"
-        regexp: '^bind '
-        line: 'bind 0.0.0.0'
-        backup: true
-      ignore_errors: true
-
-    - name: Start and enable Redis service
-      ansible.builtin.systemd:
-        name: "{{ redis_service_name }}"
-        state: started
-        enabled: true
-        daemon_reload: true
-
-    - name: Open Redis port in firewall (RedHat)
-      ansible.posix.firewalld:
-        zone: public
-        permanent: true
-        state: enabled
-        immediate: true
-        port: "6379/tcp"
-      when: ansible_os_family == "RedHat"
-
-    - name: Open Redis port in firewall (Debian)
-      community.general.ufw:
-        rule: allow
-        port: "6379"
-        proto: tcp
-      when: ansible_os_family == "Debian"
+  roles:
+    - base
+    - role: redis
+      become: true
 """
     playbook_path = inventory.parent / "test_redis.yml"
     playbook_path.write_text(playbook_content)

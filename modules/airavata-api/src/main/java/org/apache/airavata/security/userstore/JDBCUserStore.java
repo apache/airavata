@@ -78,10 +78,22 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
         }
     }
 
+    /**
+     * Authenticate using credentials object (session token).
+     *
+     * <p>JDBCUserStore only supports username/password authentication, not session token
+     * authentication. Use {@link #authenticate(String, Object)} with username and password instead.
+     *
+     * @param credentials the credentials (not used)
+     * @return authentication result
+     * @throws UserStoreException if authentication fails
+     * @throws UnsupportedOperationException always - JDBC user store only supports username/password auth
+     */
     @Override
     public boolean authenticate(Object credentials) throws UserStoreException {
         log.error("JDBC user store only supports user name, password based authentication.");
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(
+                "JDBCUserStore only supports username/password authentication - use authenticate(String, Object) instead");
     }
 
     @Override
@@ -165,10 +177,10 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
             // Create password encoder adapter
             PasswordEncoder passwordEncoder = new PasswordDigesterEncoder(passwordDigester);
 
-            // Create authentication provider
-            // Note: Using deprecated API for compatibility - Spring Security API has changed
-            authenticationProvider = new DaoAuthenticationProvider();
-            authenticationProvider.setUserDetailsService(userDetailsService);
+            // Create authentication provider using modern constructor-based API
+            // Spring Security 6.5+ deprecates no-arg constructor and setUserDetailsService()
+            // Modern approach: use constructor with UserDetailsService, then set PasswordEncoder
+            authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
             authenticationProvider.setPasswordEncoder(passwordEncoder);
         } catch (Exception e) {
             throw new UserStoreException("Failed to initialize JDBC authentication", e);

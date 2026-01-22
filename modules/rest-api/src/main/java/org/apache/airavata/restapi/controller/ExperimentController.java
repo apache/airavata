@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("restExperimentController")
 @RequestMapping("/api/v1/experiments")
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ExperimentController {
@@ -51,7 +51,7 @@ public class ExperimentController {
     @GetMapping("/{experimentId}")
     public ResponseEntity<?> getExperiment(@PathVariable String experimentId) {
         try {
-            ExperimentModel experiment = experimentService.getExperiment(experimentId);
+            var experiment = experimentService.getExperiment(experimentId);
             if (experiment == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -64,7 +64,7 @@ public class ExperimentController {
     @PostMapping
     public ResponseEntity<?> createExperiment(@RequestBody ExperimentModel experiment) {
         try {
-            String experimentId = experimentService.addExperiment(experiment);
+            var experimentId = experimentService.addExperiment(experiment);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("experimentId", experimentId));
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

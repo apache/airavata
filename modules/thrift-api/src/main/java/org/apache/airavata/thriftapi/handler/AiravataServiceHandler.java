@@ -20,6 +20,7 @@
 package org.apache.airavata.thriftapi.handler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -202,7 +203,7 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
     }
 
     /**
-     * Converts any thrown exception from Airavata Services layer to appropriate Thrift API exception type.
+     * Converts any thrown exception from Airavata Services layer to appropriate Thrift exception type.
      * The mapping strategy is:
      *  - If the cause is already a Thrift exception, return as is.
      *  - If the cause is a known domain exception, map accordingly.
@@ -703,8 +704,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         try {
             var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-            var domainFilters = new java.util.HashMap<org.apache.airavata.common.model.ProjectSearchFields, String>();
-            for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
+            var domainFilters = new HashMap<org.apache.airavata.common.model.ProjectSearchFields, String>();
+            for (var entry : filters.entrySet()) {
                 domainFilters.put(
                         org.apache.airavata.common.model.ProjectSearchFields.valueOf(
                                 entry.getKey().name()),
@@ -733,8 +734,8 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                     org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
         // Convert thrift models to domain models
         var domainAuthzToken = authzTokenMapper.toDomain(authzToken);
-        var domainFilters = new java.util.HashMap<org.apache.airavata.common.model.ExperimentSearchFields, String>();
-        for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
+        var domainFilters = new HashMap<org.apache.airavata.common.model.ExperimentSearchFields, String>();
+        for (var entry : filters.entrySet()) {
             domainFilters.put(
                     org.apache.airavata.common.model.ExperimentSearchFields.valueOf(
                             entry.getKey().name()),

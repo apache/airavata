@@ -68,7 +68,7 @@ public class ComputeHandler {
             String passphrase) {
         try {
             // Create compute resource
-            ComputeResourceDescription computeResource = new ComputeResourceDescription();
+            var computeResource = new ComputeResourceDescription();
             computeResource.setHostName(hostname);
             computeResource.setResourceDescription("Compute resource: " + name);
             computeResource.setJobSubmissionInterfaces(new ArrayList<>());
@@ -80,12 +80,12 @@ public class ComputeHandler {
 
                 // Add SSH job submission interface
                 try {
-                    SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+                    var sshJobSubmission = new SSHJobSubmission();
                     sshJobSubmission.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
                     sshJobSubmission.setSshPort(port);
 
                     // Add resource job manager
-                    ResourceJobManager jobManager = new ResourceJobManager();
+                    var jobManager = new ResourceJobManager();
                     jobManager.setResourceJobManagerType(jobManagerType);
                     sshJobSubmission.setResourceJobManager(jobManager);
 
@@ -93,7 +93,7 @@ public class ComputeHandler {
                     System.out.println("✓ SSH job submission interface added");
 
                     // Add SCP data movement interface
-                    SCPDataMovement scpDataMovement = new SCPDataMovement();
+                    var scpDataMovement = new SCPDataMovement();
                     scpDataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
                     scpDataMovement.setSshPort(port);
                     registryService.addSCPDataMovementDetails(
@@ -110,16 +110,16 @@ public class ComputeHandler {
             }
 
             // Create SSH credentials
-            SSHCredential sshCredential = new SSHCredential();
+            var sshCredential = new SSHCredential();
             sshCredential.setGatewayId(gatewayId);
             sshCredential.setUsername(loginUsername);
             sshCredential.setDescription("Compute resource credentials for " + name);
 
             if (sshKeyPath != null && !sshKeyPath.trim().isEmpty()) {
                 try {
-                    String privateKey = new String(Files.readAllBytes(Paths.get(sshKeyPath)));
+                    var privateKey = new String(Files.readAllBytes(Paths.get(sshKeyPath)));
                     sshCredential.setPrivateKey(privateKey);
-                    String publicKeyPath = sshKeyPath + ".pub";
+                    var publicKeyPath = sshKeyPath + ".pub";
                     if (new File(publicKeyPath).exists()) {
                         sshCredential.setPublicKey(new String(Files.readAllBytes(Paths.get(publicKeyPath))));
                     }
@@ -136,7 +136,7 @@ public class ComputeHandler {
 
             // Validate connection
             System.out.println("Validating compute resource connection...");
-            SSHCredential storedCredential = credentialStoreService.getSSHCredential(credentialToken, gatewayId);
+            var storedCredential = credentialStoreService.getSSHCredential(credentialToken, gatewayId);
             boolean isValid = SSHUtil.validate(hostname, port, loginUsername, storedCredential);
             if (isValid) {
                 System.out.println("✓ Compute resource connection validated successfully");

@@ -48,7 +48,7 @@ public class ComputeResourceController {
     @GetMapping
     public ResponseEntity<?> getAllComputeResources() {
         try {
-            Map<String, String> computeResources = computeResourceService.getAllComputeResourceIdList();
+            var computeResources = computeResourceService.getAllComputeResourceIdList();
             return ResponseEntity.ok(computeResources);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -58,7 +58,7 @@ public class ComputeResourceController {
     @GetMapping("/{computeResourceId}")
     public ResponseEntity<?> getComputeResource(@PathVariable String computeResourceId) {
         try {
-            ComputeResourceDescription computeResource = computeResourceService.getComputeResource(computeResourceId);
+            var computeResource = computeResourceService.getComputeResource(computeResourceId);
             if (computeResource == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -71,7 +71,7 @@ public class ComputeResourceController {
     @PostMapping
     public ResponseEntity<?> createComputeResource(@RequestBody ComputeResourceDescription computeResource) {
         try {
-            String computeResourceId = computeResourceService.addComputeResource(computeResource);
+            var computeResourceId = computeResourceService.addComputeResource(computeResource);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("computeResourceId", computeResourceId));
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

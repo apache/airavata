@@ -57,6 +57,66 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Agent API Controller - Part of the unified HTTP server.
+ *
+ * <p>This controller provides HTTP endpoints for agent management and operations,
+ * running as part of the unified HTTP server on port 8080 (configurable via
+ * {@code airavata.services.http.server.port}).
+ *
+ * <p><b>External API:</b> This is part of one of four external API layers in Airavata:
+ * <ul>
+ *   <li>Thrift Server (port 8930) - Thrift Endpoints for Airavata API functions</li>
+ *   <li>HTTP Server (port 8080):
+ *       <ul>
+ *         <li>Airavata API - HTTP Endpoints for Airavata API functions</li>
+ *         <li>File API - HTTP Endpoints for file upload/download</li>
+ *         <li>Agent API (this controller) - HTTP Endpoints for interactive job contexts</li>
+ *         <li>Research API - HTTP Endpoints for use by research hub</li>
+ *       </ul>
+ *   </li>
+ *   <li>gRPC Server (port 9090) - For airavata binaries to open persistent channels with airavata APIs</li>
+ *   <li>Dapr gRPC (port 50001) - Sidecar for pub/sub, state, and workflow execution</li>
+ * </ul>
+ *
+ * <p><b>Endpoints:</b> All endpoints are prefixed with {@code /api/v1/agent}:
+ * <ul>
+ *   <li>{@code GET /{agentId}} - Get agent information</li>
+ *   <li>{@code POST /setup/tunnel} - Create TCP tunnel</li>
+ *   <li>{@code GET /setup/tunnel/{executionId}} - Get tunnel creation response</li>
+ *   <li>{@code POST /terminate/tunnel} - Terminate TCP tunnel</li>
+ *   <li>{@code POST /setup/env} - Setup environment (conda/pip)</li>
+ *   <li>{@code GET /setup/env/{executionId}} - Get environment setup response</li>
+ *   <li>{@code POST /setup/restart} - Restart Jupyter kernel</li>
+ *   <li>{@code GET /setup/restart/{executionId}} - Get kernel restart response</li>
+ *   <li>{@code POST /execute/shell} - Execute shell command</li>
+ *   <li>{@code GET /execute/shell/{executionId}} - Get command execution response</li>
+ *   <li>{@code POST /execute/asyncshell} - Execute async shell command</li>
+ *   <li>{@code GET /execute/asyncshell/{executionId}} - Get async command execution response</li>
+ *   <li>{@code POST /list/asyncshell} - List async commands</li>
+ *   <li>{@code GET /list/asyncshell/{executionId}} - Get async command list response</li>
+ *   <li>{@code POST /terminate/asyncshell} - Terminate async command</li>
+ *   <li>{@code GET /terminate/asyncshell/{executionId}} - Get terminate response</li>
+ *   <li>{@code POST /execute/jupyter} - Execute Jupyter notebook cell</li>
+ *   <li>{@code GET /execute/jupyter/{executionId}} - Get Jupyter execution response</li>
+ *   <li>{@code POST /execute/python} - Execute Python script</li>
+ *   <li>{@code GET /execute/python/{executionId}} - Get Python execution response</li>
+ * </ul>
+ *
+ * <p><b>Relationship to gRPC:</b> This HTTP controller provides a RESTful interface to
+ * agent operations. The primary agent communication protocol is gRPC (bidirectional streaming)
+ * via {@link org.apache.airavata.agent.connection.service.handlers.AgentConnectionHandler},
+ * which runs on the unified gRPC server (port 9090). This HTTP controller provides
+ * synchronous request/response alternatives for some operations.
+ *
+ * <p><b>Configuration:</b>
+ * <ul>
+ *   <li>{@code airavata.services.agent.enabled} - Enable/disable Agent Service (default: false)</li>
+ *   <li>{@code airavata.services.http.server.port} - Unified HTTP server port (default: 8080)</li>
+ * </ul>
+ *
+ * @see org.apache.airavata.agent.connection.service.handlers.AgentConnectionHandler
+ */
 @RestController
 @RequestMapping("/api/v1/agent")
 public class AgentController {

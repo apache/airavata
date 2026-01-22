@@ -5,19 +5,19 @@ ARG TARGETARCH
 # Avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies, python 3.10, and java 17
+# Install system dependencies, python 3.10, and java 25
 RUN apt-get update && \
     apt-get install -y \
     curl wget git build-essential pkg-config libssl-dev libffi-dev software-properties-common \
     python3.10 python3.10-dev \
-    openjdk-17-jdk \
+    openjdk-25-jdk \
     && rm -rf /var/lib/apt/lists/*
 
-# Install maven 3.9.10
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz \
-    && tar -xzf apache-maven-3.9.10-bin.tar.gz \
-    && mv apache-maven-3.9.10 /opt/maven \
-    && rm apache-maven-3.9.10-bin.tar.gz
+# Install maven 3.9.12
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.12/binaries/apache-maven-3.9.12-bin.tar.gz \
+    && tar -xzf apache-maven-3.9.12-bin.tar.gz \
+    && mv apache-maven-3.9.12 /opt/maven \
+    && rm apache-maven-3.9.12-bin.tar.gz
 
 # Install go 1.23.0
 RUN wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz \
@@ -40,13 +40,11 @@ USER developer
 WORKDIR /home/developer
 
 # Set environment variables
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-$TARGETARCH
+ENV JAVA_HOME=/usr/lib/jvm/java-25-openjdk-$TARGETARCH
 ENV MAVEN_HOME=/opt/maven
 ENV GOROOT=/usr/local/go
 ENV GOPATH=/home/developer/go
 ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin:$GOROOT/bin:$GOPATH/bin
-
-EXPOSE 7878 8000 17000 8050 8930 8960 8962 8970 18800 19900 18889 19908
 
 FROM deps AS compiler
 
@@ -55,16 +53,23 @@ WORKDIR /home/developer/workspace
 RUN mvn clean install -DskipTests
 
 
-FROM eclipse-temurin:17-jdk AS runner
+FROM eclipse-temurin:25-jdk AS runner
 WORKDIR /app
 
 COPY --from=compiler /home/developer/workspace/distribution/*.tar.gz ./
 
 COPY ../dev-tools/deployment-scripts/*.sh ./
-COPY ../vault ./vault
+COPY ../conf ./conf
 
 RUN chmod +x ./distribution_update.sh ./services_up.sh
 
-EXPOSE 7878 8000 17000 8050 8930 8960 8962 8970 18800 19900 18889 19908
+# Thrift Server (8930)
+EXPOSE 8930
+# HTTP Server - Airavata API, File API, Agent API, Research API (8080)
+EXPOSE 8080
+# gRPC API (9090)
+EXPOSE 9090
+# Dapr Sidecar (50001)
+EXPOSE 50001
 
 CMD ["sh", "-c", "./distribution_update.sh && ./services_up.sh && sleep infinity"]

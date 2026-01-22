@@ -28,23 +28,23 @@ import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.common.model.ApplicationInterfaceDescription;
-import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.DataType;
-import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.ProcessState;
-import org.apache.airavata.common.model.StoragePreference;
-import org.apache.airavata.common.model.StorageResourceDescription;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.TaskContext;
 import org.apache.airavata.task.base.TaskOnFailException;
 import org.apache.airavata.telemetry.CounterMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Output Data Staging Task")
@@ -53,12 +53,12 @@ import org.springframework.stereotype.Component;
 public class OutputDataStagingTask extends DataStagingTask {
 
     public OutputDataStagingTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -80,10 +80,10 @@ public class OutputDataStagingTask extends DataStagingTask {
 
         try {
             // Get and validate data staging task model
-            DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();
+            var dataStagingTaskModel = getDataStagingTaskModel();
 
             // Fetch and validate input data type from data staging task model
-            OutputDataObjectType processOutput = dataStagingTaskModel.getProcessOutput();
+            var processOutput = dataStagingTaskModel.getProcessOutput();
             if (processOutput != null && processOutput.getValue() == null) {
                 String message = "expId: " + getExperimentId() + ", processId: " + getProcessId() + ", taskId: "
                         + getTaskId() + ":- Couldn't stage file " + processOutput.getName()
@@ -98,7 +98,7 @@ public class OutputDataStagingTask extends DataStagingTask {
             }
 
             // Use output storage resource if specified, otherwise fall back to default
-            StorageResourceDescription storageResource = getTaskContext().getOutputStorageResourceDescription();
+            var storageResource = getTaskContext().getOutputStorageResourceDescription();
 
             // Fetch and validate source and destination URLS
             URI sourceURI;
@@ -113,9 +113,9 @@ public class OutputDataStagingTask extends DataStagingTask {
                                 sourceURI.getPath().length());
 
                 if (dataStagingTaskModel.getDestination().startsWith("dummy")) {
-                    StoragePreference outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
-                    String outputStorageRoot = outputStoragePref.getFileSystemRootLocation();
-                    String destFilePath = buildDestinationFilePath(outputStorageRoot, sourceFileName);
+                    var outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
+                    var outputStorageRoot = outputStoragePref.getFileSystemRootLocation();
+                    var destFilePath = buildDestinationFilePath(outputStorageRoot, sourceFileName);
                     logger.info("Output storage path for task id {} is {}", getTaskId(), destFilePath);
                     destinationURI = new URI(
                             "file",
@@ -144,10 +144,10 @@ public class OutputDataStagingTask extends DataStagingTask {
             }
 
             // Fetch and validate storage adaptor
-            StorageResourceAdaptor storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
+            var storageResourceAdaptor = getOutputStorageAdaptor(taskHelper.getAdaptorSupport());
 
             // Fetch and validate compute resource adaptor
-            AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
+            var adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
             List<URI> destinationURIs = new ArrayList<>();
             List<String> successfullyTransferredSourcePaths = new ArrayList<>();
@@ -234,8 +234,8 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     try {
-                        var appInterface = getTaskContext().getApplicationInterfaceDescription();
-                        if (appInterface != null && appInterface.getCleanAfterStaged()) {
+                        var appInterfaceForClean = getTaskContext().getApplicationInterfaceDescription();
+                        if (appInterfaceForClean != null && appInterfaceForClean.getCleanAfterStaged()) {
                             logger.info(
                                     "cleanAfterStaged is enabled, deleting source files after successful staging for task with the Id: {}",
                                     getTaskId());
@@ -270,8 +270,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                     saveExperimentOutput(processOutput.getName(), escapeSpecialCharacters(destinationURI.toString()));
 
                     try {
-                        ApplicationInterfaceDescription appInterface =
-                                getTaskContext().getApplicationInterfaceDescription();
+                        var appInterface = getTaskContext().getApplicationInterfaceDescription();
                         if (appInterface != null && appInterface.getCleanAfterStaged()) {
                             logger.info(
                                     "cleanAfterStaged is enabled, deleting source file after successful staging for task with the Id: {}",

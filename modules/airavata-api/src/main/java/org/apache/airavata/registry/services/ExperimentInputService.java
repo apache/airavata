@@ -22,7 +22,6 @@ package org.apache.airavata.registry.services;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
@@ -52,15 +51,15 @@ public class ExperimentInputService {
 
     public String addExperimentInputs(List<InputDataObjectType> inputs, String experimentId) throws RegistryException {
         // Load the experiment to ensure it's in the persistence context and visible for foreign key constraints
-        ExperimentEntity experimentEntity = experimentRepository
+        var experimentEntity = experimentRepository
                 .findById(experimentId)
                 .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
         // Save and flush the experiment to ensure it's visible in the database for foreign key constraint checks
         // This is necessary when the experiment was created in a different transaction
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
-        for (InputDataObjectType input : inputs) {
-            ExperimentInputEntity entity = inputDataObjectTypeMapper.toEntity(input);
+        for (var input : inputs) {
+            var entity = inputDataObjectTypeMapper.toEntity(input);
             entity.setExperimentId(experimentId);
             // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
             // The experimentId field is already set and is the only field that gets persisted.
@@ -71,7 +70,7 @@ public class ExperimentInputService {
 
     public void updateExperimentInputs(List<InputDataObjectType> inputs, String experimentId) throws RegistryException {
         // Ensure experiment exists and is flushed before any deletes
-        ExperimentEntity experimentEntity = experimentRepository
+        var experimentEntity = experimentRepository
                 .findById(experimentId)
                 .orElseThrow(() -> new RegistryException("Experiment with ID " + experimentId + " does not exist"));
         experimentEntity = experimentRepository.save(experimentEntity);
@@ -85,8 +84,8 @@ public class ExperimentInputService {
         entityManager.clear();
 
         // Add new inputs
-        for (InputDataObjectType input : inputs) {
-            ExperimentInputEntity entity = inputDataObjectTypeMapper.toEntity(input);
+        for (var input : inputs) {
+            var entity = inputDataObjectTypeMapper.toEntity(input);
             entity.setExperimentId(experimentId);
             // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
             // The experimentId field is already set and is the only field that gets persisted.

@@ -21,12 +21,12 @@ package org.apache.airavata.cli.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,12 +74,12 @@ public class ProcessManager {
             throw new IOException("Airavata service is already running (socket exists). Stop it first.");
         }
 
-        List<String> command = new ArrayList<>();
+        var command = new ArrayList<String>();
         ProcessBuilder pb;
 
         if (nativeBinaryPath != null && !nativeBinaryPath.isEmpty()) {
             // Native binary mode
-            File binary = new File(nativeBinaryPath);
+            var binary = new File(nativeBinaryPath);
             if (!binary.exists() || !binary.canExecute()) {
                 throw new IOException("Native binary not found or not executable: " + nativeBinaryPath);
             }
@@ -91,7 +91,7 @@ public class ProcessManager {
             pb.directory(binary.getParentFile());
         } else if (jarPath != null && !jarPath.isEmpty()) {
             // JAR mode
-            File jar = new File(jarPath);
+            var jar = new File(jarPath);
             if (!jar.exists()) {
                 throw new IOException("JAR file not found: " + jarPath);
             }
@@ -120,18 +120,18 @@ public class ProcessManager {
         pb.environment().put("AIRAVATA_HOME", normalizedAiravataHome);
 
         // Redirect output
-        Path logDir = Paths.get(normalizedConfigDir, "logs");
+        var logDir = Paths.get(normalizedConfigDir, "logs");
         if (!Files.exists(logDir)) {
             Files.createDirectories(logDir);
         }
-        Path stdoutLog = logDir.resolve("airavata-service.out");
-        Path stderrLog = logDir.resolve("airavata-service.err");
+        var stdoutLog = logDir.resolve("airavata-service.out");
+        var stderrLog = logDir.resolve("airavata-service.err");
 
         pb.redirectOutput(stdoutLog.toFile());
         pb.redirectError(stderrLog.toFile());
 
         // Start process
-        Process process = pb.start();
+        var process = pb.start();
 
         // Write PID file
         try {
@@ -178,19 +178,19 @@ public class ProcessManager {
      * Check if process is running by PID.
      */
     public static boolean isProcessRunning(long pid) {
-        String os = System.getProperty("os.name").toLowerCase();
+        var os = System.getProperty("os.name").toLowerCase();
         try {
             if (os.contains("win")) {
                 // Windows: use tasklist
-                ProcessBuilder pb = new ProcessBuilder("tasklist", "/FI", "PID eq " + pid);
-                Process process = pb.start();
-                int exitCode = process.waitFor();
+                var pb = new ProcessBuilder("tasklist", "/FI", "PID eq " + pid);
+                var process = pb.start();
+                var exitCode = process.waitFor();
                 return exitCode == 0;
             } else {
                 // Unix/Linux/Mac: use kill -0
-                ProcessBuilder pb = new ProcessBuilder("kill", "-0", String.valueOf(pid));
-                Process process = pb.start();
-                int exitCode = process.waitFor();
+                var pb = new ProcessBuilder("kill", "-0", String.valueOf(pid));
+                var process = pb.start();
+                var exitCode = process.waitFor();
                 return exitCode == 0;
             }
         } catch (Exception e) {
@@ -203,17 +203,17 @@ public class ProcessManager {
      * Stop process by PID.
      */
     public static boolean stopProcess(long pid) {
-        String os = System.getProperty("os.name").toLowerCase();
+        var os = System.getProperty("os.name").toLowerCase();
         try {
             if (os.contains("win")) {
-                ProcessBuilder pb = new ProcessBuilder("taskkill", "/PID", String.valueOf(pid), "/F");
-                Process process = pb.start();
-                int exitCode = process.waitFor();
+                var pb = new ProcessBuilder("taskkill", "/PID", String.valueOf(pid), "/F");
+                var process = pb.start();
+                var exitCode = process.waitFor();
                 return exitCode == 0;
             } else {
-                ProcessBuilder pb = new ProcessBuilder("kill", String.valueOf(pid));
-                Process process = pb.start();
-                int exitCode = process.waitFor();
+                var pb = new ProcessBuilder("kill", String.valueOf(pid));
+                var process = pb.start();
+                var exitCode = process.waitFor();
                 return exitCode == 0;
             }
         } catch (Exception e) {
@@ -242,7 +242,7 @@ public class ProcessManager {
             if (!os.contains("win")) {
                 try {
                     // Try /proc/self/exe (Linux)
-                    Path exePath = Paths.get("/proc/self/exe");
+                    var exePath = Paths.get("/proc/self/exe");
                     if (Files.exists(exePath)) {
                         return Files.readSymbolicLink(exePath).toString();
                     }
@@ -258,7 +258,7 @@ public class ProcessManager {
                 "/usr/bin/airavata"
             };
             for (String path : possiblePaths) {
-                File f = new File(path);
+                var f = new File(path);
                 if (f.exists() && f.canExecute()) {
                     return path;
                 }
@@ -269,7 +269,7 @@ public class ProcessManager {
             // For JAR, get the JAR file path
             try {
                 String className = ProcessManager.class.getName().replace('.', '/') + ".class";
-                java.net.URL resource = ProcessManager.class.getClassLoader().getResource(className);
+                URL resource = ProcessManager.class.getClassLoader().getResource(className);
                 if (resource != null) {
                     String classPath = resource.toString();
                     int bang = classPath.indexOf("!");

@@ -23,9 +23,7 @@ import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.thriftapi.credential.model.CredentialStoreService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 public class CredentialServiceClientFactory {
@@ -35,11 +33,10 @@ public class CredentialServiceClientFactory {
     public static CredentialStoreService.Client createAiravataCSClient(String serverHost, int serverPort)
             throws CredentialStoreException {
         try {
-            TTransport transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol =
-                    new TMultiplexedProtocol(protocol, CREDENTIAL_STORE_SERVICE_NAME);
+            var protocol = new TBinaryProtocol(transport);
+            var multiplexedProtocol = new TMultiplexedProtocol(protocol, CREDENTIAL_STORE_SERVICE_NAME);
             return new CredentialStoreService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new CredentialStoreException(

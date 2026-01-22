@@ -289,14 +289,13 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertEquals(1, computeResourceList.size());
         Assertions.assertEquals(computeResourceId, computeResourceList.get(0).getComputeResourceId());
 
-        try {
-            cfilters = new HashMap<String, String>();
-            cfilters.put("Invalid_filter", uniqueHostname);
-            computeResourceService.getComputeResourceList(cfilters);
-            Assertions.fail();
-        } catch (Exception e) {
-            // Expected exception for invalid filter
-        }
+        // Expect exception when using invalid filter
+        cfilters.clear();
+        cfilters.put("Invalid_filter", uniqueHostname);
+        org.junit.jupiter.api.Assertions.assertThrows(
+                Exception.class,
+                () -> computeResourceService.getComputeResourceList(cfilters),
+                "Should throw exception for invalid filter");
     }
 
     @Test

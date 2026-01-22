@@ -55,8 +55,8 @@ public class StandardOutReader implements CommandOutput {
     }
 
     public void readStdOutFromStream(InputStream is) throws IOException {
-        StringWriter writer = new StringWriter();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        var writer = new StringWriter();
+        try (var reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
@@ -67,8 +67,8 @@ public class StandardOutReader implements CommandOutput {
     }
 
     public void readStdErrFromStream(InputStream is) throws IOException {
-        StringWriter writer = new StringWriter();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        var writer = new StringWriter();
+        try (var reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);

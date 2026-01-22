@@ -97,7 +97,7 @@ public class AiravataUtils {
 
             // Create timestamp with microsecond precision
             // Timestamp stores nanoseconds internally, so we multiply microseconds by 1000
-            Timestamp timestamp = new Timestamp(lastTimestampMillis);
+            var timestamp = new Timestamp(lastTimestampMillis);
             timestamp.setNanos(lastMicrosecondFraction * 1000);
             return timestamp;
         }

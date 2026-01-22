@@ -22,13 +22,13 @@ package org.apache.airavata.config;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -39,7 +39,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * JPA configuration for Airavata using a single unified database.
+ * JPA configuration for Airavata using a single unified 'airavata' database.
+ *
+ * <p>All entities (profiles, registry, sharing, credentials) are stored in
+ * one database, eliminating the need for multiple data sources.
  */
 @Configuration
 @EnableTransactionManagement
@@ -61,6 +64,7 @@ public class JpaConfig {
     };
 
     @Bean
+    @Primary
     @ConfigurationProperties("spring.datasource")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
@@ -77,19 +81,19 @@ public class JpaConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, Environment env) {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        var em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
         em.setPackagesToScan(ENTITY_PACKAGES);
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         // Set JPA properties from environment
-        Map<String, Object> properties = new HashMap<>();
+        var properties = new HashMap<String, Object>();
 
         // Core Hibernate properties
-        String ddlAuto = env.getProperty("spring.jpa.hibernate.ddl-auto", "none");
+        var ddlAuto = env.getProperty("spring.jpa.hibernate.ddl-auto", "none");
         properties.put("hibernate.hbm2ddl.auto", ddlAuto);
 
-        String dialect = env.getProperty("spring.jpa.properties.hibernate.dialect");
+        var dialect = env.getProperty("spring.jpa.properties.hibernate.dialect");
         if (dialect != null) {
             properties.put("hibernate.dialect", dialect);
         }

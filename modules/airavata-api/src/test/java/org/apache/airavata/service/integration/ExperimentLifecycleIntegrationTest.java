@@ -37,17 +37,17 @@ import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.MessageHandler;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.dapr.messaging.Subscriber;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -187,10 +187,8 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify messages are published during experiment lifecycle")
     void shouldVerifyMessagesPublishedDuringLifecycle() throws Exception {
-        // Fail fast if Dapr is required but not available
-        Assumptions.assumeTrue(
-                messagingFactory != null && messagingFactory.isDaprAvailable(),
-                "Dapr messaging is required for this test. Enable Dapr or mark test as @DisabledIf.");
+        // Verify Dapr is available - skip test if not available
+        requireDaprMessaging();
 
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messagesReceived = new CountDownLatch(3); // Expect 3 state changes
@@ -226,7 +224,7 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
 
             // Manually publish messages to simulate real flow (since status updates don't auto-publish)
             // In a real scenario, these would be published by OrchestratorService or WorkflowManager
-            org.apache.airavata.dapr.messaging.Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
+            Publisher publisher = messagingFactory.getPublisher(Type.STATUS);
 
             // Publish VALIDATED state
             ExperimentStatus validatedStatus = new ExperimentStatus();
@@ -308,6 +306,21 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
         for (ExperimentState expectedState : states) {
             boolean found = retrieved.getExperimentStatus().stream().anyMatch(s -> s.getState() == expectedState);
             assertThat(found).as("State %s should be in history", expectedState).isTrue();
+        }
+    }
+
+    /**
+     * Helper method to require Dapr messaging availability.
+     * Throws TestAbortedException if Dapr is not available, which properly skips the test
+     * with a clear reason instead of silently skipping via Assumptions.
+     *
+     * @throws org.opentest4j.TestAbortedException if Dapr messaging is not available
+     */
+    private void requireDaprMessaging() {
+        if (messagingFactory == null || !messagingFactory.isAvailable()) {
+            throw new org.opentest4j.TestAbortedException(
+                    "Dapr messaging is required for this test but is not available. "
+                            + "Enable Dapr (airavata.dapr.enabled=true) and ensure Dapr sidecar is running.");
         }
     }
 }

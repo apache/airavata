@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.agents.support;
 
-import java.util.Optional;
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
@@ -28,6 +27,8 @@ import org.apache.airavata.agents.ssh.SSHJAgentAdaptor;
 import org.apache.airavata.agents.ssh.SSHJStorageAdaptor;
 import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
@@ -48,12 +49,10 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     private static final Logger logger = LoggerFactory.getLogger(AdaptorSupportImpl.class);
 
     private final AgentStore agentStore = new AgentStore();
-    private final org.apache.airavata.service.registry.RegistryService registryService;
-    private final org.apache.airavata.service.security.CredentialStoreService credentialStoreService;
+    private final RegistryService registryService;
+    private final CredentialStoreService credentialStoreService;
 
-    public AdaptorSupportImpl(
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService) {
+    public AdaptorSupportImpl(RegistryService registryService, CredentialStoreService credentialStoreService) {
         this.registryService = registryService;
         this.credentialStoreService = credentialStoreService;
     }
@@ -67,8 +66,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
         logger.debug("Fetching adaptor for compute resource " + computeResourceId + " with token " + authToken
                 + " with user " + userId + " with protocol" + protocol.name());
 
-        Optional<AgentAdaptor> agentAdaptorOp =
-                agentStore.getAgentAdaptor(computeResourceId, protocol, authToken, userId);
+        var agentAdaptorOp = agentStore.getAgentAdaptor(computeResourceId, protocol, authToken, userId);
         if (agentAdaptorOp.isPresent()) {
             logger.debug("Re using the adaptor for gateway " + gatewayId + ", compute resource " + computeResourceId
                     + ", protocol " + protocol + " , user " + userId);
@@ -84,8 +82,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             + ". Creating new one");
                     switch (protocol) {
                         case SSH:
-                            SSHJAgentAdaptor agentAdaptor =
-                                    new SSHJAgentAdaptor(registryService, credentialStoreService);
+                            var agentAdaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
                             agentAdaptor.init(computeResourceId, gatewayId, userId, authToken);
                             agentStore.putAgentAdaptor(computeResourceId, protocol, authToken, userId, agentAdaptor);
                             return agentAdaptor;
@@ -107,8 +104,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
         logger.debug("Fetching adaptor for storage resource " + storageResourceId + " with token " + authToken
                 + " with user " + userId + " with protocol" + protocol.name());
 
-        Optional<StorageResourceAdaptor> agentAdaptorOp =
-                agentStore.getStorageAdaptor(storageResourceId, protocol, authToken, userId);
+        var agentAdaptorOp = agentStore.getStorageAdaptor(storageResourceId, protocol, authToken, userId);
         if (agentAdaptorOp.isPresent()) {
             logger.debug("Re using the storage adaptor for gateway " + gatewayId + ", storage resource "
                     + storageResourceId + ", protocol " + protocol + " , user " + userId);
@@ -124,7 +120,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             + ". Creating new one");
                     switch (protocol) {
                         case SCP:
-                            SSHJStorageAdaptor storageResourceAdaptor =
+                            var storageResourceAdaptor =
                                     new SSHJStorageAdaptor(registryService, credentialStoreService);
                             storageResourceAdaptor.init(storageResourceId, gatewayId, userId, authToken);
                             agentStore.putStorageAdaptor(
@@ -144,7 +140,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     public AgentAdaptor fetchComputeSSHAdaptor(
             String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
             throws AgentException {
-        String cacheKey = "compute-" + resourceId;
+        var cacheKey = "compute-" + resourceId;
 
         logger.debug(
                 "Fetching SSH adaptor for compute resource {} with token {} for gateway user {} with login username {}",
@@ -153,7 +149,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                 gatewayUserId,
                 loginUserName);
 
-        Optional<AgentAdaptor> adaptorOp = agentStore.getSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName);
+        var adaptorOp = agentStore.getSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName);
         if (adaptorOp.isPresent()) {
             logger.debug(
                     "Reusing SSH adaptor for gateway {}, compute resource {}, gateway user {}, login username {}",
@@ -177,7 +173,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             gatewayUserId,
                             loginUserName);
 
-                    SSHJAgentAdaptor agentAdaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
+                    var agentAdaptor = new SSHJAgentAdaptor(registryService, credentialStoreService);
                     agentAdaptor.init(resourceId, gatewayId, loginUserName, authToken);
 
                     agentStore.putSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName, agentAdaptor);
@@ -191,7 +187,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     public StorageResourceAdaptor fetchStorageSSHAdaptor(
             String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
             throws AgentException {
-        String cacheKey = "storage-" + resourceId;
+        var cacheKey = "storage-" + resourceId;
 
         logger.debug(
                 "Fetching SSH adaptor for storage resource {} with token {} for gateway user {} with login username {}",
@@ -200,7 +196,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                 gatewayUserId,
                 loginUserName);
 
-        Optional<AgentAdaptor> adaptorOp = agentStore.getSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName);
+        var adaptorOp = agentStore.getSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName);
         if (adaptorOp.isPresent()) {
             logger.debug(
                     "Reusing SSH adaptor for gateway {}, storage resource {}, gateway user {}, login username {}",
@@ -223,7 +219,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
                             gatewayUserId,
                             loginUserName);
 
-                    SSHJStorageAdaptor storageAdaptor = new SSHJStorageAdaptor(registryService, credentialStoreService);
+                    var storageAdaptor = new SSHJStorageAdaptor(registryService, credentialStoreService);
                     storageAdaptor.init(resourceId, gatewayId, loginUserName, authToken);
 
                     agentStore.putSSHAdaptor(cacheKey, authToken, gatewayUserId, loginUserName, storageAdaptor);

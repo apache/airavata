@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.airavata.common.model.JobState;
-import org.apache.airavata.statemachine.JobStateValidator;
+import org.apache.airavata.orchestrator.state.JobStateValidator;
 import org.junit.jupiter.api.Test;
 
 /**

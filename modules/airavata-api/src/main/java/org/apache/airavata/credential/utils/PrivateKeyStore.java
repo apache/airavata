@@ -54,7 +54,7 @@ public class PrivateKeyStore {
 
     public synchronized PrivateKey getKey(String tokenId) {
 
-        PrivateKey privateKey = privateKeyMap.get(tokenId);
+        var privateKey = privateKeyMap.get(tokenId);
 
         if (privateKey != null) {
             privateKeyMap.remove(tokenId);

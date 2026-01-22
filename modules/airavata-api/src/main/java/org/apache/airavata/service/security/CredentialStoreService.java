@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.service.security;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -117,6 +118,8 @@ public class CredentialStoreService {
                 credential.getGatewayId() != null ? credential.getGatewayId() : "gateway", null);
         credential.setToken(token);
         credential.setDescription(certificateCredential.getDescription());
+        // Copy X509 certificate from input
+        credential.setX509Cert(certificateCredential.getX509Cert());
         // For tests we skip X509 parsing and just persist the credential blob
         credentialEntityService.saveCredential(
                 credential.getGatewayId() != null ? credential.getGatewayId() : "gateway", credential);
@@ -167,7 +170,7 @@ public class CredentialStoreService {
             if (credential instanceof SSHCredential sshCred && !(credential instanceof PasswordCredential)) {
                 return convertToCredentialSummary(sshCred);
             } else if (credential instanceof CertificateCredential certCred) {
-                return convertToCredentialSummary(certCred);
+                return convertToCredentialSummary(certCred, gatewayId);
             } else if (credential instanceof PasswordCredential passCred) {
                 return convertToCredentialSummary(passCred);
             }
@@ -204,7 +207,7 @@ public class CredentialStoreService {
                 credentials.stream()
                         .filter(this::isCertificateCredential)
                         .map(CertificateCredential.class::cast)
-                        .map(this::convertToCredentialSummary)
+                        .map(cred -> convertToCredentialSummary(cred, gatewayId))
                         .toList();
             case PASSWD ->
                 credentials.stream()
@@ -218,6 +221,44 @@ public class CredentialStoreService {
                 throw new CredentialStoreException(msg);
             }
         };
+    }
+
+    /**
+     * Get all credential summaries for a gateway in a single database call.
+     * This is more efficient than calling getAllCredentialSummaries multiple times for different types.
+     *
+     * @param accessibleTokenIds optional list of token IDs to filter by (null means all)
+     * @param gatewayId the gateway ID
+     * @return list of all credential summaries (SSH, PASSWD, and CERT combined)
+     */
+    public List<CredentialSummary> getAllCredentialSummariesCombined(
+            List<String> accessibleTokenIds, String gatewayId) throws CredentialStoreException {
+        List<Credential> credentials;
+        try {
+            credentials = credentialReader.getAllAccessibleCredentialsPerGateway(gatewayId, accessibleTokenIds);
+        } catch (CredentialStoreException e) {
+            String msg = String.format("Error occurred while retrieving credentials for gateway - %s", gatewayId);
+            logger.error(msg, e);
+            throw new CredentialStoreException(msg, e);
+        }
+
+        List<CredentialSummary> summaries = new java.util.ArrayList<>();
+
+        for (Credential credential : credentials) {
+            try {
+                if (isSSHCredential(credential)) {
+                    summaries.add(convertToCredentialSummary((SSHCredential) credential));
+                } else if (isPasswordCredential(credential)) {
+                    summaries.add(convertToCredentialSummary((PasswordCredential) credential));
+                } else if (isCertificateCredential(credential)) {
+                    summaries.add(convertToCredentialSummary((CertificateCredential) credential, gatewayId));
+                }
+            } catch (Exception e) {
+                logger.warn("Error converting credential to summary, skipping: {}", e.getMessage());
+            }
+        }
+
+        return summaries;
     }
 
     private boolean isSSHCredential(Credential cred) {
@@ -244,17 +285,34 @@ public class CredentialStoreService {
         return credentialSummary;
     }
 
-    private CredentialSummary convertToCredentialSummary(CertificateCredential cred) {
+    private CredentialSummary convertToCredentialSummary(CertificateCredential cred, String gatewayId) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.CERT);
         credentialSummary.setUsername(cred.getPortalUserName());
-        // FIXME: need to get gatewayId for CertificateCredentials
-        credentialSummary.setGatewayId("");
-        // FIXME: get the public key? Or what would be appropriate for a summary of a
-        // CertificateCredential?
-        // credentialSummary.setPublicKey(new String(cred.getPublicKey()));
+        credentialSummary.setGatewayId(gatewayId != null ? gatewayId : "");
+
+        // For CertificateCredential, use the X509 certificate as the public key representation
+        // The certificate itself contains the public key and can be used for identification
+        if (cred.getX509Cert() != null && !cred.getX509Cert().isEmpty()) {
+            // Use the certificate string as the public key identifier
+            // In practice, this could be the certificate's subject or a hash, but for summary purposes
+            // we use a truncated version of the certificate
+            String certIdentifier = cred.getX509Cert().length() > 100
+                    ? cred.getX509Cert().substring(0, 100) + "..."
+                    : cred.getX509Cert();
+            credentialSummary.setPublicKey(certIdentifier);
+        }
+
         credentialSummary.setToken(cred.getToken());
-        credentialSummary.setPersistedTime(cred.getCertificateRequestedTime().getTime());
+        // Use getCertificateRequestedTime() from base Credential class, fallback to getPersistedTime() if null
+        Date certRequestedTime = cred.getCertificateRequestedTime();
+        if (certRequestedTime != null) {
+            credentialSummary.setPersistedTime(certRequestedTime.getTime());
+        } else if (cred.getPersistedTime() != null) {
+            credentialSummary.setPersistedTime(cred.getPersistedTime());
+        } else {
+            credentialSummary.setPersistedTime(System.currentTimeMillis());
+        }
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }

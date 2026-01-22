@@ -25,10 +25,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: Class level comments please
+ * Annotation for marking task fields as task parameters.
+ *
+ * <p>Fields annotated with {@code @TaskParam} are automatically serialized and deserialized
+ * by {@link TaskUtil} when tasks are executed in Dapr workflows. This allows task parameters
+ * to be passed between workflow activities and persisted in the Dapr State Store.
+ *
+ * <p>Usage example:
+ * <pre>{@code
+ * public class MyTask extends AbstractTask {
+ *     @TaskParam(name = "inputFile", mandatory = true)
+ *     private String inputFile;
+ *
+ *     @TaskParam(name = "outputDir", defaultValue = "/tmp")
+ *     private String outputDir;
+ * }
+ * }</pre>
+ *
+ * <p>In Dapr workflows, task parameters are passed via activity inputs rather than
+ * through task chaining. The {@code TaskUtil} class handles serialization/deserialization
+ * of these parameters.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
+ * @see TaskUtil
+ * @see org.apache.airavata.task.base.AbstractTask
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

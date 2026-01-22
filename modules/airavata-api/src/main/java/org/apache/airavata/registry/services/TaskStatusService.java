@@ -79,7 +79,7 @@ public class TaskStatusService {
 
             Timestamp dbLatest = null;
             if (!timestamps.isEmpty() && timestamps.get(0) != null) {
-                dbLatest = (Timestamp) timestamps.get(0);
+                dbLatest = timestamps.get(0);
             }
 
             // Use the maximum of cached and database timestamp

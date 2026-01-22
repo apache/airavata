@@ -41,8 +41,8 @@ public class ProcessInputService {
     }
 
     public String addProcessInputs(List<InputDataObjectType> inputs, String processId) throws RegistryException {
-        for (InputDataObjectType input : inputs) {
-            ProcessInputEntity entity = inputDataObjectTypeMapper.toEntityFromProcess(input);
+        for (var input : inputs) {
+            var entity = inputDataObjectTypeMapper.toEntityFromProcess(input);
             entity.setProcessId(processId);
             // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
             // The processId field is already set and is the only field that gets persisted.

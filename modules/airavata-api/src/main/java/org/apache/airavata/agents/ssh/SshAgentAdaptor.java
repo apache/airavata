@@ -32,16 +32,13 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
-import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import org.apache.airavata.agents.api.AdaptorParams;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.FileMetadata;
-import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.StorageDirectoryInfo;
 import org.apache.airavata.common.model.StorageVolumeInfo;
-import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
@@ -124,18 +121,17 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public void init(String computeResourceId, String gatewayId, String userId, String token) throws AgentException {
         try {
-            ComputeResourceDescription computeResourceDescription =
-                    registryService.getComputeResource(computeResourceId);
+            var computeResourceDescription = registryService.getComputeResource(computeResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
+            var sshCredential = credentialService.getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            SshAdaptorParams adaptorParams = new SshAdaptorParams();
+            var adaptorParams = new SshAdaptorParams();
             adaptorParams.setHostName(computeResourceDescription.getHostName());
             adaptorParams.setUserName(userId);
             adaptorParams.setPassphrase(sshCredential.getPassphrase());
@@ -168,12 +164,12 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
-        StandardOutReader commandOutput = new StandardOutReader();
+        var commandOutput = new StandardOutReader();
         Session session = null;
         try {
             session = client.startSession();
-            String fullCommand = (workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command;
-            Session.Command cmd = session.exec(fullCommand);
+            var fullCommand = (workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command;
+            var cmd = session.exec(fullCommand);
 
             // Read stdout
             try (InputStream out = cmd.getInputStream()) {
@@ -187,7 +183,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
             // Wait for command to complete
             cmd.join(30, TimeUnit.SECONDS);
-            Integer exitStatus = cmd.getExitStatus();
+            var exitStatus = cmd.getExitStatus();
             commandOutput.setExitCode(exitStatus != null ? exitStatus : -1);
 
             return commandOutput;
@@ -211,13 +207,13 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     @Override
     public void createDirectory(String path, boolean recursive) throws AgentException {
-        String command = (recursive ? "mkdir -p " : "mkdir ") + path;
+        var command = (recursive ? "mkdir -p " : "mkdir ") + path;
         Session session = null;
         try {
             session = client.startSession();
-            StandardOutReader stdOutReader = new StandardOutReader();
+            var stdOutReader = new StandardOutReader();
 
-            Session.Command cmd = session.exec(command);
+            var cmd = session.exec(command);
 
             try (InputStream out = cmd.getInputStream()) {
                 stdOutReader.readStdOutFromStream(out);
@@ -254,14 +250,14 @@ public class SshAgentAdaptor implements AgentAdaptor {
         if (path == null || path.trim().isEmpty()) {
             throw new AgentException("Directory path cannot be null or empty");
         }
-        String escapedPath = path.replace("'", "'\"'\"'");
-        String command = "rm -rf '" + escapedPath + "'";
+        var escapedPath = path.replace("'", "'\"'\"'");
+        var command = "rm -rf '" + escapedPath + "'";
         Session session = null;
         try {
             session = client.startSession();
-            StandardOutReader stdOutReader = new StandardOutReader();
+            var stdOutReader = new StandardOutReader();
 
-            Session.Command cmd = session.exec(command);
+            var cmd = session.exec(command);
 
             try (InputStream out = cmd.getInputStream()) {
                 stdOutReader.readStdOutFromStream(out);
@@ -298,7 +294,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
         try {
-            SCPFileTransfer scp = client.newSCPFileTransfer();
+            var scp = client.newSCPFileTransfer();
             scp.upload(new net.schmizz.sshj.xfer.FileSystemFile(localFile), remoteFile);
         } catch (IOException e) {
             logger.error("Failed to transfer file from {} to remote location {}", localFile, remoteFile, e);
@@ -314,7 +310,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     public void downloadFile(String remoteFile, String localFile) throws AgentException {
         try {
-            SCPFileTransfer scp = client.newSCPFileTransfer();
+            var scp = client.newSCPFileTransfer();
             scp.download(remoteFile, new net.schmizz.sshj.xfer.FileSystemFile(localFile));
         } catch (FileNotFoundException e) {
             logger.error("Failed to find local file " + localFile, e);
@@ -333,13 +329,13 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     @Override
     public List<String> listDirectory(String path) throws AgentException {
-        String command = "ls " + path;
+        var command = "ls " + path;
         Session session = null;
         try {
             session = client.startSession();
-            StandardOutReader stdOutReader = new StandardOutReader();
+            var stdOutReader = new StandardOutReader();
 
-            Session.Command cmd = session.exec(command);
+            var cmd = session.exec(command);
 
             try (InputStream out = cmd.getInputStream()) {
                 stdOutReader.readStdOutFromStream(out);
@@ -380,13 +376,13 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     @Override
     public Boolean doesFileExist(String filePath) throws AgentException {
-        String command = "ls " + filePath;
+        var command = "ls " + filePath;
         Session session = null;
         try {
             session = client.startSession();
-            StandardOutReader stdOutReader = new StandardOutReader();
+            var stdOutReader = new StandardOutReader();
 
-            Session.Command cmd = session.exec(command);
+            var cmd = session.exec(command);
 
             try (InputStream out = cmd.getInputStream()) {
                 stdOutReader.readStdOutFromStream(out);
@@ -402,7 +398,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 logger.info("Invalid file path " + filePath + ". stderr : " + stdOutReader.getStdError());
                 return false;
             } else {
-                String[] potentialFiles = stdOutReader.getStdOut().split("\n");
+                var potentialFiles = stdOutReader.getStdOut().split("\n");
                 if (potentialFiles.length > 1) {
                     logger.info("More than one file matching to given path " + filePath);
                     return false;
@@ -467,8 +463,8 @@ public class SshAgentAdaptor implements AgentAdaptor {
      * Load KeyProvider from SshAdaptorParams.
      */
     private KeyProvider loadKeyProvider(SshAdaptorParams params) throws IOException {
-        String privateKeyStr = new String(params.getPrivateKey(), StandardCharsets.UTF_8);
-        String passphrase = params.getPassphrase();
+        var privateKeyStr = new String(params.getPrivateKey(), StandardCharsets.UTF_8);
+        var passphrase = params.getPassphrase();
 
         // Use SSHClient.loadKeys() to load key from string
         net.schmizz.sshj.userauth.password.PasswordFinder passwordFinder = null;

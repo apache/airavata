@@ -21,12 +21,8 @@ package org.apache.airavata.monitor.email;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.service.registry.RegistryService;
@@ -65,7 +61,7 @@ public class HTCondorEmailParser implements EmailParser {
     public JobStatusResult parseEmail(Message message, RegistryService registryService)
             throws MessagingException, AiravataException {
         // Job Status Results
-        JobStatusResult jobStatusResult = new JobStatusResult();
+        var jobStatusResult = new JobStatusResult();
 
         try {
             // Parse the Subject Line to get the job ID
@@ -74,9 +70,9 @@ public class HTCondorEmailParser implements EmailParser {
             // Parse the email contents to get the job state
             parseJobState((String) message.getContent(), jobStatusResult);
 
-            String processId = fetchProcessId((String) message.getContent());
-            List<JobModel> jobs = registryService.getJobs("processId", processId);
-            Optional<JobModel> firstJob = jobs.stream()
+            var processId = fetchProcessId((String) message.getContent());
+            var jobs = registryService.getJobs("processId", processId);
+            var firstJob = jobs.stream()
                     .filter(job -> job.getJobId().equals(jobStatusResult.getJobId()))
                     .findFirst();
             if (firstJob.isPresent()) {
@@ -102,7 +98,7 @@ public class HTCondorEmailParser implements EmailParser {
      */
     private void parseSubject(String subject, JobStatusResult jobStatusResult) {
         // Create a new Matcher object to use for parsing the subject line
-        Matcher matcher = jobIdPattern.matcher(subject);
+        var matcher = jobIdPattern.matcher(subject);
 
         // Parse the job ID if the Job ID is available in the subject line
         if (matcher.find()) {
@@ -125,9 +121,9 @@ public class HTCondorEmailParser implements EmailParser {
     private String fetchProcessId(String content) {
         int start = content.indexOf("submitted from directory");
         int end = content.indexOf("\n", start);
-        String path = content.substring(start + "submitted from directory".length() + 1, end - 1);
+        var path = content.substring(start + "submitted from directory".length() + 1, end - 1);
         int pathSeperatorIndex = path.lastIndexOf("/");
-        String processId = path.substring(pathSeperatorIndex + 1);
+        var processId = path.substring(pathSeperatorIndex + 1);
         return processId;
     }
 
@@ -139,11 +135,11 @@ public class HTCondorEmailParser implements EmailParser {
         //        String statusLine = messageArray[5];
 
         // Match the job status in the status line
-        Matcher matcher = statusPattern.matcher(content);
+        var matcher = statusPattern.matcher(content);
 
         // Determine the state that the job is in
         if (matcher.find()) {
-            String status = matcher.group(STATUS);
+            var status = matcher.group(STATUS);
 
             if (status.equals("0")) {
                 jobStatusResult.setState(JobState.COMPLETE);

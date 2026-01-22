@@ -57,16 +57,16 @@ import org.apache.airavata.common.model.TaskStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.Publisher;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.messaging.MessagingFactory;
+import org.apache.airavata.orchestrator.state.ProcessStateValidator;
+import org.apache.airavata.orchestrator.state.StateTransitionService;
+import org.apache.airavata.orchestrator.state.TaskStateValidator;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
-import org.apache.airavata.statemachine.ProcessStateValidator;
-import org.apache.airavata.statemachine.StateTransitionService;
-import org.apache.airavata.statemachine.TaskStateValidator;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskParam;
 import org.apache.airavata.task.TaskResult;
@@ -87,7 +87,7 @@ public abstract class AiravataTask extends AbstractTask {
     protected final RegistryService registryService;
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
-    private final DaprMessagingFactory messagingFactory;
+    private final MessagingFactory messagingFactory;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AiravataTask(
@@ -96,7 +96,7 @@ public abstract class AiravataTask extends AbstractTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            DaprMessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory) {
         super(taskUtil);
         this.applicationContext = applicationContext;
         this.registryService = registryService;
@@ -450,7 +450,7 @@ public abstract class AiravataTask extends AbstractTask {
                 JsonNode outputMetadataJSON = objectMapper.readTree(outputMetadata);
                 if (outputMetadataJSON.has("file-metadata")) {
                     JsonNode fileMetadata = outputMetadataJSON.get("file-metadata");
-                    fileMetadata.fields().forEachRemaining(entry -> {
+                    fileMetadata.properties().forEach(entry -> {
                         dataProductModel
                                 .getProductMetadata()
                                 .put(entry.getKey(), entry.getValue().asText());

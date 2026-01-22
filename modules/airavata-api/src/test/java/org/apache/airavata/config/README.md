@@ -60,8 +60,8 @@ The test framework systematically verifies that:
 Test property files are located in `src/test/resources/service-startup-tests/`:
 - `all-services-enabled.properties`: All services enabled
 - `minimal-services.properties`: Only core services
-- `thrift-only.properties`: Thrift API only
-- `rest-only.properties`: REST API only
+- `thrift-only.properties`: Thrift Server only
+- `rest-only.properties`: Airavata API (HTTP) only
 - `background-services-only.properties`: Background services only
 
 ## Running Tests
@@ -102,9 +102,9 @@ Run specific test class:
 ### Core Scenarios
 1. **All Services Enabled**: Verify all services start successfully
 2. **Minimal Configuration**: Only core services, verify optional services don't start
-3. **Thrift API Only**: Verify Thrift API starts, REST API doesn't
-4. **REST API Only**: Verify REST API starts, Thrift API doesn't
-5. **Both APIs**: Verify both Thrift and REST can run simultaneously
+3. **Thrift Server Only**: Verify Thrift Server starts, Airavata API (HTTP) doesn't
+4. **Airavata API (HTTP) Only**: Verify Airavata API (HTTP) starts, Thrift Server doesn't
+5. **Both APIs**: Verify both Thrift Server and Airavata API (HTTP) can run simultaneously
 
 ### Background Service Scenarios
 6. **Dapr Only**: Controller + Participant, no workflow managers

@@ -19,7 +19,9 @@
 */
 package org.apache.airavata.task.cancel;
 
+import io.dapr.workflows.client.DaprWorkflowClient;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.WorkflowRuntimeHolder;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskParam;
@@ -54,16 +56,17 @@ public class WorkflowCancellationTask extends AbstractTask {
 
     @Override
     public TaskResult onRun(TaskHelper helper) {
-        logger.info("Cancelling workflow " + cancellingWorkflowName);
+        logger.info("Cancelling workflow {}", cancellingWorkflowName);
 
-        // Note: Dapr Workflow cancellation integration is in progress
-        // Workflow cancellation will be handled by Dapr Workflows API:
-        // daprWorkflowClient.terminateWorkflow(cancellingWorkflowName);
-        // For now, log and return success
-        logger.warn(
-                "Workflow cancellation via Dapr Workflows not yet implemented. Workflow: " + cancellingWorkflowName);
-        return onSuccess(
-                "Workflow cancellation requested for " + cancellingWorkflowName + " (Dapr implementation pending)");
+        try {
+            var workflowClient = WorkflowRuntimeHolder.getBean(DaprWorkflowClient.class);
+            workflowClient.terminateWorkflow(cancellingWorkflowName, null);
+            logger.info("Successfully terminated workflow: {}", cancellingWorkflowName);
+            return onSuccess("Workflow cancellation completed for " + cancellingWorkflowName);
+        } catch (Exception e) {
+            logger.error("Failed to cancel workflow {}", cancellingWorkflowName, e);
+            return onFail("Failed to cancel workflow " + cancellingWorkflowName + ": " + e.getMessage(), false);
+        }
     }
 
     /**

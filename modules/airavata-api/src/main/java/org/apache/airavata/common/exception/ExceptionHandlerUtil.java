@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.common.exception;
 
+import java.util.Map;
 import org.apache.airavata.common.logging.LoggingUtil;
 import org.slf4j.Logger;
 
@@ -70,10 +71,10 @@ public class ExceptionHandlerUtil {
             String operation,
             AiravataErrorType errorType,
             Throwable exception,
-            java.util.Map<String, String> context) {
+            Map<String, String> context) {
         LoggingUtil.logErrorWithContext(logger, operation, exception.getMessage(), exception, context);
 
-        StringBuilder message = new StringBuilder();
+        var message = new StringBuilder();
         message.append(String.format("[%s] failed: %s", operation, exception.getMessage()));
         if (context != null && !context.isEmpty()) {
             message.append(" | Context: ");

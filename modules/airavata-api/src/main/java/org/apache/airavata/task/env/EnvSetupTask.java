@@ -46,7 +46,7 @@ public class EnvSetupTask extends AiravataTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,

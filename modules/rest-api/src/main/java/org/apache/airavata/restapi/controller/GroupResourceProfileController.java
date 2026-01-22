@@ -19,11 +19,7 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.model.BatchQueueResourcePolicy;
-import org.apache.airavata.common.model.ComputeResourcePolicy;
-import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -52,7 +48,7 @@ public class GroupResourceProfileController {
     @GetMapping("/{groupResourceProfileId}")
     public ResponseEntity<?> getGroupResourceProfile(@PathVariable String groupResourceProfileId) {
         try {
-            GroupResourceProfile profile = groupResourceProfileService.getGroupResourceProfile(groupResourceProfileId);
+            var profile = groupResourceProfileService.getGroupResourceProfile(groupResourceProfileId);
             if (profile == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -65,7 +61,7 @@ public class GroupResourceProfileController {
     @PostMapping
     public ResponseEntity<?> createGroupResourceProfile(@RequestBody GroupResourceProfile profile) {
         try {
-            String profileId = groupResourceProfileService.addGroupResourceProfile(profile);
+            var profileId = groupResourceProfileService.addGroupResourceProfile(profile);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("groupResourceProfileId", profileId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -77,7 +73,7 @@ public class GroupResourceProfileController {
             @PathVariable String groupResourceProfileId, @RequestBody GroupResourceProfile profile) {
         try {
             profile.setGroupResourceProfileId(groupResourceProfileId);
-            String result = groupResourceProfileService.updateGroupResourceProfile(profile);
+            var result = groupResourceProfileService.updateGroupResourceProfile(profile);
             return ResponseEntity.ok(Map.of("groupResourceProfileId", result));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -102,8 +98,7 @@ public class GroupResourceProfileController {
         try {
             // The service method requires gatewayId and accessibleGroupResProfileIds
             // Passing null for accessibleGroupResProfileIds to get all profiles
-            List<GroupResourceProfile> profiles =
-                    groupResourceProfileService.getAllGroupResourceProfiles(gatewayId, null);
+            var profiles = groupResourceProfileService.getAllGroupResourceProfiles(gatewayId, null);
             return ResponseEntity.ok(profiles);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -113,8 +108,7 @@ public class GroupResourceProfileController {
     @GetMapping("/{groupResourceProfileId}/compute-preferences")
     public ResponseEntity<?> getGroupComputeResourcePreferences(@PathVariable String groupResourceProfileId) {
         try {
-            List<GroupComputeResourcePreference> preferences =
-                    groupResourceProfileService.getAllGroupComputeResourcePreferences(groupResourceProfileId);
+            var preferences = groupResourceProfileService.getAllGroupComputeResourcePreferences(groupResourceProfileId);
             return ResponseEntity.ok(preferences);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -124,8 +118,7 @@ public class GroupResourceProfileController {
     @GetMapping("/{groupResourceProfileId}/compute-policies")
     public ResponseEntity<?> getGroupComputeResourcePolicies(@PathVariable String groupResourceProfileId) {
         try {
-            List<ComputeResourcePolicy> policies =
-                    groupResourceProfileService.getAllGroupComputeResourcePolicies(groupResourceProfileId);
+            var policies = groupResourceProfileService.getAllGroupComputeResourcePolicies(groupResourceProfileId);
             return ResponseEntity.ok(policies);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -135,8 +128,7 @@ public class GroupResourceProfileController {
     @GetMapping("/{groupResourceProfileId}/batch-queue-policies")
     public ResponseEntity<?> getGroupBatchQueueResourcePolicies(@PathVariable String groupResourceProfileId) {
         try {
-            List<BatchQueueResourcePolicy> policies =
-                    groupResourceProfileService.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId);
+            var policies = groupResourceProfileService.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId);
             return ResponseEntity.ok(policies);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

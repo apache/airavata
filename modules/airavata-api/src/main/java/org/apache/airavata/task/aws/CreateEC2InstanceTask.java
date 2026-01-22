@@ -24,18 +24,26 @@ import org.apache.airavata.agents.ssh.SSHUtil;
 import org.apache.airavata.common.model.AwsComputeResourcePreference;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.aws.utils.AWSTaskUtil;
 import org.apache.airavata.task.base.AiravataTask;
 import org.apache.airavata.task.base.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.CreateKeyPairResponse;
 import software.amazon.awssdk.services.ec2.model.CreateSecurityGroupResponse;
+import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.ec2.model.InstanceType;
 import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
@@ -52,12 +60,12 @@ public class CreateEC2InstanceTask extends AiravataTask {
     private final AWSTaskUtil awsTaskUtil;
 
     public CreateEC2InstanceTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory,
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory,
             AWSTaskUtil awsTaskUtil) {
         super(
                 taskUtil,
@@ -123,15 +131,56 @@ public class CreateEC2InstanceTask extends AiravataTask {
 
             return onSuccess("AWS Env setup task successfully completed " + getTaskId());
 
-        } catch (Exception e) {
-            // TODO catch for AMI issues, etc
-            LOGGER.error("Error creating EC2 instance for process {}", getProcessId(), e);
+        } catch (Ec2Exception e) {
+            // Handle AWS EC2-specific errors
+            String errorCode = e.awsErrorDetails() != null ? e.awsErrorDetails().errorCode() : "UNKNOWN";
+            String errorMessage = e.getMessage();
+
+            // Check for common error scenarios
+            if (errorCode.contains("InvalidAMIID") || errorCode.contains("InvalidParameterValue")) {
+                LOGGER.error("AMI-related error for process {}: {} - {}", getProcessId(), errorCode, errorMessage, e);
+                this.onCancel(taskContext);
+                return onFail(
+                        String.format("Invalid AMI or instance configuration: %s - %s", errorCode, errorMessage),
+                        true, // fatal: AMI issues are not retryable
+                        e);
+            } else if (errorCode.contains("UnauthorizedOperation") || errorCode.contains("AuthFailure")) {
+                LOGGER.error(
+                        "AWS authorization error for process {}: {} - {}", getProcessId(), errorCode, errorMessage, e);
+                this.onCancel(taskContext);
+                return onFail(
+                        String.format("AWS authorization failed: %s - %s", errorCode, errorMessage),
+                        true, // fatal: credential issues are not retryable
+                        e);
+            } else if (errorCode.contains("InsufficientInstanceCapacity")
+                    || errorCode.contains("InstanceLimitExceeded")) {
+                LOGGER.error(
+                        "AWS capacity/limit error for process {}: {} - {}", getProcessId(), errorCode, errorMessage, e);
+                this.onCancel(taskContext);
+                return onFail(
+                        String.format("AWS instance capacity/limit exceeded: %s - %s", errorCode, errorMessage),
+                        false, // not fatal: capacity issues might be temporary
+                        e);
+            } else {
+                LOGGER.error("AWS EC2 error for process {}: {} - {}", getProcessId(), errorCode, errorMessage, e);
+                this.onCancel(taskContext);
+                return onFail(String.format("AWS EC2 error: %s - %s", errorCode, errorMessage), false, e);
+            }
+        } catch (SdkException e) {
+            // Handle AWS SDK errors (network, timeout, etc.)
+            LOGGER.error("AWS SDK error creating EC2 instance for process {}: {}", getProcessId(), e.getMessage(), e);
             LOGGER.warn("Triggering cleanup due to failure in onRun().");
             this.onCancel(taskContext);
             return onFail(
-                    "Error creating EC2 instance for process " + getProcessId(),
-                    false,
-                    e); // fatal: false to retry EC2 instance creation since cleanup-action was triggerred
+                    "AWS SDK error creating EC2 instance for process " + getProcessId() + ": " + e.getMessage(),
+                    false, // SDK errors might be transient
+                    e);
+        } catch (Exception e) {
+            // Handle other unexpected errors
+            LOGGER.error("Unexpected error creating EC2 instance for process {}", getProcessId(), e);
+            LOGGER.warn("Triggering cleanup due to failure in onRun().");
+            this.onCancel(taskContext);
+            return onFail("Unexpected error creating EC2 instance for process " + getProcessId(), false, e);
 
         } finally {
             if (ec2Client != null) {
@@ -177,10 +226,19 @@ public class CreateEC2InstanceTask extends AiravataTask {
                         .description("Airavata temporary security group for " + getProcessId())
                         .vpcId(vpcId));
 
-        ec2.authorizeSecurityGroupIngress(req -> req.groupId(sgRes.groupId()).ipPermissions(p -> p.ipProtocol("tcp")
-                .fromPort(22)
-                .toPort(22)
-                .ipRanges(r -> r.cidrIp("0.0.0.0/0")))); // TODO restrict the IP
+        // Security Group IP Restriction:
+        // Currently allows SSH from any IP (0.0.0.0/0) for temporary instances.
+        // For production use, this should be restricted to:
+        // 1. The user's IP address (if available from request context)
+        // 2. A configured IP range from AwsComputeResourcePreference
+        // 3. The gateway's IP range
+        // TODO: Add IP restriction configuration to AwsComputeResourcePreference
+        // and use it here instead of 0.0.0.0/0
+        String allowedCidr = "0.0.0.0/0"; // Should be restricted in production
+        LOGGER.warn(
+                "Security group allows SSH from any IP ({}). This should be restricted in production.", allowedCidr);
+        ec2.authorizeSecurityGroupIngress(req -> req.groupId(sgRes.groupId())
+                .ipPermissions(p -> p.ipProtocol("tcp").fromPort(22).toPort(22).ipRanges(r -> r.cidrIp(allowedCidr))));
 
         return sgRes.groupId();
     }

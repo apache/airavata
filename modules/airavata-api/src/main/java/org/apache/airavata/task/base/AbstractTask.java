@@ -19,10 +19,7 @@
 */
 package org.apache.airavata.task.base;
 
-import org.apache.airavata.dapr.participant.DaprParticipant;
-import org.apache.airavata.task.OutPort;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.airavata.task.TaskOutPort;
 import org.apache.airavata.task.TaskParam;
 import org.apache.airavata.task.TaskResult;
 import org.apache.airavata.task.TaskUtil;
@@ -32,7 +29,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO: Class level comments please
+ * Base class for Airavata tasks.
+ *
+ * <p>Provides common functionality for task execution including:
+ * - Task lifecycle management (init, run, cancel)
+ * - State management via UserContentStore (backed by Dapr State Store)
+ * - Retry logic
+ *
+ * <p>Tasks extend this class and implement onRun() and onCancel() methods.
+ * The task execution is managed by Dapr workflows and activities.
+ * Task orchestration is handled by Dapr workflows, not by task chaining.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
@@ -47,18 +53,13 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
     private static final CounterMetric taskFailCounter = new CounterMetric("task_fail_count");
     private static final CounterMetric taskCompleteCounter = new CounterMetric("task_complete_count");
 
-    private static final String NEXT_JOB = "next-job";
-    private static final String WORKFLOW_STARTED = "workflow-started";
-
     @TaskParam(name = "taskId")
     private String taskId;
 
-    @TaskOutPort(name = "Next Task")
-    private OutPort nextTask;
-
-    private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
-    private DaprParticipant<? extends AbstractTask> participant;
+    // TaskUtil kept for compatibility with subclasses, but no longer used for deserialization
+    // in Dapr-based architecture
+    @SuppressWarnings("unused")
     private final TaskUtil taskUtil;
 
     @TaskParam(name = "Retry Count")
@@ -71,43 +72,21 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
     @Override
     public void init(String workflowName, String jobName, String taskName) {
         this.taskId = taskName;
-        try {
-            taskInitCounter.inc();
-            if (callbackContext != null && callbackContext.getTaskConfig() != null) {
-                taskUtil.deserializeTaskData(
-                        this, this.callbackContext.getTaskConfig().getConfigMap());
-            }
-        } catch (Exception e) {
-            taskFailCounter.inc();
-            logger.error("Deserialization of task parameters failed", e);
-        }
-        if (participant != null) {
-            participant.registerRunningTask(this);
-        } else {
-            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
-        }
+        taskInitCounter.inc();
+        // Task initialization - in Dapr workflows, tasks are executed via activities
+        // and don't use callbackContext for parameter deserialization
     }
 
     @Override
     public final TaskResult run() {
         try {
             taskRunGauge.inc();
-            boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null
-                    || this.callbackContext
-                            .getJobConfig()
-                            .getJobId()
-                            .equals(this.callbackContext.getJobConfig().getWorkflow() + "_"
-                                    + getUserContent(NEXT_JOB, Scope.WORKFLOW));
-
-            return isThisNextJob
-                    ? onRun(this.taskHelper)
-                    : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
-        } finally {
-            if (participant != null) {
-                participant.unregisterRunningTask(this);
-            } else {
-                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
-            }
+            // In Dapr workflows, tasks are executed directly via activities
+            // No need for Helix-specific job sequencing logic
+            return onRun(this.taskHelper);
+        } catch (Exception e) {
+            logger.error("Task execution failed for task {}", taskId, e);
+            return onFail("Task execution failed: " + e.getMessage(), false);
         }
     }
 
@@ -118,12 +97,8 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
             taskCancelCounter.inc();
             logger.info("Cancelling task {}", taskId);
             onCancel();
-        } finally {
-            if (participant != null) {
-                participant.unregisterRunningTask(this);
-            } else {
-                logger.warn("Task with id: {} is not unregistered since the participant is not set", taskId);
-            }
+        } catch (Exception e) {
+            logger.error("Error cancelling task {}", taskId, e);
         }
     }
 
@@ -137,7 +112,8 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
         String successMessage =
                 "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
-        return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
+        // In Dapr workflows, task orchestration is handled by workflows, not task chaining
+        return new TaskResult(TaskResult.Status.COMPLETED, message);
     }
 
     protected TaskResult onFail(String reason, boolean fatal) {
@@ -149,13 +125,6 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
     protected void publishErrors(Throwable e) {
         // Task errors are logged; status updates are published via Dapr messaging
         logger.error("Task error", e);
-    }
-
-    public void sendNextJob(String jobId) {
-        putUserContent(WORKFLOW_STARTED, "TRUE", Scope.WORKFLOW);
-        if (jobId != null) {
-            putUserContent(NEXT_JOB, jobId, Scope.WORKFLOW);
-        }
     }
 
     protected void setContextVariable(String key, String value) {
@@ -174,15 +143,6 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
 
     public AbstractTask setTaskId(String taskId) {
         this.taskId = taskId;
-        return this;
-    }
-
-    public org.apache.airavata.task.base.TaskCallbackContext getCallbackContext() {
-        return callbackContext;
-    }
-
-    public AbstractTask setCallbackContext(org.apache.airavata.task.base.TaskCallbackContext callbackContext) {
-        this.callbackContext = callbackContext;
         return this;
     }
 
@@ -212,25 +172,10 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
         this.retryCount = retryCount <= 0 ? 1 : retryCount;
     }
 
-    public OutPort getNextTask() {
-        return nextTask;
-    }
-
-    public void setNextTask(OutPort nextTask) {
-        this.nextTask = nextTask;
-    }
-
-    public AbstractTask setParticipant(DaprParticipant<? extends AbstractTask> participant) {
-        this.participant = participant;
-        return this;
-    }
-
     @Override
     protected String getContextKey() {
-        // Use workflow name from callback context if available
-        if (callbackContext != null && callbackContext.getJobConfig() != null) {
-            return callbackContext.getJobConfig().getWorkflow();
-        }
+        // Use taskId as context key for Dapr State Store
+        // In Dapr workflows, tasks are executed independently via activities
         return taskId != null ? taskId : "default";
     }
 }

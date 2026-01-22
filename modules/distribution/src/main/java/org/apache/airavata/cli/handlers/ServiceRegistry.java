@@ -20,13 +20,17 @@
 package org.apache.airavata.cli.handlers;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
-import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
-import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
+import java.util.Set;
+// TODO: These services don't exist yet - uncomment when implemented
+// import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
+// import org.apache.airavata.scheduling.data.DataInterpreterService;
+// import org.apache.airavata.scheduling.scheduler.ProcessReschedulingService;
 import org.apache.airavata.thriftapi.server.ThriftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
@@ -37,7 +41,7 @@ import org.springframework.stereotype.Component;
  *
  * <p>Discovers all SmartLifecycle beans from ApplicationContext and provides
  * methods to get lifecycle beans by service name. Handles both TCP server
- * services (Thrift, REST) and background services.
+ * services (Thrift Server, Airavata API (HTTP)) and background services.
  */
 @Component
 public class ServiceRegistry {
@@ -58,12 +62,13 @@ public class ServiceRegistry {
     private void initializeServiceMappings() {
         // TCP Server Services
         serviceNameToBeanClass.put("thrift-api", ThriftServer.class);
-        // REST API is handled specially via WebServerApplicationContext
+        // Airavata API is handled specially via WebServerApplicationContext
 
         // Background Services (if they implement SmartLifecycle)
-        serviceNameToBeanClass.put("data-interpreter", DataInterpreterService.class);
-        serviceNameToBeanClass.put("process-rescheduler", ProcessReschedulingService.class);
-        serviceNameToBeanClass.put("compute-monitor", ComputationalResourceMonitoringService.class);
+        // TODO: These services don't exist yet - uncomment when implemented
+        // serviceNameToBeanClass.put("data-interpreter", DataInterpreterService.class);
+        // serviceNameToBeanClass.put("process-rescheduler", ProcessReschedulingService.class);
+        // serviceNameToBeanClass.put("compute-monitor", ComputationalResourceMonitoringService.class);
 
         // Discover additional SmartLifecycle beans dynamically
         discoverLifecycleBeans();
@@ -74,7 +79,7 @@ public class ServiceRegistry {
      */
     private void discoverLifecycleBeans() {
         try {
-            Map<String, SmartLifecycle> lifecycleBeans = applicationContext.getBeansOfType(SmartLifecycle.class);
+            var lifecycleBeans = applicationContext.getBeansOfType(SmartLifecycle.class);
             for (Map.Entry<String, SmartLifecycle> entry : lifecycleBeans.entrySet()) {
                 String beanName = entry.getKey();
                 SmartLifecycle bean = entry.getValue();
@@ -97,7 +102,7 @@ public class ServiceRegistry {
      * Get SmartLifecycle bean by service name.
      */
     public SmartLifecycle getLifecycleBean(String serviceName) {
-        // Check if it's REST API (special case)
+        // Check if it's Airavata API (special case)
         if ("rest-api".equals(serviceName)) {
             return getRestApiLifecycle();
         }
@@ -133,8 +138,8 @@ public class ServiceRegistry {
     }
 
     /**
-     * Get REST API lifecycle wrapper.
-     * REST API is managed by Spring Boot's embedded web server.
+     * Get Airavata API lifecycle wrapper.
+     * Airavata API is managed by Spring Boot's embedded web server.
      */
     private SmartLifecycle getRestApiLifecycle() {
         try {
@@ -143,7 +148,7 @@ public class ServiceRegistry {
                 return new RestApiLifecycleWrapper(webContext);
             }
         } catch (Exception e) {
-            logger.debug("REST API not available", e);
+            logger.debug("Airavata API (HTTP) not available", e);
         }
         return null;
     }
@@ -161,8 +166,8 @@ public class ServiceRegistry {
     /**
      * Get all registered service names.
      */
-    public java.util.Set<String> getRegisteredServiceNames() {
-        java.util.Set<String> names = new java.util.HashSet<>(serviceNameToBeanClass.keySet());
+    public Set<String> getRegisteredServiceNames() {
+        var names = new HashSet<String>(serviceNameToBeanClass.keySet());
         names.addAll(serviceNameToBeanName.keySet());
         if (getRestApiLifecycle() != null) {
             names.add("rest-api");
@@ -171,7 +176,7 @@ public class ServiceRegistry {
     }
 
     /**
-     * Wrapper for REST API web server to implement SmartLifecycle.
+     * Wrapper for Airavata API (HTTP) web server to implement SmartLifecycle.
      */
     private static class RestApiLifecycleWrapper implements SmartLifecycle {
         private final ServletWebServerApplicationContext webContext;
@@ -195,7 +200,7 @@ public class ServiceRegistry {
         @Override
         public boolean isRunning() {
             try {
-                org.springframework.boot.web.server.WebServer webServer = webContext.getWebServer();
+                WebServer webServer = webContext.getWebServer();
                 return webServer != null;
             } catch (Exception e) {
                 return false;

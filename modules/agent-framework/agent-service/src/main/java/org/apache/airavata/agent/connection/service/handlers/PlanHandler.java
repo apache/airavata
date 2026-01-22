@@ -38,7 +38,7 @@ public class PlanHandler {
     }
 
     public PlanEntity savePlan(PlanEntity plan) {
-        PlanEntity savedPlan = planRepo.save(plan);
+        var savedPlan = planRepo.save(plan);
         logger.info("Created the plan with the id: {}", plan.getId());
         return savedPlan;
     }

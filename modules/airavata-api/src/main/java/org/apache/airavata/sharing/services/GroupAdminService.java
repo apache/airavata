@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.services;
 
-import org.apache.airavata.sharing.entities.GroupAdminEntity;
 import org.apache.airavata.sharing.entities.GroupAdminPK;
 import org.apache.airavata.sharing.mappers.GroupAdminMapper;
 import org.apache.airavata.sharing.model.GroupAdmin;
@@ -40,7 +39,7 @@ public class GroupAdminService {
     }
 
     public GroupAdmin get(GroupAdminPK pk) throws SharingRegistryException {
-        GroupAdminEntity entity = groupAdminRepository.findById(pk).orElse(null);
+        var entity = groupAdminRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return groupAdminMapper.toModel(entity);
     }
@@ -50,8 +49,8 @@ public class GroupAdminService {
     }
 
     public GroupAdmin update(GroupAdmin groupAdmin) throws SharingRegistryException {
-        GroupAdminEntity entity = groupAdminMapper.toEntity(groupAdmin);
-        GroupAdminEntity saved = groupAdminRepository.save(entity);
+        var entity = groupAdminMapper.toEntity(groupAdmin);
+        var saved = groupAdminRepository.save(entity);
         return groupAdminMapper.toModel(saved);
     }
 

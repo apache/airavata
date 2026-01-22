@@ -21,6 +21,8 @@ package org.apache.airavata.cli.communication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.StandardProtocolFamily;
+import java.net.UnixDomainSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
@@ -55,7 +57,7 @@ public class ServiceSocketClient {
         }
 
         if (configDir != null && !configDir.isEmpty()) {
-            Path configPath = Paths.get(configDir);
+            var configPath = Paths.get(configDir);
             if (Files.exists(configPath) && Files.isWritable(configPath)) {
                 return configPath.resolve(SOCKET_NAME);
             }
@@ -83,10 +85,10 @@ public class ServiceSocketClient {
             return false;
         }
 
-        try (SocketChannel channel = SocketChannel.open(java.net.StandardProtocolFamily.UNIX)) {
+        try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
             // Set non-blocking for timeout
             channel.configureBlocking(false);
-            boolean connected = channel.connect(java.net.UnixDomainSocketAddress.of(socketPath));
+            boolean connected = channel.connect(UnixDomainSocketAddress.of(socketPath));
 
             if (!connected) {
                 // Wait for connection with timeout
@@ -110,13 +112,13 @@ public class ServiceSocketClient {
             }
 
             // Send health check request
-            ByteBuffer request = ByteBuffer.wrap(HEALTH_REQUEST.getBytes(StandardCharsets.UTF_8));
+            var request = ByteBuffer.wrap(HEALTH_REQUEST.getBytes(StandardCharsets.UTF_8));
             while (request.hasRemaining()) {
                 channel.write(request);
             }
 
             // Read response
-            ByteBuffer response = ByteBuffer.allocate(4096);
+            var response = ByteBuffer.allocate(4096);
             channel.configureBlocking(true);
             int bytesRead = channel.read(response);
             if (bytesRead > 0) {
@@ -165,19 +167,19 @@ public class ServiceSocketClient {
             throw new IOException("Service socket not found. Airavata service may not be running.");
         }
 
-        try (SocketChannel channel = SocketChannel.open(java.net.StandardProtocolFamily.UNIX)) {
+        try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
             channel.configureBlocking(true);
-            channel.connect(java.net.UnixDomainSocketAddress.of(socketPath));
+            channel.connect(UnixDomainSocketAddress.of(socketPath));
 
             // Send command
             String commandLine = command.endsWith("\n") ? command : command + "\n";
-            ByteBuffer request = ByteBuffer.wrap(commandLine.getBytes(StandardCharsets.UTF_8));
+            var request = ByteBuffer.wrap(commandLine.getBytes(StandardCharsets.UTF_8));
             while (request.hasRemaining()) {
                 channel.write(request);
             }
 
             // Read response
-            ByteBuffer response = ByteBuffer.allocate(8192);
+            var response = ByteBuffer.allocate(8192);
             int totalBytes = 0;
             while (true) {
                 int bytesRead = channel.read(response);

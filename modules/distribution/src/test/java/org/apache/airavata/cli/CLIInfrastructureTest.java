@@ -139,9 +139,9 @@ public class CLIInfrastructureTest {
         @Test
         @DisplayName("Should generate valid airavata.properties with testcontainer URLs")
         void shouldGenerateValidPropertiesFile(@TempDir Path tempDir) throws IOException {
-            File confDir = tempDir.resolve("conf").toFile();
+            var confDir = tempDir.resolve("conf").toFile();
             confDir.mkdirs();
-            File propsFile = new File(confDir, "airavata.properties");
+            var propsFile = new File(confDir, "airavata.properties");
 
             String props = generateTestProperties();
             try (FileWriter writer = new FileWriter(propsFile)) {
@@ -160,7 +160,7 @@ public class CLIInfrastructureTest {
      * Generate test properties using testcontainer URLs.
      */
     private String generateTestProperties() {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         // Database properties - use same URL for all catalogs (test mode)
         String[] catalogs = {"catalog", "registry", "profile", "sharing", "replica", "workflow", "vault", "research"};

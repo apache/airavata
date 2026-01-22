@@ -20,7 +20,6 @@
 package org.apache.airavata.sharing.services;
 
 import java.util.List;
-import org.apache.airavata.sharing.entities.DomainEntity;
 import org.apache.airavata.sharing.mappers.DomainMapper;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.SharingRegistryException;
@@ -40,7 +39,7 @@ public class DomainService {
     }
 
     public Domain get(String domainId) throws SharingRegistryException {
-        DomainEntity entity = domainRepository.findById(domainId).orElse(null);
+        var entity = domainRepository.findById(domainId).orElse(null);
         if (entity == null) return null;
         return domainMapper.toModel(entity);
     }
@@ -50,8 +49,8 @@ public class DomainService {
     }
 
     public Domain update(Domain domain) throws SharingRegistryException {
-        DomainEntity entity = domainMapper.toEntity(domain);
-        DomainEntity saved = domainRepository.save(entity);
+        var entity = domainMapper.toEntity(domain);
+        var saved = domainRepository.save(entity);
         return domainMapper.toModel(saved);
     }
 
@@ -65,7 +64,7 @@ public class DomainService {
     }
 
     public List<Domain> getAll() throws SharingRegistryException {
-        List<DomainEntity> entities = domainRepository.findAll();
+        var entities = domainRepository.findAll();
         return domainMapper.toModelList(entities);
     }
 }

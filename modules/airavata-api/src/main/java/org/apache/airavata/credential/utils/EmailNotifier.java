@@ -79,7 +79,7 @@ public class EmailNotifier implements CredentialStoreNotifier {
     @Override
     public void notifyMessage(NotificationMessage message) throws CredentialStoreException {
         try {
-            SimpleMailMessage email = new SimpleMailMessage();
+            var email = new SimpleMailMessage();
 
             if (emailNotifierConfiguration != null) {
                 email.setFrom(emailNotifierConfiguration.getFromAddress());
@@ -94,7 +94,7 @@ public class EmailNotifier implements CredentialStoreNotifier {
             }
 
         } catch (Exception e) {
-            String msg = String.format("Error sending notification message: %s", e.getMessage());
+            var msg = String.format("Error sending notification message: %s", e.getMessage());
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
@@ -103,7 +103,7 @@ public class EmailNotifier implements CredentialStoreNotifier {
     @Override
     public void notifyEmail(EmailNotificationMessage emailMessage) throws CredentialStoreException {
         try {
-            SimpleMailMessage email = new SimpleMailMessage();
+            var email = new SimpleMailMessage();
 
             if (emailNotifierConfiguration != null) {
                 email.setFrom(emailNotifierConfiguration.getFromAddress());
@@ -121,7 +121,7 @@ public class EmailNotifier implements CredentialStoreNotifier {
             }
 
         } catch (Exception e) {
-            String msg = String.format("Error sending email notification message: %s", e.getMessage());
+            var msg = String.format("Error sending email notification message: %s", e.getMessage());
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }

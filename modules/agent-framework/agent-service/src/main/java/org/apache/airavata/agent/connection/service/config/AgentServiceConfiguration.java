@@ -43,9 +43,9 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-        ConfigurableEnvironment environment = event.getEnvironment();
+        var environment = event.getEnvironment();
         // Check if agent service is enabled
-        String enabled = environment.getProperty("services.agent.enabled", "true");
+        var enabled = environment.getProperty("services.agent.enabled", "true");
         if (!"true".equalsIgnoreCase(enabled)) {
             return;
         }
@@ -53,7 +53,7 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
     }
 
     private void mapScopedProperties(ConfigurableEnvironment environment) {
-        Map<String, Object> mappedProperties = new HashMap<>();
+        var mappedProperties = new HashMap<String, Object>();
 
         // Enable gRPC server
         mappedProperties.put("spring.grpc.server.enabled", "true");
@@ -176,7 +176,7 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
             String standardKey,
             Map<String, Object> mappedProperties,
             ConfigurableEnvironment environment) {
-        String value = environment.getProperty(scopedKey);
+        var value = environment.getProperty(scopedKey);
         if (value != null) {
             mappedProperties.put(standardKey, value);
             logger.trace("Mapped {}={} to {}", scopedKey, value, standardKey);
@@ -189,7 +189,7 @@ public class AgentServiceConfiguration implements ApplicationListener<Applicatio
             String defaultValue,
             Map<String, Object> mappedProperties,
             ConfigurableEnvironment environment) {
-        String value = environment.getProperty(scopedKey, defaultValue);
+        var value = environment.getProperty(scopedKey, defaultValue);
         mappedProperties.put(standardKey, value);
         logger.trace("Mapped {}={} to {} (default: {})", scopedKey, value, standardKey, defaultValue);
     }

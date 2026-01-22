@@ -48,7 +48,7 @@ public class EntityTypeService {
     }
 
     public EntityType get(EntityTypePK pk) throws SharingRegistryException {
-        EntityTypeEntity entity = entityTypeRepository.findById(pk).orElse(null);
+        var entity = entityTypeRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return entityTypeMapper.toModel(entity);
     }
@@ -58,8 +58,8 @@ public class EntityTypeService {
     }
 
     public EntityType update(EntityType entityType) throws SharingRegistryException {
-        EntityTypeEntity entity = entityTypeMapper.toEntity(entityType);
-        EntityTypeEntity saved = entityTypeRepository.save(entity);
+        var entity = entityTypeMapper.toEntity(entityType);
+        var saved = entityTypeRepository.save(entity);
         return entityTypeMapper.toModel(saved);
     }
 

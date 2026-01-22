@@ -19,15 +19,12 @@
 */
 package org.apache.airavata.agents.ssh;
 
-import java.util.Optional;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.common.model.DataMovementInterface;
 import org.apache.airavata.common.model.DataMovementProtocol;
-import org.apache.airavata.common.model.SCPDataMovement;
-import org.apache.airavata.common.model.StorageResourceDescription;
-import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -39,9 +36,7 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
 
     private static final Logger logger = LoggerFactory.getLogger(SSHJStorageAdaptor.class);
 
-    public SSHJStorageAdaptor(
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.security.CredentialStoreService credentialService)
+    public SSHJStorageAdaptor(RegistryService registryService, CredentialStoreService credentialService)
             throws AgentException {
         super(registryService, credentialService);
         // Services are inherited from SSHJAgentAdaptor or will be injected via Spring
@@ -53,33 +48,30 @@ public class SSHJStorageAdaptor extends SSHJAgentAdaptor implements StorageResou
             logger.info("Initializing Storage Resource SCP Adaptor for storage resource : " + storageResourceId
                     + ", gateway : " + gatewayId + ", user " + loginUser + ", token : " + token);
 
-            StorageResourceDescription storageResourceDescription =
-                    registryService.getStorageResource(storageResourceId);
+            var storageResourceDescription = registryService.getStorageResource(storageResourceId);
 
             logger.info("Fetching data movement interfaces for storage resource " + storageResourceId);
 
-            Optional<DataMovementInterface> dmInterfaceOp =
-                    storageResourceDescription.getDataMovementInterfaces().stream()
-                            .filter(iface -> iface.getDataMovementProtocol() == DataMovementProtocol.SCP)
-                            .findFirst();
+            var dmInterfaceOp = storageResourceDescription.getDataMovementInterfaces().stream()
+                    .filter(iface -> iface.getDataMovementProtocol() == DataMovementProtocol.SCP)
+                    .findFirst();
 
-            DataMovementInterface scpInterface = dmInterfaceOp.orElseThrow(() ->
+            var scpInterface = dmInterfaceOp.orElseThrow(() ->
                     new AgentException("Could not find a SCP interface for storage resource " + storageResourceId));
 
-            SCPDataMovement scpDataMovement =
-                    registryService.getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
+            var scpDataMovement = registryService.getSCPDataMovement(scpInterface.getDataMovementInterfaceId());
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
+            var sshCredential = credentialService.getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
 
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            String alternateHostName = scpDataMovement.getAlternativeSCPHostName();
-            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))
+            var alternateHostName = scpDataMovement.getAlternativeSCPHostName();
+            var selectedHostName = (alternateHostName == null || "".equals(alternateHostName))
                     ? storageResourceDescription.getHostName()
                     : alternateHostName;
 

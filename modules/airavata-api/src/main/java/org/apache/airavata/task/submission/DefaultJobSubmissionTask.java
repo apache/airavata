@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.common.model.GatewayUsageReportingCommand;
 import org.apache.airavata.common.model.JobModel;
@@ -34,12 +33,14 @@ import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
 import org.apache.airavata.monitor.compute.ComputeSubmissionTracker;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.TaskContext;
 import org.apache.airavata.telemetry.CounterMetric;
 import org.slf4j.Logger;
@@ -56,13 +57,13 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     private static final CounterMetric defaultJSTaskCounter = new CounterMetric("default_js_task_counter");
 
     public DefaultJobSubmissionTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
+            TaskUtil taskUtil,
             ApplicationContext applicationContext,
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory,
-            org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder,
+            DaprMessagingFactory messagingFactory,
+            GroovyMapBuilder groovyMapBuilder,
             ComputeSubmissionTracker computeSubmissionTracker) {
         super(
                 taskUtil,
@@ -108,9 +109,9 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             }
 
             saveAndPublishProcessStatus(ProcessState.EXECUTING);
-            GroovyMapData mapData = groovyMapBuilder.build(getTaskContext());
+            var mapData = groovyMapBuilder.build(getTaskContext());
 
-            JobModel jobModel = new JobModel();
+            var jobModel = new JobModel();
             jobModel.setProcessId(getProcessId());
             jobModel.setWorkingDir(mapData.getWorkingDirectory());
             jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
@@ -118,7 +119,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             jobModel.setJobName(mapData.getJobName());
             jobModel.setJobDescription("Sample description");
 
-            JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
+            var submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 
             jobModel.setJobDescription(submissionOutput.getDescription());
             jobModel.setExitCode(submissionOutput.getExitCode());
@@ -155,7 +156,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 } else {
                     String msg;
                     saveJobModel(jobModel);
-                    ErrorModel errorModel = new ErrorModel();
+                    var errorModel = new ErrorModel();
                     if (submissionOutput.getExitCode() != Integer.MIN_VALUE) {
                         msg = "Returned non zero exit code:" + submissionOutput.getExitCode() + "  for JobName:"
                                 + jobModel.getJobName() + ", with failure reason : "
@@ -179,7 +180,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 jobModel.setJobId(jobId);
                 saveJobModel(jobModel);
 
-                JobStatus jobStatus = new JobStatus();
+                var jobStatus = new JobStatus();
                 jobStatus.setJobState(JobState.SUBMITTED);
                 jobStatus.setReason("Successfully Submitted to "
                         + getComputeResourceDescription().getHostName());

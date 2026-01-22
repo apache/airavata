@@ -2,12 +2,17 @@
 
 set -e
 
-# Set Airavata configuration directory
-export AIRAVATA_CONFIG_DIR=/opt/airavata/vault
+# Set AIRAVATA_HOME if not already set
+[ -z "$AIRAVATA_HOME" ] && AIRAVATA_HOME=/opt/apache-airavata
+export AIRAVATA_HOME
+
+# Set Airavata configuration directory (defaults to AIRAVATA_HOME/conf if not explicitly set)
+[ -z "$AIRAVATA_CONFIG_DIR" ] && AIRAVATA_CONFIG_DIR="${AIRAVATA_HOME}/conf"
+export AIRAVATA_CONFIG_DIR
 
 echo "🚀 Starting Apache Airavata Unified Server..."
 echo "📋 All services included in single Spring Boot application:"
-echo "   - Thrift API Server"
+echo "   - Thrift Server"
 echo "   - Orchestrator"
 echo "   - Registry"
 echo "   - Profile Service"
@@ -15,7 +20,7 @@ echo "   - Sharing Registry"
 echo "   - Credential Store"
 echo "   - All Workflow Managers"
 echo "   - All Background Services"
-echo "📁 Properties file location: /opt/airavata/vault/airavata.properties"
+echo "📁 Properties file location: ${AIRAVATA_CONFIG_DIR}/airavata.properties"
 echo "📁 Configuration directory: $AIRAVATA_CONFIG_DIR"
 echo "📊 All logs will be captured and visible via 'docker logs'"
 

@@ -21,21 +21,23 @@ package org.apache.airavata.task.staging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.DataType;
-import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.TaskContext;
 import org.apache.airavata.task.base.TaskOnFailException;
 import org.apache.airavata.telemetry.CounterMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Input Data Staging Task")
@@ -47,12 +49,12 @@ public class InputDataStagingTask extends DataStagingTask {
     private static final CounterMetric inputDSTaskCounter = new CounterMetric("input_ds_task_counter");
 
     public InputDataStagingTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -72,10 +74,10 @@ public class InputDataStagingTask extends DataStagingTask {
 
         try {
             // Get and validate data staging task model
-            DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();
+            var dataStagingTaskModel = getDataStagingTaskModel();
 
             // Fetch and validate input data type from data staging task model
-            InputDataObjectType processInput = dataStagingTaskModel.getProcessInput();
+            var processInput = dataStagingTaskModel.getProcessInput();
             if (processInput != null && processInput.getValue() == null) {
                 String message = "expId: " + getExperimentId() + ", processId: " + getProcessId() + ", taskId: "
                         + getTaskId() + ":- Couldn't stage file " + processInput.getName()
@@ -103,9 +105,9 @@ public class InputDataStagingTask extends DataStagingTask {
                 }
 
                 // Fetch and validate storage adaptor (uses input storage if configured, otherwise default)
-                StorageResourceAdaptor storageResourceAdaptor = getInputStorageAdaptor(taskHelper.getAdaptorSupport());
+                var storageResourceAdaptor = getInputStorageAdaptor(taskHelper.getAdaptorSupport());
                 // Fetch and validate compute resource adaptor
-                AgentAdaptor adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
+                var adaptor = getComputeResourceAdaptor(taskHelper.getAdaptorSupport());
 
                 for (String url : sourceUrls) {
                     URI sourceURI = new URI(url);

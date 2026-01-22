@@ -39,7 +39,7 @@ Updates the Airavata distribution to a new version.
 **What it does:**
 - Stops current server
 - Extracts new distribution
-- Copies configuration files from `vault/` directory
+- Copies configuration files from `conf/` directory
 - Ready to start with new version
 
 ### `distribution_backup.sh`
@@ -54,7 +54,7 @@ Backs up the current distribution and configuration.
 **What it does:**
 - Creates timestamped backup directory
 - Backs up distribution files
-- Backs up configuration from `vault/` directory
+- Backs up configuration from `conf/` directory
 - Backs up logs (optional)
 
 ### `docker-startup.sh`
@@ -70,32 +70,45 @@ Used by Docker containers to start Airavata.
 - `REDIS_HOST`: Redis hostname
 - `REDIS_PORT`: Redis port (default: 6379)
 - `AIRAVATA_HOME`: Airavata installation directory
-- `AIRAVATA_CONFIG_DIR`: Configuration directory
+- `AIRAVATA_CONFIG_DIR`: Configuration directory (defaults to `AIRAVATA_HOME/conf` if not explicitly set)
 
 ## Unified Architecture
 
-All Airavata services run in a single Spring Boot application:
+All Airavata services run in a single Spring Boot application with the following server ports:
 
-- **Thrift API Server** (port 8930)
-- **Orchestrator**
-- **Registry**
-- **Profile Service** (port 8962)
-- **Sharing Registry** (port 7878)
-- **Credential Store**
-- **Workflow Managers** (Pre, Post, Parser)
-- **Background Services** (Email Monitor, Realtime Monitor, etc.)
+- **Thrift Server** (port 8930) - Thrift Endpoints for Airavata API functions
+- **HTTP Server** (port 8080):
+  - Airavata API - HTTP Endpoints for Airavata API functions
+  - File API - HTTP Endpoints for file upload/download
+  - Agent API - HTTP Endpoints for interactive job contexts
+  - Research API - HTTP Endpoints for use by research hub
+- **gRPC Server** (port 9090) - For airavata binaries to open persistent channels with airavata APIs
+- **Dapr gRPC** (port 50001) - Sidecar for pub/sub, state, and workflow execution
+
+**Internal Services** (accessible via the above servers, not separate processes):
+- **Orchestrator** - Constructs workflow DAGs
+- **Registry** - Manages metadata
+- **Profile Service** - Manages users, tenants, compute resources
+- **Sharing Registry** - Handles permissions
+- **Credential Store** - Secure credential storage
+- **Workflow Managers** - Pre, Post, Parser (internal components)
+- **Background Services** - Email Monitor, Realtime Monitor, etc. (internal components)
 
 No separate service processes are needed - everything runs in one JVM.
 
 ## Configuration
 
-Configuration files should be in the `vault/` directory:
+Configuration files should be in the `conf/` directory (mounted at `/opt/apache-airavata/conf/`):
 
-- `airavata.properties`: Main configuration
-- `airavata.sym.p12`: Keystore file
-- `logback.xml`: Logging configuration
+- `airavata.properties`: Main configuration (located at `/opt/apache-airavata/conf/airavata.properties`)
+- `airavata.sym.p12`: Keystore file (located at `/opt/apache-airavata/conf/airavata.sym.p12`)
+- `logback.xml`: Logging configuration (located at `/opt/apache-airavata/conf/logback.xml`)
 
-These are copied to the distribution's `conf/` directory during deployment.
+**Note:** The Agent Tunnel Server configuration properties (`airavata.services.agent.tunnelserver.*`) point to a **remote server location**, not a service started by Airavata. These properties are passed to agents via gRPC messages to tell them where to connect for TCP tunneling.
+
+**Installation Path**: `/opt/apache-airavata` (set as `AIRAVATA_HOME` environment variable)
+**Configuration Path**: `/opt/apache-airavata/conf` (defaults to `AIRAVATA_HOME/conf` if `AIRAVATA_CONFIG_DIR` is not explicitly set)
+**Logs Path**: `/opt/apache-airavata/logs`
 
 ## Service Management
 

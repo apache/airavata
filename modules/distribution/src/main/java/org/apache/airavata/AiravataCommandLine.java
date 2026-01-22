@@ -19,6 +19,7 @@
 */
 package org.apache.airavata;
 
+import java.util.HashMap;
 import org.apache.airavata.cli.commands.AccountCommand;
 import org.apache.airavata.cli.commands.ApplicationCommand;
 import org.apache.airavata.cli.commands.ComputeCommand;
@@ -34,6 +35,7 @@ import org.apache.airavata.config.FlywayConfig;
 import org.apache.airavata.config.JpaConfig;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,7 +49,26 @@ import picocli.CommandLine.IFactory;
  * Airavata CLI for Server Startup and Configuration Management.
  */
 @SpringBootApplication(
-        scanBasePackages = {"org.apache.airavata.cli", "org.apache.airavata.bootstrap"},
+        scanBasePackages = {
+            "org.apache.airavata.cli",
+            "org.apache.airavata.bootstrap",
+            "org.apache.airavata.restapi",
+            "org.apache.airavata.service",
+            "org.apache.airavata.registry.services",
+            "org.apache.airavata.registry.repositories",
+            "org.apache.airavata.registry.mappers",
+            "org.apache.airavata.sharing.services",
+            "org.apache.airavata.sharing.mappers",
+            "org.apache.airavata.profile.services",
+            "org.apache.airavata.profile.repositories",
+            "org.apache.airavata.profile.mappers",
+            "org.apache.airavata.profile.utils",
+            "org.apache.airavata.credential.services",
+            "org.apache.airavata.credential.repositories",
+            "org.apache.airavata.credential.mappers",
+            "org.apache.airavata.config",
+            "org.apache.airavata.thriftapi"
+        },
         exclude = {
             org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class,
             org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class
@@ -93,7 +114,12 @@ public class AiravataCommandLine implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        int exitCode = commandLine.execute(args);
+        // Create CommandLine if it wasn't injected (e.g., when Spring uses no-arg constructor)
+        CommandLine cmd = this.commandLine;
+        if (cmd == null) {
+            cmd = new CommandLine(this);
+        }
+        int exitCode = cmd.execute(args);
         // Don't exit if serve command is running in foreground - it will block
         // Only exit for other commands
         if (exitCode != 0 || !isServeCommandForeground(args)) {
@@ -140,8 +166,8 @@ public class AiravataCommandLine implements CommandLineRunner {
         // Everything else (including `serve`) should remain usable without a running DB.
         boolean requiresDb = "init".equals(commandName);
 
-        SpringApplication app = new SpringApplication(AiravataCommandLine.class);
-        java.util.Map<String, Object> defaults = new java.util.HashMap<>();
+        var app = new SpringApplication(AiravataCommandLine.class);
+        var defaults = new HashMap<String, Object>();
         defaults.put("spring.main.allow-bean-definition-overriding", "true");
         defaults.put("spring.classformat.ignore", "true");
         defaults.put("airavata.cli.enabled", "true");
@@ -169,7 +195,7 @@ public class AiravataCommandLine implements CommandLineRunner {
         }
 
         app.setDefaultProperties(defaults);
-        app.setWebApplicationType(org.springframework.boot.WebApplicationType.NONE);
+        app.setWebApplicationType(WebApplicationType.NONE);
         app.run(args);
     }
 }

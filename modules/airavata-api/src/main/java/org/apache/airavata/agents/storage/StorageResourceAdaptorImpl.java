@@ -24,8 +24,8 @@ import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.agents.ssh.SshAdaptorParams;
 import org.apache.airavata.agents.ssh.SshAgentAdaptor;
-import org.apache.airavata.common.model.StorageResourceDescription;
-import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -37,9 +37,7 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceAdaptorImpl.class);
 
-    public StorageResourceAdaptorImpl(
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.security.CredentialStoreService credentialService)
+    public StorageResourceAdaptorImpl(RegistryService registryService, CredentialStoreService credentialService)
             throws AgentException {
         super(registryService, credentialService);
     }
@@ -50,17 +48,17 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
         try {
             logger.info("Initializing Storage Resource Adaptor for storage resource : " + storageResourceId
                     + ", gateway : " + gatewayId + ", user " + loginUser + ", token : " + token);
-            StorageResourceDescription storageResource = registryService.getStorageResource(storageResourceId);
+            var storageResource = registryService.getStorageResource(storageResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            SSHCredential sshCredential = credentialService.getSSHCredential(token, gatewayId);
+            var sshCredential = credentialService.getSSHCredential(token, gatewayId);
             if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            SshAdaptorParams adaptorParams = new SshAdaptorParams();
+            var adaptorParams = new SshAdaptorParams();
             adaptorParams.setHostName(storageResource.getHostName());
             adaptorParams.setUserName(loginUser);
             adaptorParams.setPassphrase(sshCredential.getPassphrase());

@@ -22,10 +22,7 @@ package org.apache.airavata.monitor.realtime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -41,13 +38,13 @@ public class RealtimeComputeStatusParser {
             throws RegistryException, InterruptedException {
         for (int i = 0; i < 3; i++) {
 
-            List<JobModel> jobsOfTask = registryService.getJobs("taskId", taskId);
+            var jobsOfTask = registryService.getJobs("taskId", taskId);
             if (jobsOfTask == null || jobsOfTask.isEmpty()) {
                 // Retry after 2s
                 logger.warn("No jobs for task {}. Retrying in 2 seconds", taskId);
                 Thread.sleep(2000);
             } else {
-                Optional<JobModel> filtered = jobsOfTask.stream()
+                var filtered = jobsOfTask.stream()
                         .filter(job -> jobName.equals(job.getJobName()))
                         .findFirst();
                 if (filtered.isPresent()) {
@@ -64,23 +61,23 @@ public class RealtimeComputeStatusParser {
     public JobStatusResult parse(String rawMessage, String publisherId, RegistryService registryService) {
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> asMap = objectMapper.readValue(rawMessage, new TypeReference<Map<String, Object>>() {});
+            var objectMapper = new ObjectMapper();
+            var asMap = objectMapper.readValue(rawMessage, new TypeReference<Map<String, Object>>() {});
             if (asMap.containsKey("jobName") && asMap.containsKey("status")) {
-                String jobName = (String) asMap.get("jobName");
-                String status = (String) asMap.get("status");
-                String taskId = (String) asMap.get("task");
+                var jobName = (String) asMap.get("jobName");
+                var status = (String) asMap.get("status");
+                var taskId = (String) asMap.get("task");
 
                 if (jobName != null && status != null && taskId != null) {
 
                     try {
-                        String jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registryService);
+                        var jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registryService);
                         if (jobId == null) {
                             logger.error("No job id for job name {}", jobName);
                             return null;
                         }
 
-                        JobState jobState =
+                        var jobState =
                                 switch (status) {
                                     case "RUNNING" -> JobState.ACTIVE;
                                     case "COMPLETED" -> JobState.COMPLETE;
@@ -99,7 +96,7 @@ public class RealtimeComputeStatusParser {
                             return null;
                         }
 
-                        JobStatusResult jobStatusResult = new JobStatusResult();
+                        var jobStatusResult = new JobStatusResult();
                         jobStatusResult.setJobId(jobId);
                         jobStatusResult.setJobName(jobName);
                         jobStatusResult.setState(jobState);

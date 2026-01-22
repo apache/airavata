@@ -46,7 +46,7 @@ public class CertificateCredentialWriter implements CredentialWriter {
     }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
-        CertificateCredential certificateCredential = (CertificateCredential) credential;
+        var certificateCredential = (CertificateCredential) credential;
 
         // Write community user
         writeCommunityUser(certificateCredential.getCommunityUser(), credential.getToken());

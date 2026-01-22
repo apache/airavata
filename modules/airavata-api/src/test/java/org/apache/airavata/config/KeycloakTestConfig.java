@@ -21,6 +21,7 @@ package org.apache.airavata.config;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class KeycloakTestConfig {
         // Try Keycloak realms endpoint (works for all Keycloak versions)
         try {
             String realmsUrl = String.format("http://%s:%d/realms/master", KEYCLOAK_HOST, KEYCLOAK_PORT);
-            URL url = new URL(realmsUrl);
+            URL url = URI.create(realmsUrl).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(3000);
             conn.setReadTimeout(3000);
@@ -179,7 +180,7 @@ public class KeycloakTestConfig {
     private static boolean isAdminCliDirectAccessGrantsEnabled(String serverUrl) {
         try {
             String tokenUrl = serverUrl + "/realms/master/protocol/openid-connect/token";
-            java.net.URL url = new java.net.URL(tokenUrl);
+            java.net.URL url = java.net.URI.create(tokenUrl).toURL();
             java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -227,6 +228,7 @@ public class KeycloakTestConfig {
         var iam = new AiravataServerProperties.Security.Iam(
                 true, // enabled
                 serverUrl,
+                "default", // realm
                 "airavata-client", // default client ID
                 "secret", // will be configured per test
                 new AiravataServerProperties.Security.Iam.Super(ADMIN_USERNAME, ADMIN_PASSWORD));
@@ -241,7 +243,9 @@ public class KeycloakTestConfig {
 
         var services = new AiravataServerProperties.Services(
                 new AiravataServerProperties.Services.Thrift(false, null),
-                new AiravataServerProperties.Services.Rest(false, null),
+                new AiravataServerProperties.Services.Http(new AiravataServerProperties.Services.Http.Server(8080)),
+                new AiravataServerProperties.Services.Grpc(new AiravataServerProperties.Services.Grpc.Server(9090)),
+                new AiravataServerProperties.Services.Rest(false),
                 null,
                 null,
                 null,

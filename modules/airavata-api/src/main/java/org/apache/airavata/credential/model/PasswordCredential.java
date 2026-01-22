@@ -26,6 +26,7 @@ import org.apache.airavata.credential.Credential;
  * Domain model: PasswordCredential
  */
 public class PasswordCredential extends Credential {
+    private static final long serialVersionUID = 1L;
     private String gatewayId;
     private String portalUserName;
     private String loginUserName;

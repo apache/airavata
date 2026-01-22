@@ -39,7 +39,7 @@ public class ProjectHandler {
 
     public String createProject(String name, String owner, String gatewayId, String description) {
         try {
-            Project project = new Project();
+            var project = new Project();
             project.setName(name);
             project.setOwner(owner);
             project.setGatewayId(gatewayId);

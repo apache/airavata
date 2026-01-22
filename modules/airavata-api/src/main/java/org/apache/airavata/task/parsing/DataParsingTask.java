@@ -20,15 +20,17 @@
 package org.apache.airavata.task.parsing;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.LogContainerCmd;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.PullResponseItem;
+import com.github.dockerjava.api.model.WaitResponse;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.command.LogContainerResultCallback;
-import com.github.dockerjava.core.command.PullImageResultCallback;
-import com.github.dockerjava.core.command.WaitContainerResultCallback;
+import com.github.dockerjava.core.DockerClientImpl;
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -279,27 +281,37 @@ public class DataParsingTask extends AbstractTask {
             String localOutputDir,
             Map<String, String> properties)
             throws ApplicationSettingsException {
-        DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
-
-        DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+        var config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+        var httpClient = new ApacheDockerHttpClient.Builder()
+                .dockerHost(config.getDockerHost())
+                .sslConfig(config.getSSLConfig())
+                .build();
+        DockerClient dockerClient = DockerClientImpl.getInstance(config, httpClient);
 
         logger.info("Pulling image " + parser.getImageName());
-        dockerClient
-                .pullImageCmd(parser.getImageName().split(":")[0])
-                .withTag(parser.getImageName().split(":")[1])
-                .exec(new PullImageResultCallback())
-                .awaitSuccess();
+        try {
+            dockerClient
+                    .pullImageCmd(parser.getImageName().split(":")[0])
+                    .withTag(parser.getImageName().split(":")[1])
+                    .exec(new ResultCallback.Adapter<PullResponseItem>())
+                    .awaitCompletion();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Image pull interrupted", e);
+        }
 
         logger.info("Successfully pulled image " + parser.getImageName());
 
-        String commands[] = parser.getExecutionCommand().split(" ");
+        String[] commands = parser.getExecutionCommand().split(" ");
+        var hostConfig = HostConfig.newHostConfig()
+                .withBinds(
+                        Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
+                        Bind.parse(localOutputDir + ":" + parser.getOutputDirPath()));
         CreateContainerResponse containerResponse = dockerClient
                 .createContainerCmd(parser.getImageName())
                 .withCmd(commands)
                 .withName(containerId)
-                .withBinds(
-                        Bind.parse(localInputDir + ":" + parser.getInputDirPath()),
-                        Bind.parse(localOutputDir + ":" + parser.getOutputDirPath()))
+                .withHostConfig(hostConfig)
                 .withTty(true)
                 .withAttachStdin(true)
                 .withAttachStdout(true)
@@ -328,7 +340,7 @@ public class DataParsingTask extends AbstractTask {
 
             try {
                 logContainerCmd
-                        .exec(new LogContainerResultCallback() {
+                        .exec(new ResultCallback.Adapter<Frame>() {
                             @Override
                             public void onNext(Frame item) {
                                 dockerLogs.append(item.toString());
@@ -337,14 +349,25 @@ public class DataParsingTask extends AbstractTask {
                         })
                         .awaitCompletion();
             } catch (InterruptedException e) {
-                logger.error("Interrupted while reading container log" + e.getMessage());
+                logger.error("Interrupted while reading container log: " + e.getMessage());
             }
 
             logger.info("Waiting for the container to stop");
-            Integer statusCode = dockerClient
-                    .waitContainerCmd(containerResponse.getId())
-                    .exec(new WaitContainerResultCallback())
-                    .awaitStatusCode();
+            var statusCodeHolder = new java.util.concurrent.atomic.AtomicInteger(-1);
+            var latch = new java.util.concurrent.CountDownLatch(1);
+            dockerClient.waitContainerCmd(containerResponse.getId()).exec(new ResultCallback.Adapter<WaitResponse>() {
+                @Override
+                public void onNext(WaitResponse response) {
+                    statusCodeHolder.set(response.getStatusCode() != null ? response.getStatusCode() : -1);
+                    latch.countDown();
+                }
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            Integer statusCode = statusCodeHolder.get();
             logger.info("Container " + containerResponse.getId() + " exited with status code " + statusCode);
             logger.info("Container logs " + dockerLogs.toString());
         }

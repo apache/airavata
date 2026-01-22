@@ -26,7 +26,6 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.CrudType;
 import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -35,13 +34,12 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.dapr.messaging.Dispatcher;
+import org.apache.airavata.orchestrator.internal.messaging.Dispatcher;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.mappers.UserProfileMapper;
 import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.profile.utils.keycloak.KeycloakRestClient;
-import org.apache.airavata.profile.utils.keycloak.dto.RoleRepresentation;
 import org.apache.airavata.profile.utils.keycloak.dto.UserRepresentation;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.security.model.AuthzToken;
@@ -79,7 +77,7 @@ public class IamAdminService {
      * Injects the properties so the Keycloak client can access the server URL and credentials.
      */
     private TenantManagementKeycloakImpl createKeycloakClient() {
-        TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl(properties);
+        var client = new TenantManagementKeycloakImpl(properties);
         return client;
     }
 
@@ -164,8 +162,8 @@ public class IamAdminService {
             String lastName,
             String newPassword)
             throws IamAdminServicesException {
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (keycloakclient.createUser(
                     authzToken.getAccessToken(), gatewayId, username, emailAddress, firstName, lastName, newPassword))
@@ -182,18 +180,18 @@ public class IamAdminService {
     @Transactional
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username)) {
                 // Check if user profile exists, if not create it
-                String lowerUsername = username.toLowerCase();
-                boolean userProfileExists = userProfileRepository
+                var lowerUsername = username.toLowerCase();
+                var userProfileExists = userProfileRepository
                         .findByUserIdAndGatewayId(lowerUsername, gatewayId)
                         .isPresent();
                 if (!userProfileExists) {
                     // Load basic user profile information from Keycloak and then save in UserProfileRepository
-                    UserProfile userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
+                    var userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
                     userProfile.setUserId(lowerUsername);
                     userProfile.setAiravataInternalUserId(lowerUsername + "@" + gatewayId);
                     userProfile.setCreationTime(
@@ -222,8 +220,8 @@ public class IamAdminService {
 
     public boolean isUserEnabled(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.isUserAccountEnabled(authzToken.getAccessToken(), gatewayId, username);
         } catch (IamAdminServicesException ex) {
@@ -236,8 +234,8 @@ public class IamAdminService {
 
     public boolean isUserExist(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.isUserExist(authzToken.getAccessToken(), gatewayId, username);
         } catch (IamAdminServicesException ex) {
@@ -255,8 +253,8 @@ public class IamAdminService {
             up.setGatewayId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
             return up;
         }
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
         } catch (IamAdminServicesException ex) {
@@ -270,8 +268,18 @@ public class IamAdminService {
     public List<UserProfile> getUsers(AuthzToken authzToken, int offset, int limit, String search)
             throws IamAdminServicesException {
         if (!isIamConfigured()) return java.util.Collections.emptyList();
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        
+        // Check if gatewayId is null or empty - this indicates IAM isn't properly configured for this gateway
+        if (gatewayId == null || gatewayId.isEmpty()) {
+            String msg = "Gateway ID (realm) is not configured in the authorization token. "
+                    + "The Users API requires a gateway to be set up with IAM. "
+                    + "Please ensure the gateway is properly configured with IAM settings.";
+            logger.warn(msg);
+            throw new IamAdminServicesException(msg);
+        }
+        
         try {
             return keycloakclient.getUsers(authzToken.getAccessToken(), gatewayId, offset, limit, search);
         } catch (IamAdminServicesException ex) {
@@ -284,8 +292,8 @@ public class IamAdminService {
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword)
             throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             if (keycloakclient.resetUserPassword(authzToken.getAccessToken(), gatewayId, username, newPassword))
                 return true;
@@ -300,8 +308,8 @@ public class IamAdminService {
 
     public List<UserProfile> findUsers(AuthzToken authzToken, String email, String userId)
             throws IamAdminServicesException {
-        TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        var keycloakclient = createKeycloakClient();
+        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
             return keycloakclient.findUser(authzToken.getAccessToken(), gatewayId, email, userId);
         } catch (IamAdminServicesException ex) {
@@ -318,10 +326,10 @@ public class IamAdminService {
             return;
         }
         try {
-            TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
+            var keycloakclient = createKeycloakClient();
             keycloakclient.setProperties(properties);
-            String username = userDetails.getUserId();
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var username = userDetails.getUserId();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);
         } catch (IamAdminServicesException ex) {
             String msg = String.format(
@@ -334,8 +342,8 @@ public class IamAdminService {
 
     public boolean deleteUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
         try {
-            TenantManagementKeycloakImpl keycloakclient = createKeycloakClient();
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var keycloakclient = createKeycloakClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
         } catch (IamAdminServicesException ex) {
             String msg = String.format("Error while deleting user=%s in IAM backend: %s", username, ex.getMessage());
@@ -347,20 +355,19 @@ public class IamAdminService {
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
             throws IamAdminServicesException, RegistryException, CredentialStoreException {
         try {
-            KeycloakRestClient client = createKeycloakRestClient();
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            String adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+            var client = createKeycloakRestClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            var adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
 
-            List<UserRepresentation> users =
-                    client.searchUsers(gatewayId, username, null, null, null, 0, 1, adminToken);
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, adminToken);
             if (users.isEmpty()) {
                 logger.error("User not found: " + username);
                 return false;
             }
 
-            UserRepresentation user = users.get(0);
-            RoleRepresentation role = client.getRole(gatewayId, roleName, adminToken);
+            var user = users.get(0);
+            var role = client.getRole(gatewayId, roleName, adminToken);
             if (role == null) {
                 logger.error("Role not found: " + roleName);
                 return false;
@@ -378,20 +385,19 @@ public class IamAdminService {
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
             throws IamAdminServicesException, RegistryException, CredentialStoreException {
         try {
-            KeycloakRestClient client = createKeycloakRestClient();
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            String adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+            var client = createKeycloakRestClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            var adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
 
-            List<UserRepresentation> users =
-                    client.searchUsers(gatewayId, username, null, null, null, 0, 1, adminToken);
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, adminToken);
             if (users.isEmpty()) {
                 logger.error("User not found: " + username);
                 return false;
             }
 
-            UserRepresentation user = users.get(0);
-            RoleRepresentation role = client.getRole(gatewayId, roleName, adminToken);
+            var user = users.get(0);
+            var role = client.getRole(gatewayId, roleName, adminToken);
             if (role == null) {
                 logger.error("Role not found: " + roleName);
                 return false;
@@ -409,14 +415,14 @@ public class IamAdminService {
     public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
             throws IamAdminServicesException, RegistryException, CredentialStoreException {
         try {
-            KeycloakRestClient client = createKeycloakRestClient();
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            String adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+            var client = createKeycloakRestClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            var adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
 
-            int totalUserCount = client.getUserCount(gatewayId, adminToken);
-            List<UserRepresentation> allUsers = new ArrayList<>();
-            int userBatchSize = 100;
+            var totalUserCount = client.getUserCount(gatewayId, adminToken);
+            var allUsers = new ArrayList<UserRepresentation>();
+            var userBatchSize = 100;
             for (int start = 0; start < totalUserCount; start += userBatchSize) {
                 allUsers.addAll(
                         client.searchUsers(gatewayId, null, null, null, null, start, userBatchSize, adminToken));
@@ -428,12 +434,12 @@ public class IamAdminService {
                 return Long.compare(bTime, aTime);
             });
 
-            List<UserRepresentation> mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
-            List<UserProfile> usersWithRole = new ArrayList<>();
+            var mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
+            var usersWithRole = new ArrayList<UserProfile>();
 
-            for (UserRepresentation user : mostRecentUsers) {
-                List<RoleRepresentation> roles = client.getUserRealmRoles(gatewayId, user.getId(), adminToken);
-                for (RoleRepresentation role : roles) {
+            for (var user : mostRecentUsers) {
+                var roles = client.getUserRealmRoles(gatewayId, user.getId(), adminToken);
+                for (var role : roles) {
                     if (role.getName().equals(roleName)) {
                         usersWithRole.add(convertUserRepresentationToUserProfile(user, gatewayId));
                         break;
@@ -450,7 +456,7 @@ public class IamAdminService {
     }
 
     private UserProfile convertUserRepresentationToUserProfile(UserRepresentation user, String tenantId) {
-        UserProfile profile = new UserProfile();
+        var profile = new UserProfile();
         profile.setAiravataInternalUserId(user.getUsername() + "@" + tenantId);
         profile.setGatewayId(tenantId);
         profile.setUserId(user.getUsername());
@@ -471,7 +477,7 @@ public class IamAdminService {
     }
 
     private PasswordCredential getSuperAdminPasswordCredential() throws IamAdminServicesException {
-        PasswordCredential isSuperAdminCredentials = new PasswordCredential();
+        var isSuperAdminCredentials = new PasswordCredential();
 
         // Get super admin credentials, with fallback to defaults for testing
         String username = null;
@@ -506,7 +512,7 @@ public class IamAdminService {
 
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId)
             throws IamAdminServicesException, RegistryException, CredentialStoreException {
-        GatewayResourceProfile gwrp = registryService.getGatewayResourceProfile(tenantId);
+        var gwrp = registryService.getGatewayResourceProfile(tenantId);
         return credentialStoreService.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 }

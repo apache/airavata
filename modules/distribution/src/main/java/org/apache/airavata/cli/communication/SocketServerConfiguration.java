@@ -21,6 +21,7 @@ package org.apache.airavata.cli.communication;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import java.io.File;
 import java.io.IOException;
 import org.apache.airavata.cli.handlers.ServiceHandler;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class SocketServerConfiguration {
             throw new IllegalStateException(
                     "AIRAVATA_HOME environment variable or airavata.home system property must be set.");
         }
-        String configDir = new java.io.File(airavataHome, "conf").getAbsolutePath();
+        var configDir = new File(airavataHome, "conf").getAbsolutePath();
         socketManager = new ServiceSocketManager(configDir, serviceHandler);
 
         if (socketManager.isSocketLocked()) {

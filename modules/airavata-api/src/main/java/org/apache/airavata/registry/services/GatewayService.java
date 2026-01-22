@@ -21,7 +21,6 @@ package org.apache.airavata.registry.services;
 
 import java.util.List;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.registry.entities.expcatalog.GatewayEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.GatewayMapper;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayRepository;
@@ -44,13 +43,13 @@ public class GatewayService {
     }
 
     public Gateway getGateway(String gatewayId) throws RegistryException {
-        GatewayEntity entity = gatewayRepository.findById(gatewayId).orElse(null);
+        var entity = gatewayRepository.findById(gatewayId).orElse(null);
         if (entity == null) return null;
         return gatewayMapper.toModel(entity);
     }
 
     public List<Gateway> getAllGateways() throws RegistryException {
-        List<GatewayEntity> entities = gatewayRepository.findAll();
+        var entities = gatewayRepository.findAll();
         return gatewayMapper.toModelList(entities);
     }
 
@@ -59,13 +58,13 @@ public class GatewayService {
     }
 
     public String addGateway(Gateway gateway) throws RegistryException {
-        GatewayEntity entity = gatewayMapper.toEntity(gateway);
-        GatewayEntity saved = gatewayRepository.save(entity);
+        var entity = gatewayMapper.toEntity(gateway);
+        var saved = gatewayRepository.save(entity);
         return saved.getGatewayId();
     }
 
     public void updateGateway(String gatewayId, Gateway gateway) throws RegistryException {
-        GatewayEntity entity = gatewayMapper.toEntity(gateway);
+        var entity = gatewayMapper.toEntity(gateway);
         entity.setGatewayId(gatewayId);
         gatewayRepository.save(entity);
     }

@@ -19,17 +19,22 @@
 */
 package org.apache.airavata.task.completing;
 
-import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.common.model.ExperimentCleanupStrategy;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.AiravataTask;
 import org.apache.airavata.task.base.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Completing Task")
@@ -40,12 +45,12 @@ public class CompletingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(CompletingTask.class);
 
     public CompletingTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -64,7 +69,7 @@ public class CompletingTask extends AiravataTask {
 
         try {
             if (getExperimentModel().getCleanUpStrategy() == ExperimentCleanupStrategy.ALWAYS) {
-                AgentAdaptor adaptor = helper.getAdaptorSupport()
+                var adaptor = helper.getAdaptorSupport()
                         .fetchAdaptor(
                                 getTaskContext().getGatewayId(),
                                 getTaskContext().getComputeResourceId(),

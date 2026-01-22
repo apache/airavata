@@ -38,6 +38,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 /**
  * Test configuration using Testcontainers to provide infrastructure services for testing.
@@ -248,7 +249,7 @@ public class TestcontainersConfig {
             // Use emberstack/sftp which supports both ARM64 and AMD64 architectures
             sftpContainer = new GenericContainer<>(DockerImageName.parse("emberstack/sftp:latest"))
                     .withExposedPorts(22)
-                    .withFileSystemBind(configPath.toString(), "/app/config/sftp.json")
+                    .withCopyFileToContainer(MountableFile.forHostPath(configPath), "/app/config/sftp.json")
                     .withReuse(true)
                     // Wait for port 22 to be listening (more reliable than log message)
                     .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
@@ -303,8 +304,34 @@ public class TestcontainersConfig {
     public static synchronized String getKeycloakUrl() {
         if (keycloakContainer == null || !keycloakContainer.isRunning()) {
             logger.info("Starting Keycloak container");
+
+            // Load realm file using test class's classloader (fixes classloader issue)
+            // The testcontainers-keycloak library's withRealmImportFile() uses Application ClassLoader
+            // which doesn't have access to Maven test resources. We work around this by:
+            // 1. Loading the file using the test class's classloader
+            // 2. Copying it to the container's import directory
+            // 3. Keycloak will automatically import it on startup
+            Path realmPath = null;
+            try {
+                try (InputStream realmStream =
+                        TestcontainersConfig.class.getResourceAsStream("/keycloak/realm-default.json")) {
+                    if (realmStream == null) {
+                        throw new IllegalStateException(
+                                "Keycloak realm file /keycloak/realm-default.json not found in test resources");
+                    }
+                    realmPath = Files.createTempFile("realm-default", ".json");
+                    Files.copy(realmStream, realmPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to load Keycloak realm file", e);
+            }
+
+            final Path configPath = realmPath;
+            // Keycloak automatically imports realm files from /opt/keycloak/data/import/ on startup
             keycloakContainer = new KeycloakContainer("keycloak/keycloak:25.0")
-                    .withRealmImportFile("keycloak/realm-default.json")
+                    .withCopyFileToContainer(
+                            org.testcontainers.utility.MountableFile.forHostPath(configPath),
+                            "/opt/keycloak/data/import/realm-default.json")
                     .withAdminUsername("admin")
                     .withAdminPassword("admin")
                     .withReuse(true);
@@ -381,14 +408,26 @@ public class TestcontainersConfig {
         config.setMaximumPoolSize(20); // Increased pool size for unified database
         config.setConnectionTimeout(30000);
         config.setPoolName(poolName);
+        // Configure shutdown behavior to prevent premature closure during Hibernate cleanup
+        // This ensures the DataSource stays open long enough for Hibernate to complete schema cleanup
+        config.setInitializationFailTimeout(-1); // Don't fail on initialization timeout
+        config.setRegisterMbeans(false); // Disable JMX registration to avoid shutdown conflicts
+        // Set longer connection lifetime to prevent premature closure during test cleanup
+        // These values ensure connections stay open during Hibernate's delayed drop actions
+        config.setMaxLifetime(1800000); // 30 minutes - keep connections alive during shutdown
+        config.setIdleTimeout(600000); // 10 minutes idle timeout
+        config.setKeepaliveTime(300000); // 5 minutes - keep connections alive
         logger.info("Creating DataSource '{}' at {}", poolName, container.getJdbcUrl());
         return new HikariDataSource(config);
     }
 
     /**
      * Primary DataSource for all entities.
+     * Configured with destroyMethod = "" to prevent Spring from auto-closing the DataSource
+     * before Hibernate completes its schema cleanup operations during shutdown.
+     * The DataSource will be cleaned up by Testcontainers when the container is removed.
      */
-    @Bean
+    @Bean(destroyMethod = "")
     @Primary
     public DataSource dataSource() {
         return createDataSource(getOrCreateUnifiedContainer(), "AiravataTestPool");

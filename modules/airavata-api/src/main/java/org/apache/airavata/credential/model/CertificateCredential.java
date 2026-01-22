@@ -28,6 +28,7 @@ import org.apache.airavata.credential.Credential;
  * Domain model: CertificateCredential
  */
 public class CertificateCredential extends Credential {
+    private static final long serialVersionUID = 1L;
     private CommunityUser communityUser;
     private String x509Cert;
     private String notAfter;

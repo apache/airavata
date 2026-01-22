@@ -64,7 +64,7 @@ public class StorageHandler {
             String passphrase) {
         try {
             // Create storage resource
-            StorageResourceDescription storageResource = new StorageResourceDescription();
+            var storageResource = new StorageResourceDescription();
             storageResource.setHostName(hostname);
             storageResource.setStorageResourceDescription("Storage resource: " + name);
             storageResource.setEnabled(true);
@@ -76,7 +76,7 @@ public class StorageHandler {
 
                 // Add SCP data movement interface
                 try {
-                    SCPDataMovement scpDataMovement = new SCPDataMovement();
+                    var scpDataMovement = new SCPDataMovement();
                     scpDataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
                     scpDataMovement.setSshPort(port);
                     registryService.addSCPDataMovementDetails(
@@ -93,7 +93,7 @@ public class StorageHandler {
             }
 
             // Create SSH credentials
-            SSHCredential sshCredential = new SSHCredential();
+            var sshCredential = new SSHCredential();
             sshCredential.setGatewayId(gatewayId);
             sshCredential.setUsername(loginUsername);
             sshCredential.setDescription("Storage resource credentials for " + name);
@@ -101,10 +101,10 @@ public class StorageHandler {
             if (sshKeyPath != null && !sshKeyPath.trim().isEmpty()) {
                 // Load existing key
                 try {
-                    String privateKey = new String(Files.readAllBytes(Paths.get(sshKeyPath)));
+                    var privateKey = new String(Files.readAllBytes(Paths.get(sshKeyPath)));
                     sshCredential.setPrivateKey(privateKey);
                     // Try to load public key
-                    String publicKeyPath = sshKeyPath + ".pub";
+                    var publicKeyPath = sshKeyPath + ".pub";
                     if (new File(publicKeyPath).exists()) {
                         sshCredential.setPublicKey(new String(Files.readAllBytes(Paths.get(publicKeyPath))));
                     }
@@ -121,7 +121,7 @@ public class StorageHandler {
 
             // Validate connection
             System.out.println("Validating storage resource connection...");
-            SSHCredential storedCredential = credentialStoreService.getSSHCredential(credentialToken, gatewayId);
+            var storedCredential = credentialStoreService.getSSHCredential(credentialToken, gatewayId);
             boolean isValid = SSHUtil.validate(hostname, port, loginUsername, storedCredential);
             if (isValid) {
                 System.out.println("✓ Storage resource connection validated successfully");

@@ -62,7 +62,7 @@ public class RestClientConfig {
     @Bean
     @Primary
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        RestTemplate restTemplate = builder.connectTimeout(Duration.ofSeconds(30))
+        var restTemplate = builder.connectTimeout(Duration.ofSeconds(30))
                 .readTimeout(Duration.ofSeconds(60))
                 .build();
 
@@ -90,22 +90,21 @@ public class RestClientConfig {
             return;
         }
 
-        String trustStorePath = properties.security().tls().keystore().path();
-        String trustStorePassword = properties.security().tls().keystore().password();
+        var trustStorePath = properties.security().tls().keystore().path();
+        var trustStorePassword = properties.security().tls().keystore().password();
 
         SSLContext sslContext;
 
         if (trustStorePath != null && !trustStorePath.isEmpty() && new File(trustStorePath).exists()) {
             // Use configured trust store
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            try (FileInputStream fis = new FileInputStream(trustStorePath)) {
+            var trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (var fis = new FileInputStream(trustStorePath)) {
                 trustStore.load(fis, trustStorePassword != null ? trustStorePassword.toCharArray() : null);
             }
 
-            TrustManagerFactory trustManagerFactory =
-                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            var trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(trustStore);
-            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+            var trustManagers = trustManagerFactory.getTrustManagers();
 
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, trustManagers, new java.security.SecureRandom());
@@ -121,7 +120,7 @@ public class RestClientConfig {
      * Create SSLContext that trusts all certificates (for development/test only).
      */
     private SSLContext createTrustAllSSLContext() throws Exception {
-        TrustManager[] trustAllCerts = new TrustManager[] {
+        var trustAllCerts = new TrustManager[] {
             new X509TrustManager() {
                 @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -135,7 +134,7 @@ public class RestClientConfig {
                 public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
             }
         };
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+        var sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
         return sslContext;
     }
@@ -150,7 +149,7 @@ public class RestClientConfig {
         // which respects JVM-level SSL configuration
         // For advanced features like connection pooling, Spring Boot auto-configures
         // HttpComponentsClientHttpRequestFactory when httpclient5 is on classpath
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        var requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(30000);
         requestFactory.setReadTimeout(60000);
 

@@ -60,8 +60,19 @@ public class GroupManagerService {
     }
 
     public String createGroup(AuthzToken authzToken, GroupModel groupModel)
-            throws GroupManagerServiceException, SharingRegistryException {
-        // TODO Validations for authorization
+            throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
+        // Validate authorization: user must be authenticated and belong to the gateway
+        if (authzToken == null
+                || authzToken.getClaimsMap() == null
+                || authzToken.getClaimsMap().isEmpty()) {
+            throw new AuthorizationException("Invalid authorization token");
+        }
+        String userId = getUserId(authzToken);
+        String domainId = getDomainId(authzToken);
+        if (userId == null || userId.isEmpty() || domainId == null || domainId.isEmpty()) {
+            throw new AuthorizationException("Invalid user or gateway information in authorization token");
+        }
+
         var sharingUserGroup = new UserGroup();
         sharingUserGroup.setGroupId(UUID.randomUUID().toString());
         sharingUserGroup.setName(groupModel.getName());
@@ -211,11 +222,22 @@ public class GroupManagerService {
     }
 
     private String getDomainId(AuthzToken authzToken) {
+        if (authzToken == null || authzToken.getClaimsMap() == null) {
+            return null;
+        }
         return authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
     }
 
     private String getUserId(AuthzToken authzToken) {
-        return authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + getDomainId(authzToken);
+        if (authzToken == null || authzToken.getClaimsMap() == null) {
+            return null;
+        }
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        String domainId = getDomainId(authzToken);
+        if (userName == null || domainId == null) {
+            return null;
+        }
+        return userName + "@" + domainId;
     }
 
     private List<GroupModel> convertToGroupModels(List<UserGroup> userGroups, SharingRegistryService sharingService)
@@ -272,8 +294,10 @@ public class GroupManagerService {
             SharingRegistryService sharingService, String domainId, List<String> userIds, String groupId)
             throws SharingRegistryException {
 
-        // FIXME: workaround for UserProfiles that failed to sync to the sharing
-        // registry: create any missing users in the sharing registry
+        // Workaround for UserProfiles that failed to sync to the sharing registry:
+        // Create any missing users in the sharing registry to ensure group membership can be established.
+        // This handles cases where user profiles exist in the profile service but haven't been
+        // synchronized to the sharing registry yet.
         for (String userId : userIds) {
             if (!sharingService.isUserExists(domainId, userId)) {
                 User user = new User();

@@ -20,7 +20,6 @@
 package org.apache.airavata.orchestrator.validator;
 
 import java.util.ArrayList;
-import java.util.List;
 import org.apache.airavata.common.exception.ValidationResults;
 import org.apache.airavata.common.exception.ValidatorResult;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -41,12 +40,11 @@ public class ExperimentStatusValidator implements JobMetadataValidator {
     private static Logger log = LoggerFactory.getLogger(ExperimentStatusValidator.class);
 
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
-        String error =
-                "During the validation step experiment status should be CREATED, But this experiment status is : ";
-        ValidationResults validationResults = new ValidationResults();
+        var error = "During the validation step experiment status should be CREATED, But this experiment status is : ";
+        var validationResults = new ValidationResults();
         validationResults.setValidationState(true);
-        ValidatorResult validatorResult = new ValidatorResult();
-        List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
+        var validatorResult = new ValidatorResult();
+        var validatorResultList = new ArrayList<ValidatorResult>();
         if (!experiment.getExperimentStatus().get(0).getState().equals(ExperimentState.CREATED)) {
             error += experiment.getExperimentStatus().get(0).getState().toString();
             log.error(error);

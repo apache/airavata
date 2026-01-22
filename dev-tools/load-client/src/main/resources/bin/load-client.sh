@@ -22,7 +22,7 @@
 
 # Client-specific configuration
 MAIN_CLASS="org.apache.airavata.tools.load.LoadClient"
-JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_HOME}/conf -Dairavata.home=${AIRAVATA_HOME}"
+JAVA_OPTS="-Dairavata.config.dir=${AIRAVATA_CONFIG_DIR} -Dairavata.home=${AIRAVATA_HOME}"
 
 # Parse client-specific arguments
 while (($# > 0)); do

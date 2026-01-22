@@ -58,7 +58,7 @@ public class UserGroupService {
     }
 
     public UserGroup get(UserGroupPK pk) throws SharingRegistryException {
-        UserGroupEntity entity = userGroupRepository.findById(pk).orElse(null);
+        var entity = userGroupRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return userGroupMapper.toModel(entity);
     }
@@ -68,8 +68,8 @@ public class UserGroupService {
     }
 
     public UserGroup update(UserGroup userGroup) throws SharingRegistryException {
-        UserGroupEntity entity = userGroupMapper.toEntity(userGroup);
-        UserGroupEntity saved = userGroupRepository.save(entity);
+        var entity = userGroupMapper.toEntity(userGroup);
+        var saved = userGroupRepository.save(entity);
         return userGroupMapper.toModel(saved);
     }
 
@@ -139,7 +139,7 @@ public class UserGroupService {
         predicates.add(cb.equal(groupRoot.get("groupCardinality"), GroupCardinality.MULTI_USER.toString()));
 
         if (sharingTypes.length > 0) {
-            List<String> sharingTypeNames =
+            var sharingTypeNames =
                     Arrays.stream(sharingTypes).map(SharingType::name).toList();
             predicates.add(sharingRoot.get("sharingType").in(sharingTypeNames));
         }
@@ -148,12 +148,12 @@ public class UserGroupService {
         query.distinct(true);
         query.orderBy(cb.desc(sharingRoot.get("createdTime")));
 
-        List<UserGroupEntity> entities = entityManager.createQuery(query).getResultList();
+        var entities = entityManager.createQuery(query).getResultList();
         return userGroupMapper.toModelList(entities);
     }
 
     public boolean isShared(String domainId, String entityId) throws SharingRegistryException {
-        String ownerPermissionTypeId = permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId);
+        var ownerPermissionTypeId = permissionTypeService.getOwnerPermissionTypeIdForDomain(domainId);
         var cb = entityManager.getCriteriaBuilder();
         var query = cb.createQuery(Long.class);
         var groupRoot = query.from(UserGroupEntity.class);

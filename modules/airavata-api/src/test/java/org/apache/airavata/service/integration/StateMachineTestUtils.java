@@ -538,13 +538,13 @@ public class StateMachineTestUtils {
      * This method verifies that all transitions defined in the validator are actually valid.
      */
     public static <S extends Enum<S>> void testAllValidTransitions(
-            org.apache.airavata.statemachine.StateValidator<S> validator) {
-        java.util.Set<org.apache.airavata.statemachine.StateTransition<S>> validTransitions =
+            org.apache.airavata.orchestrator.state.StateValidator<S> validator) {
+        java.util.Set<org.apache.airavata.orchestrator.state.StateTransition<S>> validTransitions =
                 validator.getValidTransitions();
         assertNotNull(validTransitions, "Valid transitions should not be null");
         assertTrue(validTransitions.size() > 0, "Should have at least one valid transition");
 
-        for (org.apache.airavata.statemachine.StateTransition<S> transition : validTransitions) {
+        for (org.apache.airavata.orchestrator.state.StateTransition<S> transition : validTransitions) {
             assertTrue(
                     validator.isValid(transition.from(), transition.to()),
                     "Transition " + transition.from() + " -> " + transition.to() + " should be valid");
@@ -556,7 +556,7 @@ public class StateMachineTestUtils {
      * This method tests common invalid transitions (terminal states, skipping states, etc.).
      */
     public static <S extends Enum<S>> void testInvalidTransitions(
-            org.apache.airavata.statemachine.StateValidator<S> validator,
+            org.apache.airavata.orchestrator.state.StateValidator<S> validator,
             java.util.Set<S> terminalStates,
             S sampleState) {
         // Test that terminal states cannot transition to any other state

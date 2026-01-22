@@ -32,12 +32,12 @@ import java.io.IOException;
 public class AdaptorParams {
 
     public Object loadFromFile(File file) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        var mapper = new ObjectMapper();
         return mapper.readValue(file, this.getClass());
     }
 
     public void writeToFile(File file) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        var mapper = new ObjectMapper();
         mapper.writeValue(file, this);
     }
 }

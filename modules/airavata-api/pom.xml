@@ -107,16 +107,15 @@ under the License.
     <dependency>
       <groupId>com.hierynomus</groupId>
       <artifactId>sshj</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk18on</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcpkix-jdk18on</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <!-- BouncyCastle - required by SSHJ for cipher support -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
     </dependency>
 
     <!-- Database Migration - using Flyway directly (Spring Boot 3.5.3 autoconfigures Flyway when flyway-core is present) -->
@@ -191,6 +190,29 @@ under the License.
       <scope>test</scope>
     </dependency>
     <!-- RabbitMQ/Spring AMQP removed - replaced by Dapr Pub/Sub -->
+    <!-- gRPC dependencies for unified gRPC server configuration -->
+    <dependency>
+      <groupId>org.springframework.grpc</groupId>
+      <artifactId>spring-grpc-spring-boot-starter</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.grpc</groupId>
+          <artifactId>grpc-netty-shaded</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty</artifactId>
+    </dependency>
     <!-- Dapr SDK for Pub/Sub, State, Workflows -->
     <dependency>
       <groupId>io.dapr</groupId>
@@ -241,11 +263,6 @@ under the License.
       <artifactId>api-all</artifactId>
     </dependency>
 
-    <!-- Quartz - using Spring-managed version -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-quartz</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
@@ -284,6 +301,10 @@ under the License.
           <artifactId>jersey-hk2</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport-httpclient5</artifactId>
     </dependency>
     <!-- snakeyaml provided transitively by Spring Boot (for YAML config support) -->
     <!-- jakarta.mail-api provided by spring-boot-starter-mail -->
@@ -438,6 +459,9 @@ under the License.
         <configuration>
           <release>25</release>
           <fork>true</fork>
+          <compilerArgs>
+            <arg>-Xlint:-dangling-doc-comments</arg>
+          </compilerArgs>
           <annotationProcessorPaths>
             <path>
               <groupId>org.mapstruct</groupId>
@@ -468,27 +492,6 @@ under the License.
         </executions>
       </plugin>
 
-      <!-- Strip generated date annotations -->
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>replace</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>${basedir}/src/main/java/org/apache/airavata/**/*.java</include>
-          </includes>
-          <token>, date = ".*"</token>
-          <value> </value>
-        </configuration>
-      </plugin>
-
       <!-- Run Tests  -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -497,12 +500,6 @@ under the License.
         <configuration>
           <failIfNoTests>false</failIfNoTests>
           <systemPropertyVariables>
-            <credential.module.directory>${basedir}</credential.module.directory>
-            <airavata.config.dir>${project.basedir}/src/test/resources</airavata.config.dir>
-            <!-- Configure Testcontainers to use nerdctl/containerd socket -->
-            <TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>${user.home}/.rd/docker.sock</TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>
-            <!-- Disable Ryuk as it may not work with containerd -->
-            <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
           </systemPropertyVariables>
           <argLine>@{argLine} -Xmx2048m --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
           <includes>
@@ -596,21 +593,9 @@ under the License.
     <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
     <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
     <testResources>
-      <!-- Shared test resources from root (application.properties) - loaded first as base -->
+      <!-- All test resources are now in root -->
       <testResource>
         <directory>${project.basedir}/../../src/test/resources</directory>
-      </testResource>
-      <!-- Module-specific test resources (can override shared properties) -->
-      <testResource>
-        <directory>${project.basedir}/src/test/resources</directory>
-      </testResource>
-      <!-- Include Flyway migrations from distribution module -->
-      <testResource>
-        <directory>${project.basedir}/../distribution/src/main/resources/conf</directory>
-        <targetPath>conf</targetPath>
-        <includes>
-          <include>db/migration/**/*.sql</include>
-        </includes>
       </testResource>
     </testResources>
   </build>

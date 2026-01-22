@@ -48,7 +48,7 @@ public class StorageResourceController {
     @GetMapping
     public ResponseEntity<?> getAllStorageResources() {
         try {
-            Map<String, String> storageResources = storageResourceService.getAllStorageResourceIdList();
+            var storageResources = storageResourceService.getAllStorageResourceIdList();
             return ResponseEntity.ok(storageResources);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -58,7 +58,7 @@ public class StorageResourceController {
     @GetMapping("/{storageResourceId}")
     public ResponseEntity<?> getStorageResource(@PathVariable String storageResourceId) {
         try {
-            StorageResourceDescription storageResource = storageResourceService.getStorageResource(storageResourceId);
+            var storageResource = storageResourceService.getStorageResource(storageResourceId);
             if (storageResource == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -71,7 +71,7 @@ public class StorageResourceController {
     @PostMapping
     public ResponseEntity<?> createStorageResource(@RequestBody StorageResourceDescription storageResource) {
         try {
-            String storageResourceId = storageResourceService.addStorageResource(storageResource);
+            var storageResourceId = storageResourceService.addStorageResource(storageResource);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("storageResourceId", storageResourceId));
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

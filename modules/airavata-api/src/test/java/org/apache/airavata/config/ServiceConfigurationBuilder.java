@@ -59,14 +59,14 @@ public class ServiceConfigurationBuilder {
     private boolean dbeventService = true;
     private boolean telemetryService = true;
 
-    // Port configuration for Thrift and REST API services
+    // Port configuration for Thrift and HTTP services
     private int thriftPort = 8930;
-    private int restPort = 8082;
+    private int httpPort = 8080; // Unified HTTP server port (replaces restPort)
     // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
     // services.thrift.server.port
 
     /**
-     * Enable Thrift API service.
+     * Enable Thrift Server.
      */
     public ServiceConfigurationBuilder enableThriftApi() {
         this.thriftApi = true;
@@ -74,7 +74,7 @@ public class ServiceConfigurationBuilder {
     }
 
     /**
-     * Disable Thrift API service.
+     * Disable Thrift Server.
      */
     public ServiceConfigurationBuilder disableThriftApi() {
         this.thriftApi = false;
@@ -82,7 +82,7 @@ public class ServiceConfigurationBuilder {
     }
 
     /**
-     * Enable REST API service.
+     * Enable Airavata API service.
      */
     public ServiceConfigurationBuilder enableRestApi() {
         this.restApi = true;
@@ -90,7 +90,7 @@ public class ServiceConfigurationBuilder {
     }
 
     /**
-     * Disable REST API service.
+     * Disable Airavata API service.
      */
     public ServiceConfigurationBuilder disableRestApi() {
         this.restApi = false;
@@ -289,7 +289,7 @@ public class ServiceConfigurationBuilder {
     }
 
     /**
-     * Set Thrift API service port.
+     * Set Thrift Server port.
      */
     public ServiceConfigurationBuilder withThriftPort(int port) {
         this.thriftPort = port;
@@ -297,10 +297,10 @@ public class ServiceConfigurationBuilder {
     }
 
     /**
-     * Set REST API service port.
+     * Set Airavata API service port.
      */
     public ServiceConfigurationBuilder withRestPort(int port) {
-        this.restPort = port;
+        this.httpPort = port;
         return this;
     }
 
@@ -406,11 +406,14 @@ public class ServiceConfigurationBuilder {
         props.put("airavata.services.dbus.enabled", String.valueOf(dbeventService));
         props.put("airavata.services.telemetry.enabled", String.valueOf(telemetryService));
 
-        // Thrift and REST API ports
+        // Thrift, HTTP, and gRPC ports
         // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
         // airavata.services.thrift.server.port
+        // All HTTP services (Airavata API, File API, Agent API, Research API) are on airavata.services.http.server.port
+        // All gRPC services (Agent gRPC, Research gRPC) are on airavata.services.grpc.server.port
         props.put("airavata.services.thrift.server.port", String.valueOf(thriftPort));
-        props.put("airavata.services.rest.server.port", String.valueOf(restPort));
+        props.put("airavata.services.http.server.port", String.valueOf(httpPort));
+        props.put("airavata.services.grpc.server.port", "9090");
 
         return props;
     }
@@ -438,11 +441,14 @@ public class ServiceConfigurationBuilder {
         props.setProperty("airavata.services.dbus.enabled", String.valueOf(dbeventService));
         props.setProperty("airavata.services.telemetry.enabled", String.valueOf(telemetryService));
 
-        // Thrift and REST API ports
+        // Thrift, HTTP, and gRPC ports
         // Note: All Thrift services (Profile, Orchestrator, Registry, Vault, Sharing) are multiplexed on
         // airavata.services.thrift.server.port
+        // All HTTP services (Airavata API, File API, Agent API, Research API) are on airavata.services.http.server.port
+        // All gRPC services (Agent gRPC, Research gRPC) are on airavata.services.grpc.server.port
         props.setProperty("airavata.services.thrift.server.port", String.valueOf(thriftPort));
-        props.setProperty("airavata.services.rest.server.port", String.valueOf(restPort));
+        props.setProperty("airavata.services.http.server.port", String.valueOf(httpPort));
+        props.setProperty("airavata.services.grpc.server.port", "9090");
 
         return props;
     }

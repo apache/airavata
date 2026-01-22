@@ -35,7 +35,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.dapr.messaging.Dispatcher;
+import org.apache.airavata.orchestrator.internal.messaging.Dispatcher;
 import org.apache.airavata.profile.entities.ProfileGatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
 import org.apache.airavata.profile.mappers.GatewayMapper;

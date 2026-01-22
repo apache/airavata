@@ -61,7 +61,7 @@ public class ComputeSubmissionTracker {
      * @return true if jobs were submitted within the time window, false otherwise
      */
     public boolean hasRecentSubmissions(String computeResourceId, long timeWindowSeconds) {
-        Long lastSubmissionTime = getLastSubmissionTime(computeResourceId);
+        var lastSubmissionTime = getLastSubmissionTime(computeResourceId);
         if (lastSubmissionTime == null) {
             return false;
         }

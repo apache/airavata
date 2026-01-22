@@ -65,24 +65,24 @@ log "Updating configuration files..."
 # Create conf directory structure
 mkdir -p ./${DIST_NAME}/conf/keystores/
 
-# Copy configuration files from vault (if exists)
-if [ -d "./vault" ]; then
-    if [ -f "./vault/airavata.properties" ]; then
-        cp ./vault/airavata.properties ./${DIST_NAME}/conf/airavata.properties
+# Copy configuration files from conf (if exists)
+if [ -d "./conf" ]; then
+    if [ -f "./conf/airavata.properties" ]; then
+        cp ./conf/airavata.properties ./${DIST_NAME}/conf/airavata.properties
         log "Configuration file updated."
     fi
     
-    if [ -f "./vault/airavata.sym.p12" ]; then
-        cp ./vault/airavata.sym.p12 ./${DIST_NAME}/conf/keystores/airavata.sym.p12
+    if [ -f "./conf/airavata.sym.p12" ]; then
+        cp ./conf/airavata.sym.p12 ./${DIST_NAME}/conf/keystores/airavata.sym.p12
         log "Keystore file updated."
     fi
     
-    if [ -f "./vault/logback.xml" ]; then
-        cp ./vault/logback.xml ./${DIST_NAME}/conf/logback.xml
+    if [ -f "./conf/logback.xml" ]; then
+        cp ./conf/logback.xml ./${DIST_NAME}/conf/logback.xml
         log "Logback configuration updated."
     fi
 else
-    log "WARNING: vault directory not found. Configuration files not updated."
+    log "WARNING: conf directory not found. Configuration files not updated."
     log "Please ensure configuration is set up before starting the server."
 fi
 

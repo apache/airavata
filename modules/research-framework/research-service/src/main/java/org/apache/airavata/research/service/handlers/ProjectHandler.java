@@ -22,8 +22,6 @@ package org.apache.airavata.research.service.handlers;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.airavata.research.service.dto.CreateProjectRequest;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
@@ -63,26 +61,26 @@ public class ProjectHandler {
     }
 
     public Project createProject(CreateProjectRequest createProjectRequest) {
-        String userId = UserContext.userId();
+        var userId = UserContext.userId();
         if (!userId.equalsIgnoreCase(createProjectRequest.getOwnerId())) {
             throw new RuntimeException("User is not owner of this project");
         }
 
-        Project project = new Project();
+        var project = new Project();
         project.setName(createProjectRequest.getName());
         project.setOwnerId(createProjectRequest.getOwnerId());
 
-        Optional<Resource> resource = resourceRepository.findById(createProjectRequest.getRepositoryId());
+        var resource = resourceRepository.findById(createProjectRequest.getRepositoryId());
         if (resource.isEmpty()) {
             throw new RuntimeException("Repository not found");
         } else if (!resource.get().getType().equals(ResourceTypeEnum.REPOSITORY)) {
             throw new RuntimeException(
                     "RepositoryId: " + createProjectRequest.getRepositoryId() + " is not a repository");
         }
-        RepositoryResource repositoryResource = (RepositoryResource) resource.get();
+        var repositoryResource = (RepositoryResource) resource.get();
         project.setRepositoryResource(repositoryResource);
 
-        List<Resource> resources = resourceRepository.findAllById(createProjectRequest.getDatasetIds());
+        var resources = resourceRepository.findAllById(createProjectRequest.getDatasetIds());
         if (resources.size() != createProjectRequest.getDatasetIds().size()) {
             throw new RuntimeException("At least one of the data set ids is not a valid resource id");
         }
@@ -92,12 +90,12 @@ public class ProjectHandler {
             }
         }
 
-        List<DatasetResource> datasetResourcesList = resources.stream()
+        var datasetResourcesList = resources.stream()
                 .filter(r -> r instanceof DatasetResource)
                 .map(r -> (DatasetResource) r)
                 .collect(Collectors.toList());
 
-        Set<DatasetResource> datasetResourcesSet = new HashSet<>(datasetResourcesList);
+        var datasetResourcesSet = new HashSet<>(datasetResourcesList);
         project.setDatasetResources(datasetResourcesSet);
         project.setState(StateEnum.ACTIVE);
         projectRepository.save(project);
@@ -113,14 +111,14 @@ public class ProjectHandler {
     }
 
     public boolean deleteProject(String projectId) {
-        Optional<Project> optionalProject = projectRepository.findByIdAndState(projectId, StateEnum.ACTIVE);
+        var optionalProject = projectRepository.findByIdAndState(projectId, StateEnum.ACTIVE);
         if (optionalProject.isEmpty()
                 || StateEnum.DELETED.equals(optionalProject.get().getState())) {
             throw new EntityNotFoundException("Unable to find a Project with id: " + projectId);
         }
 
-        Project project = optionalProject.get();
-        String userId = UserContext.userId();
+        var project = optionalProject.get();
+        var userId = UserContext.userId();
         if (!project.getOwnerId().equalsIgnoreCase(userId)) {
             throw new RuntimeException(
                     String.format("User %s is not authorized to delete project with id: %s", userId, projectId));
@@ -136,7 +134,7 @@ public class ProjectHandler {
     }
 
     public List<Project> findProjectsContainingDataset(DatasetResource datasetResource) {
-        Set<DatasetResource> set = new HashSet<>();
+        var set = new HashSet<DatasetResource>();
         set.add(datasetResource);
 
         return projectRepository.findProjectsByDatasetResourcesContainingAndState(set, StateEnum.ACTIVE);

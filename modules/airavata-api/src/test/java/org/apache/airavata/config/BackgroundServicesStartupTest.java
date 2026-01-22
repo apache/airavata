@@ -22,10 +22,10 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.dapr.monitor.RealtimeMonitor;
-import org.apache.airavata.workflow.ParserWorkflowManager;
-import org.apache.airavata.workflow.PostWorkflowManager;
-import org.apache.airavata.workflow.PreWorkflowManager;
+import org.apache.airavata.workflow.monitoring.realtime.RealtimeMonitorHandler;
+import org.apache.airavata.workflow.process.parsing.ParserWorkflowManager;
+import org.apache.airavata.workflow.process.post.PostWorkflowManager;
+import org.apache.airavata.workflow.process.pre.PreWorkflowManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,7 +51,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
             "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration",
             "spring.aop.proxy-target-class=true",
             "services.thrift.enabled=true",
-            "services.controller.enabled=true",
+            "airavata.services.controller.enabled=false",
+            "services.controller.enabled=false",
             "services.participant.enabled=true",
             "services.prewm.enabled=true",
             "flyway.enabled=false",
@@ -89,9 +90,10 @@ public class BackgroundServicesStartupTest {
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning",
-                "org.apache.airavata.dapr",
+                "org.apache.airavata.orchestrator",
                 "org.apache.airavata.monitor",
-                "org.apache.airavata.manager.dbevent"
+                "org.apache.airavata.manager.dbevent",
+                "org.apache.airavata.workflow"
             })
     static class TestConfiguration {}
 
@@ -117,11 +119,11 @@ public class BackgroundServicesStartupTest {
     public void testMonitorsAreAvailable() {
 
         int monitorCount =
-                applicationContext.getBeansOfType(RealtimeMonitor.class).size();
+                applicationContext.getBeansOfType(RealtimeMonitorHandler.class).size();
 
         assertTrue(
                 monitorCount >= 0,
-                "RealtimeMonitor configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
+                "RealtimeMonitorHandler configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
     }
 
     @Test

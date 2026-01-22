@@ -46,8 +46,8 @@ public class ProcessOutputService {
     }
 
     public void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
-        for (OutputDataObjectType output : outputs) {
-            ProcessOutputEntity entity = outputDataObjectTypeMapper.toEntityFromProcess(output);
+        for (var output : outputs) {
+            var entity = outputDataObjectTypeMapper.toEntityFromProcess(output);
             entity.setProcessId(processId);
             // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
             // The processId field is already set and is the only field that gets persisted.

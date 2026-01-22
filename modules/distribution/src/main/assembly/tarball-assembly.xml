@@ -42,7 +42,7 @@ under the License.
 
     <!-- Startup script -->
     <fileSet>
-      <directory>src/main/resources/bin</directory>
+      <directory>../../../../src/main/resources/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>755</fileMode>
       <includes>
@@ -61,7 +61,7 @@ under the License.
 
     <!-- Keystores -->
     <fileSet>
-      <directory>src/main/resources/conf/keystores</directory>
+      <directory>../../../../src/main/resources/conf/keystores</directory>
       <outputDirectory>conf/keystores</outputDirectory>
       <includes>
         <include>*.jks</include>
@@ -69,25 +69,25 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Config files from airavata-api (META-INF/persistence.xml) -->
+    <!-- Config files from root (META-INF/persistence.xml) -->
     <fileSet>
-      <directory>../airavata-api/src/main/resources</directory>
+      <directory>../../../../src/main/resources</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>META-INF/persistence.xml</include>
       </includes>
     </fileSet>
 
-    <!-- Distribution-owned config files (application.properties, logback.xml, templates, email-config.yml) -->
+    <!-- Config files from root (application.properties, logback.xml, templates, email-config.yml) -->
     <fileSet>
-      <directory>src/main/resources</directory>
+      <directory>../../../../src/main/resources</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>application.properties</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>src/main/resources/conf</directory>
+      <directory>../../../../src/main/resources/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>logback.xml</include>

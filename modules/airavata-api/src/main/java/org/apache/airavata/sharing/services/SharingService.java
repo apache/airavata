@@ -22,7 +22,6 @@ package org.apache.airavata.sharing.services;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.sharing.entities.SharingEntity;
 import org.apache.airavata.sharing.entities.SharingPK;
 import org.apache.airavata.sharing.mappers.SharingMapper;
 import org.apache.airavata.sharing.model.Sharing;
@@ -49,7 +48,7 @@ public class SharingService {
     }
 
     public Sharing get(SharingPK pk) throws SharingRegistryException {
-        SharingEntity entity = sharingRepository.findById(pk).orElse(null);
+        var entity = sharingRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return sharingMapper.toModel(entity);
     }
@@ -59,8 +58,8 @@ public class SharingService {
     }
 
     public Sharing update(Sharing sharing) throws SharingRegistryException {
-        SharingEntity entity = sharingMapper.toEntity(sharing);
-        SharingEntity saved = sharingRepository.save(entity);
+        var entity = sharingMapper.toEntity(sharing);
+        var saved = sharingRepository.save(entity);
         return sharingMapper.toModel(saved);
     }
 
@@ -76,23 +75,22 @@ public class SharingService {
     public List<Sharing> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
         // For complex filters, use Criteria API in service if needed
         // For now, return all if no filters
-        List<SharingEntity> entities = sharingRepository.findAll();
+        var entities = sharingRepository.findAll();
         return sharingMapper.toModelList(entities);
     }
 
     public List<Sharing> getIndirectSharedChildren(String domainId, String parentId, String permissionTypeId)
             throws SharingRegistryException {
-        List<SharingEntity> entities = sharingRepository.findIndirectSharedChildren(
+        var entities = sharingRepository.findIndirectSharedChildren(
                 domainId, parentId, SharingType.INDIRECT_CASCADING.toString(), permissionTypeId);
         return sharingMapper.toModelList(entities);
     }
 
     public List<Sharing> getCascadingPermissionsForEntity(String domainId, String entityId)
             throws SharingRegistryException {
-        List<String> sharingTypes =
+        var sharingTypes =
                 Arrays.asList(SharingType.DIRECT_CASCADING.toString(), SharingType.INDIRECT_CASCADING.toString());
-        List<SharingEntity> entities =
-                sharingRepository.findCascadingPermissionsForEntity(domainId, entityId, sharingTypes);
+        var entities = sharingRepository.findCascadingPermissionsForEntity(domainId, entityId, sharingTypes);
         return sharingMapper.toModelList(entities);
     }
 

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
@@ -50,7 +49,7 @@ public class DataProductController {
     @GetMapping("/{productUri}")
     public ResponseEntity<?> getDataProduct(@PathVariable String productUri) {
         try {
-            DataProductModel product = dataProductService.getDataProduct(productUri);
+            var product = dataProductService.getDataProduct(productUri);
             if (product == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -63,7 +62,7 @@ public class DataProductController {
     @GetMapping("/{productUri}/parent")
     public ResponseEntity<?> getParentDataProduct(@PathVariable String productUri) {
         try {
-            DataProductModel product = dataProductService.getParentDataProduct(productUri);
+            var product = dataProductService.getParentDataProduct(productUri);
             if (product == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -76,7 +75,7 @@ public class DataProductController {
     @PostMapping
     public ResponseEntity<?> createDataProduct(@RequestBody DataProductModel product) {
         try {
-            String productUri = dataProductService.registerDataProduct(product);
+            var productUri = dataProductService.registerDataProduct(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("productUri", productUri));
         } catch (ReplicaCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -110,7 +109,7 @@ public class DataProductController {
     @GetMapping("/{productUri}/children")
     public ResponseEntity<?> getChildDataProducts(@PathVariable String productUri) {
         try {
-            List<DataProductModel> children = dataProductService.getChildDataProducts(productUri);
+            var children = dataProductService.getChildDataProducts(productUri);
             return ResponseEntity.ok(children);
         } catch (ReplicaCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -125,8 +124,7 @@ public class DataProductController {
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "0") int offset) {
         try {
-            List<DataProductModel> products =
-                    dataProductService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+            var products = dataProductService.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
             return ResponseEntity.ok(products);
         } catch (ReplicaCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

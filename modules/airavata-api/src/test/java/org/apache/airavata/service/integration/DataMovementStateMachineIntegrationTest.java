@@ -32,13 +32,13 @@ import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.MessageHandler;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.dapr.messaging.Publisher;
-import org.apache.airavata.dapr.messaging.Subscriber;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
@@ -46,7 +46,6 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -313,10 +312,8 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
     @Test
     @DisplayName("Should verify messages are published for data staging state transitions")
     void shouldVerifyMessagesPublishedForDataStaging() throws Exception {
-        // Fail fast if Dapr is required but not available
-        Assumptions.assumeTrue(
-                messagingFactory != null && messagingFactory.isDaprAvailable(),
-                "Dapr messaging is required for this test. Enable Dapr or mark test as @DisabledIf.");
+        // Verify Dapr is available - skip test if not available
+        requireDaprMessaging();
 
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(3); // Expect 3 messages for data staging states
@@ -433,6 +430,21 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             if (subscriber != null) {
                 // Note: Subscriber cleanup handled by connection close
             }
+        }
+    }
+
+    /**
+     * Helper method to require Dapr messaging availability.
+     * Throws TestAbortedException if Dapr is not available, which properly skips the test
+     * with a clear reason instead of silently skipping via Assumptions.
+     *
+     * @throws org.opentest4j.TestAbortedException if Dapr messaging is not available
+     */
+    private void requireDaprMessaging() {
+        if (messagingFactory == null || !messagingFactory.isAvailable()) {
+            throw new org.opentest4j.TestAbortedException(
+                    "Dapr messaging is required for this test but is not available. "
+                            + "Enable Dapr (airavata.dapr.enabled=true) and ensure Dapr sidecar is running.");
         }
     }
 }

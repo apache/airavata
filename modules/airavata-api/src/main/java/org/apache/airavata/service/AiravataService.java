@@ -115,10 +115,10 @@ import org.apache.airavata.credential.model.CredentialSummary;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.model.SummaryType;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.Publisher;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.messaging.MessagingFactory;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
 import org.apache.airavata.security.model.AuthzToken;
@@ -215,7 +215,7 @@ public class AiravataService {
     private final org.apache.airavata.service.security.AuthorizationService authorizationService;
     private final org.apache.airavata.service.sharing.SharingManager sharingManager;
     private final AdaptorSupport adaptorSupport;
-    private final DaprMessagingFactory messagingFactory;
+    private final MessagingFactory messagingFactory;
 
     private Publisher experimentPublisher;
 
@@ -234,7 +234,7 @@ public class AiravataService {
             org.apache.airavata.service.security.AuthorizationService authorizationService,
             org.apache.airavata.service.sharing.SharingManager sharingManager,
             AdaptorSupport adaptorSupport,
-            DaprMessagingFactory messagingFactory) {
+            MessagingFactory messagingFactory) {
         this.properties = properties;
         this.registryService = registryService;
         this.sharingRegistryService = sharingRegistryService;
@@ -1997,7 +1997,6 @@ public class AiravataService {
         }
     }
 
-
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
             String appModuleId,
             String gatewayId,
@@ -2060,7 +2059,6 @@ public class AiravataService {
             throw e;
         }
     }
-
 
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws AiravataSystemException {
         try {

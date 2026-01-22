@@ -406,41 +406,40 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
         Assertions.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(1)));
 
-        filters = new HashMap<>();
+        filters.clear();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule2);
         filteredDeployments = applicationDeploymentService.getApplicationDeployments(filters);
         Assertions.assertEquals(1, filteredDeployments.size());
         Assertions.assertTrue(deepCompareDeployment(deployment3, filteredDeployments.get(0)));
 
-        filters = new HashMap<>();
+        filters.clear();
         filters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, computeResource1);
         filteredDeployments = applicationDeploymentService.getApplicationDeployments(filters);
         Assertions.assertEquals(1, filteredDeployments.size());
         Assertions.assertTrue(deepCompareDeployment(deployment1, filteredDeployments.get(0)));
 
-        filters = new HashMap<>();
+        filters.clear();
         filters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, computeResource2);
         filteredDeployments = applicationDeploymentService.getApplicationDeployments(filters);
         Assertions.assertEquals(2, filteredDeployments.size());
         Assertions.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(0)));
         Assertions.assertTrue(deepCompareDeployment(deployment3, filteredDeployments.get(1)));
 
-        filters = new HashMap<>();
+        filters.clear();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule1);
         filters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, computeResource2);
         filteredDeployments = applicationDeploymentService.getApplicationDeployments(filters);
         Assertions.assertEquals(1, filteredDeployments.size());
         Assertions.assertTrue(deepCompareDeployment(deployment2, filteredDeployments.get(0)));
 
-        filters = new HashMap<>();
+        filters.clear();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule1);
         filters.put("INVALID FIELD", computeResource2);
-        try {
-            filteredDeployments = applicationDeploymentService.getApplicationDeployments(filters);
-            Assertions.fail();
-        } catch (Exception e) {
-
-        }
+        // Expect exception when using invalid filter field
+        org.junit.jupiter.api.Assertions.assertThrows(
+                Exception.class,
+                () -> applicationDeploymentService.getApplicationDeployments(filters),
+                "Should throw exception for invalid filter field");
     }
 
     @Test

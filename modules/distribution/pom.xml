@@ -198,15 +198,10 @@ under the License.
 
     <build>
         <finalName>airavata-${project.version}</finalName>
-        <!-- Include shared main resources from root and module-specific resources -->
+        <!-- All resources are now in root -->
         <resources>
-            <!-- Shared application.properties from root -->
             <resource>
                 <directory>${project.basedir}/../../src/main/resources</directory>
-            </resource>
-            <!-- Module-specific resources (conf, bin, META-INF, etc.) -->
-            <resource>
-                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
@@ -327,8 +322,8 @@ under the License.
                         <buildArg>--no-fallback</buildArg>
                         <buildArg>-H:+ReportExceptionStackTraces</buildArg>
                         <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
-                        <buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/reflect-config.json</buildArg>
-                        <buildArg>-H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/META-INF/native-image/resource-config.json</buildArg>
+                        <buildArg>-H:ReflectionConfigurationFiles=${project.basedir}/../../src/main/resources/META-INF/native-image/reflect-config.json</buildArg>
+                        <buildArg>-H:ResourceConfigurationFiles=${project.basedir}/../../src/main/resources/META-INF/native-image/resource-config.json</buildArg>
                         <buildArg>--initialize-at-run-time=io.netty,io.grpc,java.util.Hashtable</buildArg>
                         <buildArg>--enable-native-access=ALL-UNNAMED</buildArg>
                     </buildArgs>

@@ -46,10 +46,22 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
 
     protected static Logger log = LoggerFactory.getLogger(SessionDBUserStore.class);
 
+    /**
+     * Authenticate a user with username and credentials.
+     *
+     * <p>SessionDBUserStore only supports session token authentication, not username/password
+     * authentication. Use {@link #authenticate(Object)} with a session token instead.
+     *
+     * @param userName the username (not used)
+     * @param credentials the credentials (not used)
+     * @return authentication result
+     * @throws UserStoreException if authentication fails
+     * @throws UnsupportedOperationException always - this user store only supports session tokens
+     */
     @Override
     public boolean authenticate(String userName, Object credentials) throws UserStoreException {
-        // This user store only supports session tokens.
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(
+                "SessionDBUserStore only supports session token authentication - use authenticate(Object token) instead");
     }
 
     @Override

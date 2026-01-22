@@ -123,13 +123,13 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
         // Create and save the mapping entity with just the IDs
         // Avoid loading full entities to prevent cascade issues
-        AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
+        var appModuleMappingEntity = new AppModuleMappingEntity();
         appModuleMappingEntity.setModuleId(moduleId);
         appModuleMappingEntity.setInterfaceId(interfaceId);
 
         // Use references instead of loading full entities
-        ApplicationModuleEntity moduleRef = applicationModuleRepository.getReferenceById(moduleId);
-        ApplicationInterfaceEntity interfaceRef = applicationInterfaceRepository.getReferenceById(interfaceId);
+        var moduleRef = applicationModuleRepository.getReferenceById(moduleId);
+        var interfaceRef = applicationInterfaceRepository.getReferenceById(interfaceId);
         appModuleMappingEntity.setApplicationModule(moduleRef);
         appModuleMappingEntity.setApplicationInterface(interfaceRef);
 
@@ -152,21 +152,19 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     @Override
     public ApplicationModule getApplicationModule(String moduleId) throws AppCatalogException {
-        ApplicationModuleEntity entity =
-                applicationModuleRepository.findById(moduleId).orElse(null);
+        var entity = applicationModuleRepository.findById(moduleId).orElse(null);
         if (entity == null) return null;
         return applicationModuleMapper.toModel(entity);
     }
 
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String interfaceId) throws AppCatalogException {
-        ApplicationInterfaceEntity entity =
-                applicationInterfaceRepository.findById(interfaceId).orElse(null);
+        var entity = applicationInterfaceRepository.findById(interfaceId).orElse(null);
         if (entity == null) return null;
 
         // Load application modules from AppModuleMapping table
         // The ElementCollection might not be automatically synced when AppModuleMappingEntity is saved separately
-        List<AppModuleMappingEntity> mappings = appModuleMappingRepository.findByInterfaceId(interfaceId);
+        var mappings = appModuleMappingRepository.findByInterfaceId(interfaceId);
         List<String> moduleIds = mappings.stream()
                 .map(AppModuleMappingEntity::getModuleId)
                 .distinct()
@@ -231,12 +229,12 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     @Override
     public List<String> getAllApplicationInterfaceIds() throws AppCatalogException {
-        List<String> applicationInterfaceIds = new ArrayList<>();
-        List<ApplicationInterfaceEntity> entities = applicationInterfaceRepository.findAll();
+        var applicationInterfaceIds = new ArrayList<String>();
+        var entities = applicationInterfaceRepository.findAll();
 
         if (entities != null && !entities.isEmpty()) {
             logger.debug("The fetched list of Application Interfaces is not NULL or empty");
-            for (ApplicationInterfaceEntity entity : entities) {
+            for (var entity : entities) {
                 applicationInterfaceIds.add(entity.getApplicationInterfaceId());
             }
         }
@@ -344,7 +342,7 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     private String saveApplicationModuleData(ApplicationModule applicationModule, String gatewayId)
             throws AppCatalogException {
-        ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule, gatewayId);
+        var applicationModuleEntity = saveApplicationModule(applicationModule, gatewayId);
         return applicationModuleEntity.getAppModuleId();
     }
 
@@ -359,8 +357,8 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             applicationModule.setAppModuleId(AiravataUtils.getId(applicationModule.getAppModuleName()));
         }
 
-        String applicationModuleId = applicationModule.getAppModuleId();
-        ApplicationModuleEntity applicationModuleEntity = applicationModuleMapper.toEntity(applicationModule);
+        var applicationModuleId = applicationModule.getAppModuleId();
+        var applicationModuleEntity = applicationModuleMapper.toEntity(applicationModule);
 
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Module");

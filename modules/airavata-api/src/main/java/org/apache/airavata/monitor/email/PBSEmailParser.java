@@ -21,7 +21,6 @@ package org.apache.airavata.monitor.email;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.JobState;
@@ -51,10 +50,10 @@ public class PBSEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message, RegistryService registryService)
             throws MessagingException, AiravataException {
-        JobStatusResult jobStatusResult = new JobStatusResult();
+        var jobStatusResult = new JobStatusResult();
         //        log.info("Parsing -> " + message.getSubject());
         try {
-            String content = ((String) message.getContent());
+            var content = (String) message.getContent();
             parseContent(content, jobStatusResult);
         } catch (Exception e) {
             throw new AiravataException("[EJM]: Error while reading content of the email message");
@@ -64,12 +63,12 @@ public class PBSEmailParser implements EmailParser {
 
     void parseContent(String content, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
         content = content.replaceAll("[^\\x00-\\x7F]", "");
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(content);
+        var pattern = Pattern.compile(REGEX);
+        var matcher = pattern.matcher(content);
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setJobName(matcher.group(JOBNAME));
-            String statusLine = matcher.group(STATUS);
+            var statusLine = matcher.group(STATUS);
             jobStatusResult.setState(getJobState(statusLine, content));
         } else {
             log.error("[EJM]: No matched found for content => \n" + content);
@@ -98,10 +97,10 @@ public class PBSEmailParser implements EmailParser {
     }
 
     private int getExitStatus(String content) {
-        Pattern pattern = Pattern.compile(REGEX_EXIT_STATUS);
-        Matcher matcher = pattern.matcher(content);
+        var pattern = Pattern.compile(REGEX_EXIT_STATUS);
+        var matcher = pattern.matcher(content);
         if (matcher.find()) {
-            String group = matcher.group(EXIT_STATUS);
+            var group = matcher.group(EXIT_STATUS);
             if (group != null && !group.trim().isEmpty()) {
                 return Integer.valueOf(group.trim());
             }

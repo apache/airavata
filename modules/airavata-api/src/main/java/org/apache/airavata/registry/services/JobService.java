@@ -27,6 +27,7 @@ import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
+import org.apache.airavata.registry.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.JobModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
@@ -53,8 +54,8 @@ public class JobService {
     }
 
     public void populateParentIds(JobEntity jobEntity) {
-        String jobId = jobEntity.getJobId();
-        String taskId = jobEntity.getTaskId();
+        var jobId = jobEntity.getJobId();
+        var taskId = jobEntity.getTaskId();
         if (jobEntity.getJobStatuses() != null) {
             logger.debug("Populating the Primary Key of JobStatus objects for the Job");
             jobEntity.getJobStatuses().forEach(jobStatusEntity -> {
@@ -66,10 +67,10 @@ public class JobService {
     }
 
     public String addJob(JobModel job, String processId) throws RegistryException {
-        JobPK jobPK = new JobPK();
+        var jobPK = new JobPK();
         jobPK.setJobId(job.getJobId());
         jobPK.setTaskId(job.getTaskId());
-        String jobId = saveJobModelData(job, jobPK);
+        var jobId = saveJobModelData(job, jobPK);
         return jobId;
     }
 
@@ -78,7 +79,7 @@ public class JobService {
     }
 
     public JobModel getJob(JobPK jobPK) throws RegistryException {
-        JobEntity entity = jobRepository.findById(jobPK).orElse(null);
+        var entity = jobRepository.findById(jobPK).orElse(null);
         if (entity == null) return null;
         // Refresh entity to get latest data from database, including any statuses
         // added via JobStatusService in the same transaction
@@ -102,9 +103,9 @@ public class JobService {
     }
 
     public List<String> getJobIds(String fieldName, Object value) throws RegistryException {
-        List<String> jobIds = new ArrayList<>();
-        List<JobModel> jobModelList = getJobList(fieldName, value);
-        for (JobModel jobModel : jobModelList) {
+        var jobIds = new ArrayList<String>();
+        var jobModelList = getJobList(fieldName, value);
+        for (var jobModel : jobModelList) {
             jobIds.add(jobModel.getJobId());
         }
         return jobIds;
@@ -123,7 +124,7 @@ public class JobService {
     }
 
     private String saveJobModelData(JobModel jobModel, JobPK jobPK) throws RegistryException {
-        JobEntity jobEntity = saveJob(jobModel, jobPK);
+        var jobEntity = saveJob(jobModel, jobPK);
         return jobEntity.getJobId();
     }
 
@@ -145,13 +146,13 @@ public class JobService {
         long currentTime = AiravataUtils.getUniqueTimestamp().getTime();
 
         // Use entityManager.find() to get managed entity for proper update
-        JobEntity existingEntity = entityManager.find(JobEntity.class, jobPK);
+        var existingEntity = entityManager.find(JobEntity.class, jobPK);
 
         if (existingEntity == null) {
             // New job - create entity from model
             logger.debug("Creating new job");
             jobModel.setCreationTime(currentTime);
-            JobEntity jobEntity = jobModelMapper.toEntity(jobModel);
+            var jobEntity = jobModelMapper.toEntity(jobModel);
             if (jobEntity.getCreationTime() == null) {
                 jobEntity.setCreationTime(AiravataUtils.getTime(currentTime));
             }
@@ -176,13 +177,12 @@ public class JobService {
                     existingEntity.setJobStatuses(new ArrayList<>());
                 }
                 // Add new statuses (don't replace existing ones)
-                for (org.apache.airavata.common.model.JobStatus statusModel : jobModel.getJobStatuses()) {
-                    boolean exists = existingEntity.getJobStatuses().stream()
+                for (var statusModel : jobModel.getJobStatuses()) {
+                    var exists = existingEntity.getJobStatuses().stream()
                             .anyMatch(s ->
                                     s.getStatusId() != null && s.getStatusId().equals(statusModel.getStatusId()));
                     if (!exists) {
-                        org.apache.airavata.registry.entities.expcatalog.JobStatusEntity statusEntity =
-                                new org.apache.airavata.registry.entities.expcatalog.JobStatusEntity();
+                        var statusEntity = new JobStatusEntity();
                         statusEntity.setStatusId(statusModel.getStatusId());
                         statusEntity.setJobState(statusModel.getJobState());
                         statusEntity.setReason(statusModel.getReason());

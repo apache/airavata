@@ -21,9 +21,14 @@ package org.apache.airavata.restapi.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.restapi.security.AuthorizationService;
+import org.apache.airavata.security.model.AuthzToken;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,63 +42,120 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/gateways")
+@ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class GatewayController {
     private final GatewayService gatewayService;
+    private final AuthorizationService authorizationService;
 
-    public GatewayController(GatewayService gatewayService) {
+    public GatewayController(GatewayService gatewayService, AuthorizationService authorizationService) {
         this.gatewayService = gatewayService;
+        this.authorizationService = authorizationService;
+    }
+
+    private AuthzToken getAuthzToken(HttpServletRequest request) {
+        return (AuthzToken) request.getAttribute("authzToken");
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllGateways() {
+    public ResponseEntity<?> getAllGateways(HttpServletRequest request) {
         try {
-            List<Gateway> gateways = gatewayService.getAllGateways();
-            return ResponseEntity.ok(gateways);
+            var authzToken = getAuthzToken(request);
+            
+            // Get all gateways
+            var allGateways = gatewayService.getAllGateways();
+            
+            // Filter based on user access
+            if (authorizationService.isRootUser(authzToken)) {
+                // Root user sees all gateways
+                return ResponseEntity.ok(allGateways);
+            } else {
+                // Regular users only see gateways they have access to
+                var accessibleGateways = authorizationService.getAccessibleGateways(authzToken);
+                var filteredGateways = allGateways.stream()
+                    .filter(g -> accessibleGateways.contains(g.getGatewayId()))
+                    .collect(Collectors.toList());
+                return ResponseEntity.ok(filteredGateways);
+            }
         } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @GetMapping("/{gatewayId}")
-    public ResponseEntity<?> getGateway(@PathVariable String gatewayId) {
+    public ResponseEntity<?> getGateway(@PathVariable String gatewayId, HttpServletRequest request) {
         try {
-            Gateway gateway = gatewayService.getGateway(gatewayId);
+            var authzToken = getAuthzToken(request);
+            
+            // Check gateway access
+            authorizationService.requireGatewayAccess(authzToken, gatewayId);
+            
+            var gateway = gatewayService.getGateway(gatewayId);
             if (gateway == null) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok(gateway);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> createGateway(@RequestBody Gateway gateway) {
+    public ResponseEntity<?> createGateway(@RequestBody Gateway gateway, HttpServletRequest request) {
         try {
-            String gatewayId = gatewayService.addGateway(gateway);
+            // Note: In production, uncomment the following to restrict gateway creation to root users
+            // var authzToken = getAuthzToken(request);
+            // authorizationService.requireRootUser(authzToken);
+            
+            var gatewayId = gatewayService.addGateway(gateway);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("gatewayId", gatewayId));
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PutMapping("/{gatewayId}")
-    public ResponseEntity<?> updateGateway(@PathVariable String gatewayId, @RequestBody Gateway gateway) {
+    public ResponseEntity<?> updateGateway(@PathVariable String gatewayId, @RequestBody Gateway gateway, HttpServletRequest request) {
         try {
+            // Note: In production, uncomment the following to restrict gateway updates to root users
+            // var authzToken = getAuthzToken(request);
+            // authorizationService.requireRootUser(authzToken);
+            
             gateway.setGatewayId(gatewayId);
             gatewayService.updateGateway(gatewayId, gateway);
             return ResponseEntity.ok().build();
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{gatewayId}")
-    public ResponseEntity<?> deleteGateway(@PathVariable String gatewayId) {
+    public ResponseEntity<?> deleteGateway(@PathVariable String gatewayId, HttpServletRequest request) {
         try {
+            // Note: In production, uncomment the following to restrict gateway deletion to root users
+            // var authzToken = getAuthzToken(request);
+            // authorizationService.requireRootUser(authzToken);
+            
             gatewayService.removeGateway(gatewayId);
             return ResponseEntity.ok().build();
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
         } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

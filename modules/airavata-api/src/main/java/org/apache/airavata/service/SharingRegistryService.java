@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
@@ -340,7 +342,10 @@ public class SharingRegistryService {
             userGroupPK.setDomainId(group.getDomainId());
             if (userGroupService.get(userGroupPK) != null)
                 throw new SharingRegistryException("There exist group with given group id");
-            // Client created groups are always of type MULTI_USER
+            // Client created groups are always of type MULTI_USER and USER_LEVEL_GROUP
+            if (group.getGroupType() == null) {
+                group.setGroupType(GroupType.USER_LEVEL_GROUP);
+            }
             group.setGroupCardinality(GroupCardinality.MULTI_USER);
             group.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             group.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
@@ -661,7 +666,41 @@ public class SharingRegistryService {
             throws SharingRegistryException {
         try {
             for (String childId : childIds) {
-                // Todo check for cyclic dependencies
+                // Check for self-reference: cannot add a group as its own child
+                if (childId.equals(groupId)) {
+                    throw new SharingRegistryException(
+                            String.format("Cannot add group %s as its own child (self-reference)", groupId));
+                }
+
+                // Check if childId is an ancestor of groupId (the parent group)
+                // If childId is an ancestor of groupId, then adding childId as a child of groupId would create a cycle
+                try {
+                    List<GroupMembership> parentAncestors = groupMembershipService.getAllParentMembershipsForChild(
+                            domainId, groupId, GroupChildType.GROUP);
+                    // Collect all parentIds from the ancestor chain (including indirect ancestors)
+                    Set<String> ancestorIds = parentAncestors.stream()
+                            .map(GroupMembership::getParentId)
+                            .collect(Collectors.toSet());
+                    // Also include groupId itself in the set to check for direct matches
+                    ancestorIds.add(groupId);
+                    // Check if childId appears anywhere in the ancestor chain
+                    boolean wouldCreateCycle = ancestorIds.contains(childId);
+
+                    if (wouldCreateCycle) {
+                        throw new SharingRegistryException(String.format(
+                                "Cannot add group %s as child of %s: would create cyclic dependency",
+                                childId, groupId));
+                    }
+                } catch (SharingRegistryException e) {
+                    // Re-throw cyclic dependency exceptions
+                    if (e.getMessage() != null && e.getMessage().contains("cyclic dependency")) {
+                        throw e;
+                    }
+                    // If we can't check (e.g., group doesn't exist yet), log and continue
+                    // The actual group membership creation will fail if there's a real issue
+                    logger.debug("Could not check for cyclic dependency for group {}: {}", childId, e.getMessage());
+                }
+
                 GroupMembership groupMembership = new GroupMembership();
                 groupMembership.setParentId(groupId);
                 groupMembership.setChildId(childId);
@@ -675,10 +714,17 @@ public class SharingRegistryService {
             }
             return true;
         } catch (SharingRegistryException e) {
+            // If the exception already contains a meaningful message (e.g., self-reference or cyclic dependency),
+            // re-throw it as-is. Otherwise, wrap it with a generic error message.
+            if (e.getMessage() != null
+                    && (e.getMessage().contains("self-reference")
+                            || e.getMessage().contains("cyclic dependency"))) {
+                throw e;
+            }
             String message = String.format(
                     "Error while adding child groups to parent group: domainId=%s, groupId=%s", domainId, groupId);
             logger.error(message, e);
-            throw new SharingRegistryException(message);
+            throw new SharingRegistryException(message, e);
         }
     }
 
@@ -933,7 +979,11 @@ public class SharingRegistryService {
             userPK.setDomainId(entity.getDomainId());
             userPK.setUserId(entity.getOwnerId());
             if (!userService.isExists(userPK)) {
-                // Todo this is for Airavata easy integration. Proper thing is to throw an exception here
+                // Auto-create user for Airavata easy integration: when creating entities, if the owner user
+                // doesn't exist in the sharing registry, create a minimal user entry automatically.
+                // This handles cases where user profiles exist but haven't been synchronized to the sharing registry.
+                // In a strict implementation, this would throw an exception, but for ease of integration,
+                // we create the user automatically.
                 User user = new User();
                 user.setUserId(entity.getOwnerId());
                 user.setDomainId(entity.getDomainId());

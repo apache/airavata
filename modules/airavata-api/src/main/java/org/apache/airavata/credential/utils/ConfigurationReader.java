@@ -20,14 +20,11 @@
 package org.apache.airavata.credential.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -69,15 +66,15 @@ public class ConfigurationReader {
     }
 
     private void loadConfigurations() throws ParserConfigurationException, IOException, SAXException {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("credential-store/client.xml");
+        var inputStream = this.getClass().getClassLoader().getResourceAsStream("credential-store/client.xml");
 
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(inputStream);
+        var dbFactory = DocumentBuilderFactory.newInstance();
+        var dBuilder = dbFactory.newDocumentBuilder();
+        var doc = dBuilder.parse(inputStream);
 
         doc.getDocumentElement().normalize();
 
-        NodeList nodeList = doc.getElementsByTagName("credential-store");
+        var nodeList = doc.getElementsByTagName("credential-store");
 
         readElementValue(nodeList);
     }
@@ -85,11 +82,11 @@ public class ConfigurationReader {
     private void readElementValue(NodeList nodeList) {
         for (int temp = 0; temp < nodeList.getLength(); temp++) {
 
-            Node nNode = nodeList.item(temp);
+            var nNode = nodeList.item(temp);
 
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-                Element eElement = (Element) nNode;
+                var eElement = (Element) nNode;
 
                 this.successUrl =
                         eElement.getElementsByTagName("successUri").item(0).getTextContent();

@@ -20,7 +20,6 @@
 package org.apache.airavata.task.submission;
 
 import groovy.text.GStringTemplateEngine;
-import groovy.text.TemplateEngine;
 import java.io.File;
 import java.io.IOException;
 import java.time.ZoneId;
@@ -31,21 +30,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationParallelismType;
 import org.apache.airavata.common.model.CommandObject;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.common.model.JobSubmissionInterface;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.common.model.JobSubmissionTaskModel;
 import org.apache.airavata.common.model.MonitorMode;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.common.model.SSHJobSubmission;
+import org.apache.airavata.common.model.ResourceJobManager;
+import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.model.SetEnvPaths;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
@@ -74,7 +70,7 @@ public class GroovyMapBuilder {
     public static final String MULTIPLE_INPUTS_SPLITTER = ",";
 
     public GroovyMapData build(TaskContext taskContext) throws Exception {
-        GroovyMapData mapData = new GroovyMapData();
+        var mapData = new GroovyMapData();
 
         setMailAddresses(taskContext, mapData);
         mapData.setInputDir(taskContext.getInputDir());
@@ -97,8 +93,7 @@ public class GroovyMapBuilder {
         mapData.setExperimentDataDir(taskContext.getProcessModel().getExperimentDataDir());
         mapData.setExperimentId(taskContext.getExperimentId());
 
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd+HH:mmZ").withZone(ZoneId.of("America/New_York"));
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd+HH:mmZ").withZone(ZoneId.of("America/New_York"));
         mapData.setCurrentTime(
                 formatter.format(AiravataUtils.getUniqueTimestamp().toInstant()));
 
@@ -137,15 +132,19 @@ public class GroovyMapBuilder {
                 JobSubmissionTaskModel jobSubmissionTaskModel =
                         ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
                 if (jobSubmissionTaskModel.getWallTime() > 0) {
-                    mapData.setMaxWallTime(maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
-                    mapData.setWallTimeInSeconds(jobSubmissionTaskModel.getWallTime() * 60);
-                    // TODO fix this
-                    /*if (resourceJobManager != null) {
-                        if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
-                            groovyMap.add(Script.MAX_WALL_TIME,
-                                    GFacUtils.maxWallTimeCalculatorForLSF(jobSubmissionTaskModel.getWallTime()));
+                    String wallTime = maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime());
+                    // Use LSF-specific format if ResourceJobManager is LSF
+                    try {
+                        ResourceJobManager resourceJobManager = taskContext.getResourceJobManager();
+                        if (resourceJobManager != null
+                                && resourceJobManager.getResourceJobManagerType() == ResourceJobManagerType.LSF) {
+                            wallTime = maxWallTimeCalculatorForLSF(jobSubmissionTaskModel.getWallTime());
                         }
-                    }*/
+                    } catch (Exception e) {
+                        logger.debug("Could not get ResourceJobManager for LSF wall time check: {}", e.getMessage());
+                    }
+                    mapData.setMaxWallTime(wallTime);
+                    mapData.setWallTimeInSeconds(jobSubmissionTaskModel.getWallTime() * 60);
                 }
             } catch (Exception e) {
                 logger.error("Error while getting job submission sub task model", e);
@@ -178,17 +177,19 @@ public class GroovyMapBuilder {
             // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
             // if so we ignore scheduling configuration.
             if (scheduling.getWallTimeLimit() > 0 && mapData.getMaxWallTime() == null) {
-                mapData.setMaxWallTime(maxWallTimeCalculator(scheduling.getWallTimeLimit()));
-                mapData.setWallTimeInSeconds(scheduling.getWallTimeLimit() * 60);
-
-                // TODO fix this
-                /*
-                if (resourceJobManager != null) {
-                    if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
-                        mapData.setMaxWallTime(maxWallTimeCalculatorForLSF(scheduling.getWallTimeLimit()));
+                String wallTime = maxWallTimeCalculator(scheduling.getWallTimeLimit());
+                // Use LSF-specific format if ResourceJobManager is LSF
+                try {
+                    ResourceJobManager resourceJobManager = taskContext.getResourceJobManager();
+                    if (resourceJobManager != null
+                            && resourceJobManager.getResourceJobManagerType() == ResourceJobManagerType.LSF) {
+                        wallTime = maxWallTimeCalculatorForLSF(scheduling.getWallTimeLimit());
                     }
+                } catch (Exception e) {
+                    logger.debug("Could not get ResourceJobManager for LSF wall time check: {}", e.getMessage());
                 }
-                */
+                mapData.setMaxWallTime(wallTime);
+                mapData.setWallTimeInSeconds(scheduling.getWallTimeLimit() * 60);
             }
             if (scheduling.getTotalPhysicalMemory() > 0) {
                 mapData.setUsedMem(scheduling.getTotalPhysicalMemory());
@@ -206,7 +207,7 @@ public class GroovyMapBuilder {
             logger.error("Task scheduling cannot be null at this point..");
         }
 
-        ApplicationDeploymentDescription appDepDescription = taskContext.getApplicationDeploymentDescription();
+        var appDepDescription = taskContext.getApplicationDeploymentDescription();
 
         List<SetEnvPaths> exportCommands = appDepDescription.getSetEnvironment();
         if (exportCommands != null) {
@@ -244,7 +245,7 @@ public class GroovyMapBuilder {
             mapData.setPostJobCommands(postJobCmdCollect);
         }
 
-        ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        var parallelism = appDepDescription.getParallelism();
         if (parallelism != null) {
             if (parallelism != ApplicationParallelismType.SERIAL) {
                 Map<ApplicationParallelismType, String> parallelismPrefix =
@@ -407,8 +408,8 @@ public class GroovyMapBuilder {
                 || qualityOfService == null
                 || qualityOfService.isEmpty()) return null;
         final String qos = "qos";
-        Pattern pattern = Pattern.compile(preferredBatchQueue + "=(?<" + qos + ">[^,]*)");
-        Matcher matcher = pattern.matcher(qualityOfService);
+        var pattern = Pattern.compile(preferredBatchQueue + "=(?<" + qos + ">[^,]*)");
+        var matcher = pattern.matcher(qualityOfService);
         if (matcher.find()) {
             return matcher.group(qos);
         }
@@ -440,7 +441,7 @@ public class GroovyMapBuilder {
     }
 
     static String parseCommands(String value, GroovyMapData bindMap) {
-        TemplateEngine templateEngine = new GStringTemplateEngine();
+        var templateEngine = new GStringTemplateEngine();
         try {
             return templateEngine
                     .createTemplate(value)
@@ -453,10 +454,10 @@ public class GroovyMapBuilder {
     }
 
     private void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws Exception {
-        ProcessModel processModel = taskContext.getProcessModel();
+        var processModel = taskContext.getProcessModel();
         String emailIds = null;
 
-        AiravataServerProperties props = this.properties;
+        var props = this.properties;
 
         if (isEmailBasedJobMonitor(taskContext) && props != null) {
             emailIds = props.services().monitor().email().address();
@@ -496,12 +497,12 @@ public class GroovyMapBuilder {
     }
 
     public boolean isEmailBasedJobMonitor(TaskContext taskContext) throws Exception {
-        JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
-        JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
+        var jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
+        var jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
-            String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission = registryService.getSSHJobSubmission(jobSubmissionInterfaceId);
-            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
+            var jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
+            var sshJobSubmission = registryService.getSSHJobSubmission(jobSubmissionInterfaceId);
+            var monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
             return false;

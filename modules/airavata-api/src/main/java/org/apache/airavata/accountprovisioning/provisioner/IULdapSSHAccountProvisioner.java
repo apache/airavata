@@ -26,14 +26,11 @@ import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
-import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.entry.DefaultAttribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.entry.ModificationOperation;
 import org.apache.directory.api.ldap.model.exception.LdapException;
-import org.apache.directory.api.ldap.model.message.ModifyRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequestImpl;
-import org.apache.directory.api.ldap.model.message.ModifyResponse;
 import org.apache.directory.api.ldap.model.message.ResultCodeEnum;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.apache.directory.api.ldap.model.name.Dn;
@@ -69,8 +66,8 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
 
     @Override
     public boolean hasAccount(String userId) throws InvalidUsernameException {
-        String username = getUsername(userId);
-        boolean result = withLdapConnection(ldapConnection -> {
+        var username = getUsername(userId);
+        var result = withLdapConnection(ldapConnection -> {
             try {
                 return hasClusterAccount(ldapConnection, username);
             } catch (LdapException e) {
@@ -87,8 +84,8 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
 
     private boolean isInCybergatewayGroup(LdapConnection ldapConnection, String username) throws LdapException {
 
-        final String filter = "(memberUid=" + username + ")";
-        try (EntryCursor entryCursor = ldapConnection.search(this.cybergatewayGroupDN, filter, SearchScope.OBJECT)) {
+        final var filter = "(memberUid=" + username + ")";
+        try (var entryCursor = ldapConnection.search(this.cybergatewayGroupDN, filter, SearchScope.OBJECT)) {
 
             int count = 0;
             for (Entry entry : entryCursor) {
@@ -111,8 +108,8 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
     @Override
     public boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey)
             throws InvalidUsernameException {
-        String username = getUsername(userId);
-        boolean result = withLdapConnection(ldapConnection -> {
+        var username = getUsername(userId);
+        var result = withLdapConnection(ldapConnection -> {
             try {
                 return hasClusterAccount(ldapConnection, username)
                         && isInCybergatewayGroup(ldapConnection, username)
@@ -127,15 +124,15 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
     public boolean isSSHKeyInstalled(LdapConnection ldapConnection, String username, String sshPublicKey)
             throws LdapException {
 
-        String ldapPublicKey = getLdapPublicKey(ldapConnection, username);
+        var ldapPublicKey = getLdapPublicKey(ldapConnection, username);
         return ldapPublicKey != null && ldapPublicKey.equals(sshPublicKey.trim());
     }
 
     @Override
     public String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
-        String username = getUsername(userId);
-        String finalSSHPublicKey = sshPublicKey.trim();
-        boolean success = withLdapConnection(ldapConnection -> {
+        var username = getUsername(userId);
+        var finalSSHPublicKey = sshPublicKey.trim();
+        var success = withLdapConnection(ldapConnection -> {
             try {
                 // 1) Check to see if key is installed, and if not, install it
                 // 2) Check to see if user is in cybergateway group and if not add the user
@@ -156,11 +153,11 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
 
     private void addUserToCybergatewayGroup(LdapConnection ldapConnection, String username) throws LdapException {
 
-        ModifyRequest modifyRequest = new ModifyRequestImpl();
+        var modifyRequest = new ModifyRequestImpl();
         modifyRequest.setName(new Dn(cybergatewayGroupDN));
         modifyRequest.addModification(
                 new DefaultAttribute(GROUP_MEMBER_ATTRIBUTE_NAME, username), ModificationOperation.ADD_ATTRIBUTE);
-        ModifyResponse modifyResponse = ldapConnection.modify(modifyRequest);
+        var modifyResponse = ldapConnection.modify(modifyRequest);
         if (modifyResponse.getLdapResult().getResultCode() != ResultCodeEnum.SUCCESS) {
             logger.warn(
                     "add member to cybergateway group ldap operation reported not being successful: " + modifyResponse);
@@ -171,15 +168,15 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
 
     private void installLdapPublicKey(LdapConnection ldapConnection, String username, String finalSSHPublicKey)
             throws LdapException {
-        String dn = "uid=" + username + "," + ldapBaseDN;
+        var dn = "uid=" + username + "," + ldapBaseDN;
 
-        String ldapPublicKey = getLdapPublicKey(ldapConnection, username);
-        Entry entry = ldapConnection.lookup(dn);
+        var ldapPublicKey = getLdapPublicKey(ldapConnection, username);
+        var entry = ldapConnection.lookup(dn);
         if (entry == null) {
             throw new RuntimeException("User [" + username + "] has no entry for " + dn);
         }
 
-        ModifyRequest modifyRequest = new ModifyRequestImpl();
+        var modifyRequest = new ModifyRequestImpl();
         modifyRequest.setName(new Dn(dn));
 
         // Add or Replace, depending on whether there is already an ldapPublicKey on the entry
@@ -199,7 +196,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
                         ModificationOperation.REPLACE_ATTRIBUTE);
             }
         }
-        ModifyResponse modifyResponse = ldapConnection.modify(modifyRequest);
+        var modifyResponse = ldapConnection.modify(modifyRequest);
         if (modifyResponse.getLdapResult().getResultCode() != ResultCodeEnum.SUCCESS) {
             logger.warn("installSSHKey ldap operation reported not being successful: " + modifyResponse);
         } else {
@@ -209,36 +206,34 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
 
     private String getLdapPublicKey(LdapConnection ldapConnection, String username) throws LdapException {
 
-        String dn = "uid=" + username + "," + ldapBaseDN;
+        var dn = "uid=" + username + "," + ldapBaseDN;
 
-        Entry entry = ldapConnection.lookup(dn);
+        var entry = ldapConnection.lookup(dn);
         if (entry == null) {
             throw new RuntimeException("User [" + username + "] has no entry for " + dn);
         }
-        boolean hasLdapPublicKey = entry.hasObjectClass(LDAP_PUBLIC_KEY_OBJECT_CLASS);
+        var hasLdapPublicKey = entry.hasObjectClass(LDAP_PUBLIC_KEY_OBJECT_CLASS);
         return hasLdapPublicKey ? entry.get(SSH_PUBLIC_KEY_ATTRIBUTE_NAME).getString() : null;
     }
 
     @Override
     public String getScratchLocation(String userId) throws InvalidUsernameException {
-        String username = getUsername(userId);
-        String scratchLocation = canonicalScratchLocation.replace("${username}", username);
+        var username = getUsername(userId);
+        var scratchLocation = canonicalScratchLocation.replace("${username}", username);
         return scratchLocation;
     }
 
     private <R> R withLdapConnection(Function<LdapConnection, R> function) {
 
-        try (LdapConnection connection = new LdapNetworkConnection(ldapHost, ldapPort, true)) {
+        try (var connection = new LdapNetworkConnection(ldapHost, ldapPort, true)) {
 
             connection.bind(ldapUsername, ldapPassword);
 
-            R result = function.apply(connection);
+            var result = function.apply(connection);
 
             connection.unBind();
 
             return result;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (LdapException e) {
             throw new RuntimeException(e);
         }

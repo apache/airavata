@@ -20,12 +20,13 @@
 package org.apache.airavata.accountprovisioning;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
+import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.PasswordUtils;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class SSHUtil {
             client.connect(hostname, port);
 
             // Load private key from bytes
-            KeyProvider keyProvider = loadKeyProvider(sshCredential);
+            var keyProvider = loadKeyProvider(sshCredential);
             client.authPublickey(username, keyProvider);
 
             return true;
@@ -78,12 +79,12 @@ public class SSHUtil {
             client.authPublickey(username, keyProvider);
 
             // Execute command
-            try (net.schmizz.sshj.connection.channel.direct.Session session = client.startSession()) {
-                net.schmizz.sshj.connection.channel.direct.Session.Command cmd = session.exec(command);
+            try (var session = client.startSession()) {
+                var cmd = session.exec(command);
 
                 // Read stdout
-                StringBuilder result = new StringBuilder();
-                try (InputStream stdout = cmd.getInputStream()) {
+                var result = new StringBuilder();
+                try (var stdout = cmd.getInputStream()) {
                     byte[] tmp = new byte[1024];
                     int bytesRead;
                     while ((bytesRead = stdout.read(tmp)) != -1) {
@@ -92,8 +93,8 @@ public class SSHUtil {
                 }
 
                 // Read stderr
-                StringBuilder stderr = new StringBuilder();
-                try (InputStream stderrStream = cmd.getErrorStream()) {
+                var stderr = new StringBuilder();
+                try (var stderrStream = cmd.getErrorStream()) {
                     byte[] tmp = new byte[1024];
                     int bytesRead;
                     while ((bytesRead = stderrStream.read(tmp)) != -1) {
@@ -103,13 +104,13 @@ public class SSHUtil {
 
                 // Wait for command to complete
                 cmd.join(30, TimeUnit.SECONDS);
-                Integer exitStatus = cmd.getExitStatus();
+                var exitStatus = cmd.getExitStatus();
 
                 logger.debug("Output from command: " + result.toString());
                 logger.debug("Exit status: " + exitStatus);
 
                 if (exitStatus == null || exitStatus != 0) {
-                    String stderrStr = stderr.toString();
+                    var stderrStr = stderr.toString();
                     if (stderrStr != null && stderrStr.length() > 0) {
                         logger.error("STDERR for command [" + command + "]: " + stderrStr);
                     }
@@ -136,14 +137,14 @@ public class SSHUtil {
      * Load KeyProvider from SSHCredential bytes.
      */
     private static KeyProvider loadKeyProvider(SSHCredential sshCredential) throws IOException {
-        String privateKeyStr = sshCredential.getPrivateKey();
-        String passphrase = sshCredential.getPassphrase();
+        var privateKeyStr = sshCredential.getPrivateKey();
+        var passphrase = sshCredential.getPassphrase();
 
         // Create a temporary SSHClient to use loadKeys() method
-        SSHClient tempClient = new SSHClient();
-        net.schmizz.sshj.userauth.password.PasswordFinder passwordFinder = null;
+        var tempClient = new SSHClient();
+        PasswordFinder passwordFinder = null;
         if (passphrase != null && !passphrase.isEmpty()) {
-            passwordFinder = net.schmizz.sshj.userauth.password.PasswordUtils.createOneOff(passphrase.toCharArray());
+            passwordFinder = PasswordUtils.createOneOff(passphrase.toCharArray());
         }
 
         return tempClient.loadKeys(privateKeyStr, null, passwordFinder);

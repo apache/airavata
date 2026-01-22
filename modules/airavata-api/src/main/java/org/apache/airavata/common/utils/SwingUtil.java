@@ -84,7 +84,7 @@ public class SwingUtil {
      */
     public static ImageIcon createImageIcon(String filename) {
         ImageIcon icon = null;
-        URL imgURL = getImageURL(filename);
+        var imgURL = getImageURL(filename);
         if (imgURL != null) {
             icon = new ImageIcon(imgURL);
         }
@@ -99,7 +99,7 @@ public class SwingUtil {
      */
     public static Image createImage(String filename) {
         Image icon = null;
-        URL imgURL = getImageURL(filename);
+        var imgURL = getImageURL(filename);
         if (imgURL != null) {
             icon = Toolkit.getDefaultToolkit().getImage(imgURL);
         }
@@ -107,8 +107,8 @@ public class SwingUtil {
     }
 
     public static URL getImageURL(String filename) {
-        String path = "/images/" + filename;
-        URL imgURL = SwingUtil.class.getResource(path);
+        var path = "/images/" + filename;
+        var imgURL = SwingUtil.class.getResource(path);
         return imgURL;
     }
 
@@ -153,9 +153,9 @@ public class SwingUtil {
      *            The column to weight
      */
     public static void layoutToGrid(Container parent, int numRow, int numColumn, int weightedRow, int weightedColumn) {
-        GridBagLayout layout = new GridBagLayout();
+        var layout = new GridBagLayout();
         parent.setLayout(layout);
-        GridBagConstraints constraints = new GridBagConstraints();
+        var constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.insets = new Insets(SwingUtil.PAD, SwingUtil.PAD, SwingUtil.PAD, SwingUtil.PAD);
@@ -190,9 +190,9 @@ public class SwingUtil {
      * @param columnWeights
      */
     public static void layoutToGrid(Container parent, double[] rowWeights, double[] columnWeights) {
-        GridBagLayout layout = new GridBagLayout();
+        var layout = new GridBagLayout();
         parent.setLayout(layout);
-        GridBagConstraints constraints = new GridBagConstraints();
+        var constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.insets = new Insets(SwingUtil.PAD, SwingUtil.PAD, SwingUtil.PAD, SwingUtil.PAD);
@@ -216,9 +216,9 @@ public class SwingUtil {
      */
     @SuppressWarnings("boxing")
     public static void layoutToGrid(Container parent, List<Double> rowWeights, List<Double> columnWeights) {
-        GridBagLayout layout = new GridBagLayout();
+        var layout = new GridBagLayout();
         parent.setLayout(layout);
-        GridBagConstraints constraints = new GridBagConstraints();
+        var constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.insets = new Insets(SwingUtil.PAD, SwingUtil.PAD, SwingUtil.PAD, SwingUtil.PAD);
@@ -274,7 +274,7 @@ public class SwingUtil {
     private static void makeSpringCompactGrid(
             Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
 
-        SpringLayout layout = new SpringLayout();
+        var layout = new SpringLayout();
         parent.setLayout(layout);
 
         // Align all cells in each column and make them the same width.
@@ -310,15 +310,15 @@ public class SwingUtil {
         }
 
         // Set the parent's size.
-        SpringLayout.Constraints pCons = layout.getConstraints(parent);
+        var pCons = layout.getConstraints(parent);
         pCons.setConstraint(SpringLayout.SOUTH, y);
         pCons.setConstraint(SpringLayout.EAST, x);
     }
 
     /* Used by makeCompactGrid. */
     private static SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
-        SpringLayout layout = (SpringLayout) parent.getLayout();
-        Component c = parent.getComponent(row * cols + col);
+        var layout = (SpringLayout) parent.getLayout();
+        var c = parent.getComponent(row * cols + col);
         return layout.getConstraints(c);
     }
 

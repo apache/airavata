@@ -23,11 +23,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Stub class for UserContentStore.
+ * UserContentStore implementation using Dapr State Store.
  *
  * <p>Replaces org.apache.helix.task.UserContentStore as part of the migration from Helix to Dapr.
  * This class provides the same API surface as Helix's UserContentStore for compatibility
- * with existing task implementations. In the future, this will be replaced with Dapr Workflow state.
+ * with existing task implementations. Now uses Dapr State Store for persistent state management.
  */
 public class UserContentStore {
 
@@ -37,28 +37,78 @@ public class UserContentStore {
         TASK
     }
 
-    // In-memory storage for workflow state (will be replaced with Dapr Workflow state)
+    // Fallback in-memory storage when Dapr is not available
     private static final Map<String, Map<String, String>> workflowContent = new ConcurrentHashMap<>();
     private static final Map<String, Map<String, String>> jobContent = new ConcurrentHashMap<>();
     private static final Map<String, Map<String, String>> taskContent = new ConcurrentHashMap<>();
 
+    // StateManager will be injected by subclasses that have access to Spring context
+    // For now, we'll use a static holder pattern or fallback to in-memory
+    private static org.apache.airavata.orchestrator.state.StateManager stateManager;
+
+    /**
+     * Set the StateManager for use by UserContentStore.
+     * Called during application initialization.
+     */
+    public static void setStateManager(org.apache.airavata.orchestrator.state.StateManager manager) {
+        stateManager = manager;
+    }
+
     protected String getUserContent(String key, Scope scope) {
-        Map<String, Map<String, String>> contentMap = getContentMap(scope);
         String contextKey = getContextKey();
         if (contextKey == null) {
             return null;
         }
+
+        // Try State Store first
+        if (stateManager != null && stateManager.isAvailable()) {
+            try {
+                String stateKey = buildStateKey(contextKey, scope, key);
+                java.util.Optional<String> value = stateManager.getState(stateKey, String.class);
+                if (value.isPresent()) {
+                    return value.get();
+                }
+            } catch (org.apache.airavata.common.exception.AiravataException e) {
+                org.slf4j.LoggerFactory.getLogger(UserContentStore.class)
+                        .warn("Failed to get content from State Store, falling back to in-memory: {}", e.getMessage());
+            }
+        }
+
+        // Fallback to in-memory storage
+        Map<String, Map<String, String>> contentMap = getContentMap(scope);
         Map<String, String> contextContent = contentMap.get(contextKey);
         return contextContent != null ? contextContent.get(key) : null;
     }
 
     protected void putUserContent(String key, String value, Scope scope) {
-        Map<String, Map<String, String>> contentMap = getContentMap(scope);
         String contextKey = getContextKey();
         if (contextKey == null) {
             return;
         }
+
+        // Try State Store first
+        if (stateManager != null && stateManager.isAvailable()) {
+            try {
+                String stateKey = buildStateKey(contextKey, scope, key);
+                stateManager.saveState(stateKey, value);
+                return;
+            } catch (org.apache.airavata.common.exception.AiravataException e) {
+                org.slf4j.LoggerFactory.getLogger(UserContentStore.class)
+                        .warn("Failed to save content to State Store, falling back to in-memory: {}", e.getMessage());
+            }
+        }
+
+        // Fallback to in-memory storage
+        Map<String, Map<String, String>> contentMap = getContentMap(scope);
         contentMap.computeIfAbsent(contextKey, k -> new ConcurrentHashMap<>()).put(key, value);
+    }
+
+    /**
+     * Build a state key for Dapr State Store.
+     * Format: "usercontent:{scope}:{contextKey}:{key}"
+     */
+    private String buildStateKey(String contextKey, Scope scope, String key) {
+        return String.format("usercontent:%s:%s:%s", scope.name().toLowerCase(), contextKey, key);
     }
 
     private Map<String, Map<String, String>> getContentMap(Scope scope) {

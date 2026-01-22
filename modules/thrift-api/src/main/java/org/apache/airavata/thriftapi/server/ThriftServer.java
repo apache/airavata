@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.thriftapi.server;
 
+import java.io.File;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.thriftapi.credential.model.CredentialStoreService;
@@ -48,10 +49,67 @@ import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Thrift Server - Thrift Endpoints for Airavata API functions.
+ *
+ * <p>This server provides Thrift endpoints for Airavata API functions, running on port 8930
+ * (configurable via {@code airavata.services.thrift.server.port}). It uses a multiplexed
+ * processor to expose multiple internal services through a single Thrift endpoint.
+ *
+ * <p><b>External API:</b> This is one of four external API layers in Airavata:
+ * <ul>
+ *   <li>Thrift Server (port 8930) - Thrift Endpoints for Airavata API functions (this server)</li>
+ *   <li>HTTP Server (port 8080):
+ *       <ul>
+ *         <li>Airavata API - HTTP Endpoints for Airavata API functions</li>
+ *         <li>File API - HTTP Endpoints for file upload/download</li>
+ *         <li>Agent API - HTTP Endpoints for interactive job contexts</li>
+ *         <li>Research API - HTTP Endpoints for use by research hub</li>
+ *       </ul>
+ *   </li>
+ *   <li>gRPC Server (port 9090) - For airavata binaries to open persistent channels with airavata APIs</li>
+ *   <li>Dapr gRPC (port 50001) - Sidecar for pub/sub, state, and workflow execution</li>
+ * </ul>
+ *
+ * <p><b>Multiplexed Services:</b> The following services are exposed through this unified
+ * Thrift Server endpoint using service name prefixes:
+ * <ul>
+ *   <li>{@code Airavata} - Main Airavata service for experiments, processes, and workflows</li>
+ *   <li>{@code ProfileService.UserProfileService} - User profile management</li>
+ *   <li>{@code ProfileService.TenantProfileService} - Tenant/gateway profile management</li>
+ *   <li>{@code ProfileService.IamAdminServices} - IAM administration</li>
+ *   <li>{@code ProfileService.GroupManagerService} - Group management</li>
+ *   <li>{@code OrchestratorService} - Workflow orchestration (internal service)</li>
+ *   <li>{@code RegistryService} - Application and metadata registry (internal service)</li>
+ *   <li>{@code CredentialStoreService} - Secure credential storage (internal service)</li>
+ *   <li>{@code SharingRegistryService} - Permissions and sharing (internal service)</li>
+ * </ul>
+ *
+ * <p><b>Internal Services:</b> Orchestrator, Registry, Profile Service, Sharing Registry,
+ * and Credential Store are internal components that are accessed via Thrift Server.
+ * They are not separate servers but are multiplexed through this unified endpoint.
+ *
+ * <p><b>Thrift Interface Definitions:</b> The Thrift IDL files are located in
+ * {@code thrift-interface-descriptions/} directory. See the main README.md for stub
+ * generation instructions.
+ *
+ * <p><b>Configuration:</b>
+ * <ul>
+ *   <li>{@code airavata.services.thrift.enabled} - Enable/disable Thrift server (default: true)</li>
+ *   <li>{@code airavata.services.thrift.server.port} - Server port (default: 8930)</li>
+ *   <li>{@code airavata.security.tls.enabled} - Enable TLS encryption (default: false)</li>
+ * </ul>
+ *
+ * <p><b>TLS Support:</b> When TLS is enabled via {@code airavata.security.tls.enabled=true},
+ * the server uses the keystore configured in {@code airavata.security.tls.keystore.path}
+ * (relative to the configuration directory).
+ *
+ * @see org.apache.airavata.config.AiravataServerProperties
+ * @see org.apache.airavata.config.ServerLifecycle
+ */
 @Component
 @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
         name = "services.thrift.enabled",
@@ -141,8 +199,8 @@ public class ThriftServer extends ServerLifecycle {
             final int serverPort = properties.services().thrift().server().port();
 
             if (!properties.security().tls().enabled()) {
-                TServerTransport serverTransport = new TServerSocket(serverPort);
-                TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+                var serverTransport = new TServerSocket(serverPort);
+                var options = new TThreadPoolServer.Args(serverTransport);
                 server = new TThreadPoolServer(options.processor(multiplexedProcessor));
                 serverThread = new Thread(() -> {
                     server.serve();
@@ -181,14 +239,14 @@ public class ThriftServer extends ServerLifecycle {
                             "TLS keystore configuration is missing: security.tls.keystore.path is not set in application.properties");
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
-                java.io.File keystoreFile = new java.io.File(
+                var keystoreFile = new File(
                         configDir, properties.security().tls().keystore().path());
                 TLSParams.setKeyStore(
                         keystoreFile.getAbsolutePath(),
                         properties.security().tls().keystore().password());
                 var TLSServerTransport = TSSLTransportFactory.getServerSocket(
                         serverPort, properties.security().tls().clientTimeout(), null, TLSParams);
-                TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
+                var settings = new TThreadPoolServer.Args(TLSServerTransport);
                 TLSServer = new TThreadPoolServer(settings.processor(multiplexedProcessor));
                 tlsServerThread = new Thread(() -> {
                     TLSServer.serve();
@@ -225,15 +283,11 @@ public class ThriftServer extends ServerLifecycle {
     @Override
     protected void doStart() throws Exception {
         // Create processors for each service
-        Airavata.Processor<Airavata.Iface> airavataProcessor = new Airavata.Processor<>(airavataHandler);
-        OrchestratorService.Processor<OrchestratorServiceHandler> orchestratorProcessor =
-                new OrchestratorService.Processor<>(orchestratorHandler);
-        RegistryService.Processor<RegistryServiceHandler> registryProcessor =
-                new RegistryService.Processor<>(registryHandler);
-        CredentialStoreService.Processor<CredentialServiceHandler> credentialProcessor =
-                new CredentialStoreService.Processor<>(credentialHandler);
-        SharingRegistryService.Processor<SharingRegistryServerHandler> sharingProcessor =
-                new SharingRegistryService.Processor<>(sharingHandler);
+        var airavataProcessor = new Airavata.Processor<>(airavataHandler);
+        var orchestratorProcessor = new OrchestratorService.Processor<>(orchestratorHandler);
+        var registryProcessor = new RegistryService.Processor<>(registryHandler);
+        var credentialProcessor = new CredentialStoreService.Processor<>(credentialHandler);
+        var sharingProcessor = new SharingRegistryService.Processor<>(sharingHandler);
 
         // Create Profile Service processors (flattened - no nested multiplexing)
         var userProfileProcessor = new UserProfileService.Processor<>(userProfileHandler);
@@ -242,7 +296,7 @@ public class ThriftServer extends ServerLifecycle {
         var groupManagerProcessor = new GroupManagerService.Processor<>(groupManagerHandler);
 
         // Create main multiplexed processor and register all services
-        TMultiplexedProcessor mainMultiplexedProcessor = new TMultiplexedProcessor();
+        var mainMultiplexedProcessor = new TMultiplexedProcessor();
         mainMultiplexedProcessor.registerProcessor(AIRAVATA_SERVICE_NAME, airavataProcessor);
         // Register Profile sub-services with prefixed names
         mainMultiplexedProcessor.registerProcessor(
@@ -260,7 +314,7 @@ public class ThriftServer extends ServerLifecycle {
         mainMultiplexedProcessor.registerProcessor(CREDENTIAL_STORE_SERVICE_NAME, credentialProcessor);
         mainMultiplexedProcessor.registerProcessor(SHARING_REGISTRY_SERVICE_NAME, sharingProcessor);
 
-        logger.info("Registered services in unified Thrift API: Airavata, ProfileService, OrchestratorService, "
+        logger.info("Registered services in unified Thrift Server: Airavata, ProfileService, OrchestratorService, "
                 + "RegistryService, CredentialStoreService, SharingRegistryService");
 
         startThriftServer(mainMultiplexedProcessor);

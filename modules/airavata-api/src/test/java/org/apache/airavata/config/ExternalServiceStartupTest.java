@@ -161,7 +161,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
 
     /**
      * Test Agent Service port availability (if service is configured).
-     * Port 18800 is used for Agent Service Thrift RPC.
+     * Agent Service uses gRPC on port 9090 (unified gRPC server) and HTTP on port 8080 (unified HTTP server).
      */
     @Test
     public void testAgentServicePort() {
@@ -170,7 +170,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
 
     /**
      * Test Research Service port availability (if service is configured).
-     * Port 18889 is used for Research Service Thrift RPC.
+     * Port 8080 is used for unified HTTP server (includes Research API endpoints).
      */
     @Test
     public void testResearchServicePort() {
@@ -179,7 +179,7 @@ public class ExternalServiceStartupTest extends ServiceStartupTestBase {
 
     /**
      * Test File Service port availability (if service is configured).
-     * Port 8050 is used for File Service Thrift RPC.
+     * Port 8080 is used for unified HTTP server (includes File Service HTTP endpoints).
      */
     @Test
     public void testFileServicePort() {

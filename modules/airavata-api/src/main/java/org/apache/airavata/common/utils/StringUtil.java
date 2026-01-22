@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ public class StringUtil {
     public static final String QUOTE = "\"";
 
     public static Map<Integer, String> getContainedParameters(String s) {
-        Map<Integer, String> parameterMap = new HashMap<>();
+        var parameterMap = new HashMap<Integer, String>();
         int i = 0;
         for (i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '$' && (i + 1) < s.length() && s.charAt(i + 1) == '{') {
@@ -57,12 +56,12 @@ public class StringUtil {
     // Merits for the following function should go to
     // http://blog.houen.net/java-get-url-from-string/
     public static List<String> getURLS(String text) {
-        List<String> links = new ArrayList<String>();
-        String regex = "\\(?\\b((http|https|ftp)://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(text);
+        var links = new ArrayList<String>();
+        var regex = "\\(?\\b((http|https|ftp)://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
+        var p = Pattern.compile(regex);
+        var m = p.matcher(text);
         while (m.find()) {
-            String urlStr = m.group();
+            var urlStr = m.group();
             if (urlStr.startsWith("(") && urlStr.endsWith(")")) {
                 urlStr = urlStr.substring(1, urlStr.length() - 1);
             }
@@ -75,7 +74,7 @@ public class StringUtil {
 
     public static String createHTMLUrlTaggedString2(String value, List<String> pullLinks) {
         for (String url : pullLinks) {
-            String hyperlinkString = "<a href='" + url + "'>" + url + "</a>";
+            var hyperlinkString = "<a href='" + url + "'>" + url + "</a>";
             value = value.replaceAll(Pattern.quote(url), hyperlinkString);
         }
         return value;
@@ -181,7 +180,7 @@ public class StringUtil {
      * @return
      */
     public static String[] getElementsFromString(String s, String delimeter, String quote) {
-        List<String> list = new ArrayList<String>();
+        var list = new ArrayList<String>();
         String currentItem = "";
         String previousChar = null;
         boolean insideQuote = false;
@@ -288,7 +287,7 @@ public class StringUtil {
             return "" + REPLACE_CHAR;
         }
 
-        StringBuilder buf = new StringBuilder();
+        var buf = new StringBuilder();
 
         char c = name.charAt(0);
         if (!Character.isJavaIdentifierStart(c)) {
@@ -358,15 +357,15 @@ public class StringUtil {
      * @return The stackTrace in String
      */
     public static String getStackTraceInString(Throwable throwable) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        var printStream = new PrintStream(byteArrayOutputStream);
         throwable.printStackTrace(printStream);
         printStream.flush();
         return byteArrayOutputStream.toString();
     }
 
     public static Map<String, String> parseCommandLineOptions(String[] args) {
-        Map<String, String> commandLineOptions = new HashMap<>();
+        var commandLineOptions = new HashMap<String, String>();
         try {
             CommandLineParameters cmdParameters = getCommandLineParser(args);
             Map<String, String> parameters = cmdParameters.getParameters();
@@ -378,9 +377,9 @@ public class StringUtil {
     }
 
     public static CommandLineParameters getCommandLineParser(String[] args) throws Exception {
-        String[] argCopy = getChangedList(args);
-        Map<String, String> options = new HashMap<>();
-        List<String> arguments = new ArrayList<>();
+        var argCopy = getChangedList(args);
+        var options = new HashMap<String, String>();
+        var arguments = new ArrayList<String>();
 
         for (int i = 0; i < argCopy.length; i++) {
             String arg = argCopy[i];

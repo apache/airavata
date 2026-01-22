@@ -28,9 +28,14 @@ import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.AiravataTask;
 import org.apache.airavata.task.base.TaskContext;
 import org.apache.airavata.task.submission.JobFactory;
@@ -38,6 +43,7 @@ import org.apache.airavata.task.submission.JobManagerConfiguration;
 import org.apache.airavata.task.submission.RawCommandInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @TaskDef(name = "Remote Job Cancellation Task")
@@ -50,12 +56,12 @@ public class RemoteJobCancellationTask extends AiravataTask {
     public static final String JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE = "job-already-cancelled";
 
     public RemoteJobCancellationTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -208,11 +214,9 @@ public class RemoteJobCancellationTask extends AiravataTask {
                             ex);
                 }
 
-                // TODO: Remove this temporary fix once schedulers are configured to notify when a job is externally
-                // cancelled
-                // This is a workaround until proper job cancellation notification is implemented
-                // forcefully make the job state as cancelled as some schedulers do not notify when the job is
-                // cancelled.
+                // Workaround: Some schedulers do not send notifications when a job is externally cancelled.
+                // Forcefully update the job state to CANCELLED to ensure the system state is consistent.
+                // This is a permanent workaround until all schedulers implement proper cancellation notifications.
                 saveAndPublishJobStatus(
                         job.getJobId(),
                         job.getTaskId(),

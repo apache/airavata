@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ProcessModel;
@@ -51,7 +50,7 @@ public class ProcessController {
     @GetMapping("/{processId}")
     public ResponseEntity<?> getProcess(@PathVariable String processId) {
         try {
-            ProcessModel process = processService.getProcess(processId);
+            var process = processService.getProcess(processId);
             if (process == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -64,7 +63,7 @@ public class ProcessController {
     @PostMapping
     public ResponseEntity<?> createProcess(@RequestParam String experimentId, @RequestBody ProcessModel process) {
         try {
-            String processId = processService.addProcess(process, experimentId);
+            var processId = processService.addProcess(process, experimentId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("processId", processId));
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -85,8 +84,7 @@ public class ProcessController {
     @GetMapping
     public ResponseEntity<?> getProcesses(@RequestParam String experimentId) {
         try {
-            List<ProcessModel> processes =
-                    processService.getProcessList(DBConstants.Process.EXPERIMENT_ID, experimentId);
+            var processes = processService.getProcessList(DBConstants.Process.EXPERIMENT_ID, experimentId);
             return ResponseEntity.ok(processes);
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -96,7 +94,7 @@ public class ProcessController {
     @GetMapping("/{processId}/resource-schedule")
     public ResponseEntity<?> getProcessResourceSchedule(@PathVariable String processId) {
         try {
-            ComputationalResourceSchedulingModel schedule = processService.getProcessResourceSchedule(processId);
+            var schedule = processService.getProcessResourceSchedule(processId);
             return ResponseEntity.ok(schedule);
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -107,7 +105,7 @@ public class ProcessController {
     public ResponseEntity<?> createProcessResourceSchedule(
             @PathVariable String processId, @RequestBody ComputationalResourceSchedulingModel schedule) {
         try {
-            String result = processService.addProcessResourceSchedule(schedule, processId);
+            var result = processService.addProcessResourceSchedule(schedule, processId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("processId", result));
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -118,7 +116,7 @@ public class ProcessController {
     public ResponseEntity<?> updateProcessResourceSchedule(
             @PathVariable String processId, @RequestBody ComputationalResourceSchedulingModel schedule) {
         try {
-            String result = processService.updateProcessResourceSchedule(schedule, processId);
+            var result = processService.updateProcessResourceSchedule(schedule, processId);
             return ResponseEntity.ok(Map.of("processId", result));
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

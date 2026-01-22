@@ -89,7 +89,7 @@ public class CLIIntegrationTest {
         void mainHelpShouldDisplayAllSubcommands() {
             // Create a standalone CommandLine without Spring context
             // This tests the CLI definition itself, not the full application
-            CommandLine cmd = createStandaloneCommandLine();
+            var cmd = createStandaloneCommandLine();
             int exitCode = cmd.execute("--help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -112,7 +112,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata -h should be equivalent to --help")
         void shortHelpFlagShouldWork() {
-            CommandLine cmd = createStandaloneCommandLine();
+            var cmd = createStandaloneCommandLine();
             int exitCode = cmd.execute("-h");
 
             assertThat(exitCode).isEqualTo(0);
@@ -124,7 +124,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata --version should display version info")
         void versionShouldDisplayVersionInfo() {
-            CommandLine cmd = createStandaloneCommandLine();
+            var cmd = createStandaloneCommandLine();
             int exitCode = cmd.execute("--version");
 
             // Version info is displayed (exit code may vary based on implementation)
@@ -153,7 +153,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata init --help should display init options")
         void initHelpShouldDisplayOptions() {
-            CommandLine cmd = new CommandLine(new InitCommand());
+            var cmd = new CommandLine(new InitCommand());
             int exitCode = cmd.execute("--help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -171,7 +171,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata serve --help should display serve options")
         void serveHelpShouldDisplayOptions() {
-            CommandLine cmd = new CommandLine(new ServeCommand());
+            var cmd = new CommandLine(new ServeCommand());
             int exitCode = cmd.execute("--help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -190,7 +190,7 @@ public class CLIIntegrationTest {
         @DisplayName("airavata account help should display account subcommands")
         void accountHelpShouldDisplaySubcommands() {
             // AccountCommand uses HelpCommand subcommand, not mixinStandardHelpOptions
-            CommandLine cmd = new CommandLine(new AccountCommand());
+            var cmd = new CommandLine(new AccountCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -207,7 +207,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata project help should display project subcommands")
         void projectHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new ProjectCommand());
+            var cmd = new CommandLine(new ProjectCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -224,7 +224,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata compute help should display compute subcommands")
         void computeHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new ComputeCommand());
+            var cmd = new CommandLine(new ComputeCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -241,7 +241,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata storage help should display storage subcommands")
         void storageHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new StorageCommand());
+            var cmd = new CommandLine(new StorageCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -258,7 +258,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata group help should display group subcommands")
         void groupHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new GroupCommand());
+            var cmd = new CommandLine(new GroupCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -275,7 +275,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata application help should display application subcommands")
         void applicationHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new ApplicationCommand());
+            var cmd = new CommandLine(new ApplicationCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -292,7 +292,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata service help should display service subcommands")
         void serviceHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new ServiceCommand());
+            var cmd = new CommandLine(new ServiceCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -309,7 +309,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("airavata test help should display test subcommands")
         void testHelpShouldDisplaySubcommands() {
-            CommandLine cmd = new CommandLine(new TestCommand());
+            var cmd = new CommandLine(new TestCommand());
             int exitCode = cmd.execute("help");
 
             assertThat(exitCode).isEqualTo(0);
@@ -326,7 +326,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("Invalid command should return non-zero exit code")
         void invalidCommandShouldFail() {
-            CommandLine cmd = createStandaloneCommandLine();
+            var cmd = createStandaloneCommandLine();
             int exitCode = cmd.execute("invalid-command");
 
             assertThat(exitCode).isNotEqualTo(0);
@@ -335,7 +335,7 @@ public class CLIIntegrationTest {
         @Test
         @DisplayName("Invalid option should return non-zero exit code")
         void invalidOptionShouldFail() {
-            CommandLine cmd = createStandaloneCommandLine();
+            var cmd = createStandaloneCommandLine();
             int exitCode = cmd.execute("--invalid-option");
 
             assertThat(exitCode).isNotEqualTo(0);

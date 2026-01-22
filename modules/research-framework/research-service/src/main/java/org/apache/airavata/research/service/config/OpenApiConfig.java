@@ -36,12 +36,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration("researchOpenApiConfig")
 public class OpenApiConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenApiConfig.class);
 
-    @Value("${services.research.openid.url:http://localhost:18080/realms/default}")
+    @Value("${airavata.services.research.openid.url:http://localhost:18080/realms/default}")
     private String openIdConfigURL;
 
     @Bean
@@ -77,7 +77,7 @@ public class OpenApiConfig {
     public OpenApiCustomizer globalHeaderCustomizer() {
         logger.info("Applying global header customizer...");
         return openApi -> {
-            Parameter claimsHeader = new Parameter()
+            var claimsHeader = new Parameter()
                     .in("header")
                     .schema(new StringSchema())
                     .name("X-Claims")

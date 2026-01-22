@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import java.util.Properties;
@@ -50,7 +49,7 @@ public class ProxyController {
 
     @PostConstruct
     public void init() {
-        Properties props = new Properties();
+        var props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, "restapiProducer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -61,14 +60,14 @@ public class ProxyController {
     @PostMapping(value = "/topics/{topic}", consumes = "application/vnd.kafka.json.v2+json")
     public ResponseEntity<?> postToKafka(@PathVariable("topic") String topic, @RequestBody String body) {
         try {
-            JsonNode root = objectMapper.readTree(body);
+            var root = objectMapper.readTree(body);
             if (!root.has("records")) {
                 return ResponseEntity.badRequest().body("Missing 'records' field");
             }
-            for (JsonNode record : root.get("records")) {
-                JsonNode valueNode = record.get("value");
+            for (var record : root.get("records")) {
+                var valueNode = record.get("value");
                 if (valueNode == null) continue;
-                String valueStr = objectMapper.writeValueAsString(valueNode);
+                var valueStr = objectMapper.writeValueAsString(valueNode);
                 log.info("Received message for topic {}: {}", topic, valueStr);
                 var kafkaRecord = new ProducerRecord<String, String>(topic, valueStr);
                 producer.send(kafkaRecord).get();

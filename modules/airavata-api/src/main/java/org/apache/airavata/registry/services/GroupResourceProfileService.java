@@ -515,46 +515,50 @@ public class GroupResourceProfileService {
 
     public List<GroupResourceProfile> getAllGroupResourceProfiles(
             String gatewayId, List<String> accessibleGroupResProfileIds) {
+        List<GroupResourceProfileEntity> entities;
+        
         if (accessibleGroupResProfileIds != null && !accessibleGroupResProfileIds.isEmpty()) {
-            List<GroupResourceProfileEntity> entities =
-                    groupResourceProfileRepository.findAccessibleGroupResourceProfiles(
+            entities = groupResourceProfileRepository.findAccessibleGroupResourceProfiles(
                             gatewayId, accessibleGroupResProfileIds);
-            List<GroupResourceProfile> profiles = groupResourceProfileMapper.toModelList(entities);
-
-            // Load computePreferences from entities (mapper ignores them due to polymorphism)
-            for (int i = 0; i < profiles.size(); i++) {
-                GroupResourceProfile profile = profiles.get(i);
-                GroupResourceProfileEntity entity = entities.get(i);
-                List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
-
-                if (entity.getComputePreferences() != null) {
-                    for (GroupComputeResourcePrefEntity prefEntity : entity.getComputePreferences()) {
-                        GroupComputeResourcePreference pref = groupComputeResourcePreferenceMapper.toModel(prefEntity);
-                        // Set resourceType and specificPreferences based on entity type
-                        if (prefEntity instanceof AWSGroupComputeResourcePrefEntity awsEntity) {
-                            pref.setResourceType(ComputeResourceType.AWS);
-                            AwsComputeResourcePreference awsPref =
-                                    awsComputeResourcePreferenceMapper.toModel(awsEntity);
-                            pref.setSpecificPreferences(
-                                    org.apache.airavata.common.model.EnvironmentSpecificPreferences.aws(awsPref));
-                        } else if (prefEntity instanceof SlurmGroupComputeResourcePrefEntity slurmEntity) {
-                            pref.setResourceType(ComputeResourceType.SLURM);
-                            SlurmComputeResourcePreference slurmPref =
-                                    slurmComputeResourcePreferenceMapper.toModel(slurmEntity);
-                            pref.setSpecificPreferences(
-                                    org.apache.airavata.common.model.EnvironmentSpecificPreferences.slurm(slurmPref));
-                        }
-                        decoratedPrefs.add(pref);
-                    }
-                }
-
-                profile.setComputePreferences(decoratedPrefs);
-            }
-            return profiles;
-
+        } else if (gatewayId != null && !gatewayId.isEmpty()) {
+            // If no access filter provided but gateway specified, return all for that gateway
+            entities = groupResourceProfileRepository.findByGatewayId(gatewayId);
         } else {
             return Collections.emptyList();
         }
+        
+        List<GroupResourceProfile> profiles = groupResourceProfileMapper.toModelList(entities);
+
+        // Load computePreferences from entities (mapper ignores them due to polymorphism)
+        for (int i = 0; i < profiles.size(); i++) {
+            GroupResourceProfile profile = profiles.get(i);
+            GroupResourceProfileEntity entity = entities.get(i);
+            List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
+
+            if (entity.getComputePreferences() != null) {
+                for (GroupComputeResourcePrefEntity prefEntity : entity.getComputePreferences()) {
+                    GroupComputeResourcePreference pref = groupComputeResourcePreferenceMapper.toModel(prefEntity);
+                    // Set resourceType and specificPreferences based on entity type
+                    if (prefEntity instanceof AWSGroupComputeResourcePrefEntity awsEntity) {
+                        pref.setResourceType(ComputeResourceType.AWS);
+                        AwsComputeResourcePreference awsPref =
+                                awsComputeResourcePreferenceMapper.toModel(awsEntity);
+                        pref.setSpecificPreferences(
+                                org.apache.airavata.common.model.EnvironmentSpecificPreferences.aws(awsPref));
+                    } else if (prefEntity instanceof SlurmGroupComputeResourcePrefEntity slurmEntity) {
+                        pref.setResourceType(ComputeResourceType.SLURM);
+                        SlurmComputeResourcePreference slurmPref =
+                                slurmComputeResourcePreferenceMapper.toModel(slurmEntity);
+                        pref.setSpecificPreferences(
+                                org.apache.airavata.common.model.EnvironmentSpecificPreferences.slurm(slurmPref));
+                    }
+                    decoratedPrefs.add(pref);
+                }
+            }
+
+            profile.setComputePreferences(decoratedPrefs);
+        }
+        return profiles;
     }
 
     public boolean removeGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) {

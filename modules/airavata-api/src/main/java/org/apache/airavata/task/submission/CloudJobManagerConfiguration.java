@@ -78,9 +78,17 @@ public class CloudJobManagerConfiguration implements JobManagerConfiguration {
         return new AiravataCustomCommandOutputParser();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Not applicable for CloudJobManagerConfiguration as jobs are executed directly
+     * on cloud VMs via SSH, not through a job scheduler that requires an installed path.
+     *
+     * @throws UnsupportedOperationException always, as this operation is not applicable
+     */
     @Override
     public String getInstalledPath() {
-        throw new UnsupportedOperationException("Installed path is not applicable for direct executions");
+        throw new UnsupportedOperationException("Installed path is not applicable for direct executions on cloud VMs");
     }
 
     @Override
@@ -98,8 +106,20 @@ public class CloudJobManagerConfiguration implements JobManagerConfiguration {
         return "/bin/bash";
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Liveness checks are not supported for cloud job managers as jobs run directly
+     * on VMs without a queue/partition system. Job status is monitored via process status
+     * checks instead.
+     *
+     * @param queueName queue name (not used)
+     * @param partition partition name (not used)
+     * @throws UnsupportedOperationException always, as this operation is not applicable
+     */
     @Override
     public String getLivenessCheckCommand(String queueName, String partition) {
-        throw new UnsupportedOperationException("Liveness check is not supported for cloud job managers");
+        throw new UnsupportedOperationException(
+                "Liveness check is not supported for cloud job managers - jobs run directly on VMs");
     }
 }

@@ -31,30 +31,35 @@ import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobStatus;
-import org.apache.airavata.common.model.ResourceJobManager;
 import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.monitor.compute.ComputeSubmissionTracker;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.AiravataTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 public abstract class JobSubmissionTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(JobSubmissionTask.class);
-    protected final org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder;
+    protected final GroovyMapBuilder groovyMapBuilder;
     protected ComputeSubmissionTracker computeSubmissionTracker;
 
     public JobSubmissionTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory,
-            org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder,
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            DaprMessagingFactory messagingFactory,
+            GroovyMapBuilder groovyMapBuilder,
             ComputeSubmissionTracker computeSubmissionTracker) {
         super(
                 taskUtil,
@@ -75,22 +80,21 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(
             AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration =
-                JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                        getRegistryService(),
-                        getTaskContext().getJobSubmissionProtocol(),
-                        getTaskContext().getPreferredJobSubmissionInterface()));
+        var jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
+                getRegistryService(),
+                getTaskContext().getJobSubmissionProtocol(),
+                getTaskContext().getPreferredJobSubmissionInterface()));
 
         if (getTaskContext().getResourceJobManager().getResourceJobManagerType() != ResourceJobManagerType.HTCONDOR) {
             addMonitoringCommands(groovyMapData);
         }
 
-        String scriptAsString = groovyMapData.loadFromFile(jobManagerConfiguration.getJobDescriptionTemplateName());
+        var scriptAsString = groovyMapData.loadFromFile(jobManagerConfiguration.getJobDescriptionTemplateName());
         logger.info("Generated job submission script : " + scriptAsString);
 
         int number = new SecureRandom().nextInt();
         number = (number < 0 ? -number : number);
-        File tempJobFile = new File(
+        var tempJobFile = new File(
                 getLocalDataDir(), "job_" + Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
 
         Files.writeString(
@@ -102,18 +106,16 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 + " of compute resource " + getTaskContext().getComputeResourceId());
         agentAdaptor.uploadFile(tempJobFile.getAbsolutePath(), workingDirectory);
 
-        RawCommandInfo submitCommand =
-                jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
+        var submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
 
         logger.info("Submit command for process id " + getProcessId() + " : " + submitCommand.getRawCommand());
         logger.debug("Working directory for process id " + getProcessId() + " : " + workingDirectory);
 
-        CommandOutput commandOutput =
-                submitCommandWithRecording(submitCommand, agentAdaptor, groovyMapData, workingDirectory);
+        var commandOutput = submitCommandWithRecording(submitCommand, agentAdaptor, groovyMapData, workingDirectory);
         logger.info("Job " + groovyMapData.getJobName() + " submitted to compute resource");
         logger.info("Submission stdout: " + commandOutput.getStdOut() + ", stderr: " + commandOutput.getStdError());
 
-        JobSubmissionOutput jsoutput = new JobSubmissionOutput();
+        var jsoutput = new JobSubmissionOutput();
         jsoutput.setDescription(scriptAsString);
 
         jsoutput.setJobId(jobManagerConfiguration.getParser().parseJobSubmission(commandOutput.getStdOut()));
@@ -211,12 +213,11 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
-        JobManagerConfiguration jobManagerConfiguration =
-                JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                        getRegistryService(),
-                        getTaskContext().getJobSubmissionProtocol(),
-                        getTaskContext().getPreferredJobSubmissionInterface()));
-        CommandOutput commandOutput = agentAdaptor.executeCommand(
+        var jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
+                getRegistryService(),
+                getTaskContext().getJobSubmissionProtocol(),
+                getTaskContext().getPreferredJobSubmissionInterface()));
+        var commandOutput = agentAdaptor.executeCommand(
                 jobManagerConfiguration.getCancelCommand(jobId).getRawCommand(), null);
         return commandOutput.getExitCode() == 0;
     }
@@ -224,7 +225,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobId) throws Exception {
 
-        ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
+        var resourceJobManager = JobFactory.getResourceJobManager(
                 getRegistryService(),
                 getTaskContext().getJobSubmissionProtocol(),
                 getTaskContext().getPreferredJobSubmissionInterface());
@@ -234,9 +235,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
                     + getTaskContext().getJobSubmissionProtocol() + " and job id " + jobId);
         }
 
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+        var jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
 
-        CommandOutput commandOutput = agentAdaptor.executeCommand(
+        var commandOutput = agentAdaptor.executeCommand(
                 jobManagerConfiguration.getMonitorCommand(jobId).getRawCommand(), null);
 
         return jobManagerConfiguration.getParser().parseJobStatus(jobId, commandOutput.getStdOut());
@@ -245,7 +246,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
 
-        ResourceJobManager resourceJobManager = JobFactory.getResourceJobManager(
+        var resourceJobManager = JobFactory.getResourceJobManager(
                 getRegistryService(),
                 getTaskContext().getJobSubmissionProtocol(),
                 getTaskContext().getPreferredJobSubmissionInterface());
@@ -256,10 +257,10 @@ public abstract class JobSubmissionTask extends AiravataTask {
                     + userName);
         }
 
-        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
+        var jobManagerConfiguration = JobFactory.getJobManagerConfiguration(resourceJobManager);
 
-        RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
-        CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
+        var jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
+        var commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
         return jobManagerConfiguration.getParser().parseJobId(jobName, commandOutput.getStdOut());
     }
 

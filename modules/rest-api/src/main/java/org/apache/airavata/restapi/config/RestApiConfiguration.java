@@ -30,11 +30,52 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 /**
- * Configuration class that maps scoped rest.* properties to Spring Boot standard properties.
- * This allows rest-api specific properties to be clearly scoped while still working
- * with Spring Boot auto-configuration.
+ * Airavata API Configuration - Part of the unified HTTP server.
  *
- * Uses ApplicationEnvironmentPreparedEvent to ensure mapping happens before auto-configuration runs.
+ * <p>This configuration class sets up the Airavata API as part of the unified HTTP server
+ * that runs on port 8080 (configurable via {@code airavata.services.http.server.port}).
+ * The Airavata API provides HTTP endpoints that serve the same core API functionalities
+ * as the Thrift Server, accessing the same internal services.
+ *
+ * <p><b>External API:</b> This is part of one of four external API layers in Airavata:
+ * <ul>
+ *   <li>Thrift Server (port 8930) - Thrift Endpoints for Airavata API functions</li>
+ *   <li>HTTP Server (port 8080):
+ *       <ul>
+ *         <li>Airavata API (this module) - HTTP Endpoints for Airavata API functions</li>
+ *         <li>File API - HTTP Endpoints for file upload/download</li>
+ *         <li>Agent API - HTTP Endpoints for interactive job contexts</li>
+ *         <li>Research API - HTTP Endpoints for use by research hub</li>
+ *       </ul>
+ *   </li>
+ *   <li>gRPC Server (port 9090) - For airavata binaries to open persistent channels with airavata APIs</li>
+ *   <li>Dapr gRPC (port 50001) - Sidecar for pub/sub, state, and workflow execution</li>
+ * </ul>
+ *
+ * <p><b>Airavata API Endpoints:</b> The Airavata API provides HTTP endpoints that wrap internal
+ * Thrift services, including:
+ * <ul>
+ *   <li>Experiments, Processes, Jobs</li>
+ *   <li>Applications and Deployments</li>
+ *   <li>Compute and Storage Resources</li>
+ *   <li>Projects, Gateways, Groups</li>
+ *   <li>Workflows</li>
+ * </ul>
+ *
+ * <p><b>Configuration:</b>
+ * <ul>
+ *   <li>{@code airavata.services.rest.enabled} - Enable/disable Airavata API (default: false)</li>
+ *   <li>{@code airavata.services.rest.server.port} - Maps to Spring Boot {@code server.port}</li>
+ *   <li>When enabled, Airavata API runs on the unified HTTP server port (8080 by default)</li>
+ * </ul>
+ *
+ * <p><b>Internal Services:</b> The Airavata API accesses the same internal services
+ * (Orchestrator, Registry, Profile Service, Sharing Registry, Credential Store) as the
+ * Thrift Server. Both APIs provide equivalent functionality through different protocols
+ * (HTTP vs Thrift).
+ *
+ * <p>Uses {@code ApplicationEnvironmentPreparedEvent} to ensure property mapping happens
+ * before Spring Boot auto-configuration runs.
  */
 @Configuration
 public class RestApiConfiguration implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
@@ -53,7 +94,7 @@ public class RestApiConfiguration implements ApplicationListener<ApplicationEnvi
     }
 
     private void mapScopedProperties(ConfigurableEnvironment environment) {
-        Map<String, Object> mappedProperties = new HashMap<>();
+        var mappedProperties = new HashMap<String, Object>();
 
         // Map services.rest.server.* to server.*
         mapProperty("services.rest.server.port", "server.port", mappedProperties, environment);

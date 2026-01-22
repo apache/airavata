@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.services;
 
 import jakarta.persistence.EntityManager;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
@@ -63,7 +64,7 @@ public class TaskService {
     }
 
     public void populateParentIds(TaskEntity taskEntity) {
-        String taskId = taskEntity.getTaskId();
+        var taskId = taskEntity.getTaskId();
 
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
@@ -83,7 +84,7 @@ public class TaskService {
 
         if (taskEntity.getJobs() != null) {
             logger.debug("Populating the Job objects' Task ID for the Task");
-            java.sql.Timestamp currentTimestamp = AiravataUtils.getUniqueTimestamp();
+            var currentTimestamp = AiravataUtils.getUniqueTimestamp();
             taskEntity.getJobs().forEach(jobEntity -> {
                 jobEntity.setTaskId(taskId);
                 // Ensure CREATION_TIME is set if not already set
@@ -105,13 +106,13 @@ public class TaskService {
     }
 
     public TaskModel getTask(String taskId) throws RegistryException {
-        TaskEntity entity = taskRepository.findById(taskId).orElse(null);
+        var entity = taskRepository.findById(taskId).orElse(null);
         if (entity == null) return null;
         // Force initialization of taskStatuses collection to ensure all statuses are loaded
         if (entity.getTaskStatuses() != null) {
             entity.getTaskStatuses().size(); // Force initialization
         }
-        TaskModel taskModel = taskModelMapper.toModel(entity);
+        var taskModel = taskModelMapper.toModel(entity);
         // Handle subTaskModel conversion: byte[] to Object
         if (entity.getSubTaskModel() != null) {
             taskModel.setSubTaskModel(entity.getSubTaskModel());
@@ -124,7 +125,7 @@ public class TaskService {
 
         if (fieldName.equals(DBConstants.Task.PARENT_PROCESS_ID)) {
             logger.debug("Search criteria is ParentProcessId");
-            List<TaskEntity> entities = taskRepository.findByParentProcessId((String) value);
+            var entities = taskRepository.findByParentProcessId((String) value);
             taskModelList = taskModelMapper.toModelList(entities);
             // Handle subTaskModel conversion for each task
             for (int i = 0; i < taskModelList.size(); i++) {
@@ -141,9 +142,9 @@ public class TaskService {
     }
 
     public List<String> getTaskIds(String fieldName, Object value) throws RegistryException {
-        List<String> taskIds = new ArrayList<>();
-        List<TaskModel> taskModelList = getTaskList(fieldName, value);
-        for (TaskModel taskModel : taskModelList) {
+        var taskIds = new ArrayList<String>();
+        var taskModelList = getTaskList(fieldName, value);
+        for (var taskModel : taskModelList) {
             taskIds.add(taskModel.getTaskId());
         }
         return taskIds;
@@ -158,14 +159,14 @@ public class TaskService {
     }
 
     public void deleteTasks(String processId) throws RegistryException {
-        List<TaskEntity> entities = taskRepository.findByParentProcessId(processId);
-        for (TaskEntity entity : entities) {
+        var entities = taskRepository.findByParentProcessId(processId);
+        for (var entity : entities) {
             taskRepository.deleteById(entity.getTaskId());
         }
     }
 
     private String saveTaskModelData(TaskModel taskModel) throws RegistryException {
-        TaskEntity taskEntity = saveTask(taskModel);
+        var taskEntity = saveTask(taskModel);
         return taskEntity.getTaskId();
     }
 
@@ -175,7 +176,7 @@ public class TaskService {
             taskModel.setTaskId(ExpCatalogUtils.getID("TASK"));
         }
 
-        String taskId = taskModel.getTaskId();
+        var taskId = taskModel.getTaskId();
 
         if (taskModel.getTaskStatuses() != null) {
             logger.debug("Populating the status id of TaskStatus objects for the Task");
@@ -200,7 +201,7 @@ public class TaskService {
             taskModel.setLastUpdateTime(currentTime);
         }
 
-        TaskEntity taskEntity = taskModelMapper.toEntity(taskModel);
+        var taskEntity = taskModelMapper.toEntity(taskModel);
 
         // Handle subTaskModel conversion: Object (byte[]) to byte[]
         if (taskModel.getSubTaskModel() != null) {
@@ -214,17 +215,17 @@ public class TaskService {
         // Ensure timestamps are set if mapper didn't set them (mapper returns null if model time is 0)
         if (taskEntity.getCreationTime() == null) {
             long creationTime = taskModel.getCreationTime() > 0 ? taskModel.getCreationTime() : currentTime;
-            taskEntity.setCreationTime(new java.sql.Timestamp(creationTime));
+            taskEntity.setCreationTime(new Timestamp(creationTime));
         }
         if (taskEntity.getLastUpdateTime() == null) {
             long lastUpdateTime = taskModel.getLastUpdateTime() > 0 ? taskModel.getLastUpdateTime() : currentTime;
-            taskEntity.setLastUpdateTime(new java.sql.Timestamp(lastUpdateTime));
+            taskEntity.setLastUpdateTime(new Timestamp(lastUpdateTime));
         }
 
         // Set process relationship - required for inserts because the @JoinColumn is insertable (default)
         // while the parentProcessId @Column has insertable=false
         if (taskModel.getParentProcessId() != null) {
-            ProcessEntity processEntity =
+            var processEntity =
                     processRepository.findById(taskModel.getParentProcessId()).orElse(null);
             if (processEntity != null) {
                 taskEntity.setProcess(processEntity);
@@ -238,14 +239,14 @@ public class TaskService {
 
         populateParentIds(taskEntity);
 
-        TaskEntity savedTask = taskRepository.save(taskEntity);
+        var savedTask = taskRepository.save(taskEntity);
         taskRepository.flush();
 
         // CRITICAL: Detach ProcessEntity from EntityManager cache to ensure tasks collection is refreshed
         // This ensures that when getProcess() is called, it sees the newly added task
         if (taskModel.getParentProcessId() != null) {
             try {
-                ProcessEntity processEntity = entityManager.find(ProcessEntity.class, taskModel.getParentProcessId());
+                var processEntity = entityManager.find(ProcessEntity.class, taskModel.getParentProcessId());
                 if (processEntity != null) {
                     // Detach the entity from cache so it will be reloaded fresh on next findById() call
                     entityManager.detach(processEntity);

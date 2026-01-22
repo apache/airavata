@@ -27,11 +27,14 @@ PRGDIR=$(dirname "$PRG")
 # Set AIRAVATA_HOME if not already set
 [ -z "$AIRAVATA_HOME" ] && AIRAVATA_HOME=$(cd "$PRGDIR/.." && pwd)
 
+# Set AIRAVATA_CONFIG_DIR if not already set (defaults to AIRAVATA_HOME/conf)
+[ -z "$AIRAVATA_CONFIG_DIR" ] && AIRAVATA_CONFIG_DIR="${AIRAVATA_HOME}/conf"
+
 # Build CLASSPATH from all JAR files
 CLASSPATH=$(printf "%s:" "$AIRAVATA_HOME"/lib/*.jar)
 CLASSPATH=${CLASSPATH%:} # Remove trailing colon
 
-export AIRAVATA_HOME CLASSPATH
+export AIRAVATA_HOME AIRAVATA_CONFIG_DIR CLASSPATH
 
 # Common function to run Airavata services
 # Usage: run_service <service_name> <main_class> <java_opts>

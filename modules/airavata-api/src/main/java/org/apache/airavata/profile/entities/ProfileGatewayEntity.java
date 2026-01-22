@@ -25,6 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.util.UUID;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -241,8 +242,7 @@ public class ProfileGatewayEntity {
 
     @PrePersist
     void createdAt() {
-        this.setRequestCreationTime(org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp()
-                .getTime());
+        this.setRequestCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
     }
 
     @Override

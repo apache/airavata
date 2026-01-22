@@ -22,6 +22,7 @@ package org.apache.airavata.thriftapi.handler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.security.interceptor.SecurityCheck;
+import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.thriftapi.mapper.AuthzTokenMapper;
 import org.apache.airavata.thriftapi.mapper.UserProfileMapper;
 import org.apache.thrift.TException;
@@ -30,11 +31,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.profile.model.UserProfileService.Iface {
 
-    private final org.apache.airavata.service.profile.UserProfileService userProfileService;
+    private final UserProfileService userProfileService;
     private final AuthzTokenMapper authzTokenMapper = AuthzTokenMapper.INSTANCE;
     private final UserProfileMapper userProfileMapper = UserProfileMapper.INSTANCE;
 
-    public UserProfileServiceHandler(org.apache.airavata.service.profile.UserProfileService userProfileService) {
+    public UserProfileServiceHandler(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
     }
 

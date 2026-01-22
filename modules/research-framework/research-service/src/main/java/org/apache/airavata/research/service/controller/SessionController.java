@@ -55,7 +55,7 @@ public class SessionController {
     public ResponseEntity<List<Session>> getSessions(
             @RequestParam(value = "status", required = false) SessionStatusEnum status) {
         LOGGER.info("Getting all sessions for user: {}, status filter: {}", UserContext.userId(), status);
-        String userId = UserContext.userId();
+        var userId = UserContext.userId();
         List<Session> sessions;
         if (status == null) {
             sessions = sessionHandler.findAllByUserId(userId);

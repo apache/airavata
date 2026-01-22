@@ -28,8 +28,8 @@ import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
+import org.apache.airavata.orchestrator.ValidationService;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.validation.ValidationService;
 import org.apache.airavata.service.application.ApplicationService;
 import org.springframework.stereotype.Service;
 
@@ -66,14 +66,14 @@ public class TestHandler {
                     .orElse(deployments.get(0));
 
             // Create a test experiment model
-            ExperimentModel experiment = new ExperimentModel();
+            var experiment = new ExperimentModel();
             experiment.setExperimentId(UUID.randomUUID().toString());
             experiment.setGatewayId(gatewayId);
             experiment.setUserName(userId);
             experiment.setProjectId("test-project");
 
             // Create process model
-            ProcessModel process = new ProcessModel();
+            var process = new ProcessModel();
             process.setProcessId(UUID.randomUUID().toString());
             process.setApplicationInterfaceId(applicationId);
             process.setApplicationDeploymentId(deployment.getAppDeploymentId());

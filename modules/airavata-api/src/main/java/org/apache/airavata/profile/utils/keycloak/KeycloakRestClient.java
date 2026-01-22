@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.config.AiravataConfigUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
@@ -97,7 +98,7 @@ public class KeycloakRestClient {
     }
 
     private RestTemplate createRestTemplate() {
-        RestTemplate template = new RestTemplate();
+        var template = new RestTemplate();
         try {
             if (properties != null
                     && properties.security() != null
@@ -105,22 +106,21 @@ public class KeycloakRestClient {
                     && properties.security().tls().enabled()
                     && properties.security().tls().keystore() != null) {
                 // Configure SSL with keystore using Java's standard SSLContext
-                String configDir =
-                        org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
-                String keystorePath = properties.security().tls().keystore().path();
+                var configDir = AiravataConfigUtils.getConfigDir(); // Will throw if not found
+                var keystorePath = properties.security().tls().keystore().path();
                 if (keystorePath == null || keystorePath.isEmpty()) {
                     logger.debug("TLS enabled but keystore path not configured, using default HTTP client");
                     template.setRequestFactory(new SimpleClientHttpRequestFactory());
                     return template;
                 }
                 // Keystore path is relative to configDir (e.g., "keystores/airavata.p12")
-                String keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
-                String keystorePassword = properties.security().tls().keystore().password();
-                KeyStore keyStore = loadKeyStore(keystoreFullPath, keystorePassword);
+                var keystoreFullPath = new File(configDir, keystorePath).getAbsolutePath();
+                var keystorePassword = properties.security().tls().keystore().password();
+                var keyStore = loadKeyStore(keystoreFullPath, keystorePassword);
 
                 // Create SSLContext with trust store
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-                TrustManager[] trustManagers = createTrustManagers(keyStore);
+                var sslContext = SSLContext.getInstance("TLS");
+                var trustManagers = createTrustManagers(keyStore);
                 sslContext.init(null, trustManagers, new java.security.SecureRandom());
 
                 // Use Spring's HttpComponentsClientHttpRequestFactory with custom SSL context
@@ -170,25 +170,25 @@ public class KeycloakRestClient {
      * Obtain admin access token using password grant.
      */
     public String obtainAdminToken(String realm, PasswordCredential credentials) throws IamAdminServicesException {
-        String cacheKey = realm + ":" + credentials.getLoginUserName();
-        TokenCacheEntry cached = tokenCache.get(cacheKey);
+        var cacheKey = realm + ":" + credentials.getLoginUserName();
+        var cached = tokenCache.get(cacheKey);
         if (cached != null && !cached.isExpired()) {
             return cached.getToken();
         }
 
         try {
-            String tokenUrl = serverUrl + "/realms/" + realm + "/protocol/openid-connect/token";
-            HttpHeaders headers = new HttpHeaders();
+            var tokenUrl = serverUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+            var headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             // admin-cli is a public client, so no Basic Auth needed - just send client_id in form data
 
-            Map<String, String> formData = new HashMap<>();
+            var formData = new HashMap<String, String>();
             formData.put("grant_type", GRANT_TYPE_PASSWORD);
             formData.put("username", credentials.getLoginUserName());
             formData.put("password", credentials.getPassword());
             formData.put("client_id", ADMIN_CLI_CLIENT_ID);
 
-            StringBuilder formBody = new StringBuilder();
+            var formBody = new StringBuilder();
             formData.forEach((key, value) -> {
                 if (formBody.length() > 0) {
                     formBody.append("&");
@@ -196,12 +196,11 @@ public class KeycloakRestClient {
                 formBody.append(key).append("=").append(encode(value));
             });
 
-            HttpEntity<String> request = new HttpEntity<>(formBody.toString(), headers);
-            ResponseEntity<TokenResponse> response =
-                    restTemplate.exchange(tokenUrl, HttpMethod.POST, request, TokenResponse.class);
+            var request = new HttpEntity<>(formBody.toString(), headers);
+            var response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, TokenResponse.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                String token = response.getBody().getAccessToken();
+                var token = response.getBody().getAccessToken();
                 int expiresIn = response.getBody().getExpiresIn() != null
                         ? response.getBody().getExpiresIn()
                         : 60; // Default to 60 seconds if not provided
@@ -237,7 +236,7 @@ public class KeycloakRestClient {
     }
 
     private HttpHeaders createAuthHeaders(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
         return headers;
@@ -246,9 +245,9 @@ public class KeycloakRestClient {
     // ==================== Realm Management ====================
 
     public void createRealm(RealmRepresentation realm) throws IamAdminServicesException {
-        String adminToken = obtainAdminToken("master", getSuperAdminCredentials());
-        String url = serverUrl + "/admin/realms";
-        HttpEntity<RealmRepresentation> request = new HttpEntity<>(realm, createAuthHeaders(adminToken));
+        var adminToken = obtainAdminToken("master", getSuperAdminCredentials());
+        var url = serverUrl + "/admin/realms";
+        var request = new HttpEntity<>(realm, createAuthHeaders(adminToken));
         try {
             restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -260,8 +259,8 @@ public class KeycloakRestClient {
 
     public ResponseEntity<Void> createUser(String realm, UserRepresentation user, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users";
-        HttpEntity<UserRepresentation> request = new HttpEntity<>(user, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/users";
+        var request = new HttpEntity<>(user, createAuthHeaders(accessToken));
         try {
             return restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -293,8 +292,8 @@ public class KeycloakRestClient {
             Boolean exact,
             String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        var url = serverUrl + "/admin/realms/" + realm + "/users";
+        var builder = UriComponentsBuilder.fromUriString(url);
         if (username != null) {
             builder.queryParam("username", username);
         }
@@ -317,8 +316,8 @@ public class KeycloakRestClient {
             builder.queryParam("max", max);
         }
 
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             @SuppressWarnings("unchecked")
             ResponseEntity<List<?>> response = (ResponseEntity<List<?>>) (ResponseEntity<?>)
@@ -337,9 +336,9 @@ public class KeycloakRestClient {
 
     public UserRepresentation getUser(String realm, String userId, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId;
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId;
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             ResponseEntity<UserRepresentation> response =
                     restTemplate.exchange(url, HttpMethod.GET, request, UserRepresentation.class);
@@ -354,8 +353,8 @@ public class KeycloakRestClient {
 
     public void updateUser(String realm, String userId, UserRepresentation user, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId;
-        HttpEntity<UserRepresentation> request = new HttpEntity<>(user, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId;
+        var request = new HttpEntity<>(user, createAuthHeaders(accessToken));
         try {
             restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -364,9 +363,9 @@ public class KeycloakRestClient {
     }
 
     public void deleteUser(String realm, String userId, String accessToken) throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId;
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId;
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -376,8 +375,8 @@ public class KeycloakRestClient {
 
     public void resetPassword(String realm, String userId, CredentialRepresentation credential, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password";
-        HttpEntity<CredentialRepresentation> request = new HttpEntity<>(credential, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password";
+        var request = new HttpEntity<>(credential, createAuthHeaders(accessToken));
         try {
             restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -386,9 +385,9 @@ public class KeycloakRestClient {
     }
 
     public int getUserCount(String realm, String accessToken) throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/count";
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/users/count";
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             @SuppressWarnings("unchecked")
             ResponseEntity<Map<String, Object>> response = (ResponseEntity<Map<String, Object>>)
@@ -406,9 +405,9 @@ public class KeycloakRestClient {
 
     public RoleRepresentation getRole(String realm, String roleName, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/roles/" + roleName;
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/roles/" + roleName;
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             ResponseEntity<RoleRepresentation> response =
                     restTemplate.exchange(url, HttpMethod.GET, request, RoleRepresentation.class);
@@ -423,9 +422,9 @@ public class KeycloakRestClient {
 
     public List<RoleRepresentation> getUserRealmRoles(String realm, String userId, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             @SuppressWarnings("unchecked")
             ResponseEntity<List<?>> response = (ResponseEntity<List<?>>)
@@ -441,8 +440,8 @@ public class KeycloakRestClient {
 
     public void addRealmRolesToUser(String realm, String userId, List<RoleRepresentation> roles, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
-        HttpEntity<List<RoleRepresentation>> request = new HttpEntity<>(roles, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
+        var request = new HttpEntity<>(roles, createAuthHeaders(accessToken));
         try {
             restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -453,8 +452,8 @@ public class KeycloakRestClient {
     public void removeRealmRolesFromUser(
             String realm, String userId, List<RoleRepresentation> roles, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
-        HttpEntity<List<RoleRepresentation>> request = new HttpEntity<>(roles, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/realm";
+        var request = new HttpEntity<>(roles, createAuthHeaders(accessToken));
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -464,10 +463,10 @@ public class KeycloakRestClient {
 
     public List<RoleRepresentation> getAvailableClientRoles(
             String realm, String userId, String clientId, String accessToken) throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/clients/" + clientId
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/clients/" + clientId
                 + "/available";
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             @SuppressWarnings("unchecked")
             ResponseEntity<List<?>> response = (ResponseEntity<List<?>>)
@@ -484,8 +483,8 @@ public class KeycloakRestClient {
     public void addClientRolesToUser(
             String realm, String userId, String clientId, List<RoleRepresentation> roles, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/clients/" + clientId;
-        HttpEntity<List<RoleRepresentation>> request = new HttpEntity<>(roles, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/clients/" + clientId;
+        var request = new HttpEntity<>(roles, createAuthHeaders(accessToken));
         try {
             restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -497,8 +496,8 @@ public class KeycloakRestClient {
 
     public ResponseEntity<Void> createClient(String realm, ClientRepresentation client, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/clients";
-        HttpEntity<ClientRepresentation> request = new HttpEntity<>(client, createAuthHeaders(accessToken));
+        var url = serverUrl + "/admin/realms/" + realm + "/clients";
+        var request = new HttpEntity<>(client, createAuthHeaders(accessToken));
         try {
             return restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -508,9 +507,9 @@ public class KeycloakRestClient {
 
     public List<ClientRepresentation> findAllClients(String realm, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/clients";
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/clients";
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             @SuppressWarnings("unchecked")
             ResponseEntity<List<?>> response = (ResponseEntity<List<?>>)
@@ -527,11 +526,11 @@ public class KeycloakRestClient {
 
     public List<ClientRepresentation> findClientsByClientId(String realm, String clientId, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/clients";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
+        var url = serverUrl + "/admin/realms/" + realm + "/clients";
+        var builder = UriComponentsBuilder.fromUriString(url);
         builder.queryParam("clientId", clientId);
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             @SuppressWarnings("unchecked")
             ResponseEntity<List<?>> response = (ResponseEntity<List<?>>) (ResponseEntity<?>)
@@ -548,9 +547,9 @@ public class KeycloakRestClient {
 
     public CredentialRepresentation getClientSecret(String realm, String clientId, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/clients/" + clientId + "/client-secret";
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/clients/" + clientId + "/client-secret";
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             ResponseEntity<CredentialRepresentation> response =
                     restTemplate.exchange(url, HttpMethod.GET, request, CredentialRepresentation.class);
@@ -562,9 +561,9 @@ public class KeycloakRestClient {
 
     public UserRepresentation getServiceAccountUser(String realm, String clientId, String accessToken)
             throws IamAdminServicesException {
-        String url = serverUrl + "/admin/realms/" + realm + "/clients/" + clientId + "/service-account-user";
-        HttpHeaders headers = createAuthHeaders(accessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        var url = serverUrl + "/admin/realms/" + realm + "/clients/" + clientId + "/service-account-user";
+        var headers = createAuthHeaders(accessToken);
+        var request = new HttpEntity<Void>(headers);
         try {
             ResponseEntity<UserRepresentation> response =
                     restTemplate.exchange(url, HttpMethod.GET, request, UserRepresentation.class);
@@ -584,7 +583,7 @@ public class KeycloakRestClient {
             throw new IamAdminServicesException("IAM super admin configuration not available. "
                     + "Ensure airavata.security.iam.super-admin.username and password are configured.");
         }
-        PasswordCredential creds = new PasswordCredential();
+        var creds = new PasswordCredential();
         creds.setLoginUserName(properties.security().iam().superAdmin().username());
         creds.setPassword(properties.security().iam().superAdmin().password());
         return creds;

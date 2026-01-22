@@ -21,9 +21,6 @@ package org.apache.airavata.task.submission;
 
 import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
-import groovy.text.TemplateEngine;
-import java.lang.reflect.Field;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -162,11 +159,11 @@ public class GroovyMapData {
 
     public Map<String, Object> getMap() {
 
-        Map<String, Object> map = new HashMap<>();
-        Field[] fields = this.getClass().getDeclaredFields();
+        var map = new HashMap<String, Object>();
+        var fields = this.getClass().getDeclaredFields();
 
-        for (Field field : fields) {
-            ScriptTag scriptTag = field.getAnnotation(ScriptTag.class);
+        for (var field : fields) {
+            var scriptTag = field.getAnnotation(ScriptTag.class);
             if (scriptTag != null) {
                 field.setAccessible(true);
                 try {
@@ -542,9 +539,9 @@ public class GroovyMapData {
 
     public Map toImmutableMap() {
 
-        Map<String, Object> dataMap = new HashMap<>();
-        Field[] declaredFields = this.getClass().getDeclaredFields();
-        for (Field field : declaredFields) {
+        var dataMap = new HashMap<String, Object>();
+        var declaredFields = this.getClass().getDeclaredFields();
+        for (var field : declaredFields) {
             field.setAccessible(true);
             if (field.getAnnotation(ScriptTag.class) != null) {
                 try {
@@ -559,7 +556,7 @@ public class GroovyMapData {
     }
 
     public String loadFromString(String templateStr) throws Exception {
-        TemplateEngine engine = new GStringTemplateEngine();
+        var engine = new GStringTemplateEngine();
         Writable make;
         try {
             make = engine.createTemplate(templateStr).make(toImmutableMap());
@@ -578,7 +575,7 @@ public class GroovyMapData {
     }
 
     public String loadFromFile(String templateName) throws Exception {
-        URL templateUrl = AiravataConfigUtils.loadFile(templateName);
+        var templateUrl = AiravataConfigUtils.loadFile(templateName);
         if (templateUrl == null) {
             String error = "Template file '" + templateName + "' not found";
             logger.error(error);

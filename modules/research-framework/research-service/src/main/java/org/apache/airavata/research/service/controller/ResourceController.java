@@ -62,13 +62,13 @@ public class ResourceController {
 
     @PostMapping("/dataset")
     public ResponseEntity<ResourceResponse> createDatasetResource(@RequestBody DatasetResource datasetResource) {
-        ResourceResponse response = resourceHandler.createResource(datasetResource, ResourceTypeEnum.DATASET);
+        var response = resourceHandler.createResource(datasetResource, ResourceTypeEnum.DATASET);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/notebook")
     public ResponseEntity<ResourceResponse> createNotebookResource(@RequestBody NotebookResource notebookResource) {
-        ResourceResponse response = resourceHandler.createResource(notebookResource, ResourceTypeEnum.NOTEBOOK);
+        var response = resourceHandler.createResource(notebookResource, ResourceTypeEnum.NOTEBOOK);
         return ResponseEntity.ok(response);
     }
 
@@ -76,19 +76,19 @@ public class ResourceController {
     public ResponseEntity<ResourceResponse> createRepositoryResource(
             @RequestBody CreateResourceRequest resourceRequest,
             @RequestParam(value = "githubUrl") String repositoryUrl) {
-        ResourceResponse response = resourceHandler.createRepositoryResource(resourceRequest, repositoryUrl);
+        var response = resourceHandler.createRepositoryResource(resourceRequest, repositoryUrl);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/repository")
     public ResponseEntity<Resource> modifyRepositoryResource(@RequestBody ModifyResourceRequest resourceRequest) {
-        Resource response = resourceHandler.modifyResource(resourceRequest);
+        var response = resourceHandler.modifyResource(resourceRequest);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/model")
     public ResponseEntity<ResourceResponse> createModelResource(@RequestBody ModelResource modelResource) {
-        ResourceResponse response = resourceHandler.createResource(modelResource, ResourceTypeEnum.MODEL);
+        var response = resourceHandler.createResource(modelResource, ResourceTypeEnum.MODEL);
         return ResponseEntity.ok(response);
     }
 
@@ -118,7 +118,7 @@ public class ResourceController {
             @RequestParam(value = "nameSearch") String nameSearch,
             @RequestParam(value = "type") ResourceTypeEnum[] types,
             @RequestParam(value = "tag", required = false) String[] tags) {
-        List<Class<? extends Resource>> typeList = new ArrayList<>();
+        var typeList = new ArrayList<Class<? extends Resource>>();
         for (ResourceTypeEnum resourceType : types) {
             if (resourceType == ResourceTypeEnum.REPOSITORY) {
                 typeList.add(RepositoryResource.class);
@@ -131,7 +131,7 @@ public class ResourceController {
             }
         }
 
-        Page<Resource> response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags, nameSearch);
+        var response = resourceHandler.getAllResources(pageNumber, pageSize, typeList, tags, nameSearch);
 
         return ResponseEntity.ok(response);
     }
@@ -142,19 +142,19 @@ public class ResourceController {
             @RequestParam(value = "type") ResourceTypeEnum type,
             @RequestParam(value = "name", required = false) String name) {
 
-        List<Resource> resources = resourceHandler.getAllResourcesByTypeAndName(getResourceType(type), name);
+        var resources = resourceHandler.getAllResourcesByTypeAndName(getResourceType(type), name);
         return ResponseEntity.ok(resources);
     }
 
     @Operation(summary = "Get projects associated with a resource")
     @GetMapping(value = "/public/{id}/projects")
     public ResponseEntity<List<Project>> getProjectsFromResourceId(@PathVariable(value = "id") String id) {
-        Resource resouce = resourceHandler.getResourceById(id);
+        var resource = resourceHandler.getResourceById(id);
         List<Project> projects;
-        if (resouce.getClass() == RepositoryResource.class) {
-            projects = projectHandler.findProjectsWithRepository((RepositoryResource) resouce);
-        } else if (resouce.getClass() == DatasetResource.class) {
-            projects = projectHandler.findProjectsContainingDataset((DatasetResource) resouce);
+        if (resource.getClass() == RepositoryResource.class) {
+            projects = projectHandler.findProjectsWithRepository((RepositoryResource) resource);
+        } else if (resource.getClass() == DatasetResource.class) {
+            projects = projectHandler.findProjectsContainingDataset((DatasetResource) resource);
         } else {
             throw new RuntimeException(
                     "Projects are only associated with repositories and datasets, and id: " + id + " is not either.");

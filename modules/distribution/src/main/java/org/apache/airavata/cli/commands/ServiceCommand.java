@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.cli.commands;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
@@ -265,6 +266,6 @@ public class ServiceCommand implements Runnable {
             throw new IllegalStateException(
                     "AIRAVATA_HOME environment variable is not set. Please set AIRAVATA_HOME to the Airavata installation directory.");
         }
-        return new java.io.File(airavataHome, "conf").getAbsolutePath();
+        return new File(airavataHome, "conf").getAbsolutePath();
     }
 }

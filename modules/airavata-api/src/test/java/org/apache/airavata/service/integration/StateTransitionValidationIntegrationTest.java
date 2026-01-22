@@ -41,13 +41,17 @@ import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.MessageHandler;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.dapr.messaging.Publisher;
-import org.apache.airavata.dapr.messaging.Subscriber;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.state.ExperimentStateValidator;
+import org.apache.airavata.orchestrator.state.JobStateValidator;
+import org.apache.airavata.orchestrator.state.StateTransitionService;
+import org.apache.airavata.orchestrator.state.TaskStateValidator;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
@@ -57,14 +61,8 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
-import org.apache.airavata.registry.services.TaskStatusService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.airavata.statemachine.ExperimentStateValidator;
-import org.apache.airavata.statemachine.JobStateValidator;
-import org.apache.airavata.statemachine.StateTransitionService;
-import org.apache.airavata.statemachine.TaskStateValidator;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -125,7 +123,6 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     private final ProcessService processService;
     private final ProcessStatusService processStatusService;
     private final TaskService taskService;
-    private final TaskStatusService taskStatusService;
     private final JobService jobService;
     private final JobStatusService jobStatusService;
     private final RegistryService registryService;
@@ -142,7 +139,6 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             ProcessService processService,
             ProcessStatusService processStatusService,
             TaskService taskService,
-            TaskStatusService taskStatusService,
             JobService jobService,
             JobStatusService jobStatusService,
             RegistryService registryService) {
@@ -152,7 +148,6 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         this.processService = processService;
         this.processStatusService = processStatusService;
         this.taskService = taskService;
-        this.taskStatusService = taskStatusService;
         this.jobService = jobService;
         this.jobStatusService = jobStatusService;
         this.registryService = registryService;
@@ -370,10 +365,8 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     @Test
     @DisplayName("Should verify messages are published for valid state transitions")
     void shouldVerifyMessagesPublishedForValidTransitions() throws Exception {
-        // Fail fast if Dapr is required but not available
-        Assumptions.assumeTrue(
-                messagingFactory != null && messagingFactory.isDaprAvailable(),
-                "Dapr messaging is required for this test. Enable Dapr or mark test as @DisabledIf.");
+        // Verify Dapr is available - skip test if not available
+        requireDaprMessaging();
 
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(2);
@@ -721,5 +714,20 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
                 StateTransitionService.isValid(
                         ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
                 "COMPLETED -> EXECUTING should be rejected by validator");
+    }
+
+    /**
+     * Helper method to require Dapr messaging availability.
+     * Throws TestAbortedException if Dapr is not available, which properly skips the test
+     * with a clear reason instead of silently skipping via Assumptions.
+     *
+     * @throws org.opentest4j.TestAbortedException if Dapr messaging is not available
+     */
+    private void requireDaprMessaging() {
+        if (messagingFactory == null || !messagingFactory.isAvailable()) {
+            throw new org.opentest4j.TestAbortedException(
+                    "Dapr messaging is required for this test but is not available. "
+                            + "Enable Dapr (airavata.dapr.enabled=true) and ensure Dapr sidecar is running.");
+        }
     }
 }

@@ -22,10 +22,7 @@ package org.apache.airavata.research.service.handlers;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
@@ -48,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -75,10 +71,10 @@ public class ResourceHandler {
     }
 
     public void initializeResource(Resource resource) {
-        Set<String> userSet = new HashSet<>();
+        var userSet = new HashSet<String>();
         for (String authorId : resource.getAuthors()) {
             try {
-                UserProfile fetchedUser = userProfileService.getUserProfileById(
+                var fetchedUser = userProfileService.getUserProfileById(
                         UserContext.authzToken(), authorId, UserContext.gatewayId());
                 userSet.add(fetchedUser.getUserId());
             } catch (Exception e) {
@@ -87,10 +83,10 @@ public class ResourceHandler {
             }
         }
 
-        HashSet<Tag> tags = new HashSet<>();
+        var tags = new HashSet<Tag>();
         for (Tag t : resource.getTags()) {
-            String tagValue = t.getValue();
-            Tag fetchedTag = tagRepository.findByValue(tagValue);
+            var tagValue = t.getValue();
+            var fetchedTag = tagRepository.findByValue(tagValue);
             if (fetchedTag == null) {
                 fetchedTag = tagRepository.save(t);
             }
@@ -102,7 +98,7 @@ public class ResourceHandler {
     }
 
     public ResourceResponse createResource(Resource resource, ResourceTypeEnum type) {
-        ResourceResponse response = new ResourceResponse();
+        var response = new ResourceResponse();
 
         initializeResource(resource);
         response.setResource(resourceRepository.save(resource));
@@ -113,7 +109,7 @@ public class ResourceHandler {
 
     public void transferResourceRequestFields(Resource resource, CreateResourceRequest createResourceRequest) {
         // check that the logged in author is at least one of the authors making the request
-        String currentUserId = UserContext.userId();
+        var currentUserId = UserContext.userId();
         boolean found = false;
         for (String authorId : createResourceRequest.getAuthors()) {
             if (authorId.equalsIgnoreCase(currentUserId)) {
@@ -131,10 +127,9 @@ public class ResourceHandler {
         resource.setAuthors(createResourceRequest.getAuthors().stream()
                 .map(String::toLowerCase)
                 .collect(Collectors.toSet()));
-        Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
+        var tagsSet = new HashSet<Tag>();
         for (String tag : createResourceRequest.getTags()) {
-            org.apache.airavata.research.service.model.entity.Tag t =
-                    new org.apache.airavata.research.service.model.entity.Tag();
+            var t = new Tag();
             t.setValue(tag);
             tagsSet.add(t);
         }
@@ -145,19 +140,19 @@ public class ResourceHandler {
     }
 
     public ResourceResponse createRepositoryResource(CreateResourceRequest resourceRequest, String repoUrl) {
-        RepositoryResource repositoryResource = new RepositoryResource();
+        var repositoryResource = new RepositoryResource();
         transferResourceRequestFields(repositoryResource, resourceRequest);
         repositoryResource.setRepositoryUrl(repoUrl);
         return createResource(repositoryResource, ResourceTypeEnum.REPOSITORY);
     }
 
     public Resource modifyResource(ModifyResourceRequest resourceRequest) {
-        Optional<Resource> resourceOp = resourceRepository.findById(resourceRequest.getId());
+        var resourceOp = resourceRepository.findById(resourceRequest.getId());
         if (resourceOp.isEmpty()) {
             throw new EntityNotFoundException("Resource not found");
         }
 
-        Resource resource = resourceOp.get();
+        var resource = resourceOp.get();
         if (StateEnum.DELETED.equals(resource.getState())) {
             throw new RuntimeException(String.format("Cannot modify deleted resource: %s", resource.getId()));
         }
@@ -182,19 +177,19 @@ public class ResourceHandler {
     }
 
     public boolean starOrUnstarResource(String resourceId) {
-        Resource resource = getResourceById(resourceId);
-        String userId = UserContext.userId();
+        var resource = getResourceById(resourceId);
+        var userId = UserContext.userId();
 
-        List<ResourceStar> resourceStars = resourceStarRepository.findByResourceAndUserId(resource, userId);
+        var resourceStars = resourceStarRepository.findByResourceAndUserId(resource, userId);
 
         if (resourceStars.isEmpty()) {
             // user has not starred the resource yet
-            ResourceStar resourceStar = new ResourceStar();
+            var resourceStar = new ResourceStar();
             resourceStar.setUserId(userId);
             resourceStar.setResource(resource);
             resourceStarRepository.save(resourceStar);
         } else {
-            ResourceStar resourceStar = resourceStars.get(0);
+            var resourceStar = resourceStars.get(0);
             resourceStarRepository.delete(resourceStar);
         }
 
@@ -202,38 +197,37 @@ public class ResourceHandler {
     }
 
     public boolean checkWhetherUserStarredResource(String resourceId) {
-        Resource resource = getResourceById(resourceId);
-        String userId = UserContext.userId();
+        var resource = getResourceById(resourceId);
+        var userId = UserContext.userId();
 
         return resourceStarRepository.existsByResourceAndUserId(resource, userId);
     }
 
     public List<Resource> getAllStarredResources(String userId) {
-        String loggedInUser = UserContext.userId();
+        var loggedInUser = UserContext.userId();
         if (!loggedInUser.equals(userId)) {
             throw new RuntimeException(
                     String.format("User %s is not authorized to request stars for %s", loggedInUser, userId));
         }
 
-        List<ResourceStar> resourceStars =
-                resourceStarRepository.findByUserIdAndResourceState(loggedInUser, StateEnum.ACTIVE);
+        var resourceStars = resourceStarRepository.findByUserIdAndResourceState(loggedInUser, StateEnum.ACTIVE);
         return resourceStars.stream().map(ResourceStar::getResource).collect(Collectors.toList());
     }
 
     public long getResourceStarCount(String resourceId) {
-        Resource resource = getResourceById(resourceId);
+        var resource = getResourceById(resourceId);
         return resourceStarRepository.countResourceStarByResource(resource);
     }
 
     public Resource getResourceById(String id) {
-        Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
+        var opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
         }
 
-        Resource resource = opResource.get();
-        boolean isAuthenticated = UserContext.isAuthenticated();
+        var resource = opResource.get();
+        var isAuthenticated = UserContext.isAuthenticated();
 
         if (resource.getPrivacy().equals(PrivacyEnum.PUBLIC)) {
             return resource;
@@ -246,15 +240,15 @@ public class ResourceHandler {
     }
 
     public boolean deleteResourceById(String id) {
-        Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
+        var opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
         }
 
-        Resource resource = opResource.get();
+        var resource = opResource.get();
 
-        String userEmail = UserContext.userId();
+        var userEmail = UserContext.userId();
         if (!resource.getAuthors().contains(userEmail.toLowerCase())) {
             String errorMsg = String.format(
                     "User %s not authorized to delete resource: %s (%s), type: %s",
@@ -270,7 +264,7 @@ public class ResourceHandler {
 
     public Page<Resource> getAllResources(
             int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
-        boolean isAuthenticated = UserContext.isAuthenticated();
+        var isAuthenticated = UserContext.isAuthenticated();
         if (isAuthenticated) {
             return getAllResourcesUserSignedIn(pageNumber, pageSize, typeList, tag, nameSearch, UserContext.userId());
         }
@@ -295,7 +289,7 @@ public class ResourceHandler {
 
     private Page<Resource> getAllPublicResources(
             int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        var pageable = PageRequest.of(pageNumber, pageSize);
         if (tag == null || tag.length == 0) {
             return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
         }
@@ -311,7 +305,7 @@ public class ResourceHandler {
             String[] tag,
             String nameSearch,
             String userId) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        var pageable = PageRequest.of(pageNumber, pageSize);
 
         if (tag == null || tag.length == 0) {
             return resourceRepository.findAllByTypesForUser(typeList, nameSearch.toLowerCase(), userId, pageable);

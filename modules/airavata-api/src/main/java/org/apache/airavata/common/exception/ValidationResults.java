@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.common.exception;
 
+import java.util.List;
+
 /**
  * Domain exception: ValidationResults
  */
@@ -27,7 +29,7 @@ public class ValidationResults extends Exception {
     private static final long serialVersionUID = 1L;
 
     private boolean validationState;
-    private java.util.List<ValidatorResult> validationResultList;
+    private List<ValidatorResult> validationResultList;
 
     public ValidationResults() {
         super();
@@ -41,8 +43,7 @@ public class ValidationResults extends Exception {
         super(message, cause);
     }
 
-    public ValidationResults(
-            String message, boolean validationState, java.util.List<ValidatorResult> validationResultList) {
+    public ValidationResults(String message, boolean validationState, List<ValidatorResult> validationResultList) {
         super(message);
         this.validationState = validationState;
         this.validationResultList = validationResultList;
@@ -56,11 +57,11 @@ public class ValidationResults extends Exception {
         this.validationState = validationState;
     }
 
-    public java.util.List<ValidatorResult> getValidationResultList() {
+    public List<ValidatorResult> getValidationResultList() {
         return validationResultList;
     }
 
-    public void setValidationResultList(java.util.List<ValidatorResult> validationResultList) {
+    public void setValidationResultList(List<ValidatorResult> validationResultList) {
         this.validationResultList = validationResultList;
     }
 }

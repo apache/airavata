@@ -205,8 +205,119 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
     }
 
     @Test
-    public void shouldGetCertificateCredential() {
-        assertThat(credentialStoreService).isNotNull();
+    public void shouldGetCertificateCredentialSummaryWithGatewayId() throws CredentialStoreException {
+        var certificateCredential = new CertificateCredential();
+        var communityUser = new CommunityUser();
+        communityUser.setGatewayName(TEST_GATEWAY_ID);
+        communityUser.setUsername(TEST_USERNAME);
+        communityUser.setUserEmail(TEST_USERNAME + "@example.com");
+        certificateCredential.setCommunityUser(communityUser);
+        certificateCredential.setX509Cert("-----BEGIN CERTIFICATE-----\nTEST_CERT\n-----END CERTIFICATE-----");
+        certificateCredential.setPortalUserName(TEST_USERNAME);
+        String token = credentialStoreService.addCertificateCredential(certificateCredential);
+
+        CredentialSummary summary = credentialStoreService.getCredentialSummary(token, TEST_GATEWAY_ID);
+
+        assertThat(summary).isNotNull();
+        assertThat(summary.getType()).isEqualTo(SummaryType.CERT);
+        assertThat(summary.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
+        assertThat(summary.getUsername()).isEqualTo(TEST_USERNAME);
+        assertThat(summary.getToken()).isEqualTo(token);
+    }
+
+    @Test
+    public void shouldGetCertificateCredentialSummaryWithPublicKey() throws CredentialStoreException {
+        var certificateCredential = new CertificateCredential();
+        var communityUser = new CommunityUser();
+        communityUser.setGatewayName(TEST_GATEWAY_ID);
+        communityUser.setUsername(TEST_USERNAME);
+        communityUser.setUserEmail(TEST_USERNAME + "@example.com");
+        certificateCredential.setCommunityUser(communityUser);
+        String x509Cert =
+                "-----BEGIN CERTIFICATE-----\nVERY_LONG_CERTIFICATE_STRING_THAT_SHOULD_BE_TRUNCATED_IF_OVER_100_CHARACTERS\n-----END CERTIFICATE-----";
+        certificateCredential.setX509Cert(x509Cert);
+        certificateCredential.setPortalUserName(TEST_USERNAME);
+        String token = credentialStoreService.addCertificateCredential(certificateCredential);
+
+        CredentialSummary summary = credentialStoreService.getCredentialSummary(token, TEST_GATEWAY_ID);
+
+        assertThat(summary).isNotNull();
+        assertThat(summary.getPublicKey()).isNotNull();
+        // Should be truncated to 100 chars + "..."
+        assertThat(summary.getPublicKey()).hasSize(103); // 100 + "..."
+        assertThat(summary.getPublicKey())
+                .startsWith(
+                        "-----BEGIN CERTIFICATE-----\nVERY_LONG_CERTIFICATE_STRING_THAT_SHOULD_BE_TRUNCATED_IF_OVER_100_CHAR");
+        assertThat(summary.getPublicKey()).endsWith("...");
+    }
+
+    @Test
+    public void shouldGetAllCertificateCredentialSummaries() throws CredentialStoreException {
+        var cert1 = new CertificateCredential();
+        var communityUser1 = new CommunityUser();
+        communityUser1.setGatewayName(TEST_GATEWAY_ID);
+        communityUser1.setUsername("user1");
+        cert1.setCommunityUser(communityUser1);
+        cert1.setX509Cert("CERT1");
+        cert1.setPortalUserName("user1");
+        String token1 = credentialStoreService.addCertificateCredential(cert1);
+
+        var cert2 = new CertificateCredential();
+        var communityUser2 = new CommunityUser();
+        communityUser2.setGatewayName(TEST_GATEWAY_ID);
+        communityUser2.setUsername("user2");
+        cert2.setCommunityUser(communityUser2);
+        cert2.setX509Cert("CERT2");
+        cert2.setPortalUserName("user2");
+        String token2 = credentialStoreService.addCertificateCredential(cert2);
+
+        List<CredentialSummary> summaries = credentialStoreService.getAllCredentialSummaries(
+                SummaryType.CERT, List.of(token1, token2), TEST_GATEWAY_ID);
+
+        assertThat(summaries).isNotNull().hasSize(2);
+        assertThat(summaries).extracting(CredentialSummary::getToken).containsExactlyInAnyOrder(token1, token2);
+        assertThat(summaries).extracting(CredentialSummary::getType).containsOnly(SummaryType.CERT);
+        assertThat(summaries).extracting(CredentialSummary::getGatewayId).containsOnly(TEST_GATEWAY_ID);
+    }
+
+    @Test
+    public void shouldHandleCertificateCredentialWithNullX509Cert() throws CredentialStoreException {
+        var certificateCredential = new CertificateCredential();
+        var communityUser = new CommunityUser();
+        communityUser.setGatewayName(TEST_GATEWAY_ID);
+        communityUser.setUsername(TEST_USERNAME);
+        certificateCredential.setCommunityUser(communityUser);
+        certificateCredential.setX509Cert(null); // Null certificate
+        certificateCredential.setPortalUserName(TEST_USERNAME);
+        String token = credentialStoreService.addCertificateCredential(certificateCredential);
+
+        CredentialSummary summary = credentialStoreService.getCredentialSummary(token, TEST_GATEWAY_ID);
+
+        assertThat(summary).isNotNull();
+        assertThat(summary.getType()).isEqualTo(SummaryType.CERT);
+        assertThat(summary.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
+        // Public key should be null when X509 cert is null
+        assertThat(summary.getPublicKey()).isNull();
+    }
+
+    @Test
+    public void shouldHandleCertificateCredentialWithEmptyX509Cert() throws CredentialStoreException {
+        var certificateCredential = new CertificateCredential();
+        var communityUser = new CommunityUser();
+        communityUser.setGatewayName(TEST_GATEWAY_ID);
+        communityUser.setUsername(TEST_USERNAME);
+        certificateCredential.setCommunityUser(communityUser);
+        certificateCredential.setX509Cert(""); // Empty certificate
+        certificateCredential.setPortalUserName(TEST_USERNAME);
+        String token = credentialStoreService.addCertificateCredential(certificateCredential);
+
+        CredentialSummary summary = credentialStoreService.getCredentialSummary(token, TEST_GATEWAY_ID);
+
+        assertThat(summary).isNotNull();
+        assertThat(summary.getType()).isEqualTo(SummaryType.CERT);
+        assertThat(summary.getGatewayId()).isEqualTo(TEST_GATEWAY_ID);
+        // Public key should be null when X509 cert is empty
+        assertThat(summary.getPublicKey()).isNull();
     }
 
     @Test

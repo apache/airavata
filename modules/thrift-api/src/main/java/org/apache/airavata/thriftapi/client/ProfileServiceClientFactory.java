@@ -33,9 +33,7 @@ import org.apache.airavata.thriftapi.profile.model.profile_tenant_cpiConstants;
 import org.apache.airavata.thriftapi.profile.model.profile_user_cpiConstants;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 /**
@@ -47,11 +45,11 @@ public class ProfileServiceClientFactory {
     public static UserProfileService.Client createUserProfileServiceClient(String serverHost, int serverPort)
             throws UserProfileServiceException {
         try {
-            TTransport transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
+            var protocol = new TBinaryProtocol(transport);
             // Use prefixed service name for Profile sub-services
-            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+            var multiplexedProtocol = new TMultiplexedProtocol(
                     protocol, PROFILE_SERVICE_NAME + "." + profile_user_cpiConstants.USER_PROFILE_CPI_NAME);
             return new UserProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
@@ -62,11 +60,11 @@ public class ProfileServiceClientFactory {
     public static TenantProfileService.Client createTenantProfileServiceClient(String serverHost, int serverPort)
             throws TenantProfileServiceException {
         try {
-            TTransport transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
+            var protocol = new TBinaryProtocol(transport);
             // Use prefixed service name for Profile sub-services
-            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+            var multiplexedProtocol = new TMultiplexedProtocol(
                     protocol, PROFILE_SERVICE_NAME + "." + profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME);
             return new TenantProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
@@ -77,11 +75,11 @@ public class ProfileServiceClientFactory {
     public static IamAdminServices.Client createIamAdminServiceClient(String serverHost, int serverPort)
             throws IamAdminServicesException {
         try {
-            TTransport transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
+            var protocol = new TBinaryProtocol(transport);
             // Use prefixed service name for Profile sub-services
-            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+            var multiplexedProtocol = new TMultiplexedProtocol(
                     protocol, PROFILE_SERVICE_NAME + "." + iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME);
             return new IamAdminServices.Client(multiplexedProtocol);
         } catch (TTransportException e) {
@@ -92,11 +90,11 @@ public class ProfileServiceClientFactory {
     public static GroupManagerService.Client createGroupManagerServiceClient(String serverHost, int serverPort)
             throws GroupManagerServiceException {
         try {
-            TTransport transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
+            var protocol = new TBinaryProtocol(transport);
             // Use prefixed service name for Profile sub-services
-            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(
+            var multiplexedProtocol = new TMultiplexedProtocol(
                     protocol, PROFILE_SERVICE_NAME + "." + group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME);
             return new GroupManagerService.Client(multiplexedProtocol);
         } catch (TTransportException e) {

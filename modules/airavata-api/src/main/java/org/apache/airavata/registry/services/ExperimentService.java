@@ -19,28 +19,32 @@
 */
 package org.apache.airavata.registry.services;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
-import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.entities.expcatalog.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
-import org.apache.airavata.registry.entities.expcatalog.UserConfigurationDataEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ExperimentMapper;
+import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.EntityMergeHelper;
+import org.hibernate.LazyInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -54,13 +58,13 @@ public class ExperimentService {
     private final ExperimentRepository experimentRepository;
     private final ProcessService processService;
     private final ExperimentMapper experimentMapper;
-    private final org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper;
+    private final ProcessWorkflowMapper processWorkflowMapper;
 
     public ExperimentService(
             ExperimentRepository experimentRepository,
             ProcessService processService,
             ExperimentMapper experimentMapper,
-            org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper) {
+            ProcessWorkflowMapper processWorkflowMapper) {
         this.experimentRepository = experimentRepository;
         this.processService = processService;
         this.experimentMapper = experimentMapper;
@@ -69,15 +73,15 @@ public class ExperimentService {
 
     @Transactional
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {
-        ExperimentStatus experimentStatus = new ExperimentStatus();
+        var experimentStatus = new ExperimentStatus();
         experimentStatus.setState(ExperimentState.CREATED);
         experimentStatus.setTimeOfStateChange(
                 AiravataUtils.getCurrentTimestamp().getTime());
         if (experimentModel.getExperimentStatus() == null) {
-            experimentModel.setExperimentStatus(new java.util.ArrayList<>());
+            experimentModel.setExperimentStatus(new ArrayList<>());
         }
         experimentModel.getExperimentStatus().add(experimentStatus);
-        String expName = experimentModel.getExperimentName();
+        var expName = experimentModel.getExperimentName();
         // This is to avoid overflow of experiment id size. Total experiment id length is <= 50 + UUID
         experimentModel.setExperimentId(AiravataUtils.getId(expName.substring(0, Math.min(expName.length(), 50))));
 
@@ -91,70 +95,69 @@ public class ExperimentService {
 
     @Transactional(readOnly = true)
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
-        ExperimentEntity entity = experimentRepository.findById(experimentId).orElse(null);
+        var entity = experimentRepository.findById(experimentId).orElse(null);
         if (entity == null) return null;
         // Force initialization of experimentStatus collection to ensure all statuses are loaded
         if (entity.getExperimentStatus() != null) {
             entity.getExperimentStatus().size(); // Force initialization
         }
-        ExperimentModel model = experimentMapper.toModel(entity);
+        var model = experimentMapper.toModel(entity);
         // Manually map processWorkflows for each process after mapping to avoid LazyInitializationException
         if (entity.getProcesses() != null && model.getProcesses() != null) {
             for (int i = 0;
                     i < entity.getProcesses().size() && i < model.getProcesses().size();
                     i++) {
-                ProcessEntity processEntity = entity.getProcesses().get(i);
-                ProcessModel processModel = model.getProcesses().get(i);
+                var processEntity = entity.getProcesses().get(i);
+                var processModel = model.getProcesses().get(i);
                 try {
-                    java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity>
-                            workflows = processEntity.getProcessWorkflows();
+                    Collection<ProcessWorkflowEntity> workflows = processEntity.getProcessWorkflows();
                     if (workflows != null) {
                         int size = workflows.size(); // Force initialization
                         if (size > 0) {
                             processModel.setProcessWorkflows(
-                                    processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                                    processWorkflowMapper.toModelList(new ArrayList<>(workflows)));
                         } else {
-                            processModel.setProcessWorkflows(new java.util.ArrayList<>());
+                            processModel.setProcessWorkflows(new ArrayList<>());
                         }
                     } else {
-                        processModel.setProcessWorkflows(new java.util.ArrayList<>());
+                        processModel.setProcessWorkflows(new ArrayList<>());
                     }
-                } catch (org.hibernate.LazyInitializationException e) {
+                } catch (LazyInitializationException e) {
                     logger.debug(
                             "Could not initialize processWorkflows for process {}: {}",
                             processEntity.getProcessId(),
                             e.getMessage());
-                    processModel.setProcessWorkflows(new java.util.ArrayList<>());
+                    processModel.setProcessWorkflows(new ArrayList<>());
                 }
             }
         }
 
         // Manually convert emailAddresses from String (CSV) to List<String>
-        String emailAddressesStr = entity.getEmailAddresses();
+        var emailAddressesStr = entity.getEmailAddresses();
         if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
-            model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
+            model.setEmailAddresses(Arrays.asList(emailAddressesStr.split(",")));
         } else {
-            model.setEmailAddresses(new java.util.ArrayList<>());
+            model.setEmailAddresses(new ArrayList<>());
         }
         // Initialize empty lists if null to prevent NullPointerException
         if (model.getExperimentInputs() == null) {
-            model.setExperimentInputs(new java.util.ArrayList<>());
+            model.setExperimentInputs(new ArrayList<>());
         }
         if (model.getExperimentOutputs() == null) {
-            model.setExperimentOutputs(new java.util.ArrayList<>());
+            model.setExperimentOutputs(new ArrayList<>());
         }
         if (model.getErrors() == null) {
-            model.setErrors(new java.util.ArrayList<>());
+            model.setErrors(new ArrayList<>());
         }
         if (model.getProcesses() == null) {
-            model.setProcesses(new java.util.ArrayList<>());
+            model.setProcesses(new ArrayList<>());
         }
         // Manually map computationalResourceScheduling from UserConfigurationDataEntity fields
         if (model.getUserConfigurationData() != null && entity.getUserConfigurationData() != null) {
-            UserConfigurationDataEntity ucdEntity = entity.getUserConfigurationData();
+            var ucdEntity = entity.getUserConfigurationData();
             // Always create ComputationalResourceSchedulingModel from entity fields
             // (entity stores scheduling fields directly, model has them in a nested object)
-            ComputationalResourceSchedulingModel crsModel = new ComputationalResourceSchedulingModel();
+            var crsModel = new ComputationalResourceSchedulingModel();
             crsModel.setResourceHostId(ucdEntity.getResourceHostId());
             crsModel.setTotalCPUCount(ucdEntity.getTotalCPUCount());
             crsModel.setNodeCount(ucdEntity.getNodeCount());
@@ -174,7 +177,7 @@ public class ExperimentService {
     @Transactional
     public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId)
             throws RegistryException {
-        ExperimentModel experimentModel = getExperiment(experimentId);
+        var experimentModel = getExperiment(experimentId);
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
         updateExperiment(experimentModel, experimentId);
         return experimentId;
@@ -189,7 +192,7 @@ public class ExperimentService {
 
     @Transactional(readOnly = true)
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryException {
-        ExperimentModel experimentModel = getExperiment(experimentId);
+        var experimentModel = getExperiment(experimentId);
         return experimentModel.getUserConfigurationData();
     }
 
@@ -207,13 +210,11 @@ public class ExperimentService {
 
         if (fieldName.equals(DBConstants.Experiment.USER_NAME)) {
             logger.debug("Search criteria is Username");
-            List<ExperimentEntity> entities =
-                    experimentRepository.findByGatewayIdAndUserName(gatewayId, (String) value);
+            var entities = experimentRepository.findByGatewayIdAndUserName(gatewayId, (String) value);
             experimentModelList = experimentMapper.toModelList(entities);
         } else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
             logger.debug("Search criteria is ProjectId");
-            List<ExperimentEntity> entities =
-                    experimentRepository.findByGatewayIdAndProjectId(gatewayId, (String) value);
+            var entities = experimentRepository.findByGatewayIdAndProjectId(gatewayId, (String) value);
             experimentModelList = experimentMapper.toModelList(entities);
         } else {
             logger.error("Unsupported field name for Experiment module.");
@@ -234,12 +235,12 @@ public class ExperimentService {
     }
 
     private String saveExperimentModelData(ExperimentModel experimentModel) throws RegistryException {
-        ExperimentEntity experimentEntity = saveExperiment(experimentModel);
+        var experimentEntity = saveExperiment(experimentModel);
         return experimentEntity.getExperimentId();
     }
 
     private ExperimentEntity saveExperiment(ExperimentModel experimentModel) throws RegistryException {
-        String experimentId = experimentModel.getExperimentId();
+        var experimentId = experimentModel.getExperimentId();
 
         if (experimentModel.getExperimentStatus() != null) {
             logger.debug("Populating the status id of ExperimentStatus objects for the Experiment");
@@ -260,13 +261,12 @@ public class ExperimentService {
             experimentModel.setCreationTime(AiravataUtils.getUniqueTimestamp().getTime());
         }
 
-        ExperimentEntity existingEntity =
-                experimentRepository.findById(experimentId).orElse(null);
+        var existingEntity = experimentRepository.findById(experimentId).orElse(null);
         ExperimentEntity experimentEntity;
 
         if (existingEntity != null) {
             // Map model to new entity to get the desired state
-            ExperimentEntity newEntity = experimentMapper.toEntity(experimentModel);
+            var newEntity = experimentMapper.toEntity(experimentModel);
             // Copy simple fields to existing entity manually (MapStruct doesn't support updating existing entities)
             existingEntity.setProjectId(experimentModel.getProjectId());
             existingEntity.setGatewayId(experimentModel.getGatewayId());
@@ -274,9 +274,7 @@ public class ExperimentService {
             existingEntity.setUserName(experimentModel.getUserName());
             existingEntity.setExperimentName(experimentModel.getExperimentName());
             existingEntity.setCreationTime(
-                    experimentModel.getCreationTime() > 0
-                            ? new java.sql.Timestamp(experimentModel.getCreationTime())
-                            : null);
+                    experimentModel.getCreationTime() > 0 ? new Timestamp(experimentModel.getCreationTime()) : null);
             existingEntity.setDescription(experimentModel.getDescription());
             existingEntity.setExecutionId(experimentModel.getExecutionId());
             existingEntity.setGatewayExecutionId(experimentModel.getGatewayExecutionId());
@@ -284,8 +282,8 @@ public class ExperimentService {
             existingEntity.setEnableEmailNotification(experimentModel.getEnableEmailNotification());
 
             // Manually set emailAddresses on both entities (excluded from mapping)
-            java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
-            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
+            var emailAddressesList = experimentModel.getEmailAddresses();
+            var emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
                     ? String.join(",", emailAddressesList)
                     : null;
             newEntity.setEmailAddresses(emailAddressesStr);
@@ -316,8 +314,8 @@ public class ExperimentService {
                     existingEntity.setUserConfigurationData(newEntity.getUserConfigurationData());
                 } else {
                     // Update existing UserConfigurationData
-                    UserConfigurationDataEntity existingUcd = existingEntity.getUserConfigurationData();
-                    UserConfigurationDataEntity newUcd = newEntity.getUserConfigurationData();
+                    var existingUcd = existingEntity.getUserConfigurationData();
+                    var newUcd = newEntity.getUserConfigurationData();
                     // Copy all fields from new to existing
                     existingUcd.setAiravataAutoSchedule(newUcd.isAiravataAutoSchedule());
                     existingUcd.setOverrideManualScheduledParams(newUcd.isOverrideManualScheduledParams());
@@ -353,22 +351,21 @@ public class ExperimentService {
         } else {
             experimentEntity = experimentMapper.toEntity(experimentModel);
             // Manually convert emailAddresses from List<String> to String (CSV) - excluded from mapping
-            java.util.List<String> emailAddressesList = experimentModel.getEmailAddresses();
-            String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
-                    ? String.join(",", emailAddressesList)
+            var emailAddressesList2 = experimentModel.getEmailAddresses();
+            var emailAddressesStr2 = (emailAddressesList2 != null && !emailAddressesList2.isEmpty())
+                    ? String.join(",", emailAddressesList2)
                     : null;
-            experimentEntity.setEmailAddresses(emailAddressesStr);
+            experimentEntity.setEmailAddresses(emailAddressesStr2);
         }
 
         if (experimentEntity.getUserConfigurationData() != null) {
             logger.debug("Populating the Primary Key of UserConfigurationData object for the Experiment");
-            UserConfigurationDataEntity ucdEntity = experimentEntity.getUserConfigurationData();
+            var ucdEntity = experimentEntity.getUserConfigurationData();
             ucdEntity.setExperimentId(experimentId);
             // Copy fields from ComputationalResourceSchedulingModel to entity fields if present
             if (experimentModel.getUserConfigurationData() != null
                     && experimentModel.getUserConfigurationData().getComputationalResourceScheduling() != null) {
-                ComputationalResourceSchedulingModel crsModel =
-                        experimentModel.getUserConfigurationData().getComputationalResourceScheduling();
+                var crsModel = experimentModel.getUserConfigurationData().getComputationalResourceScheduling();
                 ucdEntity.setResourceHostId(crsModel.getResourceHostId());
                 ucdEntity.setTotalCPUCount(crsModel.getTotalCPUCount());
                 ucdEntity.setNodeCount(crsModel.getNodeCount());
@@ -387,7 +384,7 @@ public class ExperimentService {
                 && experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList() != null) {
             logger.debug(
                     "Populating the Primary Key of UserConfigurationData.ComputationalResourceSchedulingEntities object for the Experiment");
-            for (ComputationalResourceSchedulingEntity entity :
+            for (var entity :
                     experimentEntity.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList()) {
                 entity.setExperimentId(experimentId);
             }
@@ -429,7 +426,7 @@ public class ExperimentService {
             });
         }
 
-        ExperimentEntity saved = experimentRepository.save(experimentEntity);
+        var saved = experimentRepository.save(experimentEntity);
         // Flush to ensure experiment is persisted before any child entities are added
         experimentRepository.flush();
         return saved;

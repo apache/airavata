@@ -24,6 +24,7 @@ package org.apache.airavata.accountprovisioning;
  * Message should indicate what is invalid and potentially how to fix it.
  */
 public class InvalidSetupException extends Exception {
+    private static final long serialVersionUID = 1L;
 
     public InvalidSetupException() {}
 

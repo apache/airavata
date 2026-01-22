@@ -48,7 +48,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -68,13 +67,13 @@ public class AiravataFileService {
     }
 
     public void handleReadDirRequest(ReadDirReq request, StreamObserver<ServerMessage> responseObserver) {
-        String fusePath = request.getName();
+        var fusePath = request.getName();
 
-        ReadDirRes.Builder readDirResBuilder = ReadDirRes.newBuilder();
+        var readDirResBuilder = ReadDirRes.newBuilder();
 
         try {
             if ("/".equals(fusePath)) {
-                List<String> experimentIds = getUserExperimentIDs();
+                var experimentIds = getUserExperimentIDs();
 
                 // Handle root directory
                 for (String expId : experimentIds) {
@@ -83,10 +82,10 @@ public class AiravataFileService {
                 }
 
             } else {
-                String experimentId = extractExperimentIdFromPath(fusePath);
-                String path = extractPathFromRequest(fusePath);
+                var experimentId = extractExperimentIdFromPath(fusePath);
+                var path = extractPathFromRequest(fusePath);
 
-                ExperimentStorageResponse storageResponse = getExperimentStorage(experimentId, path);
+                var storageResponse = getExperimentStorage(experimentId, path);
 
                 if (storageResponse == null) {
                     responseObserver.onError(Status.NOT_FOUND
@@ -124,22 +123,21 @@ public class AiravataFileService {
     }
 
     public ExperimentStorageResponse getExperimentStorage(String experimentId, String path) throws ExecutionException {
-        String fullPath = experimentId + (path.equals("/") ? "" : "/" + path);
+        var fullPath = experimentId + (path.equals("/") ? "" : "/" + path);
         return storageCache.get(fullPath, () -> fetchExperimentStorageFromAPI(experimentId, path));
     }
 
     private ExperimentStorageResponse fetchExperimentStorageFromAPI(String experimentId, String path) {
-        String url = "https://" + UserContext.gatewayId() + ".cybershuttle.org/api/experiment-storage/" + experimentId
+        var url = "https://" + UserContext.gatewayId() + ".cybershuttle.org/api/experiment-storage/" + experimentId
                 + "/" + path;
 
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.setBearerAuth(UserContext.authzToken().getAccessToken());
         headers.setAll(UserContext.authzToken().getClaimsMap());
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        var entity = new HttpEntity<String>(headers);
 
-        ResponseEntity<ExperimentStorageResponse> responseEntity =
-                restTemplate.exchange(url, HttpMethod.GET, entity, ExperimentStorageResponse.class);
+        var responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, ExperimentStorageResponse.class);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             return responseEntity.getBody();
@@ -179,7 +177,7 @@ public class AiravataFileService {
     }
 
     private long generateInodeNumber(String value) {
-        long hash = value.hashCode();
+        var hash = (long) value.hashCode();
         return Math.abs(hash);
     }
 
@@ -200,7 +198,7 @@ public class AiravataFileService {
                 throw new RuntimeException(msg, e);
             }
 
-            java.util.Optional<Project> defaultProject = userProjects.stream()
+            var defaultProject = userProjects.stream()
                     .filter(project -> projectName.equals(project.getName()))
                     .findFirst();
 
@@ -219,8 +217,8 @@ public class AiravataFileService {
 
     private List<String> getUserExperimentIDs() {
         int limit = 100;
-        String projectId = getProjectId("Default Project");
-        Map<ExperimentSearchFields, String> filters = Map.of(ExperimentSearchFields.PROJECT_ID, projectId);
+        var projectId = getProjectId("Default Project");
+        var filters = Map.of(ExperimentSearchFields.PROJECT_ID, projectId);
 
         return Stream.iterate(0, offset -> offset + limit)
                 .<List<ExperimentSummaryModel>>map(offset -> {

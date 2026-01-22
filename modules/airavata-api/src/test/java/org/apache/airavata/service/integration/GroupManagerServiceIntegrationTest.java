@@ -20,9 +20,12 @@
 package org.apache.airavata.service.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.airavata.common.exception.AuthorizationException;
 import org.apache.airavata.common.model.GroupModel;
 import org.apache.airavata.common.model.UserProfile;
@@ -62,7 +65,9 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
     private String testGroupId;
 
     @BeforeEach
-    public void setUpGroups() throws GroupManagerServiceException, SharingRegistryException, DuplicateEntryException {
+    public void setUpGroups()
+            throws GroupManagerServiceException, SharingRegistryException, DuplicateEntryException,
+                    AuthorizationException {
         // Ensure domain exists for the test gateway
         if (!sharingRegistryService.isDomainExists(TEST_GATEWAY_ID)) {
             Domain domain = new Domain();
@@ -101,7 +106,7 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
 
         @Test
         @DisplayName("Should create group successfully")
-        void shouldCreateGroup() throws GroupManagerServiceException, SharingRegistryException {
+        void shouldCreateGroup() throws GroupManagerServiceException, SharingRegistryException, AuthorizationException {
             GroupModel group = new GroupModel();
             group.setName("New Test Group");
             group.setDescription("A new test group");
@@ -269,6 +274,81 @@ public class GroupManagerServiceIntegrationTest extends ServiceIntegrationTestBa
             boolean hasAccess = groupManagerService.hasOwnerAccess(testAuthzToken, testGroupId, ownerId);
 
             assertThat(hasAccess).isNotNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Authorization Validation")
+    class AuthorizationTests {
+
+        @Test
+        @DisplayName("Should throw AuthorizationException when token is null")
+        void shouldThrowAuthorizationExceptionWhenTokenIsNull() {
+            GroupModel group = new GroupModel();
+            group.setName("Test Group");
+            group.setMembers(new ArrayList<>());
+            group.setAdmins(new ArrayList<>());
+
+            assertThatThrownBy(() -> groupManagerService.createGroup(null, group))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessageContaining("Invalid authorization token");
+        }
+
+        @Test
+        @DisplayName("Should throw AuthorizationException when token claims is null")
+        void shouldThrowAuthorizationExceptionWhenTokenClaimsIsNull() {
+            GroupModel group = new GroupModel();
+            group.setName("Test Group");
+            group.setMembers(new ArrayList<>());
+            group.setAdmins(new ArrayList<>());
+
+            org.apache.airavata.security.model.AuthzToken invalidToken =
+                    new org.apache.airavata.security.model.AuthzToken();
+            invalidToken.setClaimsMap(null);
+
+            assertThatThrownBy(() -> groupManagerService.createGroup(invalidToken, group))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessageContaining("Invalid authorization token");
+        }
+
+        @Test
+        @DisplayName("Should throw AuthorizationException when userId is empty")
+        void shouldThrowAuthorizationExceptionWhenUserIdIsEmpty() {
+            GroupModel group = new GroupModel();
+            group.setName("Test Group");
+            group.setMembers(new ArrayList<>());
+            group.setAdmins(new ArrayList<>());
+
+            org.apache.airavata.security.model.AuthzToken invalidToken =
+                    new org.apache.airavata.security.model.AuthzToken();
+            Map<String, String> claims = new HashMap<>();
+            // Missing USER_NAME claim
+            claims.put(org.apache.airavata.common.utils.Constants.GATEWAY_ID, TEST_GATEWAY_ID);
+            invalidToken.setClaimsMap(claims);
+
+            assertThatThrownBy(() -> groupManagerService.createGroup(invalidToken, group))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessageContaining("Invalid user or gateway information in authorization token");
+        }
+
+        @Test
+        @DisplayName("Should throw AuthorizationException when gatewayId is empty")
+        void shouldThrowAuthorizationExceptionWhenGatewayIdIsEmpty() {
+            GroupModel group = new GroupModel();
+            group.setName("Test Group");
+            group.setMembers(new ArrayList<>());
+            group.setAdmins(new ArrayList<>());
+
+            org.apache.airavata.security.model.AuthzToken invalidToken =
+                    new org.apache.airavata.security.model.AuthzToken();
+            Map<String, String> claims = new HashMap<>();
+            claims.put(org.apache.airavata.common.utils.Constants.USER_NAME, TEST_USERNAME);
+            // Missing GATEWAY_ID claim
+            invalidToken.setClaimsMap(claims);
+
+            assertThatThrownBy(() -> groupManagerService.createGroup(invalidToken, group))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessageContaining("Invalid user or gateway information in authorization token");
         }
     }
 }

@@ -36,7 +36,7 @@ public class ExecutorConfig {
      */
     @Bean(name = "postWorkflowManagerExecutor")
     public ThreadPoolTaskExecutor postWorkflowManagerExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        var executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(100);

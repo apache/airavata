@@ -51,12 +51,12 @@ public class JobController {
     @GetMapping("/{jobId}")
     public ResponseEntity<?> getJob(@PathVariable String jobId, @RequestParam(required = false) String taskId) {
         try {
-            JobPK jobPK = new JobPK();
+            var jobPK = new JobPK();
             jobPK.setJobId(jobId);
             if (taskId != null) {
                 jobPK.setTaskId(taskId);
             }
-            JobModel job = jobService.getJob(jobPK);
+            var job = jobService.getJob(jobPK);
             if (job == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -69,7 +69,7 @@ public class JobController {
     @PostMapping
     public ResponseEntity<?> createJob(@RequestParam String processId, @RequestBody JobModel job) {
         try {
-            String jobId = jobService.addJob(job, processId);
+            var jobId = jobService.addJob(job, processId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("jobId", jobId));
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -80,7 +80,7 @@ public class JobController {
     public ResponseEntity<?> updateJob(
             @PathVariable String jobId, @RequestParam(required = false) String taskId, @RequestBody JobModel job) {
         try {
-            JobPK jobPK = new JobPK();
+            var jobPK = new JobPK();
             jobPK.setJobId(jobId);
             if (taskId != null) {
                 jobPK.setTaskId(taskId);
@@ -89,7 +89,7 @@ public class JobController {
             if (taskId != null) {
                 job.setTaskId(taskId);
             }
-            String result = jobService.updateJob(job, jobPK);
+            var result = jobService.updateJob(job, jobPK);
             return ResponseEntity.ok(Map.of("jobId", result));
         } catch (RegistryException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

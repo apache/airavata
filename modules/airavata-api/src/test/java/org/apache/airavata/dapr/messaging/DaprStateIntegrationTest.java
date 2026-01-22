@@ -106,7 +106,6 @@ public class DaprStateIntegrationTest {
             named = "CI",
             matches = "true",
             disabledReason = "Requires Dapr sidecar; run locally with dapr run")
-    @org.junit.jupiter.api.Disabled("Full Dapr State requires Dapr sidecar; E2E only")
     @Tag("e2e")
     @DisplayName("saveState/getState/deleteState round-trip (requires Dapr sidecar)")
     void testSaveStateGetStateDeleteStateRequiresDaprSidecar() {

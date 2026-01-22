@@ -34,4 +34,9 @@ public interface GroupResourceProfileRepository extends JpaRepository<GroupResou
     List<GroupResourceProfileEntity> findAccessibleGroupResourceProfiles(
             @Param("gatewayId") String gatewayId,
             @Param("accessibleGroupResourceIds") List<String> accessibleGroupResourceIds);
+
+    @Query("SELECT g FROM GroupResourceProfileEntity g WHERE g.gatewayId = :gatewayId")
+    List<GroupResourceProfileEntity> findByGatewayId(@Param("gatewayId") String gatewayId);
+
+    List<GroupResourceProfileEntity> findAll();
 }

@@ -70,10 +70,22 @@ public class LDAPUserStore implements UserStore {
         }
     }
 
+    /**
+     * Authenticate using credentials object (session token).
+     *
+     * <p>LDAPUserStore only supports username/password authentication, not session token
+     * authentication. Use {@link #authenticate(String, Object)} with username and password instead.
+     *
+     * @param credentials the credentials (not used)
+     * @return authentication result
+     * @throws UserStoreException if authentication fails
+     * @throws UnsupportedOperationException always - LDAP user store only supports username/password auth
+     */
     @Override
     public boolean authenticate(Object credentials) throws UserStoreException {
         log.error("LDAP user store only supports authenticating with user name and password.");
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(
+                "LDAPUserStore only supports username/password authentication - use authenticate(String, Object) instead");
     }
 
     public void configure(Node specificConfigurationNode) throws UserStoreException {

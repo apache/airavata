@@ -20,7 +20,10 @@
 package org.apache.airavata.registry.services;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +35,17 @@ import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
+import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessMapper;
+import org.apache.airavata.registry.mappers.ProcessStatusMapper;
+import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
+import org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
+import org.hibernate.LazyInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -52,20 +60,20 @@ public class ProcessService {
     private final ExperimentRepository experimentRepository;
     private final TaskService taskService;
     private final ProcessMapper processMapper;
-    private final org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper;
+    private final ProcessWorkflowMapper processWorkflowMapper;
     private final EntityManager entityManager;
-    private final org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository processStatusRepository;
-    private final org.apache.airavata.registry.mappers.ProcessStatusMapper processStatusMapper;
+    private final ProcessStatusRepository processStatusRepository;
+    private final ProcessStatusMapper processStatusMapper;
 
     public ProcessService(
             ProcessRepository processRepository,
             ExperimentRepository experimentRepository,
             TaskService taskService,
             ProcessMapper processMapper,
-            org.apache.airavata.registry.mappers.ProcessWorkflowMapper processWorkflowMapper,
+            ProcessWorkflowMapper processWorkflowMapper,
             EntityManager entityManager,
-            org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository processStatusRepository,
-            org.apache.airavata.registry.mappers.ProcessStatusMapper processStatusMapper) {
+            ProcessStatusRepository processStatusRepository,
+            ProcessStatusMapper processStatusMapper) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.taskService = taskService;
@@ -77,7 +85,7 @@ public class ProcessService {
     }
 
     public void populateParentIds(ProcessEntity processEntity) {
-        String processId = processEntity.getProcessId();
+        var processId = processEntity.getProcessId();
         if (processEntity.getProcessResourceSchedule() != null) {
             logger.debug("Populating the Primary Key of ProcessResourceSchedule objects for the Process");
             processEntity.getProcessResourceSchedule().setProcessId(processId);
@@ -110,7 +118,7 @@ public class ProcessService {
 
         if (processEntity.getTasks() != null) {
             logger.debug("Populating the Primary Key of Task objects for the Process");
-            java.sql.Timestamp currentTimestamp = AiravataUtils.getCurrentTimestamp();
+            var currentTimestamp = AiravataUtils.getCurrentTimestamp();
             processEntity.getTasks().forEach(taskEntity -> {
                 // Set parentProcessId for consistency
                 taskEntity.setParentProcessId(processId);
@@ -133,12 +141,12 @@ public class ProcessService {
     public String addProcess(ProcessModel process, String experimentId) throws RegistryException {
         process.setExperimentId(experimentId);
 
-        ProcessStatus processStatus = new ProcessStatus(ProcessState.CREATED);
+        var processStatus = new ProcessStatus(ProcessState.CREATED);
         if (process.getProcessStatuses() == null) {
-            process.setProcessStatuses(new java.util.ArrayList<>());
+            process.setProcessStatuses(new ArrayList<>());
         }
         process.getProcessStatuses().add(processStatus);
-        String processId = saveProcessModelData(process);
+        var processId = saveProcessModelData(process);
         return processId;
     }
 
@@ -149,27 +157,25 @@ public class ProcessService {
 
     @Transactional(readOnly = true)
     public ProcessModel getProcess(String processId) throws RegistryException {
-        ProcessEntity entity = processRepository.findById(processId).orElse(null);
+        var entity = processRepository.findById(processId).orElse(null);
         if (entity == null) return null;
         // Force initialization of tasks collection to ensure all tasks are loaded
         if (entity.getTasks() != null) {
             entity.getTasks().size(); // Force initialization
         }
-        ProcessModel model = processMapper.toModel(entity);
+        var model = processMapper.toModel(entity);
 
         // Always load processStatuses from repository to ensure they're loaded
         // The entity's processStatuses collection might be lazy-loaded and appear non-empty
         // but may not contain actual data when accessed outside of transaction
         // Use ascending order so statuses are in chronological order (oldest first)
         try {
-            List<org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity> loadedStatuses =
-                    processStatusRepository.findByProcessIdOrderByTimeOfStateChangeAsc(processId);
+            var loadedStatuses = processStatusRepository.findByProcessIdOrderByTimeOfStateChangeAsc(processId);
             if (loadedStatuses != null && !loadedStatuses.isEmpty()) {
                 // Convert to model list and set on the model
-                List<ProcessStatus> statusModels = new ArrayList<>();
-                for (org.apache.airavata.registry.entities.expcatalog.ProcessStatusEntity statusEntity :
-                        loadedStatuses) {
-                    ProcessStatus statusModel = processStatusMapper.toModel(statusEntity);
+                var statusModels = new ArrayList<ProcessStatus>();
+                for (var statusEntity : loadedStatuses) {
+                    var statusModel = processStatusMapper.toModel(statusEntity);
                     statusModels.add(statusModel);
                 }
                 model.setProcessStatuses(statusModels);
@@ -184,30 +190,29 @@ public class ProcessService {
         // Manually map processWorkflows after mapping to avoid LazyInitializationException
         // Access the collection to force initialization within the transaction
         try {
-            java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity> workflows =
-                    entity.getProcessWorkflows();
+            Collection<ProcessWorkflowEntity> workflows = entity.getProcessWorkflows();
             if (workflows != null) {
                 // Force initialization by accessing size
                 int size = workflows.size();
                 if (size > 0) {
-                    model.setProcessWorkflows(processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                    model.setProcessWorkflows(processWorkflowMapper.toModelList(new ArrayList<>(workflows)));
                 } else {
-                    model.setProcessWorkflows(new java.util.ArrayList<>());
+                    model.setProcessWorkflows(new ArrayList<>());
                 }
             } else {
-                model.setProcessWorkflows(new java.util.ArrayList<>());
+                model.setProcessWorkflows(new ArrayList<>());
             }
-        } catch (org.hibernate.LazyInitializationException e) {
+        } catch (LazyInitializationException e) {
             // If lazy initialization fails, just set empty list
             logger.debug("Could not initialize processWorkflows for process {}: {}", processId, e.getMessage());
-            model.setProcessWorkflows(new java.util.ArrayList<>());
+            model.setProcessWorkflows(new ArrayList<>());
         }
         // Manually convert emailAddresses from String (CSV) to List<String>
-        String emailAddressesStr = entity.getEmailAddresses();
+        var emailAddressesStr = entity.getEmailAddresses();
         if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
-            model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
+            model.setEmailAddresses(Arrays.asList(emailAddressesStr.split(",")));
         } else {
-            model.setEmailAddresses(new java.util.ArrayList<>());
+            model.setEmailAddresses(new ArrayList<>());
         }
         return model;
     }
@@ -216,7 +221,7 @@ public class ProcessService {
     public String addProcessResourceSchedule(
             ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId)
             throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
+        var processModel = getProcess(processId);
         processModel.setProcessResourceSchedule(computationalResourceSchedulingModel);
         updateProcess(processModel, processId);
         return processId;
@@ -231,7 +236,7 @@ public class ProcessService {
 
     @Transactional(readOnly = true)
     public ComputationalResourceSchedulingModel getProcessResourceSchedule(String processId) throws RegistryException {
-        ProcessModel processModel = getProcess(processId);
+        var processModel = getProcess(processId);
         return processModel.getProcessResourceSchedule();
     }
 
@@ -241,43 +246,41 @@ public class ProcessService {
 
         if (fieldName.equals(DBConstants.Process.EXPERIMENT_ID)) {
             logger.debug("Search criteria is ExperimentId");
-            List<ProcessEntity> entities = processRepository.findByExperimentId((String) value);
+            var entities = processRepository.findByExperimentId((String) value);
             processModelList = processMapper.toModelList(entities);
             // Manually map processWorkflows after mapping to avoid LazyInitializationException
             for (int i = 0; i < processModelList.size(); i++) {
-                ProcessEntity entity = entities.get(i);
-                ProcessModel model = processModelList.get(i);
+                var entity = entities.get(i);
+                var model = processModelList.get(i);
                 try {
-                    java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity>
-                            workflows = entity.getProcessWorkflows();
+                    Collection<ProcessWorkflowEntity> workflows = entity.getProcessWorkflows();
                     if (workflows != null) {
                         int size = workflows.size(); // Force initialization
                         if (size > 0) {
-                            model.setProcessWorkflows(
-                                    processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                            model.setProcessWorkflows(processWorkflowMapper.toModelList(new ArrayList<>(workflows)));
                         } else {
-                            model.setProcessWorkflows(new java.util.ArrayList<>());
+                            model.setProcessWorkflows(new ArrayList<>());
                         }
                     } else {
-                        model.setProcessWorkflows(new java.util.ArrayList<>());
+                        model.setProcessWorkflows(new ArrayList<>());
                     }
-                } catch (org.hibernate.LazyInitializationException e) {
+                } catch (LazyInitializationException e) {
                     logger.debug(
                             "Could not initialize processWorkflows for process {}: {}",
                             entity.getProcessId(),
                             e.getMessage());
-                    model.setProcessWorkflows(new java.util.ArrayList<>());
+                    model.setProcessWorkflows(new ArrayList<>());
                 }
             }
             // Manually convert emailAddresses from String (CSV) to List<String> for each model
             for (int i = 0; i < processModelList.size(); i++) {
-                ProcessEntity entity = entities.get(i);
-                ProcessModel model = processModelList.get(i);
-                String emailAddressesStr = entity.getEmailAddresses();
+                var entity = entities.get(i);
+                var model = processModelList.get(i);
+                var emailAddressesStr = entity.getEmailAddresses();
                 if (emailAddressesStr != null && !emailAddressesStr.isEmpty()) {
-                    model.setEmailAddresses(java.util.Arrays.asList(emailAddressesStr.split(",")));
+                    model.setEmailAddresses(Arrays.asList(emailAddressesStr.split(",")));
                 } else {
-                    model.setEmailAddresses(new java.util.ArrayList<>());
+                    model.setEmailAddresses(new ArrayList<>());
                 }
             }
         } else {
@@ -290,9 +293,9 @@ public class ProcessService {
 
     @Transactional(readOnly = true)
     public List<String> getProcessIds(String fieldName, Object value) throws RegistryException {
-        List<String> processIds = new ArrayList<>();
-        List<ProcessModel> processModelList = getProcessList(fieldName, value);
-        for (ProcessModel processModel : processModelList) {
+        var processIds = new ArrayList<String>();
+        var processModelList = getProcessList(fieldName, value);
+        for (var processModel : processModelList) {
             processIds.add(processModel.getProcessId());
         }
         return processIds;
@@ -310,32 +313,30 @@ public class ProcessService {
 
     @Transactional(readOnly = true)
     public List<ProcessModel> getAllProcesses(int offset, int limit) {
-        List<ProcessEntity> entities = processRepository.findAll();
-        List<ProcessModel> models = processMapper.toModelList(entities);
+        var entities = processRepository.findAll();
+        var models = processMapper.toModelList(entities);
         // Manually map processWorkflows after mapping to avoid LazyInitializationException
         for (int i = 0; i < models.size(); i++) {
-            ProcessEntity entity = entities.get(i);
-            ProcessModel model = models.get(i);
+            var entity = entities.get(i);
+            var model = models.get(i);
             try {
-                java.util.Collection<org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity> workflows =
-                        entity.getProcessWorkflows();
+                Collection<ProcessWorkflowEntity> workflows = entity.getProcessWorkflows();
                 if (workflows != null) {
                     int size = workflows.size(); // Force initialization
                     if (size > 0) {
-                        model.setProcessWorkflows(
-                                processWorkflowMapper.toModelList(new java.util.ArrayList<>(workflows)));
+                        model.setProcessWorkflows(processWorkflowMapper.toModelList(new ArrayList<>(workflows)));
                     } else {
-                        model.setProcessWorkflows(new java.util.ArrayList<>());
+                        model.setProcessWorkflows(new ArrayList<>());
                     }
                 } else {
-                    model.setProcessWorkflows(new java.util.ArrayList<>());
+                    model.setProcessWorkflows(new ArrayList<>());
                 }
-            } catch (org.hibernate.LazyInitializationException e) {
+            } catch (LazyInitializationException e) {
                 logger.debug(
                         "Could not initialize processWorkflows for process {}: {}",
                         entity.getProcessId(),
                         e.getMessage());
-                model.setProcessWorkflows(new java.util.ArrayList<>());
+                model.setProcessWorkflows(new ArrayList<>());
             }
         }
         return models;
@@ -343,14 +344,14 @@ public class ProcessService {
 
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchTime) {
         // TODO: Migrate native queries to @Query annotations
-        Map<String, Double> timeDistributions = new HashMap<>();
+        var timeDistributions = new HashMap<String, Double>();
         // These native queries need to be migrated to repository methods
         // For now, returning empty map - will be implemented when QueryConstants are migrated
         return timeDistributions;
     }
 
     private String saveProcessModelData(ProcessModel processModel) throws RegistryException {
-        ProcessEntity processEntity = saveProcess(processModel);
+        var processEntity = saveProcess(processModel);
         return processEntity.getProcessId();
     }
 
@@ -361,7 +362,7 @@ public class ProcessService {
             processModel.setProcessId(ExpCatalogUtils.getID("PROCESS"));
         }
 
-        String processId = processModel.getProcessId();
+        var processId = processModel.getProcessId();
 
         if (processModel.getProcessStatuses() != null) {
             logger.debug("Populating the status id of ProcessStatus objects for the Process");
@@ -378,11 +379,11 @@ public class ProcessService {
         }
         processModel.setLastUpdateTime(AiravataUtils.getUniqueTimestamp().getTime());
 
-        ProcessEntity processEntity = processMapper.toEntity(processModel);
+        var processEntity = processMapper.toEntity(processModel);
 
         // Manually convert emailAddresses from List<String> to String (CSV) - excluded from mapping
-        java.util.List<String> emailAddressesList = processModel.getEmailAddresses();
-        String emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
+        var emailAddressesList = processModel.getEmailAddresses();
+        var emailAddressesStr = (emailAddressesList != null && !emailAddressesList.isEmpty())
                 ? String.join(",", emailAddressesList)
                 : null;
         processEntity.setEmailAddresses(emailAddressesStr);
@@ -394,7 +395,7 @@ public class ProcessService {
         }
         // Try to find the experiment - first check persistence context, then database
         // This handles cases where the experiment is in the same transaction but not yet flushed
-        ExperimentEntity experimentEntity = entityManager.find(ExperimentEntity.class, processModel.getExperimentId());
+        var experimentEntity = entityManager.find(ExperimentEntity.class, processModel.getExperimentId());
         if (experimentEntity == null) {
             // Not in persistence context - flush to ensure any unflushed experiments are persisted
             entityManager.flush();
@@ -409,7 +410,7 @@ public class ProcessService {
                 // which provides a clear error message
                 try {
                     experimentEntity = experimentRepository.getReferenceById(processModel.getExperimentId());
-                } catch (jakarta.persistence.EntityNotFoundException e) {
+                } catch (EntityNotFoundException e) {
                     throw new RegistryException(
                             "Experiment with id " + processModel.getExperimentId()
                                     + " does not exist. Ensure the experiment is created and saved before creating a process.",

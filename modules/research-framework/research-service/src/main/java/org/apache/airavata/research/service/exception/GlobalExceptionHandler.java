@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(RuntimeException ex) {
         // You can customize the error response here
-        ErrorResponse errorResponse = new ErrorResponse(
+        var errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 "Resource not found",
                 ex.getMessage(),

@@ -49,7 +49,7 @@ public class GlobalExceptionController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleOtherExceptions(Exception ex) {
         LOGGER.error("Unexpected error occurred: ", ex);
-        Map<String, String> errorResponse = new HashMap<>();
+        var errorResponse = new HashMap<String, String>();
         errorResponse.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);

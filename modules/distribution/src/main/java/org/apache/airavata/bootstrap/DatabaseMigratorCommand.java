@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -202,25 +201,25 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 continue;
             }
 
-            Path projectRoot = Paths.get(basePath);
-            Path migrationPath =
+            var projectRoot = Paths.get(basePath);
+            var migrationPath =
                     projectRoot.resolve(MIGRATION_DIR).resolve(versionDir).resolve(scriptName);
             if (Files.exists(migrationPath)) {
                 return migrationPath;
             }
 
-            Path apiPath = projectRoot.resolve("modules/airavata-api");
+            var apiPath = projectRoot.resolve("modules/airavata-api");
             if (Files.exists(apiPath)) {
-                Path migrationPathFromApi =
+                var migrationPathFromApi =
                         projectRoot.resolve(MIGRATION_DIR).resolve(versionDir).resolve(scriptName);
                 if (Files.exists(migrationPathFromApi)) {
                     return migrationPathFromApi;
                 }
             }
 
-            Path current = Paths.get(basePath);
+            var current = Paths.get(basePath);
             for (int i = 0; i < 5; i++) {
-                Path candidate =
+                var candidate =
                         current.resolve(MIGRATION_DIR).resolve(versionDir).resolve(scriptName);
                 if (Files.exists(candidate)) {
                     return candidate;
@@ -233,9 +232,9 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
             }
         }
 
-        Path currentDir = Paths.get(System.getProperty("user.dir"));
+        var currentDir = Paths.get(System.getProperty("user.dir"));
         for (int i = 0; i < 5; i++) {
-            Path candidate =
+            var candidate =
                     currentDir.resolve(MIGRATION_DIR).resolve(versionDir).resolve(scriptName);
             if (Files.exists(candidate)) {
                 return candidate;
@@ -288,7 +287,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
     }
 
     private String getIncrementedVersion(String currentVersion) {
-        DecimalFormat decimalFormat = new DecimalFormat("#,##0.0");
+        var decimalFormat = new DecimalFormat("#,##0.0");
         Double currentVer = Double.parseDouble(currentVersion);
         double v = currentVer + .1;
         return decimalFormat.format(v);
@@ -296,8 +295,8 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
 
     private String executeSelectQuery(Connection conn, String query) {
         try {
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery(query);
+            var statement = conn.createStatement();
+            var rs = statement.executeQuery(query);
             if (rs != null) {
                 while (rs.next()) {
                     return rs.getString(2);
@@ -311,7 +310,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
 
     private void executeQuery(Connection conn, String query) {
         try {
-            Statement statement = conn.createStatement();
+            var statement = conn.createStatement();
             statement.execute(query);
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
@@ -319,7 +318,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
     }
 
     private void executeSQLScript(Connection conn, InputStream inputStream) throws Exception {
-        StringBuffer sql = new StringBuffer();
+        var sql = new StringBuffer();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -332,7 +331,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 if (line.startsWith("--")) {
                     continue;
                 }
-                StringTokenizer st = new StringTokenizer(line);
+                var st = new StringTokenizer(line);
                 if (st.hasMoreTokens()) {
                     String token = st.nextToken();
                     if ("REM".equalsIgnoreCase(token)) {

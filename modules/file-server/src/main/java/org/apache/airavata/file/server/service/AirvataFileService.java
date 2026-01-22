@@ -23,13 +23,12 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.FileMetadata;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -112,17 +111,17 @@ public class AirvataFileService {
 
         String absPath = dataManager.getBaseDir() + subPath;
         logger.info("Getting metadata for path {}", absPath);
-        FileMetadata rm = agentAdaptor.getFileMetadata(absPath);
+        var rm = agentAdaptor.getFileMetadata(absPath);
         if (!rm.isDirectory()) {
             throw new Exception("Path " + absPath + " is not a directory");
         }
 
-        AiravataDirectory airavataDirectory = AiravataDirectory.fromMetadata(rm);
+        var airavataDirectory = AiravataDirectory.fromMetadata(rm);
         logger.info("Listing files in path {}", absPath);
-        List<String> fileList = agentAdaptor.listDirectory(absPath);
+        var fileList = agentAdaptor.listDirectory(absPath);
         for (String fileOrDir : fileList) {
             logger.info("Getting metadata for path {}", fileOrDir);
-            FileMetadata m = agentAdaptor.getFileMetadata(absPath + "/" + fileOrDir);
+            var m = agentAdaptor.getFileMetadata(absPath + "/" + fileOrDir);
             if (m.isDirectory()) {
                 airavataDirectory.getInnerDirectories().add(AiravataDirectory.fromMetadata(m));
             } else {

@@ -54,17 +54,17 @@ public class PlanController {
     @PostMapping
     public ResponseEntity<PlanEntity> savePlan(@RequestBody JsonNode incomingData) {
         try {
-            String planId = incomingData.get("id").asText();
+            var planId = incomingData.get("id").asText();
 
-            String dataAsString = objectMapper.writeValueAsString(incomingData);
+            var dataAsString = objectMapper.writeValueAsString(incomingData);
 
-            PlanEntity plan = new PlanEntity();
+            var plan = new PlanEntity();
             plan.setId(planId);
             plan.setUserId(UserContext.username());
             plan.setGatewayId(UserContext.gatewayId());
             plan.setData(dataAsString);
 
-            PlanEntity savedPlan = planHandler.savePlan(plan);
+            var savedPlan = planHandler.savePlan(plan);
             return ResponseEntity.ok(savedPlan);
 
         } catch (Exception e) {
@@ -75,13 +75,13 @@ public class PlanController {
 
     @GetMapping("/user")
     public ResponseEntity<List<PlanEntity>> getPlansByUserId() {
-        List<PlanEntity> plans = planHandler.getAllPlansByUserId(UserContext.username(), UserContext.gatewayId());
+        var plans = planHandler.getAllPlansByUserId(UserContext.username(), UserContext.gatewayId());
         return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{planId}")
     public ResponseEntity<PlanEntity> getPlanById(@PathVariable("planId") String planId) {
-        PlanEntity plan = planHandler.getPlanById(planId);
+        var plan = planHandler.getPlanById(planId);
         return ResponseEntity.ok(plan);
     }
 
@@ -89,16 +89,16 @@ public class PlanController {
     public ResponseEntity<PlanEntity> updatePlan(
             @PathVariable("planId") String planId, @RequestBody JsonNode incomingData) {
         try {
-            PlanEntity existingPlan = planHandler.getPlanById(planId);
+            var existingPlan = planHandler.getPlanById(planId);
 
             if (existingPlan == null) {
                 logger.error("Couldn't find a plan with id: {} to update", planId);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            String dataAsString = objectMapper.writeValueAsString(incomingData);
+            var dataAsString = objectMapper.writeValueAsString(incomingData);
             existingPlan.setData(dataAsString);
-            PlanEntity updatedPlan = planHandler.savePlan(existingPlan);
+            var updatedPlan = planHandler.savePlan(existingPlan);
             return ResponseEntity.ok(updatedPlan);
 
         } catch (Exception e) {

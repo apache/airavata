@@ -46,23 +46,6 @@ public class TaskUtil {
         this.beanFactory = beanFactory;
     }
 
-    public <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T taskObj) throws IllegalAccessException {
-
-        List<OutPort> outPorts = new ArrayList<>();
-        for (Class<?> c = taskObj.getClass(); c != null; c = c.getSuperclass()) {
-            Field[] fields = c.getDeclaredFields();
-            for (Field field : fields) {
-                TaskOutPort outPortAnnotation = field.getAnnotation(TaskOutPort.class);
-                if (outPortAnnotation != null) {
-                    field.setAccessible(true);
-                    OutPort outPort = (OutPort) field.get(taskObj);
-                    outPorts.add(outPort);
-                }
-            }
-        }
-        return outPorts;
-    }
-
     public <T extends AbstractTask> Map<String, String> serializeTaskData(T data) throws IllegalAccessException {
 
         Map<String, String> result = new HashMap<>();
@@ -76,16 +59,6 @@ public class TaskUtil {
                         result.put(parm.name(), taskParamValue.serialize());
                     } else {
                         result.put(parm.name(), classField.get(data).toString());
-                    }
-                }
-
-                TaskOutPort outPort = classField.getAnnotation(TaskOutPort.class);
-                if (outPort != null) {
-                    classField.setAccessible(true);
-                    if (classField.get(data) != null) {
-                        result.put(
-                                outPort.name(),
-                                ((OutPort) classField.get(data)).getNextJobId().toString());
                     }
                 }
             }
@@ -135,17 +108,8 @@ public class TaskUtil {
             }
         }
 
-        for (Field classField : allFields) {
-            TaskOutPort outPort = classField.getAnnotation(TaskOutPort.class);
-            if (outPort != null) {
-                classField.setAccessible(true);
-                if (params.containsKey(outPort.name())) {
-                    classField.set(instance, new OutPort(params.get(outPort.name()), instance));
-                } else {
-                    classField.set(instance, new OutPort(null, instance));
-                }
-            }
-        }
+        // OutPort deserialization removed - task chaining replaced by Dapr workflow orchestration
+        // TaskOutPort annotations are ignored in Dapr-based architecture
     }
 
     public String replaceSpecialCharacters(String originalTxt, String replaceTxt) {

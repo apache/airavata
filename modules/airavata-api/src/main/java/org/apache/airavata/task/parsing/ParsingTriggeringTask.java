@@ -22,17 +22,23 @@ package org.apache.airavata.task.parsing;
 import io.dapr.client.DaprClient;
 import java.util.Collections;
 import org.apache.airavata.config.conditional.ConditionalOnParticipant;
-import org.apache.airavata.dapr.config.DaprConfigConstants;
-import org.apache.airavata.dapr.messaging.DaprTopics;
+import org.apache.airavata.orchestrator.config.OrchestratorConfig;
+import org.apache.airavata.orchestrator.messaging.MessagingFactory;
+import org.apache.airavata.orchestrator.messaging.Topics;
+import org.apache.airavata.service.profile.UserProfileService;
+import org.apache.airavata.service.registry.RegistryService;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
+import org.apache.airavata.task.TaskUtil;
 import org.apache.airavata.task.base.AiravataTask;
 import org.apache.airavata.task.base.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,7 +46,7 @@ import org.springframework.stereotype.Component;
  * completes, triggering the ParserWorkflowManager. Replaces Kafka producer.
  *
  * <p>Note: This task uses DaprClient directly (rather than DaprPublisher) because
- * ProcessCompletionMessage is published in a custom format expected by DaprParsingHandler,
+ * ProcessCompletionMessage is published in a custom format expected by ParsingHandler,
  * not wrapped in MessageContext like standard messaging events.
  */
 @TaskDef(name = "Parsing Triggering Task")
@@ -54,14 +60,15 @@ public class ParsingTriggeringTask extends AiravataTask {
     private final String pubsubName;
 
     public ParsingTriggeringTask(
-            org.apache.airavata.task.TaskUtil taskUtil,
-            org.springframework.context.ApplicationContext applicationContext,
-            org.apache.airavata.service.registry.RegistryService registryService,
-            org.apache.airavata.service.profile.UserProfileService userProfileService,
-            org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory,
+            TaskUtil taskUtil,
+            ApplicationContext applicationContext,
+            RegistryService registryService,
+            UserProfileService userProfileService,
+            CredentialStoreService credentialStoreService,
+            MessagingFactory messagingFactory,
             @Autowired(required = false) DaprClient daprClient,
-            @Value("${" + DaprConfigConstants.DAPR_PUBSUB_NAME + ":" + DaprConfigConstants.DEFAULT_PUBSUB_NAME + "}") String pubsubName) {
+            @Value("${" + OrchestratorConfig.PUBSUB_NAME + ":" + OrchestratorConfig.DEFAULT_PUBSUB_NAME + "}")
+                    String pubsubName) {
         super(
                 taskUtil,
                 applicationContext,
@@ -81,15 +88,11 @@ public class ParsingTriggeringTask extends AiravataTask {
         daprClient
                 .publishEvent(
                         pubsubName,
-                        DaprTopics.PARSING,
+                        Topics.PARSING,
                         completionMessage,
                         Collections.singletonMap("routingKey", experimentId))
                 .block();
-        logger.info(
-                "ParsingTriggeringTask posted to {}: {}->{}",
-                DaprTopics.PARSING,
-                experimentId,
-                completionMessage);
+        logger.info("ParsingTriggeringTask posted to {}: {}->{}", Topics.PARSING, experimentId, completionMessage);
     }
 
     @Override

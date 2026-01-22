@@ -23,15 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.airavata.common.exception.AiravataClientException;
 import org.apache.airavata.common.exception.AiravataErrorType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.thriftapi.security.model.AuthzToken;
-import org.apache.airavata.thriftapi.service.Airavata;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,23 +57,23 @@ public class TestAiravataServiceClientFactory {
 
     @Test
     public void testCreateAiravataClient() throws ApplicationSettingsException, AiravataClientException {
-        AuthzToken token = new AuthzToken();
+        var token = new AuthzToken();
         token.setAccessToken(
                 "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBUGFKRUpERFc4ZEdzMExnc3ozYUdydERsZ2U0eWlQblFibUNsYnpJX2NVIn0.eyJqdGkiOiI1NmMwZDZmYy0yMGVhLTQ1Y2UtODUwNC1kMTY0MTZkYTdkYzEiLCJleHAiOjE2NDc0NTQyNjcsIm5iZiI6MCwiaWF0IjoxNjQ3NDUyNDY3LCJpc3MiOiJodHRwczovL2lhbWRldi5zY2lnYXAub3JnL2F1dGgvcmVhbG1zL3NlYWdyaWQiLCJhdWQiOiJwZ2EiLCJzdWIiOiI3ZGZkYjI4MS1lNWIzLTQ4MjQtOTcxZC00YzQ2ZmNkMzIwYTEiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwZ2EiLCJhdXRoX3RpbWUiOjAsInNlc3Npb25fc3RhdGUiOiI1NWVkODI5OS0xN2FiLTQwNTEtYTBjYy0zMjgzNWQ1MTVlNjUiLCJhY3IiOiIxIiwiY2xpZW50X3Nlc3Npb24iOiIwMjU2OTljNS1lY2I2LTQ2ZDYtYmYwNy01ZDczOTk1ZTI3YjMiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9kZXYuc2VhZ3JpZC5vcmciXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsicGdhIjp7InJvbGVzIjpbImdhdGV3YXktdXNlciJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsInZpZXctcHJvZmlsZSJdfX0sIm5hbWUiOiJFcm9tYSBBYmV5c2luZ2hlIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiMjAyMXRlc3QxIiwiZ2l2ZW5fbmFtZSI6IkVyb21hIiwiZmFtaWx5X25hbWUiOiJBYmV5c2luZ2hlIiwiZW1haWwiOiJlcm9tYS5hYmV5c2luZ2hlQGdtYWlsLmNvbSJ9.eMIrTzyc43CLkxCauiXIwPV99CmsBDbSbiIVEE9Qd3ASyJKXlzkrWsUVPE-g43i1iBKaHBcnLPkmzVz8Hb0B1wtDA5nKSgipGYjfJfaWdMzBrW1PkpeWMKDZHN3m4OS7YZnzQki0YJFvL1-IZsYf2UCnr_lsOi2M-dnj9xwEJ_VIdvvHl9I6ivhBUywYDU0uL9EoSL3kAes7FvooOhXnZiRxJpZK82VPZZiVAb-nv5xgCwQw0ipbm8b0kIta4cxhjKKDhyINRvGXJjqN3kRNsahYHLnwsRqRjabgvbSfe4vtS5iRoPO-qF-I-rSMf2jZPREMWxdLQ9uPXEk9mFxqbQ");
-        Map<String, String> claimsMap = new HashMap<>();
+        var claimsMap = new HashMap<String, String>();
         claimsMap.put(Constants.GATEWAY_ID, "seagrid");
         claimsMap.put(Constants.USER_NAME, "2021test1");
         token.setClaimsMap(claimsMap);
 
-        boolean tlsEnabled = properties.security() != null
+        var tlsEnabled = properties.security() != null
                 && properties.security().tls() != null
                 && properties.security().tls().enabled();
-        Airavata.Client apiClient =
+        var apiClient =
                 AiravataServiceClientFactory.createAiravataClient("apidev.scigap.org", 8930, tlsEnabled, properties);
 
         assertNotNull(apiClient, "Airavata client should be created");
 
-        List<String> outputNames = new ArrayList<>();
+        var outputNames = new ArrayList<String>();
         outputNames.add("Gaussian-Application-Output");
         outputNames.add("Gaussian-Standar-Out");
         try {

@@ -25,7 +25,6 @@ import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateAuditInfo;
 import org.apache.airavata.credential.model.CertificateCredential;
-import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.CredentialReader;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CredentialReaderImpl implements CredentialReader, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final CredentialEntityService credentialEntityService;
 
@@ -67,7 +67,7 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
     }
 
     public String getPortalUser(String gatewayName, String tokenId) throws CredentialStoreException {
-        Credential credential = credentialEntityService.getCredential(gatewayName, tokenId);
+        var credential = credentialEntityService.getCredential(gatewayName, tokenId);
         if (credential == null) {
             return null;
         }
@@ -75,16 +75,15 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
     }
 
     public CertificateAuditInfo getAuditInfo(String gatewayName, String tokenId) throws CredentialStoreException {
-        CertificateCredential certificateCredential =
-                (CertificateCredential) credentialEntityService.getCredential(gatewayName, tokenId);
+        var certificateCredential = (CertificateCredential) credentialEntityService.getCredential(gatewayName, tokenId);
 
         if (certificateCredential == null) {
             return null;
         }
 
-        CertificateAuditInfo certificateAuditInfo = new CertificateAuditInfo();
+        var certificateAuditInfo = new CertificateAuditInfo();
 
-        CommunityUser retrievedUser = certificateCredential.getCommunityUser();
+        var retrievedUser = certificateCredential.getCommunityUser();
         certificateAuditInfo.setCommunityUserName(retrievedUser.getUsername());
         certificateAuditInfo.setCredentialLifeTime(certificateCredential.getLifeTime());
         certificateAuditInfo.setCredentialsRequestedTime(certificateCredential.getCertificateRequestedTime());

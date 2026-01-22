@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Profile;
  *
  * <ul>
  *   <li>airavata.dapr.enabled=true
- *   <li>airavata.dapr.http-port=3500
  *   <li>airavata.dapr.grpc-port=50001
  *   <li>airavata.dapr.pubsub.name=redis-pubsub
  *   <li>airavata.dapr.state.name=redis-state
@@ -42,6 +41,10 @@ import org.springframework.context.annotation.Profile;
  *
  * <p>Dapr component YAMLs (redis-pubsub.yaml, redis-state.yaml) must be
  * available to the Dapr sidecar via --resources-path.
+ *
+ * <p>DaprClient uses gRPC-only mode to communicate with the Dapr sidecar.
+ * Pub/Sub subscription callbacks are delivered via HTTP to the application
+ * server (port 8080) at /api/v1/dapr/pubsub/{topic}.
  *
  * <p>When airavata.dapr.enabled=false (e.g. in tests without a Dapr sidecar),
  * this config is not loaded. Tests that need Dapr can use a separate
@@ -52,25 +55,22 @@ import org.springframework.context.annotation.Profile;
 public class DaprConfig {
 
     /**
-     * DaprClient for Pub/Sub and State Store. Connects to the Dapr sidecar.
+     * DaprClient for Pub/Sub and State Store. Connects to the Dapr sidecar via gRPC.
      *
-     * <p>Uses airavata.dapr.http-port and airavata.dapr.grpc-port to set
-     * dapr.http.port and dapr.grpc.port system properties before building
-     * when they differ from defaults, so the SDK can connect to a non-default
-     * sidecar. Otherwise set DAPR_HTTP_PORT and DAPR_GRPC_PORT in the
-     * environment before starting the JVM.
+     * <p>Uses airavata.dapr.grpc-port to set dapr.grpc.port system property
+     * when it differs from the default (50001), so the SDK can connect to a
+     * non-default sidecar. Otherwise set DAPR_GRPC_PORT in the environment
+     * before starting the JVM.
+     *
+     * <p>The Dapr Java SDK defaults to gRPC mode, so no explicit protocol
+     * configuration is needed.
      *
      * <p>Not created in profile "test"; use airavata.dapr.enabled=false or
      * a test-specific profile with a test DaprClient if needed.
      */
     @Bean
     @Profile("!test")
-    public DaprClient daprClient(
-            @Value("${airavata.dapr.http-port:3500}") int httpPort,
-            @Value("${airavata.dapr.grpc-port:50001}") int grpcPort) {
-        if (httpPort != 3500) {
-            System.setProperty("dapr.http.port", String.valueOf(httpPort));
-        }
+    public DaprClient daprClient(@Value("${airavata.dapr.grpc-port:50001}") int grpcPort) {
         if (grpcPort != 50001) {
             System.setProperty("dapr.grpc.port", String.valueOf(grpcPort));
         }

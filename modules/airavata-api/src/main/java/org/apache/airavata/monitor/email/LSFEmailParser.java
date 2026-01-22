@@ -22,7 +22,6 @@ package org.apache.airavata.monitor.email;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.model.JobState;
@@ -48,7 +47,7 @@ public class LSFEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message, RegistryService registryService)
             throws MessagingException, AiravataException {
-        JobStatusResult jobStatusResult = new JobStatusResult();
+        var jobStatusResult = new JobStatusResult();
 
         parseContent(message, jobStatusResult);
         return jobStatusResult;
@@ -56,14 +55,14 @@ public class LSFEmailParser implements EmailParser {
 
     private void parseContent(Message message, JobStatusResult jobStatusResult)
             throws MessagingException, AiravataException {
-        String subject = message.getSubject();
-        Pattern pattern = Pattern.compile(REGEX);
-        Matcher matcher = pattern.matcher(subject);
+        var subject = message.getSubject();
+        var pattern = Pattern.compile(REGEX);
+        var matcher = pattern.matcher(subject);
         try {
             if (matcher.find()) {
                 jobStatusResult.setJobId(matcher.group(JOBID));
                 jobStatusResult.setJobName(matcher.group(JOBNAME));
-                String content = (String) message.getContent();
+                var content = (String) message.getContent();
                 jobStatusResult.setState(getJobState(matcher.group(STATUS), content));
             } else {
                 log.error("[EJM]: No matched found for subject => \n" + subject);

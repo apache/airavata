@@ -1,0 +1,48 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.activities.process.cancel;
+
+import io.dapr.workflows.WorkflowActivity;
+import io.dapr.workflows.WorkflowActivityContext;
+import org.apache.airavata.activities.shared.BaseActivityInput;
+import org.apache.airavata.activities.shared.TaskExecutorHelper;
+import org.apache.airavata.orchestrator.WorkflowRuntimeHolder;
+import org.apache.airavata.task.cancel.RemoteJobCancellationTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class RemoteJobCancellationActivity implements WorkflowActivity {
+
+    private static final Logger logger = LoggerFactory.getLogger(RemoteJobCancellationActivity.class);
+
+    @Override
+    public String run(WorkflowActivityContext ctx) {
+        var input = ctx.getInput(BaseActivityInput.class);
+        logger.info("RemoteJobCancellationActivity for process {}", input.processId());
+
+        try {
+            var task = WorkflowRuntimeHolder.getBean(RemoteJobCancellationTask.class);
+            return TaskExecutorHelper.executeTask(task, input);
+        } catch (Exception e) {
+            logger.error("RemoteJobCancellationActivity failed for process {}", input.processId(), e);
+            throw new RuntimeException("RemoteJobCancellationActivity failed: " + e.getMessage(), e);
+        }
+    }
+}

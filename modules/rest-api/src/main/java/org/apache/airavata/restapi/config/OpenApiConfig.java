@@ -24,16 +24,18 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
-@Configuration
+@Configuration("restOpenApiConfig")
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class OpenApiConfig {
     @Bean
+    @Primary
     public OpenAPI airavatarestapiOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Airavata REST API")
-                        .description("REST API for Airavata Services")
+                        .title("Airavata API")
+                        .description("HTTP Endpoints for Airavata API functions")
                         .version("0.21-SNAPSHOT"));
     }
 }

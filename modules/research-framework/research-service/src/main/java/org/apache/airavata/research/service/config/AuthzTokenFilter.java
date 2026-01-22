@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.profile.UserProfileService;
@@ -46,7 +45,7 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
 
     private final UserProfileService userProfileService;
 
-    @Value("${services.research.hub.url}")
+    @Value("${airavata.services.research.hub.url}")
     private String csHubUrl;
 
     public AuthzTokenFilter(UserProfileService userProfileService) {
@@ -76,8 +75,8 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String authorizationHeader = request.getHeader("Authorization");
-            String xClaimsHeader = request.getHeader("X-Claims");
+            var authorizationHeader = request.getHeader("Authorization");
+            var xClaimsHeader = request.getHeader("X-Claims");
 
             if (request.getMethod().equals("OPTIONS")) {
                 filterChain.doFilter(request, response);
@@ -86,16 +85,16 @@ public class AuthzTokenFilter extends OncePerRequestFilter {
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ") && xClaimsHeader != null) {
                 try {
-                    String accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
-                    ObjectMapper objectMapper = new ObjectMapper();
+                    var accessToken = authorizationHeader.substring(7); // Remove "Bearer " prefix
+                    var objectMapper = new ObjectMapper();
                     Map<String, String> claimsMap = objectMapper.readValue(xClaimsHeader, new TypeReference<>() {});
 
-                    AuthzToken authzToken = new AuthzToken();
+                    var authzToken = new AuthzToken();
                     authzToken.setAccessToken(accessToken);
                     authzToken.setClaimsMap(claimsMap);
                     UserContext.setAuthzToken(authzToken);
 
-                    UserProfile userProfile = userProfileService.getUserProfileById(
+                    var userProfile = userProfileService.getUserProfileById(
                             authzToken, getClaim(authzToken, USERNAME_CLAIM), getClaim(authzToken, GATEWAY_CLAIM));
                     UserContext.setUser(userProfile);
                 } catch (Exception e) {

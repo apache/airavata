@@ -23,7 +23,7 @@ Airavata uses a streamlined architecture with minimal components. All Airavata s
        │   Airavata API Server      │
        │      (Spring Boot)         │
        ├────────────────────────────┤
-       │ • Thrift API (8930)        │
+       │ • Thrift Server (8930)        │
        │ • HTTPS via HAProxy (443)   │
        │ • Orchestrator (internal)  │
        │ • Registry (internal)      │
@@ -38,11 +38,21 @@ Airavata uses a streamlined architecture with minimal components. All Airavata s
 
 ### Components
 
-1. **MariaDB Database**: Database (`airavata`) hosting all catalogs (experiment, app, replica, workflow, sharing, credential, profile), plus `keycloak` database for IAM.
+1. **MariaDB Database**: Single unified `airavata` database containing all tables for experiments, applications, profiles, sharing, credentials, and workflows. A separate `keycloak` database is used for IAM.
 
 2. **Redis**: Pub/Sub messaging for Dapr and Dapr State Store.
 
-3. **Airavata API Server**: Unified Spring Boot application containing all services in a single JVM. External access via Thrift API (port 8930) or HTTPS via HAProxy (port 443). All other services (Orchestrator, Registry, Profile Service, Sharing Registry, Credential Store) are internal components within the same application.
+3. **Airavata API Server**: Unified Spring Boot application containing all services in a single JVM with the following server ports:
+   - **Thrift Server** (port 8930) - Thrift Endpoints for Airavata API functions
+   - **HTTP Server** (port 8080):
+     - Airavata API - HTTP Endpoints for Airavata API functions
+     - File API - HTTP Endpoints for file upload/download
+     - Agent API - HTTP Endpoints for interactive job contexts
+     - Research API - HTTP Endpoints for use by research hub
+   - **gRPC Server** (port 9090) - For airavata binaries to open persistent channels with airavata APIs
+   - **Dapr gRPC** (port 50001) - Sidecar for pub/sub, state, and workflow execution
+   
+   External access is typically via Thrift Server (port 8930) or HTTPS via HAProxy (port 443). All other services (Orchestrator, Registry, Profile Service, Sharing Registry, Credential Store) are internal components within the same application.
 
 4. **Keycloak**: Identity and Access Management (IAM) server for user authentication, OAuth2/OIDC tokens, and authorization.
 
@@ -181,7 +191,7 @@ This will:
 - Deploy unified API server (all services in one Spring Boot app)
 - Configure SSL certificates (Let's Encrypt)
 - Set up HAProxy for TLS termination on port 443
-- Configure firewall rules (port 8930 for Thrift, port 443 for HTTPS)
+- Configure firewall rules (port 8930 for Thrift, port 443 for HTTPS, port 8080 for HTTP if exposed, port 9090 for gRPC if exposed)
 - Start Airavata service
 
 #### Deploy Keycloak Only
@@ -220,13 +230,27 @@ Update `group_vars/all/vars.yml` to use `localhost` for host references.
 
 ### Airavata Configuration
 
-Main configuration file: `conf/application.properties` (generated from template)
+Main configuration file: `/opt/apache-airavata/conf/airavata.properties` (or `conf/application.properties` in distribution)
+
+**Standard Paths:**
+- Installation directory: `/opt/apache-airavata` (AIRAVATA_HOME)
+- Configuration directory: `/opt/apache-airavata/conf` (AIRAVATA_CONFIG_DIR, defaults to `AIRAVATA_HOME/conf` if not explicitly set)
+- Logs directory: `/opt/apache-airavata/logs`
 
 Key settings:
 - Database connections (MariaDB)
 - Dapr configuration (Redis connection)
 - Keycloak IAM URL
-- Thrift API port (8930)
+- Server ports:
+  - Thrift Server port (8930)
+  - HTTP Server port (8080)
+  - gRPC Server port (9090)
+  - Dapr gRPC port (50001) - DaprClient uses gRPC-only mode
+- Agent Tunnel Server configuration (remote server location, not a service started by Airavata):
+  - `airavata.services.agent.tunnelserver.host` - Remote tunnel server hostname
+  - `airavata.services.agent.tunnelserver.port` - Remote tunnel server port (typically 17000)
+  - `airavata.services.agent.tunnelserver.url` - Remote tunnel server API URL
+  - `airavata.services.agent.tunnelserver.token` - Authentication token for tunnel server
 - TLS/SSL keystore configuration
 - Service enablement flags
 
@@ -278,7 +302,7 @@ systemctl status keycloak
 ### Test Connectivity
 
 ```bash
-# Thrift API
+# Thrift Server
 telnet api.example.com 8930
 
 # HTTPS via HAProxy

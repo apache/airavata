@@ -51,7 +51,7 @@ public class GroupHandler {
     public String createGroupResourceProfile(String gatewayId, String name, String description, String owner) {
         try {
             // Create group in sharing registry
-            UserGroup group = new UserGroup();
+            var group = new UserGroup();
             group.setGroupId(UUID.randomUUID().toString());
             group.setName(name);
             group.setDescription(description);
@@ -78,7 +78,7 @@ public class GroupHandler {
             }
 
             // Create group resource profile
-            GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
+            var groupResourceProfile = new GroupResourceProfile();
             groupResourceProfile.setGatewayId(gatewayId);
             groupResourceProfile.setGroupResourceProfileName(name + " Resource Profile");
             groupResourceProfile.setComputePreferences(new ArrayList<>());
@@ -178,7 +178,7 @@ public class GroupHandler {
                 groupResourceProfile.setComputePreferences(new ArrayList<>());
             }
 
-            GroupComputeResourcePreference computePref = new GroupComputeResourcePreference();
+            var computePref = new GroupComputeResourcePreference();
             computePref.setComputeResourceId(computeId);
             computePref.setGroupResourceProfileId(groupId);
             if (loginUser != null) {

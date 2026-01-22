@@ -73,7 +73,7 @@ public class GroupMembershipService {
     }
 
     public GroupMembership get(GroupMembershipPK pk) throws SharingRegistryException {
-        GroupMembershipEntity entity = groupMembershipRepository.findById(pk).orElse(null);
+        var entity = groupMembershipRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return groupMembershipMapper.toModel(entity);
     }
@@ -83,8 +83,8 @@ public class GroupMembershipService {
     }
 
     public GroupMembership update(GroupMembership groupMembership) throws SharingRegistryException {
-        GroupMembershipEntity entity = groupMembershipMapper.toEntity(groupMembership);
-        GroupMembershipEntity saved = groupMembershipRepository.save(entity);
+        var entity = groupMembershipMapper.toEntity(groupMembership);
+        var saved = groupMembershipRepository.save(entity);
         return groupMembershipMapper.toModel(saved);
     }
 
@@ -224,16 +224,29 @@ public class GroupMembershipService {
 
     public List<GroupMembership> getAllParentMembershipsForChild(String domainId, String childId)
             throws SharingRegistryException {
+        return getAllParentMembershipsForChild(domainId, childId, null);
+    }
+
+    public List<GroupMembership> getAllParentMembershipsForChild(
+            String domainId, String childId, GroupChildType childTypeFilter) throws SharingRegistryException {
         List<GroupMembership> finalParentGroups = new ArrayList<>();
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.GroupMembershipTable.CHILD_ID, childId);
         filters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
+        // Apply childType filter if specified (e.g., GROUP for cycle detection in group hierarchies)
+        if (childTypeFilter != null) {
+            filters.put(DBConstants.GroupMembershipTable.CHILD_TYPE, childTypeFilter.toString());
+        }
         LinkedList<GroupMembership> temp = new LinkedList<>(select(filters, 0, -1));
         while (!temp.isEmpty()) {
             GroupMembership gm = temp.pop();
             filters = new HashMap<>();
             filters.put(DBConstants.GroupMembershipTable.CHILD_ID, gm.getParentId());
             filters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
+            // Maintain childType filter in recursive traversal if specified
+            if (childTypeFilter != null) {
+                filters.put(DBConstants.GroupMembershipTable.CHILD_TYPE, childTypeFilter.toString());
+            }
             temp.addAll(select(filters, 0, -1));
             finalParentGroups.add(gm);
         }

@@ -76,7 +76,12 @@ public record AiravataServerProperties(
         public record Authentication(boolean enabled) {}
 
         public record Iam(
-                boolean enabled, String serverUrl, String oauthClientId, String oauthClientSecret, Super superAdmin) {
+                boolean enabled,
+                String serverUrl,
+                String realm,
+                String oauthClientId,
+                String oauthClientSecret,
+                Super superAdmin) {
             public record Super(String username, String password) {}
         }
 
@@ -91,6 +96,8 @@ public record AiravataServerProperties(
     // ==================== Services Configuration ====================
     public record Services(
             Thrift thrift,
+            Http http,
+            Grpc grpc,
             Rest rest,
             Api api,
             Participant participant,
@@ -112,9 +119,15 @@ public record AiravataServerProperties(
             public record Server(int port) {}
         }
 
-        public record Rest(boolean enabled, Server server) {
+        public record Http(Server server) {
             public record Server(int port) {}
         }
+
+        public record Grpc(Server server) {
+            public record Server(int port) {}
+        }
+
+        public record Rest(boolean enabled) {}
 
         public record Api(Vault vault) {
             public record Vault(Keystore keystore) {
@@ -195,22 +208,16 @@ public record AiravataServerProperties(
         }
 
         public record Research(
-                boolean enabled,
-                Grpc grpc,
-                Hub hub,
-                Portal portal,
-                Server server,
-                Spring spring,
-                Springdoc springdoc,
-                Openid openid) {
+                boolean enabled, Grpc grpc, Hub hub, Portal portal, Spring spring, Springdoc springdoc, Openid openid) {
             public record Grpc(
-                    int port, String keepaliveTime, String keepaliveTimeout, boolean permitKeepaliveWithoutCalls) {}
+                    String keepaliveTime,
+                    String keepaliveTimeout,
+                    boolean permitKeepaliveWithoutCalls,
+                    long maxInboundMessageSize) {}
 
             public record Hub(String adminApiKey, int limit, String url) {}
 
             public record Portal(String devUrl, String url) {}
-
-            public record Server(int port) {}
 
             public record Spring(Servlet servlet) {
                 public record Servlet(Multipart multipart) {
@@ -234,15 +241,12 @@ public record AiravataServerProperties(
                 boolean enabled,
                 Appinterface appinterface,
                 Grpc grpc,
-                Server server,
                 Spring spring,
                 Storage storage,
                 Tunnelserver tunnelserver) {
             public record Appinterface(String id) {}
 
-            public record Grpc(long maxInboundMessageSize, int port) {}
-
-            public record Server(int port) {}
+            public record Grpc(long maxInboundMessageSize) {}
 
             public record Spring(Jpa jpa, Servlet servlet) {
                 public record Jpa(Hibernate hibernate, boolean openInView) {
@@ -259,8 +263,7 @@ public record AiravataServerProperties(
             public record Tunnelserver(String url, String host, int port, String token) {}
         }
 
-        public record Fileserver(boolean enabled, Server server, Spring spring) {
-            public record Server(int port) {}
+        public record Fileserver(boolean enabled, Spring spring) {
 
             public record Spring(Servlet servlet) {
                 public record Servlet(Multipart multipart) {
@@ -269,9 +272,7 @@ public record AiravataServerProperties(
             }
         }
 
-        public record Telemetry(boolean enabled, Server server) {
-            public record Server(int port) {}
-        }
+        public record Telemetry(boolean enabled) {}
 
         public record Dbus(boolean enabled, String classpath) {}
     }

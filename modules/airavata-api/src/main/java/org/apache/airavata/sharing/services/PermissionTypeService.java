@@ -56,7 +56,7 @@ public class PermissionTypeService {
     }
 
     public PermissionType get(PermissionTypePK pk) throws SharingRegistryException {
-        PermissionTypeEntity entity = permissionTypeRepository.findById(pk).orElse(null);
+        var entity = permissionTypeRepository.findById(pk).orElse(null);
         if (entity == null) return null;
         return permissionTypeMapper.toModel(entity);
     }
@@ -66,8 +66,8 @@ public class PermissionTypeService {
     }
 
     public PermissionType update(PermissionType permissionType) throws SharingRegistryException {
-        PermissionTypeEntity entity = permissionTypeMapper.toEntity(permissionType);
-        PermissionTypeEntity saved = permissionTypeRepository.save(entity);
+        var entity = permissionTypeMapper.toEntity(permissionType);
+        var saved = permissionTypeRepository.save(entity);
         return permissionTypeMapper.toModel(saved);
     }
 
@@ -93,8 +93,7 @@ public class PermissionTypeService {
      *                                  OWNER permissions (data inconsistency)
      */
     public String getOwnerPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
-        List<PermissionTypeEntity> entities =
-                permissionTypeRepository.findByDomainIdAndName(domainId, OWNER_PERMISSION_NAME);
+        var entities = permissionTypeRepository.findByDomainIdAndName(domainId, OWNER_PERMISSION_NAME);
 
         if (entities.isEmpty()) {
             String message = String.format(

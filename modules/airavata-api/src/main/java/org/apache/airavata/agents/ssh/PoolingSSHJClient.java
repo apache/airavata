@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +34,6 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.sftp.RemoteFile;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.transport.DisconnectListener;
 import net.schmizz.sshj.transport.TransportException;
@@ -98,27 +96,26 @@ public class PoolingSSHJClient extends SSHClient {
     ////////////////// client specific operations ///////
 
     private SSHClient newClientWithSessionValidation() throws IOException {
-        SSHClient newClient = createNewSSHClient();
-        SSHClientInfo info =
-                new SSHClientInfo(1, AiravataUtils.getUniqueTimestamp().getTime(), clientInfoMap.size());
+        var newClient = createNewSSHClient();
+        var info = new SSHClientInfo(1, AiravataUtils.getUniqueTimestamp().getTime(), clientInfoMap.size());
         clientInfoMap.put(newClient, info);
 
         /* if this is the very first connection that is created to the compute host, fetch the MaxSessions
          * value form SSHD config file in order to tune the pool
          */
         logger.info("Fetching max sessions for the connection of {}", host);
-        try (SFTPClient sftpClient = newClient.newSFTPClient()) {
-            RemoteFile remoteFile = sftpClient.open("/etc/ssh/sshd_config");
-            byte[] readContent = new byte[(int) remoteFile.length()];
+        try (var sftpClient = newClient.newSFTPClient()) {
+            var remoteFile = sftpClient.open("/etc/ssh/sshd_config");
+            var readContent = new byte[(int) remoteFile.length()];
             remoteFile.read(0, readContent, 0, readContent.length);
 
-            String content = new String(readContent, java.nio.charset.StandardCharsets.UTF_8);
+            var content = new String(readContent, java.nio.charset.StandardCharsets.UTF_8);
             logger.trace("SSHD config file content : {}", content);
-            String[] lines = content.split("\n");
+            var lines = content.split("\n");
 
-            for (String line : lines) {
+            for (var line : lines) {
                 if (line.trim().startsWith("MaxSessions")) {
-                    String[] splits = line.split(" ");
+                    var splits = line.split(" ");
                     if (splits.length == 2) {
                         int sessionCount = Integer.parseInt(splits[1]);
                         logger.info("Max session count is : {} for {}", sessionCount, host);
@@ -143,10 +140,10 @@ public class PoolingSSHJClient extends SSHClient {
 
             } else {
 
-                Optional<Map.Entry<SSHClient, SSHClientInfo>> minEntryOp = clientInfoMap.entrySet().stream()
+                var minEntryOp = clientInfoMap.entrySet().stream()
                         .min(Comparator.comparing(entry -> entry.getValue().sessionCount));
                 if (minEntryOp.isPresent()) {
-                    Map.Entry<SSHClient, SSHClientInfo> minEntry = minEntryOp.get();
+                    var minEntry = minEntryOp.get();
                     // use the connection with least amount of sessions created.
 
                     logger.debug(
@@ -175,7 +172,7 @@ public class PoolingSSHJClient extends SSHClient {
                                 .setLastAccessedTime(
                                         AiravataUtils.getUniqueTimestamp().getTime());
 
-                        SSHClient sshClient = minEntry.getKey();
+                        var sshClient = minEntry.getKey();
 
                         if (!sshClient.isConnected() || !sshClient.isAuthenticated() || isClientErrored(sshClient)) {
                             logger.warn(
@@ -245,7 +242,7 @@ public class PoolingSSHJClient extends SSHClient {
     private void removeStaleConnections() {
         List<Map.Entry<SSHClient, SSHClientInfo>> entriesTobeRemoved;
         lock.writeLock().lock();
-        logger.info("Current active connections for  {} @ {} : {} are {}", username, host, port, clientInfoMap.size());
+        logger.info("Current active connections for {} @ {}:{} are {}", username, host, port, clientInfoMap.size());
         try {
             entriesTobeRemoved = clientInfoMap.entrySet().stream()
                     .filter(entry -> ((entry.getValue().getSessionCount() == 0)
@@ -275,12 +272,7 @@ public class PoolingSSHJClient extends SSHClient {
 
     private SSHClient createNewSSHClient() throws IOException {
 
-        SSHClient sshClient;
-        if (config != null) {
-            sshClient = new SSHClient(config);
-        } else {
-            sshClient = new SSHClient();
-        }
+        var sshClient = config != null ? new SSHClient(config) : new SSHClient();
 
         sshClient.getConnection().getTransport().setDisconnectListener(new DisconnectListener() {
             @Override
@@ -381,9 +373,9 @@ public class PoolingSSHJClient extends SSHClient {
     }
 
     public SessionResource startSessionResource() throws Exception {
-        final SSHClient sshClient = leaseSSHClient();
+        final var sshClient = leaseSSHClient();
         try {
-            Session session = sshClient.startSession();
+            var session = sshClient.startSession();
             return new SessionResource(session, sshClient, this);
         } catch (Exception e) {
             if (sshClient != null) {
@@ -398,9 +390,9 @@ public class PoolingSSHJClient extends SSHClient {
     }
 
     public SCPFileTransferResource newSCPFileTransferResource() throws Exception {
-        final SSHClient sshClient = leaseSSHClient();
+        final var sshClient = leaseSSHClient();
         try {
-            SCPFileTransfer fileTransfer = sshClient.newSCPFileTransfer();
+            var fileTransfer = sshClient.newSCPFileTransfer();
             return new SCPFileTransferResource(fileTransfer, sshClient, this);
         } catch (Exception e) {
             if (sshClient != null) {
@@ -415,9 +407,9 @@ public class PoolingSSHJClient extends SSHClient {
     }
 
     public SFTPClientResource newSFTPClientResource() throws Exception {
-        final SSHClient sshClient = leaseSSHClient();
+        final var sshClient = leaseSSHClient();
         try {
-            SFTPClient sftpClient = sshClient.newSFTPClient();
+            var sftpClient = sshClient.newSFTPClient();
             return new SFTPClientResource(sftpClient, sshClient, this);
         } catch (Exception e) {
             if (sshClient != null) {

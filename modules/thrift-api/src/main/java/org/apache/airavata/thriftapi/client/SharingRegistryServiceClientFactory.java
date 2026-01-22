@@ -35,11 +35,10 @@ public class SharingRegistryServiceClientFactory {
     public static SharingRegistryService.Client createSharingRegistryClient(String serverHost, int serverPort)
             throws SharingRegistryException {
         try {
-            TSocket transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TBinaryProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol =
-                    new TMultiplexedProtocol(protocol, SHARING_REGISTRY_SERVICE_NAME);
+            var protocol = new TBinaryProtocol(transport);
+            var multiplexedProtocol = new TMultiplexedProtocol(protocol, SHARING_REGISTRY_SERVICE_NAME);
             return new SharingRegistryService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             logger.error("failed to create sharing registry client", e);

@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.repositories.appcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +101,7 @@ public class StorageResourceRepositoryTest extends TestBase {
                 }
             }
         } else {
-            fail("Created Storage Resource not found");
+            org.junit.jupiter.api.Assertions.fail("Created Storage Resource not found");
         }
 
         description.setHostName("localhost2");

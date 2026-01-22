@@ -63,7 +63,7 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.dapr.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.model.AuthzToken;

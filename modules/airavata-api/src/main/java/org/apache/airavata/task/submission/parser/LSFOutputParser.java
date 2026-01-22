@@ -32,6 +32,28 @@ import org.slf4j.LoggerFactory;
 public class LSFOutputParser implements OutputParser {
     private static final Logger logger = LoggerFactory.getLogger(LSFOutputParser.class);
 
+    /**
+     * Maps LSF status codes to JobState enum values.
+     * LSF status codes: PEND, RUN, DONE, EXIT, SUSP, USUSP, SSUSP, PSUSP, WAIT, ZOMBI
+     */
+    private JobState mapLsfStatusToJobState(String lsfStatus) {
+        if (lsfStatus == null) {
+            return JobState.UNKNOWN;
+        }
+        return switch (lsfStatus.toUpperCase()) {
+            case "PEND", "WAIT" -> JobState.QUEUED;
+            case "RUN" -> JobState.ACTIVE;
+            case "DONE" -> JobState.COMPLETE;
+            case "EXIT" -> JobState.FAILED;
+            case "SUSP", "USUSP", "SSUSP", "PSUSP" -> JobState.SUSPENDED;
+            case "ZOMBI" -> JobState.UNKNOWN;
+            default -> {
+                logger.warn("Unknown LSF status code: {}", lsfStatus);
+                yield JobState.UNKNOWN;
+            }
+        };
+    }
+
     @Override
     public String parseJobSubmission(String rawOutput) throws Exception {
         logger.debug(rawOutput);
@@ -49,9 +71,41 @@ public class LSFOutputParser implements OutputParser {
 
     @Override
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws Exception {
-        logger.debug(rawOutput);
-        // todo this is not used anymore
-        return null;
+        logger.debug("Parsing job status for jobID {}: {}", jobID, rawOutput);
+        if (rawOutput == null || rawOutput.trim().isEmpty()) {
+            var jobStatus = new JobStatus();
+            jobStatus.setJobState(JobState.UNKNOWN);
+            return jobStatus;
+        }
+
+        // Parse LSF bjobs output format - find the line containing this jobID
+        // Format is typically: JOBID USER STAT QUEUE FROM_HOST EXEC_HOST JOB_NAME SUBMIT_TIME
+        String[] lines = rawOutput.split("\n");
+        for (String line : lines) {
+            String[] lineParts = line.split(" ");
+            // Filter out empty strings
+            List<String> columnList =
+                    java.util.Arrays.stream(lineParts).filter(s -> !s.isEmpty()).toList();
+
+            // Check if this line contains our jobID (first column)
+            if (columnList.size() > 2 && columnList.get(0).equals(jobID)) {
+                try {
+                    var jobStatus = new JobStatus();
+                    // Status is typically in column 2 (index 2)
+                    jobStatus.setJobState(mapLsfStatusToJobState(columnList.get(2)));
+                    logger.info("Parsed job status for jobID {}: {}", jobID, jobStatus.getJobState());
+                    return jobStatus;
+                } catch (IndexOutOfBoundsException e) {
+                    logger.warn("Invalid LSF output format for jobID {}", jobID);
+                }
+            }
+        }
+
+        // Job not found in output
+        logger.warn("JobID {} not found in LSF bjobs output", jobID);
+        var jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.UNKNOWN);
+        return jobStatus;
     }
 
     @Override
@@ -72,7 +126,7 @@ public class LSFOutputParser implements OutputParser {
                             .toList();
                     try {
                         var jobStatus = new JobStatus();
-                        jobStatus.setJobState(JobState.valueOf(columnList.get(2)));
+                        jobStatus.setJobState(mapLsfStatusToJobState(columnList.get(2)));
                         statusMap.put(jobID, jobStatus);
                     } catch (IndexOutOfBoundsException e) {
                         var jobStatus = new JobStatus();

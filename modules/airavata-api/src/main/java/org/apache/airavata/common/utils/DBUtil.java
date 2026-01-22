@@ -119,7 +119,7 @@ public class DBUtil {
     public String getMatchingColumnValue(String tableName, String selectColumn, String whereColumn, String whereValue)
             throws SQLException {
 
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
 
         stringBuilder
                 .append("SELECT ")
@@ -130,11 +130,11 @@ public class DBUtil {
                 .append(whereColumn)
                 .append(" = ?");
 
-        String sql = stringBuilder.toString();
+        var sql = stringBuilder.toString();
 
-        Connection connection = getConnection();
+        var connection = getConnection();
 
-        PreparedStatement ps = connection.prepareStatement(sql);
+        var ps = connection.prepareStatement(sql);
         ResultSet rs = null;
 
         try {
@@ -172,9 +172,9 @@ public class DBUtil {
      */
     public void executeSQL(String sql) throws SQLException {
 
-        Connection connection = getConnection();
+        var connection = getConnection();
 
-        PreparedStatement ps = connection.prepareStatement(sql);
+        var ps = connection.prepareStatement(sql);
 
         try {
             ps.executeUpdate();
@@ -214,7 +214,7 @@ public class DBUtil {
      * @return A new data source.
      */
     public DataSource getDataSource() {
-        HikariConfig config = new HikariConfig();
+        var config = new HikariConfig();
         config.setDriverClassName(this.driverName);
         config.setUsername(this.databaseUserName);
         config.setPassword(this.databasePassword);
@@ -333,9 +333,9 @@ public class DBUtil {
      */
     public static void truncate(String tableName, Connection connection) throws SQLException {
 
-        String sql = "delete from " + tableName;
+        var sql = "delete from " + tableName;
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        var preparedStatement = connection.prepareStatement(sql);
         preparedStatement.executeUpdate();
 
         connection.commit();
@@ -355,7 +355,7 @@ public class DBUtil {
             throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException,
                     InstantiationException {
 
-        StringBuilder stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
+        var stringBuilder = new StringBuilder("Starting credential store, connecting to database - ");
         stringBuilder
                 .append(jdbcUrl)
                 .append(" DB user - ")
@@ -365,7 +365,7 @@ public class DBUtil {
 
         log.debug(stringBuilder.toString());
 
-        DBUtil dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
+        var dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
         dbUtil.init();
 
         return dbUtil;

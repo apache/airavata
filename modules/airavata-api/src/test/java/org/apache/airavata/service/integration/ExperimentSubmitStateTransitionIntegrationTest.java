@@ -70,7 +70,8 @@ import org.springframework.test.context.TestConstructor;
             "airavata.flyway.enabled=false",
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.dapr.enabled=false"
+            "airavata.dapr.enabled=false",
+            "airavata.services.controller.enabled=false"
         })
 @ActiveProfiles({"test", "orchestrator-integration"})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -107,8 +108,7 @@ public class ExperimentSubmitStateTransitionIntegrationTest extends ServiceInteg
     void launchWithMissingUserConfigTransitionsToFailed() throws RegistryException {
         // Fail fast if OrchestratorService is required but not available
         Assumptions.assumeTrue(
-                orchestratorService != null,
-                "OrchestratorService is required for this test but is not available.");
+                orchestratorService != null, "OrchestratorService is required for this test but is not available.");
 
         Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
@@ -152,8 +152,10 @@ public class ExperimentSubmitStateTransitionIntegrationTest extends ServiceInteg
             basePackages = {
                 "org.apache.airavata.service.orchestrator",
                 "org.apache.airavata.orchestrator",
+                "org.apache.airavata.workflow",
                 "org.apache.airavata.messaging",
-                "org.apache.airavata.metascheduler"
+                "org.apache.airavata.metascheduler",
+                "org.apache.airavata.scheduling"
             })
     @Profile({"test", "orchestrator-integration"})
     static class TestConfiguration {}

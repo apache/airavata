@@ -511,12 +511,11 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         Map<String, String> filters = new HashMap<>();
         filters.put("INVALID KEY", applicationModule.getAppModuleName());
-        try {
-            applicationInterfaceService.getApplicationModules(filters).get(0).getAppModuleName();
-            Assertions.fail("Expected to throw an exception");
-        } catch (IllegalArgumentException e) {
-
-        }
+        // Expect IllegalArgumentException when using invalid filter key
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> applicationInterfaceService.getApplicationModules(filters),
+                "Should throw IllegalArgumentException for invalid filter key");
     }
 
     @Test
@@ -529,12 +528,11 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         Map<String, String> filters = new HashMap<>();
         filters.put("INVALID KEY", applicationInterfaceDescription.getApplicationName());
-        try {
-            applicationInterfaceService.getApplicationInterfaces(filters).get(0).getApplicationName();
-            Assertions.fail("Expected to throw an exception");
-        } catch (IllegalArgumentException e) {
-
-        }
+        // Expect IllegalArgumentException when using invalid filter key
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> applicationInterfaceService.getApplicationInterfaces(filters),
+                "Should throw IllegalArgumentException for invalid filter key");
     }
 
     @Test

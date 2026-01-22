@@ -23,6 +23,7 @@ import java.util.UUID;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
 
 /**
  * Utility class for messaging-related test operations.

@@ -20,7 +20,6 @@
 package org.apache.airavata.agent.connection.service.handlers;
 
 import io.grpc.stub.StreamObserver;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 import org.apache.airavata.agent.AgentCommunicationServiceGrpc;
 import org.apache.airavata.agent.AgentMessage;
 import org.apache.airavata.agent.AgentPing;
-import org.apache.airavata.agent.AsyncCommand;
 import org.apache.airavata.agent.AsyncCommandExecutionRequest;
 import org.apache.airavata.agent.AsyncCommandExecutionResponse;
 import org.apache.airavata.agent.AsyncCommandListRequest;
@@ -80,6 +78,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * gRPC service handler for agent-server bidirectional communication.
+ *
+ * <p>This handler manages persistent gRPC streams between the Airavata server
+ * and remote agents. It supports:
+ * <ul>
+ *   <li>Environment setup (conda/pip package installation)</li>
+ *   <li>Synchronous and asynchronous shell command execution</li>
+ *   <li>Jupyter kernel code execution</li>
+ *   <li>Python script execution</li>
+ *   <li>TCP tunnel creation/termination</li>
+ * </ul>
+ *
+ * <p>Agents connect via {@link #createMessageBus} and maintain a persistent
+ * bidirectional stream. Requests are routed to agents via their agent ID,
+ * and responses are cached until retrieved by the caller.
+ *
+ * @see org.apache.airavata.agent.AgentCommunicationServiceGrpc
+ */
 @Service
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
 
@@ -103,16 +120,16 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, TunnelCreationResponse> TUNNEL_CREATION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
-    @Value("${services.agent.tunnelserver.host}")
+    @Value("${airavata.services.agent.tunnelserver.host}")
     private String tunnelServerHost;
 
-    @Value("${services.agent.tunnelserver.port}")
+    @Value("${airavata.services.agent.tunnelserver.port}")
     private int tunnelServerPort;
 
-    @Value("${services.agent.tunnelserver.url}")
+    @Value("${airavata.services.agent.tunnelserver.url}")
     private String tunnelServerApiUrl;
 
-    @Value("${services.agent.tunnelserver.token}")
+    @Value("${airavata.services.agent.tunnelserver.token}")
     private String tunnelServerToken;
 
     // response handling
@@ -126,7 +143,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentEnvSetupResponse getEnvSetupResponse(String executionId) {
-        AgentEnvSetupResponse envCreationResponse = new AgentEnvSetupResponse();
+        var envCreationResponse = new AgentEnvSetupResponse();
         if (ENV_SETUP_RESPONSE_CACHE.containsKey(executionId)) {
             envCreationResponse.setStatus(
                     ENV_SETUP_RESPONSE_CACHE.get(executionId).getStatus());
@@ -140,7 +157,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentCommandExecutionResponse getCommandExecutionResponse(String executionId) {
-        AgentCommandExecutionResponse agentCommandResponse = new AgentCommandExecutionResponse();
+        var agentCommandResponse = new AgentCommandExecutionResponse();
         if (COMMAND_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
             agentCommandResponse.setResponseString(
                     COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
@@ -154,10 +171,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentAsyncCommandExecutionResponse getAsyncCommandExecutionResponse(String executionId) {
-        AgentAsyncCommandExecutionResponse agentCommandResponse = new AgentAsyncCommandExecutionResponse();
+        var agentCommandResponse = new AgentAsyncCommandExecutionResponse();
         if (ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
-            AsyncCommandExecutionResponse asyncCommandExecutionResponse =
-                    ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId);
+            var asyncCommandExecutionResponse = ASYNC_COMMAND_EXECUTION_RESPONSE_CACHE.get(executionId);
             agentCommandResponse.setProcessId(asyncCommandExecutionResponse.getProcessId());
             agentCommandResponse.setExecutionId(executionId);
             agentCommandResponse.setErrorMessage(asyncCommandExecutionResponse.getErrorMessage());
@@ -170,16 +186,15 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentAsyncCommandListResponse getAsyncCommandListResponse(String executionId) {
-        AgentAsyncCommandListResponse agentCommandListResponse = new AgentAsyncCommandListResponse();
+        var agentCommandListResponse = new AgentAsyncCommandListResponse();
         if (ASYNC_COMMAND_LIST_RESPONSE_CACHE.containsKey(executionId)) {
-            AsyncCommandListResponse asyncCommandListResponse = ASYNC_COMMAND_LIST_RESPONSE_CACHE.get(executionId);
+            var asyncCommandListResponse = ASYNC_COMMAND_LIST_RESPONSE_CACHE.get(executionId);
             agentCommandListResponse.setExecutionId(executionId);
-            List<AsyncCommand> commandsList = asyncCommandListResponse.getCommandsList();
+            var commandsList = asyncCommandListResponse.getCommandsList();
 
             agentCommandListResponse.setCommands(commandsList.stream()
                     .map(c -> {
-                        org.apache.airavata.agent.connection.service.models.AsyncCommand cmd =
-                                new org.apache.airavata.agent.connection.service.models.AsyncCommand();
+                        var cmd = new org.apache.airavata.agent.connection.service.models.AsyncCommand();
                         cmd.setProcessId(c.getProcessId());
                         cmd.setArguments(c.getArgumentsList());
                         return cmd;
@@ -193,11 +208,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentAsyncCommandTerminateResponse getAsyncCommandTerminateResponse(String executionId) {
-        AgentAsyncCommandTerminateResponse agentAsyncCommandTerminateResponse =
-                new AgentAsyncCommandTerminateResponse();
+        var agentAsyncCommandTerminateResponse = new AgentAsyncCommandTerminateResponse();
         if (ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.containsKey(executionId)) {
-            AsyncCommandTerminateResponse asyncCommandTerminateResponse =
-                    ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.get(executionId);
+            var asyncCommandTerminateResponse = ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.get(executionId);
             agentAsyncCommandTerminateResponse.setExecutionId(executionId);
             agentAsyncCommandTerminateResponse.setStatus(asyncCommandTerminateResponse.getStatus());
             ASYNC_COMMAND_TERMINATE_RESPONSE_CACHE.remove(executionId);
@@ -208,7 +221,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentJupyterExecutionResponse getJupyterExecutionResponse(String executionId) {
-        AgentJupyterExecutionResponse executionResponse = new AgentJupyterExecutionResponse();
+        var executionResponse = new AgentJupyterExecutionResponse();
         if (JUPYTER_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
             executionResponse.setResponseString(
                     JUPYTER_EXECUTION_RESPONSE_CACHE.get(executionId).getResponseString());
@@ -222,7 +235,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentKernelRestartResponse getKernelRestartResponse(String executionId) {
-        AgentKernelRestartResponse kernelRestartResponse = new AgentKernelRestartResponse();
+        var kernelRestartResponse = new AgentKernelRestartResponse();
         if (KERNEL_RESTART_RESPONSE_CACHE.containsKey(executionId)) {
             kernelRestartResponse.setStatus(
                     KERNEL_RESTART_RESPONSE_CACHE.get(executionId).getStatus());
@@ -236,7 +249,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentPythonExecutionResponse getPythonExecutionResponse(String executionId) {
-        AgentPythonExecutionResponse runResponse = new AgentPythonExecutionResponse();
+        var runResponse = new AgentPythonExecutionResponse();
         if (PYTHON_EXECUTION_RESPONSE_CACHE.containsKey(executionId)) {
             runResponse.setExecutionId(executionId);
             runResponse.setExecuted(true);
@@ -251,11 +264,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
 
     // request handling
     public AgentEnvSetupAck runEnvSetupOnAgent(AgentEnvSetupRequest envSetupRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentEnvSetupAck ack = new AgentEnvSetupAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentEnvSetupAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
-                getAgentStreamObserver(envSetupRequest.getAgentId());
+        var agentStreamObserver = getAgentStreamObserver(envSetupRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running an env setup on agent {}", envSetupRequest.getAgentId());
@@ -286,13 +298,13 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentCommandExecutionAck runCommandOnAgent(AgentCommandExecutionRequest commandRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentCommandExecutionAck();
         ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
-            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            var streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            var streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running a command on agent {}", commandRequest.getAgentId());
                 streamObserver.onNext(ServerMessage.newBuilder()
@@ -319,13 +331,13 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentCommandExecutionAck runAsyncCommandOnAgent(AgentAsyncCommandExecutionRequest commandRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentCommandExecutionAck();
         ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
-            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            var streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            var streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running an async command on agent {}", commandRequest.getAgentId());
                 streamObserver.onNext(ServerMessage.newBuilder()
@@ -352,13 +364,13 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentCommandExecutionAck runAsyncCommandListOnAgent(AgentAsyncCommandListRequest commandRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentCommandExecutionAck();
         ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
-            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            var streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            var streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running an async command list on agent {}", commandRequest.getAgentId());
                 streamObserver.onNext(ServerMessage.newBuilder()
@@ -382,13 +394,13 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentCommandExecutionAck runAsyncCommandTerminateOnAgent(AgentAsyncCommandTerminateRequest commandRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentCommandExecutionAck ack = new AgentCommandExecutionAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentCommandExecutionAck();
         ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(commandRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(commandRequest.getAgentId()))) {
-            String streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            var streamId = AGENT_STREAM_MAPPING.get(commandRequest.getAgentId());
+            var streamObserver = ACTIVE_STREAMS.get(streamId);
             try {
                 logger.info("Running an async command terminate on agent {}", commandRequest.getAgentId());
                 streamObserver.onNext(ServerMessage.newBuilder()
@@ -413,11 +425,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentJupyterExecutionAck runJupyterOnAgent(AgentJupyterExecutionRequest jupyterExecutionRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentJupyterExecutionAck ack = new AgentJupyterExecutionAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentJupyterExecutionAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
-                getAgentStreamObserver(jupyterExecutionRequest.getAgentId());
+        var agentStreamObserver = getAgentStreamObserver(jupyterExecutionRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running a jupyter on agent {}", jupyterExecutionRequest.getAgentId());
@@ -447,11 +458,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentPythonExecutionAck runPythonOnAgent(AgentPythonExecutionRequest pythonRunRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentPythonExecutionAck ack = new AgentPythonExecutionAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentPythonExecutionAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
-                getAgentStreamObserver(pythonRunRequest.getAgentId());
+        var agentStreamObserver = getAgentStreamObserver(pythonRunRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("Running a python on agent {}", pythonRunRequest.getAgentId());
@@ -481,15 +491,15 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentTunnelAck terminateTunnelOnAgent(AgentTunnelTerminateRequest tunnelTerminateRequest) {
-        String executionId = UUID.randomUUID().toString();
+        var executionId = UUID.randomUUID().toString();
 
-        AgentTunnelAck ack = new AgentTunnelAck();
+        var ack = new AgentTunnelAck();
         ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(tunnelTerminateRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(tunnelTerminateRequest.getAgentId()))) {
 
-            String agentId = AGENT_STREAM_MAPPING.get(tunnelTerminateRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(agentId);
+            var agentId = AGENT_STREAM_MAPPING.get(tunnelTerminateRequest.getAgentId());
+            var streamObserver = ACTIVE_STREAMS.get(agentId);
             try {
                 streamObserver.onNext(ServerMessage.newBuilder()
                         .setTunnelTerminationRequest(TunnelTerminationRequest.newBuilder()
@@ -511,14 +521,14 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentTunnelAck runTunnelOnAgent(AgentTunnelCreateRequest tunnelRequest) {
-        String executionId = UUID.randomUUID().toString();
+        var executionId = UUID.randomUUID().toString();
 
-        AgentTunnelAck ack = new AgentTunnelAck();
+        var ack = new AgentTunnelAck();
         ack.setExecutionId(executionId);
         if (AGENT_STREAM_MAPPING.containsKey(tunnelRequest.getAgentId())
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(tunnelRequest.getAgentId()))) {
-            String agentId = AGENT_STREAM_MAPPING.get(tunnelRequest.getAgentId());
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(agentId);
+            var agentId = AGENT_STREAM_MAPPING.get(tunnelRequest.getAgentId());
+            var streamObserver = ACTIVE_STREAMS.get(agentId);
             try {
                 streamObserver.onNext(ServerMessage.newBuilder()
                         .setTunnelCreationRequest(TunnelCreationRequest.newBuilder()
@@ -543,9 +553,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentTunnelCreateResponse getTunnelCreateResponse(String executionId) {
-        AgentTunnelCreateResponse tunnelResponse = new AgentTunnelCreateResponse();
+        var tunnelResponse = new AgentTunnelCreateResponse();
         if (TUNNEL_CREATION_RESPONSE_CACHE.containsKey(executionId)) {
-            TunnelCreationResponse tunnelCreationResponse = TUNNEL_CREATION_RESPONSE_CACHE.get(executionId);
+            var tunnelCreationResponse = TUNNEL_CREATION_RESPONSE_CACHE.get(executionId);
             tunnelResponse.setTunnelId(tunnelCreationResponse.getTunnelId());
             tunnelResponse.setExecutionId(executionId);
             tunnelResponse.setProxyHost(tunnelCreationResponse.getTunnelHost());
@@ -559,11 +569,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     }
 
     public AgentKernelRestartAck runKernelRestartOnAgent(AgentKernelRestartRequest kernelRestartRequest) {
-        String executionId = UUID.randomUUID().toString();
-        AgentKernelRestartAck ack = new AgentKernelRestartAck();
+        var executionId = UUID.randomUUID().toString();
+        var ack = new AgentKernelRestartAck();
         ack.setExecutionId(executionId);
-        Optional<StreamObserver<ServerMessage>> agentStreamObserver =
-                getAgentStreamObserver(kernelRestartRequest.getAgentId());
+        var agentStreamObserver = getAgentStreamObserver(kernelRestartRequest.getAgentId());
         if (agentStreamObserver.isPresent()) {
             try {
                 logger.info("restarting kernel on env {}...", kernelRestartRequest.getEnvName());
@@ -652,8 +661,8 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private Optional<StreamObserver<ServerMessage>> getAgentStreamObserver(String agentId) {
         if (AGENT_STREAM_MAPPING.containsKey(agentId)
                 && ACTIVE_STREAMS.containsKey(AGENT_STREAM_MAPPING.get(agentId))) {
-            String streamId = AGENT_STREAM_MAPPING.get(agentId);
-            StreamObserver<ServerMessage> streamObserver = ACTIVE_STREAMS.get(streamId);
+            var streamId = AGENT_STREAM_MAPPING.get(agentId);
+            var streamObserver = ACTIVE_STREAMS.get(streamId);
             return Optional.ofNullable(streamObserver);
         } else {
             return Optional.empty();
@@ -663,7 +672,7 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     @Override
     public StreamObserver<AgentMessage> createMessageBus(StreamObserver<ServerMessage> responseObserver) {
 
-        String streamId = UUID.randomUUID().toString();
+        var streamId = UUID.randomUUID().toString();
         ACTIVE_STREAMS.put(streamId, responseObserver);
 
         return new StreamObserver<AgentMessage>() {

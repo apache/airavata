@@ -30,7 +30,7 @@ public class SSHAccountProvisionerFactory {
             ServiceLoader.load(SSHAccountProvisionerProvider.class);
 
     public static List<SSHAccountProvisionerProvider> getSSHAccountProvisionerProviders() {
-        List<SSHAccountProvisionerProvider> providers = new ArrayList<>();
+        var providers = new ArrayList<SSHAccountProvisionerProvider>();
         sshAccountProvisionerProviders.forEach(providers::add);
         return providers;
     }
@@ -47,7 +47,7 @@ public class SSHAccountProvisionerFactory {
     public static SSHAccountProvisioner createSSHAccountProvisioner(
             String provisionerName, Map<ConfigParam, String> config) {
 
-        SSHAccountProvisionerProvider sshAccountProvisionerProvider = getSSHAccountProvisionerProvider(provisionerName);
+        var sshAccountProvisionerProvider = getSSHAccountProvisionerProvider(provisionerName);
 
         return sshAccountProvisionerProvider.createSSHAccountProvisioner(config);
     }

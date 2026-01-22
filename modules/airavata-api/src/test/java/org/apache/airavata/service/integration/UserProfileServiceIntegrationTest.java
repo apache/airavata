@@ -33,12 +33,6 @@ import org.junit.jupiter.api.Test;
 
 @DisplayName(
         "UserProfileService Integration Tests - User profile CRUD operations, existence checks, and data validation")
-@org.springframework.test.context.TestPropertySource(
-        properties = {
-            "security.iam.server-url=http://localhost:18080",
-            "security.iam.super.username=admin",
-            "security.iam.super.password=admin"
-        })
 public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final UserProfileService userProfileService;

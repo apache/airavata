@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.thriftapi.handler;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -685,12 +686,10 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public Map<String, org.apache.airavata.thriftapi.model.JobStatus> getJobStatuses(String airavataExperimentId)
             throws RegistryServiceException {
         try {
-            Map<String, org.apache.airavata.common.model.JobStatus> domainJobStatuses =
-                    registryService.getJobStatuses(airavataExperimentId);
-            Map<String, org.apache.airavata.thriftapi.model.JobStatus> thriftStatuses = new java.util.HashMap<>();
-            for (Map.Entry<String, org.apache.airavata.common.model.JobStatus> entry : domainJobStatuses.entrySet()) {
-                org.apache.airavata.thriftapi.model.JobStatus thriftStatus =
-                        new org.apache.airavata.thriftapi.model.JobStatus();
+            var domainJobStatuses = registryService.getJobStatuses(airavataExperimentId);
+            var thriftStatuses = new HashMap<String, org.apache.airavata.thriftapi.model.JobStatus>();
+            for (var entry : domainJobStatuses.entrySet()) {
+                var thriftStatus = new org.apache.airavata.thriftapi.model.JobStatus();
                 thriftStatus.setJobState(org.apache.airavata.thriftapi.model.JobState.valueOf(
                         entry.getValue().getJobState().name()));
                 thriftStatus.setTimeOfStateChange(entry.getValue().getTimeOfStateChange());
@@ -1236,7 +1235,6 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
         }
     }
 
-
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
             throws RegistryServiceException {
@@ -1367,8 +1365,8 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      * Fetch a list of all deployed Compute Hosts for a given application interfaces.
      *
      * @param appInterfaceId The identifier for the requested application interface.
-
-    /**
+     *
+     * /**
      * Fetch the given Compute Resource.
      *
      * @param computeResourceId The identifier for the requested compute resource
@@ -3057,9 +3055,8 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             int offset)
             throws RegistryServiceException {
         try {
-            Map<org.apache.airavata.common.model.ExperimentSearchFields, String> domainFilters =
-                    new java.util.HashMap<>();
-            for (Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet()) {
+            var domainFilters = new HashMap<org.apache.airavata.common.model.ExperimentSearchFields, String>();
+            for (var entry : filters.entrySet()) {
                 domainFilters.put(
                         org.apache.airavata.common.model.ExperimentSearchFields.valueOf(
                                 entry.getKey().name()),
@@ -3097,8 +3094,8 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
             int offset)
             throws RegistryServiceException {
         try {
-            Map<org.apache.airavata.common.model.ProjectSearchFields, String> domainFilters = new java.util.HashMap<>();
-            for (Map.Entry<ProjectSearchFields, String> entry : filters.entrySet()) {
+            var domainFilters = new HashMap<org.apache.airavata.common.model.ProjectSearchFields, String>();
+            for (var entry : filters.entrySet()) {
                 domainFilters.put(
                         org.apache.airavata.common.model.ProjectSearchFields.valueOf(
                                 entry.getKey().name()),

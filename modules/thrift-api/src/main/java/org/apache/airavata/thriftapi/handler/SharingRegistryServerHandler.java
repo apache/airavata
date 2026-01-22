@@ -799,7 +799,7 @@ public class SharingRegistryServerHandler
 
     // Conversion helper methods
     private Domain convertToDomainDomain(org.apache.airavata.thriftapi.sharing.model.Domain thrift) {
-        Domain domain = new Domain();
+        var domain = new Domain();
         if (thrift.isSetDomainId()) domain.setDomainId(thrift.getDomainId());
         if (thrift.isSetName()) domain.setName(thrift.getName());
         if (thrift.isSetDescription()) domain.setDescription(thrift.getDescription());
@@ -809,8 +809,7 @@ public class SharingRegistryServerHandler
     }
 
     private org.apache.airavata.thriftapi.sharing.model.Domain convertToThriftDomain(Domain domain) {
-        org.apache.airavata.thriftapi.sharing.model.Domain thrift =
-                new org.apache.airavata.thriftapi.sharing.model.Domain();
+        var thrift = new org.apache.airavata.thriftapi.sharing.model.Domain();
         if (domain.getDomainId() != null) thrift.setDomainId(domain.getDomainId());
         if (domain.getName() != null) thrift.setName(domain.getName());
         if (domain.getDescription() != null) thrift.setDescription(domain.getDescription());
@@ -820,7 +819,7 @@ public class SharingRegistryServerHandler
     }
 
     private User convertToDomainUser(org.apache.airavata.thriftapi.sharing.model.User thrift) {
-        User domain = new User();
+        var domain = new User();
         if (thrift.isSetUserId()) domain.setUserId(thrift.getUserId());
         if (thrift.isSetDomainId()) domain.setDomainId(thrift.getDomainId());
         if (thrift.isSetUserName()) domain.setUserName(thrift.getUserName());
@@ -834,8 +833,7 @@ public class SharingRegistryServerHandler
     }
 
     private org.apache.airavata.thriftapi.sharing.model.User convertToThriftUser(User domain) {
-        org.apache.airavata.thriftapi.sharing.model.User thrift =
-                new org.apache.airavata.thriftapi.sharing.model.User();
+        var thrift = new org.apache.airavata.thriftapi.sharing.model.User();
         if (domain.getUserId() != null) thrift.setUserId(domain.getUserId());
         if (domain.getDomainId() != null) thrift.setDomainId(domain.getDomainId());
         if (domain.getUserName() != null) thrift.setUserName(domain.getUserName());
@@ -849,7 +847,7 @@ public class SharingRegistryServerHandler
     }
 
     private UserGroup convertToDomainUserGroup(org.apache.airavata.thriftapi.sharing.model.UserGroup thrift) {
-        UserGroup domain = new UserGroup();
+        var domain = new UserGroup();
         if (thrift.isSetGroupId()) domain.setGroupId(thrift.getGroupId());
         if (thrift.isSetDomainId()) domain.setDomainId(thrift.getDomainId());
         if (thrift.isSetName()) domain.setName(thrift.getName());
@@ -867,8 +865,7 @@ public class SharingRegistryServerHandler
     }
 
     private org.apache.airavata.thriftapi.sharing.model.UserGroup convertToThriftUserGroup(UserGroup domain) {
-        org.apache.airavata.thriftapi.sharing.model.UserGroup thrift =
-                new org.apache.airavata.thriftapi.sharing.model.UserGroup();
+        var thrift = new org.apache.airavata.thriftapi.sharing.model.UserGroup();
         if (domain.getGroupId() != null) thrift.setGroupId(domain.getGroupId());
         if (domain.getDomainId() != null) thrift.setDomainId(domain.getDomainId());
         if (domain.getName() != null) thrift.setName(domain.getName());
@@ -886,7 +883,7 @@ public class SharingRegistryServerHandler
     }
 
     private EntityType convertToDomainEntityType(org.apache.airavata.thriftapi.sharing.model.EntityType thrift) {
-        EntityType domain = new EntityType();
+        var domain = new EntityType();
         if (thrift.isSetEntityTypeId()) domain.setEntityTypeId(thrift.getEntityTypeId());
         if (thrift.isSetDomainId()) domain.setDomainId(thrift.getDomainId());
         if (thrift.isSetName()) domain.setName(thrift.getName());
@@ -897,8 +894,7 @@ public class SharingRegistryServerHandler
     }
 
     private org.apache.airavata.thriftapi.sharing.model.EntityType convertToThriftEntityType(EntityType domain) {
-        org.apache.airavata.thriftapi.sharing.model.EntityType thrift =
-                new org.apache.airavata.thriftapi.sharing.model.EntityType();
+        var thrift = new org.apache.airavata.thriftapi.sharing.model.EntityType();
         if (domain.getEntityTypeId() != null) thrift.setEntityTypeId(domain.getEntityTypeId());
         if (domain.getDomainId() != null) thrift.setDomainId(domain.getDomainId());
         if (domain.getName() != null) thrift.setName(domain.getName());
@@ -910,7 +906,7 @@ public class SharingRegistryServerHandler
 
     private PermissionType convertToDomainPermissionType(
             org.apache.airavata.thriftapi.sharing.model.PermissionType thrift) {
-        PermissionType domain = new PermissionType();
+        var domain = new PermissionType();
         if (thrift.isSetPermissionTypeId()) domain.setPermissionTypeId(thrift.getPermissionTypeId());
         if (thrift.isSetDomainId()) domain.setDomainId(thrift.getDomainId());
         if (thrift.isSetName()) domain.setName(thrift.getName());
@@ -922,8 +918,7 @@ public class SharingRegistryServerHandler
 
     private org.apache.airavata.thriftapi.sharing.model.PermissionType convertToThriftPermissionType(
             PermissionType domain) {
-        org.apache.airavata.thriftapi.sharing.model.PermissionType thrift =
-                new org.apache.airavata.thriftapi.sharing.model.PermissionType();
+        var thrift = new org.apache.airavata.thriftapi.sharing.model.PermissionType();
         if (domain.getPermissionTypeId() != null) thrift.setPermissionTypeId(domain.getPermissionTypeId());
         if (domain.getDomainId() != null) thrift.setDomainId(domain.getDomainId());
         if (domain.getName() != null) thrift.setName(domain.getName());
@@ -934,7 +929,7 @@ public class SharingRegistryServerHandler
     }
 
     private Entity convertToDomainEntity(org.apache.airavata.thriftapi.sharing.model.Entity thrift) {
-        Entity domain = new Entity();
+        var domain = new Entity();
         if (thrift.isSetEntityId()) domain.setEntityId(thrift.getEntityId());
         if (thrift.isSetDomainId()) domain.setDomainId(thrift.getDomainId());
         if (thrift.isSetEntityTypeId()) domain.setEntityTypeId(thrift.getEntityTypeId());
@@ -952,8 +947,7 @@ public class SharingRegistryServerHandler
     }
 
     private org.apache.airavata.thriftapi.sharing.model.Entity convertToThriftEntity(Entity domain) {
-        org.apache.airavata.thriftapi.sharing.model.Entity thrift =
-                new org.apache.airavata.thriftapi.sharing.model.Entity();
+        var thrift = new org.apache.airavata.thriftapi.sharing.model.Entity();
         if (domain.getEntityId() != null) thrift.setEntityId(domain.getEntityId());
         if (domain.getDomainId() != null) thrift.setDomainId(domain.getDomainId());
         if (domain.getEntityTypeId() != null) thrift.setEntityTypeId(domain.getEntityTypeId());
@@ -972,7 +966,7 @@ public class SharingRegistryServerHandler
 
     private SearchCriteria convertToDomainSearchCriteria(
             org.apache.airavata.thriftapi.sharing.model.SearchCriteria thrift) {
-        SearchCriteria domain = new SearchCriteria();
+        var domain = new SearchCriteria();
         if (thrift.isSetSearchField())
             domain.setSearchField(org.apache.airavata.sharing.model.EntitySearchField.valueOf(
                     thrift.getSearchField().name()));

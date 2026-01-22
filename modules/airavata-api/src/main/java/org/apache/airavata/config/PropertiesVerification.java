@@ -51,7 +51,9 @@ public class PropertiesVerification implements CommandLineRunner {
                 "Thrift Server - Port: {}",
                 properties.services().thrift().server().port());
         logger.info(
-                "REST Server - Port: {}", properties.services().rest().server().port());
+                "HTTP Server - Port: {}", properties.services().http().server().port());
+        logger.info(
+                "gRPC Server - Port: {}", properties.services().grpc().server().port());
         // Database configuration is now managed by Spring Boot standard properties
         // (spring.datasource.*) and is configured via JpaConfig
         // Verify Default Registry

@@ -23,9 +23,7 @@ import org.apache.airavata.common.exception.AiravataClientException;
 import org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 public class OrchestratorServiceClientFactory {
@@ -35,10 +33,10 @@ public class OrchestratorServiceClientFactory {
     public static OrchestratorService.Client createOrchestratorClient(String serverHost, int serverPort)
             throws AiravataClientException {
         try {
-            TTransport transport = new TSocket(serverHost, serverPort);
+            var transport = new TSocket(serverHost, serverPort);
             transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, ORCHESTRATOR_SERVICE_NAME);
+            var protocol = new TBinaryProtocol(transport);
+            var multiplexedProtocol = new TMultiplexedProtocol(protocol, ORCHESTRATOR_SERVICE_NAME);
             return new OrchestratorService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new AiravataClientException();

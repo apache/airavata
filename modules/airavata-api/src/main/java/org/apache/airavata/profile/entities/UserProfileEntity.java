@@ -32,8 +32,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import org.apache.airavata.common.utils.AiravataUtils;
 
 @Entity
 @Table(name = "USER_PROFILE")
@@ -323,8 +325,8 @@ public class UserProfileEntity {
 
     @PrePersist
     void createdAt() {
-        java.sql.Timestamp timestamp = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
-        Date date = new Date(timestamp.getTime());
+        Timestamp timestamp = AiravataUtils.getUniqueTimestamp();
+        var date = new Date(timestamp.getTime());
         this.setCreationTime(date);
         this.setLastAccessTime(date);
         // Ensure CustomizedDashboardEntity has the same ID as this UserProfileEntity
@@ -336,7 +338,7 @@ public class UserProfileEntity {
 
     @PreUpdate
     void updatedAt() {
-        java.sql.Timestamp timestamp = org.apache.airavata.common.utils.AiravataUtils.getUniqueTimestamp();
+        var timestamp = AiravataUtils.getUniqueTimestamp();
         this.setLastAccessTime(new Date(timestamp.getTime()));
     }
 

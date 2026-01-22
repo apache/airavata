@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import org.apache.airavata.config.TestcontainersConfig;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -115,7 +116,6 @@ public class DaprPubSubIntegrationTest {
             named = "CI",
             matches = "true",
             disabledReason = "Requires Dapr sidecar; run locally with dapr run")
-    @org.junit.jupiter.api.Disabled("Full Dapr Pub/Sub requires Dapr sidecar; E2E only")
     @Tag("e2e")
     @DisplayName("Publish and receive via Dapr Pub/Sub (requires Dapr sidecar)")
     void testPublishEventRequiresDaprSidecar() {

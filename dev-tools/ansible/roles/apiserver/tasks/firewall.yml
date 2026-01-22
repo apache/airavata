@@ -19,7 +19,7 @@
 #
 
 ---
-- name: Allow all networks to access Airavata Thrift API (RedHat)
+- name: Allow all networks to access Airavata Thrift Server (RedHat)
   ansible.posix.firewalld:
     zone: public
     permanent: yes
@@ -29,7 +29,7 @@
   become: true
   when: ansible_os_family == "RedHat"
 
-- name: Allow all networks to access Airavata Thrift API (Debian)
+- name: Allow all networks to access Airavata Thrift Server (Debian)
   community.general.ufw:
     rule: allow
     port: "{{ api_server_port }}"

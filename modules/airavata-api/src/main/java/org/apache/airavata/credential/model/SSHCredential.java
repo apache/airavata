@@ -26,6 +26,7 @@ import org.apache.airavata.credential.Credential;
  * Domain model: SSHCredential
  */
 public class SSHCredential extends Credential {
+    private static final long serialVersionUID = 1L;
     private String gatewayId;
     private String username;
     private String passphrase;

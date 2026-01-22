@@ -53,7 +53,7 @@ public class AccountHandler {
             }
 
             // Create user profile
-            UserProfile user = new UserProfile();
+            var user = new UserProfile();
             user.setUserId(username);
             user.setGatewayId(gatewayId);
             userService.addUser(user);
@@ -61,7 +61,7 @@ public class AccountHandler {
 
             // Create user in sharing registry
             String sharingUserId = username + "@" + gatewayId;
-            User sharingUser = new User();
+            var sharingUser = new User();
             sharingUser.setUserId(sharingUserId);
             sharingUser.setDomainId(gatewayId);
             sharingUser.setUserName(username);

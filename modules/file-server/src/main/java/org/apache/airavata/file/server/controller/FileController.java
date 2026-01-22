@@ -25,7 +25,6 @@ import org.apache.airavata.file.server.model.FileUploadResponse;
 import org.apache.airavata.file.server.service.AirvataFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +36,53 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * File API Controller - Part of the unified HTTP server.
+ *
+ * <p>This controller provides HTTP endpoints for file operations (list, upload, download)
+ * for process data directories, running as part of the unified HTTP server on port 8080
+ * (configurable via {@code airavata.services.http.server.port}).
+ *
+ * <p><b>External API:</b> This is part of one of four external API layers in Airavata:
+ * <ul>
+ *   <li>Thrift Server (port 8930) - Thrift Endpoints for Airavata API functions</li>
+ *   <li>HTTP Server (port 8080):
+ *       <ul>
+ *         <li>Airavata API - HTTP Endpoints for Airavata API functions</li>
+ *         <li>File API (this controller) - HTTP Endpoints for file upload/download</li>
+ *         <li>Agent API - HTTP Endpoints for interactive job contexts</li>
+ *         <li>Research API - HTTP Endpoints for use by research hub</li>
+ *       </ul>
+ *   </li>
+ *   <li>gRPC Server (port 9090) - For airavata binaries to open persistent channels with airavata APIs</li>
+ *   <li>Dapr gRPC (port 50001) - Sidecar for pub/sub, state, and workflow execution</li>
+ * </ul>
+ *
+ * <p><b>Endpoints:</b>
+ * <ul>
+ *   <li>{@code GET /list/{live}/{processId}} - List files in process root directory</li>
+ *   <li>{@code GET /list/{live}/{processId}/{*subPath}} - List files in subdirectory or get file info</li>
+ *   <li>{@code GET /download/{live}/{processId}/{*subPath}} - Download a file</li>
+ *   <li>{@code POST /upload/{live}/{processId}/{*subPath}} - Upload a file</li>
+ * </ul>
+ *
+ * <p><b>Path Parameters:</b>
+ * <ul>
+ *   <li>{@code live} - Indicates whether accessing live or archived process data</li>
+ *   <li>{@code processId} - Process identifier</li>
+ *   <li>{@code subPath} - Relative path within the process data directory</li>
+ * </ul>
+ *
+ * <p><b>Configuration:</b>
+ * <ul>
+ *   <li>{@code airavata.services.fileserver.enabled} - Enable/disable File API (default: true)</li>
+ *   <li>{@code airavata.services.http.server.port} - Unified HTTP server port (default: 8080)</li>
+ *   <li>{@code airavata.services.fileserver.spring.servlet.multipart.max-file-size} - Max upload size (default: 10MB)</li>
+ *   <li>{@code airavata.services.fileserver.spring.servlet.multipart.max-request-size} - Max request size (default: 10MB)</li>
+ * </ul>
+ *
+ * @see org.apache.airavata.file.server.service.AirvataFileService
+ */
 @Controller
 public class FileController {
 
@@ -83,11 +129,11 @@ public class FileController {
     public ResponseEntity<?> downloadFile(
             @PathVariable String live, @PathVariable String processId, @PathVariable String subPath) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
-        String fileName = new File(relPath).getName();
+        var fileName = new File(relPath).getName();
         Path localPath = null;
         try {
             localPath = fileService.downloadFile(processId, relPath);
-            Resource resource = new UrlResource(localPath.toUri());
+            var resource = new UrlResource(localPath.toUri());
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
                     .body(resource);
@@ -104,9 +150,9 @@ public class FileController {
             @PathVariable String processId,
             @PathVariable String subPath,
             @RequestParam("file") MultipartFile file) {
-        String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
+        var relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
-            String name = file.getName();
+            var name = file.getName();
             fileService.uploadFile(processId, relPath, file);
             return ResponseEntity.ok(new FileUploadResponse(name, relPath, file.getContentType(), file.getSize()));
 

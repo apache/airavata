@@ -70,8 +70,8 @@ public class ServeCommand implements Runnable {
         }
 
         // Derive configDir from airavata.home
-        File airavataHomeFile = new File(airavataHome);
-        File confDir = new File(airavataHomeFile, "conf");
+        var airavataHomeFile = new File(airavataHome);
+        var confDir = new File(airavataHomeFile, "conf");
         if (!confDir.exists() || !confDir.isDirectory()) {
             System.err.println("Error: Config directory does not exist at: " + confDir.getAbsolutePath());
             System.err.println("Please ensure airavata.home points to the correct Airavata installation directory.");
@@ -96,7 +96,7 @@ public class ServeCommand implements Runnable {
 
             // Set ALL gRPC keepalive/duration properties as system properties to prevent NullPointerException
             // Spring Boot gRPC's DefaultServerFactoryPropertyMapper requires ALL Duration fields to be non-null
-            System.setProperty("spring.grpc.server.port", "19908");
+            System.setProperty("spring.grpc.server.port", "9090");
             System.setProperty("spring.grpc.server.enable-keep-alive", "true");
             System.setProperty("spring.grpc.server.keepalive-time", "30s");
             System.setProperty("spring.grpc.server.keepalive-timeout", "5s");
@@ -111,7 +111,7 @@ public class ServeCommand implements Runnable {
             // Disable the property mapper to rely only on ServerBuilderCustomizer
             System.setProperty("spring.boot.grpc.server.property-mapper.enabled", "false");
 
-            SpringApplication app = new SpringApplication(AiravataServer.class);
+            var app = new SpringApplication(AiravataServer.class);
             var defaultProps = new HashMap<String, Object>();
             defaultProps.put("spring.main.allow-bean-definition-overriding", "true");
             defaultProps.put("spring.classformat.ignore", "true");
@@ -145,7 +145,7 @@ public class ServeCommand implements Runnable {
                             "/usr/bin/airavata"
                         };
                         for (String path : possiblePaths) {
-                            File f = new File(path);
+                            var f = new File(path);
                             if (f.exists() && f.canExecute()) {
                                 nativeBinaryPath = path;
                                 break;

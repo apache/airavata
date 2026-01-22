@@ -19,11 +19,8 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.common.model.UserResourceProfile;
-import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.UserResourceProfileService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -52,7 +49,7 @@ public class UserResourceProfileController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserResourceProfile(@PathVariable String userId, @RequestParam String gatewayId) {
         try {
-            UserResourceProfile profile = userResourceProfileService.getUserResourceProfile(userId, gatewayId);
+            var profile = userResourceProfileService.getUserResourceProfile(userId, gatewayId);
             if (profile == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -65,7 +62,7 @@ public class UserResourceProfileController {
     @PostMapping
     public ResponseEntity<?> createUserResourceProfile(@RequestBody UserResourceProfile profile) {
         try {
-            String userId = userResourceProfileService.addUserResourceProfile(profile);
+            var userId = userResourceProfileService.addUserResourceProfile(profile);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("userId", userId));
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -101,7 +98,7 @@ public class UserResourceProfileController {
     @GetMapping
     public ResponseEntity<?> getAllUserResourceProfiles() {
         try {
-            List<UserResourceProfile> profiles = userResourceProfileService.getAllUserResourceProfiles();
+            var profiles = userResourceProfileService.getAllUserResourceProfiles();
             return ResponseEntity.ok(profiles);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -112,8 +109,7 @@ public class UserResourceProfileController {
     public ResponseEntity<?> getUserComputeResourcePreferences(
             @PathVariable String userId, @RequestParam String gatewayId) {
         try {
-            List<UserComputeResourcePreference> preferences =
-                    userResourceProfileService.getAllUserComputeResourcePreferences(userId, gatewayId);
+            var preferences = userResourceProfileService.getAllUserComputeResourcePreferences(userId, gatewayId);
             return ResponseEntity.ok(preferences);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -123,8 +119,7 @@ public class UserResourceProfileController {
     @GetMapping("/{userId}/storage-preferences")
     public ResponseEntity<?> getUserStoragePreferences(@PathVariable String userId, @RequestParam String gatewayId) {
         try {
-            List<UserStoragePreference> preferences =
-                    userResourceProfileService.getAllUserStoragePreferences(userId, gatewayId);
+            var preferences = userResourceProfileService.getAllUserStoragePreferences(userId, gatewayId);
             return ResponseEntity.ok(preferences);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

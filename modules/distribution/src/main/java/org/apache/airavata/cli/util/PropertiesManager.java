@@ -35,29 +35,37 @@ public class PropertiesManager {
     /**
      * Get the path to application.properties file.
      * Checks in order:
-     * 1. AIRAVATA_CONFIG_DIR environment variable
+     * 1. AIRAVATA_CONFIG_DIR environment variable (defaults to AIRAVATA_HOME/conf if not set)
      * 2. AIRAVATA_HOME/conf directory
      * 3. Current directory
      */
     public static Path getPropertiesFilePath() {
         String configDir = System.getenv("AIRAVATA_CONFIG_DIR");
+        String airavataHome = System.getenv("AIRAVATA_HOME");
+
+        // If AIRAVATA_CONFIG_DIR is not set, default to AIRAVATA_HOME/conf
+        if ((configDir == null || configDir.isEmpty()) && airavataHome != null && !airavataHome.isEmpty()) {
+            configDir = Paths.get(airavataHome, "conf").toString();
+        }
+
+        // Try AIRAVATA_CONFIG_DIR (or defaulted value) first
         if (configDir != null && !configDir.isEmpty()) {
-            Path path = Paths.get(configDir, "application.properties");
+            var path = Paths.get(configDir, "application.properties");
             if (Files.exists(path)) {
                 return path;
             }
         }
 
-        String airavataHome = System.getenv("AIRAVATA_HOME");
+        // Fallback to AIRAVATA_HOME/conf if AIRAVATA_CONFIG_DIR was not set and file doesn't exist
         if (airavataHome != null && !airavataHome.isEmpty()) {
-            Path path = Paths.get(airavataHome, "conf", "application.properties");
+            var path = Paths.get(airavataHome, "conf", "application.properties");
             if (Files.exists(path)) {
                 return path;
             }
         }
 
         // Try current directory
-        Path path = Paths.get("application.properties");
+        var path = Paths.get("application.properties");
         if (Files.exists(path)) {
             return path;
         }
@@ -71,7 +79,7 @@ public class PropertiesManager {
      */
     public static Properties readProperties() throws IOException {
         Path propertiesFile = getPropertiesFilePath();
-        Properties props = new Properties();
+        var props = new Properties();
 
         if (Files.exists(propertiesFile)) {
             try (InputStream is = Files.newInputStream(propertiesFile)) {
@@ -117,7 +125,7 @@ public class PropertiesManager {
      * Update property value in lines, preserving comments and structure.
      */
     private static List<String> updatePropertiesInLines(List<String> lines, Properties props) {
-        List<String> updatedLines = new ArrayList<>();
+        var updatedLines = new ArrayList<String>();
 
         for (String line : lines) {
             String trimmed = line.trim();
@@ -160,7 +168,7 @@ public class PropertiesManager {
      * Update a single property value.
      */
     public static void updateProperty(String key, String value) throws IOException {
-        Properties props = readProperties();
+        var props = readProperties();
         props.setProperty(key, value);
         writeProperties(props);
     }

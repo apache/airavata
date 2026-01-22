@@ -34,7 +34,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * Test to verify AiravataApplication startup in Thrift mode (default).
  *
  * In Thrift mode:
- * - All Thrift API servers should be configured
+ * - Thrift Server should be configured
  * - DB Event Manager should be enabled
  * - Background services can be enabled/disabled
  */
@@ -78,7 +78,7 @@ public class ThriftModeStartupTest {
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security",
                 "org.apache.airavata.accountprovisioning",
-                "org.apache.airavata.dapr",
+                "org.apache.airavata.orchestrator",
                 "org.apache.airavata.manager.dbevent"
             })
     static class TestConfiguration {}
@@ -89,8 +89,8 @@ public class ThriftModeStartupTest {
     @Test
     public void testDBEventDispatcherIsEnabled() {
 
-        String[] beanNames =
-                applicationContext.getBeanNamesForType(org.apache.airavata.dapr.messaging.Dispatcher.class);
+        String[] beanNames = applicationContext.getBeanNamesForType(
+                org.apache.airavata.orchestrator.internal.messaging.Dispatcher.class);
         int dispatcherCount = beanNames.length;
 
         assertTrue(dispatcherCount > 0, "Dispatcher should be available (replaces DBEventManagerRunner)");

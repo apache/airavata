@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class ServiceSocketManager {
         }
 
         if (configDir != null && !configDir.isEmpty()) {
-            Path configPath = Paths.get(configDir);
+            var configPath = Paths.get(configDir);
             if (Files.exists(configPath) && Files.isWritable(configPath)) {
                 return configPath.resolve(SOCKET_NAME);
             }
@@ -170,7 +171,7 @@ public class ServiceSocketManager {
     private void handleClient(SocketChannel client) {
         try {
             // Read request
-            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            var buffer = ByteBuffer.allocate(4096);
             int bytesRead = client.read(buffer);
             if (bytesRead > 0) {
                 buffer.flip();
@@ -182,7 +183,7 @@ public class ServiceSocketManager {
                 String response = processCommand(request);
 
                 // Send response
-                ByteBuffer responseBuffer = ByteBuffer.wrap(response.getBytes(StandardCharsets.UTF_8));
+                var responseBuffer = ByteBuffer.wrap(response.getBytes(StandardCharsets.UTF_8));
                 client.write(responseBuffer);
             }
         } catch (IOException e) {
@@ -201,7 +202,7 @@ public class ServiceSocketManager {
      */
     private String processCommand(String command) {
         try {
-            Map<String, Object> response = new HashMap<>();
+            var response = new HashMap<String, Object>();
 
             if (command == null || command.isEmpty()) {
                 response.put("status", "error");
@@ -224,7 +225,7 @@ public class ServiceSocketManager {
                         // Get specific service status
                         try {
                             ServiceStatus status = serviceHandler.getServiceStatus(serviceName);
-                            Map<String, Object> statusData = new HashMap<>();
+                            var statusData = new HashMap<String, Object>();
                             statusData.put("service", status.getServiceName());
                             statusData.put("displayName", status.getDisplayName());
                             statusData.put("enabled", status.isEnabled());
@@ -239,7 +240,7 @@ public class ServiceSocketManager {
                         // Get overall process status
                         boolean running = serviceHandler.isAiravataRunning();
                         Long pid = serviceHandler.getAiravataPid();
-                        Map<String, Object> statusData = new HashMap<>();
+                        var statusData = new HashMap<String, Object>();
                         statusData.put("running", running);
                         if (pid != null) {
                             statusData.put("pid", pid);
@@ -251,9 +252,9 @@ public class ServiceSocketManager {
 
                 case "LIST":
                     List<ServiceStatus> services = serviceHandler.listServices();
-                    List<Map<String, Object>> servicesData = new java.util.ArrayList<>();
+                    var servicesData = new ArrayList<Map<String, Object>>();
                     for (ServiceStatus status : services) {
-                        Map<String, Object> serviceData = new HashMap<>();
+                        var serviceData = new HashMap<String, Object>();
                         serviceData.put("service", status.getServiceName());
                         serviceData.put("displayName", status.getDisplayName());
                         serviceData.put("enabled", status.isEnabled());
@@ -320,7 +321,7 @@ public class ServiceSocketManager {
             return toJson(response) + "\n";
         } catch (Exception e) {
             logger.error("Error processing command: " + command, e);
-            Map<String, Object> errorResponse = new HashMap<>();
+            var errorResponse = new HashMap<String, Object>();
             errorResponse.put("status", "error");
             errorResponse.put("message", "Internal error: " + e.getMessage());
             return toJson(errorResponse) + "\n";

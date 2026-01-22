@@ -31,11 +31,11 @@ import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.dapr.config.DaprConfigConstants;
-import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
-import org.apache.airavata.dapr.messaging.MessageContext;
-import org.apache.airavata.dapr.messaging.Publisher;
-import org.apache.airavata.dapr.messaging.Type;
+import org.apache.airavata.orchestrator.config.OrchestratorConfig;
+import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.messaging.MessagingFactory;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -59,13 +59,13 @@ public class ExperimentService {
 
     public ExperimentService(
             RegistryService registryService,
-            DaprMessagingFactory messagingFactory,
-            @Value("${" + org.apache.airavata.dapr.config.DaprConfigConstants.DAPR_ENABLED + ":false}") boolean daprEnabled,
+            MessagingFactory messagingFactory,
+            @Value("${" + OrchestratorConfig.ENABLED + ":false}") boolean daprEnabled,
             @Autowired(required = false) Environment environment) {
         this.registryService = registryService;
         if (daprEnabled) {
             try {
-                if (messagingFactory.isDaprAvailable()) {
+                if (messagingFactory.isAvailable()) {
                     statusPublisher = messagingFactory.getPublisher(Type.STATUS);
                 } else {
                     boolean isTestProfile = environment != null
@@ -150,11 +150,23 @@ public class ExperimentService {
         }
     }
 
+    /**
+     * Clone an existing experiment with a new name.
+     *
+     * <p>This method is not implemented in ExperimentService as it requires additional
+     * context (user permissions, gateway configuration, etc.) that is better handled
+     * by the full AiravataService implementation.
+     *
+     * @param existingExperimentId the ID of the experiment to clone
+     * @param newExperimentName the name for the cloned experiment
+     * @return the ID of the cloned experiment
+     * @throws AiravataSystemException if the operation fails
+     * @throws UnsupportedOperationException always - use AiravataService.cloneExperiment() instead
+     */
     public String cloneExperiment(String existingExperimentId, String newExperimentName)
             throws AiravataSystemException {
-        // This is a simplified version - full implementation would need more context
         throw new UnsupportedOperationException(
-                "Clone experiment requires additional context - use AiravataService.cloneExperiment");
+                "Clone experiment requires additional context - use AiravataService.cloneExperiment() instead");
     }
 
     public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)

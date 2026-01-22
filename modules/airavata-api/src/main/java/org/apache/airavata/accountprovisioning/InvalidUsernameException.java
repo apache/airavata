@@ -25,6 +25,8 @@ package org.apache.airavata.accountprovisioning;
  * exist at that institution.
  */
 public class InvalidUsernameException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     public InvalidUsernameException() {}
 
     public InvalidUsernameException(String message) {

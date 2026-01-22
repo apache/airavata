@@ -21,18 +21,21 @@ package org.apache.airavata.credential.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.common.utils.SecurityUtil;
+import org.apache.airavata.config.AiravataConfigUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.entities.CredentialEntity;
@@ -74,13 +77,13 @@ public class CredentialEntityService {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        String configDir = org.apache.airavata.config.AiravataConfigUtils.getConfigDir(); // Will throw if not found
+        var configDir = AiravataConfigUtils.getConfigDir(); // Will throw if not found
         // Use Environment instead of properties object as it's populated earlier in Spring lifecycle
-        String credentialStoreKeyStorePath = environment.getProperty("airavata.security.vault.keystore.url");
+        var credentialStoreKeyStorePath = environment.getProperty("airavata.security.vault.keystore.url");
         if (credentialStoreKeyStorePath == null || credentialStoreKeyStorePath.isEmpty()) {
             // In test profile, use default keystore location
             boolean isTestProfile = environment != null
-                    && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
+                    && Arrays.asList(environment.getActiveProfiles()).contains("test");
             if (isTestProfile) {
                 credentialStoreKeyStorePath = "conf/keystores/airavata.sym.p12";
                 logger.debug("Test profile detected, using default keystore path: {}", credentialStoreKeyStorePath);
@@ -90,14 +93,14 @@ public class CredentialEntityService {
             }
         }
         // Keystore path is relative to configDir (e.g., "keystores/airavata.sym.p12")
-        this.keyStorePath = new java.io.File(configDir, credentialStoreKeyStorePath).getAbsolutePath();
-        String aliasFromEnv = environment.getProperty("airavata.security.vault.keystore.alias");
+        this.keyStorePath = new File(configDir, credentialStoreKeyStorePath).getAbsolutePath();
+        var aliasFromEnv = environment.getProperty("airavata.security.vault.keystore.alias");
         this.secretKeyAlias = aliasFromEnv != null ? aliasFromEnv : "airavata";
 
         // Verify keystore password is set (required for encryption/decryption)
         boolean isTestProfile = environment != null
-                && java.util.Arrays.asList(environment.getActiveProfiles()).contains("test");
-        String keystorePassword = environment.getProperty("airavata.security.vault.keystore.password");
+                && Arrays.asList(environment.getActiveProfiles()).contains("test");
+        var keystorePassword = environment.getProperty("airavata.security.vault.keystore.password");
         if (keystorePassword == null || keystorePassword.isEmpty()) {
             if (isTestProfile) {
                 // In test profile, use default password if not set
@@ -110,7 +113,7 @@ public class CredentialEntityService {
         }
 
         // Verify keystore file exists
-        java.io.File keystoreFile = new java.io.File(this.keyStorePath);
+        var keystoreFile = new File(this.keyStorePath);
         if (!keystoreFile.exists()) {
             logger.warn(
                     "Keystore file does not exist at: {}. Credential encryption/decryption may fail.",
@@ -123,7 +126,7 @@ public class CredentialEntityService {
      */
     public void saveCredential(String gatewayId, Credential credential) throws CredentialStoreException {
         try {
-            CredentialEntity entity = new CredentialEntity();
+            var entity = new CredentialEntity();
             entity.setGatewayId(gatewayId);
             entity.setTokenId(credential.getToken());
             entity.setCredential(convertObjectToByteArray(credential));
@@ -207,10 +210,14 @@ public class CredentialEntityService {
 
     /**
      * Get credentials for a gateway with specific token IDs.
+     * If accessibleTokenIds is null, returns all credentials for the gateway.
+     * If accessibleTokenIds is empty, returns an empty list.
      */
     public List<Credential> getCredentials(String gatewayId, List<String> accessibleTokenIds)
             throws CredentialStoreException {
-        if (accessibleTokenIds == null || accessibleTokenIds.isEmpty()) {
+        // If accessibleTokenIds is null, return ALL credentials for the gateway (no filter)
+        // If accessibleTokenIds is empty, return empty list (explicit empty filter)
+        if (accessibleTokenIds != null && accessibleTokenIds.isEmpty()) {
             return Collections.emptyList();
         }
         return getCredentialsInternal(gatewayId, accessibleTokenIds);
@@ -225,10 +232,10 @@ public class CredentialEntityService {
             entities = credentialRepository.findByGatewayId(gatewayId);
         }
 
-        List<Credential> credentials = new ArrayList<>();
-        for (CredentialEntity entity : entities) {
+        var credentials = new ArrayList<Credential>();
+        for (var entity : entities) {
             try {
-                Credential credential = (Credential) convertByteArrayToObject(entity.getCredential());
+                var credential = (Credential) convertByteArrayToObject(entity.getCredential());
                 credential.setToken(entity.getTokenId());
                 credential.setPortalUserName(entity.getPortalUserId());
                 credential.setCertificateRequestedTime(entity.getTimePersisted());
@@ -249,11 +256,11 @@ public class CredentialEntityService {
      * Get all credentials.
      */
     public List<Credential> getAllCredentials() throws CredentialStoreException {
-        List<CredentialEntity> entities = credentialRepository.findAll();
-        List<Credential> credentials = new ArrayList<>();
-        for (CredentialEntity entity : entities) {
+        var entities = credentialRepository.findAll();
+        var credentials = new ArrayList<Credential>();
+        for (var entity : entities) {
             try {
-                Credential credential = (Credential) convertByteArrayToObject(entity.getCredential());
+                var credential = (Credential) convertByteArrayToObject(entity.getCredential());
                 credential.setToken(entity.getTokenId());
                 credential.setPortalUserName(entity.getPortalUserId());
                 credential.setCertificateRequestedTime(entity.getTimePersisted());
@@ -284,11 +291,7 @@ public class CredentialEntityService {
 
             objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
             return objectInputStream.readObject();
-        } catch (IOException e) {
-            var msg = String.format("Error de-serializing object: %s", e.getMessage());
-            logger.error(msg, e);
-            throw new CredentialStoreException(msg, e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             var msg = String.format("Error de-serializing object: %s", e.getMessage());
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
@@ -311,7 +314,7 @@ public class CredentialEntityService {
      * Convert object to byte array (with encryption if enabled).
      */
     private byte[] convertObjectToByteArray(Serializable o) throws CredentialStoreException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        var byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = null;
         try {
             objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);

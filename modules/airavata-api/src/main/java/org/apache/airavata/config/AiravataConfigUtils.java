@@ -53,10 +53,9 @@ public class AiravataConfigUtils {
     private static String resolveResourcesRoot() {
         try {
             // Try to locate application.properties on classpath
-            java.net.URL resourceUrl =
-                    AiravataConfigUtils.class.getClassLoader().getResource(APPLICATION_PROPERTIES);
+            var resourceUrl = AiravataConfigUtils.class.getClassLoader().getResource(APPLICATION_PROPERTIES);
             if (resourceUrl != null && "file".equals(resourceUrl.getProtocol())) {
-                String resourcePath = resourceUrl.getPath();
+                var resourcePath = resourceUrl.getPath();
                 // Remove URL encoding if present
                 if (resourcePath.contains("%20")) {
                     resourcePath = java.net.URLDecoder.decode(resourcePath, "UTF-8");
@@ -67,8 +66,8 @@ public class AiravataConfigUtils {
                     resourcePath = resourcePath.substring(1);
                 }
                 // Navigate up from application.properties to resources root
-                java.io.File resourceFile = new java.io.File(resourcePath);
-                java.io.File resourcesRoot = resourceFile.getParentFile();
+                var resourceFile = new java.io.File(resourcePath);
+                var resourcesRoot = resourceFile.getParentFile();
                 if (resourcesRoot != null && resourcesRoot.exists() && resourcesRoot.isDirectory()) {
                     return resourcesRoot.getAbsolutePath();
                 }
@@ -92,14 +91,14 @@ public class AiravataConfigUtils {
      */
     public static String getConfigDir() {
         // Check system property
-        String systemPropertyHome = System.getProperty("airavata.home");
+        var systemPropertyHome = System.getProperty("airavata.home");
         if (systemPropertyHome != null && !systemPropertyHome.isEmpty()) {
-            File confDir = new File(systemPropertyHome, "conf");
+            var confDir = new File(systemPropertyHome, "conf");
             if (confDir.exists() && confDir.isDirectory()) {
                 return confDir.getAbsolutePath();
             }
             // Fall back to airavata.home itself if conf doesn't exist
-            File homeDir = new File(systemPropertyHome);
+            var homeDir = new File(systemPropertyHome);
             if (homeDir.exists() && homeDir.isDirectory()) {
                 return homeDir.getAbsolutePath();
             }
@@ -108,7 +107,7 @@ public class AiravataConfigUtils {
         }
 
         // IDE mode: Try to resolve resources root
-        String resourcesRoot = resolveResourcesRoot();
+        var resourcesRoot = resolveResourcesRoot();
         if (resourcesRoot != null) {
             logger.debug("IDE mode: using resources root configDir: {}", resourcesRoot);
             return resourcesRoot;
@@ -125,11 +124,11 @@ public class AiravataConfigUtils {
      * @throws IllegalStateException if configDir cannot be resolved or file is not found
      */
     public static URL loadFile(String fileName) {
-        String configDir = getConfigDir();
+        var configDir = getConfigDir();
         try {
-            String configDirPath = configDir.endsWith(File.separator) ? configDir : configDir + File.separator;
-            String filePath = configDirPath + fileName;
-            File file = new File(filePath);
+            var configDirPath = configDir.endsWith(File.separator) ? configDir : configDir + File.separator;
+            var filePath = configDirPath + fileName;
+            var file = new File(filePath);
             if (file.exists() && file.isFile()) {
                 logger.debug("Loading file from configDir: {}", file.getAbsolutePath());
                 return file.toURI().toURL();
@@ -144,7 +143,7 @@ public class AiravataConfigUtils {
      * Load and cache application.properties from classpath or config directory.
      */
     public static Properties getProperties() {
-        Properties props = cachedProperties;
+        var props = cachedProperties;
         if (props != null) {
             return props;
         }
@@ -152,7 +151,7 @@ public class AiravataConfigUtils {
             if (cachedProperties != null) {
                 return cachedProperties;
             }
-            Properties loaded = new Properties();
+            var loaded = new Properties();
             // Try classpath first
             try (InputStream is =
                     AiravataConfigUtils.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES)) {
@@ -166,8 +165,8 @@ public class AiravataConfigUtils {
             }
             // Fall back to file system
             try {
-                URL url = loadFile(APPLICATION_PROPERTIES);
-                try (InputStream is = url.openStream()) {
+                var url = loadFile(APPLICATION_PROPERTIES);
+                try (var is = url.openStream()) {
                     loaded.load(is);
                 }
                 cachedProperties = loaded;
@@ -183,7 +182,7 @@ public class AiravataConfigUtils {
      * Order: system props -> env vars -> loaded application.properties.
      */
     public static String getSetting(String key, String defaultValue) {
-        String value = System.getProperty(key);
+        var value = System.getProperty(key);
         if (value == null) {
             value = System.getenv(key);
         }

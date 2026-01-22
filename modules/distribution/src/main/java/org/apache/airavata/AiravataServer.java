@@ -20,7 +20,6 @@
 package org.apache.airavata;
 
 import java.util.HashMap;
-import java.util.Map;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.ThriftMapperImplExcludeFilter;
 import org.slf4j.Logger;
@@ -73,7 +72,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.messaging",
             "org.apache.airavata.monitor",
             "org.apache.airavata.orchestrator",
-            "org.apache.airavata.dapr",
+            "org.apache.airavata.workflow",
             "org.apache.airavata.config",
             "org.apache.airavata.thriftapi",
             "org.apache.airavata.manager.dbevent",
@@ -81,8 +80,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.file.server",
             "org.apache.airavata.restapi",
             "org.apache.airavata.agent.connection.service",
-            "org.apache.airavata.research.service",
-            "org.apache.airavata.bootstrap"
+            "org.apache.airavata.bootstrap",
+            "org.apache.airavata.task"
         },
         excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = ThriftMapperImplExcludeFilter.class))
 @EntityScan(
@@ -90,7 +89,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.registry.entities",
             "org.apache.airavata.profile.entities",
             "org.apache.airavata.sharing.entities",
-            "org.apache.airavata.credential.entities"
+            "org.apache.airavata.credential.entities",
+            "org.apache.airavata.research.service.model.entity"
         })
 public class AiravataServer {
 
@@ -98,15 +98,15 @@ public class AiravataServer {
 
     public static void main(String[] args) {
         logger.info("Starting Airavata Server...");
-        SpringApplication app = new SpringApplication(AiravataServer.class);
+        var app = new SpringApplication(AiravataServer.class);
 
-        Map<String, Object> defaultProps = new HashMap<>();
+        var defaultProps = new HashMap<String, Object>();
         defaultProps.put("spring.main.allow-bean-definition-overriding", "true");
         defaultProps.put("spring.classformat.ignore", "true");
         defaultProps.put("spring.config.name", "airavata");
 
         // Build exclude list for spring.autoconfigure.exclude
-        StringBuilder excludeList = new StringBuilder();
+        var excludeList = new StringBuilder();
         excludeList.append("org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,");
         excludeList.append("org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,");
         excludeList.append("org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration");

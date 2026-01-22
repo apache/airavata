@@ -445,6 +445,10 @@ For questions and support:
 - Check the documentation at `/docs`
 - Review the API documentation at `/docs`
 
+## Project History
+
+For the original project goals, achievements, and roadmap, see [FINAL_REPORT.md](FINAL_REPORT.md).
+
 ---
 
 **SimExR Framework** - Empowering scientific simulation with AI reasoning capabilities.

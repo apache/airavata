@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.cli.handlers;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
@@ -104,7 +105,7 @@ public class ServiceHandler {
             throw new IllegalStateException(
                     "AIRAVATA_HOME environment variable is not set. Please set AIRAVATA_HOME to the Airavata installation directory.");
         }
-        return new java.io.File(airavataHome, "conf").getAbsolutePath();
+        return new File(airavataHome, "conf").getAbsolutePath();
     }
 
     /**
@@ -132,7 +133,7 @@ public class ServiceHandler {
         }
 
         try {
-            java.util.Properties props = PropertiesManager.readProperties();
+            var props = PropertiesManager.readProperties();
             String value = props.getProperty(info.propertyKey, "true");
             return Boolean.parseBoolean(value);
         } catch (Exception e) {
@@ -200,7 +201,7 @@ public class ServiceHandler {
      * List all services with their status.
      */
     public List<ServiceStatus> listServices() {
-        List<ServiceStatus> services = new ArrayList<>();
+        var services = new ArrayList<ServiceStatus>();
         for (String serviceName : SERVICE_MAP.keySet()) {
             services.add(getServiceStatus(serviceName));
         }

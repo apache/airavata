@@ -51,11 +51,11 @@ public class ResearchHubController {
             @PathVariable("projectId") String projectId, @RequestParam("sessionName") String sessionName) {
         LOGGER.info("Starting new RHub session ({}) for project: {}", sessionName, projectId);
 
-        String spawnUrl = rHubHandler.spinRHubSession(projectId, sessionName);
+        var spawnUrl = rHubHandler.spinRHubSession(projectId, sessionName);
 
         LOGGER.info("Session spawned: {}", spawnUrl);
 
-        RedirectResponse response = new RedirectResponse(spawnUrl);
+        var response = new RedirectResponse(spawnUrl);
 
         return ResponseEntity.ok(response);
     }
@@ -63,10 +63,10 @@ public class ResearchHubController {
     @GetMapping("/resume/session/{sessionId}")
     public ResponseEntity<RedirectResponse> resolveRHubExistingSession(@PathVariable("sessionId") String sessionId) {
         LOGGER.info("Resuming session: {}", sessionId);
-        String spawnUrl = rHubHandler.resolveRHubExistingSession(sessionId);
+        var spawnUrl = rHubHandler.resolveRHubExistingSession(sessionId);
         LOGGER.info("Resume success: {}", spawnUrl);
 
-        RedirectResponse response = new RedirectResponse(spawnUrl);
+        var response = new RedirectResponse(spawnUrl);
 
         return ResponseEntity.ok(response);
     }

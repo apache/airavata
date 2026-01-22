@@ -45,7 +45,7 @@ public class AWSTaskFactory implements DaprTaskFactory {
     private final CredentialStoreService credentialStoreService;
     private final org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder;
     private final org.apache.airavata.task.aws.utils.AWSTaskUtil awsTaskUtil;
-    private final org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory;
+    private final org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory;
 
     public AWSTaskFactory(
             ApplicationContext applicationContext,
@@ -54,7 +54,7 @@ public class AWSTaskFactory implements DaprTaskFactory {
             CredentialStoreService credentialStoreService,
             org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder,
             org.apache.airavata.task.aws.utils.AWSTaskUtil awsTaskUtil,
-            org.apache.airavata.dapr.messaging.DaprMessagingFactory messagingFactory) {
+            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;

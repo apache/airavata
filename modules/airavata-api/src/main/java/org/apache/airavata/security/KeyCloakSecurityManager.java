@@ -29,7 +29,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.model.Gateway;
@@ -400,8 +399,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             // If not in Admins or Read Only Admins groups, treat as a gateway-user
             role = "gateway-user";
         }
-        Pattern pattern = Pattern.compile(this.rolePermissionConfig.get(role));
-        Matcher matcher = pattern.matcher(apiMethod);
+        var pattern = Pattern.compile(this.rolePermissionConfig.get(role));
+        var matcher = pattern.matcher(apiMethod);
         return matcher.matches();
     }
 

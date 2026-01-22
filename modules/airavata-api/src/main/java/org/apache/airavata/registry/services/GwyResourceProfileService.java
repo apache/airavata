@@ -189,11 +189,16 @@ public class GwyResourceProfileService {
 
     @Transactional
     public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
-        if (!gwyResourceProfileRepository.existsById(gatewayId)) {
-            return false;
-        }
-        gwyResourceProfileRepository.deleteById(gatewayId);
-        return true;
+        // Load entity first to trigger JPA cascade deletes for compute resource preferences
+        // and their SSH account provisioner configurations
+        // deleteById() bypasses entity lifecycle and doesn't trigger cascade operations
+        return gwyResourceProfileRepository
+                .findById(gatewayId)
+                .map(entity -> {
+                    gwyResourceProfileRepository.delete(entity);
+                    return true;
+                })
+                .orElse(false);
     }
 
     @Transactional(readOnly = true)
@@ -220,7 +225,11 @@ public class GwyResourceProfileService {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
         computeResourcePreferencePK.setComputeResourceId(preferenceId);
-        computeResourcePrefRepository.deleteById(computeResourcePreferencePK);
+        // Load entity first to trigger JPA cascade deletes for SSH_ACCOUNT_PROVISIONER_CONFIG
+        // deleteById() bypasses entity lifecycle and doesn't trigger cascade operations
+        computeResourcePrefRepository
+                .findById(computeResourcePreferencePK)
+                .ifPresent(computeResourcePrefRepository::delete);
         return true;
     }
 
