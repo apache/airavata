@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 
 /**
  * Deserializes Long (milliseconds since epoch) to java.sql.Timestamp from JSON.
- * Used to match the format previously used by MessageContext.Wrapper.
  */
 public class TimestampDeserializer extends JsonDeserializer<Timestamp> {
 

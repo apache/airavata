@@ -59,6 +59,7 @@ import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarc
 import org.apache.airavata.statemachine.JobStateValidator;
 import org.apache.airavata.statemachine.ProcessStateValidator;
 import org.apache.airavata.statemachine.StateTransitionService;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,7 +89,7 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.dapr.enabled=false",
+            "airavata.dapr.enabled=true", // Enable Dapr for messaging tests to avoid skipping
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -401,7 +402,10 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
                             "Should have QUEUED state message");
                 }
             } else {
-                logger.warn("Skipping message reception verification - no messages were published successfully");
+                // If we expected to publish messages but none were published, this is a failure
+                // The test should fail fast rather than silently skip verification
+                throw new AssertionError(
+                        "No messages were published successfully. This indicates a messaging infrastructure failure that must be fixed.");
             }
         } finally {
             if (subscriber != null) {

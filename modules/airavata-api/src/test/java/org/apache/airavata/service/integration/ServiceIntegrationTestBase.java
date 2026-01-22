@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.services.rest.enabled=false",
             "airavata.services.thrift.enabled=true",
-            "airavata.dapr.enabled=false"
+            "airavata.dapr.enabled=true" // Enable Dapr for tests to avoid skipping messaging tests
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)

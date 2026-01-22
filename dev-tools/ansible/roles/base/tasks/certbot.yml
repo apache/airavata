@@ -1,0 +1,68 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under this work is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Add Certbot PPA repository (Debian)
+  ansible.builtin.apt_repository:
+    repo: "ppa:certbot/certbot"
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Install Certbot and dependencies (CentOS 7)
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ os_packages.RedHat.certbot }}"
+  become: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: Install Certbot and dependencies (Rocky 8)
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ os_packages.RedHat.certbot }}"
+  become: true
+  when: ansible_distribution == "Rocky" and ansible_distribution_major_version == "8"
+
+- name: Install Certbot and dependencies (Debian)
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop: "{{ os_packages.Debian.certbot }}"
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Enable certbot renewal (RedHat)
+  ansible.builtin.systemd:
+    enabled: true
+    name: certbot-renew
+    daemon_reload: yes
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Enable certbot renewal timer (RedHat)
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: certbot-renew.timer
+    daemon_reload: yes
+  become: true
+  when: ansible_os_family == "RedHat"

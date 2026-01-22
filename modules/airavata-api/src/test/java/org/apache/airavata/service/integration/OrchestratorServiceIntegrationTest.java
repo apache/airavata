@@ -44,6 +44,7 @@ import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -138,10 +139,10 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify experiment status transitions when launching")
     void shouldVerifyExperimentStatusTransitions() throws RegistryException, OrchestratorException {
-        if (orchestratorService == null) {
-            logger.warn("OrchestratorService not available in test profile, skipping test");
-            return;
-        }
+        // Fail fast if OrchestratorService is required but not available
+        Assumptions.assumeTrue(
+                orchestratorService != null,
+                "OrchestratorService is required for this test but is not available in test profile.");
 
         Project project = TestDataFactory.createTestProject("Status Test Project", TEST_GATEWAY_ID);
         String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
@@ -162,10 +163,10 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify messages are published on state changes")
     void shouldVerifyMessagesPublishedOnStateChanges() throws Exception {
-        if (orchestratorService == null || messagingFactory == null || !messagingFactory.isDaprAvailable()) {
-            logger.warn("OrchestratorService or DaprMessagingFactory not available, skipping test");
-            return;
-        }
+        // Fail fast if required services are not available
+        Assumptions.assumeTrue(
+                orchestratorService != null && messagingFactory != null && messagingFactory.isDaprAvailable(),
+                "OrchestratorService and DaprMessagingFactory are required for this test but are not available.");
 
         CountDownLatch messageReceived = new CountDownLatch(1);
         List<MessageContext> capturedMessages = new ArrayList<>();

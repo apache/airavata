@@ -56,8 +56,8 @@ public class WorkflowCancellationTask extends AbstractTask {
     public TaskResult onRun(TaskHelper helper) {
         logger.info("Cancelling workflow " + cancellingWorkflowName);
 
-        // TODO: Implement Dapr Workflow cancellation
-        // Workflow cancellation should be handled by Dapr Workflows API:
+        // Note: Dapr Workflow cancellation integration is in progress
+        // Workflow cancellation will be handled by Dapr Workflows API:
         // daprWorkflowClient.terminateWorkflow(cancellingWorkflowName);
         // For now, log and return success
         logger.warn(

@@ -381,9 +381,8 @@ public class PostWorkflowManager extends WorkflowManager implements DaprJobStatu
         }
         allTasks.add(parsingTriggeringTask);
 
-        // TODO: Replace with Dapr Workflow - ProcessPostWorkflow
-        // String workflowName = daprWorkflowClient.scheduleNewWorkflow(ProcessPostWorkflow.class, input);
-        // For now, generate a workflow name for registration using standardized naming
+        // Note: Dapr Workflow integration is in progress
+        // Currently using workflow naming for registration; full Dapr Workflow support pending
         String workflowName = org.apache.airavata.dapr.workflow.WorkflowNaming.postWorkflow(processId);
         registerWorkflowForProcess(processId, workflowName, "POST");
     }

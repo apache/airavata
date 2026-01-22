@@ -20,8 +20,7 @@
 package org.apache.airavata.common.utils;
 
 /*
-These are the job statuses shared in database level between orchestrator and
-gfac instances
+These are the job statuses used at the database level for process and task execution.
  */
 public class AiravataJobState {
 

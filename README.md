@@ -67,11 +67,11 @@ docker compose -f .devcontainer/docker-compose.yml ps
 
 **Services started:**
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| MariaDB | 13306 | Database (8 catalogs) |
-| Keycloak | 18080 | Identity/Access Management |
-| Redis | 6379 | Dapr Pub/Sub and State Store |
+| Service | Port | Version | Purpose |
+|---------|------|---------|---------|
+| MariaDB | 13306 | 10.4.13 | Database (8 catalogs) |
+| Keycloak | 18080 | 25.0 | Identity/Access Management (Quarkus-based) |
+| Redis | 6379 | 7 | Dapr Pub/Sub and State Store |
 
 **Access points:**
 - Keycloak Admin: http://localhost:18080 (admin/admin)
@@ -103,9 +103,7 @@ mvn exec:java -Dexec.args="serve --foreground"
 
 | Port | Service |
 |------|---------|
-| 8930 | Thrift API |
-| 8962 | Profile Service |
-| 19908 | gRPC Agent Service |
+| 8930 | Thrift API (main external interface) |
 
 ### Step 5: Verify Installation
 
@@ -193,23 +191,23 @@ airavata-0.21-SNAPSHOT/
 
 | Service | Description |
 |---------|-------------|
-| **Thrift API Server** | Public-facing API on port 8930 |
-| **REST API Server** | Alternative RESTful API interface |
-| **Profile Service** | Manages users, tenants, compute resources (port 8962) |
-| **Registry Service** | Manages metadata and application definitions |
-| **Credential Store** | Secure storage of credentials |
-| **Sharing Registry** | Handles permissions and sharing |
-| **Orchestrator** | Constructs workflow DAGs |
-| **DB Event Manager** | Syncs task events to database |
+| **Thrift API Server** | Public-facing API on port 8930 (main external interface) |
+| **REST API Server** | Alternative RESTful API interface (optional, disabled by default) |
+| **Profile Service** | Manages users, tenants, compute resources (internal component) |
+| **Registry Service** | Manages metadata and application definitions (internal component) |
+| **Credential Store** | Secure storage of credentials (internal component) |
+| **Sharing Registry** | Handles permissions and sharing (internal component) |
+| **Orchestrator** | Constructs workflow DAGs (internal component) |
+| **DB Event Manager** | Syncs task events to database (internal component) |
 
 ### Background Services
 
 | Service | Purpose |
 |---------|---------|
-| **Controller** | Manages task state transitions using Apache Helix |
-| **Participant** | Executes tasks (EnvSetup, DataStaging, JobSubmission, etc.) |
+| **Dapr Workflows** | Manages task state transitions and workflow orchestration |
+| **Task Executors** | Executes tasks (EnvSetup, DataStaging, JobSubmission, etc.) |
 | **Email Monitor** | Monitors email for job status updates |
-| **Realtime Monitor** | Listens for state-change messages |
+| **Realtime Monitor** | Listens for state-change messages via Dapr Pub/Sub |
 | **Pre Workflow Manager** | Handles pre-execution phases |
 | **Post Workflow Manager** | Handles post-execution phases |
 
@@ -265,6 +263,29 @@ cd ../../distribution
 ./airavata-0.21-SNAPSHOT-{arch} init --clean
 ./airavata-0.21-SNAPSHOT-{arch} serve --config-dir /path/to/config
 ```
+
+### Option 4: Ansible Deployment (Production)
+
+For production deployments, use the consolidated Ansible playbook:
+
+```bash
+cd dev-tools/ansible
+
+# Copy and customize inventory
+cp -r inventories/template inventories/my-deployment
+# Edit inventories/my-deployment/hosts and group_vars/all/vars.yml
+
+# Deploy everything
+ansible-playbook -i inventories/my-deployment deploy.yml
+
+# Or deploy components individually using tags
+ansible-playbook -i inventories/my-deployment deploy.yml --tags database
+ansible-playbook -i inventories/my-deployment deploy.yml --tags redis
+ansible-playbook -i inventories/my-deployment deploy.yml --tags apiserver
+ansible-playbook -i inventories/my-deployment deploy.yml --tags keycloak
+```
+
+See [dev-tools/ansible/README.md](dev-tools/ansible/README.md) for detailed Ansible documentation.
 
 ---
 

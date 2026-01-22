@@ -27,7 +27,6 @@ import java.sql.Timestamp;
 
 /**
  * Serializes java.sql.Timestamp to Long (milliseconds since epoch) for JSON.
- * Used to match the format previously used by MessageContext.Wrapper.
  */
 public class TimestampSerializer extends JsonSerializer<Timestamp> {
 

@@ -1138,25 +1138,6 @@ public class RegistryService {
         }
     }
 
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryException {
-        try {
-            var appDeployments = new ArrayList<String>();
-            var filters = new HashMap<String, String>();
-            filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
-            var applicationDeployments = applicationDeploymentService.getApplicationDeployments(filters);
-            for (var description : applicationDeployments) {
-                appDeployments.add(description.getAppDeploymentId());
-            }
-            logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
-            return appDeployments;
-        } catch (AppCatalogException e) {
-            String message =
-                    String.format("Error while getting app module deployed resources: appModuleId=%s", appModuleId);
-            logger.error(message, e);
-            throw new RegistryException(message);
-        }
-    }
-
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
             throws RegistryException {
         try {
@@ -1277,39 +1258,6 @@ public class RegistryService {
             return list;
         } catch (RegistryException e) {
             throw e;
-        }
-    }
-
-    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
-            throws RegistryException {
-        try {
-            Map<String, String> allComputeResources = computeResourceService.getAvailableComputeResourceIdList();
-            var availableComputeResources = new HashMap<String, String>();
-            ApplicationInterfaceDescription applicationInterface =
-                    applicationInterfaceService.getApplicationInterface(appInterfaceId);
-            var filters = new HashMap<String, String>();
-            List<String> applicationModules = applicationInterface.getApplicationModules();
-            if (applicationModules != null && !applicationModules.isEmpty()) {
-                for (var moduleId : applicationModules) {
-                    filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, moduleId);
-                    var applicationDeployments = applicationDeploymentService.getApplicationDeployments(filters);
-                    for (var deploymentDescription : applicationDeployments) {
-                        var computeHostId = deploymentDescription.getComputeHostId();
-                        if (allComputeResources.get(computeHostId) != null) {
-                            availableComputeResources.put(computeHostId, allComputeResources.get(computeHostId));
-                        }
-                    }
-                }
-            }
-            logger.debug(
-                    "Airavata retrieved available compute resources for application interface id : " + appInterfaceId);
-            return availableComputeResources;
-        } catch (AppCatalogException e) {
-            String message = String.format(
-                    "Error while retrieving available app interface compute resources: appInterfaceId=%s",
-                    appInterfaceId);
-            logger.error(message, e);
-            throw new RegistryException(message);
         }
     }
 

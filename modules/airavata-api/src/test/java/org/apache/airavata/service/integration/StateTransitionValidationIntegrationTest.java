@@ -64,6 +64,7 @@ import org.apache.airavata.statemachine.ExperimentStateValidator;
 import org.apache.airavata.statemachine.JobStateValidator;
 import org.apache.airavata.statemachine.StateTransitionService;
 import org.apache.airavata.statemachine.TaskStateValidator;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,7 +94,7 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.dapr.enabled=false",
+            "airavata.dapr.enabled=true", // Enable Dapr for messaging tests to avoid skipping
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -369,10 +370,10 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     @Test
     @DisplayName("Should verify messages are published for valid state transitions")
     void shouldVerifyMessagesPublishedForValidTransitions() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
-            logger.warn("Dapr not available, skipping messaging verification");
-            return;
-        }
+        // Fail fast if Dapr is required but not available
+        Assumptions.assumeTrue(
+                messagingFactory != null && messagingFactory.isDaprAvailable(),
+                "Dapr messaging is required for this test. Enable Dapr or mark test as @DisabledIf.");
 
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(2);
@@ -448,15 +449,11 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
                 // Wait for messages with longer timeout for Dapr in test environment
                 boolean received = messageReceived.await(15, TimeUnit.SECONDS);
 
-                // If messages weren't received, skip verification instead of failing
-                // This handles cases where messaging infrastructure has timing issues in test environment
-                if (!received && capturedMessages.isEmpty()) {
-                    logger.warn(
-                            "Messages not received within timeout - skipping message verification (this may be due to messaging timing issues in test environment)");
-                    return;
-                }
-
-                assertTrue(received || !capturedMessages.isEmpty(), "Messages should be received within timeout");
+                // If messages weren't received, this is a test failure
+                // We should not silently skip verification - this indicates a real problem
+                assertTrue(
+                        received || !capturedMessages.isEmpty(),
+                        "Messages should be received within timeout. This indicates a messaging infrastructure issue that must be fixed.");
                 assertTrue(
                         capturedMessages.size() >= publishSuccessCount || capturedMessages.isEmpty(),
                         "Should capture at least " + publishSuccessCount + " messages");
@@ -472,7 +469,10 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
                             "Should have job status message");
                 }
             } else {
-                logger.warn("Skipping message reception verification - no messages were published successfully");
+                // If we expected to publish messages but none were published, this is a failure
+                // The test should fail fast rather than silently skip verification
+                throw new AssertionError(
+                        "No messages were published successfully. This indicates a messaging infrastructure failure that must be fixed.");
             }
         } finally {
             if (subscriber != null) {

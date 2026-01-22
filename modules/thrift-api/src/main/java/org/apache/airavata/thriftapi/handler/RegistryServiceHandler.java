@@ -1236,21 +1236,6 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
         }
     }
 
-    /**
-     * Fetch a list of Deployed Compute Hosts.
-     *
-     * @param appModuleId The identifier for the requested application module
-     * @return list<string>
-     * Returns a list of Deployed Resources.
-     */
-    @Override
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException {
-        try {
-            return registryService.getAppModuleDeployedResources(appModuleId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Failed to get app module deployed resources");
-        }
-    }
 
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId)
@@ -1382,19 +1367,6 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      * Fetch a list of all deployed Compute Hosts for a given application interfaces.
      *
      * @param appInterfaceId The identifier for the requested application interface.
-     * @return map<computeResourceId, computeResourceName>
-     * A map of registered compute resource id's and their corresponding hostnames.
-     * Deployments of each modules listed within the interfaces will be listed.
-     */
-    @Override
-    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
-            throws RegistryServiceException {
-        try {
-            return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
-        } catch (Throwable e) {
-            throw convertToRegistryServiceException(e, "Failed to get available app interface compute resources");
-        }
-    }
 
     /**
      * Fetch the given Compute Resource.

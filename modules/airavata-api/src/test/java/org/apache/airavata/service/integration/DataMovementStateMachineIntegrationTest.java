@@ -46,6 +46,7 @@ import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ import org.springframework.transaction.annotation.Transactional;
             "airavata.flyway.enabled=false",
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.dapr.enabled=false",
+            "airavata.dapr.enabled=true", // Enable Dapr for messaging tests to avoid skipping
         })
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -312,10 +313,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
     @Test
     @DisplayName("Should verify messages are published for data staging state transitions")
     void shouldVerifyMessagesPublishedForDataStaging() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
-            logger.warn("Dapr not available, skipping messaging verification");
-            return;
-        }
+        // Fail fast if Dapr is required but not available
+        Assumptions.assumeTrue(
+                messagingFactory != null && messagingFactory.isDaprAvailable(),
+                "Dapr messaging is required for this test. Enable Dapr or mark test as @DisabledIf.");
 
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messageReceived = new CountDownLatch(3); // Expect 3 messages for data staging states

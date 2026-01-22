@@ -1,0 +1,85 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under this work is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Set auto-update config based on OS
+  ansible.builtin.set_fact:
+    auto_update_config_data: "{{ auto_update_config[ansible_distribution] | default({}) }}"
+    auto_update_packages: "{{ os_packages[ansible_os_family].auto_updates[ansible_distribution] | default([]) }}"
+  when: ansible_os_family == "RedHat"
+
+- name: Install auto-update packages (RedHat)
+  ansible.builtin.package:
+    name: "{{ auto_update_packages }}"
+    state: present
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Copy auto-update config file (RedHat)
+  ansible.builtin.copy:
+    src: "{{ auto_update_config_data.src }}"
+    dest: "{{ auto_update_config_data.dest }}"
+    backup: true
+  become: true
+  when: ansible_os_family == "RedHat" and auto_update_config_data.src | length > 0
+
+- name: Enable and start auto-update service (RedHat)
+  ansible.builtin.systemd:
+    name: "{{ auto_update_config_data.service }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true
+  when: ansible_os_family == "RedHat" and auto_update_config_data.service | length > 0
+
+- name: Install unattended-upgrades (Debian)
+  ansible.builtin.apt:
+    name: "{{ os_packages.Debian.auto_updates[0] }}"
+    state: present
+    update_cache: yes
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Enable automatic security updates (Debian)
+  ansible.builtin.lineinfile:
+    path: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: '^//Unattended-Upgrade::Remove-Unused-Kernel-Packages'
+    line: 'Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";'
+    backup: yes
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Enable automatic updates (Debian)
+  ansible.builtin.lineinfile:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: '^APT::Periodic::Update-Package-Lists'
+    line: 'APT::Periodic::Update-Package-Lists "1";'
+    backup: yes
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Enable automatic upgrade (Debian)
+  ansible.builtin.lineinfile:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: '^APT::Periodic::Unattended-Upgrade'
+    line: 'APT::Periodic::Unattended-Upgrade "1";'
+    backup: yes
+  become: true
+  when: ansible_os_family == "Debian"

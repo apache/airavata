@@ -52,7 +52,7 @@ public class MessageContext {
     @JsonProperty("deliveryTag")
     private long deliveryTag;
     
-    @JsonProperty("isRedeliver")
+    @JsonProperty("redeliver")
     private boolean isRedeliver;
 
     @JsonCreator
@@ -60,25 +60,22 @@ public class MessageContext {
             @JsonProperty("event") MessagingEvent event,
             @JsonProperty("messageType") MessageType type,
             @JsonProperty("messageId") String messageId,
-            @JsonProperty("gatewayId") String gatewayId) {
+            @JsonProperty("gatewayId") String gatewayId,
+            @JsonProperty(value = "deliveryTag", required = false) Long deliveryTag) {
         this.event = event;
         this.type = type;
         this.messageId = messageId;
         this.gatewayId = gatewayId;
+        this.deliveryTag = (deliveryTag != null) ? deliveryTag : 0L;
     }
 
-    @JsonCreator
+    // Convenience constructor without deliveryTag
     public MessageContext(
-            @JsonProperty("event") MessagingEvent event,
-            @JsonProperty("messageType") MessageType type,
-            @JsonProperty("messageId") String messageId,
-            @JsonProperty("gatewayId") String gatewayId,
-            @JsonProperty("deliveryTag") long deliveryTag) {
-        this.event = event;
-        this.type = type;
-        this.messageId = messageId;
-        this.gatewayId = gatewayId;
-        this.deliveryTag = deliveryTag;
+            MessagingEvent event,
+            MessageType type,
+            String messageId,
+            String gatewayId) {
+        this(event, type, messageId, gatewayId, null);
     }
 
     public MessagingEvent getEvent() {

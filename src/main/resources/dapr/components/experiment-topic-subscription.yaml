@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Dapr Subscription: experiment-topic -> app. MessageContext.Wrapper with
+# Dapr Subscription: experiment-topic -> app. MessageContext with
 # ExperimentSubmitEvent; OrchestratorService ExperimentHandler launches experiment.
 #
 apiVersion: dapr.io/v1alpha1

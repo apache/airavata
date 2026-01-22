@@ -57,8 +57,16 @@ import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
-import org.apache.airavata.dapr.job.GFACPassiveJobSubmitter;
-import org.apache.airavata.dapr.job.JobSubmitter;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.model.MessageType;
+import org.apache.airavata.common.model.ProcessSubmitEvent;
+import org.apache.airavata.common.model.ProcessTerminateEvent;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.credential.model.CredentialReader;
+import org.apache.airavata.dapr.messaging.DaprMessagingFactory;
+import org.apache.airavata.dapr.messaging.MessageContext;
+import org.apache.airavata.dapr.messaging.Publisher;
+import org.apache.airavata.dapr.messaging.Type;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.utils.OrchestratorUtils;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -77,57 +85,83 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private ExecutorService executor;
 
-    // this is going to be null unless the thread count is 0
-    private JobSubmitter jobSubmitter = null;
+    private Publisher processLaunchPublisher;
 
     private final RegistryService registryService;
     private final AiravataServerProperties properties;
     private final OrchestratorUtils orchestratorUtils;
     private final org.apache.airavata.orchestrator.validation.ValidationService validationService;
+    private final DaprMessagingFactory messagingFactory;
 
     public SimpleOrchestratorImpl(
             RegistryService registryService,
             AiravataServerProperties properties,
             OrchestratorUtils orchestratorUtils,
-            org.apache.airavata.orchestrator.validation.ValidationService validationService)
+            org.apache.airavata.orchestrator.validation.ValidationService validationService,
+            DaprMessagingFactory messagingFactory)
             throws OrchestratorException {
         this.registryService = registryService;
         this.properties = properties;
         this.orchestratorUtils = orchestratorUtils;
         this.validationService = validationService;
+        this.messagingFactory = messagingFactory;
         super.orchestratorUtils = orchestratorUtils;
-        try {
-            try {
-                // We are only going to use GFacPassiveJobSubmitter
-                jobSubmitter = new GFACPassiveJobSubmitter();
-                ((GFACPassiveJobSubmitter) jobSubmitter).setOrchestratorUtils(orchestratorUtils);
-                if (this.orchestratorContext != null) {
-                    jobSubmitter.initialize(this.orchestratorContext);
-                }
-
-            } catch (Exception e) {
-                String error = "Error creating JobSubmitter in non threaded mode ";
-                logger.error(error);
-                throw new OrchestratorException(error, e);
-            }
-        } catch (OrchestratorException e) {
-            logger.error("Error Constructing the Orchestrator");
-            throw e;
-        }
     }
 
     @PostConstruct
     public void init() throws OrchestratorException {
         logger.info("[BEAN-INIT] SimpleOrchestratorImpl.init() called");
         initialize(properties);
+        try {
+            if (messagingFactory != null && messagingFactory.isDaprAvailable()) {
+                processLaunchPublisher = messagingFactory.getPublisher(Type.PROCESS_LAUNCH);
+            } else {
+                logger.warn("Dapr messaging factory not available - process launch will not work");
+            }
+        } catch (AiravataException e) {
+            logger.error("Failed to initialize process launch publisher", e);
+            throw new OrchestratorException("Failed to initialize process launch publisher", e);
+        }
         logger.info("[BEAN-INIT] SimpleOrchestratorImpl initialized successfully");
     }
 
     public boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException {
         try {
-            return jobSubmitter.submit(processModel.getExperimentId(), processModel.getProcessId(), tokenId);
+            if (processLaunchPublisher == null) {
+                throw new OrchestratorException("Process launch publisher not initialized");
+            }
+
+            String gatewayId = null;
+            CredentialReader credentialReader =
+                    orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
+            if (credentialReader != null) {
+                try {
+                    gatewayId = credentialReader.getGatewayID(tokenId);
+                } catch (Exception e) {
+                    logger.error(e.getLocalizedMessage());
+                }
+            }
+            if (gatewayId == null || gatewayId.isEmpty()) {
+                if (properties != null) {
+                    gatewayId = properties.defaultGateway();
+                } else {
+                    gatewayId = "default";
+                }
+            }
+
+            ProcessSubmitEvent processSubmitEvent =
+                    new ProcessSubmitEvent(processModel.getProcessId(), gatewayId, processModel.getExperimentId(), tokenId);
+            MessageContext messageContext = new MessageContext(
+                    processSubmitEvent,
+                    MessageType.LAUNCHPROCESS,
+                    "LAUNCH.PROCESS-" + java.util.UUID.randomUUID().toString(),
+                    gatewayId);
+            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            processLaunchPublisher.publish(messageContext);
+            return true;
         } catch (Exception e) {
-            throw new OrchestratorException("Error launching the job", e);
+            logger.error("Error launching the process", e);
+            throw new OrchestratorException("Error launching the process", e);
         }
     }
 
@@ -145,11 +179,37 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         logger.info("Terminating experiment {}", experiment.getExperimentId());
 
         try {
+            if (processLaunchPublisher == null) {
+                throw new OrchestratorException("Process launch publisher not initialized");
+            }
+
             List<String> processIds = registryService.getProcessIds(experiment.getExperimentId());
             if (processIds != null && !processIds.isEmpty()) {
+                String gatewayId = null;
+                CredentialReader credentialReader =
+                        orchestratorUtils != null ? orchestratorUtils.getCredentialReader() : null;
+                if (credentialReader != null) {
+                    try {
+                        gatewayId = credentialReader.getGatewayID(tokenId);
+                    } catch (Exception e) {
+                        logger.error(e.getLocalizedMessage());
+                    }
+                }
+                if (gatewayId == null || gatewayId.isEmpty()) {
+                    gatewayId = properties != null ? properties.defaultGateway() : "default";
+                }
+
                 for (String processId : processIds) {
                     logger.info("Terminating process {} of experiment {}", processId, experiment.getExperimentId());
-                    jobSubmitter.terminate(experiment.getExperimentId(), processId, tokenId);
+                    ProcessTerminateEvent processTerminateEvent =
+                            new ProcessTerminateEvent(processId, gatewayId, experiment.getExperimentId(), tokenId);
+                    MessageContext messageContext = new MessageContext(
+                            processTerminateEvent,
+                            MessageType.TERMINATEPROCESS,
+                            "LAUNCH.TERMINATE-" + java.util.UUID.randomUUID().toString(),
+                            gatewayId);
+                    messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                    processLaunchPublisher.publish(messageContext);
                 }
             } else {
                 logger.warn("No processes found for experiment {} to cancel", experiment.getExperimentId());
@@ -158,6 +218,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             logger.error("Failed to fetch process ids for experiment {}", experiment.getExperimentId(), e);
             throw new OrchestratorException(
                     "Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
+        } catch (AiravataException e) {
+            logger.error("Failed to publish terminate message", e);
+            throw new OrchestratorException("Failed to terminate experiment", e);
         }
     }
 
@@ -167,14 +230,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public void setExecutor(ExecutorService executor) {
         this.executor = executor;
-    }
-
-    public JobSubmitter getJobSubmitter() {
-        return jobSubmitter;
-    }
-
-    public void setJobSubmitter(JobSubmitter jobSubmitter) {
-        this.jobSubmitter = jobSubmitter;
     }
 
     public void initialize() throws OrchestratorException {}

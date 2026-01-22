@@ -1487,23 +1487,6 @@ service Airavata extends base_api.BaseAPI {
                   4: airavata_errors.AuthorizationException ae)
 
   /**
-   * Fetch a list of Deployed Compute Hosts.
-   *
-   * @param appModuleId
-   *   The identifier for the requested application module
-   *
-   * @return list<string>
-   *   Returns a list of Deployed Resources.
-   *
-  */
-  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
-  list<string> getAppModuleDeployedResources(1: required security_model.AuthzToken authzToken, 2: required string appModuleId)
-      	throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
-
-  /**
    * Fetch a list of Application Deployments that this user can use for executing the given Application Module using the given Group Resource Profile.
    * The user must have at least READ access to the Group Resource Profile.
    *
@@ -1692,25 +1675,6 @@ service Airavata extends base_api.BaseAPI {
   */
   list<application_io_models.OutputDataObjectType> getApplicationOutputs(1: required security_model.AuthzToken authzToken,
                 2: required string appInterfaceId)
-      	throws (1: airavata_errors.InvalidRequestException ire,
-                2: airavata_errors.AiravataClientException ace,
-                3: airavata_errors.AiravataSystemException ase,
-                4: airavata_errors.AuthorizationException ae)
-
-  /**
-   *
-   * Fetch a list of all deployed Compute Hosts for a given application interfaces.
-   *
-   * @param appInterfaceId
-   *   The identifier for the requested application interface.
-   *
-   * @return map<computeResourceId, computeResourceName>
-   *   A map of registered compute resource id's and their corresponding hostnames.
-   *   Deployments of each modules listed within the interfaces will be listed.
-   *
-  */
-  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
-  map<string, string> getAvailableAppInterfaceComputeResources(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,

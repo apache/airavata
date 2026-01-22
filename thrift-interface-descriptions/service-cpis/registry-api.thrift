@@ -1068,20 +1068,6 @@ service RegistryService extends base_api.BaseAPI {
                 throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
-             * Fetch a list of Deployed Compute Hosts.
-             *
-             * @param appModuleId
-             *   The identifier for the requested application module
-             *
-             * @return list<string>
-             *   Returns a list of Deployed Resources.
-             *
-            */
-            list<string> getAppModuleDeployedResources(1: required string appModuleId)
-                	throws (1: registry_api_errors.RegistryServiceException rse)
-
-
-            /**
             *
             * Fetch Application Deployment Description list
             *
@@ -1212,22 +1198,6 @@ service RegistryService extends base_api.BaseAPI {
                	throws (1: registry_api_errors.RegistryServiceException rse)
 
            /**
-            *
-            * Fetch a list of all deployed Compute Hosts for a given application interfaces.
-            *
-            * @param appInterfaceId
-            *   The identifier for the requested application interface.
-            *
-            * @return map<computeResourceId, computeResourceName>
-            *   A map of registered compute resource id's and their corresponding hostnames.
-            *   Deployments of each modules listed within the interfaces will be listed.
-            *
-           */
-           map<string, string> getAvailableAppInterfaceComputeResources(1: required string appInterfaceId)
-               	throws (1: registry_api_errors.RegistryServiceException rse)
-
-
-
           /*
            *
            * Compute Resource

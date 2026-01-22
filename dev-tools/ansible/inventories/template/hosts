@@ -1,23 +1,11 @@
 ---
-# inventory file
-# NOTE: update the CHANGEMEs to the actual ip address or hostname.
-
-[zookeeper]
-CHANGEME
-
-[rabbitmq]
-CHANGEME
-
 [database]
 CHANGEME
 
-[api-orch]
+[redis]
 CHANGEME
 
-[gfac]
-CHANGEME
-
-[pga]
+[apiserver]
 CHANGEME
 
 [keycloak]

@@ -147,7 +147,7 @@ public abstract class AbstractTask extends org.apache.airavata.task.base.UserCon
     }
 
     protected void publishErrors(Throwable e) {
-        // TODO Publish through kafka channel with task and workflow id
+        // Task errors are logged; status updates are published via Dapr messaging
         logger.error("Task error", e);
     }
 

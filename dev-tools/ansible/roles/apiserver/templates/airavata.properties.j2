@@ -1,0 +1,91 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+spring.datasource.url=jdbc:mariadb://{{ db_server }}:{{ db_server_port }}/{{ db_name }}
+spring.datasource.username={{ db_user }}
+spring.datasource.password={{ db_password }}
+spring.datasource.hikari.minimum-idle=2
+spring.datasource.hikari.maximum-pool-size=20
+spring.datasource.hikari.connection-timeout=30000
+spring.datasource.hikari.leak-detection-threshold=20000
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+spring.jpa.properties.hibernate.archive.autodetection=class
+spring.jpa.open-in-view=false
+
+airavata.default-gateway={{ default_gateway }}
+airavata.sharing.enabled={{ enable_sharing }}
+airavata.flyway.enabled=true
+airavata.validation-enabled=true
+
+airavata.dapr.enabled=true
+airavata.dapr.grpc-port=50001
+airavata.dapr.http-port=3500
+airavata.dapr.pubsub.name=redis-pubsub
+airavata.dapr.state.name=redis-state
+
+airavata.security.authentication.enabled=true
+airavata.security.authzCache.enabled=true
+airavata.security.iam.enabled=true
+airavata.security.iam.server-url={{ iam_server_url }}
+airavata.security.iam.super-admin.username={{ iam_server_super_admin_username }}
+airavata.security.iam.super-admin.password={{ iam_server_super_admin_password }}
+{% if iam_oauth_client_id is defined and iam_oauth_client_id != "" %}
+airavata.security.iam.oauth-client-id={{ iam_oauth_client_id }}
+{% endif %}
+{% if iam_oauth_client_secret is defined and iam_oauth_client_secret != "" %}
+airavata.security.iam.oauth-client-secret={{ iam_oauth_client_secret }}
+{% endif %}
+airavata.security.tls.enabled={{ tls_enable }}
+airavata.security.tls.client-timeout=10000
+airavata.security.tls.keystore.path=keystores/{{ keystore_src_path | basename }}
+airavata.security.tls.keystore.password={{ keystore_passwd }}
+airavata.security.vault.keystore.url=keystores/{{ cred_keystore_src_path | basename }}
+airavata.security.vault.keystore.alias={{ cred_keystore_alias }}
+airavata.security.vault.keystore.password={{ cred_keystore_passwd }}
+
+airavata.services.api.vault.keystore.url=keystores/{{ cred_keystore_src_path | basename }}
+airavata.services.api.vault.keystore.alias={{ cred_keystore_alias }}
+airavata.services.api.vault.keystore.password={{ cred_keystore_passwd }}
+
+airavata.services.controller.enabled=true
+airavata.services.registry.enabled=true
+airavata.services.sharing.enabled={{ enable_sharing }}
+airavata.services.monitor.compute.validators=BatchQueueValidator,ExperimentStatusValidator
+airavata.services.monitor.compute.enabled=true
+airavata.services.monitor.realtime.enabled=true
+
+{% if monitor_email_address is defined and monitor_email_address != "" %}
+airavata.services.monitor.email.enabled=true
+airavata.services.monitor.email.host=imap.gmail.com
+airavata.services.monitor.email.address={{ monitor_email_address }}
+airavata.services.monitor.email.password={{ monitor_email_password }}
+airavata.services.monitor.email.folder-name=INBOX
+airavata.services.monitor.email.store-protocol=imaps
+airavata.services.monitor.email.period=10000
+{% else %}
+airavata.services.monitor.email.enabled=false
+{% endif %}
+
+airavata.services.thrift.enabled=true
+airavata.services.thrift.server.port={{ api_server_port }}

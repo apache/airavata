@@ -21,12 +21,20 @@
 # {{ansible_managed}}
 
 [Unit]
-Description=Keycloak
+Description=Keycloak Authorization Server
+After=network.target
 
 [Service]
-ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/standalone.sh -b 0.0.0.0
-User={{user}}
-Group={{group}}
+Type=simple
+User={{ user }}
+Group={{ group }}
+Environment="KEYCLOAK_ADMIN={{ keycloak_master_account_username }}"
+Environment="KEYCLOAK_ADMIN_PASSWORD={{ keycloak_master_account_password }}"
+ExecStart={{ user_home }}/{{ keycloak_install_dir }}/bin/kc.sh start --optimized
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

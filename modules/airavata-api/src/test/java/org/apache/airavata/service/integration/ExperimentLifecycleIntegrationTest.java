@@ -47,6 +47,7 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -186,10 +187,10 @@ public class ExperimentLifecycleIntegrationTest extends ServiceIntegrationTestBa
     @Test
     @DisplayName("Should verify messages are published during experiment lifecycle")
     void shouldVerifyMessagesPublishedDuringLifecycle() throws Exception {
-        if (messagingFactory == null || !messagingFactory.isDaprAvailable()) {
-            logger.warn("Dapr not available, skipping messaging verification");
-            return;
-        }
+        // Fail fast if Dapr is required but not available
+        Assumptions.assumeTrue(
+                messagingFactory != null && messagingFactory.isDaprAvailable(),
+                "Dapr messaging is required for this test. Enable Dapr or mark test as @DisabledIf.");
 
         List<MessageContext> capturedMessages = new ArrayList<>();
         CountDownLatch messagesReceived = new CountDownLatch(3); // Expect 3 state changes

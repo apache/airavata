@@ -27,7 +27,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
+import org.apache.airavata.agents.ssh.SSHJStorageAdaptor;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.security.AuthzToken;

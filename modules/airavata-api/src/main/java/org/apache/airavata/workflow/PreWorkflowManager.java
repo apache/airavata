@@ -112,8 +112,8 @@ public class PreWorkflowManager extends WorkflowManager {
             super.initComponents();
         } catch (Exception e) {
             logger.warn(
-                    "Failed to initialize workflow manager components (Zookeeper may not be available): {}. "
-                            + "Workflow management features will be unavailable until Zookeeper is accessible.",
+                    "Failed to initialize workflow manager components: {}. "
+                            + "Workflow management features will be unavailable.",
                     e.getMessage());
             // Allow server to start even if workflow manager components can't be initialized
         }
@@ -243,9 +243,8 @@ public class PreWorkflowManager extends WorkflowManager {
             allTasks.add(completingTask);
         }
 
-        // TODO: Replace with Dapr Workflow - ProcessPreWorkflow
-        // String workflowName = daprWorkflowClient.scheduleNewWorkflow(ProcessPreWorkflow.class, event);
-        // For now, generate a workflow name for registration using standardized naming
+        // Note: Dapr Workflow integration is in progress
+        // Currently using workflow naming for registration; full Dapr Workflow support pending
         String workflowName = org.apache.airavata.dapr.workflow.WorkflowNaming.preWorkflow(processId);
         registerWorkflowForProcess(processId, workflowName, org.apache.airavata.dapr.workflow.WorkflowNaming.TYPE_PRE);
 
@@ -328,9 +327,8 @@ public class PreWorkflowManager extends WorkflowManager {
         }
         allTasks.add(cct);
 
-        // TODO: Replace with Dapr Workflow - ProcessCancelWorkflow
-        // String workflow = daprWorkflowClient.scheduleNewWorkflow(ProcessCancelWorkflow.class, event);
-        // For now, generate a workflow name using standardized naming
+        // Note: Dapr Workflow integration is in progress
+        // Currently using workflow naming for registration; full Dapr Workflow support pending
         String workflow = org.apache.airavata.dapr.workflow.WorkflowNaming.cancelWorkflow(processId);
         logger.info("Started launching workflow {} to cancel process {}", workflow, processId);
         return workflow;

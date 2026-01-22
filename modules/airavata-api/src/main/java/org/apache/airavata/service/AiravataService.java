@@ -1997,15 +1997,6 @@ public class AiravataService {
         }
     }
 
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws AiravataSystemException {
-        try {
-            return registryService.getAppModuleDeployedResources(appModuleId);
-        } catch (RegistryException e) {
-            String msg = "Error while retrieving application deployment: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
-    }
 
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeploymentsForAppModule(
             String appModuleId,
@@ -2070,16 +2061,6 @@ public class AiravataService {
         }
     }
 
-    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId)
-            throws AiravataSystemException {
-        try {
-            return registryService.getAvailableAppInterfaceComputeResources(appInterfaceId);
-        } catch (RegistryException e) {
-            String msg = "Error while retrieving available compute resources: " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
-    }
 
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws AiravataSystemException {
         try {

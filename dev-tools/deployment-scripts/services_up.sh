@@ -1,53 +1,53 @@
 #!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# Simplified Airavata Service Startup Script
+# 
+# This script starts the unified Airavata API server.
+# All services (API, Orchestrator, Registry, Workflow Managers) run in a single process.
 
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
-  sleep 1
 }
 
 # ================================
-# Start the API Server
+# Start the Unified Airavata Server
 # ================================
-log "Starting the API Services..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d start api-orch
-log "Orchestrator started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/controller.sh -d start
-log "Controller started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/participant.sh -d start
-log "Participant started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/email-monitor.sh -d start
-log "Email Monitor started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/realtime-monitor.sh -d start
-log "Realtime Monitor started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/pre-wm.sh -d start
-log "Pre-Workflow Manager started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/post-wm.sh -d start
-log "Post-Workflow Manager started."
+log "Starting Airavata API Server (unified service)..."
 
-# ================================
-# Start the Agent Service
-# ================================
-log "Starting the Agent Service..."
-./apache-airavata-agent-service-0.21-SNAPSHOT/bin/agent-service.sh -d start
-log "Agent Service started."
+# The unified server includes:
+# - Thrift API Server
+# - Orchestrator
+# - Registry
+# - Profile Service
+# - Sharing Registry
+# - Credential Store
+# - All Workflow Managers
+# - All Background Services
 
-# ================================
-# Start the Research Service
-# ================================
-log "Starting the Research Service..."
-./apache-airavata-research-service-0.21-SNAPSHOT/bin/research-service.sh -d start
-log "Research Service started."
+if [ -f "./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-start.sh" ]; then
+    ./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-start.sh -d
+    log "Airavata API Server started."
+else
+    log "ERROR: Airavata distribution not found. Please deploy first using Ansible."
+    exit 1
+fi
 
-# ================================
-# Start the File Service
-# ================================
-log "Starting the File Service..."
-./apache-airavata-file-server-0.21-SNAPSHOT/bin/file-service.sh -d start
-log "File Service started."
-
-# ================================
-# Start the REST proxy
-# ================================
-log "Starting the REST proxy..."
-./apache-airavata-restapi-0.21-SNAPSHOT/bin/restapi.sh -d start
-log "REST proxy started."
+log "All Airavata services are running in the unified server."

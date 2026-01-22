@@ -222,6 +222,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         org.apache.airavata.common.model.JobModel jobModel = new org.apache.airavata.common.model.JobModel();
         jobModel.setJobId("test-job-" + java.util.UUID.randomUUID().toString());
         jobModel.setTaskId(jobTaskId);
+        jobModel.setJobDescription("Test job for workflow state transition");
         String jobId = jobService.addJob(jobModel, testProcessId);
 
         JobPK jobPK = new JobPK();
@@ -377,11 +378,16 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         processStatusService.addProcessStatus(executing, testProcessId);
 
         // Experiment state should reflect process state (in real system, this is handled by workflow managers)
+        // According to ExperimentStateValidator, CREATED -> LAUNCHED -> EXECUTING is the valid path
         // This test verifies the state transitions are valid for both experiment and process
         assertTrue(
                 StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, ExperimentState.EXECUTING),
-                "Experiment CREATED -> EXECUTING should be valid when process transitions");
+                        ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, ExperimentState.LAUNCHED),
+                "Experiment CREATED -> LAUNCHED should be valid when process starts");
+        assertTrue(
+                StateTransitionService.isValid(
+                        ExperimentStateValidator.INSTANCE, ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
+                "Experiment LAUNCHED -> EXECUTING should be valid when process transitions");
 
         // Process completes
         ProcessStatus completed = StateMachineTestUtils.createProcessStatus(ProcessState.COMPLETED, "Completed");

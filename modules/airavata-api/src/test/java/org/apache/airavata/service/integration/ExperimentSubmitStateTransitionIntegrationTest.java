@@ -35,6 +35,7 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -104,10 +105,10 @@ public class ExperimentSubmitStateTransitionIntegrationTest extends ServiceInteg
     @Test
     @DisplayName("Launch with missing UserConfigurationData transitions CREATED -> FAILED")
     void launchWithMissingUserConfigTransitionsToFailed() throws RegistryException {
-        if (orchestratorService == null) {
-            logger.warn("OrchestratorService not available, skipping test");
-            return;
-        }
+        // Fail fast if OrchestratorService is required but not available
+        Assumptions.assumeTrue(
+                orchestratorService != null,
+                "OrchestratorService is required for this test but is not available.");
 
         Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {

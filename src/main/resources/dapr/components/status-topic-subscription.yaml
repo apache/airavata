@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Dapr Subscription: status-topic -> app. MessageContext.Wrapper with
+# Dapr Subscription: status-topic -> app. MessageContext with
 # ExperimentStatusChangeEvent, ProcessStatusChangeEvent, TaskStatusChangeEvent, etc.
 #
 apiVersion: dapr.io/v1alpha1

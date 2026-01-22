@@ -1,0 +1,90 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Database
+  hosts: database
+  tags: [database, airavata]
+  roles:
+    - base
+    - role: database
+      become: true
+      become_user: "{{ user }}"
+
+- name: Redis
+  hosts: redis
+  tags: [redis, airavata]
+  become: true
+  vars:
+    redis_package: "{{ 'redis-server' if ansible_os_family == 'Debian' else 'redis' }}"
+    redis_config_path: "{{ '/etc/redis/redis.conf' if ansible_os_family == 'Debian' else '/etc/redis.conf' }}"
+    redis_service_name: "{{ 'redis-server' if ansible_os_family == 'Debian' else 'redis' }}"
+  tasks:
+    - name: Install Redis
+      ansible.builtin.package:
+        name: "{{ redis_package }}"
+        state: present
+
+    - name: Configure Redis to listen on all interfaces
+      ansible.builtin.lineinfile:
+        path: "{{ redis_config_path }}"
+        regexp: '^bind '
+        line: 'bind 0.0.0.0'
+        backup: true
+      ignore_errors: true
+
+    - name: Start and enable Redis service
+      ansible.builtin.systemd:
+        name: "{{ redis_service_name }}"
+        state: started
+        enabled: true
+        daemon_reload: true
+
+    - name: Open Redis port in firewall (RedHat)
+      ansible.posix.firewalld:
+        zone: public
+        permanent: true
+        state: enabled
+        immediate: true
+        port: "6379/tcp"
+      when: ansible_os_family == "RedHat"
+
+    - name: Open Redis port in firewall (Debian)
+      community.general.ufw:
+        rule: allow
+        port: "6379"
+        proto: tcp
+      when: ansible_os_family == "Debian"
+
+- name: API Server
+  hosts: apiserver
+  tags: [apiserver, airavata]
+  roles:
+    - base
+    - role: apiserver
+      become: true
+      become_user: "{{ user }}"
+
+- name: Keycloak
+  hosts: keycloak
+  tags: [keycloak]
+  roles:
+    - base
+    - keycloak

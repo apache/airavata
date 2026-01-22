@@ -85,16 +85,14 @@ public class DaprPubSubIntegrationTest {
 
         // Serialize to JSON
         com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        MessageContext.Wrapper wrapper = new MessageContext.Wrapper(original);
-        String json = objectMapper.writeValueAsString(wrapper);
+        String json = objectMapper.writeValueAsString(original);
 
         assertNotNull(json, "Serialized JSON should not be null");
         assertTrue(json.contains("test-exp-123"), "JSON should contain experiment ID");
         assertTrue(json.contains("CREATED"), "JSON should contain state");
 
         // Deserialize from JSON
-        MessageContext.Wrapper deserializedWrapper = objectMapper.readValue(json, MessageContext.Wrapper.class);
-        MessageContext deserialized = deserializedWrapper.toMessageContext();
+        MessageContext deserialized = objectMapper.readValue(json, MessageContext.class);
 
         assertNotNull(deserialized, "Deserialized MessageContext should not be null");
         assertEquals(messageId, deserialized.getMessageId(), "Message ID should match");

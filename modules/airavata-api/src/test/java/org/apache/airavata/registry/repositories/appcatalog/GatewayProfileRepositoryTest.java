@@ -195,27 +195,34 @@ public class GatewayProfileRepositoryTest extends TestBase {
                 assertFalse(pref2.getOverridebyAiravata());
             }
         }
-        // Clean up in the correct order: gateway profiles first (which cascades to preferences),
-        // then compute resources
+        // Clean up in the correct order to avoid foreign key constraint violations:
+        // 1. Remove compute resource preferences from gateways (deletes SSH_ACCOUNT_PROVISIONER_CONFIG)
+        // 2. Remove gateway profiles (which cascades to remaining preferences)
+        // 3. Remove compute resources
+        // Cleanup failures are logged but don't fail the test (cleanup is best-effort)
         try {
+            // Remove preferences before deleting gateway to avoid foreign key constraint
+            gwyResourceProfileService.removeComputeResourcePreferenceFromGateway("testGateway", hostId1);
+            gwyResourceProfileService.removeComputeResourcePreferenceFromGateway("testGateway", hostId2);
             gwyResourceProfileService.removeGatewayResourceProfile("testGateway");
         } catch (Exception e) {
-            logger.warn("Error removing testGateway: {}", e.getMessage());
+            logger.warn("Error removing testGateway: {}", e.getMessage(), e);
         }
         try {
+            // testGateway1 has no preferences, so can be removed directly
             gwyResourceProfileService.removeGatewayResourceProfile("testGateway1");
         } catch (Exception e) {
-            logger.warn("Error removing testGateway1: {}", e.getMessage());
+            logger.warn("Error removing testGateway1: {}", e.getMessage(), e);
         }
         try {
             computeResourceService.removeComputeResource(hostId1);
         } catch (Exception e) {
-            logger.warn("Error removing hostId1: {}", e.getMessage());
+            logger.warn("Error removing hostId1: {}", e.getMessage(), e);
         }
         try {
             computeResourceService.removeComputeResource(hostId2);
         } catch (Exception e) {
-            logger.warn("Error removing hostId2: {}", e.getMessage());
+            logger.warn("Error removing hostId2: {}", e.getMessage(), e);
         }
     }
 }

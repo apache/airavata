@@ -248,13 +248,11 @@ public class ParserWorkflowManager extends WorkflowManager implements DaprParsin
                             completionMessage,
                             registryService);
                 }
-                // TODO: Replace with Dapr Workflow - ParsingWorkflow
-                // String workflow = daprWorkflowClient.scheduleNewWorkflow(ParsingWorkflow.class, message);
-                // For now, generate a workflow name using standardized naming
+                // Note: Dapr Workflow integration is in progress
+                // Currently using workflow naming for registration; full Dapr Workflow support pending
                 String workflow = org.apache.airavata.dapr.workflow.WorkflowNaming.parsingWorkflow(
                         completionMessage.getProcessId());
-                // TODO: figure out processId and register
-                // registerWorkflowForProcess(processId, workflow, "PARSER");
+                // Workflow registration pending Dapr Workflow migration
                 logger.info("Launched workflow " + workflow);
                 parserwfCounter.inc();
             }

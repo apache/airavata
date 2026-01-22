@@ -1399,22 +1399,6 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
 
     @Override
     @SecurityCheck
-    @Deprecated
-    public List<String> getAppModuleDeployedResources(
-            org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String appModuleId)
-            throws org.apache.airavata.thriftapi.exception.InvalidRequestException,
-                    org.apache.airavata.thriftapi.exception.AiravataClientException,
-                    org.apache.airavata.thriftapi.exception.AiravataSystemException,
-                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
-        try {
-            return airavataService.getAppModuleDeployedResources(appModuleId);
-        } catch (Throwable e) {
-            throw wrapException(e);
-        }
-    }
-
-    @Override
-    @SecurityCheck
     public List<ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
             org.apache.airavata.thriftapi.security.model.AuthzToken authzToken,
             String appModuleId,
@@ -1585,22 +1569,6 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
             return domainOutputs.stream()
                     .map(outputDataObjectTypeMapper::toThrift)
                     .collect(Collectors.toList());
-        } catch (Throwable e) {
-            throw wrapException(e);
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    @Deprecated
-    public Map<String, String> getAvailableAppInterfaceComputeResources(
-            org.apache.airavata.thriftapi.security.model.AuthzToken authzToken, String appInterfaceId)
-            throws org.apache.airavata.thriftapi.exception.InvalidRequestException,
-                    org.apache.airavata.thriftapi.exception.AiravataClientException,
-                    org.apache.airavata.thriftapi.exception.AiravataSystemException,
-                    org.apache.airavata.thriftapi.exception.AuthorizationException, TException {
-        try {
-            return airavataService.getAvailableAppInterfaceComputeResources(appInterfaceId);
         } catch (Throwable e) {
             throw wrapException(e);
         }
