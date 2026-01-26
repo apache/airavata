@@ -23,28 +23,32 @@ import java.util.Objects;
 import org.apache.airavata.credential.Credential;
 
 /**
- * Domain model: SSHCredential
+ * SSH key-based credential for authenticating to resources.
  */
 public class SSHCredential extends Credential {
     private static final long serialVersionUID = 1L;
-    private String gatewayId;
+
+    /**
+     * The login username for the target resource.
+     */
     private String username;
+
+    /**
+     * The passphrase for the private key.
+     */
     private String passphrase;
+
+    /**
+     * The public key in OpenSSH format.
+     */
     private String publicKey;
+
+    /**
+     * The private key in PEM format.
+     */
     private String privateKey;
-    private Long persistedTime;
-    private String token;
-    private String description;
 
     public SSHCredential() {}
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
-    }
 
     public String getUsername() {
         return username;
@@ -78,60 +82,40 @@ public class SSHCredential extends Credential {
         this.privateKey = privateKey;
     }
 
-    public Long getPersistedTime() {
-        return persistedTime;
-    }
-
-    public void setPersistedTime(Long persistedTime) {
-        this.persistedTime = persistedTime;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SSHCredential that = (SSHCredential) o;
-        return Objects.equals(gatewayId, that.gatewayId)
+        return Objects.equals(getGatewayId(), that.getGatewayId())
+                && Objects.equals(getUserId(), that.getUserId())
                 && Objects.equals(username, that.username)
                 && Objects.equals(passphrase, that.passphrase)
                 && Objects.equals(publicKey, that.publicKey)
                 && Objects.equals(privateKey, that.privateKey)
-                && Objects.equals(persistedTime, that.persistedTime)
-                && Objects.equals(token, that.token)
-                && Objects.equals(description, that.description);
+                && Objects.equals(getPersistedTime(), that.getPersistedTime())
+                && Objects.equals(getToken(), that.getToken())
+                && Objects.equals(getDescription(), that.getDescription());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gatewayId, username, passphrase, publicKey, privateKey, persistedTime, token, description);
+        return Objects.hash(getGatewayId(), getUserId(), username, passphrase, publicKey,
+                privateKey, getPersistedTime(), getToken(), getDescription());
     }
 
     @Override
     public String toString() {
-        return "SSHCredential{" + "gatewayId='"
-                + gatewayId + '\'' + ", username='"
-                + username + '\'' + ", passphrase='"
-                + (passphrase != null ? "***" : null) + '\'' + ", publicKey='"
-                + (publicKey != null ? "***" : null) + '\'' + ", privateKey='"
-                + (privateKey != null ? "***" : null) + '\'' + ", persistedTime="
-                + persistedTime + ", token='"
-                + token + '\'' + ", description='"
-                + description + '\'' + '}';
+        return "SSHCredential{"
+                + "gatewayId='" + getGatewayId() + '\''
+                + ", userId='" + getUserId() + '\''
+                + ", username='" + username + '\''
+                + ", passphrase='" + (passphrase != null ? "***" : null) + '\''
+                + ", publicKey='" + (publicKey != null ? "***" : null) + '\''
+                + ", privateKey='" + (privateKey != null ? "***" : null) + '\''
+                + ", persistedTime=" + getPersistedTime()
+                + ", token='" + getToken() + '\''
+                + ", description='" + getDescription() + '\''
+                + '}';
     }
 }

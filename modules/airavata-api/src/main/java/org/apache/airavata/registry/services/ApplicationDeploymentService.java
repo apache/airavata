@@ -26,9 +26,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.CommandObject;
 import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.DeploymentCommandType;
+import org.apache.airavata.common.model.LibraryPathType;
+import org.apache.airavata.common.model.SetEnvPaths;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentCommandEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
+import org.apache.airavata.registry.entities.appcatalog.LibraryPathEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.mappers.ApplicationDeploymentMapper;
 import org.apache.airavata.registry.mappers.CommandObjectMapper;
@@ -84,27 +90,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         ApplicationDeploymentEntity entity =
                 applicationDeploymentRepository.findById(deploymentId).orElse(null);
         if (entity == null) return null;
-        ApplicationDeploymentDescription model = applicationDeploymentMapper.toModel(entity);
-        // Manually map lists
-        if (entity.getModuleLoadCmds() != null) {
-            model.setModuleLoadCmds(commandObjectMapper.toModelListFromModuleLoad(entity.getModuleLoadCmds()));
-        }
-        if (entity.getPreJobCommands() != null) {
-            model.setPreJobCommands(commandObjectMapper.toModelListFromPrejob(entity.getPreJobCommands()));
-        }
-        if (entity.getPostJobCommands() != null) {
-            model.setPostJobCommands(commandObjectMapper.toModelListFromPostjob(entity.getPostJobCommands()));
-        }
-        if (entity.getLibPrependPaths() != null) {
-            model.setLibPrependPaths(setEnvPathsMapper.toModelListFromPrepend(entity.getLibPrependPaths()));
-        }
-        if (entity.getLibAppendPaths() != null) {
-            model.setLibAppendPaths(setEnvPathsMapper.toModelListFromAppend(entity.getLibAppendPaths()));
-        }
-        if (entity.getSetEnvironment() != null) {
-            model.setSetEnvironment(setEnvPathsMapper.toModelListFromEnvironment(entity.getSetEnvironment()));
-        }
-        return model;
+        return mapEntityToModel(entity);
     }
 
     @Override
@@ -125,7 +111,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
                         List<ApplicationDeploymentEntity> entities =
                                 applicationDeploymentRepository.findByAppModuleId(filters.get(fieldName));
                         tmpDescriptions =
-                                entities.stream().map(e -> mapEntityToModel(e)).collect(Collectors.toList());
+                                entities.stream().map(this::mapEntityToModel).collect(Collectors.toList());
                         break;
                     }
 
@@ -137,7 +123,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
                         List<ApplicationDeploymentEntity> entities =
                                 applicationDeploymentRepository.findByComputeHostId(filters.get(fieldName));
                         tmpDescriptions =
-                                entities.stream().map(e -> mapEntityToModel(e)).collect(Collectors.toList());
+                                entities.stream().map(this::mapEntityToModel).collect(Collectors.toList());
                         break;
                     }
 
@@ -166,7 +152,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
                 }
             }
         } catch (IllegalArgumentException e) {
-            // Validation error - just rethrow without logging at ERROR level
             throw e;
         } catch (Exception e) {
             logger.error("Error while retrieving app deployment list...", e);
@@ -179,7 +164,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
     public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId)
             throws AppCatalogException {
         List<ApplicationDeploymentEntity> entities = applicationDeploymentRepository.findByGatewayId(gatewayId);
-        return entities.stream().map(e -> mapEntityToModel(e)).collect(Collectors.toList());
+        return entities.stream().map(this::mapEntityToModel).collect(Collectors.toList());
     }
 
     @Override
@@ -192,7 +177,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         List<ApplicationDeploymentEntity> entities =
                 applicationDeploymentRepository.findAccessibleApplicationDeployments(
                         gatewayId, accessibleAppIds, accessibleCompHostIds);
-        return entities.stream().map(e -> mapEntityToModel(e)).collect(Collectors.toList());
+        return entities.stream().map(this::mapEntityToModel).collect(Collectors.toList());
     }
 
     @Override
@@ -208,7 +193,7 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         List<ApplicationDeploymentEntity> entities =
                 applicationDeploymentRepository.findAccessibleApplicationDeploymentsForAppModule(
                         gatewayId, appModuleId, accessibleAppIds, accessibleComputeResourceIds);
-        return entities.stream().map(e -> mapEntityToModel(e)).collect(Collectors.toList());
+        return entities.stream().map(this::mapEntityToModel).collect(Collectors.toList());
     }
 
     @Override
@@ -217,7 +202,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         List<ApplicationDeploymentEntity> entities = applicationDeploymentRepository.findAll();
 
         if (entities != null && !entities.isEmpty()) {
-            logger.debug("The fetched list of Application Deployment is not NULL or empty");
             for (ApplicationDeploymentEntity entity : entities) {
                 applicationDeploymentIds.add(entity.getAppDeploymentId());
             }
@@ -249,8 +233,6 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
 
         if (applicationDeploymentDescription.getAppDeploymentId().trim().isEmpty()
                 || applicationDeploymentDescription.getAppDeploymentId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
-            logger.debug(
-                    "If Application Deployment ID is empty or DEFAULT, set it as the compute host name plus the App Module ID");
             ComputeResourceDescription computeResourceDescription =
                     computeResourceService.getComputeResource(applicationDeploymentDescription.getComputeHostId());
             applicationDeploymentDescription.setAppDeploymentId(
@@ -261,82 +243,84 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
         ApplicationDeploymentEntity applicationDeploymentEntity =
                 applicationDeploymentMapper.toEntity(applicationDeploymentDescription);
 
-        // Manually map lists
-        if (applicationDeploymentDescription.getModuleLoadCmds() != null) {
-            applicationDeploymentEntity.setModuleLoadCmds(
-                    commandObjectMapper.toEntityListToModuleLoad(applicationDeploymentDescription.getModuleLoadCmds()));
-        }
-        if (applicationDeploymentDescription.getPreJobCommands() != null) {
-            applicationDeploymentEntity.setPreJobCommands(
-                    commandObjectMapper.toEntityListToPrejob(applicationDeploymentDescription.getPreJobCommands()));
-        }
-        if (applicationDeploymentDescription.getPostJobCommands() != null) {
-            applicationDeploymentEntity.setPostJobCommands(
-                    commandObjectMapper.toEntityListToPostjob(applicationDeploymentDescription.getPostJobCommands()));
-        }
-        if (applicationDeploymentDescription.getLibPrependPaths() != null) {
-            applicationDeploymentEntity.setLibPrependPaths(
-                    setEnvPathsMapper.toEntityListToPrepend(applicationDeploymentDescription.getLibPrependPaths()));
-        }
-        if (applicationDeploymentDescription.getLibAppendPaths() != null) {
-            applicationDeploymentEntity.setLibAppendPaths(
-                    setEnvPathsMapper.toEntityListToAppend(applicationDeploymentDescription.getLibAppendPaths()));
-        }
-        if (applicationDeploymentDescription.getSetEnvironment() != null) {
-            applicationDeploymentEntity.setSetEnvironment(
-                    setEnvPathsMapper.toEntityListToEnvironment(applicationDeploymentDescription.getSetEnvironment()));
-        }
-
         if (gatewayId != null) {
-            logger.debug("Setting the gateway ID of the Application Deployment");
             applicationDeploymentEntity.setGatewayId(gatewayId);
         }
 
-        if (applicationDeploymentEntity.getModuleLoadCmds() != null) {
-            logger.debug("Populating the Primary Key of ModuleLoadCmds objects for the Application Deployment");
-            applicationDeploymentEntity
-                    .getModuleLoadCmds()
-                    .forEach(moduleLoadCmdEntity -> moduleLoadCmdEntity.setAppdeploymentId(applicationDeploymentId));
+        // Build unified command list from all command types
+        List<ApplicationDeploymentCommandEntity> commands = new ArrayList<>();
+        
+        if (applicationDeploymentDescription.getModuleLoadCmds() != null) {
+            for (CommandObject cmd : applicationDeploymentDescription.getModuleLoadCmds()) {
+                ApplicationDeploymentCommandEntity entity = new ApplicationDeploymentCommandEntity();
+                entity.setDeploymentId(applicationDeploymentId);
+                entity.setCommandType(DeploymentCommandType.MODULE_LOAD);
+                entity.setCommand(cmd.getCommand());
+                entity.setCommandOrder(cmd.getCommandOrder());
+                commands.add(entity);
+            }
         }
-
-        if (applicationDeploymentEntity.getPreJobCommands() != null) {
-            logger.debug("Populating the Primary Key PreJobCommands objects for the Application Deployment");
-            applicationDeploymentEntity
-                    .getPreJobCommands()
-                    .forEach(prejobCommandEntity -> prejobCommandEntity.setAppdeploymentId(applicationDeploymentId));
+        
+        if (applicationDeploymentDescription.getPreJobCommands() != null) {
+            for (CommandObject cmd : applicationDeploymentDescription.getPreJobCommands()) {
+                ApplicationDeploymentCommandEntity entity = new ApplicationDeploymentCommandEntity();
+                entity.setDeploymentId(applicationDeploymentId);
+                entity.setCommandType(DeploymentCommandType.PREJOB);
+                entity.setCommand(cmd.getCommand());
+                entity.setCommandOrder(cmd.getCommandOrder());
+                commands.add(entity);
+            }
         }
-
-        if (applicationDeploymentEntity.getPostJobCommands() != null) {
-            logger.debug("Populating the Primary Key PostJobCommands objects for the Application Deployment");
-            applicationDeploymentEntity
-                    .getPostJobCommands()
-                    .forEach(postjobCommandEntity -> postjobCommandEntity.setAppdeploymentId(applicationDeploymentId));
+        
+        if (applicationDeploymentDescription.getPostJobCommands() != null) {
+            for (CommandObject cmd : applicationDeploymentDescription.getPostJobCommands()) {
+                ApplicationDeploymentCommandEntity entity = new ApplicationDeploymentCommandEntity();
+                entity.setDeploymentId(applicationDeploymentId);
+                entity.setCommandType(DeploymentCommandType.POSTJOB);
+                entity.setCommand(cmd.getCommand());
+                entity.setCommandOrder(cmd.getCommandOrder());
+                commands.add(entity);
+            }
         }
+        
+        applicationDeploymentEntity.setCommands(commands);
 
-        if (applicationDeploymentEntity.getLibPrependPaths() != null) {
-            logger.debug("Populating the Primary Key LibPrependPaths objects for the Application Deployment");
-            applicationDeploymentEntity
-                    .getLibPrependPaths()
-                    .forEach(libraryPrependPathEntity ->
-                            libraryPrependPathEntity.setDeploymentId(applicationDeploymentId));
+        // Build unified library path list from prepend and append paths
+        List<LibraryPathEntity> libraryPaths = new ArrayList<>();
+        
+        if (applicationDeploymentDescription.getLibPrependPaths() != null) {
+            for (SetEnvPaths path : applicationDeploymentDescription.getLibPrependPaths()) {
+                LibraryPathEntity entity = new LibraryPathEntity();
+                entity.setDeploymentId(applicationDeploymentId);
+                entity.setPathType(LibraryPathType.PREPEND);
+                entity.setName(path.getName());
+                entity.setValue(path.getValue());
+                libraryPaths.add(entity);
+            }
         }
-
-        if (applicationDeploymentEntity.getLibAppendPaths() != null) {
-            logger.debug("Populating the Primary Key LibAppendPaths objects for the Application Deployment");
-            applicationDeploymentEntity
-                    .getLibAppendPaths()
-                    .forEach(libraryApendPathEntity -> libraryApendPathEntity.setDeploymentId(applicationDeploymentId));
+        
+        if (applicationDeploymentDescription.getLibAppendPaths() != null) {
+            for (SetEnvPaths path : applicationDeploymentDescription.getLibAppendPaths()) {
+                LibraryPathEntity entity = new LibraryPathEntity();
+                entity.setDeploymentId(applicationDeploymentId);
+                entity.setPathType(LibraryPathType.APPEND);
+                entity.setName(path.getName());
+                entity.setValue(path.getValue());
+                libraryPaths.add(entity);
+            }
         }
+        
+        applicationDeploymentEntity.setLibraryPaths(libraryPaths);
 
-        if (applicationDeploymentEntity.getSetEnvironment() != null) {
-            logger.debug("Populating the Primary Key of SetEnvironment objects for the Application Deployment");
-            applicationDeploymentEntity
-                    .getSetEnvironment()
-                    .forEach(appEnvironmentEntity -> appEnvironmentEntity.setDeploymentId(applicationDeploymentId));
+        // Set environment variables
+        if (applicationDeploymentDescription.getSetEnvironment() != null) {
+            applicationDeploymentEntity.setSetEnvironment(
+                    setEnvPathsMapper.toEntityListToEnvironment(applicationDeploymentDescription.getSetEnvironment()));
+            applicationDeploymentEntity.getSetEnvironment()
+                    .forEach(env -> env.setDeploymentId(applicationDeploymentId));
         }
 
         if (!isAppDeploymentExists(applicationDeploymentId)) {
-            logger.debug("Checking if the Application Deployment already exists");
             applicationDeploymentEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
         }
 
@@ -346,25 +330,42 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
 
     private ApplicationDeploymentDescription mapEntityToModel(ApplicationDeploymentEntity entity) {
         ApplicationDeploymentDescription model = applicationDeploymentMapper.toModel(entity);
-        // Manually map lists
-        if (entity.getModuleLoadCmds() != null) {
-            model.setModuleLoadCmds(commandObjectMapper.toModelListFromModuleLoad(entity.getModuleLoadCmds()));
+        
+        // Map module load commands
+        List<ApplicationDeploymentCommandEntity> moduleLoadCmds = entity.getModuleLoadCommands();
+        if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()) {
+            model.setModuleLoadCmds(commandObjectMapper.toModelList(moduleLoadCmds));
         }
-        if (entity.getPreJobCommands() != null) {
-            model.setPreJobCommands(commandObjectMapper.toModelListFromPrejob(entity.getPreJobCommands()));
+        
+        // Map prejob commands
+        List<ApplicationDeploymentCommandEntity> preJobCmds = entity.getPreJobCommands();
+        if (preJobCmds != null && !preJobCmds.isEmpty()) {
+            model.setPreJobCommands(commandObjectMapper.toModelList(preJobCmds));
         }
-        if (entity.getPostJobCommands() != null) {
-            model.setPostJobCommands(commandObjectMapper.toModelListFromPostjob(entity.getPostJobCommands()));
+        
+        // Map postjob commands
+        List<ApplicationDeploymentCommandEntity> postJobCmds = entity.getPostJobCommands();
+        if (postJobCmds != null && !postJobCmds.isEmpty()) {
+            model.setPostJobCommands(commandObjectMapper.toModelList(postJobCmds));
         }
-        if (entity.getLibPrependPaths() != null) {
-            model.setLibPrependPaths(setEnvPathsMapper.toModelListFromPrepend(entity.getLibPrependPaths()));
+        
+        // Map library prepend paths
+        List<LibraryPathEntity> prependPaths = entity.getLibPrependPaths();
+        if (prependPaths != null && !prependPaths.isEmpty()) {
+            model.setLibPrependPaths(setEnvPathsMapper.toModelListFromLibraryPath(prependPaths));
         }
-        if (entity.getLibAppendPaths() != null) {
-            model.setLibAppendPaths(setEnvPathsMapper.toModelListFromAppend(entity.getLibAppendPaths()));
+        
+        // Map library append paths
+        List<LibraryPathEntity> appendPaths = entity.getLibAppendPaths();
+        if (appendPaths != null && !appendPaths.isEmpty()) {
+            model.setLibAppendPaths(setEnvPathsMapper.toModelListFromLibraryPath(appendPaths));
         }
+        
+        // Map environment variables
         if (entity.getSetEnvironment() != null) {
             model.setSetEnvironment(setEnvPathsMapper.toModelListFromEnvironment(entity.getSetEnvironment()));
         }
+        
         return model;
     }
 }

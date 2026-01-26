@@ -26,12 +26,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
+import org.apache.airavata.registry.entities.GatewayEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Entity representing a user group in the sharing registry.
+ * The domainId references the GatewayEntity's gatewayId (formerly via DomainEntity).
+ */
 @Entity
 @Table(name = "USER_GROUP", schema = "")
 @IdClass(UserGroupPK.class)
@@ -39,6 +46,7 @@ public class UserGroupEntity {
     private static final Logger logger = LoggerFactory.getLogger(UserGroupEntity.class);
     private String groupId;
     private String domainId;
+    private GatewayEntity gateway;
     private String name;
     private String description;
     private String ownerId;
@@ -66,6 +74,20 @@ public class UserGroupEntity {
 
     public void setDomainId(String domainId) {
         this.domainId = domainId;
+    }
+
+    /**
+     * Returns the associated gateway for this group's domain.
+     * The domainId references the gateway's gatewayId.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DOMAIN_ID", referencedColumnName = "GATEWAY_ID", insertable = false, updatable = false)
+    public GatewayEntity getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(GatewayEntity gateway) {
+        this.gateway = gateway;
     }
 
     @Basic

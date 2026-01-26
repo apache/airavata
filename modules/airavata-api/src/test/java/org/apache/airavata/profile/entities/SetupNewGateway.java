@@ -84,7 +84,7 @@ public class SetupNewGateway {
         superAdminCreds.setDescription("Keycloak super admin credentials");
         superAdminCreds.setLoginUserName("admin");
         superAdminCreds.setPassword("admin");
-        superAdminCreds.setPortalUserName("admin");
+        superAdminCreds.setUserId("admin");
     }
 
     @Test
@@ -106,12 +106,10 @@ public class SetupNewGateway {
         boolean adminCreated = client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
         assertTrue(adminCreated, "Admin account should be created");
 
-        // Configure OAuth client
-        Gateway gatewayWithClient = client.configureClient(superAdminCreds, testGateway);
-        assertNotNull(gatewayWithClient.getOauthClientId(), "OAuth Client ID should be set");
-        assertNotNull(gatewayWithClient.getOauthClientSecret(), "OAuth Client Secret should be set");
+        // Configure OAuth client in Keycloak
+        client.configureClient(superAdminCreds, testGateway);
 
-        logger.info("Gateway {} created with OAuth Client ID: {}", testGatewayId, gatewayWithClient.getOauthClientId());
+        logger.info("Gateway {} created with OAuth client configured in Keycloak", testGatewayId);
     }
 
     @Test
@@ -128,7 +126,7 @@ public class SetupNewGateway {
 
         client.addTenant(superAdminCreds, testGateway);
         client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123");
-        Gateway gatewayWithClient = client.configureClient(superAdminCreds, testGateway);
+        client.configureClient(superAdminCreds, testGateway);
 
         // Create test user
         String userId = "testuser-" + UUID.randomUUID().toString().substring(0, 8);

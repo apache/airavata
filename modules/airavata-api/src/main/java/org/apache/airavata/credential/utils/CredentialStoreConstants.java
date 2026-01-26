@@ -20,15 +20,12 @@
 package org.apache.airavata.credential.utils;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 8/25/13
- * Time: 4:34 PM
+ * Constants for credential store queries.
  */
 public class CredentialStoreConstants {
 
     public static final String GATEWAY_NAME_QUERY_PARAMETER = "gatewayName";
-    public static final String PORTAL_USER_QUERY_PARAMETER = "portalUserName";
-    public static final String PORTAL_USER_EMAIL_QUERY_PARAMETER = "email";
-    public static final String PORTAL_TOKEN_ID_ASSIGNED = "associatedToken";
+    public static final String USER_ID_QUERY_PARAMETER = "userId";
+    public static final String TOKEN_ID_QUERY_PARAMETER = "associatedToken";
     public static final String DURATION_QUERY_PARAMETER = "duration";
 }

@@ -20,39 +20,154 @@
 package org.apache.airavata.registry.mappers;
 
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.registry.entities.appcatalog.ApplicationInputEntity;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
-import org.apache.airavata.registry.entities.expcatalog.ProcessInputEntity;
+import org.apache.airavata.registry.entities.InputDataEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
- * MapStruct mapper for converting between InputDataObjectType entities and InputDataObjectType model.
+ * MapStruct mapper for converting between InputDataEntity and InputDataObjectType model.
+ *
+ * <p>This mapper uses the unified InputDataEntity which stores inputs for all parent types
+ * (experiments, processes, applications, and handlers) in a single table.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface InputDataObjectTypeMapper {
 
-    InputDataObjectType toModel(ExperimentInputEntity entity);
+    /**
+     * Convert unified InputDataEntity to InputDataObjectType model.
+     */
+    @Mapping(target = "isRequired", source = "required")
+    @Mapping(target = "isReadOnly", source = "readOnly")
+    InputDataObjectType toModel(InputDataEntity entity);
 
-    ExperimentInputEntity toEntity(InputDataObjectType model);
+    /**
+     * Convert InputDataObjectType model to unified InputDataEntity.
+     * Note: parentId and parentType must be set after mapping.
+     */
+    @Mapping(target = "parentId", ignore = true)
+    @Mapping(target = "parentType", ignore = true)
+    @Mapping(target = "required", source = "isRequired")
+    @Mapping(target = "readOnly", source = "isReadOnly")
+    InputDataEntity toEntity(InputDataObjectType model);
 
-    InputDataObjectType toModel(ProcessInputEntity entity);
+    /**
+     * Convert list of unified InputDataEntity to list of InputDataObjectType models.
+     */
+    List<InputDataObjectType> toModelList(List<InputDataEntity> entities);
 
-    ProcessInputEntity toEntityFromProcess(InputDataObjectType model);
+    /**
+     * Convert list of InputDataObjectType models to list of unified InputDataEntity.
+     * Note: parentId and parentType must be set on each entity after mapping.
+     */
+    List<InputDataEntity> toEntityList(List<InputDataObjectType> models);
 
-    InputDataObjectType toModel(ApplicationInputEntity entity);
+    /**
+     * Create an InputDataEntity for an experiment input.
+     *
+     * @param model the input data object type
+     * @param experimentId the experiment ID
+     * @return the input data entity with parent type set to EXPERIMENT
+     */
+    default InputDataEntity toExperimentInputEntity(InputDataObjectType model, String experimentId) {
+        InputDataEntity entity = toEntity(model);
+        entity.setParentId(experimentId);
+        entity.setParentType(DataObjectParentType.EXPERIMENT);
+        return entity;
+    }
 
-    ApplicationInputEntity toEntityFromApplication(InputDataObjectType model);
+    /**
+     * Create an InputDataEntity for a process input.
+     *
+     * @param model the input data object type
+     * @param processId the process ID
+     * @return the input data entity with parent type set to PROCESS
+     */
+    default InputDataEntity toProcessInputEntity(InputDataObjectType model, String processId) {
+        InputDataEntity entity = toEntity(model);
+        entity.setParentId(processId);
+        entity.setParentType(DataObjectParentType.PROCESS);
+        return entity;
+    }
 
-    List<InputDataObjectType> toModelListFromExperiment(List<ExperimentInputEntity> entities);
+    /**
+     * Create an InputDataEntity for an application input.
+     *
+     * @param model the input data object type
+     * @param applicationId the application interface ID
+     * @return the input data entity with parent type set to APPLICATION
+     */
+    default InputDataEntity toApplicationInputEntity(InputDataObjectType model, String applicationId) {
+        InputDataEntity entity = toEntity(model);
+        entity.setParentId(applicationId);
+        entity.setParentType(DataObjectParentType.APPLICATION);
+        return entity;
+    }
 
-    List<ExperimentInputEntity> toEntityListFromExperiment(List<InputDataObjectType> models);
+    /**
+     * Create an InputDataEntity for a handler input.
+     *
+     * @param model the input data object type
+     * @param handlerId the handler ID
+     * @return the input data entity with parent type set to HANDLER
+     */
+    default InputDataEntity toHandlerInputEntity(InputDataObjectType model, String handlerId) {
+        InputDataEntity entity = toEntity(model);
+        entity.setParentId(handlerId);
+        entity.setParentType(DataObjectParentType.HANDLER);
+        return entity;
+    }
 
-    List<InputDataObjectType> toModelListFromProcess(List<ProcessInputEntity> entities);
+    /**
+     * Create InputDataEntity list for experiment inputs.
+     *
+     * @param models the list of input data object types
+     * @param experimentId the experiment ID
+     * @return list of input data entities with parent type set to EXPERIMENT
+     */
+    default List<InputDataEntity> toExperimentInputEntities(List<InputDataObjectType> models, String experimentId) {
+        return models.stream()
+                .map(model -> toExperimentInputEntity(model, experimentId))
+                .toList();
+    }
 
-    List<ProcessInputEntity> toEntityListFromProcess(List<InputDataObjectType> models);
+    /**
+     * Create InputDataEntity list for process inputs.
+     *
+     * @param models the list of input data object types
+     * @param processId the process ID
+     * @return list of input data entities with parent type set to PROCESS
+     */
+    default List<InputDataEntity> toProcessInputEntities(List<InputDataObjectType> models, String processId) {
+        return models.stream()
+                .map(model -> toProcessInputEntity(model, processId))
+                .toList();
+    }
 
-    List<InputDataObjectType> toModelListFromApplication(List<ApplicationInputEntity> entities);
+    /**
+     * Create InputDataEntity list for application inputs.
+     *
+     * @param models the list of input data object types
+     * @param applicationId the application interface ID
+     * @return list of input data entities with parent type set to APPLICATION
+     */
+    default List<InputDataEntity> toApplicationInputEntities(List<InputDataObjectType> models, String applicationId) {
+        return models.stream()
+                .map(model -> toApplicationInputEntity(model, applicationId))
+                .toList();
+    }
 
-    List<ApplicationInputEntity> toEntityListFromApplication(List<InputDataObjectType> models);
+    /**
+     * Create InputDataEntity list for handler inputs.
+     *
+     * @param models the list of input data object types
+     * @param handlerId the handler ID
+     * @return list of input data entities with parent type set to HANDLER
+     */
+    default List<InputDataEntity> toHandlerInputEntities(List<InputDataObjectType> models, String handlerId) {
+        return models.stream()
+                .map(model -> toHandlerInputEntity(model, handlerId))
+                .toList();
+    }
 }

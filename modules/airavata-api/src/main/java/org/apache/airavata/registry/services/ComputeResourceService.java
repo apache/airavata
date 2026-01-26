@@ -54,8 +54,7 @@ import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandPK;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.LocalDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.LocalSubmissionEntity;
-import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandEntity;
-import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandPK;
+import org.apache.airavata.common.model.CommandCategory;
 import org.apache.airavata.registry.entities.appcatalog.ResourceJobManagerEntity;
 import org.apache.airavata.registry.entities.appcatalog.ScpDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.SshJobSubmissionEntity;
@@ -86,7 +85,6 @@ import org.apache.airavata.registry.repositories.appcatalog.JobManagerCommandRep
 import org.apache.airavata.registry.repositories.appcatalog.JobSubmissionInterfaceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.LocalDataMovementRepository;
 import org.apache.airavata.registry.repositories.appcatalog.LocalSubmissionRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ParallelismCommandRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ResourceJobManagerRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ScpDataMovementRepository;
 import org.apache.airavata.registry.repositories.appcatalog.SshJobSubmissionRepository;
@@ -108,7 +106,6 @@ public class ComputeResourceService {
     private final ComputeResourceFileSystemRepository computeResourceFileSystemRepository;
     private final ResourceJobManagerRepository resourceJobManagerRepository;
     private final JobManagerCommandRepository jobManagerCommandRepository;
-    private final ParallelismCommandRepository parallelismCommandRepository;
     private final JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository;
     private final SshJobSubmissionRepository sshJobSubmissionRepository;
     private final CloudJobSubmissionRepository cloudJobSubmissionRepository;
@@ -140,7 +137,6 @@ public class ComputeResourceService {
             ComputeResourceFileSystemRepository computeResourceFileSystemRepository,
             ResourceJobManagerRepository resourceJobManagerRepository,
             JobManagerCommandRepository jobManagerCommandRepository,
-            ParallelismCommandRepository parallelismCommandRepository,
             JobSubmissionInterfaceRepository jobSubmissionInterfaceRepository,
             SshJobSubmissionRepository sshJobSubmissionRepository,
             CloudJobSubmissionRepository cloudJobSubmissionRepository,
@@ -170,7 +166,6 @@ public class ComputeResourceService {
         this.computeResourceFileSystemRepository = computeResourceFileSystemRepository;
         this.resourceJobManagerRepository = resourceJobManagerRepository;
         this.jobManagerCommandRepository = jobManagerCommandRepository;
-        this.parallelismCommandRepository = parallelismCommandRepository;
         this.jobSubmissionInterfaceRepository = jobSubmissionInterfaceRepository;
         this.sshJobSubmissionRepository = sshJobSubmissionRepository;
         this.cloudJobSubmissionRepository = cloudJobSubmissionRepository;
@@ -854,13 +849,6 @@ public class ComputeResourceService {
                 gridftpEndpointEntity.setGridftpDataMovement(gridftpDataMovementEntity);
                 gridftpEndpointEntity.setDataMovementInterfaceId(gridFTPDataMovement.getDataMovementInterfaceId());
                 gridftpEndpointEntity.setEndpoint(endpoint);
-                // Ensure creationTime and updateTime are set
-                if (gridftpEndpointEntity.getCreationTime() == null) {
-                    gridftpEndpointEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
-                }
-                if (gridftpEndpointEntity.getUpdateTime() == null) {
-                    gridftpEndpointEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-                }
                 gridftpEndpointRepository.save(gridftpEndpointEntity);
             }
         }
@@ -993,19 +981,21 @@ public class ComputeResourceService {
         }
         String resourceJobManagerId = resourceJobManagerEntity.getResourceJobManagerId();
         for (Map.Entry<ApplicationParallelismType, String> entry : parallelismPrefix.entrySet()) {
-            ParallelismCommandPK pk = new ParallelismCommandPK();
+            JobManagerCommandPK pk = new JobManagerCommandPK();
             pk.setResourceJobManagerId(resourceJobManagerId);
-            pk.setCommandType(entry.getKey());
+            pk.setCommandCategory(CommandCategory.PARALLELISM);
+            pk.setCommandType(entry.getKey().name());
 
-            ParallelismCommandEntity entity =
-                    parallelismCommandRepository.findById(pk).orElse(new ParallelismCommandEntity());
+            JobManagerCommandEntity entity =
+                    jobManagerCommandRepository.findById(pk).orElse(new JobManagerCommandEntity());
 
             entity.setResourceJobManagerId(resourceJobManagerId);
-            entity.setCommandType(entry.getKey());
+            entity.setCommandCategory(CommandCategory.PARALLELISM);
+            entity.setCommandType(entry.getKey().name());
             entity.setCommand(entry.getValue());
             // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent
             // unmanaged object exception
-            parallelismCommandRepository.save(entity);
+            jobManagerCommandRepository.save(entity);
         }
     }
 
@@ -1018,13 +1008,15 @@ public class ComputeResourceService {
         for (Map.Entry<JobManagerCommand, String> entry : jobManagerCommands.entrySet()) {
             JobManagerCommandPK pk = new JobManagerCommandPK();
             pk.setResourceJobManagerId(resourceJobManagerId);
-            pk.setCommandType(entry.getKey());
+            pk.setCommandCategory(CommandCategory.JOB_MANAGER);
+            pk.setCommandType(entry.getKey().name());
 
             JobManagerCommandEntity entity =
                     jobManagerCommandRepository.findById(pk).orElse(new JobManagerCommandEntity());
 
             entity.setResourceJobManagerId(resourceJobManagerId);
-            entity.setCommandType(entry.getKey());
+            entity.setCommandCategory(CommandCategory.JOB_MANAGER);
+            entity.setCommandType(entry.getKey().name());
             entity.setCommand(entry.getValue());
             // entity.setResourceJobManager(resourceJobManagerEntity); // Avoid setting relationship to prevent
             // unmanaged object exception
@@ -1033,11 +1025,12 @@ public class ComputeResourceService {
     }
 
     private Map<ApplicationParallelismType, String> getParallelismPrefix(String resourceJobManagerId) {
-        List<ParallelismCommandEntity> entities =
+        List<JobManagerCommandEntity> entities =
                 resourceJobManagerRepository.findParallelismCommandsByResourceJobManagerId(resourceJobManagerId);
         Map<ApplicationParallelismType, String> result = new HashMap<>();
-        for (ParallelismCommandEntity entity : entities) {
-            result.put(entity.getCommandType(), entity.getCommand());
+        for (JobManagerCommandEntity entity : entities) {
+            ApplicationParallelismType type = ApplicationParallelismType.valueOf(entity.getCommandType());
+            result.put(type, entity.getCommand());
         }
         return result;
     }
@@ -1047,7 +1040,8 @@ public class ComputeResourceService {
                 resourceJobManagerRepository.findJobManagerCommandsByResourceJobManagerId(resourceJobManagerId);
         Map<JobManagerCommand, String> result = new HashMap<>();
         for (JobManagerCommandEntity entity : entities) {
-            result.put(entity.getCommandType(), entity.getCommand());
+            JobManagerCommand cmd = JobManagerCommand.valueOf(entity.getCommandType());
+            result.put(cmd, entity.getCommand());
         }
         return result;
     }

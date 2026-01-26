@@ -21,14 +21,19 @@ package org.apache.airavata.registry.entities.airavataworkflowcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.registry.entities.ErrorEntity;
+import org.apache.airavata.registry.entities.StatusEntity;
 
 @Entity
 @Table(name = "AIRAVATA_WORKFLOW")
@@ -72,19 +77,23 @@ public class AiravataWorkflowEntity implements Serializable {
             fetch = FetchType.EAGER)
     private List<WorkflowConnectionEntity> connections;
 
-    @OneToMany(
-            targetEntity = AiravataWorkflowStatusEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "workflow",
-            fetch = FetchType.EAGER)
-    private List<AiravataWorkflowStatusEntity> statuses;
+    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'WORKFLOW'")
+    private List<StatusEntity> statuses;
 
-    @OneToMany(
-            targetEntity = AiravataWorkflowErrorEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "workflow",
-            fetch = FetchType.EAGER)
-    private List<AiravataWorkflowErrorEntity> errors;
+    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(name = "PARENT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'WORKFLOW'")
+    private List<ErrorEntity> errors;
 
     public AiravataWorkflowEntity() {}
 
@@ -120,11 +129,11 @@ public class AiravataWorkflowEntity implements Serializable {
         this.connections = connections;
     }
 
-    public void setStatuses(List<AiravataWorkflowStatusEntity> statuses) {
+    public void setStatuses(List<StatusEntity> statuses) {
         this.statuses = statuses;
     }
 
-    public void setErrors(List<AiravataWorkflowErrorEntity> errors) {
+    public void setErrors(List<ErrorEntity> errors) {
         this.errors = errors;
     }
 
@@ -160,11 +169,11 @@ public class AiravataWorkflowEntity implements Serializable {
         return connections;
     }
 
-    public List<AiravataWorkflowStatusEntity> getStatuses() {
+    public List<StatusEntity> getStatuses() {
         return statuses;
     }
 
-    public List<AiravataWorkflowErrorEntity> getErrors() {
+    public List<ErrorEntity> getErrors() {
         return errors;
     }
 }

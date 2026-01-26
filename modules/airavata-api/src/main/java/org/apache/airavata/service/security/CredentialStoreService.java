@@ -27,7 +27,6 @@ import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
-import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.CredentialSummary;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
@@ -75,7 +74,7 @@ public class CredentialStoreService {
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
         SSHCredential credential = new SSHCredential();
         credential.setGatewayId(sshCredential.getGatewayId());
-        credential.setPortalUserName(sshCredential.getUsername());
+        credential.setUserId(sshCredential.getUsername());
         credential.setUsername(sshCredential.getUsername());
         // only username and gateway id will be sent by client.
         String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
@@ -106,14 +105,10 @@ public class CredentialStoreService {
     public String addCertificateCredential(CertificateCredential certificateCredential)
             throws CredentialStoreException {
         CertificateCredential credential = new CertificateCredential();
-        if (certificateCredential.getCommunityUser() != null) {
-            credential.setPortalUserName(
-                    certificateCredential.getCommunityUser().getUsername());
-            credential.setCommunityUser(certificateCredential.getCommunityUser());
-            credential.setGatewayId(certificateCredential.getCommunityUser().getGatewayName());
-        }
-        // CommunityUser is not serializable in this test setup; drop it before persisting
-        credential.setCommunityUser(null);
+        // Set userId and gatewayId from the input credential
+        credential.setUserId(certificateCredential.getUserId());
+        credential.setGatewayId(certificateCredential.getGatewayId());
+
         String token = TokenGenerator.generateToken(
                 credential.getGatewayId() != null ? credential.getGatewayId() : "gateway", null);
         credential.setToken(token);
@@ -129,7 +124,7 @@ public class CredentialStoreService {
     public String addPasswordCredential(PasswordCredential passwordCredential) throws CredentialStoreException {
         PasswordCredential credential = new PasswordCredential();
         credential.setGatewayId(passwordCredential.getGatewayId());
-        credential.setPortalUserName(passwordCredential.getPortalUserName());
+        credential.setUserId(passwordCredential.getUserId());
         credential.setLoginUserName(passwordCredential.getLoginUserName());
         credential.setPassword(passwordCredential.getPassword());
         credential.setDescription(passwordCredential.getDescription());
@@ -276,11 +271,12 @@ public class CredentialStoreService {
     private CredentialSummary convertToCredentialSummary(SSHCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.SSH);
-        credentialSummary.setUsername(cred.getPortalUserName());
+        credentialSummary.setUsername(cred.getUserId());
         credentialSummary.setGatewayId(cred.getGatewayId());
         credentialSummary.setPublicKey(new String(cred.getPublicKey()));
         credentialSummary.setToken(cred.getToken());
-        credentialSummary.setPersistedTime(cred.getCertificateRequestedTime().getTime());
+        Date persistedTime = cred.getPersistedTime();
+        credentialSummary.setPersistedTime(persistedTime != null ? persistedTime.getTime() : System.currentTimeMillis());
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }
@@ -288,7 +284,7 @@ public class CredentialStoreService {
     private CredentialSummary convertToCredentialSummary(CertificateCredential cred, String gatewayId) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.CERT);
-        credentialSummary.setUsername(cred.getPortalUserName());
+        credentialSummary.setUsername(cred.getUserId());
         credentialSummary.setGatewayId(gatewayId != null ? gatewayId : "");
 
         // For CertificateCredential, use the X509 certificate as the public key representation
@@ -304,15 +300,8 @@ public class CredentialStoreService {
         }
 
         credentialSummary.setToken(cred.getToken());
-        // Use getCertificateRequestedTime() from base Credential class, fallback to getPersistedTime() if null
-        Date certRequestedTime = cred.getCertificateRequestedTime();
-        if (certRequestedTime != null) {
-            credentialSummary.setPersistedTime(certRequestedTime.getTime());
-        } else if (cred.getPersistedTime() != null) {
-            credentialSummary.setPersistedTime(cred.getPersistedTime());
-        } else {
-            credentialSummary.setPersistedTime(System.currentTimeMillis());
-        }
+        Date persistedTime = cred.getPersistedTime();
+        credentialSummary.setPersistedTime(persistedTime != null ? persistedTime.getTime() : System.currentTimeMillis());
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }
@@ -320,10 +309,11 @@ public class CredentialStoreService {
     private CredentialSummary convertToCredentialSummary(PasswordCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.PASSWD);
-        credentialSummary.setUsername(cred.getPortalUserName());
+        credentialSummary.setUsername(cred.getUserId());
         credentialSummary.setGatewayId(cred.getGatewayId());
         credentialSummary.setToken(cred.getToken());
-        credentialSummary.setPersistedTime(cred.getCertificateRequestedTime().getTime());
+        Date persistedTime = cred.getPersistedTime();
+        credentialSummary.setPersistedTime(persistedTime != null ? persistedTime.getTime() : System.currentTimeMillis());
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }
@@ -333,20 +323,19 @@ public class CredentialStoreService {
         Credential credential = credentialReader.getCredential(gatewayId, tokenId);
         if (credential instanceof CertificateCredential cc) {
             var cred = new CertificateCredential();
-            var user = new CommunityUser();
-            user.setGatewayName(cc.getCommunityUser().getGatewayName());
-            user.setUsername(cc.getCommunityUser().getUsername());
-            user.setUserEmail(cc.getCommunityUser().getUserEmail());
-            cred.setCommunityUser(user);
+            cred.setUserId(cc.getUserId());
+            cred.setGatewayId(cc.getGatewayId());
             cred.setToken(cc.getToken());
             cred.setLifeTime(cc.getLifeTime());
             cred.setNotAfter(cc.getNotAfter());
             cred.setNotBefore(cc.getNotBefore());
-            cred.setPersistedTime(cc.getCertificateRequestedTime().getTime());
+            cred.setPersistedTime(cc.getPersistedTime());
             if (cc.getPrivateKey() != null) {
                 cred.setPrivateKey(cc.getPrivateKey().toString());
             }
-            cred.setX509Cert(cc.getCertificates()[0].toString());
+            if (cc.getCertificates() != null && cc.getCertificates().length > 0) {
+                cred.setX509Cert(cc.getCertificates()[0].toString());
+            }
             return cred;
         } else {
             var msg = String.format(
@@ -361,12 +350,13 @@ public class CredentialStoreService {
         if (credential instanceof PasswordCredential pc) {
             var cred = new PasswordCredential();
             cred.setGatewayId(pc.getGatewayId());
-            cred.setPortalUserName(pc.getPortalUserName());
+            cred.setUserId(pc.getUserId());
             cred.setLoginUserName(pc.getLoginUserName());
             cred.setPassword(pc.getPassword());
             cred.setDescription(pc.getDescription());
             cred.setToken(pc.getToken());
-            cred.setPersistedTime(pc.getCertificateRequestedTime().getTime());
+            Date persistedTime = pc.getPersistedTime();
+            cred.setPersistedTime(persistedTime);
             return cred;
         } else {
             var msg = String.format(

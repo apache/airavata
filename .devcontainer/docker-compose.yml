@@ -121,6 +121,20 @@ services:
       retries: 5
       start_period: 10s
 
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    networks:
+      - airavata-network
+    ports:
+      - "8081:8080"
+
   # ===========================================
   # TEST PROFILE SERVICES
   # ===========================================

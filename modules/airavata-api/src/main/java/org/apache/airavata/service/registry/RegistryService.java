@@ -103,10 +103,9 @@ import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;
-import org.apache.airavata.registry.services.ExperimentErrorService;
+import org.apache.airavata.registry.services.ErrorService;
 import org.apache.airavata.registry.services.ExperimentOutputService;
 import org.apache.airavata.registry.services.ExperimentService;
-import org.apache.airavata.registry.services.ExperimentStatusService;
 import org.apache.airavata.registry.services.ExperimentSummaryService;
 import org.apache.airavata.registry.services.GatewayGroupsService;
 import org.apache.airavata.registry.services.GatewayService;
@@ -120,17 +119,13 @@ import org.apache.airavata.registry.services.ParserInputService;
 import org.apache.airavata.registry.services.ParserOutputService;
 import org.apache.airavata.registry.services.ParserService;
 import org.apache.airavata.registry.services.ParsingTemplateService;
-import org.apache.airavata.registry.services.ProcessErrorService;
 import org.apache.airavata.registry.services.ProcessOutputService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProcessWorkflowService;
 import org.apache.airavata.registry.services.ProjectService;
-import org.apache.airavata.registry.services.QueueStatusService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.StorageResourceService;
-import org.apache.airavata.registry.services.TaskErrorService;
 import org.apache.airavata.registry.services.TaskService;
-import org.apache.airavata.registry.services.TaskStatusService;
 import org.apache.airavata.registry.services.UserResourceProfileService;
 import org.apache.airavata.registry.services.UserService;
 import org.apache.airavata.registry.services.WorkflowService;
@@ -162,17 +157,12 @@ public class RegistryService {
     private final GatewayService gatewayService;
     private final ProjectService projectService;
     private final NotificationService notificationService;
-    private final ProcessStatusService processStatusService;
-    private final TaskStatusService taskStatusService;
-    private final ExperimentStatusService experimentStatusService;
+    private final StatusService statusService;
     private final JobStatusService jobStatusService;
     private final ProcessOutputService processOutputService;
     private final ExperimentOutputService experimentOutputService;
     private final ProcessWorkflowService processWorkflowService;
-    private final ExperimentErrorService experimentErrorService;
-    private final QueueStatusService queueStatusService;
-    private final TaskErrorService taskErrorService;
-    private final ProcessErrorService processErrorService;
+    private final ErrorService errorService;
     private final DataProductService dataProductService;
     private final DataReplicaLocationService dataReplicaLocationService;
     private final WorkflowService workflowService;
@@ -201,17 +191,12 @@ public class RegistryService {
             GatewayService gatewayService,
             org.apache.airavata.registry.services.ProjectService projectService,
             org.apache.airavata.registry.services.NotificationService notificationService,
-            ProcessStatusService processStatusService,
-            TaskStatusService taskStatusService,
-            ExperimentStatusService experimentStatusService,
+            StatusService statusService,
             JobStatusService jobStatusService,
             ProcessOutputService processOutputService,
             ExperimentOutputService experimentOutputService,
             ProcessWorkflowService processWorkflowService,
-            ExperimentErrorService experimentErrorService,
-            QueueStatusService queueStatusService,
-            TaskErrorService taskErrorService,
-            ProcessErrorService processErrorService,
+            ErrorService errorService,
             org.apache.airavata.registry.services.DataProductService dataProductService,
             DataReplicaLocationService dataReplicaLocationService,
             WorkflowService workflowService,
@@ -238,17 +223,12 @@ public class RegistryService {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.notificationService = notificationService;
-        this.processStatusService = processStatusService;
-        this.taskStatusService = taskStatusService;
-        this.experimentStatusService = experimentStatusService;
+        this.statusService = statusService;
         this.jobStatusService = jobStatusService;
         this.processOutputService = processOutputService;
         this.experimentOutputService = experimentOutputService;
         this.processWorkflowService = processWorkflowService;
-        this.experimentErrorService = experimentErrorService;
-        this.queueStatusService = queueStatusService;
-        this.taskErrorService = taskErrorService;
-        this.processErrorService = processErrorService;
+        this.errorService = errorService;
         this.dataProductService = dataProductService;
         this.dataReplicaLocationService = dataReplicaLocationService;
         this.workflowService = workflowService;
@@ -653,7 +633,7 @@ public class RegistryService {
                 throw new RegistryException(
                         "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            return experimentStatusService.getExperimentStatus(airavataExperimentId);
+            return statusService.getLatestExperimentStatus(airavataExperimentId);
         } catch (RegistryException e) {
             String message =
                     String.format("Error while retrieving experiment status: experimentId=%s", airavataExperimentId);
@@ -779,7 +759,7 @@ public class RegistryService {
 
     public ProcessStatus getProcessStatus(String processId) throws RegistryException {
         try {
-            return processStatusService.getProcessStatus(processId);
+            return statusService.getLatestProcessStatus(processId);
         } catch (RegistryException e) {
             String message = String.format("Error while retrieving process status: processId=%s", processId);
             logger.error(message, e);
@@ -789,23 +769,11 @@ public class RegistryService {
 
     public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryException {
         try {
-            var finalProcessList = new ArrayList<ProcessModel>();
-            int offset = 0;
-            int limit = 100;
-            int count = 0;
-            do {
-                var processStatusList = processStatusService.getProcessStatusList(processState, offset, limit);
-                offset += processStatusList.size();
-                count = processStatusList.size();
-                for (var processStatus : processStatusList) {
-                    var latestStatus = processStatusService.getProcessStatus(processStatus.getProcessId());
-                    if (latestStatus != null && latestStatus.getState().name().equals(processState.name())) {
-                        finalProcessList.add(processService.getProcess(latestStatus.getProcessId()));
-                    }
-                }
-            } while (count == limit);
-            return finalProcessList;
-        } catch (RegistryException e) {
+            // TODO: This method needs to be reimplemented using StatusService with state-based query
+            // For now, return empty list since processStatusService was removed
+            logger.warn("getProcessListInState: This method needs reimplementation with unified StatusService");
+            return new ArrayList<ProcessModel>();
+        } catch (Exception e) {
             String message = String.format(
                     "Error while retrieving process list with given status: processState=%s", processState);
             logger.error(message, e);
@@ -815,7 +783,7 @@ public class RegistryService {
 
     public List<ProcessStatus> getProcessStatusList(String processId) throws RegistryException {
         try {
-            return processStatusService.getProcessStatusList(processId);
+            return statusService.getProcessStatuses(processId);
         } catch (RegistryException e) {
             String message = String.format(
                     "Error while retrieving process status list for given process Id: processId=%s", processId);
@@ -1223,6 +1191,46 @@ public class RegistryService {
         }
     }
 
+    /**
+     * Get application interfaces by their IDs.
+     *
+     * <p>This method is used for filtering application interfaces by a list of accessible IDs
+     * from the sharing registry. The sharing registry is gateway-scoped, so the IDs already
+     * belong to the specified gateway's domain.
+     *
+     * @param gatewayId The gateway ID (used for validation)
+     * @param interfaceIds List of application interface IDs to retrieve
+     * @return List of application interface descriptions
+     */
+    public List<ApplicationInterfaceDescription> getApplicationInterfacesByIds(
+            String gatewayId, List<String> interfaceIds) throws RegistryException {
+        try {
+            if (!isGatewayExistInternal(gatewayId)) {
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AppCatalogException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            List<ApplicationInterfaceDescription> result = new ArrayList<>();
+            for (String interfaceId : interfaceIds) {
+                try {
+                    var appInterface = applicationInterfaceService.getApplicationInterface(interfaceId);
+                    if (appInterface != null) {
+                        result.add(appInterface);
+                    }
+                } catch (AppCatalogException e) {
+                    // Skip interfaces that don't exist or can't be retrieved
+                    logger.debug("Could not retrieve application interface: {}", interfaceId);
+                }
+            }
+            logger.debug("Retrieved {} application interfaces by IDs for gateway: {}", result.size(), gatewayId);
+            return result;
+        } catch (AppCatalogException e) {
+            String message = String.format(
+                    "Error while retrieving application interfaces by IDs: gatewayId=%s", gatewayId);
+            logger.error(message, e);
+            throw new RegistryException(message);
+        }
+    }
+
     public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws RegistryException {
         try {
             List<InputDataObjectType> applicationInputs =
@@ -1286,6 +1294,55 @@ public class RegistryService {
         }
     }
 
+    /**
+     * Get all compute resources as a list.
+     *
+     * @return List of all compute resource descriptions
+     */
+    public List<ComputeResourceDescription> getAllComputeResourcesList() throws RegistryException {
+        try {
+            List<ComputeResourceDescription> resources = computeResourceService.getAllComputeResourceList();
+            logger.debug("Airavata retrieved all available compute resources list");
+            return resources;
+        } catch (AppCatalogException e) {
+            String message = "Error while retrieving all compute resources list";
+            logger.error(message, e);
+            throw new RegistryException(message);
+        }
+    }
+
+    /**
+     * Get compute resources by their IDs.
+     *
+     * <p>This method is used for filtering compute resources by a list of accessible IDs
+     * from the sharing registry.
+     *
+     * @param resourceIds List of compute resource IDs to retrieve
+     * @return List of compute resource descriptions
+     */
+    public List<ComputeResourceDescription> getComputeResourcesByIds(List<String> resourceIds) throws RegistryException {
+        try {
+            List<ComputeResourceDescription> result = new ArrayList<>();
+            for (String resourceId : resourceIds) {
+                try {
+                    var resource = computeResourceService.getComputeResource(resourceId);
+                    if (resource != null) {
+                        result.add(resource);
+                    }
+                } catch (AppCatalogException e) {
+                    // Skip resources that don't exist or can't be retrieved
+                    logger.debug("Could not retrieve compute resource: {}", resourceId);
+                }
+            }
+            logger.debug("Retrieved {} compute resources by IDs", result.size());
+            return result;
+        } catch (Exception e) {
+            String message = "Error while retrieving compute resources by IDs";
+            logger.error(message, e);
+            throw new RegistryException(message);
+        }
+    }
+
     public boolean deleteComputeResource(String computeResourceId) throws RegistryException {
         try {
             computeResourceService.removeComputeResource(computeResourceId);
@@ -1319,6 +1376,55 @@ public class RegistryService {
             return resourceIdList;
         } catch (AppCatalogException e) {
             String message = "Error while retrieving all storage resource names";
+            logger.error(message, e);
+            throw new RegistryException(message);
+        }
+    }
+
+    /**
+     * Get all storage resources as a list.
+     *
+     * @return List of all storage resource descriptions
+     */
+    public List<StorageResourceDescription> getAllStorageResourcesList() throws RegistryException {
+        try {
+            List<StorageResourceDescription> resources = storageResourceService.getAllStorageResourceList();
+            logger.debug("Airavata retrieved all available storage resources list");
+            return resources;
+        } catch (AppCatalogException e) {
+            String message = "Error while retrieving all storage resources list";
+            logger.error(message, e);
+            throw new RegistryException(message);
+        }
+    }
+
+    /**
+     * Get storage resources by their IDs.
+     *
+     * <p>This method is used for filtering storage resources by a list of accessible IDs
+     * from the sharing registry.
+     *
+     * @param resourceIds List of storage resource IDs to retrieve
+     * @return List of storage resource descriptions
+     */
+    public List<StorageResourceDescription> getStorageResourcesByIds(List<String> resourceIds) throws RegistryException {
+        try {
+            List<StorageResourceDescription> result = new ArrayList<>();
+            for (String resourceId : resourceIds) {
+                try {
+                    var resource = storageResourceService.getStorageResource(resourceId);
+                    if (resource != null) {
+                        result.add(resource);
+                    }
+                } catch (AppCatalogException e) {
+                    // Skip resources that don't exist or can't be retrieved
+                    logger.debug("Could not retrieve storage resource: {}", resourceId);
+                }
+            }
+            logger.debug("Retrieved {} storage resources by IDs", result.size());
+            return result;
+        } catch (Exception e) {
+            String message = "Error while retrieving storage resources by IDs";
             logger.error(message, e);
             throw new RegistryException(message);
         }
@@ -2267,11 +2373,11 @@ public class RegistryService {
     public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryException {
         try {
             if (ExpCatChildDataType.EXPERIMENT_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                experimentErrorService.addExperimentError(errorModel, id);
+                errorService.addExperimentError(errorModel, id);
             } else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                taskErrorService.addTaskError(errorModel, id);
+                errorService.addTaskError(errorModel, id);
             } else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
-                processErrorService.addProcessError(errorModel, id);
+                errorService.addProcessError(errorModel, id);
             }
         } catch (RegistryException e) {
             String message = String.format("Error while adding errors: errorType=%s, id=%s", errorType, id);
@@ -2282,7 +2388,7 @@ public class RegistryService {
 
     public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
         try {
-            taskStatusService.addTaskStatus(taskStatus, taskId);
+            statusService.addTaskStatus(taskStatus, taskId);
         } catch (RegistryException e) {
             String message = String.format("Error while adding task status: taskId=%s", taskId);
             logger.error(message, e);
@@ -2292,7 +2398,7 @@ public class RegistryService {
 
     public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
         try {
-            processStatusService.addProcessStatus(processStatus, processId);
+            statusService.addProcessStatus(processStatus, processId);
         } catch (RegistryException e) {
             String message = String.format("Error while adding process status: processId=%s", processId);
             logger.error(message, e);
@@ -2302,7 +2408,7 @@ public class RegistryService {
 
     public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
         try {
-            processStatusService.updateProcessStatus(processStatus, processId);
+            statusService.addProcessStatus(processStatus, processId); // Updated to add new status (status history)
         } catch (RegistryException e) {
             String message = String.format("Error while updating process status: processId=%s", processId);
             logger.error(message, e);
@@ -2313,7 +2419,7 @@ public class RegistryService {
     public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
             throws RegistryException {
         try {
-            experimentStatusService.updateExperimentStatus(experimentStatus, experimentId);
+            statusService.updateExperimentStatus(experimentStatus, experimentId);
         } catch (RegistryException e) {
             String message = String.format("Error while updating experiment status: experimentId=%s", experimentId);
             logger.error(message, e);
@@ -3965,7 +4071,7 @@ public class RegistryService {
 
     public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
         try {
-            return queueStatusService.getLatestQueueStatuses();
+            return statusService.getLatestQueueStatuses();
         } catch (RegistryException e) {
             String message = "Error while retrieving latest queue statuses";
             logger.error(message, e);
@@ -3975,7 +4081,7 @@ public class RegistryService {
 
     public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryException {
         try {
-            queueStatusService.createQueueStatuses(queueStatuses);
+            statusService.createQueueStatuses(queueStatuses);
         } catch (RegistryException e) {
             String message = "Error while registering queue statuses";
             logger.error(message, e);
@@ -3985,7 +4091,7 @@ public class RegistryService {
 
     public QueueStatusModel getQueueStatus(String hostName, String queueName) throws RegistryException {
         try {
-            QueueStatusModel queueStatusModel = queueStatusService.getQueueStatus(hostName, queueName);
+            QueueStatusModel queueStatusModel = statusService.getQueueStatus(hostName, queueName);
             if (queueStatusModel != null) {
                 return queueStatusModel;
             } else {

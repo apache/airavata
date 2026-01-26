@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
+            org.apache.airavata.config.TestDaprConfig.class,
             ServiceIntegrationTestBase.TestConfiguration.class
         },
         properties = {
@@ -137,6 +138,7 @@ public abstract class ServiceIntegrationTestBase {
                 "org.apache.airavata.credential.services",
                 "org.apache.airavata.credential.utils",
                 "org.apache.airavata.messaging",
+                "org.apache.airavata.orchestrator.internal.messaging",
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.security"
             })

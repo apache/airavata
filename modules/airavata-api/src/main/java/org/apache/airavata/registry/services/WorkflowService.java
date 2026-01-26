@@ -40,23 +40,16 @@ import org.apache.airavata.common.model.WorkflowExecutionState;
 import org.apache.airavata.common.model.WorkflowHandler;
 import org.apache.airavata.common.model.WorkflowStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowErrorEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.AiravataWorkflowStatusEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.ApplicationErrorEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.ApplicationStatusEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerErrorEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerInputEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerOutputEntity;
-import org.apache.airavata.registry.entities.airavataworkflowcatalog.HandlerStatusEntity;
+import org.apache.airavata.registry.entities.ErrorEntity;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowApplicationEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowConnectionEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowDataBlockEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowHandlerEntity;
 import org.apache.airavata.registry.exception.WorkflowCatalogException;
 import org.apache.airavata.registry.mappers.AiravataWorkflowMapper;
-import org.apache.airavata.registry.mappers.ErrorModelMapper;
-import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
-import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.workflowcatalog.WorkflowRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,21 +59,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkflowService {
     private final WorkflowRepository workflowRepository;
     private final AiravataWorkflowMapper airavataWorkflowMapper;
-    private final ErrorModelMapper errorModelMapper;
-    private final InputDataObjectTypeMapper inputDataObjectTypeMapper;
-    private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public WorkflowService(
             WorkflowRepository workflowRepository,
-            AiravataWorkflowMapper airavataWorkflowMapper,
-            ErrorModelMapper errorModelMapper,
-            InputDataObjectTypeMapper inputDataObjectTypeMapper,
-            OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
+            AiravataWorkflowMapper airavataWorkflowMapper) {
         this.workflowRepository = workflowRepository;
         this.airavataWorkflowMapper = airavataWorkflowMapper;
-        this.errorModelMapper = errorModelMapper;
-        this.inputDataObjectTypeMapper = inputDataObjectTypeMapper;
-        this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     public void registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException {
@@ -177,7 +161,7 @@ public class WorkflowService {
         }
         if (entity.getErrors() != null) {
             workflow.setErrors(
-                    entity.getErrors().stream().map(this::convertWorkflowError).toList());
+                    entity.getErrors().stream().map(this::convertError).toList());
         }
         return workflow;
     }
@@ -278,24 +262,28 @@ public class WorkflowService {
         }
         if (entity.getErrors() != null) {
             model.setErrors(entity.getErrors().stream()
-                    .map(this::convertApplicationError)
+                    .map(this::convertError)
                     .toList());
         }
         return model;
     }
 
-    private ApplicationStatus convertApplicationStatus(ApplicationStatusEntity entity) {
+    private ApplicationStatus convertApplicationStatus(StatusEntity entity) {
         var model = new ApplicationStatus();
-        model.setId(entity.getId());
+        model.setId(entity.getStatusId());
         if (entity.getState() != null) {
-            model.setState(ApplicationState.valueOf(entity.getState().name()));
+            try {
+                model.setState(ApplicationState.valueOf(entity.getState()));
+            } catch (IllegalArgumentException e) {
+                // If the state string doesn't match enum, leave it null
+            }
         }
-        model.setDescription(entity.getDescription());
-        model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
+        model.setDescription(entity.getReason());
+        model.setUpdatedAt(entity.getTimeOfStateChange() != null ? entity.getTimeOfStateChange().getTime() : 0L);
         return model;
     }
 
-    private ErrorModel convertApplicationError(ApplicationErrorEntity entity) {
+    private ErrorModel convertError(ErrorEntity entity) {
         var model = new ErrorModel();
         model.setErrorId(entity.getErrorId());
         model.setCreationTime(
@@ -320,11 +308,11 @@ public class WorkflowService {
         model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
         if (entity.getInputs() != null) {
             model.setInputs(
-                    entity.getInputs().stream().map(this::convertHandlerInput).toList());
+                    entity.getInputs().stream().map(this::convertInputData).toList());
         }
         if (entity.getOutputs() != null) {
             model.setOutputs(
-                    entity.getOutputs().stream().map(this::convertHandlerOutput).toList());
+                    entity.getOutputs().stream().map(this::convertOutputData).toList());
         }
         if (entity.getStatuses() != null) {
             model.setStatuses(entity.getStatuses().stream()
@@ -333,14 +321,14 @@ public class WorkflowService {
         }
         if (entity.getErrors() != null) {
             model.setErrors(
-                    entity.getErrors().stream().map(this::convertHandlerError).toList());
+                    entity.getErrors().stream().map(this::convertError).toList());
         }
         return model;
     }
 
-    private HandlerStatus convertHandlerStatus(HandlerStatusEntity entity) {
+    private HandlerStatus convertHandlerStatus(StatusEntity entity) {
         var model = new HandlerStatus();
-        model.setId(entity.getId());
+        model.setId(entity.getStatusId());
         if (entity.getState() != null) {
             try {
                 model.setState(HandlerState.valueOf(entity.getState()));
@@ -348,40 +336,27 @@ public class WorkflowService {
                 // If the state string doesn't match enum, leave it null
             }
         }
-        model.setDescription(entity.getDescription());
-        model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
+        model.setDescription(entity.getReason());
+        model.setUpdatedAt(entity.getTimeOfStateChange() != null ? entity.getTimeOfStateChange().getTime() : 0L);
         return model;
     }
 
-    private ErrorModel convertHandlerError(HandlerErrorEntity entity) {
-        var model = new ErrorModel();
-        model.setErrorId(entity.getErrorId());
-        model.setCreationTime(
-                entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L);
-        model.setActualErrorMessage(entity.getActualErrorMessage());
-        model.setUserFriendlyMessage(entity.getUserFriendlyMessage());
-        model.setTransientOrPersistent(entity.isTransientOrPersistent());
-        model.setRootCauseErrorIdList(
-                entity.getRootCauseErrorIdList() != null
-                        ? Arrays.asList(entity.getRootCauseErrorIdList().split(","))
-                        : null);
-        return model;
-    }
 
-    private WorkflowStatus convertWorkflowStatus(AiravataWorkflowStatusEntity entity) {
+    private WorkflowStatus convertWorkflowStatus(StatusEntity entity) {
         var model = new WorkflowStatus();
-        model.setId(entity.getId());
+        model.setId(entity.getStatusId());
         if (entity.getState() != null) {
-            // Convert WorkflowRuntimeState to WorkflowExecutionState
+            // Convert state string to WorkflowExecutionState
             try {
-                var stateName = entity.getState().name();
-                // Map WorkflowRuntimeState to WorkflowExecutionState
+                var stateName = entity.getState();
+                // Map state name to WorkflowExecutionState
                 WorkflowExecutionState executionState = null;
                 switch (stateName) {
                     case "CREATED":
                         executionState = WorkflowExecutionState.CREATED;
                         break;
                     case "STARTED":
+                    case "LAUNCHED":
                         executionState = WorkflowExecutionState.LAUNCHED;
                         break;
                     case "EXECUTING":
@@ -394,36 +369,29 @@ public class WorkflowService {
                         executionState = WorkflowExecutionState.FAILED;
                         break;
                     case "CANCELLING":
+                    case "CANCELING":
                         executionState = WorkflowExecutionState.CANCELING;
                         break;
                     case "CANCELED":
                         executionState = WorkflowExecutionState.CANCELED;
                         break;
+                    default:
+                        try {
+                            executionState = WorkflowExecutionState.valueOf(stateName);
+                        } catch (IllegalArgumentException e) {
+                            // If no match, leave as null
+                        }
                 }
                 model.setState(executionState);
             } catch (Exception e) {
                 // If conversion fails, leave state as null
             }
         }
-        model.setDescription(entity.getDescription());
-        model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
+        model.setDescription(entity.getReason());
+        model.setUpdatedAt(entity.getTimeOfStateChange() != null ? entity.getTimeOfStateChange().getTime() : 0L);
         return model;
     }
 
-    private ErrorModel convertWorkflowError(AiravataWorkflowErrorEntity entity) {
-        var model = new ErrorModel();
-        model.setErrorId(entity.getErrorId());
-        model.setCreationTime(
-                entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L);
-        model.setActualErrorMessage(entity.getActualErrorMessage());
-        model.setUserFriendlyMessage(entity.getUserFriendlyMessage());
-        model.setTransientOrPersistent(entity.isTransientOrPersistent());
-        model.setRootCauseErrorIdList(
-                entity.getRootCauseErrorIdList() != null
-                        ? Arrays.asList(entity.getRootCauseErrorIdList().split(","))
-                        : null);
-        return model;
-    }
 
     private WorkflowConnection convertConnection(WorkflowConnectionEntity entity) {
         var model = new WorkflowConnection();
@@ -462,7 +430,7 @@ public class WorkflowService {
         return model;
     }
 
-    private InputDataObjectType convertHandlerInput(HandlerInputEntity entity) {
+    private InputDataObjectType convertInputData(InputDataEntity entity) {
         var model = new InputDataObjectType();
         model.setName(entity.getName());
         model.setValue(entity.getValue());
@@ -482,7 +450,7 @@ public class WorkflowService {
         return model;
     }
 
-    private OutputDataObjectType convertHandlerOutput(HandlerOutputEntity entity) {
+    private OutputDataObjectType convertOutputData(OutputDataEntity entity) {
         var model = new OutputDataObjectType();
         model.setName(entity.getName());
         model.setValue(entity.getValue());

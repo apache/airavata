@@ -29,7 +29,6 @@ import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.common.model.DataProductType;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.common.model.ReplicaPersistentType;
-import org.apache.airavata.registry.entities.replicacatalog.DataReplicaMetadataEntity;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
@@ -37,6 +36,14 @@ import org.apache.airavata.registry.services.DataReplicaLocationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Test class for DataReplicaLocationRepository functionality.
+ *
+ * <p>Note: Metadata for data replicas is stored in the unified MetadataEntity table
+ * with parentType = MetadataParentType.DATA_REPLICA. The DataReplicaLocationService handles
+ * metadata persistence and retrieval through MetadataRepository.
+ */
 
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -74,22 +81,10 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
         testDataReplicaLocationModel2.setProductUri(productUri);
         String replicaId2 = dataReplicaLocationService.registerReplicaLocation(testDataReplicaLocationModel2);
 
-        DataReplicaMetadataEntity dataReplicaMetadataEntity1 = new DataReplicaMetadataEntity();
-        dataReplicaMetadataEntity1.setReplicaId(replicaId1);
-        dataReplicaMetadataEntity1.setMetadataKey("dataKey1");
-        dataReplicaMetadataEntity1.setMetadataValue("dataValue1");
-
-        DataReplicaMetadataEntity dataReplicaMetadataEntity2 = new DataReplicaMetadataEntity();
-        dataReplicaMetadataEntity2.setReplicaId(replicaId1);
-        dataReplicaMetadataEntity2.setMetadataKey("dataKey2");
-        dataReplicaMetadataEntity2.setMetadataValue("dataValue2");
-
-        Map<String, String> dataReplicaMetadataEntityMap = new HashMap<>();
-        dataReplicaMetadataEntityMap.put(
-                dataReplicaMetadataEntity1.getMetadataKey(), dataReplicaMetadataEntity1.getMetadataValue());
-        dataReplicaMetadataEntityMap.put(
-                dataReplicaMetadataEntity2.getMetadataKey(), dataReplicaMetadataEntity2.getMetadataValue());
-        testDataReplicaLocationModel1.setReplicaMetadata(dataReplicaMetadataEntityMap);
+        Map<String, String> replicaMetadata = new HashMap<>();
+        replicaMetadata.put("dataKey1", "dataValue1");
+        replicaMetadata.put("dataKey2", "dataValue2");
+        testDataReplicaLocationModel1.setReplicaMetadata(replicaMetadata);
         testDataReplicaLocationModel1.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
         assertTrue(dataReplicaLocationService.updateReplicaLocation(testDataReplicaLocationModel1));
 

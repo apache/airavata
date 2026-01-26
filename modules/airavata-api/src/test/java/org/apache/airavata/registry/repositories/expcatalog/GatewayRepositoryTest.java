@@ -21,6 +21,7 @@ package org.apache.airavata.registry.repositories.expcatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -28,15 +29,16 @@ import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.registry.repositories.GatewayRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.GatewayService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
 
 /**
- * Integration tests for {@link GatewayRepository} and {@link GatewayService}.
+ * Integration tests for the unified {@link GatewayRepository} and {@link GatewayService}.
  *
- * <p>Tests CRUD operations on Gateway entities using a real database
+ * <p>Tests CRUD operations on the unified Gateway entity using a real database
  * (Testcontainers MariaDB).
  */
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -60,34 +62,50 @@ public class GatewayRepositoryTest extends TestBase {
         gateway.setDomain("TEST_DOMAIN");
         gateway.setEmailAddress("test@example.com");
         gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
-        gateway.setOauthClientId("test-client");
-        gateway.setOauthClientSecret("test-secret");
 
-        // Test create
-        String gatewayId = gatewayService.addGateway(gateway);
-        assertEquals(testGatewayId, gatewayId);
-        assertTrue(gatewayService.isGatewayExist(gatewayId));
+        // Test create - addGateway returns gatewayId for backward compatibility
+        String returnedGatewayId = gatewayService.addGateway(gateway);
+        assertNotNull(returnedGatewayId);
+        assertEquals(testGatewayId, returnedGatewayId);
+        assertTrue(gatewayService.isGatewayExist(testGatewayId));
 
-        // Test read
-        Gateway retrieved = gatewayService.getGateway(gatewayId);
+        // Test read by gatewayId
+        Gateway retrieved = gatewayService.getGateway(testGatewayId);
+        assertNotNull(retrieved);
         assertEquals(gateway.getDomain(), retrieved.getDomain());
         assertEquals(gateway.getEmailAddress(), retrieved.getEmailAddress());
         assertEquals(GatewayApprovalStatus.APPROVED, retrieved.getGatewayApprovalStatus());
 
+        // Get the internal ID from the retrieved gateway
+        String airavataInternalGatewayId = retrieved.getAiravataInternalGatewayId();
+        assertNotNull(airavataInternalGatewayId);
+
+        // Test read by airavataInternalGatewayId
+        Gateway retrievedByInternalId = gatewayService.getGatewayByInternalId(airavataInternalGatewayId);
+        assertNotNull(retrievedByInternalId);
+        assertEquals(testGatewayId, retrievedByInternalId.getGatewayId());
+
         // Test update
         gateway.setGatewayAdminFirstName("Admin");
+        gateway.setAiravataInternalGatewayId(airavataInternalGatewayId);
         gatewayService.updateGateway(testGatewayId, gateway);
 
-        Gateway updated = gatewayService.getGateway(gatewayId);
+        Gateway updated = gatewayService.getGateway(testGatewayId);
         assertEquals("Admin", updated.getGatewayAdminFirstName());
 
         // Test list
         List<Gateway> allGateways = gatewayService.getAllGateways();
         assertTrue(allGateways.size() >= 1);
 
+        // Test getGatewaysForUser
+        gateway.setRequesterUsername("testuser");
+        gatewayService.updateGateway(testGatewayId, gateway);
+        List<Gateway> userGateways = gatewayService.getGatewaysForUser("testuser");
+        assertTrue(userGateways.size() >= 1);
+
         // Test delete
-        gatewayService.removeGateway(gatewayId);
-        assertFalse(gatewayService.isGatewayExist(gatewayId));
+        gatewayService.removeGateway(testGatewayId);
+        assertFalse(gatewayService.isGatewayExist(testGatewayId));
     }
 
     @Test

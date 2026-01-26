@@ -21,8 +21,10 @@ package org.apache.airavata.registry.entities.expcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -34,6 +36,7 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.registry.entities.StatusEntity;
 
 /**
  * The persistent class for the job database table.
@@ -82,13 +85,17 @@ public class JobEntity implements Serializable {
     @Column(name = "EXIT_CODE")
     private int exitCode;
 
-    @OneToMany(
-            targetEntity = JobStatusEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "job",
-            fetch = FetchType.EAGER)
-    @OrderBy("timeOfStateChange ASC")
-    private List<JobStatusEntity> jobStatuses;
+    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "JOB_ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.Where(clause = "PARENT_TYPE = 'JOB'")
+    @OrderBy("sequenceNum ASC")
+    private List<StatusEntity> jobStatuses;
 
     // Note: No cascade - this is a read-only relationship (insertable=false, updatable=false)
     @ManyToOne(targetEntity = TaskEntity.class, fetch = FetchType.LAZY)
@@ -190,11 +197,11 @@ public class JobEntity implements Serializable {
         this.exitCode = exitCode;
     }
 
-    public List<JobStatusEntity> getJobStatuses() {
+    public List<StatusEntity> getJobStatuses() {
         return jobStatuses;
     }
 
-    public void setJobStatuses(List<JobStatusEntity> jobStatuses) {
+    public void setJobStatuses(List<StatusEntity> jobStatuses) {
         this.jobStatuses = jobStatuses;
     }
 

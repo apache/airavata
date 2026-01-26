@@ -21,10 +21,12 @@ package org.apache.airavata.registry.entities.expcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
@@ -36,6 +38,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.common.model.TaskTypes;
+import org.apache.airavata.registry.entities.StatusEntity;
+import org.apache.airavata.registry.entities.ErrorEntity;
 
 /**
  * The persistent class for the task database table.
@@ -73,20 +77,24 @@ public class TaskEntity implements Serializable {
     @Column(name = "SUB_TASK_MODEL")
     private byte[] subTaskModel;
 
-    @OneToMany(
-            targetEntity = TaskStatusEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "task",
-            fetch = FetchType.EAGER)
-    @OrderBy("timeOfStateChange ASC")
-    private List<TaskStatusEntity> taskStatuses;
+    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "TASK_ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'TASK'")
+    @OrderBy("sequenceNum ASC")
+    private List<StatusEntity> taskStatuses;
 
-    @OneToMany(
-            targetEntity = TaskErrorEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "task",
-            fetch = FetchType.EAGER)
-    private List<TaskErrorEntity> taskErrors;
+    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(name = "PARENT_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'TASK'")
+    private List<ErrorEntity> taskErrors;
 
     @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL, mappedBy = "task", fetch = FetchType.EAGER)
     private List<JobEntity> jobs;
@@ -153,19 +161,19 @@ public class TaskEntity implements Serializable {
         this.subTaskModel = subTaskModel;
     }
 
-    public List<TaskStatusEntity> getTaskStatuses() {
+    public List<StatusEntity> getTaskStatuses() {
         return taskStatuses;
     }
 
-    public void setTaskStatuses(List<TaskStatusEntity> taskStatuses) {
+    public void setTaskStatuses(List<StatusEntity> taskStatuses) {
         this.taskStatuses = taskStatuses;
     }
 
-    public List<TaskErrorEntity> getTaskErrors() {
+    public List<ErrorEntity> getTaskErrors() {
         return taskErrors;
     }
 
-    public void setTaskErrors(List<TaskErrorEntity> taskErrors) {
+    public void setTaskErrors(List<ErrorEntity> taskErrors) {
         this.taskErrors = taskErrors;
     }
 

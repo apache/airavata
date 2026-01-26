@@ -337,8 +337,112 @@ public class TestcontainersConfig {
                     .withReuse(true);
             keycloakContainer.start();
             logger.info("Keycloak container started at: {}", keycloakContainer.getAuthServerUrl());
+
+            // Enable direct access grants on admin-cli client in master realm
+            // This is required for password-based authentication in Keycloak 25+
+            // where admin-cli no longer has directAccessGrantsEnabled by default
+            enableAdminCliDirectAccessGrants();
         }
         return keycloakContainer.getAuthServerUrl();
+    }
+
+    /**
+     * Enable direct access grants on the admin-cli client in the master realm.
+     * This is required for password-based authentication in Keycloak 25+ where
+     * the admin-cli client no longer has directAccessGrantsEnabled by default.
+     *
+     * <p>This method uses the Keycloak admin CLI (kcadm.sh) to update the admin-cli
+     * client configuration.
+     */
+    private static void enableAdminCliDirectAccessGrants() {
+        if (keycloakContainer == null || !keycloakContainer.isRunning()) {
+            logger.warn("Cannot enable admin-cli direct access grants: Keycloak container not running");
+            return;
+        }
+
+        try {
+            // First, authenticate with kcadm
+            var authResult = keycloakContainer.execInContainer(
+                    "/opt/keycloak/bin/kcadm.sh",
+                    "config",
+                    "credentials",
+                    "--server",
+                    "http://localhost:8080",
+                    "--realm",
+                    "master",
+                    "--user",
+                    "admin",
+                    "--password",
+                    "admin");
+
+            if (authResult.getExitCode() != 0) {
+                logger.warn(
+                        "Failed to authenticate with kcadm: {} {}",
+                        authResult.getStdout(),
+                        authResult.getStderr());
+                return;
+            }
+
+            // Get the client ID (internal UUID) of admin-cli
+            var getClientResult = keycloakContainer.execInContainer(
+                    "/opt/keycloak/bin/kcadm.sh",
+                    "get",
+                    "clients",
+                    "-r",
+                    "master",
+                    "-q",
+                    "clientId=admin-cli",
+                    "--fields",
+                    "id");
+
+            if (getClientResult.getExitCode() != 0) {
+                logger.warn(
+                        "Failed to get admin-cli client: {} {}",
+                        getClientResult.getStdout(),
+                        getClientResult.getStderr());
+                return;
+            }
+
+            // Parse the client ID from the JSON response
+            String clientOutput = getClientResult.getStdout();
+            // Response format: [ { "id" : "uuid-here" } ]
+            String clientUuid = null;
+            if (clientOutput.contains("\"id\"")) {
+                int startIdx = clientOutput.indexOf("\"id\"");
+                int colonIdx = clientOutput.indexOf(":", startIdx);
+                int quoteStart = clientOutput.indexOf("\"", colonIdx);
+                int quoteEnd = clientOutput.indexOf("\"", quoteStart + 1);
+                if (quoteStart > 0 && quoteEnd > quoteStart) {
+                    clientUuid = clientOutput.substring(quoteStart + 1, quoteEnd);
+                }
+            }
+
+            if (clientUuid == null || clientUuid.isEmpty()) {
+                logger.warn("Could not parse admin-cli client UUID from: {}", clientOutput);
+                return;
+            }
+
+            // Enable direct access grants on the admin-cli client
+            var updateResult = keycloakContainer.execInContainer(
+                    "/opt/keycloak/bin/kcadm.sh",
+                    "update",
+                    "clients/" + clientUuid,
+                    "-r",
+                    "master",
+                    "-s",
+                    "directAccessGrantsEnabled=true");
+
+            if (updateResult.getExitCode() == 0) {
+                logger.info("Successfully enabled direct access grants on admin-cli client");
+            } else {
+                logger.warn(
+                        "Failed to enable direct access grants: {} {}",
+                        updateResult.getStdout(),
+                        updateResult.getStderr());
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to enable admin-cli direct access grants: {}", e.getMessage());
+        }
     }
 
     /**
@@ -443,16 +547,27 @@ public class TestcontainersConfig {
 
     /**
      * Creates the EXPERIMENT_SUMMARY database view after Hibernate DDL runs.
+     * Also drops any auto-generated foreign key constraints on the unified STATUS and ERROR tables
+     * that Hibernate may have created due to @OneToMany relationships.
+     *
      * Hibernate's ddl-auto=create-drop creates a TABLE for ExperimentSummaryEntity,
-     * but it should be a VIEW that aggregates data from EXPERIMENT, EXPERIMENT_STATUS,
+     * but it should be a VIEW that aggregates data from EXPERIMENT, STATUS (filtered by PARENT_TYPE='EXPERIMENT'),
      * and USER_CONFIGURATION_DATA tables.
      */
     @Bean
     public org.springframework.boot.ApplicationRunner createExperimentSummaryView(DataSource dataSource) {
         return args -> {
-            logger.info("Creating EXPERIMENT_SUMMARY view for tests");
+            logger.info("Creating EXPERIMENT_SUMMARY view and cleaning up constraints for tests");
             try (java.sql.Connection conn = dataSource.getConnection();
                     java.sql.Statement stmt = conn.createStatement()) {
+                
+                // Drop any auto-generated foreign key constraints on STATUS table
+                // The STATUS table is unified and should not have FK constraints to specific parent tables
+                dropForeignKeyConstraints(stmt, "STATUS");
+                
+                // Drop any auto-generated foreign key constraints on ERROR table
+                dropForeignKeyConstraints(stmt, "ERROR");
+                
                 // Drop the table Hibernate created
                 stmt.execute("DROP TABLE IF EXISTS EXPERIMENT_SUMMARY");
                 // Drop the view if it exists (for reusable containers)
@@ -460,13 +575,16 @@ public class TestcontainersConfig {
                 stmt.execute("DROP VIEW IF EXISTS EXPERIMENT_SUMMARY");
 
                 // Create LATEST_EXPERIMENT_STATUS view first (EXPERIMENT_SUMMARY depends on it)
+                // Uses unified STATUS table with PARENT_TYPE = 'EXPERIMENT' filter
+                // Uses SEQUENCE_NUM for ordering (auto-increment guarantees creation order)
                 stmt.execute("CREATE VIEW LATEST_EXPERIMENT_STATUS AS "
-                        + "SELECT ES1.EXPERIMENT_ID AS EXPERIMENT_ID, ES1.STATE AS STATE, "
+                        + "SELECT ES1.PARENT_ID AS EXPERIMENT_ID, ES1.STATE AS STATE, "
                         + "ES1.TIME_OF_STATE_CHANGE AS TIME_OF_STATE_CHANGE "
-                        + "FROM EXPERIMENT_STATUS ES1 LEFT JOIN EXPERIMENT_STATUS ES2 "
-                        + "ON (ES1.EXPERIMENT_ID = ES2.EXPERIMENT_ID "
-                        + "AND ES1.TIME_OF_STATE_CHANGE < ES2.TIME_OF_STATE_CHANGE) "
-                        + "WHERE ES2.TIME_OF_STATE_CHANGE IS NULL");
+                        + "FROM STATUS ES1 LEFT JOIN STATUS ES2 "
+                        + "ON (ES1.PARENT_ID = ES2.PARENT_ID "
+                        + "AND ES1.PARENT_TYPE = ES2.PARENT_TYPE "
+                        + "AND ES1.SEQUENCE_NUM < ES2.SEQUENCE_NUM) "
+                        + "WHERE ES1.PARENT_TYPE = 'EXPERIMENT' AND ES2.SEQUENCE_NUM IS NULL");
 
                 // Create EXPERIMENT_SUMMARY view
                 stmt.execute("CREATE VIEW EXPERIMENT_SUMMARY AS "
@@ -487,5 +605,35 @@ public class TestcontainersConfig {
                 throw new RuntimeException("Failed to create EXPERIMENT_SUMMARY view", e);
             }
         };
+    }
+
+    /**
+     * Drops all foreign key constraints on the specified table.
+     * This is necessary because Hibernate auto-generates FK constraints for @OneToMany relationships,
+     * but the unified STATUS and ERROR tables use a discriminator pattern and should not have FK constraints.
+     */
+    private void dropForeignKeyConstraints(java.sql.Statement stmt, String tableName) {
+        try {
+            // Query to find all foreign key constraints on the table
+            java.sql.ResultSet rs = stmt.executeQuery(
+                    "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS " +
+                    "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" + tableName + "' " +
+                    "AND CONSTRAINT_TYPE = 'FOREIGN KEY'");
+            
+            java.util.List<String> constraintNames = new java.util.ArrayList<>();
+            while (rs.next()) {
+                constraintNames.add(rs.getString("CONSTRAINT_NAME"));
+            }
+            rs.close();
+            
+            // Drop each foreign key constraint
+            for (String constraintName : constraintNames) {
+                logger.info("Dropping foreign key constraint {} on table {}", constraintName, tableName);
+                stmt.execute("ALTER TABLE " + tableName + " DROP FOREIGN KEY " + constraintName);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to drop foreign key constraints on {}: {}", tableName, e.getMessage());
+            // Continue execution even if this fails - the table might not exist yet or have no FKs
+        }
     }
 }

@@ -20,16 +20,54 @@
 package org.apache.airavata.common.model;
 
 /**
- * Domain enum: SharingResourceType
+ * Enum defining entity types that can be shared via the Sharing Registry.
+ *
+ * <p>The sharing registry provides visibility control: determining which users/groups
+ * can see and access specific entities. Each entity type listed here can be registered
+ * as a shareable entity with ownership and permission grants.
+ *
+ * <h3>Visibility vs Access Model:</h3>
+ * <ul>
+ *   <li><b>Visibility</b> (Sharing Registry): Controls who can see an entity exists</li>
+ *   <li><b>Access</b> (RESOURCE_ACCESS table): Controls who can use a resource with which credential</li>
+ * </ul>
+ *
+ * <p>For compute/storage resources, both visibility AND access must be granted:
+ * <ol>
+ *   <li>User must have visibility (sharing registry permission) to see the resource</li>
+ *   <li>User must have access grant (RESOURCE_ACCESS) with a credential to use the resource</li>
+ * </ol>
  */
 public enum SharingResourceType {
+    /** Projects containing experiments */
     PROJECT(0),
+
+    /** Individual experiments */
     EXPERIMENT(1),
+
+    /** Data products and replicas */
     DATA(2),
+
+    /** Application deployments (specific deployments on compute resources) */
     APPLICATION_DEPLOYMENT(3),
+
+    /** Group resource profiles (shared credential/preference configurations) */
     GROUP_RESOURCE_PROFILE(4),
+
+    /** Credential tokens (SSH keys, certificates, etc.) */
     CREDENTIAL_TOKEN(5),
-    OTHER(6);
+
+    /** Generic/fallback type for other entities */
+    OTHER(6),
+
+    /** Application interfaces (application definitions with inputs/outputs) */
+    APPLICATION_INTERFACE(7),
+
+    /** Compute resources (HPC clusters, cloud instances, etc.) */
+    COMPUTE_RESOURCE(8),
+
+    /** Storage resources (file systems, object stores, etc.) */
+    STORAGE_RESOURCE(9);
 
     private final int value;
 
@@ -57,6 +95,12 @@ public enum SharingResourceType {
                 return CREDENTIAL_TOKEN;
             case 6:
                 return OTHER;
+            case 7:
+                return APPLICATION_INTERFACE;
+            case 8:
+                return COMPUTE_RESOURCE;
+            case 9:
+                return STORAGE_RESOURCE;
             default:
                 return null;
         }

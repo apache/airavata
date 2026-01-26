@@ -48,12 +48,10 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
-import org.apache.airavata.registry.services.JobStatusService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
-import org.apache.airavata.registry.services.TaskStatusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,11 +105,9 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
     private final TaskService taskService;
-    private final TaskStatusService taskStatusService;
     private final JobService jobService;
-    private final JobStatusService jobStatusService;
 
     private String testProcessId;
     private String testExperimentId;
@@ -121,20 +117,16 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService,
+            StatusService statusService,
             TaskService taskService,
-            TaskStatusService taskStatusService,
-            JobService jobService,
-            JobStatusService jobStatusService) {
+            JobService jobService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
         this.taskService = taskService;
-        this.taskStatusService = taskStatusService;
         this.jobService = jobService;
-        this.jobStatusService = jobStatusService;
     }
 
     @BeforeEach
@@ -166,12 +158,12 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         // Verify all expected tasks execute and state transitions occur correctly
 
         // 1. Initial state: CREATED
-        ProcessStatus created = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus created = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.CREATED, created.getState(), "Process should start in CREATED state");
 
         // 2. Transition to STARTED (PreWorkflowManager would create pre-execution tasks)
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(started, testProcessId);
+        statusService.addProcessStatus(started, testProcessId);
 
         // Verify state transition was valid
         assertTrue(
@@ -194,23 +186,23 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         // Input staging completes -> process may transition
         TaskStatus inputExecuting =
                 StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Input staging executing");
-        taskStatusService.addTaskStatus(inputExecuting, inputTaskId);
+        statusService.addTaskStatus(inputExecuting, inputTaskId);
 
         TaskStatus inputCompleted =
                 StateMachineTestUtils.createTaskStatus(TaskState.COMPLETED, "Input staging completed");
-        taskStatusService.addTaskStatus(inputCompleted, inputTaskId);
+        statusService.addTaskStatus(inputCompleted, inputTaskId);
 
         // Job submission completes -> process transitions to EXECUTING
         TaskStatus jobExecuting =
                 StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Job submission executing");
-        taskStatusService.addTaskStatus(jobExecuting, jobTaskId);
+        statusService.addTaskStatus(jobExecuting, jobTaskId);
 
         TaskStatus jobCompleted = StateMachineTestUtils.createTaskStatus(TaskState.COMPLETED, "Job submitted");
-        taskStatusService.addTaskStatus(jobCompleted, jobTaskId);
+        statusService.addTaskStatus(jobCompleted, jobTaskId);
 
         // 5. Process transitions to EXECUTING (job is running)
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         assertTrue(
                 StateTransitionService.isValid(
@@ -231,7 +223,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // Job completes
         JobStatus jobComplete = StateMachineTestUtils.createJobStatus(JobState.COMPLETE, "Job completed");
-        jobStatusService.addJobStatus(jobComplete, jobPK);
+        statusService.addJobStatus(jobComplete, jobPK.getJobId());
 
         // 7. Post-execution tasks execute
         TaskModel outputStagingTask = new TaskModel();
@@ -241,18 +233,18 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         TaskStatus outputExecuting =
                 StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Output staging executing");
-        taskStatusService.addTaskStatus(outputExecuting, outputTaskId);
+        statusService.addTaskStatus(outputExecuting, outputTaskId);
 
         TaskStatus outputCompleted =
                 StateMachineTestUtils.createTaskStatus(TaskState.COMPLETED, "Output staging completed");
-        taskStatusService.addTaskStatus(outputCompleted, outputTaskId);
+        statusService.addTaskStatus(outputCompleted, outputTaskId);
 
         // 8. Process transitions to COMPLETED
         ProcessStatus completed = StateMachineTestUtils.createProcessStatus(ProcessState.COMPLETED, "Completed");
-        processStatusService.addProcessStatus(completed, testProcessId);
+        statusService.addProcessStatus(completed, testProcessId);
 
         // Verify final state
-        ProcessStatus finalStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus finalStatus = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.COMPLETED, finalStatus.getState(), "Process should be in COMPLETED state");
 
         // Verify all state transitions were valid
@@ -277,7 +269,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // 1. CREATED -> STARTED
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(started, testProcessId);
+        statusService.addProcessStatus(started, testProcessId);
 
         // 2. Create and execute task
         TaskModel task = new TaskModel();
@@ -286,23 +278,23 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         String taskId = taskService.addTask(task, testProcessId);
 
         TaskStatus executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Task executing");
-        taskStatusService.addTaskStatus(executing, taskId);
+        statusService.addTaskStatus(executing, taskId);
 
         // 3. Process transitions to EXECUTING
         ProcessStatus processExecuting = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(processExecuting, testProcessId);
+        statusService.addProcessStatus(processExecuting, testProcessId);
 
         // 4. Task fails (fatal)
         TaskStatus failed = StateMachineTestUtils.createTaskStatus(TaskState.FAILED, "Task failed - fatal");
-        taskStatusService.addTaskStatus(failed, taskId);
+        statusService.addTaskStatus(failed, taskId);
 
         // 5. Process transitions to FAILED (handled by AiravataTask.onFail())
         ProcessStatus processFailed =
                 StateMachineTestUtils.createProcessStatus(ProcessState.FAILED, "Process failed due to task failure");
-        processStatusService.addProcessStatus(processFailed, testProcessId);
+        statusService.addProcessStatus(processFailed, testProcessId);
 
         // Verify final state
-        ProcessStatus finalStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus finalStatus = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.FAILED, finalStatus.getState(), "Process should be in FAILED state");
 
         // Verify state transition was valid
@@ -319,11 +311,11 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // 1. Process reaches EXECUTING
         ProcessStatus executing1 = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing1, testProcessId);
+        statusService.addProcessStatus(executing1, testProcessId);
 
         // 2. Task fails (non-fatal, autoSchedule enabled) -> process transitions to REQUEUED
         ProcessStatus requeued = StateMachineTestUtils.createProcessStatus(ProcessState.REQUEUED, "Requeued");
-        processStatusService.addProcessStatus(requeued, testProcessId);
+        statusService.addProcessStatus(requeued, testProcessId);
 
         assertTrue(
                 StateTransitionService.isValid(
@@ -332,7 +324,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // 3. Process transitions to QUEUED
         ProcessStatus queued = StateMachineTestUtils.createProcessStatus(ProcessState.QUEUED, "Queued");
-        processStatusService.addProcessStatus(queued, testProcessId);
+        statusService.addProcessStatus(queued, testProcessId);
 
         assertTrue(
                 StateTransitionService.isValid(
@@ -341,7 +333,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // 4. Process transitions back to EXECUTING (requeue completed)
         ProcessStatus executing2 = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Re-executing");
-        processStatusService.addProcessStatus(executing2, testProcessId);
+        statusService.addProcessStatus(executing2, testProcessId);
 
         assertTrue(
                 StateTransitionService.isValid(
@@ -349,7 +341,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
                 "QUEUED -> EXECUTING should be valid");
 
         // Verify final state
-        ProcessStatus finalStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus finalStatus = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.EXECUTING, finalStatus.getState(), "Process should be back in EXECUTING state");
 
         // Verify all requeue states are in history
@@ -375,7 +367,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // Process transitions to EXECUTING
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         // Experiment state should reflect process state (in real system, this is handled by workflow managers)
         // According to ExperimentStateValidator, CREATED -> LAUNCHED -> EXECUTING is the valid path
@@ -391,7 +383,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // Process completes
         ProcessStatus completed = StateMachineTestUtils.createProcessStatus(ProcessState.COMPLETED, "Completed");
-        processStatusService.addProcessStatus(completed, testProcessId);
+        statusService.addProcessStatus(completed, testProcessId);
 
         // Experiment should transition to COMPLETED
         assertTrue(
@@ -418,18 +410,18 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
                 // Add status to verify it works
                 ProcessStatus status =
                         StateMachineTestUtils.createProcessStatus(currentState, "State: " + currentState.name());
-                processStatusService.addProcessStatus(status, testProcessId);
+                statusService.addProcessStatus(status, testProcessId);
             } else {
                 // First state - just add it
                 ProcessStatus status =
                         StateMachineTestUtils.createProcessStatus(currentState, "State: " + currentState.name());
-                processStatusService.addProcessStatus(status, testProcessId);
+                statusService.addProcessStatus(status, testProcessId);
             }
             previousState = currentState;
         }
 
         // Verify final state
-        ProcessStatus finalStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus finalStatus = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(
                 workflowStates.get(workflowStates.size() - 1),
                 finalStatus.getState(),

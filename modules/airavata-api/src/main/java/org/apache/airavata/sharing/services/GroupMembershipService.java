@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.registry.entities.UserEntity;
 import org.apache.airavata.sharing.entities.GroupMembershipEntity;
 import org.apache.airavata.sharing.entities.GroupMembershipPK;
-import org.apache.airavata.sharing.entities.UserEntity;
 import org.apache.airavata.sharing.entities.UserGroupEntity;
 import org.apache.airavata.sharing.mappers.GroupMembershipMapper;
 import org.apache.airavata.sharing.mappers.UserGroupMapper;
@@ -146,10 +146,11 @@ public class GroupMembershipService {
         }
 
         // Then query User entities for those IDs
+        // Note: In unified entity, domainId maps to gatewayId
         var userQuery = cb.createQuery(UserEntity.class);
         var userQueryRoot = userQuery.from(UserEntity.class);
         var userPredicates = new ArrayList<Predicate>();
-        userPredicates.add(cb.equal(userQueryRoot.get("domainId"), domainId));
+        userPredicates.add(cb.equal(userQueryRoot.get("gatewayId"), domainId));
         userPredicates.add(userQueryRoot.get("userId").in(userIds));
         userQuery.where(cb.and(userPredicates.toArray(new Predicate[0])));
 

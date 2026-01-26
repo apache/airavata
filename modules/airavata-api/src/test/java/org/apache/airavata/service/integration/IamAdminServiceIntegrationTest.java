@@ -243,7 +243,7 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
 
             PasswordCredential adminCredential = new PasswordCredential();
             adminCredential.setGatewayId(gateway.getGatewayId());
-            adminCredential.setPortalUserName("admin");
+            adminCredential.setUserId("admin");
             adminCredential.setLoginUserName("admin");
             adminCredential.setPassword("admin-password");
             String adminToken = credentialStoreService.addPasswordCredential(adminCredential);

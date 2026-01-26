@@ -36,7 +36,7 @@ import org.mapstruct.Mapping;
             UserConfigurationDataMapper.class,
             InputDataObjectTypeMapper.class,
             OutputDataObjectTypeMapper.class,
-            ExperimentStatusMapper.class,
+            StatusMapper.class,
             ErrorModelMapper.class,
             ProcessMapper.class
         })

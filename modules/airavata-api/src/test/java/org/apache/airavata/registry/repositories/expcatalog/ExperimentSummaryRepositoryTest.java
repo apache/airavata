@@ -42,10 +42,10 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
-import org.apache.airavata.registry.services.ExperimentStatusService;
 import org.apache.airavata.registry.services.ExperimentSummaryService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
@@ -57,7 +57,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
     private final GatewayService gatewayService;
     private final ProjectService projectService;
     private final ExperimentService experimentService;
-    private final ExperimentStatusService experimentStatusService;
+    private final StatusService statusService;
     private final ExperimentSummaryService experimentSummaryService;
     private final ExperimentSummaryRepository experimentSummaryRepository;
 
@@ -65,13 +65,13 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
             GatewayService gatewayService,
             ProjectService projectService,
             ExperimentService experimentService,
-            ExperimentStatusService experimentStatusService,
+            StatusService statusService,
             ExperimentSummaryService experimentSummaryService,
             ExperimentSummaryRepository experimentSummaryRepository) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
-        this.experimentStatusService = experimentStatusService;
+        this.statusService = statusService;
         this.experimentSummaryService = experimentSummaryService;
         this.experimentSummaryRepository = experimentSummaryRepository;
     }
@@ -262,19 +262,19 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
 
         ExperimentStatus experimentStatusOne = new ExperimentStatus();
         experimentStatusOne.setState(ExperimentState.CREATED);
-        String statusIdOne = experimentStatusService.addExperimentStatus(experimentStatusOne, experimentIdOne);
+        String statusIdOne = statusService.addExperimentStatus(experimentStatusOne, experimentIdOne);
         assertTrue(statusIdOne != null);
         saveExperimentSummary(experimentModelOne, ExperimentState.CREATED.name());
 
         ExperimentStatus experimentStatusTwo = new ExperimentStatus();
         experimentStatusTwo.setState(ExperimentState.EXECUTING);
-        String statusIdTwo = experimentStatusService.addExperimentStatus(experimentStatusTwo, experimentIdTwo);
+        String statusIdTwo = statusService.addExperimentStatus(experimentStatusTwo, experimentIdTwo);
         assertTrue(statusIdTwo != null);
         saveExperimentSummary(experimentModelTwo, ExperimentState.EXECUTING.name());
 
         ExperimentStatus experimentStatusThree = new ExperimentStatus();
         experimentStatusThree.setState(ExperimentState.CANCELED);
-        String statusIdThree = experimentStatusService.addExperimentStatus(experimentStatusThree, experimentIdThree);
+        String statusIdThree = statusService.addExperimentStatus(experimentStatusThree, experimentIdThree);
         assertTrue(statusIdThree != null);
         saveExperimentSummary(experimentModelThree, ExperimentState.CANCELED.name());
 

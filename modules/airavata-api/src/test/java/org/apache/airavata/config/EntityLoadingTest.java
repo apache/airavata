@@ -56,7 +56,8 @@ public class EntityLoadingTest {
             // Verify key entities from different packages are loaded
             assertTrue(hasEntity(entities, "ComputeResourceEntity"), "ComputeResourceEntity should be loaded");
             assertTrue(hasEntity(entities, "ExperimentEntity"), "ExperimentEntity should be loaded");
-            assertTrue(hasEntity(entities, "DomainEntity"), "DomainEntity should be loaded");
+            assertTrue(hasEntity(entities, "StatusEntity"), "StatusEntity should be loaded");
+            assertTrue(hasEntity(entities, "GatewayEntity"), "GatewayEntity should be loaded");
             assertTrue(hasEntity(entities, "CredentialEntity"), "CredentialEntity should be loaded");
         } finally {
             em.close();

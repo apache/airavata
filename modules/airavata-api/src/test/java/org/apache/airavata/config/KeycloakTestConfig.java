@@ -145,8 +145,108 @@ public class KeycloakTestConfig {
                     .withReuse(true);
             keycloakContainer.start();
             logger.info("Testcontainers Keycloak started at: {}", keycloakContainer.getAuthServerUrl());
+
+            // Enable direct access grants on admin-cli client in master realm
+            // This is required for password-based authentication in Keycloak 25+
+            enableAdminCliDirectAccessGrants(keycloakContainer);
         }
         return keycloakContainer;
+    }
+
+    /**
+     * Enable direct access grants on the admin-cli client in the master realm.
+     * This is required for password-based authentication in Keycloak 25+/26+ where
+     * the admin-cli client no longer has directAccessGrantsEnabled by default.
+     */
+    private static void enableAdminCliDirectAccessGrants(KeycloakContainer container) {
+        if (container == null || !container.isRunning()) {
+            logger.warn("Cannot enable admin-cli direct access grants: Keycloak container not running");
+            return;
+        }
+
+        try {
+            // First, authenticate with kcadm
+            var authResult = container.execInContainer(
+                    "/opt/keycloak/bin/kcadm.sh",
+                    "config",
+                    "credentials",
+                    "--server",
+                    "http://localhost:8080",
+                    "--realm",
+                    "master",
+                    "--user",
+                    ADMIN_USERNAME,
+                    "--password",
+                    ADMIN_PASSWORD);
+
+            if (authResult.getExitCode() != 0) {
+                logger.warn(
+                        "Failed to authenticate with kcadm: {} {}",
+                        authResult.getStdout(),
+                        authResult.getStderr());
+                return;
+            }
+
+            // Get the client ID (internal UUID) of admin-cli
+            var getClientResult = container.execInContainer(
+                    "/opt/keycloak/bin/kcadm.sh",
+                    "get",
+                    "clients",
+                    "-r",
+                    "master",
+                    "-q",
+                    "clientId=admin-cli",
+                    "--fields",
+                    "id");
+
+            if (getClientResult.getExitCode() != 0) {
+                logger.warn(
+                        "Failed to get admin-cli client: {} {}",
+                        getClientResult.getStdout(),
+                        getClientResult.getStderr());
+                return;
+            }
+
+            // Parse the client ID from the JSON response
+            String clientOutput = getClientResult.getStdout();
+            // Response format: [ { "id" : "uuid-here" } ]
+            String clientUuid = null;
+            if (clientOutput.contains("\"id\"")) {
+                int startIdx = clientOutput.indexOf("\"id\"");
+                int colonIdx = clientOutput.indexOf(":", startIdx);
+                int quoteStart = clientOutput.indexOf("\"", colonIdx);
+                int quoteEnd = clientOutput.indexOf("\"", quoteStart + 1);
+                if (quoteStart > 0 && quoteEnd > quoteStart) {
+                    clientUuid = clientOutput.substring(quoteStart + 1, quoteEnd);
+                }
+            }
+
+            if (clientUuid == null || clientUuid.isEmpty()) {
+                logger.warn("Could not parse admin-cli client UUID from: {}", clientOutput);
+                return;
+            }
+
+            // Enable direct access grants on the admin-cli client
+            var updateResult = container.execInContainer(
+                    "/opt/keycloak/bin/kcadm.sh",
+                    "update",
+                    "clients/" + clientUuid,
+                    "-r",
+                    "master",
+                    "-s",
+                    "directAccessGrantsEnabled=true");
+
+            if (updateResult.getExitCode() == 0) {
+                logger.info("Successfully enabled direct access grants on admin-cli client");
+            } else {
+                logger.warn(
+                        "Failed to enable direct access grants: {} {}",
+                        updateResult.getStdout(),
+                        updateResult.getStderr());
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to enable admin-cli direct access grants: {}", e.getMessage());
+        }
     }
 
     /**

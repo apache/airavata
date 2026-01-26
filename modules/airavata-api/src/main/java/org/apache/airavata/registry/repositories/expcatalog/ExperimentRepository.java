@@ -29,11 +29,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ExperimentRepository extends JpaRepository<ExperimentEntity, String> {
 
-    @Query("SELECT e FROM ExperimentEntity e WHERE e.gatewayId = :gatewayId AND e.userName = :userName")
+    @Query("SELECT e FROM ExperimentEntity e WHERE e.gatewayId = :gatewayId AND e.userName = :userName ORDER BY e.creationTime DESC")
     List<ExperimentEntity> findByGatewayIdAndUserName(
             @Param("gatewayId") String gatewayId, @Param("userName") String userName);
 
-    @Query("SELECT e FROM ExperimentEntity e WHERE e.gatewayId = :gatewayId AND e.projectId = :projectId")
+    @Query("SELECT e FROM ExperimentEntity e WHERE e.gatewayId = :gatewayId AND e.projectId = :projectId ORDER BY e.creationTime DESC")
     List<ExperimentEntity> findByGatewayIdAndProjectId(
             @Param("gatewayId") String gatewayId, @Param("projectId") String projectId);
+
+    @Query("SELECT e FROM ExperimentEntity e WHERE e.gatewayId = :gatewayId ORDER BY e.creationTime DESC")
+    List<ExperimentEntity> findByGatewayId(@Param("gatewayId") String gatewayId);
 }

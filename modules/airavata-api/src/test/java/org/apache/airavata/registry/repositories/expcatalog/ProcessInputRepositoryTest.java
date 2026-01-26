@@ -23,20 +23,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.registry.entities.InputDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.InputDataRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
-import org.apache.airavata.registry.services.ProcessInputService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class ProcessInputRepositoryTest extends TestBase {
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessInputService processInputService;
+    private final InputDataRepository inputDataRepository;
 
     private String gatewayId;
     private String projectId;
@@ -63,12 +63,12 @@ public class ProcessInputRepositoryTest extends TestBase {
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessInputService processInputService) {
+            InputDataRepository inputDataRepository) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processInputService = processInputService;
+        this.inputDataRepository = inputDataRepository;
     }
 
     @BeforeEach
@@ -102,24 +102,27 @@ public class ProcessInputRepositoryTest extends TestBase {
     @Test
     public void testProcessInputRepository_CreateAndUpdate() throws RegistryException {
 
-        InputDataObjectType inputDataObjectProType = new InputDataObjectType();
-        inputDataObjectProType.setName("inputP");
-        inputDataObjectProType.setType(DataType.STDOUT);
+        InputDataEntity inputEntity = new InputDataEntity();
+        inputEntity.setParentId(processId);
+        inputEntity.setParentType(DataObjectParentType.PROCESS);
+        inputEntity.setName("inputP");
+        inputEntity.setType(DataType.STDOUT);
 
-        List<InputDataObjectType> inputDataObjectTypeProList = new ArrayList<>();
-        inputDataObjectTypeProList.add(inputDataObjectProType);
-
-        String returnedProcessId = processInputService.addProcessInputs(inputDataObjectTypeProList, processId);
-        assertEquals(processId, returnedProcessId, "Returned process ID should match");
-        // Clear JPA cache to ensure fresh load with the newly added input
+        inputDataRepository.save(inputEntity);
         flushAndClear();
-        assertEquals(
-                1, processService.getProcess(processId).getProcessInputs().size(), "Process should have one input");
 
-        inputDataObjectProType.setValue("iValueP");
-        processInputService.updateProcessInputs(inputDataObjectTypeProList, processId);
+        List<InputDataEntity> retrievedInputs =
+                inputDataRepository.findByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
+        assertEquals(1, retrievedInputs.size(), "Process should have one input");
+        assertEquals("inputP", retrievedInputs.get(0).getName(), "Input name should match");
+        assertEquals(DataType.STDOUT, retrievedInputs.get(0).getType(), "Input type should match");
 
-        List<InputDataObjectType> retrievedProInputsList = processInputService.getProcessInputs(processId);
+        inputEntity.setValue("iValueP");
+        inputDataRepository.save(inputEntity);
+        flushAndClear();
+
+        List<InputDataEntity> retrievedProInputsList =
+                inputDataRepository.findByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
         assertEquals(1, retrievedProInputsList.size(), "Should have one input");
         assertEquals("iValueP", retrievedProInputsList.get(0).getValue(), "Input value should be updated");
         assertEquals(DataType.STDOUT, retrievedProInputsList.get(0).getType(), "Input type should match");
@@ -129,29 +132,37 @@ public class ProcessInputRepositoryTest extends TestBase {
     @Test
     public void testProcessInputRepository_MultipleInputs() throws RegistryException {
 
-        InputDataObjectType input1 = new InputDataObjectType();
+        InputDataEntity input1 = new InputDataEntity();
+        input1.setParentId(processId);
+        input1.setParentType(DataObjectParentType.PROCESS);
         input1.setName("input1");
         input1.setType(DataType.STDOUT);
         input1.setValue("value1");
+        input1.setInputOrder(0);
 
-        InputDataObjectType input2 = new InputDataObjectType();
+        InputDataEntity input2 = new InputDataEntity();
+        input2.setParentId(processId);
+        input2.setParentType(DataObjectParentType.PROCESS);
         input2.setName("input2");
         input2.setType(DataType.STRING);
         input2.setValue("value2");
+        input2.setInputOrder(1);
 
-        InputDataObjectType input3 = new InputDataObjectType();
+        InputDataEntity input3 = new InputDataEntity();
+        input3.setParentId(processId);
+        input3.setParentType(DataObjectParentType.PROCESS);
         input3.setName("input3");
         input3.setType(DataType.URI);
         input3.setValue("value3");
+        input3.setInputOrder(2);
 
-        List<InputDataObjectType> inputs = new ArrayList<>();
-        inputs.add(input1);
-        inputs.add(input2);
-        inputs.add(input3);
+        inputDataRepository.save(input1);
+        inputDataRepository.save(input2);
+        inputDataRepository.save(input3);
+        flushAndClear();
 
-        processInputService.addProcessInputs(inputs, processId);
-
-        List<InputDataObjectType> retrievedInputs = processInputService.getProcessInputs(processId);
+        List<InputDataEntity> retrievedInputs =
+                inputDataRepository.findByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
         assertEquals(3, retrievedInputs.size(), "Process should have 3 inputs");
 
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input1")), "Input 1 should be present");

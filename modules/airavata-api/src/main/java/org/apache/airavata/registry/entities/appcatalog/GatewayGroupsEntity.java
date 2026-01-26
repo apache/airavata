@@ -25,6 +25,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
+/**
+ * Entity for storing gateway-level group associations.
+ *
+ * <p>This entity stores references to the default groups for a gateway:
+ * <ul>
+ *   <li>adminsGroupId - Gateway administrators group</li>
+ *   <li>readOnlyAdminsGroupId - Read-only administrators group</li>
+ *   <li>defaultGatewayUsersGroupId - Default users group</li>
+ * </ul>
+ *
+ * <p>Note: This entity is a simple mapping table that links gateway IDs to group IDs
+ * from the sharing registry. Consider migrating this data to the
+ * {@link org.apache.airavata.registry.entities.GatewayEntity} entity's fields
+ * or the sharing registry's metadata system in a future consolidation.
+ *
+ * @see org.apache.airavata.sharing.entities.UserGroupEntity
+ */
 @Entity
 @Table(name = "GATEWAY_GROUPS")
 public class GatewayGroupsEntity implements Serializable {

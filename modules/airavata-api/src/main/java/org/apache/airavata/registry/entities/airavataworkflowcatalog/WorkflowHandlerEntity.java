@@ -21,20 +21,27 @@ package org.apache.airavata.registry.entities.airavataworkflowcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.common.model.HandlerType;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
+import org.apache.airavata.registry.entities.StatusEntity;
+import org.apache.airavata.registry.entities.ErrorEntity;
 
 @Entity
 @Table(name = "WORKFLOW_HANDLER")
@@ -64,33 +71,37 @@ public class WorkflowHandlerEntity implements Serializable {
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AiravataWorkflowEntity workflow;
 
-    @OneToMany(
-            targetEntity = HandlerStatusEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "handler",
-            fetch = FetchType.EAGER)
-    private List<HandlerStatusEntity> statuses;
+    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'HANDLER'")
+    private List<StatusEntity> statuses;
 
-    @OneToMany(
-            targetEntity = HandlerErrorEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "handler",
-            fetch = FetchType.EAGER)
-    private List<HandlerErrorEntity> errors;
+    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(name = "PARENT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'HANDLER'")
+    private List<ErrorEntity> errors;
 
-    @OneToMany(
-            targetEntity = HandlerInputEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "handler",
-            fetch = FetchType.EAGER)
-    private List<HandlerInputEntity> inputs;
+    /**
+     * Transient field for handler inputs. Inputs are stored in the unified INPUT_DATA table
+     * and loaded via InputDataRepository.findByHandlerId().
+     */
+    @Transient
+    private List<InputDataEntity> inputs;
 
-    @OneToMany(
-            targetEntity = HandlerOutputEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "handler",
-            fetch = FetchType.EAGER)
-    private List<HandlerOutputEntity> outputs;
+    /**
+     * Transient field for handler outputs. Outputs are stored in the unified OUTPUT_DATA table
+     * and loaded via OutputDataRepository.findByHandlerId().
+     */
+    @Transient
+    private List<OutputDataEntity> outputs;
 
     public WorkflowHandlerEntity() {}
 
@@ -118,19 +129,19 @@ public class WorkflowHandlerEntity implements Serializable {
         this.workflow = workflow;
     }
 
-    public void setStatuses(List<HandlerStatusEntity> statuses) {
+    public void setStatuses(List<StatusEntity> statuses) {
         this.statuses = statuses;
     }
 
-    public void setErrors(List<HandlerErrorEntity> errors) {
+    public void setErrors(List<ErrorEntity> errors) {
         this.errors = errors;
     }
 
-    public void setInputs(List<HandlerInputEntity> inputs) {
+    public void setInputs(List<InputDataEntity> inputs) {
         this.inputs = inputs;
     }
 
-    public void setOutputs(List<HandlerOutputEntity> outputs) {
+    public void setOutputs(List<OutputDataEntity> outputs) {
         this.outputs = outputs;
     }
 
@@ -158,19 +169,19 @@ public class WorkflowHandlerEntity implements Serializable {
         return workflow;
     }
 
-    public List<HandlerStatusEntity> getStatuses() {
+    public List<StatusEntity> getStatuses() {
         return statuses;
     }
 
-    public List<HandlerErrorEntity> getErrors() {
+    public List<ErrorEntity> getErrors() {
         return errors;
     }
 
-    public List<HandlerInputEntity> getInputs() {
+    public List<InputDataEntity> getInputs() {
         return inputs;
     }
 
-    public List<HandlerOutputEntity> getOutputs() {
+    public List<OutputDataEntity> getOutputs() {
         return outputs;
     }
 }

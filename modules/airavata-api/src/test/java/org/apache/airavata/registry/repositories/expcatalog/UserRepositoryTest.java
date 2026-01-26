@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.UserProfile;
-import org.apache.airavata.registry.entities.expcatalog.UserPK;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.UserService;
@@ -46,6 +45,7 @@ public class UserRepositoryTest extends TestBase {
     private final GatewayService gatewayService;
     private final UserService userService;
 
+    // Gateway IDs
     private String gatewayId;
     private String gatewayId2;
 
@@ -79,12 +79,12 @@ public class UserRepositoryTest extends TestBase {
         userProfile.setGatewayId(gatewayId);
 
         userService.addUser(userProfile);
-        UserProfile retrievedUserProfile = userService.get(new UserPK(gatewayId, "username"));
+        UserProfile retrievedUserProfile = userService.get("username", gatewayId);
         assertEquals("username", retrievedUserProfile.getUserId());
         assertEquals("username@" + gatewayId, retrievedUserProfile.getAiravataInternalUserId());
         assertEquals(gatewayId, retrievedUserProfile.getGatewayId());
 
-        userService.delete(new UserPK(gatewayId, "username"));
+        userService.delete("username", gatewayId);
     }
 
     @Test
@@ -118,8 +118,8 @@ public class UserRepositoryTest extends TestBase {
         assertEquals(1, gateway2Usernames.size());
         assertEquals(Collections.singleton(username3), new HashSet<>(gateway2Usernames));
 
-        userService.delete(new UserPK(gatewayId, username1));
-        userService.delete(new UserPK(gatewayId, username2));
-        userService.delete(new UserPK(gatewayId2, username3));
+        userService.delete(username1, gatewayId);
+        userService.delete(username2, gatewayId);
+        userService.delete(username3, gatewayId2);
     }
 }

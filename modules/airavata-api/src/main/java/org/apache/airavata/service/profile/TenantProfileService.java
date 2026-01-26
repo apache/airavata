@@ -25,21 +25,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.model.CrudType;
-import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.orchestrator.internal.messaging.Dispatcher;
-import org.apache.airavata.profile.entities.ProfileGatewayEntity;
 import org.apache.airavata.profile.exception.TenantProfileServiceException;
-import org.apache.airavata.profile.mappers.GatewayMapper;
-import org.apache.airavata.profile.repositories.TenantProfileRepository;
+import org.apache.airavata.registry.entities.GatewayEntity;
+import org.apache.airavata.registry.mappers.GatewayMapper;
+import org.apache.airavata.registry.repositories.GatewayRepository;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
@@ -52,24 +48,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class TenantProfileService {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileService.class);
 
-    private final TenantProfileRepository tenantProfileRepository;
+    private final GatewayRepository gatewayRepository;
     private final CredentialStoreService credentialStoreService;
     private final GatewayMapper gatewayMapper;
     private final EntityManager entityManager;
 
-    private final Dispatcher dbEventDispatcher;
-
     public TenantProfileService(
-            TenantProfileRepository tenantProfileRepository,
+            GatewayRepository gatewayRepository,
             CredentialStoreService credentialStoreService,
             GatewayMapper gatewayMapper,
-            EntityManager entityManager,
-            Dispatcher dbEventDispatcher) {
-        this.tenantProfileRepository = tenantProfileRepository;
+            EntityManager entityManager) {
+        this.gatewayRepository = gatewayRepository;
         this.credentialStoreService = credentialStoreService;
         this.gatewayMapper = gatewayMapper;
         this.entityManager = entityManager;
-        this.dbEventDispatcher = dbEventDispatcher;
     }
 
     @Transactional
@@ -86,17 +78,6 @@ public class TenantProfileService {
                 gateway = createGateway(gateway);
                 if (gateway != null) {
                     logger.info("Added Airavata Gateway with Id: " + gateway.getGatewayId());
-                    // replicate tenant at end-places only if status is APPROVED
-                    if (gateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED)) {
-                        logger.info(
-                                "Gateway with ID: {}, is now APPROVED, replicating to subscribers.",
-                                gateway.getGatewayId());
-                        try {
-                            dbEventDispatcher.dispatch(EntityType.TENANT, CrudType.CREATE, gateway);
-                        } catch (AiravataException e) {
-                            logger.error("Error dispatching gateway creation event", e);
-                        }
-                    }
                     // return internal id
                     return gateway.getAiravataInternalGatewayId();
                 } else {
@@ -123,9 +104,7 @@ public class TenantProfileService {
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway)
             throws TenantProfileServiceException, CredentialStoreException {
         try {
-
-            // if admin password token changes then copy the admin password and store under this gateway id and then
-            // update the admin password token
+            // Verify gateway exists
             Gateway existingGateway;
             try {
                 existingGateway = getGateway(updatedGateway.getAiravataInternalGatewayId());
@@ -134,22 +113,22 @@ public class TenantProfileService {
                 logger.error(message, e);
                 throw new TenantProfileServiceException(message, e);
             }
-            if (updatedGateway.getIdentityServerPasswordToken() != null
-                    && (existingGateway.getIdentityServerPasswordToken() == null
-                            || !existingGateway
-                                    .getIdentityServerPasswordToken()
-                                    .equals(updatedGateway.getIdentityServerPasswordToken()))) {
+            if (existingGateway == null) {
+                throw new TenantProfileServiceException(
+                        "Gateway not found: " + updatedGateway.getAiravataInternalGatewayId());
+            }
+
+            // If a new admin password token is provided in the request, copy the admin password
+            // to the target gateway's credential store. The identityServerPasswordToken is a
+            // reference to a credential in the requesting gateway's credential store.
+            // Note: This token is not persisted in the Gateway entity - it's only used during
+            // the setup process to copy credentials.
+            if (updatedGateway.getIdentityServerPasswordToken() != null) {
                 copyAdminPasswordToGateway(authzToken, updatedGateway);
             }
 
             if (updateGateway(updatedGateway) != null) {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
-                // replicate tenant at end-places
-                try {
-                    dbEventDispatcher.dispatch(EntityType.TENANT, CrudType.UPDATE, updatedGateway);
-                } catch (AiravataException e) {
-                    logger.error("Error dispatching gateway update event", e);
-                }
                 return true;
             } else {
                 return false;
@@ -198,22 +177,6 @@ public class TenantProfileService {
             logger.debug("Deleting Airavata gateway-profile with ID: " + gatewayId + "Internal ID: "
                     + airavataInternalGatewayId);
             boolean deleteSuccess = deleteGateway(airavataInternalGatewayId);
-            if (deleteSuccess) {
-                // delete tenant at end-places
-                try {
-                    Gateway gateway = new Gateway();
-                    gateway.setGatewayId(gatewayId);
-                    gateway.setGatewayApprovalStatus(GatewayApprovalStatus.DEACTIVATED);
-                    dbEventDispatcher.dispatch(
-                            EntityType.TENANT,
-                            CrudType.DELETE,
-                            // pass along gateway datamodel, with correct gatewayId;
-                            // approvalstatus is not used for delete, hence set dummy value
-                            gateway);
-                } catch (AiravataException e) {
-                    logger.error("Error dispatching gateway deletion event", e);
-                }
-            }
             return deleteSuccess;
         } catch (PersistenceException e) {
             String message = "Error deleting gateway-profile: " + e.getMessage();
@@ -309,8 +272,8 @@ public class TenantProfileService {
 
     // Helper methods that wrap repository calls and handle entity-to-model mapping
     private Gateway getGateway(String airavataInternalGatewayId) throws Exception {
-        Optional<ProfileGatewayEntity> entityOpt =
-                tenantProfileRepository.findByAiravataInternalGatewayId(airavataInternalGatewayId);
+        Optional<GatewayEntity> entityOpt =
+                gatewayRepository.findByAiravataInternalGatewayId(airavataInternalGatewayId);
         if (entityOpt.isEmpty()) {
             return null;
         }
@@ -318,7 +281,7 @@ public class TenantProfileService {
     }
 
     private Gateway getGatewayByGatewayId(String gatewayId) throws Exception {
-        Optional<ProfileGatewayEntity> entityOpt = tenantProfileRepository.findByGatewayId(gatewayId);
+        Optional<GatewayEntity> entityOpt = gatewayRepository.findByGatewayId(gatewayId);
         if (entityOpt.isEmpty()) {
             return null;
         }
@@ -326,22 +289,22 @@ public class TenantProfileService {
     }
 
     private List<Gateway> getAllGateways() throws Exception {
-        List<ProfileGatewayEntity> entities = tenantProfileRepository.findAllGateways();
+        List<GatewayEntity> entities = gatewayRepository.findAllGateways();
         return gatewayMapper.toModelList(entities);
     }
 
     private List<Gateway> getAllGatewaysForUser(String requesterUsername) throws Exception {
-        List<ProfileGatewayEntity> entities = tenantProfileRepository.findByRequesterUsername(requesterUsername);
+        List<GatewayEntity> entities = gatewayRepository.findByRequesterUsername(requesterUsername);
         return gatewayMapper.toModelList(entities);
     }
 
     private Gateway getDuplicateGateway(String gatewayId, String gatewayName, String gatewayURL) throws Exception {
-        List<String> statuses = Arrays.asList(
-                GatewayApprovalStatus.APPROVED.name(),
-                GatewayApprovalStatus.CREATED.name(),
-                GatewayApprovalStatus.DEPLOYED.name());
-        List<ProfileGatewayEntity> entities =
-                tenantProfileRepository.findDuplicateGateways(statuses, gatewayId, gatewayName, gatewayURL);
+        List<GatewayApprovalStatus> statuses = Arrays.asList(
+                GatewayApprovalStatus.APPROVED,
+                GatewayApprovalStatus.CREATED,
+                GatewayApprovalStatus.DEPLOYED);
+        List<GatewayEntity> entities =
+                gatewayRepository.findDuplicateGateways(statuses, gatewayId, gatewayName, gatewayURL);
         if (entities.isEmpty()) {
             return null;
         }
@@ -349,21 +312,21 @@ public class TenantProfileService {
     }
 
     private Gateway createGateway(Gateway gateway) {
-        ProfileGatewayEntity entity = gatewayMapper.toEntity(gateway);
-        ProfileGatewayEntity persistedCopy = entityManager.merge(entity);
+        GatewayEntity entity = gatewayMapper.toEntity(gateway);
+        GatewayEntity persistedCopy = entityManager.merge(entity);
         entityManager.flush(); // Ensure entity is persisted and visible in same transaction
         return gatewayMapper.toModel(persistedCopy);
     }
 
     private Gateway updateGateway(Gateway gateway) {
-        ProfileGatewayEntity entity = gatewayMapper.toEntity(gateway);
-        ProfileGatewayEntity persistedCopy = entityManager.merge(entity);
+        GatewayEntity entity = gatewayMapper.toEntity(gateway);
+        GatewayEntity persistedCopy = entityManager.merge(entity);
         return gatewayMapper.toModel(persistedCopy);
     }
 
     private boolean deleteGateway(String airavataInternalGatewayId) {
-        if (tenantProfileRepository.existsById(airavataInternalGatewayId)) {
-            tenantProfileRepository.deleteById(airavataInternalGatewayId);
+        if (gatewayRepository.existsById(airavataInternalGatewayId)) {
+            gatewayRepository.deleteById(airavataInternalGatewayId);
             return true;
         }
         return false;

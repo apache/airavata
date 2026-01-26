@@ -185,7 +185,14 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             var client = getRestClient();
             var adminToken = client.obtainAdminToken(this.superAdminRealmId, isSuperAdminPasswordCreds);
             var user = new UserRepresentation();
-            user.setUsername(gatewayDetails.getIdentityServerUserName());
+            // Use identityServerUserName if provided in the request, otherwise fall back to email.
+            // Note: identityServerUserName is NOT persisted in the database (credentials are managed by Keycloak),
+            // but it can be provided in the Gateway object during the setup API call.
+            String adminUsername = gatewayDetails.getIdentityServerUserName();
+            if (adminUsername == null || adminUsername.isEmpty()) {
+                adminUsername = gatewayDetails.getGatewayAdminEmail();
+            }
+            user.setUsername(adminUsername);
             user.setFirstName(gatewayDetails.getGatewayAdminFirstName());
             user.setLastName(gatewayDetails.getGatewayAdminLastName());
             user.setEmail(gatewayDetails.getGatewayAdminEmail());
@@ -309,6 +316,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 if (!clients.isEmpty()) {
                     var clientUUID = clients.get(0).getId();
                     var clientSecret = client.getClientSecret(gatewayDetails.getGatewayId(), clientUUID, adminToken);
+                    // Set OAuth credentials on the Gateway object for the caller to use.
+                    // Note: These values are NOT persisted to the database (credentials are managed by Keycloak).
+                    // They are returned for informational purposes or immediate use by the caller.
                     gatewayDetails.setOauthClientId(pgaClient.getClientId());
                     gatewayDetails.setOauthClientSecret(clientSecret.getValue());
 
@@ -649,7 +659,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         profile.setFirstName(userRepresentation.getFirstName());
         profile.setLastName(userRepresentation.getLastName());
         profile.setEmails(Arrays.asList(new String[] {userRepresentation.getEmail()}));
-        profile.setCreationTime(userRepresentation.getCreatedTimestamp());
+        profile.setCreationTime(userRepresentation.getCreatedTimestamp() != null 
+                ? userRepresentation.getCreatedTimestamp() : System.currentTimeMillis());
 
         // Just default these. UserProfile isn't a great data model for this data since it isn't actually the Airavata
         // UserProfile

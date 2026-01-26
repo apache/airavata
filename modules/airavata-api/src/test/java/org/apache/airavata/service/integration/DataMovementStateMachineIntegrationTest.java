@@ -43,8 +43,8 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,6 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
+            org.apache.airavata.config.TestDaprConfig.class,
             DataMovementStateMachineIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -91,6 +92,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
                 "org.apache.airavata.registry.utils",
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
+                "org.apache.airavata.orchestrator.internal.messaging",
                 "org.apache.airavata.messaging"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -103,7 +105,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
 
     @Autowired(required = false)
     private DaprMessagingFactory messagingFactory;
@@ -115,12 +117,12 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService) {
+            StatusService statusService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
     }
 
     @BeforeEach
@@ -148,10 +150,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(
                 ProcessState.INPUT_DATA_STAGING, latest.getState(), "Process should be in INPUT_DATA_STAGING state");
 
@@ -176,10 +178,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(
                 ProcessState.OUTPUT_DATA_STAGING, latest.getState(), "Process should be in OUTPUT_DATA_STAGING state");
 
@@ -209,10 +211,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
         // data staging states are in history
@@ -240,10 +242,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.FAILED, latest.getState(), "Process should be in FAILED state");
 
         // Test failure during output staging
@@ -262,10 +264,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
 
         for (ProcessState state : states2) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy2.processId);
+            statusService.addProcessStatus(status, testHierarchy2.processId);
         }
 
-        ProcessStatus latest2 = processStatusService.getProcessStatus(testHierarchy2.processId);
+        ProcessStatus latest2 = statusService.getLatestProcessStatus(testHierarchy2.processId);
         assertEquals(ProcessState.FAILED, latest2.getState(), "Process should be in FAILED state");
     }
 
@@ -291,10 +293,10 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
         var process = processService.getProcess(testHierarchy.processId);
@@ -339,7 +341,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
 
             ProcessStatus inputStaging =
                     StateMachineTestUtils.createProcessStatus(ProcessState.INPUT_DATA_STAGING, "Input data staging");
-            processStatusService.addProcessStatus(inputStaging, testHierarchy.processId);
+            statusService.addProcessStatus(inputStaging, testHierarchy.processId);
 
             ProcessStatusChangeEvent event1 = new ProcessStatusChangeEvent(ProcessState.INPUT_DATA_STAGING, identifier);
             MessageContext msgCtx1 = new MessageContext(
@@ -358,7 +360,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
             }
 
             ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-            processStatusService.addProcessStatus(executing, testHierarchy.processId);
+            statusService.addProcessStatus(executing, testHierarchy.processId);
 
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
@@ -378,7 +380,7 @@ public class DataMovementStateMachineIntegrationTest extends ServiceIntegrationT
 
             ProcessStatus outputStaging =
                     StateMachineTestUtils.createProcessStatus(ProcessState.OUTPUT_DATA_STAGING, "Output data staging");
-            processStatusService.addProcessStatus(outputStaging, testHierarchy.processId);
+            statusService.addProcessStatus(outputStaging, testHierarchy.processId);
 
             ProcessStatusChangeEvent event3 =
                     new ProcessStatusChangeEvent(ProcessState.OUTPUT_DATA_STAGING, identifier);

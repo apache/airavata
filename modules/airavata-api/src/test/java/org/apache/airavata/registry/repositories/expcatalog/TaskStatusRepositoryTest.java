@@ -28,18 +28,20 @@ import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskState;
-import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.registry.services.TaskService;
-import org.apache.airavata.registry.services.TaskStatusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
@@ -53,7 +55,7 @@ public class TaskStatusRepositoryTest extends TestBase {
     private final ExperimentService experimentService;
     private final ProcessService processService;
     private final TaskService taskService;
-    private final TaskStatusService taskStatusService;
+    private final StatusRepository statusRepository;
 
     private String gatewayId;
     private String projectId;
@@ -67,13 +69,13 @@ public class TaskStatusRepositoryTest extends TestBase {
             ExperimentService experimentService,
             ProcessService processService,
             TaskService taskService,
-            TaskStatusService taskStatusService) {
+            StatusRepository statusRepository) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
         this.taskService = taskService;
-        this.taskStatusService = taskStatusService;
+        this.statusRepository = statusRepository;
     }
 
     @BeforeEach
@@ -112,71 +114,87 @@ public class TaskStatusRepositoryTest extends TestBase {
     @Test
     public void testTaskStatusRepository_StateTransitions() throws RegistryException {
 
-        TaskStatus taskStatus = new TaskStatus();
-        taskStatus.setState(TaskState.EXECUTING);
-        taskStatusService.addTaskStatus(taskStatus, taskId);
+        String statusId1 = "TASK_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity taskStatus = new StatusEntity(statusId1, taskId, StatusParentType.TASK, TaskState.EXECUTING.name());
+        statusRepository.save(taskStatus);
         // Clear JPA cache to ensure fresh load with the newly added status
         flushAndClear();
-        assertEquals(1, taskService.getTask(taskId).getTaskStatuses().size(), "Task should have one status");
+        
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(taskId, StatusParentType.TASK);
+        assertEquals(1, statuses.size(), "Task should have one status");
+        assertEquals(taskId, statuses.get(0).getParentId(), "Parent ID should match task ID");
+        assertEquals(StatusParentType.TASK, statuses.get(0).getParentType(), "Parent type should be TASK");
 
-        taskStatus.setState(TaskState.CREATED);
-        taskStatusService.updateTaskStatus(taskStatus, taskId);
+        String statusId2 = "TASK_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity createdStatus = new StatusEntity(statusId2, taskId, StatusParentType.TASK, TaskState.CREATED.name());
+        statusRepository.save(createdStatus);
+        flushAndClear();
 
-        TaskStatus retrievedTaskStatus = taskStatusService.getTaskStatus(taskId);
-        assertEquals(TaskState.CREATED, retrievedTaskStatus.getState(), "Task status should be updated to CREATED");
+        java.util.Optional<StatusEntity> latestStatusOpt = statusRepository.findLatestByParentIdAndParentType(taskId, StatusParentType.TASK);
+        assertTrue(latestStatusOpt.isPresent(), "Latest status should exist");
+        StatusEntity retrievedTaskStatus = latestStatusOpt.get();
+        assertEquals(TaskState.CREATED.name(), retrievedTaskStatus.getState(), "Task status should be updated to CREATED");
         assertNotNull(retrievedTaskStatus.getStatusId(), "Status ID should be set");
+        assertEquals(taskId, retrievedTaskStatus.getParentId(), "Parent ID should match task ID");
+        assertEquals(StatusParentType.TASK, retrievedTaskStatus.getParentType(), "Parent type should be TASK");
     }
 
     @Test
     public void testTaskStatusRepository_MultipleStatusHistory() throws RegistryException, InterruptedException {
 
-        TaskStatus status1 = new TaskStatus();
-        status1.setState(TaskState.CREATED);
-        taskStatusService.addTaskStatus(status1, taskId);
+        String statusId1 = "TASK_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity status1 = new StatusEntity(statusId1, taskId, StatusParentType.TASK, TaskState.CREATED.name());
+        statusRepository.save(status1);
 
-        TaskStatus status2 = new TaskStatus();
-        status2.setState(TaskState.EXECUTING);
-        taskStatusService.addTaskStatus(status2, taskId);
+        Thread.sleep(10); // Ensure timestamp difference
 
-        TaskStatus status3 = new TaskStatus();
-        status3.setState(TaskState.COMPLETED);
-        taskStatusService.addTaskStatus(status3, taskId);
+        String statusId2 = "TASK_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity status2 = new StatusEntity(statusId2, taskId, StatusParentType.TASK, TaskState.EXECUTING.name());
+        statusRepository.save(status2);
+
+        Thread.sleep(10); // Ensure timestamp difference
+
+        String statusId3 = "TASK_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity status3 = new StatusEntity(statusId3, taskId, StatusParentType.TASK, TaskState.COMPLETED.name());
+        statusRepository.save(status3);
 
         // Clear JPA cache to ensure fresh load with the newly added statuses
         flushAndClear();
-        assertTrue(
-                taskService.getTask(taskId).getTaskStatuses().size() >= 3,
-                "Task should have at least 3 statuses in history");
+        
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(taskId, StatusParentType.TASK);
+        assertTrue(statuses.size() >= 3, "Task should have at least 3 statuses in history");
 
-        TaskStatus latest = taskStatusService.getTaskStatus(taskId);
-        assertEquals(TaskState.COMPLETED, latest.getState(), "Latest status should be COMPLETED");
+        java.util.Optional<StatusEntity> latestOpt = statusRepository.findLatestByParentIdAndParentType(taskId, StatusParentType.TASK);
+        assertTrue(latestOpt.isPresent(), "Latest status should exist");
+        StatusEntity latest = latestOpt.get();
+        assertEquals(TaskState.COMPLETED.name(), latest.getState(), "Latest status should be COMPLETED");
 
         // Verify strict timestamp ordering
-        java.util.List<TaskStatus> statuses = taskService.getTask(taskId).getTaskStatuses();
-        TaskStatus s1 = statuses.stream()
-                .filter(s -> s.getState() == TaskState.CREATED)
+        StatusEntity s1 = statuses.stream()
+                .filter(s -> TaskState.CREATED.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
-        TaskStatus s2 = statuses.stream()
-                .filter(s -> s.getState() == TaskState.EXECUTING)
+        StatusEntity s2 = statuses.stream()
+                .filter(s -> TaskState.EXECUTING.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
-        TaskStatus s3 = statuses.stream()
-                .filter(s -> s.getState() == TaskState.COMPLETED)
+        StatusEntity s3 = statuses.stream()
+                .filter(s -> TaskState.COMPLETED.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
 
-        assertNotNull(s1);
-        assertNotNull(s2);
-        assertNotNull(s3);
+        assertNotNull(s1, "CREATED status should exist");
+        assertNotNull(s2, "EXECUTING status should exist");
+        assertNotNull(s3, "COMPLETED status should exist");
 
+        // Verify sequence number ordering (sequence numbers guarantee deterministic creation order)
         assertTrue(
-                s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
-                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 ("
-                        + s1.getTimeOfStateChange() + ")");
+                s2.getSequenceNum() > s1.getSequenceNum(),
+                "Status 2 sequence (" + s2.getSequenceNum() + ") should be greater than Status 1 ("
+                        + s1.getSequenceNum() + ")");
         assertTrue(
-                s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
-                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 ("
-                        + s2.getTimeOfStateChange() + ")");
+                s3.getSequenceNum() > s2.getSequenceNum(),
+                "Status 3 sequence (" + s3.getSequenceNum() + ") should be greater than Status 2 ("
+                        + s2.getSequenceNum() + ")");
     }
 }

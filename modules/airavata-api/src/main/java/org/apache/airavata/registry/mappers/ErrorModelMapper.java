@@ -21,85 +21,55 @@ package org.apache.airavata.registry.mappers;
 
 import java.util.List;
 import org.apache.airavata.common.model.ErrorModel;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
-import org.apache.airavata.registry.entities.expcatalog.ProcessErrorEntity;
+import org.apache.airavata.registry.entities.ErrorEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * MapStruct mapper for converting between ErrorModel entities and ErrorModel.
+ * MapStruct mapper for converting between ErrorEntity and ErrorModel.
+ *
+ * <p>This mapper uses the unified {@link ErrorEntity} which consolidates error records
+ * from experiments, processes, tasks, workflows, applications, and handlers.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface ErrorModelMapper {
 
+    // ========== Unified ErrorEntity Mappings ==========
+
+    /**
+     * Convert unified ErrorEntity to ErrorModel.
+     */
     @Mapping(
             target = "creationTime",
             expression = "java(entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L)")
     @Mapping(
             target = "rootCauseErrorIdList",
             expression =
-                    "java(entity.getRootCauseErrorIdList() != null && !entity.getRootCauseErrorIdList().isEmpty() ? java.util.Arrays.asList(entity.getRootCauseErrorIdList().split(\",\")) : null)")
-    ErrorModel toModel(ExperimentErrorEntity entity);
+                    "java(entity.getRootCauseErrorIdList() != null && !entity.getRootCauseErrorIdList().isEmpty() ? java.util.Arrays.asList(entity.getRootCauseErrorIdList().split(\",\")) : java.util.Collections.emptyList())")
+    ErrorModel toModel(ErrorEntity entity);
 
+    /**
+     * Convert ErrorModel to unified ErrorEntity.
+     * Note: parentId and parentType must be set separately after this mapping.
+     */
     @Mapping(
             target = "creationTime",
             expression = "java(model.getCreationTime() > 0 ? new java.sql.Timestamp(model.getCreationTime()) : null)")
     @Mapping(
             target = "rootCauseErrorIdList",
             expression =
-                    "java(model.getRootCauseErrorIdList() != null ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
-    @Mapping(target = "experiment", ignore = true) // Set by parent entity - immutable in JPA
-    ExperimentErrorEntity toEntity(ErrorModel model);
+                    "java(model.getRootCauseErrorIdList() != null && !model.getRootCauseErrorIdList().isEmpty() ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
+    @Mapping(target = "parentId", ignore = true)
+    @Mapping(target = "parentType", ignore = true)
+    ErrorEntity toEntity(ErrorModel model);
 
-    @Mapping(
-            target = "creationTime",
-            expression = "java(entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L)")
-    @Mapping(
-            target = "rootCauseErrorIdList",
-            expression =
-                    "java(entity.getRootCauseErrorIdList() != null && !entity.getRootCauseErrorIdList().isEmpty() ? java.util.Arrays.asList(entity.getRootCauseErrorIdList().split(\",\")) : null)")
-    ErrorModel toModel(ProcessErrorEntity entity);
+    /**
+     * Convert list of unified ErrorEntity to list of ErrorModel.
+     */
+    List<ErrorModel> toModelList(List<ErrorEntity> entities);
 
-    @Mapping(
-            target = "creationTime",
-            expression = "java(model.getCreationTime() > 0 ? new java.sql.Timestamp(model.getCreationTime()) : null)")
-    @Mapping(
-            target = "rootCauseErrorIdList",
-            expression =
-                    "java(model.getRootCauseErrorIdList() != null ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
-    @Mapping(target = "process", ignore = true) // Set by parent entity - immutable in JPA
-    ProcessErrorEntity toEntityFromProcess(ErrorModel model);
-
-    @Mapping(
-            target = "creationTime",
-            expression = "java(entity.getCreationTime() != null ? entity.getCreationTime().getTime() : 0L)")
-    @Mapping(
-            target = "rootCauseErrorIdList",
-            expression =
-                    "java(entity.getRootCauseErrorIdList() != null && !entity.getRootCauseErrorIdList().isEmpty() ? java.util.Arrays.asList(entity.getRootCauseErrorIdList().split(\",\")) : null)")
-    ErrorModel toModel(org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity entity);
-
-    @Mapping(
-            target = "creationTime",
-            expression = "java(model.getCreationTime() > 0 ? new java.sql.Timestamp(model.getCreationTime()) : null)")
-    @Mapping(
-            target = "rootCauseErrorIdList",
-            expression =
-                    "java(model.getRootCauseErrorIdList() != null ? String.join(\",\", model.getRootCauseErrorIdList()) : null)")
-    @Mapping(target = "task", ignore = true) // Set by parent entity - immutable in JPA
-    org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity toEntityFromTask(ErrorModel model);
-
-    List<ErrorModel> toModelListFromExperiment(List<ExperimentErrorEntity> entities);
-
-    List<ExperimentErrorEntity> toEntityListFromExperiment(List<ErrorModel> models);
-
-    List<ErrorModel> toModelListFromProcess(List<ProcessErrorEntity> entities);
-
-    List<ProcessErrorEntity> toEntityListFromProcess(List<ErrorModel> models);
-
-    List<ErrorModel> toModelListFromTask(
-            List<org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity> entities);
-
-    List<org.apache.airavata.registry.entities.expcatalog.TaskErrorEntity> toEntityListFromTask(
-            List<ErrorModel> models);
+    /**
+     * Convert list of ErrorModel to list of unified ErrorEntity.
+     */
+    List<ErrorEntity> toEntityList(List<ErrorModel> models);
 }

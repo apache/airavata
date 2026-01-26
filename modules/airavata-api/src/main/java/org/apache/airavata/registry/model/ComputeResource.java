@@ -86,7 +86,7 @@ public interface ComputeResource {
 
     /**
      * This method will add a GlobusJobSubmission to the database
-     * @param globusJobSubmission GSISSHJobSubmission object
+     * @param globusJobSubmission GlobusJobSubmission object
      * @return uniquely generated submission id
      */
     String addGlobusJobSubmission(GlobusJobSubmission globusJobSubmission) throws AppCatalogException;
@@ -173,9 +173,9 @@ public interface ComputeResource {
     //    List<GlobusJobSubmission> getGlobusJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
 
     /**
-     * This method will retrieve GSISSHJobSubmission object
+     * This method will retrieve SSHJobSubmission object
      * @param submissionId unique submission id
-     * @return GSISSHSubmission object
+     * @return SSHJobSubmission object
      */
     SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException;
 
@@ -189,15 +189,15 @@ public interface ComputeResource {
     UnicoreDataMovement getUNICOREDataMovement(String dataMovementId) throws AppCatalogException;
 
     /**
-     * This method will retrieve GSISSHJobSubmission object
+     * This method will retrieve CloudJobSubmission object
      * @param submissionId unique submission id
-     * @return GSISSHSubmission object
+     * @return CloudJobSubmission object
      */
     CloudJobSubmission getCloudJobSubmission(String submissionId) throws AppCatalogException;
     //    /**
-    //     * This method will return a list of GSISSHSubmission objects according to given search criteria
+    //     * This method will return a list of SSHJobSubmission objects according to given search criteria
     //     * @param filters map should be provided as the field name and it's value
-    //     * @return list of GSISSHSubmission objects
+    //     * @return list of SSHJobSubmission objects
     //     */
     //    List<SSHJobSubmission> getSSHJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
     /**

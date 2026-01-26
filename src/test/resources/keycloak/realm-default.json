@@ -97,13 +97,35 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["admin", "gateway-provider", "offline_access", "uma_authorization"]
+      "realmRoles": ["admin", "gateway-provider", "offline_access", "uma_authorization"],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "manage-clients",
+          "view-clients",
+          "query-clients",
+          "manage-realm",
+          "view-realm"
+        ]
+      }
     },
     {
       "username": "service-account-pga",
       "enabled": true,
       "serviceAccountClientId": "pga",
-      "realmRoles": ["offline_access", "uma_authorization"]
+      "realmRoles": ["offline_access", "uma_authorization"],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "manage-clients",
+          "view-clients",
+          "query-clients"
+        ]
+      }
     }
   ]
 }

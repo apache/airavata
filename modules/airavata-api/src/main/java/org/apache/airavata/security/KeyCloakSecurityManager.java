@@ -31,12 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.credential.model.PasswordCredential;
+import org.apache.airavata.profile.utils.keycloak.KeycloakRestClient;
 import org.apache.airavata.security.authzcache.AuthzCacheEntry;
 import org.apache.airavata.security.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.authzcache.AuthzCacheManager;
@@ -241,21 +242,69 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     public AuthzToken getUserManagementServiceAccountAuthzToken(String gatewayId) throws AiravataSecurityException {
         try {
             initServiceClients();
-            Gateway gateway = registryService.getGateway(gatewayId);
+
+            // Get OAuth client credentials from Keycloak
+            // The "pga" client is created for each gateway during gateway setup
+            String oauthClientId = "pga";
+            String oauthClientSecret = getOAuthClientSecretFromKeycloak(gatewayId, oauthClientId);
+
             String tokenURL = getTokenEndpoint(gatewayId);
-            JsonNode clientCredentials =
-                    getClientCredentials(tokenURL, gateway.getOauthClientId(), gateway.getOauthClientSecret());
+            JsonNode clientCredentials = getClientCredentials(tokenURL, oauthClientId, oauthClientSecret);
             String accessToken = clientCredentials.get("access_token").asText();
             AuthzToken authzToken = new AuthzToken(accessToken);
 
             var claimsMap = authzToken.getClaimsMap();
             claimsMap.put(Constants.GATEWAY_ID, gatewayId);
-            claimsMap.put(Constants.USER_NAME, gateway.getOauthClientId());
+            claimsMap.put(Constants.USER_NAME, oauthClientId);
             return authzToken;
         } catch (Exception e) {
             throw new AiravataSecurityException(e);
         } finally {
             closeServiceClients();
+        }
+    }
+
+    /**
+     * Retrieves the OAuth client secret from Keycloak for a given gateway and client.
+     * Uses super admin credentials to authenticate with Keycloak Admin API.
+     *
+     * @param gatewayId the gateway/realm ID
+     * @param clientId the OAuth client ID (typically "pga")
+     * @return the client secret
+     * @throws AiravataSecurityException if credentials cannot be retrieved
+     */
+    private String getOAuthClientSecretFromKeycloak(String gatewayId, String clientId)
+            throws AiravataSecurityException {
+        try {
+            String serverUrl = properties.security().iam().serverUrl();
+            var keycloakClient = new KeycloakRestClient(serverUrl, properties);
+
+            // Get super admin credentials from configuration
+            var superAdminCredentials = new PasswordCredential();
+            superAdminCredentials.setLoginUserName(properties.security().iam().superAdmin().username());
+            superAdminCredentials.setPassword(properties.security().iam().superAdmin().password());
+
+            // Authenticate with master realm to get admin token
+            String adminToken = keycloakClient.obtainAdminToken("master", superAdminCredentials);
+
+            // Find the client by clientId (e.g., "pga") in the gateway's realm
+            var clients = keycloakClient.findClientsByClientId(gatewayId, clientId, adminToken);
+            if (clients.isEmpty()) {
+                throw new AiravataSecurityException(
+                        "OAuth client '" + clientId + "' not found in gateway '" + gatewayId + "'");
+            }
+
+            // Get the internal UUID of the client
+            String clientUUID = clients.get(0).getId();
+
+            // Retrieve the client secret
+            var credential = keycloakClient.getClientSecret(gatewayId, clientUUID, adminToken);
+            return credential.getValue();
+        } catch (AiravataSecurityException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AiravataSecurityException(
+                    "Failed to retrieve OAuth client secret from Keycloak: " + e.getMessage(), e);
         }
     }
 

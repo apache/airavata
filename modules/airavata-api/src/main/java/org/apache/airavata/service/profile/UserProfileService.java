@@ -22,24 +22,23 @@ package org.apache.airavata.service.profile;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.model.CrudType;
-import org.apache.airavata.common.model.EntityType;
+import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
-import org.apache.airavata.orchestrator.internal.messaging.Dispatcher;
-import org.apache.airavata.profile.entities.UserProfileEntity;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.exception.UserProfileServiceException;
 import org.apache.airavata.profile.mappers.UserProfileMapper;
-import org.apache.airavata.profile.repositories.UserProfileRepository;
+import org.apache.airavata.registry.entities.UserEntity;
+import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.UserRepository;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.UserInfo;
 import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.IamAdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,30 +57,30 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class UserProfileService {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileService.class);
 
-    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
     private final IamAdminService iamAdminService;
 
     private final UserProfileMapper userProfileMapper;
     private final AiravataSecurityManager securityManager;
     private final EntityManager entityManager;
-    private final Dispatcher dbEventDispatcher;
+    private final RegistryService registryService;
     private final TransactionTemplate iamUpdateTransactionTemplate;
 
     public UserProfileService(
-            UserProfileRepository userProfileRepository,
+            UserRepository userRepository,
             IamAdminService iamAdminService,
             UserProfileMapper userProfileMapper,
             AiravataSecurityManager securityManager,
             EntityManager entityManager,
             PlatformTransactionManager transactionManager,
-            Dispatcher dbEventDispatcher) {
-        this.userProfileRepository = userProfileRepository;
+            RegistryService registryService) {
+        this.userRepository = userRepository;
         this.iamAdminService = iamAdminService;
         this.userProfileMapper = userProfileMapper;
         this.securityManager = securityManager;
         this.entityManager = entityManager;
-        this.dbEventDispatcher = dbEventDispatcher;
+        this.registryService = registryService;
         // Create a TransactionTemplate for IAM updates that uses REQUIRES_NEW propagation
         this.iamUpdateTransactionTemplate = new TransactionTemplate(transactionManager);
         this.iamUpdateTransactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -112,12 +111,8 @@ public class UserProfileService {
             userProfile = createUserProfile(userProfile);
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
-                // replicate userProfile at end-places
-                try {
-                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
-                } catch (AiravataException e) {
-                    logger.error("Error dispatching USER_PROFILE create event", e);
-                }
+                // Create default project for the new user
+                createDefaultProjectIfNeeded(userProfile);
                 // return userId
                 return userProfile.getUserId();
             } else {
@@ -163,12 +158,8 @@ public class UserProfileService {
             userProfile = updateUserProfile(userProfile, iamUpdater);
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
-                // replicate userProfile at end-places
-                try {
-                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
-                } catch (AiravataException e) {
-                    logger.error("Error dispatching USER_PROFILE create event", e);
-                }
+                // Create default project for the new user
+                createDefaultProjectIfNeeded(userProfile);
                 // return userId
                 return userProfile.getUserId();
             } else {
@@ -206,19 +197,6 @@ public class UserProfileService {
             }
             if (updateUserProfile(userProfile, iamUserProfileUpdater) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
-                // replicate userProfile at end-places
-                // DB event publishing is best-effort and should not affect the transaction
-                try {
-                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile);
-                } catch (AiravataException e) {
-                    logger.error("Error dispatching USER_PROFILE update event", e);
-                } catch (RuntimeException e) {
-                    // Catch RuntimeException as well - DB event publishing failures should not rollback the transaction
-                    logger.error("Error publishing user profile update event (RuntimeException)", e);
-                } catch (Throwable e) {
-                    // Catch everything to ensure no exception from DB event publishing affects the transaction
-                    logger.error("Error publishing user profile update event (unexpected exception)", e);
-                }
                 return true;
             }
             return false;
@@ -354,15 +332,6 @@ public class UserProfileService {
             // delete user
             boolean deleteSuccess = deleteUserProfile(userProfile.getAiravataInternalUserId());
             logger.info("Delete UserProfile with userId: " + userId + ", " + (deleteSuccess ? "Success!" : "Failed!"));
-
-            if (deleteSuccess) {
-                // delete userProfile at end-places
-                try {
-                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.DELETE, userProfile);
-                } catch (AiravataException e) {
-                    logger.error("Error dispatching USER_PROFILE delete event", e);
-                }
-            }
             return deleteSuccess;
         } catch (RuntimeException e) {
             String message = "Error while deleting user profile: " + e.getMessage();
@@ -396,7 +365,7 @@ public class UserProfileService {
 
     // Helper methods that wrap repository calls and handle entity-to-model mapping
     public UserProfile getUserProfileByIdAndGateWay(String userId, String gatewayId) {
-        Optional<UserProfileEntity> entityOpt = userProfileRepository.findByUserIdAndGatewayId(userId, gatewayId);
+        Optional<UserEntity> entityOpt = userRepository.findByUserIdAndGatewayId(userId, gatewayId);
         if (entityOpt.isEmpty()) {
             return null;
         }
@@ -408,24 +377,30 @@ public class UserProfileService {
     }
 
     private UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
-        UserProfileEntity entity = userProfileMapper.toEntity(userProfile);
-        UserProfileEntity persistedCopy;
+        UserEntity entity = userProfileMapper.toEntity(userProfile);
+        UserEntity persistedCopy;
         try {
             // If updating an existing entity, preserve creationTime and lastAccessTime from the database
             // These fields are required and should not be null
             if (entity.getAiravataInternalUserId() != null) {
-                UserProfileEntity existingEntity =
-                        entityManager.find(UserProfileEntity.class, entity.getAiravataInternalUserId());
+                UserEntity existingEntity =
+                        entityManager.find(UserEntity.class, entity.getAiravataInternalUserId());
                 if (existingEntity != null) {
                     // Entity exists - update it with new values while preserving timestamps
                     // Copy non-null fields from the new entity to the existing one
-                    if (entity.getUserId() != null) existingEntity.setUserId(entity.getUserId());
+                    // UserEntity now uses OIDC standard claims:
+                    // - sub (replaces userId)
+                    // - givenName (replaces firstName)
+                    // - familyName (replaces lastName)
+                    // - email (replaces emails list)
+                    // - state and validUntil are removed (not in OIDC scope)
+                    if (entity.getSub() != null) existingEntity.setSub(entity.getSub());
                     if (entity.getGatewayId() != null) existingEntity.setGatewayId(entity.getGatewayId());
-                    if (entity.getFirstName() != null) existingEntity.setFirstName(entity.getFirstName());
-                    if (entity.getLastName() != null) existingEntity.setLastName(entity.getLastName());
-                    if (entity.getEmails() != null) existingEntity.setEmails(entity.getEmails());
-                    if (entity.getState() != null) existingEntity.setState(entity.getState());
-                    if (entity.getValidUntil() != null) existingEntity.setValidUntil(entity.getValidUntil());
+                    if (entity.getGivenName() != null) existingEntity.setGivenName(entity.getGivenName());
+                    if (entity.getFamilyName() != null) existingEntity.setFamilyName(entity.getFamilyName());
+                    if (entity.getEmail() != null) existingEntity.setEmail(entity.getEmail());
+                    if (entity.getPreferredUsername() != null) existingEntity.setPreferredUsername(entity.getPreferredUsername());
+                    if (entity.getZoneinfo() != null) existingEntity.setZoneinfo(entity.getZoneinfo());
                     // Use existing entity (with preserved timestamps) for merge
                     entity = existingEntity;
                 }
@@ -497,27 +472,55 @@ public class UserProfileService {
     private List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) {
         if (limit > 0) {
             Pageable pageable = PageRequest.of(offset / limit, limit);
-            Page<UserProfileEntity> page = userProfileRepository.findByGatewayId(gatewayId, pageable);
+            Page<UserEntity> page = userRepository.findByGatewayId(gatewayId, pageable);
             return userProfileMapper.toModelList(page.getContent());
         } else {
-            List<UserProfileEntity> entities = userProfileRepository.findByGatewayId(gatewayId);
+            List<UserEntity> entities = userRepository.findByGatewayId(gatewayId);
             return userProfileMapper.toModelList(entities);
         }
     }
 
     private boolean deleteUserProfile(String airavataInternalUserId) {
-        if (userProfileRepository.existsById(airavataInternalUserId)) {
-            userProfileRepository.deleteById(airavataInternalUserId);
+        if (userRepository.existsById(airavataInternalUserId)) {
+            userRepository.deleteById(airavataInternalUserId);
             return true;
         }
         return false;
     }
 
     public UserProfile getUserProfileByAiravataInternalUserId(String airavataInternalUserId) {
-        Optional<UserProfileEntity> entityOpt = userProfileRepository.findById(airavataInternalUserId);
+        Optional<UserEntity> entityOpt = userRepository.findById(airavataInternalUserId);
         if (entityOpt.isEmpty()) {
             return null;
         }
         return userProfileMapper.toModel(entityOpt.get());
+    }
+
+    /**
+     * Creates a default project for a user if they don't already have one.
+     * This ensures every user has at least one project to work with.
+     *
+     * @param userProfile The user profile to create a default project for
+     */
+    private void createDefaultProjectIfNeeded(UserProfile userProfile) {
+        try {
+            // Check if user already has any projects
+            var projects = registryService.getUserProjects(
+                    userProfile.getGatewayId(), userProfile.getUserId(), 1, 0);
+            if (projects.isEmpty()) {
+                var defaultProject = new Project();
+                defaultProject.setOwner(userProfile.getUserId());
+                defaultProject.setName("Default Project");
+                defaultProject.setGatewayId(userProfile.getGatewayId());
+                defaultProject.setDescription("This is the default project for user " + userProfile.getUserId());
+                var defaultProjectId = registryService.createProject(userProfile.getGatewayId(), defaultProject);
+                logger.info("Default project created for user: {} with projectId: {}",
+                        userProfile.getUserId(), defaultProjectId);
+            }
+        } catch (RegistryException e) {
+            // Log but don't fail - default project creation is best-effort
+            logger.warn("Failed to create default project for user: {}. Reason: {}",
+                    userProfile.getUserId(), e.getMessage());
+        }
     }
 }

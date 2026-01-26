@@ -41,10 +41,9 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
-import org.apache.airavata.registry.services.TaskStatusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,9 +96,8 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
     private final TaskService taskService;
-    private final TaskStatusService taskStatusService;
 
     private String testProcessId;
     private String testExperimentId;
@@ -110,16 +108,14 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService,
-            TaskService taskService,
-            TaskStatusService taskStatusService) {
+            StatusService statusService,
+            TaskService taskService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
         this.taskService = taskService;
-        this.taskStatusService = taskStatusService;
     }
 
     @BeforeEach
@@ -157,13 +153,13 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Task transitions: CREATED -> EXECUTING -> COMPLETED
         TaskStatus executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Task executing");
-        taskStatusService.addTaskStatus(executing, testTaskId);
+        statusService.addTaskStatus(executing, testTaskId);
 
         TaskStatus completed = StateMachineTestUtils.createTaskStatus(TaskState.COMPLETED, "Task completed");
-        taskStatusService.addTaskStatus(completed, testTaskId);
+        statusService.addTaskStatus(completed, testTaskId);
 
         // Verify task state
-        TaskStatus taskStatus = taskStatusService.getTaskStatus(testTaskId);
+        TaskStatus taskStatus = statusService.getLatestTaskStatus(testTaskId);
         assertEquals(TaskState.COMPLETED, taskStatus.getState(), "Task should be in COMPLETED state");
 
         // Verify task state transition was valid
@@ -179,13 +175,13 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Task transitions: CREATED -> EXECUTING -> FAILED
         TaskStatus executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Task executing");
-        taskStatusService.addTaskStatus(executing, testTaskId);
+        statusService.addTaskStatus(executing, testTaskId);
 
         TaskStatus failed = StateMachineTestUtils.createTaskStatus(TaskState.FAILED, "Task failed");
-        taskStatusService.addTaskStatus(failed, testTaskId);
+        statusService.addTaskStatus(failed, testTaskId);
 
         // Verify task state
-        TaskStatus taskStatus = taskStatusService.getTaskStatus(testTaskId);
+        TaskStatus taskStatus = statusService.getLatestTaskStatus(testTaskId);
         assertEquals(TaskState.FAILED, taskStatus.getState(), "Task should be in FAILED state");
 
         // When task fails, process should transition to FAILED (if fatal or retries exhausted)
@@ -205,14 +201,14 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Simulate process reaching completion stage
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         // CompletingTask would be executed and set process to COMPLETED
         ProcessStatus completed = StateMachineTestUtils.createProcessStatus(ProcessState.COMPLETED, "Completed");
-        processStatusService.addProcessStatus(completed, testProcessId);
+        statusService.addProcessStatus(completed, testProcessId);
 
         // Verify process state
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Process should be in COMPLETED state");
 
         // Verify state transition was valid
@@ -231,19 +227,19 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
         // Simulate task failure after retries exhausted
         // Process should be in EXECUTING state
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         // Task fails (retries exhausted)
         TaskStatus failed = StateMachineTestUtils.createTaskStatus(TaskState.FAILED, "Task failed - retries exhausted");
-        taskStatusService.addTaskStatus(failed, testTaskId);
+        statusService.addTaskStatus(failed, testTaskId);
 
         // Process should transition to FAILED (handled by AiravataTask.onFail())
         ProcessStatus failedProcess =
                 StateMachineTestUtils.createProcessStatus(ProcessState.FAILED, "Process failed due to task failure");
-        processStatusService.addProcessStatus(failedProcess, testProcessId);
+        statusService.addProcessStatus(failedProcess, testProcessId);
 
         // Verify process state
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.FAILED, latest.getState(), "Process should be in FAILED state");
 
         // Verify state transition was valid
@@ -261,16 +257,16 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Simulate task failure with autoSchedule enabled
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         // Task fails but autoSchedule would trigger requeue
         // Process should transition to REQUEUED
         ProcessStatus requeued = StateMachineTestUtils.createProcessStatus(
                 ProcessState.REQUEUED, "Requeued due to task failure with autoSchedule");
-        processStatusService.addProcessStatus(requeued, testProcessId);
+        statusService.addProcessStatus(requeued, testProcessId);
 
         // Verify process state
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.REQUEUED, latest.getState(), "Process should be in REQUEUED state");
 
         // Verify state transition was valid
@@ -313,7 +309,7 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Task must transition through valid states
         TaskStatus created = StateMachineTestUtils.createTaskStatus(TaskState.CREATED, "Created");
-        taskStatusService.addTaskStatus(created, testTaskId);
+        statusService.addTaskStatus(created, testTaskId);
 
         // Valid transition: CREATED -> EXECUTING
         assertTrue(
@@ -321,7 +317,7 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
                 "CREATED -> EXECUTING should be valid for tasks");
 
         TaskStatus executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Executing");
-        taskStatusService.addTaskStatus(executing, testTaskId);
+        statusService.addTaskStatus(executing, testTaskId);
 
         // Invalid transition: EXECUTING -> CREATED (cannot go backwards)
         assertFalse(
@@ -350,20 +346,20 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Task1 succeeds -> should trigger task2
         TaskStatus task1Executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Task1 executing");
-        taskStatusService.addTaskStatus(task1Executing, task1Id);
+        statusService.addTaskStatus(task1Executing, task1Id);
 
         TaskStatus task1Completed = StateMachineTestUtils.createTaskStatus(TaskState.COMPLETED, "Task1 completed");
-        taskStatusService.addTaskStatus(task1Completed, task1Id);
+        statusService.addTaskStatus(task1Completed, task1Id);
 
         // Task2 should be ready to execute (in real workflow, nextTask.invoke() would trigger it)
         TaskStatus task2Executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Task2 executing");
-        taskStatusService.addTaskStatus(task2Executing, task2Id);
+        statusService.addTaskStatus(task2Executing, task2Id);
 
         // Verify both tasks have correct states
-        TaskStatus task1Status = taskStatusService.getTaskStatus(task1Id);
+        TaskStatus task1Status = statusService.getLatestTaskStatus(task1Id);
         assertEquals(TaskState.COMPLETED, task1Status.getState(), "Task1 should be COMPLETED");
 
-        TaskStatus task2Status = taskStatusService.getTaskStatus(task2Id);
+        TaskStatus task2Status = statusService.getLatestTaskStatus(task2Id);
         assertEquals(TaskState.EXECUTING, task2Status.getState(), "Task2 should be EXECUTING");
     }
 
@@ -385,22 +381,22 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Task1 fails (fatal) -> task chain should stop
         TaskStatus task1Executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Task1 executing");
-        taskStatusService.addTaskStatus(task1Executing, task1Id);
+        statusService.addTaskStatus(task1Executing, task1Id);
 
         TaskStatus task1Failed = StateMachineTestUtils.createTaskStatus(TaskState.FAILED, "Task1 failed - fatal");
-        taskStatusService.addTaskStatus(task1Failed, task1Id);
+        statusService.addTaskStatus(task1Failed, task1Id);
 
         // Process should transition to FAILED (handled by AiravataTask.onFail())
         ProcessStatus failed =
                 StateMachineTestUtils.createProcessStatus(ProcessState.FAILED, "Process failed due to task1 failure");
-        processStatusService.addProcessStatus(failed, testProcessId);
+        statusService.addProcessStatus(failed, testProcessId);
 
         // Verify task1 is FAILED
-        TaskStatus task1Status = taskStatusService.getTaskStatus(task1Id);
+        TaskStatus task1Status = statusService.getLatestTaskStatus(task1Id);
         assertEquals(TaskState.FAILED, task1Status.getState(), "Task1 should be FAILED");
 
         // Verify process is FAILED (task2 should not execute)
-        ProcessStatus processStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus processStatus = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.FAILED, processStatus.getState(), "Process should be FAILED");
     }
 
@@ -411,15 +407,15 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Task fails (non-fatal, retries available)
         TaskStatus executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Executing");
-        taskStatusService.addTaskStatus(executing, testTaskId);
+        statusService.addTaskStatus(executing, testTaskId);
 
         TaskStatus failed = StateMachineTestUtils.createTaskStatus(TaskState.FAILED, "Task failed - will retry");
-        taskStatusService.addTaskStatus(failed, testTaskId);
+        statusService.addTaskStatus(failed, testTaskId);
 
         // If retries are available, task can transition back to EXECUTING
         // (handled by AiravataTask.onFail() retry logic)
         TaskStatus retryExecuting = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Retrying task");
-        taskStatusService.addTaskStatus(retryExecuting, testTaskId);
+        statusService.addTaskStatus(retryExecuting, testTaskId);
 
         // Verify task can transition from FAILED back to EXECUTING for retry
         // Note: TaskStateValidator doesn't allow FAILED -> EXECUTING directly

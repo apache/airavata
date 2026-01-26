@@ -20,7 +20,11 @@
 package org.apache.airavata.registry.entities.expcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
+/**
+ * The primary key class for the computational_resource_scheduling database table.
+ */
 public class ComputationalResourceSchedulingPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -29,6 +33,12 @@ public class ComputationalResourceSchedulingPK implements Serializable {
     private String queueName;
 
     public ComputationalResourceSchedulingPK() {}
+
+    public ComputationalResourceSchedulingPK(String experimentId, String resourceHostId, String queueName) {
+        this.experimentId = experimentId;
+        this.resourceHostId = resourceHostId;
+        this.queueName = queueName;
+    }
 
     public String getExperimentId() {
         return experimentId;
@@ -54,26 +64,27 @@ public class ComputationalResourceSchedulingPK implements Serializable {
         this.queueName = queueName;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof ComputationalResourceSchedulingPK)) {
-            return false;
-        }
-        ComputationalResourceSchedulingPK castOther = (ComputationalResourceSchedulingPK) other;
-        return this.experimentId.equals(castOther.experimentId)
-                && this.resourceHostId.equals(castOther.resourceHostId)
-                && this.queueName.equals(castOther.queueName);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ComputationalResourceSchedulingPK that = (ComputationalResourceSchedulingPK) o;
+        return Objects.equals(experimentId, that.experimentId)
+                && Objects.equals(resourceHostId, that.resourceHostId)
+                && Objects.equals(queueName, that.queueName);
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.experimentId.hashCode();
-        hash = hash * prime + this.resourceHostId.hashCode();
-        hash = hash * prime + this.queueName.hashCode();
+        return Objects.hash(experimentId, resourceHostId, queueName);
+    }
 
-        return hash;
+    @Override
+    public String toString() {
+        return "ComputationalResourceSchedulingPK{"
+                + "experimentId='" + experimentId + '\''
+                + ", resourceHostId='" + resourceHostId + '\''
+                + ", queueName='" + queueName + '\''
+                + '}';
     }
 }

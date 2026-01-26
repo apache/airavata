@@ -26,7 +26,7 @@ import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.credential.repositories.CredentialRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
-import org.apache.airavata.sharing.repositories.DomainRepository;
+import org.apache.airavata.registry.repositories.GatewayRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,7 +58,7 @@ public class SpringContextLoadTest {
     private ExperimentRepository experimentRepository;
 
     @Autowired
-    private DomainRepository domainRepository;
+    private GatewayRepository gatewayRepository;
 
     @Autowired
     private CredentialRepository credentialRepository;
@@ -78,7 +78,7 @@ public class SpringContextLoadTest {
     public void testRepositoriesAreInjected() {
         assertNotNull(computeResourceRepository, "ComputeResourceRepository should be injected");
         assertNotNull(experimentRepository, "ExperimentRepository should be injected");
-        assertNotNull(domainRepository, "DomainRepository should be injected");
+        assertNotNull(gatewayRepository, "GatewayRepository should be injected");
         assertNotNull(credentialRepository, "CredentialRepository should be injected");
     }
 }

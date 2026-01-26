@@ -23,21 +23,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import org.apache.airavata.common.model.QueueStatusModel;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
-import org.apache.airavata.registry.services.QueueStatusService;
+import org.apache.airavata.registry.services.StatusService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
 
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class QueueStatusRepositoryTest extends TestBase {
 
-    private final QueueStatusService queueStatusService;
+    private final StatusRepository statusRepository;
+    private final StatusService statusService;
 
-    public QueueStatusRepositoryTest(QueueStatusService queueStatusService) {
-        this.queueStatusService = queueStatusService;
+    public QueueStatusRepositoryTest(StatusRepository statusRepository, StatusService statusService) {
+        this.statusRepository = statusRepository;
+        this.statusService = statusService;
     }
 
     @Test
@@ -53,10 +59,9 @@ public class QueueStatusRepositoryTest extends TestBase {
         queueStatusModel.setQueuedJobs(10);
         queueStatusModel.setTime(AiravataUtils.getUniqueTimestamp().getTime());
 
-        boolean returnValue = queueStatusService.createQueueStatuses(Arrays.asList(queueStatusModel));
-        assertTrue(returnValue);
+        statusService.createQueueStatuses(Arrays.asList(queueStatusModel));
 
-        QueueStatusModel retrieved = queueStatusService.getQueueStatus(uniqueHostName, uniqueQueueName);
+        QueueStatusModel retrieved = statusService.getQueueStatus(uniqueHostName, uniqueQueueName);
         assertNotNull(retrieved);
         assertEquals(uniqueHostName, retrieved.getHostName());
         assertEquals(uniqueQueueName, retrieved.getQueueName());
@@ -76,10 +81,10 @@ public class QueueStatusRepositoryTest extends TestBase {
         status1.setQueueUp(true);
         status1.setTime(AiravataUtils.getUniqueTimestamp().getTime());
 
-        queueStatusService.createQueueStatuses(Arrays.asList(status1));
+        statusService.createQueueStatuses(Arrays.asList(status1));
 
         // Verify we can retrieve individual status
-        QueueStatusModel retrieved = queueStatusService.getQueueStatus(hostName, "queue1");
+        QueueStatusModel retrieved = statusService.getQueueStatus(hostName, "queue1");
         assertNotNull(retrieved);
         assertEquals(hostName, retrieved.getHostName());
     }

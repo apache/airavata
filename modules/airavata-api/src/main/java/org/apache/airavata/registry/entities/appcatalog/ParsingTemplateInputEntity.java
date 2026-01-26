@@ -28,6 +28,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
+/**
+ * Represents a mapping between a parsing template and a parser input.
+ */
 @Entity
 @Table(name = "PARSING_TEMPLATE_INPUT")
 public class ParsingTemplateInputEntity implements Serializable {
@@ -49,9 +52,12 @@ public class ParsingTemplateInputEntity implements Serializable {
     @Column(name = "PARSING_TEMPLATE_ID", nullable = false, insertable = false, updatable = false)
     private String parsingTemplateId;
 
-    @ManyToOne(targetEntity = ParserInputEntity.class, cascade = CascadeType.MERGE)
+    /**
+     * Reference to the parser I/O entry (should be an INPUT direction entry).
+     */
+    @ManyToOne(targetEntity = ParserIOEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "TARGET_PARSER_INPUT_ID")
-    private ParserInputEntity input;
+    private ParserIOEntity input;
 
     @ManyToOne(targetEntity = ParsingTemplateEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "PARSING_TEMPLATE_ID")
@@ -97,11 +103,11 @@ public class ParsingTemplateInputEntity implements Serializable {
         this.parsingTemplateId = parsingTemplateId;
     }
 
-    public ParserInputEntity getInput() {
+    public ParserIOEntity getInput() {
         return input;
     }
 
-    public void setInput(ParserInputEntity input) {
+    public void setInput(ParserIOEntity input) {
         this.input = input;
     }
 

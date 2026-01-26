@@ -23,35 +23,22 @@ import java.util.Objects;
 import org.apache.airavata.credential.Credential;
 
 /**
- * Domain model: PasswordCredential
+ * Password-based credential for authenticating to resources.
  */
 public class PasswordCredential extends Credential {
     private static final long serialVersionUID = 1L;
-    private String gatewayId;
-    private String portalUserName;
+
+    /**
+     * The login username for the target resource.
+     */
     private String loginUserName;
+
+    /**
+     * The password for authentication.
+     */
     private String password;
-    private String description;
-    private Long persistedTime;
-    private String token;
 
     public PasswordCredential() {}
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
-    }
-
-    public String getPortalUserName() {
-        return portalUserName;
-    }
-
-    public void setPortalUserName(String portalUserName) {
-        this.portalUserName = portalUserName;
-    }
 
     public String getLoginUserName() {
         return loginUserName;
@@ -69,58 +56,36 @@ public class PasswordCredential extends Credential {
         this.password = password;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Long getPersistedTime() {
-        return persistedTime;
-    }
-
-    public void setPersistedTime(Long persistedTime) {
-        this.persistedTime = persistedTime;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PasswordCredential that = (PasswordCredential) o;
-        return Objects.equals(gatewayId, that.gatewayId)
-                && Objects.equals(portalUserName, that.portalUserName)
+        return Objects.equals(getGatewayId(), that.getGatewayId())
+                && Objects.equals(getUserId(), that.getUserId())
                 && Objects.equals(loginUserName, that.loginUserName)
                 && Objects.equals(password, that.password)
-                && Objects.equals(description, that.description)
-                && Objects.equals(persistedTime, that.persistedTime)
-                && Objects.equals(token, that.token);
+                && Objects.equals(getDescription(), that.getDescription())
+                && Objects.equals(getPersistedTime(), that.getPersistedTime())
+                && Objects.equals(getToken(), that.getToken());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gatewayId, portalUserName, loginUserName, password, description, persistedTime, token);
+        return Objects.hash(getGatewayId(), getUserId(), loginUserName, password,
+                getDescription(), getPersistedTime(), getToken());
     }
 
     @Override
     public String toString() {
-        return "PasswordCredential{" + "gatewayId='"
-                + gatewayId + '\'' + ", portalUserName='"
-                + portalUserName + '\'' + ", loginUserName='"
-                + loginUserName + '\'' + ", password='"
-                + (password != null ? "***" : null) + '\'' + ", description='"
-                + description + '\'' + ", persistedTime="
-                + persistedTime + ", token='"
-                + token + '\'' + '}';
+        return "PasswordCredential{"
+                + "gatewayId='" + getGatewayId() + '\''
+                + ", userId='" + getUserId() + '\''
+                + ", loginUserName='" + loginUserName + '\''
+                + ", password='" + (password != null ? "***" : null) + '\''
+                + ", description='" + getDescription() + '\''
+                + ", persistedTime=" + getPersistedTime()
+                + ", token='" + getToken() + '\''
+                + '}';
     }
 }

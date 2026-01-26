@@ -19,9 +19,11 @@
 */
 package org.apache.airavata.thriftapi.mapper;
 
+import java.util.Date;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -35,13 +37,28 @@ public interface PasswordCredentialMapper extends ModelMapper {
     /**
      * Convert domain model to thrift model.
      */
+    @Mapping(target = "persistedTime", source = "persistedTime", qualifiedByName = "dateToLong")
     org.apache.airavata.thriftapi.credential.model.PasswordCredential toThrift(PasswordCredential domain);
 
     /**
      * Convert thrift model to domain model.
-     *
-     * Note: certificateRequestedTime is ignored as it is not present in the Thrift IDL definition.
      */
-    @Mapping(target = "certificateRequestedTime", ignore = true)
+    @Mapping(target = "persistedTime", source = "persistedTime", qualifiedByName = "longToDate")
     PasswordCredential toDomain(org.apache.airavata.thriftapi.credential.model.PasswordCredential thrift);
+
+    /**
+     * Convert Date to long (milliseconds since epoch).
+     */
+    @Named("dateToLong")
+    default long dateToLong(Date date) {
+        return date != null ? date.getTime() : 0L;
+    }
+
+    /**
+     * Convert long to Date.
+     */
+    @Named("longToDate")
+    default Date longToDate(long millis) {
+        return millis > 0 ? new Date(millis) : null;
+    }
 }

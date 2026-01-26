@@ -20,19 +20,23 @@
 package org.apache.airavata.registry.entities.appcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * The primary key class for the batch_queue database table.
- *
  */
 public class BatchQueuePK implements Serializable {
-    // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     private String computeResourceId;
     private String queueName;
 
     public BatchQueuePK() {}
+
+    public BatchQueuePK(String computeResourceId, String queueName) {
+        this.computeResourceId = computeResourceId;
+        this.queueName = queueName;
+    }
 
     public String getComputeResourceId() {
         return computeResourceId;
@@ -50,23 +54,25 @@ public class BatchQueuePK implements Serializable {
         this.queueName = queueName;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof BatchQueuePK)) {
-            return false;
-        }
-        BatchQueuePK castOther = (BatchQueuePK) other;
-        return this.computeResourceId.equals(castOther.computeResourceId) && this.queueName.equals(castOther.queueName);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BatchQueuePK that = (BatchQueuePK) o;
+        return Objects.equals(computeResourceId, that.computeResourceId)
+                && Objects.equals(queueName, that.queueName);
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.computeResourceId.hashCode();
-        hash = hash * prime + this.queueName.hashCode();
+        return Objects.hash(computeResourceId, queueName);
+    }
 
-        return hash;
+    @Override
+    public String toString() {
+        return "BatchQueuePK{"
+                + "computeResourceId='" + computeResourceId + '\''
+                + ", queueName='" + queueName + '\''
+                + '}';
     }
 }

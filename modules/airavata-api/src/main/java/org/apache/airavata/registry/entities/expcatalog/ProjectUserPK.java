@@ -20,18 +20,23 @@
 package org.apache.airavata.registry.entities.expcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * The primary key class for the project_user database table.
  */
 public class ProjectUserPK implements Serializable {
-    // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     private String projectID;
     private String userName;
 
     public ProjectUserPK() {}
+
+    public ProjectUserPK(String projectID, String userName) {
+        this.projectID = projectID;
+        this.userName = userName;
+    }
 
     public String getProjectID() {
         return projectID;
@@ -49,23 +54,25 @@ public class ProjectUserPK implements Serializable {
         this.userName = userName;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof ProjectUserPK)) {
-            return false;
-        }
-        ProjectUserPK castOther = (ProjectUserPK) other;
-        return this.projectID.equals(castOther.projectID) && this.userName.equals(castOther.userName);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProjectUserPK that = (ProjectUserPK) o;
+        return Objects.equals(projectID, that.projectID)
+                && Objects.equals(userName, that.userName);
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.projectID.hashCode();
-        hash = hash * prime + this.userName.hashCode();
+        return Objects.hash(projectID, userName);
+    }
 
-        return hash;
+    @Override
+    public String toString() {
+        return "ProjectUserPK{"
+                + "projectID='" + projectID + '\''
+                + ", userName='" + userName + '\''
+                + '}';
     }
 }

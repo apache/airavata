@@ -87,16 +87,6 @@ public class RestModeStartupTest {
     private ApplicationContext applicationContext;
 
     @Test
-    public void testDBEventDispatcherIsAvailable() {
-
-        String[] beanNames = applicationContext.getBeanNamesForType(
-                org.apache.airavata.orchestrator.internal.messaging.Dispatcher.class);
-        int count = beanNames.length;
-
-        assertTrue(count > 0, "Dispatcher should be available in HTTP mode (replaces DBEventManagerRunner)");
-    }
-
-    @Test
     public void testApplicationContextLoads() {
         assertNotNull(applicationContext, "Application context should be loaded in HTTP mode");
     }

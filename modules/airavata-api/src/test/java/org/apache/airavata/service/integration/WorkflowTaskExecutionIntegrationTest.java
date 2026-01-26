@@ -41,8 +41,8 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -99,7 +99,7 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
     private final TaskService taskService;
 
     private String testProcessId;
@@ -110,13 +110,13 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService,
+            StatusService statusService,
             TaskService taskService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
         this.taskService = taskService;
     }
 
@@ -148,7 +148,7 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
         // Test that state transitions are validated before tasks can execute
         // This ensures invalid state transitions are rejected even if tasks try to update state
 
-        ProcessStatus currentStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus currentStatus = statusService.getLatestProcessStatus(testProcessId);
         ProcessState currentState = currentStatus != null ? currentStatus.getState() : null;
 
         // Test valid transition: CREATED -> VALIDATED
@@ -157,7 +157,7 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
                 "CREATED -> VALIDATED should be valid");
 
         ProcessStatus validated = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
-        processStatusService.addProcessStatus(validated, testProcessId);
+        statusService.addProcessStatus(validated, testProcessId);
 
         // Test invalid transition: VALIDATED -> COMPLETED (skipping required states)
         assertFalse(
@@ -166,7 +166,7 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
                 "VALIDATED -> COMPLETED (skipping STARTED/EXECUTING) should be invalid");
 
         // Verify state was updated correctly
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.VALIDATED, latest.getState(), "Process should be in VALIDATED state");
     }
 
@@ -226,7 +226,7 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
 
         // Simulate job completion by transitioning process to appropriate state
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         // Create tasks that would be created by PostWorkflowManager
         // JOB_VERIFICATION task (created first in post-workflow)
@@ -254,9 +254,9 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
 
         // CREATED -> STARTED should trigger PreWorkflowManager
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(started, testProcessId);
+        statusService.addProcessStatus(started, testProcessId);
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.STARTED, latest.getState(), "Process should be in STARTED state");
 
         // At STARTED state, PreWorkflowManager would create pre-execution tasks
@@ -268,12 +268,12 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
 
         // EXECUTING -> COMPLETED should trigger PostWorkflowManager
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         ProcessStatus completed = StateMachineTestUtils.createProcessStatus(ProcessState.COMPLETED, "Completed");
-        processStatusService.addProcessStatus(completed, testProcessId);
+        statusService.addProcessStatus(completed, testProcessId);
 
-        latest = processStatusService.getProcessStatus(testProcessId);
+        latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Process should be in COMPLETED state");
     }
 
@@ -339,23 +339,23 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
         // Test that process state determines which workflow phase and tasks can execute
 
         // CREATED state: No tasks should execute yet
-        ProcessStatus created = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus created = statusService.getLatestProcessStatus(testProcessId);
         assertNotNull(created, "Process should have initial status");
         assertEquals(ProcessState.CREATED, created.getState(), "Process should start in CREATED state");
 
         // STARTED state: Pre-workflow tasks should execute
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(started, testProcessId);
+        statusService.addProcessStatus(started, testProcessId);
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.STARTED, latest.getState(), "Process should be in STARTED state");
         // At STARTED, PreWorkflowManager would create and execute pre-workflow tasks
 
         // EXECUTING state: Job is running, post-workflow tasks will execute when job completes
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
-        latest = processStatusService.getProcessStatus(testProcessId);
+        latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.EXECUTING, latest.getState(), "Process should be in EXECUTING state");
         // At EXECUTING, job is running; PostWorkflowManager will handle post-execution tasks
     }

@@ -31,12 +31,19 @@ import org.apache.airavata.common.model.DataProductType;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.common.model.ReplicaLocationCategory;
 import org.apache.airavata.common.model.ReplicaPersistentType;
-import org.apache.airavata.registry.entities.replicacatalog.DataProductMetadataEntity;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
+
+/**
+ * Test class for DataProductRepository functionality.
+ *
+ * <p>Note: Metadata for data products is stored in the unified MetadataEntity table
+ * with parentType = MetadataParentType.DATA_PRODUCT. The DataProductService handles
+ * metadata persistence and retrieval through MetadataRepository.
+ */
 
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -77,15 +84,9 @@ public class DataProductRepositoryTest extends TestBase {
         // Set the generated productUri back on the model for subsequent updates
         testDataProductModel2.setProductUri(productUri2);
 
-        DataProductMetadataEntity dataProductMetadataEntity = new DataProductMetadataEntity();
-        dataProductMetadataEntity.setProductUri(productUri2);
-        dataProductMetadataEntity.setMetadataKey("dataKey");
-        dataProductMetadataEntity.setMetadataValue("dataValue");
-
-        Map<String, String> dataProductMetadataEntityMap = new HashMap<>();
-        dataProductMetadataEntityMap.put(
-                dataProductMetadataEntity.getMetadataKey(), dataProductMetadataEntity.getMetadataValue());
-        testDataProductModel2.setProductMetadata(dataProductMetadataEntityMap);
+        Map<String, String> productMetadata = new HashMap<>();
+        productMetadata.put("dataKey", "dataValue");
+        testDataProductModel2.setProductMetadata(productMetadata);
         testDataProductModel2.setParentProductUri(productUri1);
         assertTrue(dataProductService.updateDataProduct(testDataProductModel2));
 

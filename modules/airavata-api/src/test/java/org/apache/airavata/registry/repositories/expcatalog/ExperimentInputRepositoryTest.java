@@ -23,17 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.registry.entities.InputDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.InputDataRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
-import org.apache.airavata.registry.services.ExperimentInputService;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
@@ -48,7 +48,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
     private final GatewayService gatewayService;
     private final ProjectService projectService;
     private final ExperimentService experimentService;
-    private final ExperimentInputService experimentInputService;
+    private final InputDataRepository inputDataRepository;
 
     private String gatewayId;
     private String projectId;
@@ -58,11 +58,11 @@ public class ExperimentInputRepositoryTest extends TestBase {
             GatewayService gatewayService,
             ProjectService projectService,
             ExperimentService experimentService,
-            ExperimentInputService experimentInputService) {
+            InputDataRepository inputDataRepository) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
-        this.experimentInputService = experimentInputService;
+        this.inputDataRepository = inputDataRepository;
     }
 
     @BeforeEach
@@ -92,23 +92,27 @@ public class ExperimentInputRepositoryTest extends TestBase {
     @Test
     public void testExperimentInputRepository_CreateAndUpdate() throws RegistryException {
 
-        InputDataObjectType inputDataObjectTypeExp = new InputDataObjectType();
-        inputDataObjectTypeExp.setName("inputE");
-        inputDataObjectTypeExp.setType(DataType.STRING);
+        InputDataEntity inputEntity = new InputDataEntity();
+        inputEntity.setParentId(experimentId);
+        inputEntity.setParentType(DataObjectParentType.EXPERIMENT);
+        inputEntity.setName("inputE");
+        inputEntity.setType(DataType.STRING);
 
-        List<InputDataObjectType> inputDataObjectTypeExpList = new ArrayList<>();
-        inputDataObjectTypeExpList.add(inputDataObjectTypeExp);
+        inputDataRepository.save(inputEntity);
+        flushAndClear();
 
-        String returnedExperimentId =
-                experimentInputService.addExperimentInputs(inputDataObjectTypeExpList, experimentId);
-        assertEquals(experimentId, returnedExperimentId, "Returned experiment ID should match");
-        List<InputDataObjectType> retrievedInputs = experimentInputService.getExperimentInputs(experimentId);
+        List<InputDataEntity> retrievedInputs =
+                inputDataRepository.findByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
         assertEquals(1, retrievedInputs.size(), "Experiment should have one input");
+        assertEquals("inputE", retrievedInputs.get(0).getName(), "Input name should match");
+        assertEquals(DataType.STRING, retrievedInputs.get(0).getType(), "Input type should match");
 
-        inputDataObjectTypeExp.setValue("iValueE");
-        experimentInputService.updateExperimentInputs(inputDataObjectTypeExpList, experimentId);
+        inputEntity.setValue("iValueE");
+        inputDataRepository.save(inputEntity);
+        flushAndClear();
 
-        List<InputDataObjectType> retrievedExpInputsList = experimentInputService.getExperimentInputs(experimentId);
+        List<InputDataEntity> retrievedExpInputsList =
+                inputDataRepository.findByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
         assertEquals(1, retrievedExpInputsList.size(), "Should have one input");
         assertEquals("iValueE", retrievedExpInputsList.get(0).getValue(), "Input value should be updated");
         assertEquals(DataType.STRING, retrievedExpInputsList.get(0).getType(), "Input type should match");
@@ -118,23 +122,28 @@ public class ExperimentInputRepositoryTest extends TestBase {
     @Test
     public void testExperimentInputRepository_MultipleInputs() throws RegistryException {
 
-        InputDataObjectType input1 = new InputDataObjectType();
+        InputDataEntity input1 = new InputDataEntity();
+        input1.setParentId(experimentId);
+        input1.setParentType(DataObjectParentType.EXPERIMENT);
         input1.setName("input1");
         input1.setType(DataType.STRING);
         input1.setValue("value1");
+        input1.setInputOrder(0);
 
-        InputDataObjectType input2 = new InputDataObjectType();
+        InputDataEntity input2 = new InputDataEntity();
+        input2.setParentId(experimentId);
+        input2.setParentType(DataObjectParentType.EXPERIMENT);
         input2.setName("input2");
         input2.setType(DataType.URI);
         input2.setValue("value2");
+        input2.setInputOrder(1);
 
-        List<InputDataObjectType> inputs = new ArrayList<>();
-        inputs.add(input1);
-        inputs.add(input2);
+        inputDataRepository.save(input1);
+        inputDataRepository.save(input2);
+        flushAndClear();
 
-        experimentInputService.addExperimentInputs(inputs, experimentId);
-
-        List<InputDataObjectType> retrievedInputs = experimentInputService.getExperimentInputs(experimentId);
+        List<InputDataEntity> retrievedInputs =
+                inputDataRepository.findByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
         assertEquals(2, retrievedInputs.size(), "Experiment should have 2 inputs");
 
         assertTrue(retrievedInputs.stream().anyMatch(i -> i.getName().equals("input1")), "Input 1 should be present");

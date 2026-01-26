@@ -22,9 +22,6 @@ package org.apache.airavata.service.security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.model.CrudType;
-import org.apache.airavata.common.model.EntityType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
@@ -34,11 +31,10 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.conditional.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.orchestrator.internal.messaging.Dispatcher;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.mappers.UserProfileMapper;
-import org.apache.airavata.profile.repositories.UserProfileRepository;
 import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
+import org.apache.airavata.registry.repositories.UserRepository;
 import org.apache.airavata.profile.utils.keycloak.KeycloakRestClient;
 import org.apache.airavata.profile.utils.keycloak.dto.UserRepresentation;
 import org.apache.airavata.registry.exception.RegistryException;
@@ -57,12 +53,10 @@ public class IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(IamAdminService.class);
 
     private final AiravataServerProperties properties;
-    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
     private final UserProfileMapper userProfileMapper;
     private final CredentialStoreService credentialStoreService;
     private final RegistryService registryService;
-
-    private final Dispatcher dbEventDispatcher;
 
     private boolean isIamConfigured() {
         return properties != null
@@ -94,17 +88,15 @@ public class IamAdminService {
 
     public IamAdminService(
             AiravataServerProperties properties,
-            UserProfileRepository userProfileRepository,
+            UserRepository userRepository,
             UserProfileMapper userProfileMapper,
             CredentialStoreService credentialStoreService,
-            RegistryService registryService,
-            Dispatcher dbEventDispatcher) {
+            RegistryService registryService) {
         this.properties = properties;
-        this.userProfileRepository = userProfileRepository;
+        this.userRepository = userRepository;
         this.userProfileMapper = userProfileMapper;
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
-        this.dbEventDispatcher = dbEventDispatcher;
     }
 
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway)
@@ -124,8 +116,10 @@ public class IamAdminService {
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
-            // Load the tenant admin password stored in gateway request
-            // Admin password token should already be stored under requested gateway's gatewayId
+            // Load the tenant admin password using the credential token from the gateway request.
+            // The identityServerPasswordToken is a reference to a credential in the credential store
+            // that was created by the caller (e.g., super-portal) before calling this method.
+            // This token is NOT persisted in the Gateway entity - it's only used during setup.
             var tenantAdminPasswordCredential = credentialStoreService.getPasswordCredential(
                     gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
@@ -186,11 +180,11 @@ public class IamAdminService {
             if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username)) {
                 // Check if user profile exists, if not create it
                 var lowerUsername = username.toLowerCase();
-                var userProfileExists = userProfileRepository
+                var userProfileExists = userRepository
                         .findByUserIdAndGatewayId(lowerUsername, gatewayId)
                         .isPresent();
                 if (!userProfileExists) {
-                    // Load basic user profile information from Keycloak and then save in UserProfileRepository
+                    // Load basic user profile information from Keycloak and then save in UserRepository
                     var userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
                     userProfile.setUserId(lowerUsername);
                     userProfile.setAiravataInternalUserId(lowerUsername + "@" + gatewayId);
@@ -201,9 +195,7 @@ public class IamAdminService {
                     userProfile.setValidUntil(-1);
                     // Convert to entity and save using repository
                     var entity = userProfileMapper.toEntity(userProfile);
-                    userProfileRepository.save(entity);
-                    // Dispatch IAM_ADMIN service event for a new USER_PROFILE
-                    dbEventDispatcher.dispatch(EntityType.USER_PROFILE, CrudType.CREATE, userProfile);
+                    userRepository.save(entity);
                 }
                 return true;
             } else {
@@ -211,10 +203,6 @@ public class IamAdminService {
             }
         } catch (IamAdminServicesException ex) {
             throw ex;
-        } catch (AiravataException ex) {
-            String msg = String.format("Error while enabling user=%s in IAM backend: %s", username, ex.getMessage());
-            logger.error(msg, ex);
-            throw new IamAdminServicesException(msg, ex);
         }
     }
 

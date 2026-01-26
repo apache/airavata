@@ -241,6 +241,285 @@ All services run in a unified Spring Boot application with the following server 
 
 ---
 
+## Internal Code Architecture
+
+The core API module (`modules/airavata-api`) implements a layered architecture with clear separation of concerns.
+
+### Package Structure Overview
+
+```
+org.apache.airavata
+├── accountprovisioning/       # SSH account provisioning
+├── activities/                # Dapr workflow activities
+├── agents/                    # Agent framework
+├── common/                    # Shared utilities and domain models
+│   ├── model/                # Domain models (183 classes)
+│   ├── exception/            # Custom exceptions
+│   └── utils/                # Utility classes
+├── config/                    # Spring configuration
+├── credential/                # Credential management
+├── monitor/                   # Monitoring services
+├── orchestrator/              # Workflow orchestration
+├── profile/                   # User/tenant profile management
+├── registry/                  # Data persistence layer
+│   ├── entities/             # JPA entities organized by catalog
+│   ├── repositories/         # Data access repositories (54 classes)
+│   ├── services/             # Domain services (37 classes)
+│   └── mappers/              # Entity ↔ Model mappers (49 classes)
+├── scheduling/                # Job scheduling
+├── security/                  # Security and authorization
+├── service/                   # High-level service interfaces
+├── sharing/                   # Resource sharing and permissions
+├── task/                      # Task implementations
+├── telemetry/                 # Telemetry and metrics
+├── util/                      # General utilities
+└── workflow/                  # Workflow managers
+```
+
+### Data Layer Architecture
+
+The registry layer follows a 4-tier architecture:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Service Layer                                      │
+│   ExperimentService, ProcessService, ComputeResourceService, etc.           │
+│   (37 @Service beans with @Transactional support)                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Mapper Layer                                       │
+│   Entity ↔ Domain Model conversion using MapStruct                          │
+│   (49 mapper interfaces with Spring component model)                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         Repository Layer                                     │
+│   AbstractRepository<T, E, Id> with generic CRUD operations                 │
+│   Catalog-specific: AppCat, ExpCat, RepCat, WorkflowCat                     │
+│   (54 repository classes)                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Entity Layer                                       │
+│   JPA entities organized by catalog type                                    │
+│   (100+ entity classes with relationships and composite keys)               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     Unified Database (MariaDB)                               │
+│   Single schema with 64 tables, Flyway migrations                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Entity Organization
+
+Entities are organized by catalog type under `registry/entities/` (101 total):
+
+| Catalog | Location | Files | Key Entities |
+|---------|----------|-------|--------------|
+| **App Catalog** | `appcatalog/` | 52 | `ApplicationInterfaceEntity`, `ApplicationDeploymentEntity`, `ComputeResourceEntity`, `StorageResourceEntity`, `ResourceProfileEntity`, `ResourcePreferenceEntity` |
+| **Exp Catalog** | `expcatalog/` | 20 | `ExperimentEntity`, `ProcessEntity`, `JobEntity`, `TaskEntity`, `ProjectEntity`, `NotificationEntity` |
+| **Airavata Workflow** | `airavataworkflowcatalog/` | 8 | `AiravataWorkflowEntity`, `WorkflowApplicationEntity`, `WorkflowConnectionEntity`, `WorkflowHandlerEntity` |
+| **Workflow Catalog** | `workflowcatalog/` | 6 | Composite key classes (`EdgePK`, `NodePK`, `PortPK`, etc.) |
+| **Replica Catalog** | `replicacatalog/` | 2 | `DataProductEntity`, `DataReplicaLocationEntity` |
+| **Root Level** | `entities/` | 13 | `GatewayEntity`, `UserEntity`, `StatusEntity`, `ErrorEntity`, `InputDataEntity`, `OutputDataEntity`, `MetadataEntity`, `ResourceAccessEntity` |
+
+### Unified Database Schema
+
+The database uses a consolidated schema with unified entities for cross-cutting concerns:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CORE UNIFIED ENTITIES                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  GATEWAY              │ Unified gateway (profile + experiment catalog)      │
+│  AIRAVATA_USER        │ User with OIDC claims (profile from Keycloak)       │
+│  STATUS               │ Unified status tracking (experiment, process, etc.) │
+│  ERROR                │ Unified error tracking for all entity types         │
+│  INPUT_DATA           │ Unified inputs (experiment, process, application)   │
+│  OUTPUT_DATA          │ Unified outputs (experiment, process, application)  │
+│  METADATA             │ Unified key-value metadata storage                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      RESOURCE MANAGEMENT ENTITIES                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  RESOURCE_PROFILE     │ Unified profile (gateway, group, user)              │
+│  RESOURCE_PREFERENCE  │ Key-value preferences with level inheritance        │
+│  RESOURCE_INTERFACE   │ Unified interfaces (job submission, data movement)  │
+│  RESOURCE_ACCESS      │ User/group to resource credential mapping           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       COMPUTE & STORAGE RESOURCES                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  COMPUTE_RESOURCE     │ HPC clusters, cloud instances                       │
+│  STORAGE_RESOURCE     │ File systems, object stores                         │
+│  BATCH_QUEUE          │ Queue definitions per compute resource              │
+│  SSH_JOB_SUBMISSION   │ SSH job submission interface                        │
+│  SCP_DATA_MOVEMENT    │ SCP data movement interface                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       APPLICATION CATALOG                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  APPLICATION_INTERFACE│ Application definition and I/O                      │
+│  APPLICATION_DEPLOYMENT│ Deployment on specific compute resource            │
+│  PARSER / PARSER_IO   │ Output parsing definitions                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        EXPERIMENT CATALOG                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  PROJECT              │ Project container for experiments                   │
+│  EXPERIMENT           │ Experiment definition and metadata                  │
+│  PROCESS              │ Process within experiment                           │
+│  TASK                 │ Task within process                                 │
+│  JOB                  │ Job submitted to compute resource                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Unified Multi-Level Preference System
+
+Airavata implements a hierarchical preference system where settings can be defined at multiple levels with automatic inheritance and override:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    PREFERENCE RESOLUTION ORDER                               │
+│                                                                              │
+│   USER level (highest priority)                                             │
+│        ↓ overrides                                                          │
+│   GROUP level                                                               │
+│        ↓ overrides                                                          │
+│   GATEWAY level (lowest priority, default)                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Supported Resource Types:**
+
+| Resource Type | Resource ID Format | Example Use Cases |
+|---------------|-------------------|-------------------|
+| `COMPUTE` | computeResourceId | Login username, scratch location, allocation |
+| `STORAGE` | storageResourceId | File system root, credentials |
+| `PROFILE` | profileId | Profile-level metadata |
+| `BATCH_QUEUE` | computeResourceId:queueName | Max nodes, max walltime, queue access |
+| `APPLICATION` | applicationInterfaceId | Default resource, queue, input values |
+| `GATEWAY` | gatewayId | Feature flags, UI theme, maintenance mode |
+| `SYSTEM` | "GLOBAL" or gatewayId | Rate limits, session timeout, quotas |
+
+**Key Components:**
+
+```
+PreferenceResourceType (enum)       PreferenceLevel (enum)
+├── COMPUTE                         ├── GATEWAY (priority 0)
+├── STORAGE                         ├── GROUP (priority 1)
+├── PROFILE                         └── USER (priority 2)
+├── BATCH_QUEUE
+├── APPLICATION
+├── GATEWAY
+└── SYSTEM
+
+PreferenceKeys (constants)
+├── BatchQueue.*     (maxNodes, maxCpus, maxWalltime, ...)
+├── Application.*    (defaultComputeResource, defaultQueue, ...)
+├── Gateway.*        (enableExperimentLaunch, featureFlags, ...)
+└── System.*         (maxExperimentsPerUser, sessionTimeout, ...)
+```
+
+**Preference Resolution Services:**
+
+| Service | Purpose |
+|---------|---------|
+| `PreferenceResolutionService` | Core resolution logic (USER > GROUP > GATEWAY) |
+| `BatchQueuePreferenceService` | Queue policies and limits |
+| `ApplicationPreferenceService` | Application defaults and access |
+| `GatewayConfigService` | Gateway configuration and features |
+| `SystemConfigService` | System-wide settings with gateway overrides |
+
+**Database Storage:**
+
+All preferences are stored in the unified `RESOURCE_PREFERENCE` table:
+
+```sql
+RESOURCE_PREFERENCE (
+    RESOURCE_TYPE,      -- COMPUTE, STORAGE, BATCH_QUEUE, APPLICATION, GATEWAY, SYSTEM
+    RESOURCE_ID,        -- Resource identifier (format varies by type)
+    OWNER_ID,           -- gatewayId, groupId, or userId@gatewayId
+    PREFERENCE_LEVEL,   -- GATEWAY, GROUP, or USER
+    PREFERENCE_KEY,     -- Preference name (e.g., "maxNodes", "defaultQueue")
+    PREFERENCE_VALUE,   -- Value (can be JSON for complex types)
+    VALUE_TYPE          -- STRING, INTEGER, BOOLEAN, JSON, TIMESTAMP
+)
+```
+
+### Service Layer Organization
+
+All 37 services are in `registry/services/`, organized by domain:
+
+**Experiment Catalog Services:**
+- `ExperimentService`, `ExperimentSummaryService` - Experiment management
+- `ExperimentInputService`, `ExperimentOutputService` - Experiment I/O
+- `ProcessService`, `ProcessInputService`, `ProcessOutputService` - Process management
+- `ProcessWorkflowService` - Process workflow associations
+- `JobService`, `JobStatusService` - Job tracking
+- `TaskService` - Task management
+- `ProjectService` - Project management
+- `NotificationService` - Notifications
+- `GatewayUsageReportingCommandService` - Usage reporting
+
+**Application Catalog Services:**
+- `ApplicationInterfaceService` - Application definitions
+- `ApplicationDeploymentService` - Deployment configurations
+- `ComputeResourceService` - Compute resource management
+- `StorageResourceService` - Storage resource management
+- `ParserService`, `ParserIOService`, `ParsingTemplateService` - Parsing
+
+**Resource Profile Services:**
+- `GroupResourceProfileService` - Group-level profiles
+- `UserResourceProfileService` - User-level profiles
+- `GwyResourceProfileService` - Gateway profiles
+
+**Configuration & Preference Services:**
+- `PreferenceResolutionService` - Core preference resolution
+- `BatchQueuePreferenceService` - Queue policies
+- `ApplicationPreferenceService` - Application defaults
+- `GatewayConfigService` - Gateway configuration
+- `SystemConfigService` - System settings
+
+**Core Entity Services:**
+- `GatewayService`, `GatewayGroupsService` - Gateway management
+- `UserService` - User management
+- `StatusService`, `ErrorService` - Status/error tracking
+- `WorkflowService` - Workflow management
+
+**Data Services:**
+- `DataProductService` - Data products
+- `DataReplicaLocationService` - Replica locations
+
+### Mapper Pattern
+
+MapStruct is used for type-safe entity ↔ model mapping:
+
+```java
+@Mapper(componentModel = "spring")
+public interface ExperimentMapper {
+    ExperimentModel toModel(ExperimentEntity entity);
+    ExperimentEntity toEntity(ExperimentModel model);
+}
+```
+
+Configuration (`EntityMapperConfig`):
+- Component model: Spring (auto-wired)
+- Null handling: IGNORE for properties
+- Collection mapping: ADDER_PREFERRED
+
+---
+
 ## Standard Configuration
 
 ### Server Ports

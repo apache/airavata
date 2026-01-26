@@ -65,6 +65,7 @@ import org.springframework.test.context.TestConstructor;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
+            org.apache.airavata.config.TestDaprConfig.class,
             OrchestratorServiceIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -76,7 +77,7 @@ import org.springframework.test.context.TestConstructor;
             // Enable IAM/security components via Keycloak testcontainer
             "airavata.security.manager.enabled=false",
             "airavata.security.authzCache.enabled=true",
-            "airavata.dapr.enabled=false",
+            "airavata.dapr.enabled=true", // Enable Dapr with mock client for messaging tests
             "airavata.services.controller.enabled=false"
         })
 @ActiveProfiles({"test", "orchestrator-integration"})
@@ -219,7 +220,10 @@ public class OrchestratorServiceIntegrationTest extends ServiceIntegrationTestBa
                 "org.apache.airavata.orchestrator",
                 "org.apache.airavata.workflow",
                 "org.apache.airavata.messaging",
-                "org.apache.airavata.metascheduler"
+                "org.apache.airavata.orchestrator.internal.messaging",
+                "org.apache.airavata.metascheduler",
+                "org.apache.airavata.credential.services",
+                "org.apache.airavata.credential.repositories"
             })
     @Profile("test")
     static class TestConfiguration {}

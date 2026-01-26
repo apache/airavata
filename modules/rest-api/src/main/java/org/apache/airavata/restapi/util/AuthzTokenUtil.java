@@ -68,10 +68,15 @@ public class AuthzTokenUtil {
                     if (jwtClaims != null) {
                         // Extract user info from JWT claims
                         String userId = extractClaim(jwtClaims, "sub", "preferred_username", "email", "userId");
+                        // Extract preferred_username separately (useful for admin checks)
+                        String preferredUsername = extractClaim(jwtClaims, "preferred_username");
                         // Try multiple possible claim names for gatewayId
                         String gatewayId = extractClaim(jwtClaims, Constants.GATEWAY_ID, "gatewayId", "gateway_id", "gateway");
                         
                         claims.put("userId", userId != null ? userId : MASTER_USER_ID);
+                        if (preferredUsername != null) {
+                            claims.put("userName", preferredUsername);
+                        }
                         claims.put(Constants.GATEWAY_ID, gatewayId != null ? gatewayId : MASTER_GATEWAY_ID);
                     } else {
                         // Fallback to master account if JWT decode fails

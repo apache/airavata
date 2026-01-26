@@ -20,8 +20,8 @@
 package org.apache.airavata.registry.repositories.appcatalog;
 
 import java.util.List;
+import org.apache.airavata.common.model.CommandCategory;
 import org.apache.airavata.registry.entities.appcatalog.JobManagerCommandEntity;
-import org.apache.airavata.registry.entities.appcatalog.ParallelismCommandEntity;
 import org.apache.airavata.registry.entities.appcatalog.ResourceJobManagerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,11 +31,22 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResourceJobManagerRepository extends JpaRepository<ResourceJobManagerEntity, String> {
 
-    @Query("SELECT DISTINCT jm FROM JobManagerCommandEntity jm WHERE jm.resourceJobManagerId = :resourceJobManagerId")
-    List<JobManagerCommandEntity> findJobManagerCommandsByResourceJobManagerId(
-            @Param("resourceJobManagerId") String resourceJobManagerId);
+    @Query("SELECT DISTINCT jm FROM JobManagerCommandEntity jm WHERE jm.resourceJobManagerId = :resourceJobManagerId AND jm.commandCategory = :commandCategory")
+    List<JobManagerCommandEntity> findCommandsByResourceJobManagerIdAndCategory(
+            @Param("resourceJobManagerId") String resourceJobManagerId,
+            @Param("commandCategory") CommandCategory commandCategory);
 
-    @Query("SELECT DISTINCT pf FROM ParallelismCommandEntity pf WHERE pf.resourceJobManagerId = :resourceJobManagerId")
-    List<ParallelismCommandEntity> findParallelismCommandsByResourceJobManagerId(
-            @Param("resourceJobManagerId") String resourceJobManagerId);
+    /**
+     * Find job manager commands for a resource job manager.
+     */
+    default List<JobManagerCommandEntity> findJobManagerCommandsByResourceJobManagerId(String resourceJobManagerId) {
+        return findCommandsByResourceJobManagerIdAndCategory(resourceJobManagerId, CommandCategory.JOB_MANAGER);
+    }
+
+    /**
+     * Find parallelism commands for a resource job manager.
+     */
+    default List<JobManagerCommandEntity> findParallelismCommandsByResourceJobManagerId(String resourceJobManagerId) {
+        return findCommandsByResourceJobManagerIdAndCategory(resourceJobManagerId, CommandCategory.PARALLELISM);
+    }
 }

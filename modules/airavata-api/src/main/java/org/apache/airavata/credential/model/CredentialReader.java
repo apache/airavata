@@ -32,84 +32,70 @@ public interface CredentialReader {
     /**
      * Retrieves the credential from the credential store.
      *
-     * @param gatewayId
-     *            The gateway id
-     * @param tokenId
-     *            The token id associated with the credential
+     * @param gatewayId The gateway id
+     * @param tokenId The token id associated with the credential
      * @return The Credential object associated with the token.
-     * @throws CredentialStoreException
-     *             If an error occurred while retrieving a credential.
+     * @throws CredentialStoreException If an error occurred while retrieving a credential.
      */
     Credential getCredential(String gatewayId, String tokenId) throws CredentialStoreException;
 
     /**
-     * Gets the admin portal user name who retrieved given community user for given portal user name.
+     * Gets the user ID who owns the credential for given token.
      *
-     * @param gatewayName
-     *            The gateway name
-     * @param tokenId
-     *            The issued token id.
-     * @return The portal user name who requested given community user credentials.
+     * @param gatewayName The gateway name
+     * @param tokenId The issued token id.
+     * @return The user ID who owns the credential.
      */
-    String getPortalUser(String gatewayName, String tokenId) throws CredentialStoreException;
+    String getUserId(String gatewayName, String tokenId) throws CredentialStoreException;
 
     /**
-     * Gets audit information related to given gateway name and community user name.
+     * Gets audit information related to given gateway name and token.
      *
-     * @param gatewayName
-     *            The gateway name.
-     * @param tokenId
-     *            The community user name.
-     * @return CertificateAuditInfo object.
+     * @param gatewayName The gateway name.
+     * @param tokenId The token id.
+     * @return AuditInfo object.
      */
     AuditInfo getAuditInfo(String gatewayName, String tokenId) throws CredentialStoreException;
 
     /**
      * Gets all the credential records.
+     *
      * @return All credential records as a list
      * @throws CredentialStoreException If an error occurred while retrieving credentials.
      */
-    public List<Credential> getAllCredentials() throws CredentialStoreException;
+    List<Credential> getAllCredentials() throws CredentialStoreException;
 
-    public List<Credential> getAllCredentialsPerGateway(String gatewayId) throws CredentialStoreException;
-
-    public List<Credential> getAllAccessibleCredentialsPerGateway(String gatewayId, List<String> accessibleTokenIds)
-            throws CredentialStoreException;
-
-    public List<Credential> getAllCredentialsPerUser(String userName) throws CredentialStoreException;
     /**
-     * Updates the community user contact email address.
-     *
-     * @param gatewayName
-     *            The gateway name.
-     * @param communityUser
-     *            The community user name.
-     * @param email
-     *            The new email address.
+     * Gets all credentials for a specific gateway.
      */
-    void updateCommunityUserEmail(String gatewayName, String communityUser, String email)
+    List<Credential> getAllCredentialsPerGateway(String gatewayId) throws CredentialStoreException;
+
+    /**
+     * Gets credentials for a gateway filtered by accessible token IDs.
+     */
+    List<Credential> getAllAccessibleCredentialsPerGateway(String gatewayId, List<String> accessibleTokenIds)
             throws CredentialStoreException;
 
     /**
-     * Will remove credentials for the given gateway id and community user.
+     * Gets all credentials owned by a specific user.
+     */
+    List<Credential> getAllCredentialsPerUser(String userId) throws CredentialStoreException;
+
+    /**
+     * Will remove credentials for the given gateway id and token.
      *
-     * @param gatewayName
-     *            The gateway Id
-     * @param tokenId
-     *            The issued token id.
-     * @throws CredentialStoreException
-     *             If an error occurred while retrieving data.
+     * @param gatewayName The gateway Id
+     * @param tokenId The issued token id.
+     * @throws CredentialStoreException If an error occurred while removing credentials.
      */
     void removeCredentials(String gatewayName, String tokenId) throws CredentialStoreException;
 
     /**
      * Retrieves gatewayID from the credential store.
      *
-     * @param tokenId
-     *            The token id associated with the credential
-     * @return The Credential object associated with the token.
-     * @throws CredentialStoreException
-     *             If an error occurred while retrieving a credential.
+     * @param tokenId The token id associated with the credential
+     * @return The gateway ID associated with the token.
+     * @throws CredentialStoreException If an error occurred while retrieving the gateway ID.
      */
     String getGatewayID(String tokenId) throws CredentialStoreException;
 }

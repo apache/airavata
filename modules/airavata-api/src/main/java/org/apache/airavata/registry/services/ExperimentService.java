@@ -25,22 +25,27 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.ErrorEntity;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentErrorEntity;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentStatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ExperimentMapper;
+import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
+import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
+import org.apache.airavata.registry.repositories.InputDataRepository;
+import org.apache.airavata.registry.repositories.OutputDataRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.EntityMergeHelper;
@@ -59,16 +64,28 @@ public class ExperimentService {
     private final ProcessService processService;
     private final ExperimentMapper experimentMapper;
     private final ProcessWorkflowMapper processWorkflowMapper;
+    private final InputDataRepository inputDataRepository;
+    private final OutputDataRepository outputDataRepository;
+    private final InputDataObjectTypeMapper inputDataObjectTypeMapper;
+    private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public ExperimentService(
             ExperimentRepository experimentRepository,
             ProcessService processService,
             ExperimentMapper experimentMapper,
-            ProcessWorkflowMapper processWorkflowMapper) {
+            ProcessWorkflowMapper processWorkflowMapper,
+            InputDataRepository inputDataRepository,
+            OutputDataRepository outputDataRepository,
+            InputDataObjectTypeMapper inputDataObjectTypeMapper,
+            OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.experimentRepository = experimentRepository;
         this.processService = processService;
         this.experimentMapper = experimentMapper;
         this.processWorkflowMapper = processWorkflowMapper;
+        this.inputDataRepository = inputDataRepository;
+        this.outputDataRepository = outputDataRepository;
+        this.inputDataObjectTypeMapper = inputDataObjectTypeMapper;
+        this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     @Transactional
@@ -101,7 +118,23 @@ public class ExperimentService {
         if (entity.getExperimentStatus() != null) {
             entity.getExperimentStatus().size(); // Force initialization
         }
+
+        // Load inputs and outputs from unified tables
+        List<InputDataEntity> inputEntities = inputDataRepository.findByExperimentId(experimentId);
+        entity.setExperimentInputs(inputEntities);
+
+        List<OutputDataEntity> outputEntities = outputDataRepository.findByExperimentId(experimentId);
+        entity.setExperimentOutputs(outputEntities);
+
         var model = experimentMapper.toModel(entity);
+
+        // Map inputs and outputs to model
+        if (inputEntities != null && !inputEntities.isEmpty()) {
+            model.setExperimentInputs(inputDataObjectTypeMapper.toModelList(inputEntities));
+        }
+        if (outputEntities != null && !outputEntities.isEmpty()) {
+            model.setExperimentOutputs(outputDataObjectTypeMapper.toModelList(outputEntities));
+        }
         // Manually map processWorkflows for each process after mapping to avoid LazyInitializationException
         if (entity.getProcesses() != null && model.getProcesses() != null) {
             for (int i = 0;
@@ -208,7 +241,12 @@ public class ExperimentService {
             throws RegistryException {
         List<ExperimentModel> experimentModelList;
 
-        if (fieldName.equals(DBConstants.Experiment.USER_NAME)) {
+        if (fieldName == null || fieldName.isEmpty()) {
+            // Return all experiments for gateway
+            logger.debug("No filter - returning all experiments for gateway");
+            var entities = experimentRepository.findByGatewayId(gatewayId);
+            experimentModelList = experimentMapper.toModelList(entities);
+        } else if (fieldName.equals(DBConstants.Experiment.USER_NAME)) {
             logger.debug("Search criteria is Username");
             var entities = experimentRepository.findByGatewayIdAndUserName(gatewayId, (String) value);
             experimentModelList = experimentMapper.toModelList(entities);
@@ -219,6 +257,12 @@ public class ExperimentService {
         } else {
             logger.error("Unsupported field name for Experiment module.");
             throw new IllegalArgumentException("Unsupported field name for Experiment module.");
+        }
+
+        // Apply limit and offset
+        if (limit > 0 && experimentModelList.size() > offset) {
+            int endIndex = Math.min(offset + limit, experimentModelList.size());
+            experimentModelList = experimentModelList.subList(offset, endIndex);
         }
 
         return experimentModelList;
@@ -293,17 +337,10 @@ public class ExperimentService {
             EntityMergeHelper.mergeLists(
                     existingEntity.getExperimentStatus(),
                     newEntity.getExperimentStatus(),
-                    ExperimentStatusEntity::getStatusId);
+                    StatusEntity::getStatusId);
+            // Inputs and outputs are now managed separately via unified repositories
             EntityMergeHelper.mergeLists(
-                    existingEntity.getExperimentInputs(),
-                    newEntity.getExperimentInputs(),
-                    ExperimentInputEntity::getName);
-            EntityMergeHelper.mergeLists(
-                    existingEntity.getExperimentOutputs(),
-                    newEntity.getExperimentOutputs(),
-                    ExperimentOutputEntity::getName);
-            EntityMergeHelper.mergeLists(
-                    existingEntity.getErrors(), newEntity.getErrors(), ExperimentErrorEntity::getErrorId);
+                    existingEntity.getErrors(), newEntity.getErrors(), ErrorEntity::getErrorId);
             EntityMergeHelper.mergeLists(
                     existingEntity.getProcesses(), newEntity.getProcesses(), ProcessEntity::getProcessId);
 
@@ -390,32 +427,23 @@ public class ExperimentService {
             }
         }
 
-        if (experimentEntity.getExperimentInputs() != null) {
-            logger.debug("Populating the Primary Key of ExperimentInput objects for the Experiment");
-            experimentEntity
-                    .getExperimentInputs()
-                    .forEach(experimentInputEntity -> experimentInputEntity.setExperimentId(experimentId));
-        }
-
-        if (experimentEntity.getExperimentOutputs() != null) {
-            logger.debug("Populating the Primary Key of ExperimentOutput objects for the Experiment");
-            experimentEntity
-                    .getExperimentOutputs()
-                    .forEach(experimentOutputEntity -> experimentOutputEntity.setExperimentId(experimentId));
-        }
+        // Inputs and outputs are now saved separately to unified tables after entity save
+        // (see below after save)
 
         if (experimentEntity.getExperimentStatus() != null) {
             logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
-            experimentEntity
-                    .getExperimentStatus()
-                    .forEach(experimentStatusEntity -> experimentStatusEntity.setExperimentId(experimentId));
+            experimentEntity.getExperimentStatus().forEach(statusEntity -> {
+                statusEntity.setParentId(experimentId);
+                statusEntity.setParentType(org.apache.airavata.common.model.StatusParentType.EXPERIMENT);
+            });
         }
 
         if (experimentEntity.getErrors() != null) {
             logger.debug("Populating the Primary Key of ExperimentError objects for the Experiment");
-            experimentEntity
-                    .getErrors()
-                    .forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
+            experimentEntity.getErrors().forEach(errorEntity -> {
+                errorEntity.setParentId(experimentId);
+                errorEntity.setParentType(org.apache.airavata.common.model.ErrorParentType.EXPERIMENT);
+            });
         }
 
         if (experimentEntity.getProcesses() != null) {
@@ -429,6 +457,28 @@ public class ExperimentService {
         var saved = experimentRepository.save(experimentEntity);
         // Flush to ensure experiment is persisted before any child entities are added
         experimentRepository.flush();
+
+        // Save inputs and outputs to unified tables
+        // First delete existing ones, then save new ones
+        inputDataRepository.deleteByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
+        outputDataRepository.deleteByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
+
+        if (experimentModel.getExperimentInputs() != null) {
+            logger.debug("Saving ExperimentInputs to unified INPUT_DATA table");
+            for (var input : experimentModel.getExperimentInputs()) {
+                var inputEntity = inputDataObjectTypeMapper.toExperimentInputEntity(input, experimentId);
+                inputDataRepository.save(inputEntity);
+            }
+        }
+
+        if (experimentModel.getExperimentOutputs() != null) {
+            logger.debug("Saving ExperimentOutputs to unified OUTPUT_DATA table");
+            for (var output : experimentModel.getExperimentOutputs()) {
+                var outputEntity = outputDataObjectTypeMapper.toExperimentOutputEntity(output, experimentId);
+                outputDataRepository.save(outputEntity);
+            }
+        }
+
         return saved;
     }
 }

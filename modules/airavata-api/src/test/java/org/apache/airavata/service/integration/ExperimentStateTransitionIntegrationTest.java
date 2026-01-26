@@ -39,6 +39,7 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -92,6 +93,7 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final RegistryService registryService;
+    private final StatusService statusService;
 
     private String testExperimentId;
     private String testProjectId;
@@ -100,11 +102,13 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
             GatewayService gatewayService,
             ProjectService projectService,
             ExperimentService experimentService,
-            RegistryService registryService) {
+            RegistryService registryService,
+            StatusService statusService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.registryService = registryService;
+        this.statusService = statusService;
     }
 
     @BeforeEach
@@ -317,16 +321,16 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
             registryService.updateExperimentStatus(status, testExperimentId);
         }
 
-        // Verify all states are in history
-        ExperimentModel experiment = experimentService.getExperiment(testExperimentId);
-        assertNotNull(experiment.getExperimentStatus(), "Experiment should have status history");
+        // Verify all states are in history using StatusService (not Experiment entity which may be stale)
+        List<ExperimentStatus> statuses = statusService.getExperimentStatuses(testExperimentId);
+        assertNotNull(statuses, "Experiment should have status history");
         assertTrue(
-                experiment.getExperimentStatus().size() >= expectedStates.size(),
+                statuses.size() >= expectedStates.size(),
                 "Experiment should have at least " + expectedStates.size() + " status entries");
 
         // Verify all expected states are present
         for (ExperimentState expectedState : expectedStates) {
-            boolean found = experiment.getExperimentStatus().stream().anyMatch(s -> s.getState() == expectedState);
+            boolean found = statuses.stream().anyMatch(s -> s.getState() == expectedState);
             assertTrue(found, "Experiment state history should contain " + expectedState);
         }
 
@@ -359,10 +363,10 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
         assertEquals(
                 ExperimentState.EXECUTING, status.getState(), "Experiment should be in EXECUTING state after requeue");
 
-        // Verify all states are in history
-        ExperimentModel experiment = experimentService.getExperiment(testExperimentId);
+        // Verify all states are in history using StatusService (not Experiment entity which may be stale)
+        List<ExperimentStatus> statuses = statusService.getExperimentStatuses(testExperimentId);
         assertTrue(
-                experiment.getExperimentStatus().stream().anyMatch(s -> s.getState() == ExperimentState.SCHEDULED),
+                statuses.stream().anyMatch(s -> s.getState() == ExperimentState.SCHEDULED),
                 "History should contain SCHEDULED state from requeue");
     }
 

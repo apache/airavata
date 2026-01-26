@@ -123,6 +123,10 @@ public class CredentialEntityService {
 
     /**
      * Add or update credentials.
+     *
+     * @param gatewayId the gateway ID
+     * @param credential the credential to save
+     * @throws CredentialStoreException if an error occurs
      */
     public void saveCredential(String gatewayId, Credential credential) throws CredentialStoreException {
         try {
@@ -130,13 +134,9 @@ public class CredentialEntityService {
             entity.setGatewayId(gatewayId);
             entity.setTokenId(credential.getToken());
             entity.setCredential(convertObjectToByteArray(credential));
-            entity.setPortalUserId(credential.getPortalUserName());
+            entity.setUserId(credential.getUserId());
             entity.setTimePersisted(AiravataUtils.getUniqueTimestamp());
             entity.setDescription(credential.getDescription());
-            // Set default owner type if not specified
-            if (entity.getCredentialOwnerType() == null) {
-                entity.setCredentialOwnerType("GATEWAY");
-            }
             credentialRepository.save(entity);
         } catch (Exception e) {
             var msg = String.format(
@@ -182,8 +182,8 @@ public class CredentialEntityService {
         try {
             var credential = (Credential) convertByteArrayToObject(entity.getCredential());
             credential.setToken(entity.getTokenId());
-            credential.setPortalUserName(entity.getPortalUserId());
-            credential.setCertificateRequestedTime(entity.getTimePersisted());
+            credential.setUserId(entity.getUserId());
+            credential.setPersistedTime(entity.getTimePersisted());
             credential.setDescription(entity.getDescription());
             return credential;
         } catch (Exception e) {
@@ -237,8 +237,8 @@ public class CredentialEntityService {
             try {
                 var credential = (Credential) convertByteArrayToObject(entity.getCredential());
                 credential.setToken(entity.getTokenId());
-                credential.setPortalUserName(entity.getPortalUserId());
-                credential.setCertificateRequestedTime(entity.getTimePersisted());
+                credential.setUserId(entity.getUserId());
+                credential.setPersistedTime(entity.getTimePersisted());
                 credential.setDescription(entity.getDescription());
                 credentials.add(credential);
             } catch (Exception e) {
@@ -262,8 +262,8 @@ public class CredentialEntityService {
             try {
                 var credential = (Credential) convertByteArrayToObject(entity.getCredential());
                 credential.setToken(entity.getTokenId());
-                credential.setPortalUserName(entity.getPortalUserId());
-                credential.setCertificateRequestedTime(entity.getTimePersisted());
+                credential.setUserId(entity.getUserId());
+                credential.setPersistedTime(entity.getTimePersisted());
                 credential.setDescription(entity.getDescription());
                 credentials.add(credential);
             } catch (Exception e) {

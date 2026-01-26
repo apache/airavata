@@ -20,46 +20,44 @@
 package org.apache.airavata.registry.services;
 
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.registry.entities.expcatalog.ProcessOutputEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
-import org.apache.airavata.registry.repositories.expcatalog.ProcessOutputRepository;
+import org.apache.airavata.registry.repositories.OutputDataRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class ProcessOutputService {
-    private final ProcessOutputRepository processOutputRepository;
+    private final OutputDataRepository outputDataRepository;
     private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public ProcessOutputService(
-            ProcessOutputRepository processOutputRepository, OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
-        this.processOutputRepository = processOutputRepository;
+            OutputDataRepository outputDataRepository, OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
+        this.outputDataRepository = outputDataRepository;
         this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
-        List<ProcessOutputEntity> entities = processOutputRepository.findByProcessId(processId);
-        return outputDataObjectTypeMapper.toModelListFromProcess(entities);
+        List<OutputDataEntity> entities = outputDataRepository.findByProcessId(processId);
+        return outputDataObjectTypeMapper.toModelList(entities);
     }
 
     public void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
         for (var output : outputs) {
-            var entity = outputDataObjectTypeMapper.toEntityFromProcess(output);
-            entity.setProcessId(processId);
-            // Note: We don't call entity.setProcess() because the @JoinColumn has insertable=false.
-            // The processId field is already set and is the only field that gets persisted.
-            processOutputRepository.save(entity);
+            var entity = outputDataObjectTypeMapper.toProcessOutputEntity(output, processId);
+            outputDataRepository.save(entity);
         }
     }
 
     public void updateProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException {
-        List<ProcessOutputEntity> existing = processOutputRepository.findByProcessId(processId);
+        List<OutputDataEntity> existing = outputDataRepository.findByProcessId(processId);
         if (!existing.isEmpty()) {
-            processOutputRepository.deleteAll(existing);
-            processOutputRepository.flush(); // Ensure deletes are executed before inserting new ones with same IDs
+            outputDataRepository.deleteByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
+            outputDataRepository.flush(); // Ensure deletes are executed before inserting new ones with same IDs
         }
         addProcessOutputs(outputs, processId);
     }

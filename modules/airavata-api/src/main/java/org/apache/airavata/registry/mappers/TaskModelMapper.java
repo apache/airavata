@@ -32,7 +32,7 @@ import org.mapstruct.Mapping;
 @Mapper(
         componentModel = "spring",
         config = EntityMapperConfig.class,
-        uses = {TaskStatusMapper.class, ErrorModelMapper.class, JobModelMapper.class})
+        uses = {StatusMapper.class, ErrorModelMapper.class, JobModelMapper.class})
 public interface TaskModelMapper {
 
     @Mapping(

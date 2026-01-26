@@ -21,24 +21,54 @@ package org.apache.airavata.registry.mappers;
 
 import java.util.List;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.registry.entities.expcatalog.GatewayEntity;
+import org.apache.airavata.registry.entities.GatewayEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * MapStruct mapper for converting between GatewayEntity and Gateway model.
+ * MapStruct mapper for converting between the unified GatewayEntity and Gateway model.
+ *
+ * <p>This mapper handles the unified GatewayEntity which combines fields from both
+ * the former ProfileGatewayEntity and expcatalog GatewayEntity.
  */
-@Mapper(componentModel = "spring", config = EntityMapperConfig.class, implementationName = "RegistryGatewayMapperImpl")
+@Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface GatewayMapper {
 
+    /**
+     * Maps GatewayEntity to Gateway model.
+     *
+     * <p>Note: The following fields exist in the Gateway model but NOT in GatewayEntity
+     * (credentials are managed by Keycloak, not stored in the database):
+     * <ul>
+     *   <li>identityServerUserName - tenant admin username (use gatewayAdminEmail instead)</li>
+     *   <li>identityServerPasswordToken - credential store token (stored in GatewayResourceProfile)</li>
+     *   <li>oauthClientId - OAuth client ID (retrieved from Keycloak)</li>
+     *   <li>oauthClientSecret - OAuth client secret (retrieved from Keycloak)</li>
+     * </ul>
+     */
     @Mapping(target = "gatewayURL", source = "gatewayUrl")
     @Mapping(
             target = "requestCreationTime",
             expression =
                     "java(entity.getRequestCreationTime() != null ? entity.getRequestCreationTime().getTime() : 0L)")
-    @Mapping(target = "airavataInternalGatewayId", ignore = true)
+    @Mapping(target = "identityServerUserName", ignore = true)
+    @Mapping(target = "identityServerPasswordToken", ignore = true)
+    @Mapping(target = "oauthClientId", ignore = true)
+    @Mapping(target = "oauthClientSecret", ignore = true)
     Gateway toModel(GatewayEntity entity);
 
+    /**
+     * Maps Gateway model to GatewayEntity.
+     *
+     * <p>Note: The following fields from the Gateway model are ignored during mapping
+     * because they are not stored in the database (credentials are managed by Keycloak):
+     * <ul>
+     *   <li>identityServerUserName - tenant admin username</li>
+     *   <li>identityServerPasswordToken - credential store token</li>
+     *   <li>oauthClientId - OAuth client ID</li>
+     *   <li>oauthClientSecret - OAuth client secret</li>
+     * </ul>
+     */
     @Mapping(target = "gatewayUrl", source = "gatewayURL")
     @Mapping(
             target = "requestCreationTime",

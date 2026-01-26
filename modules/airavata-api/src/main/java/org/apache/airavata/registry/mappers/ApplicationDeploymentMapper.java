@@ -27,31 +27,26 @@ import org.mapstruct.Mapping;
 
 /**
  * MapStruct mapper for converting between ApplicationDeploymentEntity and ApplicationDeploymentDescription.
- * Note: Lists (moduleLoadCmds, preJobCommands, etc.) are handled manually in the service layer.
+ * Note: Command lists and library paths are handled manually in the service layer using unified entities.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface ApplicationDeploymentMapper {
 
-    @Mapping(target = "moduleLoadCmds", ignore = true) // Handled manually in service layer
-    @Mapping(target = "preJobCommands", ignore = true) // Handled manually in service layer
-    @Mapping(target = "postJobCommands", ignore = true) // Handled manually in service layer
-    @Mapping(target = "libPrependPaths", ignore = true) // Handled manually in service layer
-    @Mapping(target = "libAppendPaths", ignore = true) // Handled manually in service layer
-    @Mapping(target = "setEnvironment", ignore = true) // Handled manually in service layer
-    @Mapping(
-            source = "defaultWallTime",
-            target = "defaultWalltime") // Field name mismatch: entity uses defaultWallTime, model uses defaultWalltime
+    // Model properties - handled manually in service layer
+    @Mapping(target = "moduleLoadCmds", ignore = true)
+    @Mapping(target = "preJobCommands", ignore = true)
+    @Mapping(target = "postJobCommands", ignore = true)
+    @Mapping(target = "libPrependPaths", ignore = true)
+    @Mapping(target = "libAppendPaths", ignore = true)
+    @Mapping(target = "setEnvironment", ignore = true)
+    @Mapping(source = "defaultWallTime", target = "defaultWalltime")
     ApplicationDeploymentDescription toModel(ApplicationDeploymentEntity entity);
 
-    @Mapping(target = "moduleLoadCmds", ignore = true) // Handled manually in service layer
-    @Mapping(target = "preJobCommands", ignore = true) // Handled manually in service layer
-    @Mapping(target = "postJobCommands", ignore = true) // Handled manually in service layer
-    @Mapping(target = "libPrependPaths", ignore = true) // Handled manually in service layer
-    @Mapping(target = "libAppendPaths", ignore = true) // Handled manually in service layer
-    @Mapping(target = "setEnvironment", ignore = true) // Handled manually in service layer
-    @Mapping(
-            source = "defaultWalltime",
-            target = "defaultWallTime") // Field name mismatch: model uses defaultWalltime, entity uses defaultWallTime
+    // Entity properties - handled manually in service layer using unified entities
+    @Mapping(target = "commands", ignore = true)
+    @Mapping(target = "libraryPaths", ignore = true)
+    @Mapping(target = "setEnvironment", ignore = true)
+    @Mapping(source = "defaultWalltime", target = "defaultWallTime")
     ApplicationDeploymentEntity toEntity(ApplicationDeploymentDescription model);
 
     List<ApplicationDeploymentDescription> toModelList(List<ApplicationDeploymentEntity> entities);

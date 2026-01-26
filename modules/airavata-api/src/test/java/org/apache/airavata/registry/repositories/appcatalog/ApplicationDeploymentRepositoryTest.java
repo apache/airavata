@@ -182,11 +182,11 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         SetEnvPaths libPrependPath = new SetEnvPaths();
         libPrependPath.setName("libPrependPath");
         libPrependPath.setValue("libPrependPathValue");
-        libPrependPath.setEnvPathOrder(0); // LibraryPrependPathEntity doesn't store envPathOrder, always returns 0
+        libPrependPath.setEnvPathOrder(0); // LibraryPathEntity doesn't store envPathOrder, always returns 0
         SetEnvPaths libAppendPath = new SetEnvPaths();
         libAppendPath.setName("libAppendPath");
         libAppendPath.setValue("libAppendPathValue");
-        libAppendPath.setEnvPathOrder(0); // LibraryApendPathEntity doesn't store envPathOrder, always returns 0
+        libAppendPath.setEnvPathOrder(0); // LibraryPathEntity doesn't store envPathOrder, always returns 0
 
         SetEnvPaths setEnvironment = new SetEnvPaths();
         setEnvironment.setName("setEnvironment");

@@ -33,7 +33,7 @@ import org.mapstruct.Mapping;
         componentModel = "spring",
         config = EntityMapperConfig.class,
         uses = {
-            ProcessStatusMapper.class,
+            StatusMapper.class,
             InputDataObjectTypeMapper.class,
             OutputDataObjectTypeMapper.class,
             ComputationalResourceSchedulingMapper.class,

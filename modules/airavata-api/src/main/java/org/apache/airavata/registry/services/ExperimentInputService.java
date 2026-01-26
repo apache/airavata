@@ -21,11 +21,12 @@ package org.apache.airavata.registry.services;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.InputDataObjectType;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentInputEntity;
+import org.apache.airavata.registry.entities.InputDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
-import org.apache.airavata.registry.repositories.expcatalog.ExperimentInputRepository;
+import org.apache.airavata.registry.repositories.InputDataRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,17 +34,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class ExperimentInputService {
-    private final ExperimentInputRepository experimentInputRepository;
+    private final InputDataRepository inputDataRepository;
     private final ExperimentRepository experimentRepository;
     private final EntityManager entityManager;
     private final InputDataObjectTypeMapper inputDataObjectTypeMapper;
 
     public ExperimentInputService(
-            ExperimentInputRepository experimentInputRepository,
+            InputDataRepository inputDataRepository,
             ExperimentRepository experimentRepository,
             EntityManager entityManager,
             InputDataObjectTypeMapper inputDataObjectTypeMapper) {
-        this.experimentInputRepository = experimentInputRepository;
+        this.inputDataRepository = inputDataRepository;
         this.experimentRepository = experimentRepository;
         this.entityManager = entityManager;
         this.inputDataObjectTypeMapper = inputDataObjectTypeMapper;
@@ -59,11 +60,8 @@ public class ExperimentInputService {
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
         for (var input : inputs) {
-            var entity = inputDataObjectTypeMapper.toEntity(input);
-            entity.setExperimentId(experimentId);
-            // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
-            // The experimentId field is already set and is the only field that gets persisted.
-            experimentInputRepository.save(entity);
+            var entity = inputDataObjectTypeMapper.toExperimentInputEntity(input, experimentId);
+            inputDataRepository.save(entity);
         }
         return experimentId;
     }
@@ -76,25 +74,22 @@ public class ExperimentInputService {
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
 
-        // Delete existing inputs using native query to bypass persistence context issues
-        experimentInputRepository.deleteByExperimentId(experimentId);
+        // Delete existing inputs
+        inputDataRepository.deleteByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
         // Flush to ensure deletes are executed
-        experimentInputRepository.flush();
+        inputDataRepository.flush();
         // Clear entity manager to remove any managed entities from persistence context
         entityManager.clear();
 
         // Add new inputs
         for (var input : inputs) {
-            var entity = inputDataObjectTypeMapper.toEntity(input);
-            entity.setExperimentId(experimentId);
-            // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
-            // The experimentId field is already set and is the only field that gets persisted.
-            experimentInputRepository.save(entity);
+            var entity = inputDataObjectTypeMapper.toExperimentInputEntity(input, experimentId);
+            inputDataRepository.save(entity);
         }
     }
 
     public List<InputDataObjectType> getExperimentInputs(String experimentId) throws RegistryException {
-        List<ExperimentInputEntity> entities = experimentInputRepository.findByExperimentId(experimentId);
-        return inputDataObjectTypeMapper.toModelListFromExperiment(entities);
+        List<InputDataEntity> entities = inputDataRepository.findByExperimentId(experimentId);
+        return inputDataObjectTypeMapper.toModelList(entities);
     }
 }

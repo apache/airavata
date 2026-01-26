@@ -23,20 +23,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.registry.entities.OutputDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.OutputDataRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
-import org.apache.airavata.registry.services.ProcessOutputService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class ProcessOutputRepositoryTest extends TestBase {
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessOutputService processOutputService;
+    private final OutputDataRepository outputDataRepository;
 
     private String gatewayId;
     private String projectId;
@@ -63,12 +63,12 @@ public class ProcessOutputRepositoryTest extends TestBase {
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessOutputService processOutputService) {
+            OutputDataRepository outputDataRepository) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processOutputService = processOutputService;
+        this.outputDataRepository = outputDataRepository;
     }
 
     @BeforeEach
@@ -102,23 +102,27 @@ public class ProcessOutputRepositoryTest extends TestBase {
     @Test
     public void testProcessOutputRepository_CreateAndUpdate() throws RegistryException {
 
-        OutputDataObjectType outputDataObjectProType = new OutputDataObjectType();
-        outputDataObjectProType.setName("outputP");
-        outputDataObjectProType.setType(DataType.STDERR);
+        OutputDataEntity outputEntity = new OutputDataEntity();
+        outputEntity.setParentId(processId);
+        outputEntity.setParentType(DataObjectParentType.PROCESS);
+        outputEntity.setName("outputP");
+        outputEntity.setType(DataType.STDERR);
 
-        List<OutputDataObjectType> outputDataObjectTypeProList = new ArrayList<>();
-        outputDataObjectTypeProList.add(outputDataObjectProType);
-
-        processOutputService.addProcessOutputs(outputDataObjectTypeProList, processId);
-        // Clear JPA cache to ensure fresh load with the newly added output
+        outputDataRepository.save(outputEntity);
         flushAndClear();
-        assertEquals(
-                1, processService.getProcess(processId).getProcessOutputs().size(), "Process should have one output");
 
-        outputDataObjectProType.setValue("oValueP");
-        processOutputService.updateProcessOutputs(outputDataObjectTypeProList, processId);
+        List<OutputDataEntity> retrievedOutputs =
+                outputDataRepository.findByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
+        assertEquals(1, retrievedOutputs.size(), "Process should have one output");
+        assertEquals("outputP", retrievedOutputs.get(0).getName(), "Output name should match");
+        assertEquals(DataType.STDERR, retrievedOutputs.get(0).getType(), "Output type should match");
 
-        List<OutputDataObjectType> retrievedProOutputList = processOutputService.getProcessOutputs(processId);
+        outputEntity.setValue("oValueP");
+        outputDataRepository.save(outputEntity);
+        flushAndClear();
+
+        List<OutputDataEntity> retrievedProOutputList =
+                outputDataRepository.findByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
         assertEquals(1, retrievedProOutputList.size(), "Should have one output");
         assertEquals("oValueP", retrievedProOutputList.get(0).getValue(), "Output value should be updated");
         assertEquals(DataType.STDERR, retrievedProOutputList.get(0).getType(), "Output type should match");
@@ -128,29 +132,37 @@ public class ProcessOutputRepositoryTest extends TestBase {
     @Test
     public void testProcessOutputRepository_MultipleOutputs() throws RegistryException {
 
-        OutputDataObjectType output1 = new OutputDataObjectType();
+        OutputDataEntity output1 = new OutputDataEntity();
+        output1.setParentId(processId);
+        output1.setParentType(DataObjectParentType.PROCESS);
         output1.setName("output1");
         output1.setType(DataType.STDERR);
         output1.setValue("value1");
+        output1.setOutputOrder(0);
 
-        OutputDataObjectType output2 = new OutputDataObjectType();
+        OutputDataEntity output2 = new OutputDataEntity();
+        output2.setParentId(processId);
+        output2.setParentType(DataObjectParentType.PROCESS);
         output2.setName("output2");
         output2.setType(DataType.STRING);
         output2.setValue("value2");
+        output2.setOutputOrder(1);
 
-        OutputDataObjectType output3 = new OutputDataObjectType();
+        OutputDataEntity output3 = new OutputDataEntity();
+        output3.setParentId(processId);
+        output3.setParentType(DataObjectParentType.PROCESS);
         output3.setName("output3");
         output3.setType(DataType.URI);
         output3.setValue("value3");
+        output3.setOutputOrder(2);
 
-        List<OutputDataObjectType> outputs = new ArrayList<>();
-        outputs.add(output1);
-        outputs.add(output2);
-        outputs.add(output3);
+        outputDataRepository.save(output1);
+        outputDataRepository.save(output2);
+        outputDataRepository.save(output3);
+        flushAndClear();
 
-        processOutputService.addProcessOutputs(outputs, processId);
-
-        List<OutputDataObjectType> retrievedOutputs = processOutputService.getProcessOutputs(processId);
+        List<OutputDataEntity> retrievedOutputs =
+                outputDataRepository.findByParentIdAndParentType(processId, DataObjectParentType.PROCESS);
         assertEquals(3, retrievedOutputs.size(), "Process should have 3 outputs");
 
         assertTrue(

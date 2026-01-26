@@ -38,11 +38,11 @@ import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessMapper;
-import org.apache.airavata.registry.mappers.ProcessStatusMapper;
 import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
+import org.apache.airavata.registry.mappers.StatusMapper;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
-import org.apache.airavata.registry.repositories.expcatalog.ProcessStatusRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
 import org.hibernate.LazyInitializationException;
@@ -62,8 +62,8 @@ public class ProcessService {
     private final ProcessMapper processMapper;
     private final ProcessWorkflowMapper processWorkflowMapper;
     private final EntityManager entityManager;
-    private final ProcessStatusRepository processStatusRepository;
-    private final ProcessStatusMapper processStatusMapper;
+    private final StatusRepository statusRepository;
+    private final StatusMapper statusMapper;
 
     public ProcessService(
             ProcessRepository processRepository,
@@ -72,16 +72,16 @@ public class ProcessService {
             ProcessMapper processMapper,
             ProcessWorkflowMapper processWorkflowMapper,
             EntityManager entityManager,
-            ProcessStatusRepository processStatusRepository,
-            ProcessStatusMapper processStatusMapper) {
+            StatusRepository statusRepository,
+            StatusMapper statusMapper) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.taskService = taskService;
         this.processMapper = processMapper;
         this.processWorkflowMapper = processWorkflowMapper;
         this.entityManager = entityManager;
-        this.processStatusRepository = processStatusRepository;
-        this.processStatusMapper = processStatusMapper;
+        this.statusRepository = statusRepository;
+        this.statusMapper = statusMapper;
     }
 
     public void populateParentIds(ProcessEntity processEntity) {
@@ -93,27 +93,38 @@ public class ProcessService {
 
         if (processEntity.getProcessInputs() != null) {
             logger.debug("Populating the Primary Key of ProcessInput objects for the Process");
-            processEntity.getProcessInputs().forEach(processInputEntity -> processInputEntity.setProcessId(processId));
+            processEntity.getProcessInputs().forEach(processInputEntity -> {
+                processInputEntity.setParentId(processId);
+                processInputEntity.setParentType(org.apache.airavata.common.model.DataObjectParentType.PROCESS);
+            });
         }
 
         if (processEntity.getProcessOutputs() != null) {
             logger.debug("Populating the Primary Key of ProcessOutput objects for the Process");
-            processEntity
-                    .getProcessOutputs()
-                    .forEach(processOutputEntity -> processOutputEntity.setProcessId(processId));
+            processEntity.getProcessOutputs().forEach(processOutputEntity -> {
+                processOutputEntity.setParentId(processId);
+                processOutputEntity.setParentType(org.apache.airavata.common.model.DataObjectParentType.PROCESS);
+            });
         }
 
         if (processEntity.getProcessStatuses() != null) {
             logger.debug("Populating the Primary Key of ProcessStatus objects for the Process");
             processEntity.getProcessStatuses().forEach(processStatusEntity -> {
-                processStatusEntity.setProcessId(processId);
-                processStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
+                processStatusEntity.setParentId(processId);
+                processStatusEntity.setParentType(org.apache.airavata.common.model.StatusParentType.PROCESS);
+                // Only set timestamp if not already set (mapper or constructor may have already set it)
+                if (processStatusEntity.getTimeOfStateChange() == null) {
+                    processStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
+                }
             });
         }
 
         if (processEntity.getProcessErrors() != null) {
             logger.debug("Populating the Primary Key of ProcessError objects for the Process");
-            processEntity.getProcessErrors().forEach(processErrorEntity -> processErrorEntity.setProcessId(processId));
+            processEntity.getProcessErrors().forEach(processErrorEntity -> {
+                processErrorEntity.setParentId(processId);
+                processErrorEntity.setParentType(org.apache.airavata.common.model.ErrorParentType.PROCESS);
+            });
         }
 
         if (processEntity.getTasks() != null) {
@@ -168,16 +179,14 @@ public class ProcessService {
         // Always load processStatuses from repository to ensure they're loaded
         // The entity's processStatuses collection might be lazy-loaded and appear non-empty
         // but may not contain actual data when accessed outside of transaction
-        // Use ascending order so statuses are in chronological order (oldest first)
+        // Use the unified StatusRepository to fetch process statuses (returns in descending order by default)
         try {
-            var loadedStatuses = processStatusRepository.findByProcessIdOrderByTimeOfStateChangeAsc(processId);
+            var loadedStatuses = statusRepository.findByProcessId(processId);
             if (loadedStatuses != null && !loadedStatuses.isEmpty()) {
-                // Convert to model list and set on the model
-                var statusModels = new ArrayList<ProcessStatus>();
-                for (var statusEntity : loadedStatuses) {
-                    var statusModel = processStatusMapper.toModel(statusEntity);
-                    statusModels.add(statusModel);
-                }
+                // Convert to model list using the unified StatusMapper
+                // Note: StatusRepository returns DESC order, but we want ASC for chronological order
+                java.util.Collections.reverse(loadedStatuses);
+                var statusModels = statusMapper.toProcessStatusList(loadedStatuses);
                 model.setProcessStatuses(statusModels);
             } else {
                 model.setProcessStatuses(new ArrayList<>());

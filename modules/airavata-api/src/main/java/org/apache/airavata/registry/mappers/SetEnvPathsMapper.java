@@ -22,8 +22,7 @@ package org.apache.airavata.registry.mappers;
 import java.util.List;
 import org.apache.airavata.common.model.SetEnvPaths;
 import org.apache.airavata.registry.entities.appcatalog.AppEnvironmentEntity;
-import org.apache.airavata.registry.entities.appcatalog.LibraryApendPathEntity;
-import org.apache.airavata.registry.entities.appcatalog.LibraryPrependPathEntity;
+import org.apache.airavata.registry.entities.appcatalog.LibraryPathEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -33,35 +32,27 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface SetEnvPathsMapper {
 
+    // AppEnvironmentEntity mapping
     SetEnvPaths toModel(AppEnvironmentEntity entity);
 
-    @Mapping(target = "applicationDeployment", ignore = true) // Set by parent entity
-    @Mapping(target = "deploymentId", ignore = true) // Set by parent entity
+    @Mapping(target = "applicationDeployment", ignore = true)
+    @Mapping(target = "deploymentId", ignore = true)
     AppEnvironmentEntity toEntity(SetEnvPaths model);
-
-    @Mapping(target = "envPathOrder", constant = "0") // LibraryPrependPathEntity doesn't have envPathOrder
-    SetEnvPaths toModelFromPrepend(LibraryPrependPathEntity entity);
-
-    @Mapping(target = "applicationDeployment", ignore = true) // Set by parent entity
-    @Mapping(target = "deploymentId", ignore = true) // Set by parent entity
-    LibraryPrependPathEntity toEntityToPrepend(SetEnvPaths model);
-
-    @Mapping(target = "envPathOrder", constant = "0") // LibraryApendPathEntity doesn't have envPathOrder
-    SetEnvPaths toModelFromAppend(LibraryApendPathEntity entity);
-
-    @Mapping(target = "applicationDeployment", ignore = true) // Set by parent entity
-    @Mapping(target = "deploymentId", ignore = true) // Set by parent entity
-    LibraryApendPathEntity toEntityToAppend(SetEnvPaths model);
 
     List<SetEnvPaths> toModelListFromEnvironment(List<AppEnvironmentEntity> entities);
 
     List<AppEnvironmentEntity> toEntityListToEnvironment(List<SetEnvPaths> models);
 
-    List<SetEnvPaths> toModelListFromPrepend(List<LibraryPrependPathEntity> entities);
+    // Unified LibraryPathEntity mapping
+    @Mapping(target = "envPathOrder", constant = "0")
+    SetEnvPaths toModelFromLibraryPath(LibraryPathEntity entity);
 
-    List<LibraryPrependPathEntity> toEntityListToPrepend(List<SetEnvPaths> models);
+    @Mapping(target = "applicationDeployment", ignore = true)
+    @Mapping(target = "deploymentId", ignore = true)
+    @Mapping(target = "pathType", ignore = true) // Set by caller based on context
+    LibraryPathEntity toEntityToLibraryPath(SetEnvPaths model);
 
-    List<SetEnvPaths> toModelListFromAppend(List<LibraryApendPathEntity> entities);
+    List<SetEnvPaths> toModelListFromLibraryPath(List<LibraryPathEntity> entities);
 
-    List<LibraryApendPathEntity> toEntityListToAppend(List<SetEnvPaths> models);
+    List<LibraryPathEntity> toEntityListToLibraryPath(List<SetEnvPaths> models);
 }

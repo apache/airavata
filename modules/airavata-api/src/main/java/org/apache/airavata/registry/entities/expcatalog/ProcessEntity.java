@@ -21,8 +21,10 @@ package org.apache.airavata.registry.entities.expcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
@@ -31,10 +33,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
+import org.apache.airavata.registry.entities.ErrorEntity;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
+import org.apache.airavata.registry.entities.StatusEntity;
 
 /**
  * The persistent class for the process database table.
@@ -111,34 +118,38 @@ public class ProcessEntity implements Serializable {
     @Column(name = "USE_USER_CR_PREF")
     private boolean useUserCRPref;
 
-    @OneToMany(
-            targetEntity = ProcessStatusEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "process",
-            fetch = FetchType.EAGER)
-    @OrderBy("timeOfStateChange ASC")
-    private List<ProcessStatusEntity> processStatuses;
+    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "PROCESS_ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'PROCESS'")
+    @OrderBy("sequenceNum ASC")
+    private List<StatusEntity> processStatuses;
 
-    @OneToMany(
-            targetEntity = ProcessErrorEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "process",
-            fetch = FetchType.EAGER)
-    private List<ProcessErrorEntity> processErrors;
+    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(name = "PARENT_ID", referencedColumnName = "PROCESS_ID", insertable = false, updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'PROCESS'")
+    private List<ErrorEntity> processErrors;
 
-    @OneToMany(
-            targetEntity = ProcessInputEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "process",
-            fetch = FetchType.EAGER)
-    private List<ProcessInputEntity> processInputs;
+    /**
+     * Transient field for process inputs. Inputs are stored in the unified INPUT_DATA table
+     * and loaded via InputDataRepository.findByProcessId().
+     */
+    @Transient
+    private List<InputDataEntity> processInputs;
 
-    @OneToMany(
-            targetEntity = ProcessOutputEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "process",
-            fetch = FetchType.EAGER)
-    private List<ProcessOutputEntity> processOutputs;
+    /**
+     * Transient field for process outputs. Outputs are stored in the unified OUTPUT_DATA table
+     * and loaded via OutputDataRepository.findByProcessId().
+     */
+    @Transient
+    private List<OutputDataEntity> processOutputs;
 
     @OneToOne(
             targetEntity = ProcessResourceScheduleEntity.class,
@@ -332,35 +343,35 @@ public class ProcessEntity implements Serializable {
         this.useUserCRPref = useUserCRPref;
     }
 
-    public List<ProcessStatusEntity> getProcessStatuses() {
+    public List<StatusEntity> getProcessStatuses() {
         return processStatuses;
     }
 
-    public void setProcessStatuses(List<ProcessStatusEntity> processStatuses) {
+    public void setProcessStatuses(List<StatusEntity> processStatuses) {
         this.processStatuses = processStatuses;
     }
 
-    public List<ProcessErrorEntity> getProcessErrors() {
+    public List<ErrorEntity> getProcessErrors() {
         return processErrors;
     }
 
-    public void setProcessErrors(List<ProcessErrorEntity> processErrors) {
+    public void setProcessErrors(List<ErrorEntity> processErrors) {
         this.processErrors = processErrors;
     }
 
-    public List<ProcessInputEntity> getProcessInputs() {
+    public List<InputDataEntity> getProcessInputs() {
         return processInputs;
     }
 
-    public void setProcessInputs(List<ProcessInputEntity> processInputs) {
+    public void setProcessInputs(List<InputDataEntity> processInputs) {
         this.processInputs = processInputs;
     }
 
-    public List<ProcessOutputEntity> getProcessOutputs() {
+    public List<OutputDataEntity> getProcessOutputs() {
         return processOutputs;
     }
 
-    public void setProcessOutputs(List<ProcessOutputEntity> processOutputs) {
+    public void setProcessOutputs(List<OutputDataEntity> processOutputs) {
         this.processOutputs = processOutputs;
     }
 

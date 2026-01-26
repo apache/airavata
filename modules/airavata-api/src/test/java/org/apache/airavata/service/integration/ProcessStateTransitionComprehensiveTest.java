@@ -39,8 +39,8 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,7 +93,7 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
 
     private String testProcessId;
     private String testExperimentId;
@@ -103,12 +103,12 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService) {
+            StatusService statusService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
     }
 
     @BeforeEach
@@ -142,7 +142,7 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
         // Add statuses in sequence
         for (ProcessState state : forwardFlow) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testProcessId);
+            statusService.addProcessStatus(status, testProcessId);
         }
 
         // Verify all states are in history
@@ -153,7 +153,7 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
                 "Process should have at least " + forwardFlow.size() + " status entries");
 
         // Verify latest state
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
     }
 
@@ -172,10 +172,10 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testProcessId);
+            statusService.addProcessStatus(status, testProcessId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
         // Verify queuing states are in history
@@ -205,10 +205,10 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testProcessId);
+            statusService.addProcessStatus(status, testProcessId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
         // Verify requeue states are in history
@@ -233,10 +233,10 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testProcessId);
+            statusService.addProcessStatus(status, testProcessId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.CANCELED, latest.getState(), "Final state should be CANCELED");
     }
 
@@ -245,12 +245,12 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
     public void testFailurePaths() throws RegistryException {
         // Test failure from CREATED
         ProcessStatus created = StateMachineTestUtils.createProcessStatus(ProcessState.CREATED, "Created");
-        processStatusService.addProcessStatus(created, testProcessId);
+        statusService.addProcessStatus(created, testProcessId);
 
         ProcessStatus failed1 = StateMachineTestUtils.createProcessStatus(ProcessState.FAILED, "Failed from CREATED");
-        processStatusService.addProcessStatus(failed1, testProcessId);
+        statusService.addProcessStatus(failed1, testProcessId);
 
-        ProcessStatus latest1 = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus latest1 = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.FAILED, latest1.getState(), "Process should be in FAILED state");
 
         // Create new process for next test
@@ -260,15 +260,15 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
 
         // Test failure from EXECUTING
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(started, processId2);
+        statusService.addProcessStatus(started, processId2);
 
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, processId2);
+        statusService.addProcessStatus(executing, processId2);
 
         ProcessStatus failed2 = StateMachineTestUtils.createProcessStatus(ProcessState.FAILED, "Failed from EXECUTING");
-        processStatusService.addProcessStatus(failed2, processId2);
+        statusService.addProcessStatus(failed2, processId2);
 
-        ProcessStatus latest2 = processStatusService.getProcessStatus(processId2);
+        ProcessStatus latest2 = statusService.getLatestProcessStatus(processId2);
         assertEquals(ProcessState.FAILED, latest2.getState(), "Process should be in FAILED state");
     }
 
@@ -334,10 +334,10 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
     public void testProcessStateAffectsExperimentState() throws RegistryException {
         // When process transitions to EXECUTING, experiment should transition to EXECUTING
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testProcessId);
+        statusService.addProcessStatus(executing, testProcessId);
 
         // Verify process state
-        ProcessStatus processStatus = processStatusService.getProcessStatus(testProcessId);
+        ProcessStatus processStatus = statusService.getLatestProcessStatus(testProcessId);
         assertEquals(ProcessState.EXECUTING, processStatus.getState(), "Process should be in EXECUTING state");
 
         // Note: In a real system, experiment state would be updated based on process state
@@ -413,7 +413,7 @@ public class ProcessStateTransitionComprehensiveTest extends ServiceIntegrationT
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testProcessId);
+            statusService.addProcessStatus(status, testProcessId);
         }
 
         // Verify all states are in history

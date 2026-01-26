@@ -26,9 +26,18 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.airavata.common.model.IODirection;
 
+/**
+ * Parser entity representing a container-based output parser.
+ *
+ * <p>Uses unified {@link ParserIOEntity} for both inputs and outputs, distinguished
+ * by the {@link IODirection} field.
+ */
 @Entity
 @Table(name = "PARSER")
 public class ParserEntity implements Serializable {
@@ -53,21 +62,16 @@ public class ParserEntity implements Serializable {
     @Column(name = "GATEWAY_ID", nullable = false)
     private String gatewayId;
 
+    /**
+     * All parser I/O entries (both inputs and outputs).
+     */
     @OneToMany(
-            targetEntity = ParserInputEntity.class,
+            targetEntity = ParserIOEntity.class,
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             mappedBy = "parser",
             fetch = FetchType.EAGER)
-    private List<ParserInputEntity> inputFiles;
-
-    @OneToMany(
-            targetEntity = ParserOutputEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "parser",
-            fetch = FetchType.EAGER)
-    private List<ParserOutputEntity> outputFiles;
+    private List<ParserIOEntity> ioEntries;
 
     public String getId() {
         return id;
@@ -109,27 +113,48 @@ public class ParserEntity implements Serializable {
         this.executionCommand = executionCommand;
     }
 
-    public List<ParserInputEntity> getInputFiles() {
-        return inputFiles;
-    }
-
-    public void setInputFiles(List<ParserInputEntity> inputFiles) {
-        this.inputFiles = inputFiles;
-    }
-
-    public List<ParserOutputEntity> getOutputFiles() {
-        return outputFiles;
-    }
-
-    public void setOutputFiles(List<ParserOutputEntity> outputFiles) {
-        this.outputFiles = outputFiles;
-    }
-
     public String getGatewayId() {
         return gatewayId;
     }
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    /**
+     * Gets all I/O entries (both inputs and outputs).
+     */
+    public List<ParserIOEntity> getIoEntries() {
+        return ioEntries;
+    }
+
+    public void setIoEntries(List<ParserIOEntity> ioEntries) {
+        this.ioEntries = ioEntries;
+    }
+
+    /**
+     * Gets only input entries.
+     */
+    @Transient
+    public List<ParserIOEntity> getInputs() {
+        if (ioEntries == null) {
+            return List.of();
+        }
+        return ioEntries.stream()
+                .filter(io -> io.getDirection() == IODirection.INPUT)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets only output entries.
+     */
+    @Transient
+    public List<ParserIOEntity> getOutputs() {
+        if (ioEntries == null) {
+            return List.of();
+        }
+        return ioEntries.stream()
+                .filter(io -> io.getDirection() == IODirection.OUTPUT)
+                .collect(Collectors.toList());
     }
 }

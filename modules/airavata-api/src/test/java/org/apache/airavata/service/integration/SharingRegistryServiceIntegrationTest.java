@@ -24,7 +24,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.DuplicateEntryException;
@@ -48,9 +51,22 @@ import org.junit.jupiter.api.Test;
 public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
 
     private final SharingRegistryService sharingService;
+    private final GatewayService gatewayService;
 
-    public SharingRegistryServiceIntegrationTest(SharingRegistryService sharingService) {
+    public SharingRegistryServiceIntegrationTest(SharingRegistryService sharingService, GatewayService gatewayService) {
         this.sharingService = sharingService;
+        this.gatewayService = gatewayService;
+    }
+
+    /**
+     * Helper method to create a gateway for domain testing.
+     * A domain's domainId must correspond to an existing gateway's gatewayId.
+     */
+    private String createGatewayForDomain(String gatewayId) throws RegistryException {
+        Gateway gateway = new Gateway();
+        gateway.setGatewayId(gatewayId);
+        gateway.setGatewayName("Test Gateway " + gatewayId);
+        return gatewayService.addGateway(gateway);
     }
 
     @Test
@@ -58,9 +74,12 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
             "Should perform complete sharing registry operations including domain, users, groups, permissions, entities, and access control")
     void shouldPerformCompleteSharingRegistryOperations()
             throws InterruptedException, ApplicationSettingsException, SharingRegistryException,
-                    DuplicateEntryException {
-        Domain domain = new Domain();
+                    DuplicateEntryException, RegistryException {
+        // First create a gateway - domain's domainId must correspond to an existing gateway's gatewayId
         String testDomainId = "test-domain-" + System.currentTimeMillis();
+        createGatewayForDomain(testDomainId);
+
+        Domain domain = new Domain();
         domain.setDomainId(testDomainId);
         domain.setName("test-domain" + Math.random());
         domain.setDescription("test domain description");
@@ -430,8 +449,10 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         @Test
         @DisplayName("Should reject self-reference when adding group as its own child")
         void shouldRejectSelfReferenceWhenAddingGroupAsChild()
-                throws SharingRegistryException, DuplicateEntryException {
+                throws SharingRegistryException, DuplicateEntryException, RegistryException {
             String testDomainId = "test-domain-cyclic-" + System.currentTimeMillis();
+            createGatewayForDomain(testDomainId);
+
             Domain domain = new Domain();
             domain.setDomainId(testDomainId);
             domain.setName("Cyclic Test Domain");
@@ -454,8 +475,10 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         @Test
         @DisplayName("Should reject cyclic dependency when adding ancestor as child")
         void shouldRejectCyclicDependencyWhenAddingAncestorAsChild()
-                throws SharingRegistryException, DuplicateEntryException {
+                throws SharingRegistryException, DuplicateEntryException, RegistryException {
             String testDomainId = "test-domain-cyclic2-" + System.currentTimeMillis();
+            createGatewayForDomain(testDomainId);
+
             Domain domain = new Domain();
             domain.setDomainId(testDomainId);
             domain.setName("Cyclic Test Domain 2");
@@ -490,8 +513,10 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         @Test
         @DisplayName("Should reject cyclic dependency in multi-level hierarchy")
         void shouldRejectCyclicDependencyInMultiLevelHierarchy()
-                throws SharingRegistryException, DuplicateEntryException {
+                throws SharingRegistryException, DuplicateEntryException, RegistryException {
             String testDomainId = "test-domain-cyclic3-" + System.currentTimeMillis();
+            createGatewayForDomain(testDomainId);
+
             Domain domain = new Domain();
             domain.setDomainId(testDomainId);
             domain.setName("Cyclic Test Domain 3");
@@ -532,8 +557,10 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
 
         @Test
         @DisplayName("Should allow valid non-cyclic group hierarchy")
-        void shouldAllowValidGroupHierarchy() throws SharingRegistryException, DuplicateEntryException {
+        void shouldAllowValidGroupHierarchy() throws SharingRegistryException, DuplicateEntryException, RegistryException {
             String testDomainId = "test-domain-valid-" + System.currentTimeMillis();
+            createGatewayForDomain(testDomainId);
+
             Domain domain = new Domain();
             domain.setDomainId(testDomainId);
             domain.setName("Valid Hierarchy Domain");

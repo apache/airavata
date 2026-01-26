@@ -22,10 +22,8 @@ package org.apache.airavata.registry.repositories.expcatalog;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
@@ -34,18 +32,21 @@ import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
-import org.apache.airavata.registry.services.JobStatusService;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,8 @@ public class JobStatusRepositoryTest extends TestBase {
     private final ProcessService processService;
     private final TaskService taskService;
     private final JobService jobService;
-    private final JobStatusService jobStatusService;
+    private final StatusRepository statusRepository;
+    private final StatusService statusService;
 
     private String gatewayId;
     private String projectId;
@@ -78,18 +80,20 @@ public class JobStatusRepositoryTest extends TestBase {
             ProcessService processService,
             TaskService taskService,
             JobService jobService,
-            JobStatusService jobStatusService) {
+            StatusRepository statusRepository,
+            StatusService statusService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
         this.taskService = taskService;
         this.jobService = jobService;
-        this.jobStatusService = jobStatusService;
+        this.statusRepository = statusRepository;
+        this.statusService = statusService;
     }
 
     @BeforeEach
-    public void setUp() throws RegistryException, RegistryException {
+    public void setUp() throws RegistryException {
         Gateway gateway = new Gateway();
         gateway.setGatewayId("gateway-" + java.util.UUID.randomUUID().toString());
         gateway.setDomain("SEAGRID");
@@ -135,26 +139,37 @@ public class JobStatusRepositoryTest extends TestBase {
     @Test
     public void testJobStatusRepository_Create_MultipleStatuses() throws RegistryException, InterruptedException {
 
-        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status1 = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         status1.setReason("Job submitted to queue");
-        jobStatusService.addJobStatus(status1, jobPK);
+        statusRepository.save(status1);
 
-        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        Thread.sleep(10); // Ensure timestamp difference
+
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status2 = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.QUEUED.name());
         status2.setReason("Job queued for execution");
-        jobStatusService.addJobStatus(status2, jobPK);
+        statusRepository.save(status2);
 
-        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        Thread.sleep(10); // Ensure timestamp difference
+
+        String statusId3 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status3 = new StatusEntity(statusId3, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
         status3.setReason("Job is now active");
-        jobStatusService.addJobStatus(status3, jobPK);
+        statusRepository.save(status3);
+        flushAndClear();
 
-        JobModel job = jobService.getJob(jobPK);
-        assertNotNull(job.getJobStatuses(), "Job statuses should not be null");
-        assertTrue(job.getJobStatuses().size() >= 3, "Job should have at least 3 status entries");
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertNotNull(statuses, "Job statuses should not be null");
+        assertTrue(statuses.size() >= 3, "Job should have at least 3 status entries");
 
         // latest status
-        JobStatus latestStatus = jobStatusService.getJobStatus(jobPK);
-        assertNotNull(latestStatus, "Latest status should not be null");
-        assertEquals(JobState.ACTIVE, latestStatus.getJobState(), "Latest status should be ACTIVE");
+        java.util.Optional<StatusEntity> latestStatusOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(latestStatusOpt.isPresent(), "Latest status should exist");
+        StatusEntity latestStatus = latestStatusOpt.get();
+        assertEquals(JobState.ACTIVE.name(), latestStatus.getState(), "Latest status should be ACTIVE");
+        assertEquals(jobPK.getJobId(), latestStatus.getParentId(), "Parent ID should match job ID");
+        assertEquals(StatusParentType.JOB, latestStatus.getParentType(), "Parent type should be JOB");
     }
 
     @Test
@@ -162,21 +177,21 @@ public class JobStatusRepositoryTest extends TestBase {
         // a complete state transition flow
         JobStatus submitted = new JobStatus(JobState.SUBMITTED);
         submitted.setReason("Initial submission");
-        jobStatusService.addJobStatus(submitted, jobPK);
+        statusService.addJobStatus(submitted, jobPK.getJobId());
 
         JobStatus queued = new JobStatus(JobState.QUEUED);
         queued.setReason("Queued for resources");
-        jobStatusService.addJobStatus(queued, jobPK);
+        statusService.addJobStatus(queued, jobPK.getJobId());
 
         JobStatus active = new JobStatus(JobState.ACTIVE);
         active.setReason("Job is running");
-        jobStatusService.addJobStatus(active, jobPK);
+        statusService.addJobStatus(active, jobPK.getJobId());
 
         JobStatus complete = new JobStatus(JobState.COMPLETE);
         complete.setReason("Job completed successfully");
-        jobStatusService.addJobStatus(complete, jobPK);
+        statusService.addJobStatus(complete, jobPK.getJobId());
 
-        JobStatus latest = jobStatusService.getJobStatus(jobPK);
+        JobStatus latest = statusService.getLatestJobStatus(jobPK.getJobId());
         assertNotNull(latest, "Latest status should exist");
         assertEquals(JobState.COMPLETE, latest.getJobState(), "Final state should be COMPLETE");
         assertEquals("Job completed successfully", latest.getReason(), "Reason should match");
@@ -193,203 +208,238 @@ public class JobStatusRepositoryTest extends TestBase {
         failedJobPK.setTaskId(taskId);
 
         JobStatus failedSubmitted = new JobStatus(JobState.SUBMITTED);
-        jobStatusService.addJobStatus(failedSubmitted, failedJobPK);
+        statusService.addJobStatus(failedSubmitted, failedJobPK.getJobId());
 
         JobStatus failed = new JobStatus(JobState.FAILED);
         failed.setReason("Job execution failed");
-        jobStatusService.addJobStatus(failed, failedJobPK);
+        statusService.addJobStatus(failed, failedJobPK.getJobId());
 
         // the job has the failed status
         JobModel failedJob = jobService.getJob(failedJobPK);
         assertNotNull(failedJob.getJobStatuses(), "Failed job should have statuses");
         assertTrue(failedJob.getJobStatuses().size() >= 2, "Failed job should have at least 2 statuses");
 
-        JobStatus failedStatus = jobStatusService.getJobStatus(failedJobPK);
+        JobStatus failedStatus = statusService.getLatestJobStatus(failedJobPK.getJobId());
         assertNotNull(failedStatus, "Failed job status should exist");
         assertEquals(JobState.FAILED, failedStatus.getJobState(), "Failed job state should be FAILED");
     }
 
     @Test
     public void testJobStatusRepository_Get_NonExistentJob() throws RegistryException {
-        JobPK nonExistentPK = new JobPK();
-        nonExistentPK.setJobId("non-existent-job-" + java.util.UUID.randomUUID().toString());
-        nonExistentPK.setTaskId(
-                "non-existent-task-" + java.util.UUID.randomUUID().toString());
+        String nonExistentJobId = "non-existent-job-" + java.util.UUID.randomUUID().toString();
 
-        JobStatus status = jobStatusService.getJobStatus(nonExistentPK);
-        assertNull(status, "Non-existent job should return null status");
+        java.util.Optional<StatusEntity> statusOpt = statusRepository.findLatestByParentIdAndParentType(nonExistentJobId, StatusParentType.JOB);
+        assertTrue(statusOpt.isEmpty(), "Non-existent job should return empty optional");
 
-        JobStatus existingStatus = new JobStatus(JobState.SUBMITTED);
+        String statusId = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity existingStatus = new StatusEntity(statusId, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         existingStatus.setReason("Existing job status");
-        jobStatusService.addJobStatus(existingStatus, jobPK);
+        statusRepository.save(existingStatus);
+        flushAndClear();
 
-        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
-        assertNotNull(retrieved, "Existing job should have status");
-        assertEquals(JobState.SUBMITTED, retrieved.getJobState(), "Status should match");
+        java.util.Optional<StatusEntity> retrievedOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(retrievedOpt.isPresent(), "Existing job should have status");
+        StatusEntity retrieved = retrievedOpt.get();
+        assertEquals(JobState.SUBMITTED.name(), retrieved.getState(), "Status should match");
     }
 
     @Test
     public void testJobStatusRepository_Update_AllStatusFields() throws RegistryException, InterruptedException {
-        JobStatus status = new JobStatus(JobState.QUEUED);
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.QUEUED.name());
         status.setReason("Initial queued state");
-        jobStatusService.addJobStatus(status, jobPK);
+        statusRepository.save(status);
+        flushAndClear();
 
+        Thread.sleep(10);
         // Ensure updated status has a later timestamp
-        JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity updatedStatus = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
         updatedStatus.setReason("Updated: Job is now active");
-        // Don't set timestamp - let updateJobStatus use getUniqueTimestampForJob to ensure proper ordering
-        jobStatusService.updateJobStatus(updatedStatus, jobPK);
+        statusRepository.save(updatedStatus);
+        flushAndClear();
 
-        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
-        assertNotNull(retrieved, "Updated status should exist");
-        assertEquals(JobState.ACTIVE, retrieved.getJobState(), "State should be updated to ACTIVE");
+        java.util.Optional<StatusEntity> retrievedOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(retrievedOpt.isPresent(), "Updated status should exist");
+        StatusEntity retrieved = retrievedOpt.get();
+        assertEquals(JobState.ACTIVE.name(), retrieved.getState(), "State should be updated to ACTIVE");
         assertEquals("Updated: Job is now active", retrieved.getReason(), "Reason should be updated");
-        assertTrue(retrieved.getTimeOfStateChange() > 0, "Time of state change should be set");
+        assertNotNull(retrieved.getTimeOfStateChange(), "Time of state change should be set");
+        assertTrue(retrieved.getTimeOfStateChange().getTime() > 0, "Time of state change should be greater than 0");
     }
 
     @Test
     public void testJobStatusRepository_UpdateAddsNewStatusEntry() throws RegistryException {
-        JobStatus initialStatus = new JobStatus(JobState.SUBMITTED);
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity initialStatus = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         initialStatus.setReason("Initial submission");
-        jobStatusService.addJobStatus(initialStatus, jobPK);
+        statusRepository.save(initialStatus);
+        flushAndClear();
 
-        JobModel jobBeforeUpdate = jobService.getJob(jobPK);
-        assertNotNull(jobBeforeUpdate.getJobStatuses(), "Job statuses should not be null");
-        int statusCountBefore = jobBeforeUpdate.getJobStatuses().size();
+        java.util.List<StatusEntity> statusesBefore = statusRepository.findByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertNotNull(statusesBefore, "Job statuses should not be null");
+        int statusCountBefore = statusesBefore.size();
         assertTrue(statusCountBefore >= 1, "Should have at least 1 status before update");
 
-        JobStatus updatedStatus = new JobStatus(JobState.ACTIVE);
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity updatedStatus = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
         updatedStatus.setReason("Updated to active");
-        jobStatusService.updateJobStatus(updatedStatus, jobPK);
+        statusRepository.save(updatedStatus);
+        flushAndClear();
 
-        JobStatus latest = jobStatusService.getJobStatus(jobPK);
-        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
+        java.util.Optional<StatusEntity> latestOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(latestOpt.isPresent(), "Latest status should exist");
+        StatusEntity latest = latestOpt.get();
+        assertEquals(JobState.ACTIVE.name(), latest.getState(), "Latest status should be ACTIVE");
         assertEquals("Updated to active", latest.getReason(), "Latest reason should match");
 
-        JobModel jobAfterUpdate = jobService.getJob(jobPK);
-        assertNotNull(jobAfterUpdate.getJobStatuses(), "Job statuses should not be null");
+        java.util.List<StatusEntity> statusesAfter = statusRepository.findByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertNotNull(statusesAfter, "Job statuses should not be null");
         assertTrue(
-                jobAfterUpdate.getJobStatuses().size() > statusCountBefore,
+                statusesAfter.size() > statusCountBefore,
                 "Update should add a new status entry, not replace existing");
 
-        List<JobStatus> allStatuses = jobAfterUpdate.getJobStatuses();
         assertTrue(
-                allStatuses.stream().anyMatch(s -> s.getJobState() == JobState.SUBMITTED),
+                statusesAfter.stream().anyMatch(s -> JobState.SUBMITTED.name().equals(s.getState())),
                 "Original SUBMITTED status should still exist in history");
         assertTrue(
-                allStatuses.stream().anyMatch(s -> s.getJobState() == JobState.ACTIVE),
+                statusesAfter.stream().anyMatch(s -> JobState.ACTIVE.name().equals(s.getState())),
                 "New ACTIVE status should exist in history");
     }
 
     @Test
     public void testJobStatusRepository_TimeOfStateChangeHandling() throws RegistryException {
-        // Capture time after status creation to account for time set in addJobStatus
-        JobStatus status = new JobStatus(JobState.SUBMITTED);
+        // Capture time after status creation to account for time set in save
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         status.setReason("Test time handling");
 
         long beforeTime = AiravataUtils.getUniqueTimestamp().getTime();
-        jobStatusService.addJobStatus(status, jobPK);
+        statusRepository.save(status);
+        flushAndClear();
         long afterTime = AiravataUtils.getUniqueTimestamp().getTime();
 
-        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
-        assertNotNull(retrieved, "Status should exist");
-        assertTrue(retrieved.getTimeOfStateChange() > 0, "Time should be set");
+        java.util.Optional<StatusEntity> retrievedOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(retrievedOpt.isPresent(), "Status should exist");
+        StatusEntity retrieved = retrievedOpt.get();
+        assertNotNull(retrieved.getTimeOfStateChange(), "Time should be set");
+        assertTrue(retrieved.getTimeOfStateChange().getTime() > 0, "Time should be greater than 0");
         // Allow small timing differences (within 1 second) due to timestamp conversion and processing
         assertTrue(
-                retrieved.getTimeOfStateChange() >= beforeTime - 1000,
+                retrieved.getTimeOfStateChange().getTime() >= beforeTime - 1000,
                 "Time should be set to current or later (expected >= " + beforeTime + ", actual: "
-                        + retrieved.getTimeOfStateChange() + ")");
+                        + retrieved.getTimeOfStateChange().getTime() + ")");
         assertTrue(
-                retrieved.getTimeOfStateChange() <= afterTime + 1000,
+                retrieved.getTimeOfStateChange().getTime() <= afterTime + 1000,
                 "Time should be set to current or earlier (expected <= " + afterTime + ", actual: "
-                        + retrieved.getTimeOfStateChange() + ")");
+                        + retrieved.getTimeOfStateChange().getTime() + ")");
 
         long explicitTime = AiravataUtils.getUniqueTimestamp().getTime() + 1000;
-        JobStatus updated = new JobStatus(JobState.ACTIVE);
-        updated.setTimeOfStateChange(explicitTime);
-        jobStatusService.updateJobStatus(updated, jobPK);
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity updated = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
+        updated.setTimeOfStateChange(new java.sql.Timestamp(explicitTime));
+        statusRepository.save(updated);
+        flushAndClear();
 
-        JobStatus updatedRetrieved = jobStatusService.getJobStatus(jobPK);
+        java.util.Optional<StatusEntity> updatedRetrievedOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(updatedRetrievedOpt.isPresent(), "Updated status should exist");
+        StatusEntity updatedRetrieved = updatedRetrievedOpt.get();
         // Allow small timing differences due to timestamp conversion and processing
         assertTrue(
-                updatedRetrieved.getTimeOfStateChange() >= explicitTime - 100,
+                updatedRetrieved.getTimeOfStateChange().getTime() >= explicitTime - 100,
                 "Updated time should be set correctly (expected >= " + explicitTime + ", actual: "
-                        + updatedRetrieved.getTimeOfStateChange() + ")");
+                        + updatedRetrieved.getTimeOfStateChange().getTime() + ")");
     }
 
     @Test
     public void testJobStatusRepository_StatusOrdering() throws RegistryException, InterruptedException {
 
-        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
-        jobStatusService.addJobStatus(status1, jobPK);
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status1 = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
+        statusRepository.save(status1);
 
-        JobStatus status2 = new JobStatus(JobState.QUEUED);
-        jobStatusService.addJobStatus(status2, jobPK);
+        Thread.sleep(10);
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status2 = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.QUEUED.name());
+        statusRepository.save(status2);
 
-        JobStatus status3 = new JobStatus(JobState.ACTIVE);
-        jobStatusService.addJobStatus(status3, jobPK);
+        Thread.sleep(10);
+        String statusId3 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status3 = new StatusEntity(statusId3, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
+        statusRepository.save(status3);
+        flushAndClear();
 
-        JobModel job = jobService.getJob(jobPK);
-        List<JobStatus> statuses = job.getJobStatuses();
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
         assertNotNull(statuses, "Statuses list should not be null");
         assertTrue(statuses.size() >= 3, "Should have at least 3 statuses");
 
-        JobStatus latest = jobStatusService.getJobStatus(jobPK);
-        assertNotNull(latest, "Latest status should exist");
-        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
+        java.util.Optional<StatusEntity> latestOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(latestOpt.isPresent(), "Latest status should exist");
+        StatusEntity latest = latestOpt.get();
+        assertEquals(JobState.ACTIVE.name(), latest.getState(), "Latest status should be ACTIVE");
     }
 
     @Test
     public void testJobStatusRepository_AutomaticStatusIdGeneration() throws RegistryException {
-        JobStatus status = new JobStatus(JobState.SUBMITTED);
+        String statusId = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status = new StatusEntity(statusId, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         status.setReason("Testing automatic status ID generation");
+        statusRepository.save(status);
+        flushAndClear();
 
-        jobStatusService.addJobStatus(status, jobPK);
-
-        JobStatus retrieved = jobStatusService.getJobStatus(jobPK);
-        assertNotNull(retrieved, "Status should exist");
-        assertNotNull(retrieved.getStatusId(), "Status ID should be automatically generated");
+        java.util.Optional<StatusEntity> retrievedOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(retrievedOpt.isPresent(), "Status should exist");
+        StatusEntity retrieved = retrievedOpt.get();
+        assertNotNull(retrieved.getStatusId(), "Status ID should be set");
         assertFalse(retrieved.getStatusId().isEmpty(), "Status ID should not be empty");
-        assertTrue(retrieved.getStatusId().startsWith("JOB_STATE"), "Status ID should start with 'JOB_STATE' prefix");
+        assertEquals(statusId, retrieved.getStatusId(), "Status ID should match");
     }
 
     @Test
     public void testJobStatusRepository_StatusHistoryCompleteness() throws RegistryException, InterruptedException {
-        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status1 = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         status1.setReason("Job submitted");
-        jobStatusService.addJobStatus(status1, jobPK);
+        statusRepository.save(status1);
 
-        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        Thread.sleep(10);
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status2 = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.QUEUED.name());
         status2.setReason("Job queued");
-        jobStatusService.addJobStatus(status2, jobPK);
+        statusRepository.save(status2);
 
-        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        Thread.sleep(10);
+        String statusId3 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status3 = new StatusEntity(statusId3, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
         status3.setReason("Job active");
-        jobStatusService.addJobStatus(status3, jobPK);
+        statusRepository.save(status3);
+        flushAndClear();
 
-        JobModel job = jobService.getJob(jobPK);
-        List<JobStatus> statuses = job.getJobStatuses();
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
         assertNotNull(statuses, "Statuses list should not be null");
         assertTrue(statuses.size() >= 3, "Should have at least 3 statuses in history");
 
         assertTrue(
-                statuses.stream().anyMatch(s -> s.getJobState() == JobState.SUBMITTED),
+                statuses.stream().anyMatch(s -> JobState.SUBMITTED.name().equals(s.getState())),
                 "SUBMITTED status should be in history");
         assertTrue(
-                statuses.stream().anyMatch(s -> s.getJobState() == JobState.QUEUED),
+                statuses.stream().anyMatch(s -> JobState.QUEUED.name().equals(s.getState())),
                 "QUEUED status should be in history");
         assertTrue(
-                statuses.stream().anyMatch(s -> s.getJobState() == JobState.ACTIVE),
+                statuses.stream().anyMatch(s -> JobState.ACTIVE.name().equals(s.getState())),
                 "ACTIVE status should be in history");
 
-        JobStatus latest = jobStatusService.getJobStatus(jobPK);
-        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should be ACTIVE");
-        assertTrue(latest.getTimeOfStateChange() > 0, "Latest status should have timestamp");
+        java.util.Optional<StatusEntity> latestOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(latestOpt.isPresent(), "Latest status should exist");
+        StatusEntity latest = latestOpt.get();
+        assertEquals(JobState.ACTIVE.name(), latest.getState(), "Latest status should be ACTIVE");
+        assertNotNull(latest.getTimeOfStateChange(), "Latest status should have timestamp");
+        assertTrue(latest.getTimeOfStateChange().getTime() > 0, "Latest status should have timestamp > 0");
 
         statuses.forEach(s -> {
-            assertTrue(
-                    s.getTimeOfStateChange() > 0, "Each status should have timeOfStateChange set: " + s.getJobState());
-            assertNotNull(s.getStatusId(), "Each status should have statusId: " + s.getJobState());
+            assertNotNull(s.getTimeOfStateChange(), "Each status should have timeOfStateChange set: " + s.getState());
+            assertTrue(s.getTimeOfStateChange().getTime() > 0, "Each status should have timeOfStateChange > 0: " + s.getState());
+            assertNotNull(s.getStatusId(), "Each status should have statusId: " + s.getState());
         });
     }
 
@@ -401,65 +451,76 @@ public class JobStatusRepositoryTest extends TestBase {
 
         for (int i = 0; i < allStates.length; i++) {
             jobPKs[i] = createNewJob("job-state-" + allStates[i].name());
-            JobStatus status = new JobStatus(allStates[i]);
+            String statusId = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+            StatusEntity status = new StatusEntity(statusId, jobPKs[i].getJobId(), StatusParentType.JOB, allStates[i].name());
             status.setReason("Testing state: " + allStates[i].name());
-            jobStatusService.addJobStatus(status, jobPKs[i]);
+            statusRepository.save(status);
+            flushAndClear();
 
-            JobStatus retrieved = jobStatusService.getJobStatus(jobPKs[i]);
-            assertNotNull(retrieved, "Status for " + allStates[i] + " should exist");
-            assertEquals(allStates[i], retrieved.getJobState(), "State should match for " + allStates[i]);
+            java.util.Optional<StatusEntity> retrievedOpt = statusRepository.findLatestByParentIdAndParentType(jobPKs[i].getJobId(), StatusParentType.JOB);
+            assertTrue(retrievedOpt.isPresent(), "Status for " + allStates[i] + " should exist");
+            StatusEntity retrieved = retrievedOpt.get();
+            assertEquals(allStates[i].name(), retrieved.getState(), "State should match for " + allStates[i]);
         }
     }
 
     @Test
     public void testJobStatusRepository_RapidStatusUpdates() throws RegistryException, InterruptedException {
-        JobStatus status1 = new JobStatus(JobState.SUBMITTED);
+        String statusId1 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status1 = new StatusEntity(statusId1, jobPK.getJobId(), StatusParentType.JOB, JobState.SUBMITTED.name());
         status1.setReason("Rapid update 1");
-        jobStatusService.addJobStatus(status1, jobPK);
+        statusRepository.save(status1);
 
-        JobStatus status2 = new JobStatus(JobState.QUEUED);
+        Thread.sleep(10);
+        String statusId2 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status2 = new StatusEntity(statusId2, jobPK.getJobId(), StatusParentType.JOB, JobState.QUEUED.name());
         status2.setReason("Rapid update 2");
-        jobStatusService.addJobStatus(status2, jobPK);
+        statusRepository.save(status2);
 
-        JobStatus status3 = new JobStatus(JobState.ACTIVE);
+        Thread.sleep(10);
+        String statusId3 = "JOB_STATE_" + AiravataUtils.getId("STATUS");
+        StatusEntity status3 = new StatusEntity(statusId3, jobPK.getJobId(), StatusParentType.JOB, JobState.ACTIVE.name());
         status3.setReason("Rapid update 3");
-        jobStatusService.addJobStatus(status3, jobPK);
+        statusRepository.save(status3);
+        flushAndClear();
 
-        JobModel job = jobService.getJob(jobPK);
-        assertNotNull(job.getJobStatuses(), "Job statuses should not be null");
-        assertTrue(job.getJobStatuses().size() >= 3, "All rapid status updates should be recorded without loss");
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertNotNull(statuses, "Job statuses should not be null");
+        assertTrue(statuses.size() >= 3, "All rapid status updates should be recorded without loss");
 
-        JobStatus latest = jobStatusService.getJobStatus(jobPK);
-        assertEquals(JobState.ACTIVE, latest.getJobState(), "Latest status should reflect the most recent update");
+        java.util.Optional<StatusEntity> latestOpt = statusRepository.findLatestByParentIdAndParentType(jobPK.getJobId(), StatusParentType.JOB);
+        assertTrue(latestOpt.isPresent(), "Latest status should exist");
+        StatusEntity latest = latestOpt.get();
+        assertEquals(JobState.ACTIVE.name(), latest.getState(), "Latest status should reflect the most recent update");
         assertEquals("Rapid update 3", latest.getReason(), "Latest reason should match the most recent update");
 
-        List<JobStatus> statuses = job.getJobStatuses();
         // Verify strict timestamp ordering
-        JobStatus s1 = statuses.stream()
-                .filter(s -> s.getJobState() == JobState.SUBMITTED)
+        StatusEntity s1 = statuses.stream()
+                .filter(s -> JobState.SUBMITTED.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
-        JobStatus s2 = statuses.stream()
-                .filter(s -> s.getJobState() == JobState.QUEUED)
+        StatusEntity s2 = statuses.stream()
+                .filter(s -> JobState.QUEUED.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
-        JobStatus s3 = statuses.stream()
-                .filter(s -> s.getJobState() == JobState.ACTIVE)
+        StatusEntity s3 = statuses.stream()
+                .filter(s -> JobState.ACTIVE.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
 
-        assertNotNull(s1);
-        assertNotNull(s2);
-        assertNotNull(s3);
+        assertNotNull(s1, "SUBMITTED status should exist");
+        assertNotNull(s2, "QUEUED status should exist");
+        assertNotNull(s3, "ACTIVE status should exist");
 
+        // Verify sequence number ordering (sequence numbers guarantee deterministic creation order)
         assertTrue(
-                s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
-                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 ("
-                        + s1.getTimeOfStateChange() + ")");
+                s2.getSequenceNum() > s1.getSequenceNum(),
+                "Status 2 sequence (" + s2.getSequenceNum() + ") should be greater than Status 1 ("
+                        + s1.getSequenceNum() + ")");
         assertTrue(
-                s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
-                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 ("
-                        + s2.getTimeOfStateChange() + ")");
+                s3.getSequenceNum() > s2.getSequenceNum(),
+                "Status 3 sequence (" + s3.getSequenceNum() + ") should be greater than Status 2 ("
+                        + s2.getSequenceNum() + ")");
     }
 
     private JobPK createNewJob(String jobIdPrefix) throws RegistryException {

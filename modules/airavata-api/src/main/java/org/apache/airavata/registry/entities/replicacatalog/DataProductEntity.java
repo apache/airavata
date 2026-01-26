@@ -20,21 +20,19 @@
 package org.apache.airavata.registry.entities.replicacatalog;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
-import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.DataProductType;
@@ -82,11 +80,13 @@ public class DataProductEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private DataProductType dataProductType;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "DATA_PRODUCT_METADATA", joinColumns = @JoinColumn(name = "PRODUCT_URI"))
-    @MapKeyColumn(name = "METADATA_KEY")
-    @Column(name = "METADATA_VALUE")
-    private Map<String, String> productMetadata;
+    /**
+     * Product metadata stored in the unified METADATA table.
+     * This field is transient and populated by the service layer from MetadataRepository.
+     * Use MetadataRepository.findByDataProductUri(productUri) to manage metadata.
+     */
+    @Transient
+    private Map<String, String> productMetadata = new HashMap<>();
 
     @OneToMany(
             targetEntity = DataReplicaLocationEntity.class,

@@ -46,6 +46,7 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         return credentialEntityService.getCredential(gatewayId, tokenId);
     }
 
+    @Override
     public List<Credential> getAllCredentials() throws CredentialStoreException {
         return credentialEntityService.getAllCredentials();
     }
@@ -62,18 +63,21 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
     }
 
     @Override
-    public List<Credential> getAllCredentialsPerUser(String userName) throws CredentialStoreException {
+    public List<Credential> getAllCredentialsPerUser(String userId) throws CredentialStoreException {
+        // TODO: Implement when needed - would require a new repository method
         return null;
     }
 
-    public String getPortalUser(String gatewayName, String tokenId) throws CredentialStoreException {
+    @Override
+    public String getUserId(String gatewayName, String tokenId) throws CredentialStoreException {
         var credential = credentialEntityService.getCredential(gatewayName, tokenId);
         if (credential == null) {
             return null;
         }
-        return credential.getPortalUserName();
+        return credential.getUserId();
     }
 
+    @Override
     public CertificateAuditInfo getAuditInfo(String gatewayName, String tokenId) throws CredentialStoreException {
         var certificateCredential = (CertificateCredential) credentialEntityService.getCredential(gatewayName, tokenId);
 
@@ -82,24 +86,17 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
         }
 
         var certificateAuditInfo = new CertificateAuditInfo();
-
-        var retrievedUser = certificateCredential.getCommunityUser();
-        certificateAuditInfo.setCommunityUserName(retrievedUser.getUsername());
+        certificateAuditInfo.setUserId(certificateCredential.getUserId());
         certificateAuditInfo.setCredentialLifeTime(certificateCredential.getLifeTime());
-        certificateAuditInfo.setCredentialsRequestedTime(certificateCredential.getCertificateRequestedTime());
+        certificateAuditInfo.setCredentialsRequestedTime(certificateCredential.getPersistedTime());
         certificateAuditInfo.setGatewayName(gatewayName);
         certificateAuditInfo.setNotAfter(certificateCredential.getNotAfter());
         certificateAuditInfo.setNotBefore(certificateCredential.getNotBefore());
-        certificateAuditInfo.setPortalUserName(certificateCredential.getPortalUserName());
 
         return certificateAuditInfo;
     }
 
-    public void updateCommunityUserEmail(String gatewayName, String communityUser, String email)
-            throws CredentialStoreException {
-        // TODO
-    }
-
+    @Override
     public void removeCredentials(String gatewayName, String tokenId) throws CredentialStoreException {
         credentialEntityService.deleteCredential(gatewayName, tokenId);
     }

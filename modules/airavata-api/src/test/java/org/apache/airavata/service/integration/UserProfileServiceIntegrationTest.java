@@ -22,7 +22,6 @@ package org.apache.airavata.service.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.exception.UserProfileServiceException;
@@ -31,6 +30,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+/**
+ * UserProfileService Integration Tests - User profile CRUD operations, existence checks, and data validation.
+ *
+ * <p>Note: The UserEntity now uses OIDC standard claims. The following changes apply:
+ * <ul>
+ *   <li>state field is no longer stored in the database (fetch from IdP if needed)</li>
+ *   <li>emails is now a single email field (not a list)</li>
+ *   <li>validUntil is no longer stored in the database</li>
+ * </ul>
+ */
 @DisplayName(
         "UserProfileService Integration Tests - User profile CRUD operations, existence checks, and data validation")
 public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBase {
@@ -60,7 +69,7 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             assertThat(retrieved.getFirstName()).isEqualTo("Test");
             assertThat(retrieved.getLastName()).isEqualTo("User");
             assertThat(retrieved.getEmails()).isNotEmpty();
-            assertThat(retrieved.getState()).isEqualTo(Status.ACTIVE);
+            // Note: state is no longer stored in OIDC-based UserEntity
         }
 
         @Test
@@ -69,6 +78,7 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-update-user", TEST_GATEWAY_ID);
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
 
+            // Get a fresh copy from the database
             UserProfile toUpdate = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             toUpdate.setFirstName("Updated");
             toUpdate.setLastName("Name");
@@ -93,8 +103,8 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
             assertThat(retrieved.getFirstName()).isEqualTo("Test");
             assertThat(retrieved.getLastName()).isEqualTo("User");
             assertThat(retrieved.getEmails()).isNotEmpty();
-            assertThat(retrieved.getState()).isEqualTo(Status.ACTIVE);
             assertThat(retrieved.getCreationTime()).isGreaterThan(0);
+            // Note: state is no longer stored in OIDC-based UserEntity
         }
 
         @Test
@@ -197,36 +207,24 @@ public class UserProfileServiceIntegrationTest extends ServiceIntegrationTestBas
     class UserProfileValidationTests {
 
         @Test
-        @DisplayName("Should preserve user profile state when creating and retrieving")
-        void shouldPreserveUserProfileState() throws UserProfileServiceException, IamAdminServicesException {
-            UserProfile userProfile = TestDataFactory.createTestUserProfile("test-state-user", TEST_GATEWAY_ID);
-            userProfile.setState(Status.ACTIVE);
-
-            String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
-
-            UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
-            assertThat(retrieved).isNotNull();
-            assertThat(retrieved.getState()).isEqualTo(Status.ACTIVE);
-            assertThat(retrieved.getUserId()).isEqualTo(userId);
-        }
-
-        @Test
-        @DisplayName("Should preserve multiple email addresses when creating and retrieving user profile")
-        void shouldPreserveEmailAddresses() throws UserProfileServiceException, IamAdminServicesException {
+        @DisplayName("Should preserve email address when creating and retrieving user profile")
+        void shouldPreserveEmailAddress() throws UserProfileServiceException, IamAdminServicesException {
             UserProfile userProfile = TestDataFactory.createTestUserProfile("test-email-user", TEST_GATEWAY_ID);
+            // OIDC-based UserEntity only supports single email
             if (userProfile.getEmails() == null) {
                 userProfile.setEmails(new java.util.ArrayList<>());
             }
-            userProfile.getEmails().add("email1@example.com");
-            userProfile.getEmails().add("email2@example.com");
+            userProfile.getEmails().clear();
+            userProfile.getEmails().add("test@example.com");
 
             String userId = userProfileService.addUserProfile(testAuthzToken, userProfile);
 
             UserProfile retrieved = userProfileService.getUserProfileById(testAuthzToken, userId, TEST_GATEWAY_ID);
             assertThat(retrieved).isNotNull();
             assertThat(retrieved.getEmails()).isNotNull().isNotEmpty();
-            assertThat(retrieved.getEmails().size()).isGreaterThanOrEqualTo(2);
-            assertThat(retrieved.getEmails()).contains("email1@example.com", "email2@example.com");
+            // Only one email is stored in OIDC-based UserEntity
+            assertThat(retrieved.getEmails()).hasSize(1);
+            assertThat(retrieved.getEmails()).contains("test@example.com");
         }
     }
 }

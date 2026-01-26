@@ -23,17 +23,39 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * This class represents the actual credential. The credential can be a certificate, user name password or a SSH key. As
- * per now we only have certificate implementation.
+ * Base class for all credential types.
+ *
+ * <p>The credential can be a certificate, user name password or a SSH key.
+ * The {@code userId} field tracks who owns/created this credential.
  */
 public abstract class Credential implements Serializable {
 
     private static final long serialVersionUID = -3653870227035604734L;
 
-    private String portalUserName;
+    /**
+     * The user ID of the credential owner.
+     */
+    private String userId;
+
+    /**
+     * When the credential was persisted.
+     */
     private Date persistedTime;
+
+    /**
+     * Unique token identifying this credential.
+     */
     private String token;
+
+    /**
+     * The gateway this credential belongs to.
+     */
     private String gatewayId;
+
+    /**
+     * Human-readable description of this credential.
+     */
+    private String description;
 
     public String getGatewayId() {
         return gatewayId;
@@ -51,8 +73,6 @@ public abstract class Credential implements Serializable {
         this.description = description;
     }
 
-    private String description;
-
     public String getToken() {
         return token;
     }
@@ -61,19 +81,19 @@ public abstract class Credential implements Serializable {
         this.token = token;
     }
 
-    public void setPortalUserName(String userName) {
-        portalUserName = userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public String getPortalUserName() {
-        return portalUserName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public void setCertificateRequestedTime(Date ts) {
-        persistedTime = ts;
-    }
-
-    public Date getCertificateRequestedTime() {
+    public Date getPersistedTime() {
         return persistedTime;
+    }
+
+    public void setPersistedTime(Date persistedTime) {
+        this.persistedTime = persistedTime;
     }
 }

@@ -20,18 +20,23 @@
 package org.apache.airavata.registry.entities.appcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * The primary key class for the job_submission_interface database table.
  */
 public class JobSubmissionInterfacePK implements Serializable {
-    // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     private String computeResourceId;
     private String jobSubmissionInterfaceId;
 
     public JobSubmissionInterfacePK() {}
+
+    public JobSubmissionInterfacePK(String computeResourceId, String jobSubmissionInterfaceId) {
+        this.computeResourceId = computeResourceId;
+        this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
+    }
 
     public String getComputeResourceId() {
         return computeResourceId;
@@ -49,24 +54,25 @@ public class JobSubmissionInterfacePK implements Serializable {
         this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof JobSubmissionInterfacePK)) {
-            return false;
-        }
-        JobSubmissionInterfacePK castOther = (JobSubmissionInterfacePK) other;
-        return this.computeResourceId.equals(castOther.computeResourceId)
-                && this.jobSubmissionInterfaceId.equals(castOther.jobSubmissionInterfaceId);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JobSubmissionInterfacePK that = (JobSubmissionInterfacePK) o;
+        return Objects.equals(computeResourceId, that.computeResourceId)
+                && Objects.equals(jobSubmissionInterfaceId, that.jobSubmissionInterfaceId);
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.computeResourceId.hashCode();
-        hash = hash * prime + this.jobSubmissionInterfaceId.hashCode();
+        return Objects.hash(computeResourceId, jobSubmissionInterfaceId);
+    }
 
-        return hash;
+    @Override
+    public String toString() {
+        return "JobSubmissionInterfacePK{"
+                + "computeResourceId='" + computeResourceId + '\''
+                + ", jobSubmissionInterfaceId='" + jobSubmissionInterfaceId + '\''
+                + '}';
     }
 }

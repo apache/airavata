@@ -56,10 +56,9 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
-import org.apache.airavata.registry.services.JobStatusService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
 import org.apache.airavata.service.registry.RegistryService;
@@ -83,6 +82,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
+            org.apache.airavata.config.TestDaprConfig.class,
             StateTransitionValidationIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -109,6 +109,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.monitor",
+                "org.apache.airavata.orchestrator.internal.messaging",
                 "org.apache.airavata.messaging"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -121,10 +122,9 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
     private final TaskService taskService;
     private final JobService jobService;
-    private final JobStatusService jobStatusService;
     private final RegistryService registryService;
 
     @Autowired(required = false)
@@ -137,19 +137,17 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService,
+            StatusService statusService,
             TaskService taskService,
             JobService jobService,
-            JobStatusService jobStatusService,
             RegistryService registryService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
         this.taskService = taskService;
         this.jobService = jobService;
-        this.jobStatusService = jobStatusService;
         this.registryService = registryService;
     }
 
@@ -245,7 +243,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Add statuses in sequence
         for (ProcessState state : sequentialStates) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
         // all states are in correct order
@@ -288,13 +286,13 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Test that state transitions have proper timestamps
         // Test job state timestamps
         JobStatus status1 = StateMachineTestUtils.createJobStatus(JobState.SUBMITTED, "Submitted");
-        jobStatusService.addJobStatus(status1, testHierarchy.jobPK);
+        statusService.addJobStatus(status1, testHierarchy.jobPK.getJobId());
 
         JobStatus status2 = StateMachineTestUtils.createJobStatus(JobState.QUEUED, "Queued");
-        jobStatusService.addJobStatus(status2, testHierarchy.jobPK);
+        statusService.addJobStatus(status2, testHierarchy.jobPK.getJobId());
 
         JobStatus status3 = StateMachineTestUtils.createJobStatus(JobState.ACTIVE, "Active");
-        jobStatusService.addJobStatus(status3, testHierarchy.jobPK);
+        statusService.addJobStatus(status3, testHierarchy.jobPK.getJobId());
 
         // timestamps
         var job = jobService.getJob(testHierarchy.jobPK);
@@ -302,13 +300,13 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
 
         // Test process state timestamps
         ProcessStatus pStatus1 = StateMachineTestUtils.createProcessStatus(ProcessState.CREATED, "Created");
-        processStatusService.addProcessStatus(pStatus1, testHierarchy.processId);
+        statusService.addProcessStatus(pStatus1, testHierarchy.processId);
 
         ProcessStatus pStatus2 = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
-        processStatusService.addProcessStatus(pStatus2, testHierarchy.processId);
+        statusService.addProcessStatus(pStatus2, testHierarchy.processId);
 
         ProcessStatus pStatus3 = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(pStatus3, testHierarchy.processId);
+        statusService.addProcessStatus(pStatus3, testHierarchy.processId);
 
         // timestamps
         var process = processService.getProcess(testHierarchy.processId);
@@ -327,7 +325,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Add statuses rapidly
         for (JobState state : rapidStates) {
             JobStatus status = StateMachineTestUtils.createJobStatus(state, "Rapid transition: " + state.name());
-            jobStatusService.addJobStatus(status, testHierarchy.jobPK);
+            statusService.addJobStatus(status, testHierarchy.jobPK.getJobId());
         }
 
         // all states are recorded
@@ -336,7 +334,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         assertTrue(job.getJobStatuses().size() >= rapidStates.size(), "All rapid state transitions should be recorded");
 
         // latest state is correct
-        JobStatus latest = jobStatusService.getJobStatus(testHierarchy.jobPK);
+        JobStatus latest = statusService.getLatestJobStatus(testHierarchy.jobPK.getJobId());
         assertEquals(
                 rapidStates.get(rapidStates.size() - 1),
                 latest.getJobState(),
@@ -391,7 +389,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
 
             // Valid process transition: CREATED -> VALIDATED
             ProcessStatus validated = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
-            processStatusService.addProcessStatus(validated, testHierarchy.processId);
+            statusService.addProcessStatus(validated, testHierarchy.processId);
 
             ProcessIdentifier processIdentifier =
                     new ProcessIdentifier(testHierarchy.processId, testHierarchy.experimentId, testHierarchy.gatewayId);
@@ -415,7 +413,7 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
 
             // Valid job transition: SUBMITTED -> QUEUED
             JobStatus queued = StateMachineTestUtils.createJobStatus(JobState.QUEUED, "Queued");
-            jobStatusService.addJobStatus(queued, testHierarchy.jobPK);
+            statusService.addJobStatus(queued, testHierarchy.jobPK.getJobId());
 
             JobIdentifier jobIdentifier = new JobIdentifier(
                     testHierarchy.jobId,

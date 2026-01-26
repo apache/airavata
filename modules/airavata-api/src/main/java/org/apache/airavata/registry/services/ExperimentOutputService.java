@@ -21,11 +21,12 @@ package org.apache.airavata.registry.services;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.registry.entities.expcatalog.ExperimentOutputEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
-import org.apache.airavata.registry.repositories.expcatalog.ExperimentOutputRepository;
+import org.apache.airavata.registry.repositories.OutputDataRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,25 +34,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class ExperimentOutputService {
-    private final ExperimentOutputRepository experimentOutputRepository;
+    private final OutputDataRepository outputDataRepository;
     private final ExperimentRepository experimentRepository;
     private final EntityManager entityManager;
     private final OutputDataObjectTypeMapper outputDataObjectTypeMapper;
 
     public ExperimentOutputService(
-            ExperimentOutputRepository experimentOutputRepository,
+            OutputDataRepository outputDataRepository,
             ExperimentRepository experimentRepository,
             EntityManager entityManager,
             OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
-        this.experimentOutputRepository = experimentOutputRepository;
+        this.outputDataRepository = outputDataRepository;
         this.experimentRepository = experimentRepository;
         this.entityManager = entityManager;
         this.outputDataObjectTypeMapper = outputDataObjectTypeMapper;
     }
 
     public List<OutputDataObjectType> getExperimentOutputs(String experimentId) throws RegistryException {
-        List<ExperimentOutputEntity> entities = experimentOutputRepository.findByExperimentId(experimentId);
-        return outputDataObjectTypeMapper.toModelListFromExperiment(entities);
+        List<OutputDataEntity> entities = outputDataRepository.findByExperimentId(experimentId);
+        return outputDataObjectTypeMapper.toModelList(entities);
     }
 
     public void addExperimentOutputs(List<OutputDataObjectType> outputs, String experimentId) throws RegistryException {
@@ -64,11 +65,8 @@ public class ExperimentOutputService {
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
         for (var output : outputs) {
-            var entity = outputDataObjectTypeMapper.toEntity(output);
-            entity.setExperimentId(experimentId);
-            // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
-            // The experimentId field is already set and is the only field that gets persisted.
-            experimentOutputRepository.save(entity);
+            var entity = outputDataObjectTypeMapper.toExperimentOutputEntity(output, experimentId);
+            outputDataRepository.save(entity);
         }
     }
 
@@ -81,20 +79,17 @@ public class ExperimentOutputService {
         experimentEntity = experimentRepository.save(experimentEntity);
         experimentRepository.flush();
 
-        // Delete existing outputs using native query to bypass persistence context issues
-        experimentOutputRepository.deleteByExperimentId(experimentId);
+        // Delete existing outputs
+        outputDataRepository.deleteByParentIdAndParentType(experimentId, DataObjectParentType.EXPERIMENT);
         // Flush to ensure deletes are executed
-        experimentOutputRepository.flush();
+        outputDataRepository.flush();
         // Clear entity manager to remove any managed entities from persistence context
         entityManager.clear();
 
         // Add new outputs
         for (var output : outputs) {
-            var entity = outputDataObjectTypeMapper.toEntity(output);
-            entity.setExperimentId(experimentId);
-            // Note: We don't call entity.setExperiment() because the @JoinColumn has insertable=false.
-            // The experimentId field is already set and is the only field that gets persisted.
-            experimentOutputRepository.save(entity);
+            var entity = outputDataObjectTypeMapper.toExperimentOutputEntity(output, experimentId);
+            outputDataRepository.save(entity);
         }
     }
 }

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.registry.entities.appcatalog;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -27,12 +26,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
 
 /**
  * The persistent class for the application_interface database table.
@@ -78,26 +79,38 @@ public class ApplicationInterfaceEntity implements Serializable {
     @Column(name = "CLEAN_AFTER_STAGED")
     private boolean cleanAfterStaged;
 
+    /**
+     * Application module name - can be used as a direct property on interface
+     * instead of through the module mapping indirection.
+     */
+    @Column(name = "MODULE_NAME")
+    private String moduleName;
+
+    /**
+     * Application module version - can be used as a direct property on interface
+     * instead of through the module mapping indirection.
+     */
+    @Column(name = "MODULE_VERSION")
+    private String moduleVersion;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "APP_MODULE_MAPPING", joinColumns = @JoinColumn(name = "INTERFACE_ID"))
     @Column(name = "MODULE_ID")
     private List<String> applicationModules = new ArrayList<>();
 
-    @OneToMany(
-            targetEntity = ApplicationInputEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "applicationInterface",
-            fetch = FetchType.EAGER)
-    private List<ApplicationInputEntity> applicationInputs = new ArrayList<>();
+    /**
+     * Transient field for application inputs. Inputs are stored in the unified INPUT_DATA table
+     * and loaded via InputDataRepository.findByApplicationId().
+     */
+    @Transient
+    private List<InputDataEntity> applicationInputs = new ArrayList<>();
 
-    @OneToMany(
-            targetEntity = ApplicationOutputEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "applicationInterface",
-            fetch = FetchType.EAGER)
-    private List<ApplicationOutputEntity> applicationOutputs = new ArrayList<>();
+    /**
+     * Transient field for application outputs. Outputs are stored in the unified OUTPUT_DATA table
+     * and loaded via OutputDataRepository.findByApplicationId().
+     */
+    @Transient
+    private List<OutputDataEntity> applicationOutputs = new ArrayList<>();
 
     public ApplicationInterfaceEntity() {}
 
@@ -173,6 +186,22 @@ public class ApplicationInterfaceEntity implements Serializable {
         this.cleanAfterStaged = cleanAfterStaged;
     }
 
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getModuleVersion() {
+        return moduleVersion;
+    }
+
+    public void setModuleVersion(String moduleVersion) {
+        this.moduleVersion = moduleVersion;
+    }
+
     public List<String> getApplicationModules() {
         return applicationModules;
     }
@@ -181,19 +210,19 @@ public class ApplicationInterfaceEntity implements Serializable {
         this.applicationModules = applicationModules;
     }
 
-    public List<ApplicationInputEntity> getApplicationInputs() {
+    public List<InputDataEntity> getApplicationInputs() {
         return applicationInputs;
     }
 
-    public void setApplicationInputs(List<ApplicationInputEntity> applicationInputs) {
+    public void setApplicationInputs(List<InputDataEntity> applicationInputs) {
         this.applicationInputs = applicationInputs;
     }
 
-    public List<ApplicationOutputEntity> getApplicationOutputs() {
+    public List<OutputDataEntity> getApplicationOutputs() {
         return applicationOutputs;
     }
 
-    public void setApplicationOutputs(List<ApplicationOutputEntity> applicationOutputs) {
+    public void setApplicationOutputs(List<OutputDataEntity> applicationOutputs) {
         this.applicationOutputs = applicationOutputs;
     }
 }

@@ -83,7 +83,9 @@ public class TestcontainersSetupTest {
             assertTrue(
                     tableExists(conn, "EXPERIMENT") || tableExists(conn, "experiment"),
                     "EXPERIMENT table should exist");
-            assertTrue(tableExists(conn, "DOMAIN") || tableExists(conn, "domain"), "DOMAIN table should exist");
+            assertTrue(
+                    tableExists(conn, "STATUS") || tableExists(conn, "status"),
+                    "STATUS table should exist");
         }
     }
 

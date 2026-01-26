@@ -30,8 +30,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ApplicationParallelismType;
+import org.apache.airavata.common.model.DeploymentCommandType;
+import org.apache.airavata.common.model.LibraryPathType;
 
 /**
  * The persistent class for the application_deployment database table.
@@ -80,6 +84,18 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "APP_MODULE_ID", nullable = false)
     private String appModuleId;
 
+    /**
+     * Optional direct reference to the application interface.
+     * This enables deployments to be linked directly to interfaces,
+     * bypassing the module indirection.
+     * 
+     * <p>When set, this provides a direct link from deployment to interface,
+     * simplifying the relationship model. The appModuleId is retained for
+     * backward compatibility with existing data.
+     */
+    @Column(name = "APPLICATION_INTERFACE_ID")
+    private String applicationInterfaceId;
+
     @Column(name = "DEFAULT_NODE_COUNT")
     private int defaultNodeCount;
 
@@ -95,13 +111,14 @@ public class ApplicationDeploymentEntity implements Serializable {
     @Column(name = "EDITABLE_BY_USER")
     private boolean editableByUser;
 
+    // Unified command entity for all command types
     @OneToMany(
-            targetEntity = ModuleLoadCmdEntity.class,
+            targetEntity = ApplicationDeploymentCommandEntity.class,
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             mappedBy = "applicationDeployment",
             fetch = FetchType.EAGER)
-    private List<ModuleLoadCmdEntity> moduleLoadCmds;
+    private List<ApplicationDeploymentCommandEntity> commands;
 
     @OneToMany(
             targetEntity = AppEnvironmentEntity.class,
@@ -111,37 +128,14 @@ public class ApplicationDeploymentEntity implements Serializable {
             fetch = FetchType.EAGER)
     private List<AppEnvironmentEntity> setEnvironment;
 
+    // Unified library path entity for prepend and append paths
     @OneToMany(
-            targetEntity = LibraryPrependPathEntity.class,
+            targetEntity = LibraryPathEntity.class,
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             mappedBy = "applicationDeployment",
             fetch = FetchType.EAGER)
-    private List<LibraryPrependPathEntity> libPrependPaths;
-
-    @OneToMany(
-            targetEntity = LibraryApendPathEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "applicationDeployment",
-            fetch = FetchType.EAGER)
-    private List<LibraryApendPathEntity> libAppendPaths;
-
-    @OneToMany(
-            targetEntity = PrejobCommandEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "applicationDeployment",
-            fetch = FetchType.EAGER)
-    private List<PrejobCommandEntity> preJobCommands;
-
-    @OneToMany(
-            targetEntity = PostjobCommandEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "applicationDeployment",
-            fetch = FetchType.EAGER)
-    private List<PostjobCommandEntity> postJobCommands;
+    private List<LibraryPathEntity> libraryPaths;
 
     public ApplicationDeploymentEntity() {}
 
@@ -225,6 +219,14 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.appModuleId = appModuleId;
     }
 
+    public String getApplicationInterfaceId() {
+        return applicationInterfaceId;
+    }
+
+    public void setApplicationInterfaceId(String applicationInterfaceId) {
+        this.applicationInterfaceId = applicationInterfaceId;
+    }
+
     public int getDefaultNodeCount() {
         return defaultNodeCount;
     }
@@ -265,13 +267,51 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.editableByUser = editableByUser;
     }
 
-    public List<ModuleLoadCmdEntity> getModuleLoadCmds() {
-        return moduleLoadCmds;
+    // ============================================
+    // UNIFIED COMMAND ACCESSORS
+    // ============================================
+
+    public List<ApplicationDeploymentCommandEntity> getCommands() {
+        return commands;
     }
 
-    public void setModuleLoadCmds(List<ModuleLoadCmdEntity> moduleLoadCmds) {
-        this.moduleLoadCmds = moduleLoadCmds;
+    public void setCommands(List<ApplicationDeploymentCommandEntity> commands) {
+        this.commands = commands;
     }
+
+    /**
+     * Get module load commands filtered from unified commands list.
+     */
+    public List<ApplicationDeploymentCommandEntity> getModuleLoadCommands() {
+        if (commands == null) return new ArrayList<>();
+        return commands.stream()
+                .filter(c -> c.getCommandType() == DeploymentCommandType.MODULE_LOAD)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get prejob commands filtered from unified commands list.
+     */
+    public List<ApplicationDeploymentCommandEntity> getPreJobCommands() {
+        if (commands == null) return new ArrayList<>();
+        return commands.stream()
+                .filter(c -> c.getCommandType() == DeploymentCommandType.PREJOB)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get postjob commands filtered from unified commands list.
+     */
+    public List<ApplicationDeploymentCommandEntity> getPostJobCommands() {
+        if (commands == null) return new ArrayList<>();
+        return commands.stream()
+                .filter(c -> c.getCommandType() == DeploymentCommandType.POSTJOB)
+                .collect(Collectors.toList());
+    }
+
+    // ============================================
+    // ENVIRONMENT ACCESSORS
+    // ============================================
 
     public List<AppEnvironmentEntity> getSetEnvironment() {
         return setEnvironment;
@@ -281,35 +321,35 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.setEnvironment = setEnvironment;
     }
 
-    public List<LibraryPrependPathEntity> getLibPrependPaths() {
-        return libPrependPaths;
+    // ============================================
+    // UNIFIED LIBRARY PATH ACCESSORS
+    // ============================================
+
+    public List<LibraryPathEntity> getLibraryPaths() {
+        return libraryPaths;
     }
 
-    public void setLibPrependPaths(List<LibraryPrependPathEntity> libPrependPaths) {
-        this.libPrependPaths = libPrependPaths;
+    public void setLibraryPaths(List<LibraryPathEntity> libraryPaths) {
+        this.libraryPaths = libraryPaths;
     }
 
-    public List<LibraryApendPathEntity> getLibAppendPaths() {
-        return libAppendPaths;
+    /**
+     * Get library prepend paths filtered from unified library paths list.
+     */
+    public List<LibraryPathEntity> getLibPrependPaths() {
+        if (libraryPaths == null) return new ArrayList<>();
+        return libraryPaths.stream()
+                .filter(p -> p.getPathType() == LibraryPathType.PREPEND)
+                .collect(Collectors.toList());
     }
 
-    public void setLibAppendPaths(List<LibraryApendPathEntity> libAppendPaths) {
-        this.libAppendPaths = libAppendPaths;
-    }
-
-    public List<PrejobCommandEntity> getPreJobCommands() {
-        return preJobCommands;
-    }
-
-    public void setPreJobCommands(List<PrejobCommandEntity> preJobCommands) {
-        this.preJobCommands = preJobCommands;
-    }
-
-    public List<PostjobCommandEntity> getPostJobCommands() {
-        return postJobCommands;
-    }
-
-    public void setPostJobCommands(List<PostjobCommandEntity> postJobCommands) {
-        this.postJobCommands = postJobCommands;
+    /**
+     * Get library append paths filtered from unified library paths list.
+     */
+    public List<LibraryPathEntity> getLibAppendPaths() {
+        if (libraryPaths == null) return new ArrayList<>();
+        return libraryPaths.stream()
+                .filter(p -> p.getPathType() == LibraryPathType.APPEND)
+                .collect(Collectors.toList());
     }
 }

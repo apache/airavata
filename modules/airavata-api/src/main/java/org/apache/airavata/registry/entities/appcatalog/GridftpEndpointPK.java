@@ -20,24 +20,21 @@
 package org.apache.airavata.registry.entities.appcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
- * The primary key class for the gridftp_endpoint database table.
+ * Composite primary key for GridftpEndpointEntity.
  */
 public class GridftpEndpointPK implements Serializable {
-    // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String dataMovementInterfaceId;
     private String endpoint;
+    private String dataMovementInterfaceId;
 
     public GridftpEndpointPK() {}
 
-    public String getDataMovementInterfaceId() {
-        return dataMovementInterfaceId;
-    }
-
-    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+    public GridftpEndpointPK(String endpoint, String dataMovementInterfaceId) {
+        this.endpoint = endpoint;
         this.dataMovementInterfaceId = dataMovementInterfaceId;
     }
 
@@ -49,24 +46,33 @@ public class GridftpEndpointPK implements Serializable {
         this.endpoint = endpoint;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof GridftpEndpointPK)) {
-            return false;
-        }
-        GridftpEndpointPK castOther = (GridftpEndpointPK) other;
-        return this.dataMovementInterfaceId.equals(castOther.dataMovementInterfaceId)
-                && this.endpoint.equals(castOther.endpoint);
+    public String getDataMovementInterfaceId() {
+        return dataMovementInterfaceId;
     }
 
-    public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.dataMovementInterfaceId.hashCode();
-        hash = hash * prime + this.endpoint.hashCode();
+    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+        this.dataMovementInterfaceId = dataMovementInterfaceId;
+    }
 
-        return hash;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GridftpEndpointPK that = (GridftpEndpointPK) o;
+        return Objects.equals(endpoint, that.endpoint)
+                && Objects.equals(dataMovementInterfaceId, that.dataMovementInterfaceId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(endpoint, dataMovementInterfaceId);
+    }
+
+    @Override
+    public String toString() {
+        return "GridftpEndpointPK{"
+                + "endpoint='" + endpoint + '\''
+                + ", dataMovementInterfaceId='" + dataMovementInterfaceId + '\''
+                + '}';
     }
 }

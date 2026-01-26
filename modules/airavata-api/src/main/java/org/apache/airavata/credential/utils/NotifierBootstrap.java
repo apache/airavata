@@ -19,11 +19,6 @@
 */
 package org.apache.airavata.credential.utils;
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 12/27/13
- * Time: 2:22 PM
- */
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Timer;
@@ -33,21 +28,22 @@ import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.CredentialReader;
 import org.apache.airavata.credential.model.CredentialStoreNotifier;
-import org.apache.airavata.credential.model.EmailNotificationMessage;
 import org.apache.airavata.credential.model.EmailNotifierConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class runs a timer. Periodically it checks for expiring credentials.
- * Then if there are expiring credentials this will send an email.
+ * Then if there are expiring credentials this will log a warning.
+ *
+ * <p>Note: Email notification has been disabled since user email is no longer stored
+ * on credentials. To re-enable, integrate with the UserService to fetch email by userId.
  */
 public class NotifierBootstrap extends TimerTask {
 
     private static boolean enabled = false;
 
-    private static String MESSAGE = "Credentials for community user {0} expires at {1}";
-    private static String SUBJECT = "Expiring credentials for user {0}";
+    private static String MESSAGE = "Credentials for user {0} expires at {1}";
 
     private CredentialReader credentialReader;
 
@@ -104,23 +100,21 @@ public class NotifierBootstrap extends TimerTask {
 
                     var currentInstant = AiravataUtils.getUniqueTimestamp().toInstant();
                     if (currentInstant.isAfter(expiryWithGap)) {
-                        // Send an email
-                        var communityUser = certificateCredential.getCommunityUser();
-                        var body = String.format(
-                                MESSAGE, communityUser.getUsername(), certificateCredential.getNotAfter());
-                        var subject = String.format(SUBJECT, communityUser.getUsername());
-                        var notificationMessage =
-                                new EmailNotificationMessage(subject, communityUser.getUserEmail(), body);
+                        // Log a warning about expiring credential
+                        var userId = certificateCredential.getUserId();
+                        var message = String.format(MESSAGE, userId, certificateCredential.getNotAfter());
+                        log.warn(message);
 
-                        this.credentialStoreNotifier.notifyEmail(notificationMessage);
+                        // TODO: To send email notifications, integrate with UserService
+                        // to fetch user email by userId, then use credentialStoreNotifier
                     }
                 }
             }
 
         } catch (CredentialStoreException e) {
-            log.error("Error sending emails about credential expiring.", e);
+            log.error("Error checking for expiring credentials.", e);
         } catch (DateTimeParseException e) {
-            log.error("Error parsing date time when sending emails", e);
+            log.error("Error parsing date time when checking credentials", e);
         }
     }
 }

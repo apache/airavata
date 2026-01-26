@@ -30,6 +30,9 @@ import java.sql.Timestamp;
 
 /**
  * JPA entity for CREDENTIALS table.
+ *
+ * <p>Stores SSH keys and other credentials used for accessing compute and storage resources.
+ * The {@code userId} field tracks who owns/created this credential.
  */
 @Entity
 @Table(name = "CREDENTIALS")
@@ -49,8 +52,12 @@ public class CredentialEntity implements Serializable {
     @Column(name = "CREDENTIAL", nullable = false, columnDefinition = "LONGBLOB")
     private byte[] credential;
 
-    @Column(name = "PORTAL_USER_ID", length = 256, nullable = false)
-    private String portalUserId;
+    /**
+     * The user ID of the credential owner.
+     * This is the Airavata user ID (not the internal user ID).
+     */
+    @Column(name = "USER_ID", length = 256, nullable = false)
+    private String userId;
 
     @Column(
             name = "TIME_PERSISTED",
@@ -60,9 +67,6 @@ public class CredentialEntity implements Serializable {
 
     @Column(name = "DESCRIPTION")
     private String description;
-
-    @Column(name = "CREDENTIAL_OWNER_TYPE", length = 50, nullable = false)
-    private String credentialOwnerType;
 
     public CredentialEntity() {}
 
@@ -90,12 +94,12 @@ public class CredentialEntity implements Serializable {
         this.credential = credential;
     }
 
-    public String getPortalUserId() {
-        return portalUserId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setPortalUserId(String portalUserId) {
-        this.portalUserId = portalUserId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Timestamp getTimePersisted() {
@@ -112,13 +116,5 @@ public class CredentialEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getCredentialOwnerType() {
-        return credentialOwnerType;
-    }
-
-    public void setCredentialOwnerType(String credentialOwnerType) {
-        this.credentialOwnerType = credentialOwnerType;
     }
 }

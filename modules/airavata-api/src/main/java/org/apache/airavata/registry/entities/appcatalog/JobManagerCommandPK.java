@@ -20,17 +20,24 @@
 package org.apache.airavata.registry.entities.appcatalog;
 
 import java.io.Serializable;
-import org.apache.airavata.common.model.JobManagerCommand;
+import java.util.Objects;
+import org.apache.airavata.common.model.CommandCategory;
 
 /**
  * The primary key class for the job_manager_command database table.
+ * 
+ * Composite primary key consisting of:
+ * - resourceJobManagerId: The ID of the resource job manager
+ * - commandCategory: The category of command (JOB_MANAGER or PARALLELISM)
+ * - commandType: The specific command type as a string
  */
 public class JobManagerCommandPK implements Serializable {
     // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     private String resourceJobManagerId;
-    private JobManagerCommand commandType;
+    private CommandCategory commandCategory;
+    private String commandType;
 
     public JobManagerCommandPK() {}
 
@@ -42,14 +49,23 @@ public class JobManagerCommandPK implements Serializable {
         this.resourceJobManagerId = resourceJobManagerId;
     }
 
-    public JobManagerCommand getCommandType() {
+    public CommandCategory getCommandCategory() {
+        return commandCategory;
+    }
+
+    public void setCommandCategory(CommandCategory commandCategory) {
+        this.commandCategory = commandCategory;
+    }
+
+    public String getCommandType() {
         return commandType;
     }
 
-    public void setCommandType(JobManagerCommand commandType) {
+    public void setCommandType(String commandType) {
         this.commandType = commandType;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;
@@ -58,16 +74,13 @@ public class JobManagerCommandPK implements Serializable {
             return false;
         }
         JobManagerCommandPK castOther = (JobManagerCommandPK) other;
-        return this.resourceJobManagerId.equals(castOther.resourceJobManagerId)
-                && this.commandType.equals(castOther.commandType);
+        return Objects.equals(this.resourceJobManagerId, castOther.resourceJobManagerId)
+                && Objects.equals(this.commandCategory, castOther.commandCategory)
+                && Objects.equals(this.commandType, castOther.commandType);
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.resourceJobManagerId.hashCode();
-        hash = hash * prime + this.commandType.hashCode();
-
-        return hash;
+        return Objects.hash(resourceJobManagerId, commandCategory, commandType);
     }
 }

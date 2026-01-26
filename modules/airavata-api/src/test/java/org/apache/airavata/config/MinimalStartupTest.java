@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.profile.repositories.UserProfileRepository;
+import org.apache.airavata.registry.repositories.UserRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.service.registry.RegistryService;
@@ -96,7 +96,7 @@ public class MinimalStartupTest {
     private CredentialStoreService credentialStoreService;
 
     @Autowired
-    private UserProfileRepository userProfileRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private ComputeResourceRepository computeResourceRepository;
@@ -123,7 +123,7 @@ public class MinimalStartupTest {
 
     @Test
     public void testRepositoriesAreAvailable() {
-        assertNotNull(userProfileRepository, "UserProfileRepository should be available");
+        assertNotNull(userRepository, "UserRepository should be available");
         assertNotNull(computeResourceRepository, "ComputeResourceRepository should be available");
         assertNotNull(experimentRepository, "ExperimentRepository should be available");
     }

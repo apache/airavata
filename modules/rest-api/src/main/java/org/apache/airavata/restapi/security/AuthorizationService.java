@@ -44,7 +44,7 @@ import jakarta.annotation.PreDestroy;
 public class AuthorizationService {
     
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AuthorizationService.class);
-    private static final String ROOT_USER_ID = System.getenv().getOrDefault("AIRAVATA_MASTER_USER_ID", "root");
+    private static final String ROOT_USER_ID = "default-admin";
     
     // Cache TTL in milliseconds (5 minutes)
     private static final long CACHE_TTL_MS = 5 * 60 * 1000;
@@ -124,7 +124,9 @@ public class AuthorizationService {
      */
     public boolean isRootUser(AuthzToken authzToken) {
         String userId = authzToken.getClaimsMap().get("userId");
-        return ROOT_USER_ID.equals(userId);
+        String userName = authzToken.getClaimsMap().get("userName");
+        // Check both userId (which could be UUID) and userName (which is the username)
+        return ROOT_USER_ID.equals(userId) || ROOT_USER_ID.equals(userName);
     }
 
     /**

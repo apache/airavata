@@ -20,6 +20,7 @@
 package org.apache.airavata.registry.entities.expcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * The primary key class for the PROCESS_WORKFLOW database table.
@@ -31,6 +32,11 @@ public class ProcessWorkflowPK implements Serializable {
     private String workflowId;
 
     public ProcessWorkflowPK() {}
+
+    public ProcessWorkflowPK(String processId, String workflowId) {
+        this.processId = processId;
+        this.workflowId = workflowId;
+    }
 
     public String getProcessId() {
         return processId;
@@ -52,19 +58,21 @@ public class ProcessWorkflowPK implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ProcessWorkflowPK that = (ProcessWorkflowPK) o;
-
-        return (getProcessId() != null ? getProcessId().equals(that.getProcessId()) : that.getProcessId() == null)
-                && (getWorkflowId() != null
-                        ? getWorkflowId().equals(that.getWorkflowId())
-                        : that.getWorkflowId() == null);
+        return Objects.equals(processId, that.processId)
+                && Objects.equals(workflowId, that.workflowId);
     }
 
     @Override
     public int hashCode() {
-        int result = getProcessId() != null ? getProcessId().hashCode() : 0;
-        result = 31 * result + (getWorkflowId() != null ? getWorkflowId().hashCode() : 0);
-        return result;
+        return Objects.hash(processId, workflowId);
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessWorkflowPK{"
+                + "processId='" + processId + '\''
+                + ", workflowId='" + workflowId + '\''
+                + '}';
     }
 }

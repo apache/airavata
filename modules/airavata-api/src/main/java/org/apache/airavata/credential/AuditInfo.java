@@ -21,7 +21,6 @@ package org.apache.airavata.credential;
 
 import java.io.Serializable;
 import java.util.Date;
-import org.apache.airavata.credential.model.CommunityUser;
 
 /**
  * Any audit information related to a credential.
@@ -29,18 +28,11 @@ import org.apache.airavata.credential.model.CommunityUser;
 public interface AuditInfo extends Serializable {
 
     /**
-     * Gets the community user associated with the credential.
+     * The user ID of the credential owner.
      *
-     * @return The community user associated with the credential.
+     * @return The user ID.
      */
-    public CommunityUser getCommunityUser();
-
-    /**
-     * The portal user associated with the credential.
-     *
-     * @return The portal user name.
-     */
-    public String getPortalUserId();
+    public String getUserId();
 
     /**
      * Get the time which credentials are persisted.

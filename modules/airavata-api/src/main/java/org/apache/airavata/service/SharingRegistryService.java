@@ -38,7 +38,6 @@ import org.apache.airavata.sharing.entities.GroupMembershipPK;
 import org.apache.airavata.sharing.entities.PermissionTypePK;
 import org.apache.airavata.sharing.entities.SharingPK;
 import org.apache.airavata.sharing.entities.UserGroupPK;
-import org.apache.airavata.sharing.entities.UserPK;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.DuplicateEntryException;
 import org.apache.airavata.sharing.model.Entity;
@@ -64,6 +63,8 @@ import org.apache.airavata.sharing.services.PermissionTypeService;
 import org.apache.airavata.sharing.services.SharingService;
 import org.apache.airavata.sharing.services.UserGroupService;
 import org.apache.airavata.sharing.services.UserService;
+import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,7 @@ public class SharingRegistryService {
     private final DomainService domainService;
     private final EntityTypeService entityTypeService;
     private final PermissionTypeService permissionTypeService;
+    private final GatewayService gatewayService;
 
     @Qualifier("sharingUserService")
     private final UserService userService;
@@ -94,6 +96,7 @@ public class SharingRegistryService {
             DomainService domainService,
             EntityTypeService entityTypeService,
             PermissionTypeService permissionTypeService,
+            GatewayService gatewayService,
             @Qualifier("sharingUserService") UserService userService,
             UserGroupService userGroupService,
             GroupMembershipService groupMembershipService,
@@ -103,6 +106,7 @@ public class SharingRegistryService {
         this.domainService = domainService;
         this.entityTypeService = entityTypeService;
         this.permissionTypeService = permissionTypeService;
+        this.gatewayService = gatewayService;
         this.userService = userService;
         this.userGroupService = userGroupService;
         this.groupMembershipService = groupMembershipService;
@@ -113,22 +117,46 @@ public class SharingRegistryService {
     public static String OWNER_PERMISSION_NAME = "OWNER";
 
     /**
-     * Creates a domain and automatically creates the OWNER permission for that domain.
-     * <p>
-     * This method is transactional, ensuring that both the domain and OWNER permission
-     * are created atomically. If the OWNER permission creation fails, the domain creation
-     * will be rolled back.
+     * Initializes domain fields on a gateway and creates the OWNER permission for that domain.
      *
-     * @param domain The domain to create
+     * <p>This method is transactional, ensuring that both the domain initialization and OWNER
+     * permission creation happen atomically. If permission creation fails, the domain
+     * initialization will be rolled back.
+     *
+     * <p><strong>Gateway-Domain Relationship:</strong>
+     * Domains are now stored as part of GatewayEntity. The domainId corresponds to the gateway's
+     * gatewayId. This method sets the domain-specific fields (description, timestamps,
+     * initialUserGroupId) on an existing gateway.
+     *
+     * <p>The typical flow is:
+     * <ol>
+     *   <li>Create a Gateway via {@link org.apache.airavata.service.AiravataService#addGateway}</li>
+     *   <li>Initialize domain fields via this method (automatically done by addGateway)</li>
+     * </ol>
+     *
+     * @param domain The domain to create. The domainId must match an existing gateway's gatewayId.
      * @return The domain ID
-     * @throws SharingRegistryException If domain or OWNER permission creation fails
-     * @throws DuplicateEntryException If a domain with the same ID already exists
+     * @throws SharingRegistryException If domain creation fails or if no gateway exists with the given domainId
+     * @throws DuplicateEntryException If the domain fields are already initialized on the gateway
+     * @see org.apache.airavata.registry.entities.GatewayEntity
      */
     @Transactional
     public String createDomain(Domain domain) throws SharingRegistryException, DuplicateEntryException {
         try {
-            if (domainService.get(domain.getDomainId()) != null)
-                throw new DuplicateEntryException("There exist domain with given domain id");
+            // Check if domain fields are already initialized on the gateway
+            Domain existingDomain = domainService.get(domain.getDomainId());
+            if (existingDomain != null && existingDomain.getCreatedTime() != null) {
+                throw new DuplicateEntryException("Domain already initialized for gateway: " + domain.getDomainId());
+            }
+
+            // Validate that a gateway exists with this domainId
+            if (!gatewayService.isGatewayExist(domain.getDomainId())) {
+                throw new SharingRegistryException(
+                        String.format(
+                                "Cannot create domain: No gateway exists with gatewayId '%s'. "
+                                        + "A domain's domainId must correspond to an existing gateway's gatewayId.",
+                                domain.getDomainId()));
+            }
 
             domain.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             domain.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
@@ -145,6 +173,13 @@ public class SharingRegistryService {
             permissionTypeService.create(permissionType);
 
             return domain.getDomainId();
+        } catch (DuplicateEntryException e) {
+            throw e;
+        } catch (RegistryException e) {
+            String message = String.format(
+                    "Error while validating gateway for domain: domainId=%s", domain.getDomainId());
+            logger.error(message, e);
+            throw new SharingRegistryException(message);
         } catch (SharingRegistryException e) {
             String message = String.format("Error while creating domain: domainId=%s", domain.getDomainId());
             logger.error(message, e);
@@ -167,6 +202,12 @@ public class SharingRegistryService {
         }
     }
 
+    /**
+     * Checks if a domain exists by checking if the corresponding gateway exists.
+     *
+     * @param domainId the domain ID (equivalent to gatewayId)
+     * @return true if the gateway/domain exists
+     */
     public boolean isDomainExists(String domainId) throws SharingRegistryException {
         return ServiceUtils.executeBool(
                 () -> domainService.isExists(domainId),
@@ -175,13 +216,18 @@ public class SharingRegistryService {
                 domainId);
     }
 
+    /**
+     * Deleting a domain is not supported since domains are now part of gateways.
+     * Gateway deletion should be handled through GatewayService.
+     *
+     * @param domainId the domain ID
+     * @return false - domain deletion not supported
+     * @throws SharingRegistryException always - domain deletion not supported
+     */
     public boolean deleteDomain(String domainId) throws SharingRegistryException {
-        ServiceUtils.executeVoid(
-                () -> domainService.delete(domainId),
-                SharingRegistryException.class,
-                "Error deleting domain: domainId=%s",
-                domainId);
-        return true;
+        throw new SharingRegistryException(
+                "Domain deletion is not supported. Domains are part of gateways. "
+                        + "Delete the gateway instead through the appropriate gateway management service.");
     }
 
     public Domain getDomain(String domainId) throws SharingRegistryException {
@@ -207,10 +253,7 @@ public class SharingRegistryService {
      */
     public String createUser(User user) throws SharingRegistryException {
         try {
-            UserPK userPK = new UserPK();
-            userPK.setUserId(user.getUserId());
-            userPK.setDomainId(user.getDomainId());
-            if (userService.get(userPK) != null)
+            if (userService.get(user.getUserId(), user.getDomainId()) != null)
                 throw new SharingRegistryException("There exist user with given user id");
 
             user.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
@@ -245,10 +288,7 @@ public class SharingRegistryService {
 
     public boolean updatedUser(User user) throws SharingRegistryException {
         try {
-            UserPK userPK = new UserPK();
-            userPK.setUserId(user.getUserId());
-            userPK.setDomainId(user.getDomainId());
-            User oldUser = userService.get(userPK);
+            User oldUser = userService.get(user.getUserId(), user.getDomainId());
             user.setCreatedTime(oldUser.getCreatedTime());
             user.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             user = getUpdatedObject(oldUser, user);
@@ -272,12 +312,7 @@ public class SharingRegistryService {
 
     public boolean isUserExists(String domainId, String userId) throws SharingRegistryException {
         return ServiceUtils.executeBool(
-                () -> {
-                    UserPK userPK = new UserPK();
-                    userPK.setDomainId(domainId);
-                    userPK.setUserId(userId);
-                    return userService.isExists(userPK);
-                },
+                () -> userService.isExists(userId, domainId),
                 SharingRegistryException.class,
                 "Error checking if user exists: domainId=%s, userId=%s",
                 domainId,
@@ -286,10 +321,7 @@ public class SharingRegistryService {
 
     public boolean deleteUser(String domainId, String userId) throws SharingRegistryException {
         try {
-            UserPK userPK = new UserPK();
-            userPK.setUserId(userId);
-            userPK.setDomainId(domainId);
-            userService.delete(userPK);
+            userService.delete(userId, domainId);
 
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(userId);
@@ -305,12 +337,7 @@ public class SharingRegistryService {
 
     public User getUser(String domainId, String userId) throws SharingRegistryException {
         return ServiceUtils.execute(
-                () -> {
-                    UserPK userPK = new UserPK();
-                    userPK.setUserId(userId);
-                    userPK.setDomainId(domainId);
-                    return userService.get(userPK);
-                },
+                () -> userService.get(userId, domainId),
                 SharingRegistryException.class,
                 "Error getting user: domainId=%s, userId=%s",
                 domainId,
@@ -975,10 +1002,7 @@ public class SharingRegistryService {
             if (entityService.get(entityPK) != null)
                 throw new DuplicateEntryException("There exist Entity with given Entity id");
 
-            UserPK userPK = new UserPK();
-            userPK.setDomainId(entity.getDomainId());
-            userPK.setUserId(entity.getOwnerId());
-            if (!userService.isExists(userPK)) {
+            if (!userService.isExists(entity.getOwnerId(), entity.getDomainId())) {
                 // Auto-create user for Airavata easy integration: when creating entities, if the owner user
                 // doesn't exist in the sharing registry, create a minimal user entry automatically.
                 // This handles cases where user profiles exist but haven't been synchronized to the sharing registry.

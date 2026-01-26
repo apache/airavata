@@ -20,18 +20,23 @@
 package org.apache.airavata.registry.entities.expcatalog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * The primary key class for the job database table.
  */
 public class JobPK implements Serializable {
-    // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     private String jobId;
     private String taskId;
 
     public JobPK() {}
+
+    public JobPK(String jobId, String taskId) {
+        this.jobId = jobId;
+        this.taskId = taskId;
+    }
 
     public String getJobId() {
         return jobId;
@@ -49,23 +54,25 @@ public class JobPK implements Serializable {
         this.taskId = taskId;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof JobPK)) {
-            return false;
-        }
-        JobPK castOther = (JobPK) other;
-        return this.jobId.equals(castOther.jobId) && this.taskId.equals(castOther.taskId);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JobPK that = (JobPK) o;
+        return Objects.equals(jobId, that.jobId)
+                && Objects.equals(taskId, that.taskId);
     }
 
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.jobId.hashCode();
-        hash = hash * prime + this.taskId.hashCode();
+        return Objects.hash(jobId, taskId);
+    }
 
-        return hash;
+    @Override
+    public String toString() {
+        return "JobPK{"
+                + "jobId='" + jobId + '\''
+                + ", taskId='" + taskId + '\''
+                + '}';
     }
 }

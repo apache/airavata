@@ -29,14 +29,16 @@ import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
-import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.Project;
+import org.apache.airavata.common.model.StatusParentType;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
@@ -49,19 +51,19 @@ public class ProcessStatusRepositoryTest extends TestBase {
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusRepository statusRepository;
 
     public ProcessStatusRepositoryTest(
             GatewayService gatewayService,
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService) {
+            StatusRepository statusRepository) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusRepository = statusRepository;
     }
 
     @Test
@@ -93,31 +95,46 @@ public class ProcessStatusRepositoryTest extends TestBase {
         String processId = processService.addProcess(processModel, experimentId);
         assertTrue(processId != null);
 
-        assertTrue(processService.getProcess(processId).getProcessStatuses().size() == 1);
-        ProcessStatus processStatus =
-                processService.getProcess(processId).getProcessStatuses().get(0);
-        assertEquals(ProcessState.CREATED, processStatus.getState());
+        java.util.List<StatusEntity> initialStatuses = statusRepository.findByParentIdAndParentType(processId, StatusParentType.PROCESS);
+        assertEquals(1, initialStatuses.size(), "Process should have initial CREATED status");
+        StatusEntity initialStatus = initialStatuses.get(0);
+        assertEquals(ProcessState.CREATED.name(), initialStatus.getState(), "Initial status should be CREATED");
+        assertEquals(processId, initialStatus.getParentId(), "Parent ID should match process ID");
+        assertEquals(StatusParentType.PROCESS, initialStatus.getParentType(), "Parent type should be PROCESS");
 
-        processStatus.setState(ProcessState.EXECUTING);
-        processStatusService.updateProcessStatus(processStatus, processId);
+        String statusId1 = "PROC_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity executingStatus = new StatusEntity(statusId1, processId, StatusParentType.PROCESS, ProcessState.EXECUTING.name());
+        statusRepository.save(executingStatus);
+        flushAndClear();
 
-        ProcessStatus retrievedStatus = processStatusService.getProcessStatus(processId);
-        assertEquals(ProcessState.EXECUTING, retrievedStatus.getState());
+        java.util.Optional<StatusEntity> latestStatusOpt = statusRepository.findLatestByParentIdAndParentType(processId, StatusParentType.PROCESS);
+        assertTrue(latestStatusOpt.isPresent(), "Latest status should exist");
+        StatusEntity retrievedStatus = latestStatusOpt.get();
+        assertEquals(ProcessState.EXECUTING.name(), retrievedStatus.getState(), "Status should be EXECUTING");
 
-        ProcessStatus updatedStatus = new ProcessStatus(ProcessState.MONITORING);
+        String statusId2 = "PROC_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity monitoringStatus = new StatusEntity(statusId2, processId, StatusParentType.PROCESS, ProcessState.MONITORING.name());
+        statusRepository.save(monitoringStatus);
+        flushAndClear();
 
-        processStatusService.updateProcessStatus(updatedStatus, processId);
-        retrievedStatus = processStatusService.getProcessStatus(processId);
-        assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
-        assertTrue(retrievedStatus.getStatusId() != null);
-        assertNull(retrievedStatus.getReason());
+        latestStatusOpt = statusRepository.findLatestByParentIdAndParentType(processId, StatusParentType.PROCESS);
+        assertTrue(latestStatusOpt.isPresent(), "Latest status should exist");
+        retrievedStatus = latestStatusOpt.get();
+        assertEquals(ProcessState.MONITORING.name(), retrievedStatus.getState(), "Status should be MONITORING");
+        assertNotNull(retrievedStatus.getStatusId(), "Status ID should not be null");
+        assertNull(retrievedStatus.getReason(), "Reason should be null");
 
-        ProcessStatus updatedStatusWithReason = new ProcessStatus(ProcessState.MONITORING);
-        updatedStatusWithReason.setReason("test-reason");
-        processStatusService.updateProcessStatus(updatedStatusWithReason, processId);
-        retrievedStatus = processStatusService.getProcessStatus(processId);
-        assertEquals(ProcessState.MONITORING, retrievedStatus.getState());
-        assertEquals("test-reason", retrievedStatus.getReason());
+        String statusId3 = "PROC_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity monitoringStatusWithReason = new StatusEntity(statusId3, processId, StatusParentType.PROCESS, ProcessState.MONITORING.name());
+        monitoringStatusWithReason.setReason("test-reason");
+        statusRepository.save(monitoringStatusWithReason);
+        flushAndClear();
+
+        latestStatusOpt = statusRepository.findLatestByParentIdAndParentType(processId, StatusParentType.PROCESS);
+        assertTrue(latestStatusOpt.isPresent(), "Latest status should exist");
+        retrievedStatus = latestStatusOpt.get();
+        assertEquals(ProcessState.MONITORING.name(), retrievedStatus.getState(), "Status should be MONITORING");
+        assertEquals("test-reason", retrievedStatus.getReason(), "Reason should be set");
 
         experimentService.removeExperiment(experimentId);
         processService.removeProcess(processId);
@@ -151,49 +168,57 @@ public class ProcessStatusRepositoryTest extends TestBase {
         processModel.setExperimentId(experimentId);
         String processId = processService.addProcess(processModel, experimentId);
 
-        ProcessStatus status1 = new ProcessStatus(ProcessState.CREATED);
-        processStatusService.addProcessStatus(status1, processId);
+        String statusId1 = "PROC_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity status1 = new StatusEntity(statusId1, processId, StatusParentType.PROCESS, ProcessState.CREATED.name());
+        statusRepository.save(status1);
 
-        ProcessStatus status2 = new ProcessStatus(ProcessState.EXECUTING);
-        processStatusService.addProcessStatus(status2, processId);
+        Thread.sleep(10); // Ensure timestamp difference
 
-        ProcessStatus status3 = new ProcessStatus(ProcessState.COMPLETED);
-        processStatusService.addProcessStatus(status3, processId);
+        String statusId2 = "PROC_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity status2 = new StatusEntity(statusId2, processId, StatusParentType.PROCESS, ProcessState.EXECUTING.name());
+        statusRepository.save(status2);
 
-        assertTrue(
-                processService.getProcess(processId).getProcessStatuses().size() >= 3,
-                "Process should have at least 3 statuses in history");
+        Thread.sleep(10); // Ensure timestamp difference
 
-        ProcessStatus latest = processStatusService.getProcessStatus(processId);
-        assertEquals(ProcessState.COMPLETED, latest.getState(), "Latest status should be COMPLETED");
+        String statusId3 = "PROC_STATUS_" + AiravataUtils.getId("STATUS");
+        StatusEntity status3 = new StatusEntity(statusId3, processId, StatusParentType.PROCESS, ProcessState.COMPLETED.name());
+        statusRepository.save(status3);
+        flushAndClear();
+
+        java.util.List<StatusEntity> statuses = statusRepository.findByParentIdAndParentType(processId, StatusParentType.PROCESS);
+        assertTrue(statuses.size() >= 3, "Process should have at least 3 statuses in history");
+
+        java.util.Optional<StatusEntity> latestOpt = statusRepository.findLatestByParentIdAndParentType(processId, StatusParentType.PROCESS);
+        assertTrue(latestOpt.isPresent(), "Latest status should exist");
+        StatusEntity latest = latestOpt.get();
+        assertEquals(ProcessState.COMPLETED.name(), latest.getState(), "Latest status should be COMPLETED");
 
         // Verify strict timestamp ordering
-        java.util.List<ProcessStatus> statuses =
-                processService.getProcess(processId).getProcessStatuses();
-        ProcessStatus s1 = statuses.stream()
-                .filter(s -> s.getState() == ProcessState.CREATED)
+        StatusEntity s1 = statuses.stream()
+                .filter(s -> ProcessState.CREATED.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
-        ProcessStatus s2 = statuses.stream()
-                .filter(s -> s.getState() == ProcessState.EXECUTING)
+        StatusEntity s2 = statuses.stream()
+                .filter(s -> ProcessState.EXECUTING.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
-        ProcessStatus s3 = statuses.stream()
-                .filter(s -> s.getState() == ProcessState.COMPLETED)
+        StatusEntity s3 = statuses.stream()
+                .filter(s -> ProcessState.COMPLETED.name().equals(s.getState()))
                 .findFirst()
                 .orElse(null);
 
-        assertNotNull(s1);
-        assertNotNull(s2);
-        assertNotNull(s3);
+        assertNotNull(s1, "CREATED status should exist");
+        assertNotNull(s2, "EXECUTING status should exist");
+        assertNotNull(s3, "COMPLETED status should exist");
 
+        // Verify sequence number ordering (sequence numbers guarantee deterministic creation order)
         assertTrue(
-                s2.getTimeOfStateChange() > s1.getTimeOfStateChange(),
-                "Status 2 timestamp (" + s2.getTimeOfStateChange() + ") should be greater than Status 1 ("
-                        + s1.getTimeOfStateChange() + ")");
+                s2.getSequenceNum() > s1.getSequenceNum(),
+                "Status 2 sequence (" + s2.getSequenceNum() + ") should be greater than Status 1 ("
+                        + s1.getSequenceNum() + ")");
         assertTrue(
-                s3.getTimeOfStateChange() > s2.getTimeOfStateChange(),
-                "Status 3 timestamp (" + s3.getTimeOfStateChange() + ") should be greater than Status 2 ("
-                        + s2.getTimeOfStateChange() + ")");
+                s3.getSequenceNum() > s2.getSequenceNum(),
+                "Status 3 sequence (" + s3.getSequenceNum() + ") should be greater than Status 2 ("
+                        + s2.getSequenceNum() + ")");
     }
 }

@@ -20,53 +20,44 @@
 package org.apache.airavata.registry.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.airavata.common.model.ComputeResourcePreference;
+import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.GatewayResourceProfile;
+import org.apache.airavata.common.model.JobSubmissionProtocol;
+import org.apache.airavata.common.model.PreferenceKeys;
+import org.apache.airavata.common.model.PreferenceLevel;
+import org.apache.airavata.common.model.PreferenceResourceType;
 import org.apache.airavata.common.model.StoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.entities.appcatalog.ComputeResourcePreferenceEntity;
-import org.apache.airavata.registry.entities.appcatalog.ComputeResourcePreferencePK;
-import org.apache.airavata.registry.entities.appcatalog.GatewayProfileEntity;
-import org.apache.airavata.registry.entities.appcatalog.SSHAccountProvisionerConfiguration;
-import org.apache.airavata.registry.entities.appcatalog.StoragePreferenceEntity;
-import org.apache.airavata.registry.entities.appcatalog.StoragePreferencePK;
+import org.apache.airavata.registry.entities.appcatalog.ResourcePreferenceEntity;
+import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
-import org.apache.airavata.registry.mappers.ComputeResourcePreferenceMapper;
-import org.apache.airavata.registry.mappers.GatewayResourceProfileMapper;
-import org.apache.airavata.registry.mappers.StoragePreferenceMapper;
-import org.apache.airavata.registry.repositories.appcatalog.ComputeResourcePrefRepository;
-import org.apache.airavata.registry.repositories.appcatalog.GwyResourceProfileRepository;
-import org.apache.airavata.registry.repositories.appcatalog.SSHAccountProvisionerConfigurationRepository;
-import org.apache.airavata.registry.repositories.appcatalog.StoragePrefRepository;
+import org.apache.airavata.registry.mappers.ResourceProfileMapper;
+import org.apache.airavata.registry.repositories.ResourcePreferenceRepository;
+import org.apache.airavata.registry.repositories.appcatalog.ResourceProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service for managing Gateway Resource Profiles using the unified RESOURCE_PREFERENCE key-value store.
+ */
 @Service
 public class GwyResourceProfileService {
-    private final GwyResourceProfileRepository gwyResourceProfileRepository;
-    private final ComputeResourcePrefRepository computeResourcePrefRepository;
-    private final StoragePrefRepository storagePrefRepository;
-    private final GatewayResourceProfileMapper gatewayResourceProfileMapper;
-    private final ComputeResourcePreferenceMapper computeResourcePreferenceMapper;
-    private final StoragePreferenceMapper storagePreferenceMapper;
-    private final SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository;
+
+    private final ResourceProfileRepository resourceProfileRepository;
+    private final ResourcePreferenceRepository resourcePreferenceRepository;
+    private final ResourceProfileMapper resourceProfileMapper;
 
     public GwyResourceProfileService(
-            GwyResourceProfileRepository gwyResourceProfileRepository,
-            ComputeResourcePrefRepository computeResourcePrefRepository,
-            StoragePrefRepository storagePrefRepository,
-            GatewayResourceProfileMapper gatewayResourceProfileMapper,
-            ComputeResourcePreferenceMapper computeResourcePreferenceMapper,
-            StoragePreferenceMapper storagePreferenceMapper,
-            SSHAccountProvisionerConfigurationRepository sshAccountProvisionerConfigurationRepository) {
-        this.gwyResourceProfileRepository = gwyResourceProfileRepository;
-        this.computeResourcePrefRepository = computeResourcePrefRepository;
-        this.storagePrefRepository = storagePrefRepository;
-        this.gatewayResourceProfileMapper = gatewayResourceProfileMapper;
-        this.computeResourcePreferenceMapper = computeResourcePreferenceMapper;
-        this.storagePreferenceMapper = storagePreferenceMapper;
-        this.sshAccountProvisionerConfigurationRepository = sshAccountProvisionerConfigurationRepository;
+            ResourceProfileRepository resourceProfileRepository,
+            ResourcePreferenceRepository resourcePreferenceRepository,
+            ResourceProfileMapper resourceProfileMapper) {
+        this.resourceProfileRepository = resourceProfileRepository;
+        this.resourcePreferenceRepository = resourcePreferenceRepository;
+        this.resourceProfileMapper = resourceProfileMapper;
     }
 
     @Transactional
@@ -86,203 +77,192 @@ public class GwyResourceProfileService {
         if (gatewayId == null || gatewayId.trim().isEmpty()) {
             throw new IllegalArgumentException("GatewayID is required for GatewayResourceProfile");
         }
-        GatewayProfileEntity gatewayProfileEntity = gatewayResourceProfileMapper.toEntity(gatewayResourceProfile);
-        // Ensure gatewayId is set on the entity (mapper field name mismatch: model uses gatewayID, entity uses
-        // gatewayId)
-        gatewayProfileEntity.setGatewayId(gatewayId);
-        if (gwyResourceProfileRepository.findById(gatewayId).isPresent()) {
-            gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        ResourceProfileEntity resourceProfileEntity = resourceProfileMapper.gatewayToEntity(gatewayResourceProfile);
+        if (resourceProfileRepository.gatewayProfileExists(gatewayId)) {
+            resourceProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         } else {
-            gatewayProfileEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+            resourceProfileEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
         }
 
-        // Manually map compute resource preferences (mapper ignores them)
+        // Save the resource profile first
+        ResourceProfileEntity persistedCopy = resourceProfileRepository.save(resourceProfileEntity);
+
+        // Save compute resource preferences
         if (gatewayResourceProfile.getComputeResourcePreferences() != null
                 && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
-            List<ComputeResourcePreferenceEntity> computePrefs = computeResourcePreferenceMapper.toEntityList(
-                    gatewayResourceProfile.getComputeResourcePreferences());
-            for (ComputeResourcePreferenceEntity pref : computePrefs) {
-                pref.setGatewayId(gatewayId);
-                // Set the back-reference for proper cascade behavior
-                // Even though JoinColumn has insertable=false, updatable=false,
-                // the back-reference is needed for Hibernate's cascade management
-                pref.setGatewayProfileResource(gatewayProfileEntity);
+            for (ComputeResourcePreference pref : gatewayResourceProfile.getComputeResourcePreferences()) {
+                saveComputePreference(pref, gatewayId);
             }
-            gatewayProfileEntity.setComputeResourcePreferences(computePrefs);
         }
 
-        // Manually map storage preferences (mapper ignores them)
+        // Save storage preferences
         if (gatewayResourceProfile.getStoragePreferences() != null
                 && !gatewayResourceProfile.getStoragePreferences().isEmpty()) {
-            List<StoragePreferenceEntity> storagePrefs =
-                    storagePreferenceMapper.toEntityList(gatewayResourceProfile.getStoragePreferences());
-            for (StoragePreferenceEntity pref : storagePrefs) {
-                pref.setGatewayId(gatewayId);
-                // Set the back-reference for proper cascade behavior
-                pref.setGatewayProfileResource(gatewayProfileEntity);
-            }
-            gatewayProfileEntity.setStoragePreferences(storagePrefs);
-        }
-
-        GatewayProfileEntity persistedCopy = gwyResourceProfileRepository.save(gatewayProfileEntity);
-
-        // Handle SSH Account Provisioner Configurations for compute resource preferences
-        List<ComputeResourcePreference> computeResourcePreferences =
-                gatewayResourceProfile.getComputeResourcePreferences();
-        if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
-            for (ComputeResourcePreference preference : computeResourcePreferences) {
-                if (preference.getSshAccountProvisionerConfig() != null
-                        && !preference.getSshAccountProvisionerConfig().isEmpty()) {
-                    // Look up the existing persisted compute resource preference
-                    ComputeResourcePreferencePK prefPK = new ComputeResourcePreferencePK();
-                    prefPK.setGatewayId(gatewayId);
-                    prefPK.setComputeResourceId(preference.getComputeResourceId());
-                    ComputeResourcePreferenceEntity existingPref =
-                            computeResourcePrefRepository.findById(prefPK).orElse(null);
-
-                    if (existingPref != null) {
-                        // Delete existing SSH configs first
-                        if (existingPref.getSshAccountProvisionerConfigurations() != null) {
-                            sshAccountProvisionerConfigurationRepository.deleteAll(
-                                    existingPref.getSshAccountProvisionerConfigurations());
-                        }
-
-                        // Create new SSH configs using the explicit fields, not the relationship
-                        List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
-                        for (String configName :
-                                preference.getSshAccountProvisionerConfig().keySet()) {
-                            String configValue =
-                                    preference.getSshAccountProvisionerConfig().get(configName);
-                            SSHAccountProvisionerConfiguration sshConfig = new SSHAccountProvisionerConfiguration();
-                            sshConfig.setGatewayId(gatewayId);
-                            sshConfig.setResourceId(preference.getComputeResourceId());
-                            sshConfig.setConfigName(configName);
-                            sshConfig.setConfigValue(configValue);
-                            // Don't set computeResourcePreference - foreign key is managed by explicit fields
-                            configurations.add(sshConfig);
-                        }
-                        sshAccountProvisionerConfigurationRepository.saveAll(configurations);
-                    }
-                }
+            for (StoragePreference pref : gatewayResourceProfile.getStoragePreferences()) {
+                saveStoragePreference(pref, gatewayId);
             }
         }
+
         return persistedCopy.getGatewayId();
     }
 
     @Transactional(readOnly = true)
     public GatewayResourceProfile getGatewayProfile(String gatewayId) {
-        GatewayProfileEntity entity =
-                gwyResourceProfileRepository.findById(gatewayId).orElse(null);
+        ResourceProfileEntity entity = resourceProfileRepository.findGatewayProfile(gatewayId).orElse(null);
         if (entity == null) return null;
-        GatewayResourceProfile gatewayResourceProfile = gatewayResourceProfileMapper.toModel(entity);
-        gatewayResourceProfile.setGatewayID(gatewayId);
-        if (gatewayResourceProfile.getComputeResourcePreferences() != null
-                && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
-            for (ComputeResourcePreference preference : gatewayResourceProfile.getComputeResourcePreferences()) {
-                preference.setSshAccountProvisionerConfig(
-                        sshAccountProvisionerConfigurationRepository.getSshAccountProvisionerConfig(
-                                gatewayResourceProfile.getGatewayID(), preference.getComputeResourceId()));
+        GatewayResourceProfile profile = resourceProfileMapper.toGatewayResourceProfile(entity);
+        profile.setGatewayID(gatewayId);
+
+        // Load compute resource preferences
+        List<String> computeResourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                PreferenceResourceType.COMPUTE, gatewayId);
+        List<ComputeResourcePreference> computePrefs = new ArrayList<>();
+        for (String resourceId : computeResourceIds) {
+            List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                    .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                            PreferenceResourceType.COMPUTE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+            if (!prefs.isEmpty()) {
+                computePrefs.add(toComputePreferenceModel(resourceId, prefs));
             }
         }
-        return gatewayResourceProfile;
+        profile.setComputeResourcePreferences(computePrefs);
+
+        // Load storage preferences
+        List<String> storageResourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                PreferenceResourceType.STORAGE, gatewayId);
+        List<StoragePreference> storagePrefs = new ArrayList<>();
+        for (String resourceId : storageResourceIds) {
+            List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                    .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                            PreferenceResourceType.STORAGE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+            if (!prefs.isEmpty()) {
+                storagePrefs.add(toStoragePreferenceModel(resourceId, prefs));
+            }
+        }
+        profile.setStoragePreferences(storagePrefs);
+
+        return profile;
     }
 
     @Transactional
     public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
-        // Load entity first to trigger JPA cascade deletes for compute resource preferences
-        // and their SSH account provisioner configurations
-        // deleteById() bypasses entity lifecycle and doesn't trigger cascade operations
-        return gwyResourceProfileRepository
-                .findById(gatewayId)
-                .map(entity -> {
-                    gwyResourceProfileRepository.delete(entity);
-                    return true;
-                })
-                .orElse(false);
+        // Delete compute resource preferences
+        List<String> computeResourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                PreferenceResourceType.COMPUTE, gatewayId);
+        for (String resourceId : computeResourceIds) {
+            resourcePreferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                    PreferenceResourceType.COMPUTE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+        }
+
+        // Delete storage preferences
+        List<String> storageResourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                PreferenceResourceType.STORAGE, gatewayId);
+        for (String resourceId : storageResourceIds) {
+            resourcePreferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                    PreferenceResourceType.STORAGE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+        }
+
+        // Delete the resource profile
+        if (resourceProfileRepository.gatewayProfileExists(gatewayId)) {
+            resourceProfileRepository.deleteGatewayProfile(gatewayId);
+            return true;
+        }
+        return false;
     }
 
     @Transactional(readOnly = true)
     public List<GatewayResourceProfile> getAllGatewayProfiles() {
-        List<GatewayProfileEntity> entities = gwyResourceProfileRepository.findAll();
-        List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<>();
-        for (GatewayProfileEntity entity : entities) {
-            GatewayResourceProfile gatewayResourceProfile = gatewayResourceProfileMapper.toModel(entity);
-            if (gatewayResourceProfile.getComputeResourcePreferences() != null
-                    && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()) {
-                for (ComputeResourcePreference preference : gatewayResourceProfile.getComputeResourcePreferences()) {
-                    preference.setSshAccountProvisionerConfig(
-                            sshAccountProvisionerConfigurationRepository.getSshAccountProvisionerConfig(
-                                    gatewayResourceProfile.getGatewayID(), preference.getComputeResourceId()));
+        List<ResourceProfileEntity> entities = resourceProfileRepository.findAllGatewayProfiles();
+        List<GatewayResourceProfile> profiles = new ArrayList<>();
+        for (ResourceProfileEntity entity : entities) {
+            GatewayResourceProfile profile = resourceProfileMapper.toGatewayResourceProfile(entity);
+            String gatewayId = entity.getGatewayId();
+
+            // Load compute resource preferences
+            List<String> computeResourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                    PreferenceResourceType.COMPUTE, gatewayId);
+            List<ComputeResourcePreference> computePrefs = new ArrayList<>();
+            for (String resourceId : computeResourceIds) {
+                List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                        .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                                PreferenceResourceType.COMPUTE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+                if (!prefs.isEmpty()) {
+                    computePrefs.add(toComputePreferenceModel(resourceId, prefs));
                 }
             }
-            gatewayResourceProfileList.add(gatewayResourceProfile);
+            profile.setComputeResourcePreferences(computePrefs);
+
+            // Load storage preferences
+            List<String> storageResourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                    PreferenceResourceType.STORAGE, gatewayId);
+            List<StoragePreference> storagePrefs = new ArrayList<>();
+            for (String resourceId : storageResourceIds) {
+                List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                        .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                                PreferenceResourceType.STORAGE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+                if (!prefs.isEmpty()) {
+                    storagePrefs.add(toStoragePreferenceModel(resourceId, prefs));
+                }
+            }
+            profile.setStoragePreferences(storagePrefs);
+
+            profiles.add(profile);
         }
-        return gatewayResourceProfileList;
+        return profiles;
     }
 
     @Transactional
-    public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) {
-        ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
-        computeResourcePreferencePK.setGatewayId(gatewayId);
-        computeResourcePreferencePK.setComputeResourceId(preferenceId);
-        // Load entity first to trigger JPA cascade deletes for SSH_ACCOUNT_PROVISIONER_CONFIG
-        // deleteById() bypasses entity lifecycle and doesn't trigger cascade operations
-        computeResourcePrefRepository
-                .findById(computeResourcePreferencePK)
-                .ifPresent(computeResourcePrefRepository::delete);
+    public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String computeResourceId) {
+        resourcePreferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                PreferenceResourceType.COMPUTE, computeResourceId, gatewayId, PreferenceLevel.GATEWAY);
         return true;
     }
 
     @Transactional
-    public boolean removeDataStoragePreferenceFromGateway(String gatewayId, String preferenceId) {
-        StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
-        storagePreferencePK.setGatewayId(gatewayId);
-        storagePreferencePK.setStorageResourceId(preferenceId);
-        storagePrefRepository.deleteById(storagePreferencePK);
+    public boolean removeDataStoragePreferenceFromGateway(String gatewayId, String storageResourceId) {
+        resourcePreferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                PreferenceResourceType.STORAGE, storageResourceId, gatewayId, PreferenceLevel.GATEWAY);
         return true;
     }
 
     @Transactional(readOnly = true)
     public boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException {
-        return gwyResourceProfileRepository.existsById(gatewayId);
+        return resourceProfileRepository.gatewayProfileExists(gatewayId);
     }
 
     @Transactional(readOnly = true)
-    public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) {
-        ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
-        computeResourcePreferencePK.setGatewayId(gatewayId);
-        computeResourcePreferencePK.setComputeResourceId(hostId);
-        ComputeResourcePreference computeResourcePreference = computeResourcePrefRepository
-                .findById(computeResourcePreferencePK)
-                .map(entity -> computeResourcePreferenceMapper.toModel(entity))
-                .orElse(null);
-        if (computeResourcePreference != null) {
-            computeResourcePreference.setSshAccountProvisionerConfig(
-                    sshAccountProvisionerConfigurationRepository.getSshAccountProvisionerConfig(gatewayId, hostId));
+    public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String computeResourceId) {
+        List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                        PreferenceResourceType.COMPUTE, computeResourceId, gatewayId, PreferenceLevel.GATEWAY);
+        if (prefs.isEmpty()) {
+            return null;
         }
-        return computeResourcePreference;
+        return toComputePreferenceModel(computeResourceId, prefs);
     }
 
     @Transactional(readOnly = true)
-    public StoragePreference getStoragePreference(String gatewayId, String storageId) {
-        StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
-        storagePreferencePK.setStorageResourceId(storageId);
-        storagePreferencePK.setGatewayId(gatewayId);
-        return storagePrefRepository
-                .findById(storagePreferencePK)
-                .map(entity -> storagePreferenceMapper.toModel(entity))
-                .orElse(null);
+    public StoragePreference getStoragePreference(String gatewayId, String storageResourceId) {
+        List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                        PreferenceResourceType.STORAGE, storageResourceId, gatewayId, PreferenceLevel.GATEWAY);
+        if (prefs.isEmpty()) {
+            return null;
+        }
+        return toStoragePreferenceModel(storageResourceId, prefs);
     }
 
     @Transactional(readOnly = true)
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
-        List<ComputeResourcePreferenceEntity> entities = computeResourcePrefRepository.findByGatewayId(gatewayId);
-        List<ComputeResourcePreference> preferences = computeResourcePreferenceMapper.toModelList(entities);
-        if (preferences != null && !preferences.isEmpty()) {
-            for (ComputeResourcePreference preference : preferences) {
-                preference.setSshAccountProvisionerConfig(
-                        sshAccountProvisionerConfigurationRepository.getSshAccountProvisionerConfig(
-                                gatewayId, preference.getComputeResourceId()));
+        List<String> resourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                PreferenceResourceType.COMPUTE, gatewayId);
+        List<ComputeResourcePreference> preferences = new ArrayList<>();
+        for (String resourceId : resourceIds) {
+            List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                    .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                            PreferenceResourceType.COMPUTE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+            if (!prefs.isEmpty()) {
+                preferences.add(toComputePreferenceModel(resourceId, prefs));
             }
         }
         return preferences;
@@ -290,7 +270,191 @@ public class GwyResourceProfileService {
 
     @Transactional(readOnly = true)
     public List<StoragePreference> getAllStoragePreferences(String gatewayId) {
-        List<StoragePreferenceEntity> entities = storagePrefRepository.findByGatewayId(gatewayId);
-        return storagePreferenceMapper.toModelList(entities);
+        List<String> resourceIds = resourcePreferenceRepository.findDistinctResourceIdsByResourceTypeAndOwnerId(
+                PreferenceResourceType.STORAGE, gatewayId);
+        List<StoragePreference> preferences = new ArrayList<>();
+        for (String resourceId : resourceIds) {
+            List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                    .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                            PreferenceResourceType.STORAGE, resourceId, gatewayId, PreferenceLevel.GATEWAY);
+            if (!prefs.isEmpty()) {
+                preferences.add(toStoragePreferenceModel(resourceId, prefs));
+            }
+        }
+        return preferences;
+    }
+
+    // ========== Save Methods ==========
+
+    private void saveComputePreference(ComputeResourcePreference model, String gatewayId) {
+        String resourceId = model.getComputeResourceId();
+        PreferenceResourceType resourceType = PreferenceResourceType.COMPUTE;
+        PreferenceLevel level = PreferenceLevel.GATEWAY;
+
+        // Save each field as a key-value pair
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.LOGIN_USERNAME, model.getLoginUserName());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.PREFERRED_BATCH_QUEUE, model.getPreferredBatchQueue());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.SCRATCH_LOCATION, model.getScratchLocation());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.ALLOCATION_PROJECT_NUMBER, model.getAllocationProjectNumber());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN, model.getResourceSpecificCredentialStoreToken());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.QUALITY_OF_SERVICE, model.getQualityOfService());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.RESERVATION, model.getReservation());
+        if (model.getReservationStartTime() > 0) {
+            savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.RESERVATION_START_TIME,
+                    String.valueOf(model.getReservationStartTime()));
+        }
+        if (model.getReservationEndTime() > 0) {
+            savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.RESERVATION_END_TIME,
+                    String.valueOf(model.getReservationEndTime()));
+        }
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.OVERRIDE_BY_AIRAVATA,
+                String.valueOf(model.getOverridebyAiravata()));
+        
+        // Protocol preferences
+        if (model.getPreferredJobSubmissionProtocol() != null) {
+            savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.PREFERRED_JOB_SUBMISSION_PROTOCOL,
+                    model.getPreferredJobSubmissionProtocol().name());
+        }
+        if (model.getPreferredDataMovementProtocol() != null) {
+            savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.PREFERRED_DATA_MOVEMENT_PROTOCOL,
+                    model.getPreferredDataMovementProtocol().name());
+        }
+        
+        // Gateway-specific fields
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.USAGE_REPORTING_GATEWAY_ID, model.getUsageReportingGatewayId());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.SSH_ACCOUNT_PROVISIONER, model.getSshAccountProvisioner());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO, model.getSshAccountProvisionerAdditionalInfo());
+        
+        // SSH provisioner config (stored as individual keys with prefix)
+        if (model.getSshAccountProvisionerConfig() != null && !model.getSshAccountProvisionerConfig().isEmpty()) {
+            // First delete old config keys
+            deletePreferencesWithPrefix(resourceType, resourceId, gatewayId, level, PreferenceKeys.SSH_PROVISIONER_CONFIG_PREFIX);
+            // Save new config keys
+            for (Map.Entry<String, String> entry : model.getSshAccountProvisionerConfig().entrySet()) {
+                savePreference(resourceType, resourceId, gatewayId, level,
+                        PreferenceKeys.SSH_PROVISIONER_CONFIG_PREFIX + entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    private void saveStoragePreference(StoragePreference model, String gatewayId) {
+        String resourceId = model.getStorageResourceId();
+        PreferenceResourceType resourceType = PreferenceResourceType.STORAGE;
+        PreferenceLevel level = PreferenceLevel.GATEWAY;
+
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.LOGIN_USERNAME, model.getLoginUserName());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.FILE_SYSTEM_ROOT_LOCATION, model.getFileSystemRootLocation());
+        savePreference(resourceType, resourceId, gatewayId, level, PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN, model.getResourceSpecificCredentialStoreToken());
+    }
+
+    private void savePreference(PreferenceResourceType resourceType, String resourceId, String ownerId,
+            PreferenceLevel level, String key, String value) {
+        if (value == null) {
+            // Delete the preference if value is null
+            ResourcePreferenceEntity existing = resourcePreferenceRepository
+                    .findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(resourceType, resourceId, ownerId, level, key);
+            if (existing != null) {
+                resourcePreferenceRepository.delete(existing);
+            }
+            return;
+        }
+
+        ResourcePreferenceEntity existing = resourcePreferenceRepository
+                .findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(resourceType, resourceId, ownerId, level, key);
+        if (existing != null) {
+            existing.setValue(value);
+            resourcePreferenceRepository.save(existing);
+        } else {
+            ResourcePreferenceEntity entity = new ResourcePreferenceEntity();
+            entity.setResourceType(resourceType);
+            entity.setResourceId(resourceId);
+            entity.setOwnerId(ownerId);
+            entity.setLevel(level);
+            entity.setKey(key);
+            entity.setTypedValue(value);
+            resourcePreferenceRepository.save(entity);
+        }
+    }
+
+    private void deletePreferencesWithPrefix(PreferenceResourceType resourceType, String resourceId, String ownerId,
+            PreferenceLevel level, String prefix) {
+        List<ResourcePreferenceEntity> prefs = resourcePreferenceRepository
+                .findByResourceTypeAndResourceIdAndOwnerIdAndLevel(resourceType, resourceId, ownerId, level);
+        List<ResourcePreferenceEntity> toDelete = prefs.stream()
+                .filter(p -> p.getKey().startsWith(prefix))
+                .toList();
+        if (!toDelete.isEmpty()) {
+            resourcePreferenceRepository.deleteAll(toDelete);
+        }
+    }
+
+    // ========== Conversion Methods ==========
+
+    private ComputeResourcePreference toComputePreferenceModel(String resourceId, List<ResourcePreferenceEntity> prefs) {
+        Map<String, String> prefMap = new HashMap<>();
+        for (ResourcePreferenceEntity p : prefs) {
+            prefMap.put(p.getKey(), p.getValue());
+        }
+
+        ComputeResourcePreference model = new ComputeResourcePreference();
+        model.setComputeResourceId(resourceId);
+        model.setLoginUserName(prefMap.get(PreferenceKeys.LOGIN_USERNAME));
+        model.setPreferredBatchQueue(prefMap.get(PreferenceKeys.PREFERRED_BATCH_QUEUE));
+        model.setScratchLocation(prefMap.get(PreferenceKeys.SCRATCH_LOCATION));
+        model.setAllocationProjectNumber(prefMap.get(PreferenceKeys.ALLOCATION_PROJECT_NUMBER));
+        model.setResourceSpecificCredentialStoreToken(prefMap.get(PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN));
+        model.setQualityOfService(prefMap.get(PreferenceKeys.QUALITY_OF_SERVICE));
+        model.setReservation(prefMap.get(PreferenceKeys.RESERVATION));
+        
+        if (prefMap.get(PreferenceKeys.RESERVATION_START_TIME) != null) {
+            model.setReservationStartTime(Long.parseLong(prefMap.get(PreferenceKeys.RESERVATION_START_TIME)));
+        }
+        if (prefMap.get(PreferenceKeys.RESERVATION_END_TIME) != null) {
+            model.setReservationEndTime(Long.parseLong(prefMap.get(PreferenceKeys.RESERVATION_END_TIME)));
+        }
+        
+        model.setOverridebyAiravata(!"false".equals(prefMap.get(PreferenceKeys.OVERRIDE_BY_AIRAVATA)));
+        
+        // Protocol preferences
+        if (prefMap.get(PreferenceKeys.PREFERRED_JOB_SUBMISSION_PROTOCOL) != null) {
+            model.setPreferredJobSubmissionProtocol(
+                    JobSubmissionProtocol.valueOf(prefMap.get(PreferenceKeys.PREFERRED_JOB_SUBMISSION_PROTOCOL)));
+        }
+        if (prefMap.get(PreferenceKeys.PREFERRED_DATA_MOVEMENT_PROTOCOL) != null) {
+            model.setPreferredDataMovementProtocol(
+                    DataMovementProtocol.valueOf(prefMap.get(PreferenceKeys.PREFERRED_DATA_MOVEMENT_PROTOCOL)));
+        }
+        
+        // Gateway-specific fields
+        model.setUsageReportingGatewayId(prefMap.get(PreferenceKeys.USAGE_REPORTING_GATEWAY_ID));
+        model.setSshAccountProvisioner(prefMap.get(PreferenceKeys.SSH_ACCOUNT_PROVISIONER));
+        model.setSshAccountProvisionerAdditionalInfo(prefMap.get(PreferenceKeys.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO));
+        
+        // SSH provisioner config
+        Map<String, String> sshConfig = new HashMap<>();
+        for (ResourcePreferenceEntity p : prefs) {
+            if (p.getKey().startsWith(PreferenceKeys.SSH_PROVISIONER_CONFIG_PREFIX)) {
+                sshConfig.put(p.getKey().substring(PreferenceKeys.SSH_PROVISIONER_CONFIG_PREFIX.length()), p.getValue());
+            }
+        }
+        if (!sshConfig.isEmpty()) {
+            model.setSshAccountProvisionerConfig(sshConfig);
+        }
+        
+        return model;
+    }
+
+    private StoragePreference toStoragePreferenceModel(String resourceId, List<ResourcePreferenceEntity> prefs) {
+        Map<String, String> prefMap = new HashMap<>();
+        for (ResourcePreferenceEntity p : prefs) {
+            prefMap.put(p.getKey(), p.getValue());
+        }
+
+        StoragePreference model = new StoragePreference();
+        model.setStorageResourceId(resourceId);
+        model.setLoginUserName(prefMap.get(PreferenceKeys.LOGIN_USERNAME));
+        model.setFileSystemRootLocation(prefMap.get(PreferenceKeys.FILE_SYSTEM_ROOT_LOCATION));
+        model.setResourceSpecificCredentialStoreToken(prefMap.get(PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN));
+        return model;
     }
 }

@@ -52,8 +52,8 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
 import org.apache.airavata.service.integration.StateMachineTestUtils.TestHierarchy;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +75,7 @@ import org.springframework.transaction.annotation.Transactional;
         classes = {
             org.apache.airavata.config.JpaConfig.class,
             org.apache.airavata.config.TestcontainersConfig.class,
+            org.apache.airavata.config.TestDaprConfig.class,
             ProcessExecutionStateMachineIntegrationTest.TestConfiguration.class
         },
         properties = {
@@ -100,6 +101,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
                 "org.apache.airavata.config",
                 "org.apache.airavata.common.utils",
                 "org.apache.airavata.service.orchestrator",
+                "org.apache.airavata.orchestrator.internal.messaging",
                 "org.apache.airavata.messaging"
             })
     @EnableConfigurationProperties(org.apache.airavata.config.AiravataServerProperties.class)
@@ -112,7 +114,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
     private final ProjectService projectService;
     private final ExperimentService experimentService;
     private final ProcessService processService;
-    private final ProcessStatusService processStatusService;
+    private final StatusService statusService;
     private final TaskService taskService;
 
     @Autowired(required = false)
@@ -125,13 +127,13 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             ProjectService projectService,
             ExperimentService experimentService,
             ProcessService processService,
-            ProcessStatusService processStatusService,
+            StatusService statusService,
             TaskService taskService) {
         this.gatewayService = gatewayService;
         this.projectService = projectService;
         this.experimentService = experimentService;
         this.processService = processService;
-        this.processStatusService = processStatusService;
+        this.statusService = statusService;
         this.taskService = taskService;
     }
 
@@ -159,15 +161,15 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Add statuses in sequence
         for (ProcessState state : expectedStates) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
         // state transitions
         StateMachineTestUtils.verifyProcessStateTransition(
-                processService, processStatusService, testHierarchy.processId, expectedStates);
+                processService, statusService, testHierarchy.processId, expectedStates);
 
         // latest status
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertNotNull(latest, "Latest status should exist");
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
     }
@@ -187,10 +189,10 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
         // queuing states are in history
@@ -216,10 +218,10 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.FAILED, latest.getState(), "Final state should be FAILED");
     }
 
@@ -237,10 +239,10 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.CANCELED, latest.getState(), "Final state should be CANCELED");
     }
 
@@ -261,10 +263,10 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Add statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.COMPLETED, latest.getState(), "Final state should be COMPLETED");
 
         // requeue states are in history
@@ -279,9 +281,9 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Test that process state changes trigger correct experiment state updates
         // When process is STARTED, experiment should be EXECUTING
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Process started");
-        processStatusService.addProcessStatus(started, testHierarchy.processId);
+        statusService.addProcessStatus(started, testHierarchy.processId);
 
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.STARTED, latest.getState(), "Process state should be STARTED");
 
         var experiment = experimentService.getExperiment(testHierarchy.experimentId);
@@ -301,7 +303,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Add all statuses
         for (ProcessState state : states) {
             ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-            processStatusService.addProcessStatus(status, testHierarchy.processId);
+            statusService.addProcessStatus(status, testHierarchy.processId);
         }
 
         // all states are in history
@@ -347,7 +349,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             int publishSuccessCount = 0;
 
             ProcessStatus status1 = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Process started");
-            processStatusService.addProcessStatus(status1, testHierarchy.processId);
+            statusService.addProcessStatus(status1, testHierarchy.processId);
 
             // Publish message (as would happen in real flow via AiravataTask or WorkflowManager)
             ProcessIdentifier identifier =
@@ -371,7 +373,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
             // Add another status and publish
             ProcessStatus status2 =
                     StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Process executing");
-            processStatusService.addProcessStatus(status2, testHierarchy.processId);
+            statusService.addProcessStatus(status2, testHierarchy.processId);
 
             ProcessStatusChangeEvent event2 = new ProcessStatusChangeEvent(ProcessState.EXECUTING, identifier);
             MessageContext msgCtx2 = new MessageContext(
@@ -461,7 +463,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
             for (ProcessState state : expectedStates) {
                 ProcessStatus status = StateMachineTestUtils.createProcessStatus(state, "State: " + state.name());
-                processStatusService.addProcessStatus(status, testHierarchy.processId);
+                statusService.addProcessStatus(status, testHierarchy.processId);
 
                 ProcessStatusChangeEvent event = new ProcessStatusChangeEvent(state, identifier);
                 MessageContext msgCtx = new MessageContext(
@@ -515,7 +517,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
         // Transition process to STARTED
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Process started");
-        processStatusService.addProcessStatus(started, testHierarchy.processId);
+        statusService.addProcessStatus(started, testHierarchy.processId);
 
         // Verify state transition was valid
         assertTrue(
@@ -551,13 +553,13 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
         // Process is in EXECUTING state
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testHierarchy.processId);
+        statusService.addProcessStatus(executing, testHierarchy.processId);
 
         // Task fails -> process should transition to FAILED
         // (In real system, AiravataTask.onFail() would handle this)
         ProcessStatus failed =
                 StateMachineTestUtils.createProcessStatus(ProcessState.FAILED, "Process failed due to task failure");
-        processStatusService.addProcessStatus(failed, testHierarchy.processId);
+        statusService.addProcessStatus(failed, testHierarchy.processId);
 
         // Verify state transition was valid
         assertTrue(
@@ -566,7 +568,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
                 "EXECUTING -> FAILED should be valid when task fails");
 
         // Verify final state
-        ProcessStatus latest = processStatusService.getProcessStatus(testHierarchy.processId);
+        ProcessStatus latest = statusService.getLatestProcessStatus(testHierarchy.processId);
         assertEquals(ProcessState.FAILED, latest.getState(), "Process should be in FAILED state");
     }
 
@@ -577,7 +579,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
         // Process transitions to STARTED
         ProcessStatus started = StateMachineTestUtils.createProcessStatus(ProcessState.STARTED, "Started");
-        processStatusService.addProcessStatus(started, testHierarchy.processId);
+        statusService.addProcessStatus(started, testHierarchy.processId);
 
         // Create task chain: INPUT_DATA_STAGING -> JOB_SUBMISSION
         TaskModel task1 = new TaskModel();
@@ -598,7 +600,7 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
         // Task1 completes -> process may transition
         // Task2 executes -> process transitions to EXECUTING
         ProcessStatus executing = StateMachineTestUtils.createProcessStatus(ProcessState.EXECUTING, "Executing");
-        processStatusService.addProcessStatus(executing, testHierarchy.processId);
+        statusService.addProcessStatus(executing, testHierarchy.processId);
 
         // Verify state transition
         assertTrue(

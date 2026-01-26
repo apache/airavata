@@ -25,30 +25,47 @@ import java.util.Objects;
 import org.apache.airavata.credential.Credential;
 
 /**
- * Domain model: CertificateCredential
+ * X.509 certificate-based credential.
  */
 public class CertificateCredential extends Credential {
     private static final long serialVersionUID = 1L;
-    private CommunityUser communityUser;
+
+    /**
+     * The X.509 certificate in PEM format.
+     */
     private String x509Cert;
+
+    /**
+     * Certificate expiration time.
+     */
     private String notAfter;
+
+    /**
+     * The private key in PEM format.
+     */
     private String privateKey;
+
+    /**
+     * Certificate lifetime in seconds.
+     */
     private Long lifeTime;
+
+    /**
+     * Certificate start time.
+     */
     private String notBefore;
-    private Long persistedTime;
-    private String token;
+
+    /**
+     * Parsed X.509 certificate chain.
+     */
     private X509Certificate[] certificates;
+
+    /**
+     * Parsed private key object.
+     */
     private PrivateKey privateKeyObject;
 
     public CertificateCredential() {}
-
-    public CommunityUser getCommunityUser() {
-        return communityUser;
-    }
-
-    public void setCommunityUser(CommunityUser communityUser) {
-        this.communityUser = communityUser;
-    }
 
     public String getX509Cert() {
         return x509Cert;
@@ -90,22 +107,6 @@ public class CertificateCredential extends Credential {
         this.notBefore = notBefore;
     }
 
-    public Long getPersistedTime() {
-        return persistedTime;
-    }
-
-    public void setPersistedTime(Long persistedTime) {
-        this.persistedTime = persistedTime;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public X509Certificate[] getCertificates() {
         return certificates;
     }
@@ -127,31 +128,35 @@ public class CertificateCredential extends Credential {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CertificateCredential that = (CertificateCredential) o;
-        return Objects.equals(communityUser, that.communityUser)
+        return Objects.equals(getUserId(), that.getUserId())
+                && Objects.equals(getGatewayId(), that.getGatewayId())
                 && Objects.equals(x509Cert, that.x509Cert)
                 && Objects.equals(notAfter, that.notAfter)
                 && Objects.equals(privateKey, that.privateKey)
                 && Objects.equals(lifeTime, that.lifeTime)
                 && Objects.equals(notBefore, that.notBefore)
-                && Objects.equals(persistedTime, that.persistedTime)
-                && Objects.equals(token, that.token);
+                && Objects.equals(getPersistedTime(), that.getPersistedTime())
+                && Objects.equals(getToken(), that.getToken());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(communityUser, x509Cert, notAfter, privateKey, lifeTime, notBefore, persistedTime, token);
+        return Objects.hash(getUserId(), getGatewayId(), x509Cert, notAfter, privateKey,
+                lifeTime, notBefore, getPersistedTime(), getToken());
     }
 
     @Override
     public String toString() {
-        return "CertificateCredential{" + "communityUser="
-                + communityUser + ", x509Cert='"
-                + (x509Cert != null ? "***" : null) + '\'' + ", notAfter='"
-                + notAfter + '\'' + ", privateKey='"
-                + (privateKey != null ? "***" : null) + '\'' + ", lifeTime="
-                + lifeTime + ", notBefore='"
-                + notBefore + '\'' + ", persistedTime="
-                + persistedTime + ", token='"
-                + token + '\'' + '}';
+        return "CertificateCredential{"
+                + "userId='" + getUserId() + '\''
+                + ", gatewayId='" + getGatewayId() + '\''
+                + ", x509Cert='" + (x509Cert != null ? "***" : null) + '\''
+                + ", notAfter='" + notAfter + '\''
+                + ", privateKey='" + (privateKey != null ? "***" : null) + '\''
+                + ", lifeTime=" + lifeTime
+                + ", notBefore='" + notBefore + '\''
+                + ", persistedTime=" + getPersistedTime()
+                + ", token='" + getToken() + '\''
+                + '}';
     }
 }

@@ -22,7 +22,6 @@ package org.apache.airavata.credential.services;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
-import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.CredentialWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Writes certificate credentials to database.
+ * User info is stored via the userId field in the credential.
  */
 @Component
 public class CertificateCredentialWriter implements CredentialWriter {
@@ -37,30 +37,18 @@ public class CertificateCredentialWriter implements CredentialWriter {
     protected static Logger log = LoggerFactory.getLogger(CertificateCredentialWriter.class);
 
     private final CredentialEntityService credentialEntityService;
-    private final CommunityUserEntityService communityUserEntityService;
 
-    public CertificateCredentialWriter(
-            CredentialEntityService credentialEntityService, CommunityUserEntityService communityUserEntityService) {
+    public CertificateCredentialWriter(CredentialEntityService credentialEntityService) {
         this.credentialEntityService = credentialEntityService;
-        this.communityUserEntityService = communityUserEntityService;
     }
 
     public void writeCredentials(Credential credential) throws CredentialStoreException {
         var certificateCredential = (CertificateCredential) credential;
 
-        // Write community user
-        writeCommunityUser(certificateCredential.getCommunityUser(), credential.getToken());
-
         // Delete existing credentials and add the new certificate
-        credentialEntityService.deleteCredential(
-                certificateCredential.getCommunityUser().getGatewayName(), certificateCredential.getToken());
-        credentialEntityService.saveCredential(
-                certificateCredential.getCommunityUser().getGatewayName(), credential);
-    }
+        credentialEntityService.deleteCredential(certificateCredential.getGatewayId(), certificateCredential.getToken());
 
-    public void writeCommunityUser(CommunityUser communityUser, String token) throws CredentialStoreException {
-        // Delete existing community user and persist new one
-        communityUserEntityService.deleteCommunityUserByToken(communityUser, token);
-        communityUserEntityService.saveCommunityUser(communityUser, token);
+        // Save credential - userId is already set on the credential object
+        credentialEntityService.saveCredential(certificateCredential.getGatewayId(), credential);
     }
 }

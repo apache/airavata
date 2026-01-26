@@ -30,10 +30,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.airavata.common.model.JobManagerCommand;
+import org.apache.airavata.common.model.CommandCategory;
 
 /**
  * The persistent class for the job_manager_command database table.
+ * 
+ * This entity is unified to store both job manager commands and parallelism commands.
+ * The COMMAND_CATEGORY column distinguishes between JOB_MANAGER and PARALLELISM commands.
+ * The COMMAND_TYPE stores the enum name as a string (e.g., "SUBMISSION", "MPI").
  */
 @Entity
 @Table(name = "JOB_MANAGER_COMMAND")
@@ -46,9 +50,13 @@ public class JobManagerCommandEntity implements Serializable {
     private String resourceJobManagerId;
 
     @Id
-    @Column(name = "COMMAND_TYPE", nullable = false)
+    @Column(name = "COMMAND_CATEGORY", nullable = false)
     @Enumerated(EnumType.STRING)
-    private JobManagerCommand commandType;
+    private CommandCategory commandCategory;
+
+    @Id
+    @Column(name = "COMMAND_TYPE", nullable = false)
+    private String commandType;
 
     @Column(name = "COMMAND")
     private String command;
@@ -67,11 +75,19 @@ public class JobManagerCommandEntity implements Serializable {
         this.resourceJobManagerId = resourceJobManagerId;
     }
 
-    public JobManagerCommand getCommandType() {
+    public CommandCategory getCommandCategory() {
+        return commandCategory;
+    }
+
+    public void setCommandCategory(CommandCategory commandCategory) {
+        this.commandCategory = commandCategory;
+    }
+
+    public String getCommandType() {
         return commandType;
     }
 
-    public void setCommandType(JobManagerCommand commandType) {
+    public void setCommandType(String commandType) {
         this.commandType = commandType;
     }
 

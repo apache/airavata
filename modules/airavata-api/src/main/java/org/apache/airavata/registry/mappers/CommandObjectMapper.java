@@ -21,40 +21,26 @@ package org.apache.airavata.registry.mappers;
 
 import java.util.List;
 import org.apache.airavata.common.model.CommandObject;
-import org.apache.airavata.registry.entities.appcatalog.ModuleLoadCmdEntity;
-import org.apache.airavata.registry.entities.appcatalog.PostjobCommandEntity;
-import org.apache.airavata.registry.entities.appcatalog.PrejobCommandEntity;
+import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentCommandEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * MapStruct mapper for converting between CommandObject and command entities.
+ * MapStruct mapper for converting between CommandObject and ApplicationDeploymentCommandEntity.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface CommandObjectMapper {
 
-    CommandObject toModel(ModuleLoadCmdEntity entity);
+    @Mapping(target = "command", source = "command")
+    @Mapping(target = "commandOrder", source = "commandOrder")
+    CommandObject toModel(ApplicationDeploymentCommandEntity entity);
 
-    ModuleLoadCmdEntity toEntity(CommandObject model);
+    @Mapping(target = "deploymentId", ignore = true)
+    @Mapping(target = "commandType", ignore = true) // Set by caller based on context
+    @Mapping(target = "applicationDeployment", ignore = true)
+    ApplicationDeploymentCommandEntity toEntity(CommandObject model);
 
-    CommandObject toModelFromPrejob(PrejobCommandEntity entity);
+    List<CommandObject> toModelList(List<ApplicationDeploymentCommandEntity> entities);
 
-    PrejobCommandEntity toEntityToPrejob(CommandObject model);
-
-    CommandObject toModelFromPostjob(PostjobCommandEntity entity);
-
-    @Mapping(target = "applicationDeployment", ignore = true) // Set by parent entity
-    PostjobCommandEntity toEntityToPostjob(CommandObject model);
-
-    List<CommandObject> toModelListFromModuleLoad(List<ModuleLoadCmdEntity> entities);
-
-    List<ModuleLoadCmdEntity> toEntityListToModuleLoad(List<CommandObject> models);
-
-    List<CommandObject> toModelListFromPrejob(List<PrejobCommandEntity> entities);
-
-    List<PrejobCommandEntity> toEntityListToPrejob(List<CommandObject> models);
-
-    List<CommandObject> toModelListFromPostjob(List<PostjobCommandEntity> entities);
-
-    List<PostjobCommandEntity> toEntityListToPostjob(List<CommandObject> models);
+    List<ApplicationDeploymentCommandEntity> toEntityList(List<CommandObject> models);
 }

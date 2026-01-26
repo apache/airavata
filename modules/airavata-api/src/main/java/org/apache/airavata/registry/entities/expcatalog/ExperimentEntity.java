@@ -21,20 +21,28 @@ package org.apache.airavata.registry.entities.expcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.common.model.ExperimentType;
+import org.apache.airavata.registry.entities.ErrorEntity;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
+import org.apache.airavata.registry.entities.StatusEntity;
 
 /**
  * The persistent class for the experiment database table.
@@ -93,38 +101,42 @@ public class ExperimentEntity implements Serializable {
             fetch = FetchType.EAGER)
     private UserConfigurationDataEntity userConfigurationData;
 
-    @OneToMany(
-            targetEntity = ExperimentInputEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "experiment",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    private List<ExperimentInputEntity> experimentInputs;
+    /**
+     * Transient field for experiment inputs. Inputs are stored in the unified INPUT_DATA table
+     * and loaded via InputDataRepository.findByExperimentId().
+     */
+    @Transient
+    private List<InputDataEntity> experimentInputs;
 
-    @OneToMany(
-            targetEntity = ExperimentOutputEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "experiment",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    private List<ExperimentOutputEntity> experimentOutputs;
+    /**
+     * Transient field for experiment outputs. Outputs are stored in the unified OUTPUT_DATA table
+     * and loaded via OutputDataRepository.findByExperimentId().
+     */
+    @Transient
+    private List<OutputDataEntity> experimentOutputs;
 
-    @OneToMany(
-            targetEntity = ExperimentStatusEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "experiment",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    @OrderBy("timeOfStateChange ASC")
-    private List<ExperimentStatusEntity> experimentStatus;
+    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "EXPERIMENT_ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'EXPERIMENT'")
+    @OrderBy("sequenceNum ASC")
+    private List<StatusEntity> experimentStatus;
 
-    @OneToMany(
-            targetEntity = ExperimentErrorEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "experiment",
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    private List<ExperimentErrorEntity> errors;
+    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinColumns(value = {
+        @JoinColumn(
+                name = "PARENT_ID",
+                referencedColumnName = "EXPERIMENT_ID",
+                insertable = false,
+                updatable = false)
+    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'EXPERIMENT'")
+    private List<ErrorEntity> errors;
 
     @OneToMany(
             targetEntity = ProcessEntity.class,
@@ -248,35 +260,35 @@ public class ExperimentEntity implements Serializable {
         this.userConfigurationData = userConfiguration;
     }
 
-    public List<ExperimentInputEntity> getExperimentInputs() {
+    public List<InputDataEntity> getExperimentInputs() {
         return experimentInputs;
     }
 
-    public void setExperimentInputs(List<ExperimentInputEntity> experimentInputs) {
+    public void setExperimentInputs(List<InputDataEntity> experimentInputs) {
         this.experimentInputs = experimentInputs;
     }
 
-    public List<ExperimentOutputEntity> getExperimentOutputs() {
+    public List<OutputDataEntity> getExperimentOutputs() {
         return experimentOutputs;
     }
 
-    public void setExperimentOutputs(List<ExperimentOutputEntity> experimentOutputs) {
+    public void setExperimentOutputs(List<OutputDataEntity> experimentOutputs) {
         this.experimentOutputs = experimentOutputs;
     }
 
-    public List<ExperimentErrorEntity> getErrors() {
+    public List<ErrorEntity> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<ExperimentErrorEntity> errors) {
+    public void setErrors(List<ErrorEntity> errors) {
         this.errors = errors;
     }
 
-    public List<ExperimentStatusEntity> getExperimentStatus() {
+    public List<StatusEntity> getExperimentStatus() {
         return experimentStatus;
     }
 
-    public void setExperimentStatus(List<ExperimentStatusEntity> experimentStatus) {
+    public void setExperimentStatus(List<StatusEntity> experimentStatus) {
         this.experimentStatus = experimentStatus;
     }
 

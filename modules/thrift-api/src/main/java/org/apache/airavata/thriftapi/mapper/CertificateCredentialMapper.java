@@ -19,9 +19,11 @@
 */
 package org.apache.airavata.thriftapi.mapper;
 
+import java.util.Date;
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -34,20 +36,32 @@ public interface CertificateCredentialMapper extends ModelMapper {
 
     /**
      * Convert domain model to thrift model.
+     * Note: certificates and privateKeyObject are domain-only runtime objects.
      */
+    @Mapping(target = "persistedTime", source = "persistedTime", qualifiedByName = "dateToLong")
     org.apache.airavata.thriftapi.credential.model.CertificateCredential toThrift(CertificateCredential domain);
 
     /**
      * Convert thrift model to domain model.
-     *
-     * Note: The following properties are ignored as they are not present in the Thrift IDL definition:
-     * gatewayId, description, portalUserName, certificateRequestedTime, certificates, privateKeyObject
      */
-    @Mapping(target = "gatewayId", ignore = true)
-    @Mapping(target = "description", ignore = true)
-    @Mapping(target = "portalUserName", ignore = true)
-    @Mapping(target = "certificateRequestedTime", ignore = true)
-    @Mapping(target = "certificates", ignore = true)
-    @Mapping(target = "privateKeyObject", ignore = true)
+    @Mapping(target = "persistedTime", source = "persistedTime", qualifiedByName = "longToDate")
+    @Mapping(target = "certificates", ignore = true) // Runtime object
+    @Mapping(target = "privateKeyObject", ignore = true) // Runtime object
     CertificateCredential toDomain(org.apache.airavata.thriftapi.credential.model.CertificateCredential thrift);
+
+    /**
+     * Convert Date to long (milliseconds since epoch).
+     */
+    @Named("dateToLong")
+    default long dateToLong(Date date) {
+        return date != null ? date.getTime() : 0L;
+    }
+
+    /**
+     * Convert long to Date.
+     */
+    @Named("longToDate")
+    default Date longToDate(long millis) {
+        return millis > 0 ? new Date(millis) : null;
+    }
 }

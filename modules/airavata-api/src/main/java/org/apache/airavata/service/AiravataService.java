@@ -48,6 +48,7 @@ import org.apache.airavata.common.exception.InvalidRequestException;
 import org.apache.airavata.common.exception.ProjectNotFoundException;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
+import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
 import org.apache.airavata.common.model.BatchQueueResourcePolicy;
@@ -365,7 +366,7 @@ public class AiravataService {
 
             logger.debug("Starting to add password credential to default gateway={}", defaultGateway);
             var passwordCredential = new PasswordCredential();
-            passwordCredential.setPortalUserName(
+            passwordCredential.setUserId(
                     properties.security().iam().superAdmin().username());
             passwordCredential.setGatewayId(defaultGateway);
             passwordCredential.setLoginUserName(
@@ -387,6 +388,23 @@ public class AiravataService {
 
     private void initSharingRegistry() throws SharingRegistryException, DuplicateEntryException {
         String defaultGateway = properties.defaultGateway();
+        
+        // Ensure the default gateway exists before creating the domain
+        // (Domain creation requires an existing gateway due to foreign key constraint)
+        try {
+            if (!isGatewayExist(defaultGateway)) {
+                var gateway = new Gateway();
+                gateway.setGatewayId(defaultGateway);
+                gateway.setGatewayName(defaultGateway);
+                gateway.setDomain(defaultGateway);
+                gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+                registryService.addGateway(gateway);
+                logger.info("Created default gateway: {}", defaultGateway);
+            }
+        } catch (Exception e) {
+            logger.warn("Could not create or verify default gateway: {}", e.getMessage());
+        }
+        
         if (!isDomainExists(defaultGateway)) {
             var domain = new Domain();
             domain.setDomainId(defaultGateway);
@@ -441,6 +459,27 @@ public class AiravataService {
             entityType.setDomainId(domain.getDomainId());
             entityType.setName(SharingResourceType.CREDENTIAL_TOKEN.name());
             entityType.setDescription("Credential Store Token entity type");
+            createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.APPLICATION_INTERFACE.name());
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName(SharingResourceType.APPLICATION_INTERFACE.name());
+            entityType.setDescription("Application Interface entity type");
+            createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.COMPUTE_RESOURCE.name());
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName(SharingResourceType.COMPUTE_RESOURCE.name());
+            entityType.setDescription("Compute Resource entity type");
+            createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.getDomainId() + ":" + SharingResourceType.STORAGE_RESOURCE.name());
+            entityType.setDomainId(domain.getDomainId());
+            entityType.setName(SharingResourceType.STORAGE_RESOURCE.name());
+            entityType.setDescription("Storage Resource entity type");
             createEntityType(entityType);
 
             // Creating Permission Types for each domain
@@ -1075,6 +1114,52 @@ public class AiravataService {
                 "saving compute resource", () -> registryService.registerComputeResource(computeResourceDescription));
     }
 
+    /**
+     * Register a compute resource and add it to the sharing registry.
+     *
+     * <p>This overload registers the resource in the sharing registry, providing
+     * visibility control over which users/groups can see this compute resource exists.
+     * The creator becomes the owner, and the resource is automatically shared with
+     * gateway admin groups.
+     *
+     * <p><b>Note:</b> Visibility (sharing registry) controls who can see the resource.
+     * Access (RESOURCE_ACCESS table) controls who can use the resource with which credential.
+     * Both are required for a user to use a compute resource.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway where the compute resource will be registered
+     * @param computeResourceDescription The compute resource description
+     * @return The generated compute resource ID
+     */
+    public String registerComputeResource(
+            AuthzToken authzToken, String gatewayId, ComputeResourceDescription computeResourceDescription)
+            throws AiravataSystemException, InvalidRequestException, AuthorizationException,
+                    ApplicationSettingsException {
+        try {
+            String result = registerComputeResource(computeResourceDescription);
+            if (properties.isSharingEnabled()) {
+                var entity = new Entity();
+                entity.setEntityId(result);
+                final String domainId = gatewayId;
+                entity.setDomainId(domainId);
+                entity.setEntityTypeId(domainId + ":" + SharingResourceType.COMPUTE_RESOURCE.name());
+                var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                entity.setOwnerId(userName + "@" + domainId);
+                entity.setName(computeResourceDescription.getHostName());
+                entity.setDescription(computeResourceDescription.getResourceDescription());
+                createEntity(new SharingEntity(entity));
+                shareEntityWithAdminGatewayGroups(entity);
+            }
+            return result;
+        } catch (InvalidRequestException | AuthorizationException e) {
+            throw e;
+        } catch (SharingRegistryException | DuplicateEntryException e) {
+            String msg = "Error while registering compute resource in sharing registry: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
     public boolean updateComputeResource(
             String computeResourceId, ComputeResourceDescription computeResourceDescription)
             throws AiravataSystemException {
@@ -1097,6 +1182,52 @@ public class AiravataService {
             throws AiravataSystemException {
         return executeRegistryOperation(
                 "saving storage resource", () -> registryService.registerStorageResource(storageResourceDescription));
+    }
+
+    /**
+     * Register a storage resource and add it to the sharing registry.
+     *
+     * <p>This overload registers the resource in the sharing registry, providing
+     * visibility control over which users/groups can see this storage resource exists.
+     * The creator becomes the owner, and the resource is automatically shared with
+     * gateway admin groups.
+     *
+     * <p><b>Note:</b> Visibility (sharing registry) controls who can see the resource.
+     * Access (RESOURCE_ACCESS table) controls who can use the resource with which credential.
+     * Both are required for a user to use a storage resource.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway where the storage resource will be registered
+     * @param storageResourceDescription The storage resource description
+     * @return The generated storage resource ID
+     */
+    public String registerStorageResource(
+            AuthzToken authzToken, String gatewayId, StorageResourceDescription storageResourceDescription)
+            throws AiravataSystemException, InvalidRequestException, AuthorizationException,
+                    ApplicationSettingsException {
+        try {
+            String result = registerStorageResource(storageResourceDescription);
+            if (properties.isSharingEnabled()) {
+                var entity = new Entity();
+                entity.setEntityId(result);
+                final String domainId = gatewayId;
+                entity.setDomainId(domainId);
+                entity.setEntityTypeId(domainId + ":" + SharingResourceType.STORAGE_RESOURCE.name());
+                var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                entity.setOwnerId(userName + "@" + domainId);
+                entity.setName(storageResourceDescription.getHostName());
+                entity.setDescription(storageResourceDescription.getStorageResourceDescription());
+                createEntity(new SharingEntity(entity));
+                shareEntityWithAdminGatewayGroups(entity);
+            }
+            return result;
+        } catch (InvalidRequestException | AuthorizationException e) {
+            throw e;
+        } catch (SharingRegistryException | DuplicateEntryException e) {
+            String msg = "Error while registering storage resource in sharing registry: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
     }
 
     public StorageResourceDescription getStorageResource(String storageResourceId) throws AiravataSystemException {
@@ -1416,6 +1547,47 @@ public class AiravataService {
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface)
             throws AiravataSystemException {
         return applicationService.registerApplicationInterface(gatewayId, applicationInterface);
+    }
+
+    /**
+     * Register an application interface and add it to the sharing registry.
+     *
+     * <p>This overload registers the interface in the sharing registry, making it
+     * a sharable entity with visibility control. The creator becomes the owner,
+     * and the interface is automatically shared with gateway admin groups.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway where the application interface belongs
+     * @param applicationInterface The application interface description
+     * @return The generated application interface ID
+     */
+    public String registerApplicationInterface(
+            AuthzToken authzToken, String gatewayId, ApplicationInterfaceDescription applicationInterface)
+            throws AiravataSystemException, InvalidRequestException, AuthorizationException,
+                    ApplicationSettingsException {
+        try {
+            String result = registerApplicationInterface(gatewayId, applicationInterface);
+            if (properties.isSharingEnabled()) {
+                var entity = new Entity();
+                entity.setEntityId(result);
+                final String domainId = gatewayId;
+                entity.setDomainId(domainId);
+                entity.setEntityTypeId(domainId + ":" + SharingResourceType.APPLICATION_INTERFACE.name());
+                var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                entity.setOwnerId(userName + "@" + domainId);
+                entity.setName(applicationInterface.getApplicationName());
+                entity.setDescription(applicationInterface.getApplicationDescription());
+                createEntity(new SharingEntity(entity));
+                shareEntityWithAdminGatewayGroups(entity);
+            }
+            return result;
+        } catch (InvalidRequestException | AuthorizationException e) {
+            throw e;
+        } catch (SharingRegistryException | DuplicateEntryException e) {
+            String msg = "Error while registering application interface in sharing registry: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
     }
 
     public String cloneApplicationInterface(String existingAppInterfaceID, String newApplicationName, String gatewayId)
@@ -2764,6 +2936,151 @@ public class AiravataService {
         }
     }
 
+    /**
+     * Get accessible entity IDs from the sharing registry for a given entity type.
+     *
+     * <p>This helper method queries the sharing registry to find all entities of a given
+     * type that the user has READ permission to access.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway ID
+     * @param resourceType The type of resource to search for
+     * @return List of accessible entity IDs
+     */
+    public List<String> getAccessibleEntityIds(AuthzToken authzToken, String gatewayId, SharingResourceType resourceType)
+            throws AiravataSystemException {
+        var userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        var accessibleIds = new ArrayList<String>();
+
+        if (properties.isSharingEnabled()) {
+            try {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                var entityTypeFilter = new SearchCriteria();
+                entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                entityTypeFilter.setValue(gatewayId + ":" + resourceType.name());
+                sharingFilters.add(entityTypeFilter);
+                var permissionTypeFilter = new SearchCriteria();
+                permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+                permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
+                sharingFilters.add(permissionTypeFilter);
+                sharingRegistryService
+                        .searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, -1)
+                        .forEach(e -> accessibleIds.add(e.getEntityId()));
+            } catch (SharingRegistryException e) {
+                String msg = "Error while searching accessible entities: " + e.getMessage();
+                logger.error(msg, e);
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+            }
+        }
+        return accessibleIds;
+    }
+
+    /**
+     * Get application interfaces accessible to the user via the sharing registry.
+     *
+     * <p>This method returns only application interfaces that the user has READ permission
+     * to access through the sharing registry. If sharing is disabled, returns all interfaces
+     * in the gateway.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway ID
+     * @return List of accessible application interfaces
+     */
+    public List<ApplicationInterfaceDescription> getAccessibleApplicationInterfaces(
+            AuthzToken authzToken, String gatewayId)
+            throws AiravataSystemException, InvalidRequestException, AuthorizationException {
+        try {
+            if (properties.isSharingEnabled()) {
+                List<String> accessibleIds = getAccessibleEntityIds(
+                        authzToken, gatewayId, SharingResourceType.APPLICATION_INTERFACE);
+                if (accessibleIds.isEmpty()) {
+                    return Collections.emptyList();
+                }
+                return registryService.getApplicationInterfacesByIds(gatewayId, accessibleIds);
+            } else {
+                return registryService.getAllApplicationInterfaces(gatewayId);
+            }
+        } catch (RegistryException e) {
+            String msg = "Error while retrieving accessible application interfaces: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    /**
+     * Get compute resources accessible to the user via the sharing registry.
+     *
+     * <p>This method returns only compute resources that the user has READ permission
+     * (visibility) to access through the sharing registry. If sharing is disabled,
+     * returns all compute resources.
+     *
+     * <p><b>Note:</b> Visibility via sharing registry is separate from access via
+     * RESOURCE_ACCESS table. A user needs both visibility AND access (with credential)
+     * to actually use a compute resource.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway ID
+     * @return List of accessible compute resources
+     */
+    public List<ComputeResourceDescription> getAccessibleComputeResources(
+            AuthzToken authzToken, String gatewayId)
+            throws AiravataSystemException, InvalidRequestException, AuthorizationException {
+        try {
+            if (properties.isSharingEnabled()) {
+                List<String> accessibleIds = getAccessibleEntityIds(
+                        authzToken, gatewayId, SharingResourceType.COMPUTE_RESOURCE);
+                if (accessibleIds.isEmpty()) {
+                    return Collections.emptyList();
+                }
+                return registryService.getComputeResourcesByIds(accessibleIds);
+            } else {
+                return registryService.getAllComputeResourcesList();
+            }
+        } catch (RegistryException e) {
+            String msg = "Error while retrieving accessible compute resources: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
+    /**
+     * Get storage resources accessible to the user via the sharing registry.
+     *
+     * <p>This method returns only storage resources that the user has READ permission
+     * (visibility) to access through the sharing registry. If sharing is disabled,
+     * returns all storage resources.
+     *
+     * <p><b>Note:</b> Visibility via sharing registry is separate from access via
+     * RESOURCE_ACCESS table. A user needs both visibility AND access (with credential)
+     * to actually use a storage resource.
+     *
+     * @param authzToken Authorization token containing user and gateway information
+     * @param gatewayId The gateway ID
+     * @return List of accessible storage resources
+     */
+    public List<StorageResourceDescription> getAccessibleStorageResources(
+            AuthzToken authzToken, String gatewayId)
+            throws AiravataSystemException, InvalidRequestException, AuthorizationException {
+        try {
+            if (properties.isSharingEnabled()) {
+                List<String> accessibleIds = getAccessibleEntityIds(
+                        authzToken, gatewayId, SharingResourceType.STORAGE_RESOURCE);
+                if (accessibleIds.isEmpty()) {
+                    return Collections.emptyList();
+                }
+                return registryService.getStorageResourcesByIds(accessibleIds);
+            } else {
+                return registryService.getAllStorageResourcesList();
+            }
+        } catch (RegistryException e) {
+            String msg = "Error while retrieving accessible storage resources: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        }
+    }
+
     // Credential management methods
     public String generateAndRegisterSSHKeys(String gatewayId, String userName, String description)
             throws InvalidRequestException, AiravataSystemException {
@@ -2806,7 +3123,7 @@ public class AiravataService {
             throws InvalidRequestException, AiravataSystemException {
         try {
             var pwdCredential = new PasswordCredential();
-            pwdCredential.setPortalUserName(userName);
+            pwdCredential.setUserId(userName);
             pwdCredential.setLoginUserName(loginUserName);
             pwdCredential.setPassword(password);
             pwdCredential.setDescription(description);

@@ -27,7 +27,7 @@ import org.apache.airavata.credential.repositories.CredentialRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ComputeResourceRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ExperimentRepository;
 import org.apache.airavata.service.registry.RegistryService;
-import org.apache.airavata.sharing.repositories.DomainRepository;
+import org.apache.airavata.registry.repositories.GatewayRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -93,7 +93,7 @@ public class UnifiedApplicationStartupTest {
     public void testRepositoriesAreInjected() {
         assertNotNull(applicationContext.getBean(ComputeResourceRepository.class));
         assertNotNull(applicationContext.getBean(ExperimentRepository.class));
-        assertNotNull(applicationContext.getBean(DomainRepository.class));
+        assertNotNull(applicationContext.getBean(GatewayRepository.class));
         assertNotNull(applicationContext.getBean(CredentialRepository.class));
     }
 }

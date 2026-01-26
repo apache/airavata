@@ -24,10 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.JobModel;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.entities.expcatalog.JobStatusEntity;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.mappers.JobModelMapper;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
@@ -55,13 +56,12 @@ public class JobService {
 
     public void populateParentIds(JobEntity jobEntity) {
         var jobId = jobEntity.getJobId();
-        var taskId = jobEntity.getTaskId();
         if (jobEntity.getJobStatuses() != null) {
             logger.debug("Populating the Primary Key of JobStatus objects for the Job");
-            jobEntity.getJobStatuses().forEach(jobStatusEntity -> {
-                jobStatusEntity.setJobId(jobId);
-                jobStatusEntity.setTaskId(taskId);
-                jobStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
+            jobEntity.getJobStatuses().forEach(statusEntity -> {
+                statusEntity.setParentId(jobId);
+                statusEntity.setParentType(StatusParentType.JOB);
+                statusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
             });
         }
     }
@@ -81,6 +81,9 @@ public class JobService {
     public JobModel getJob(JobPK jobPK) throws RegistryException {
         var entity = jobRepository.findById(jobPK).orElse(null);
         if (entity == null) return null;
+        // Flush to ensure all pending changes are persisted before refresh
+        // This is necessary because refresh reads directly from the database
+        entityManager.flush();
         // Refresh entity to get latest data from database, including any statuses
         // added via JobStatusService in the same transaction
         entityManager.refresh(entity);
@@ -182,16 +185,16 @@ public class JobService {
                             .anyMatch(s ->
                                     s.getStatusId() != null && s.getStatusId().equals(statusModel.getStatusId()));
                     if (!exists) {
-                        var statusEntity = new JobStatusEntity();
+                        var statusEntity = new StatusEntity();
                         statusEntity.setStatusId(statusModel.getStatusId());
-                        statusEntity.setJobState(statusModel.getJobState());
+                        statusEntity.setState(statusModel.getJobState() != null ? statusModel.getJobState().name() : null);
                         statusEntity.setReason(statusModel.getReason());
                         if (statusModel.getTimeOfStateChange() > 0) {
                             statusEntity.setTimeOfStateChange(
                                     AiravataUtils.getTime(statusModel.getTimeOfStateChange()));
                         }
-                        statusEntity.setJobId(jobPK.getJobId());
-                        statusEntity.setTaskId(jobPK.getTaskId());
+                        statusEntity.setParentId(jobPK.getJobId());
+                        statusEntity.setParentType(StatusParentType.JOB);
                         existingEntity.getJobStatuses().add(statusEntity);
                     }
                 }

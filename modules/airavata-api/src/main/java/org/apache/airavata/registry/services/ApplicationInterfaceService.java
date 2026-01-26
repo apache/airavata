@@ -26,26 +26,27 @@ import java.util.Map;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
+import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.InputDataEntity;
+import org.apache.airavata.registry.entities.OutputDataEntity;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingEntity;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingPK;
-import org.apache.airavata.registry.entities.appcatalog.ApplicationInputEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationModuleEntity;
-import org.apache.airavata.registry.entities.appcatalog.ApplicationOutputEntity;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.mappers.ApplicationInterfaceMapper;
 import org.apache.airavata.registry.mappers.ApplicationModuleMapper;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
 import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.model.ApplicationInterface;
+import org.apache.airavata.registry.repositories.InputDataRepository;
+import org.apache.airavata.registry.repositories.OutputDataRepository;
 import org.apache.airavata.registry.repositories.appcatalog.AppModuleMappingRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ApplicationInputRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ApplicationModuleRepository;
-import org.apache.airavata.registry.repositories.appcatalog.ApplicationOutputRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +60,8 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     private final ApplicationInterfaceRepository applicationInterfaceRepository;
     private final ApplicationModuleRepository applicationModuleRepository;
-    private final ApplicationInputRepository applicationInputRepository;
-    private final ApplicationOutputRepository applicationOutputRepository;
+    private final InputDataRepository inputDataRepository;
+    private final OutputDataRepository outputDataRepository;
     private final AppModuleMappingRepository appModuleMappingRepository;
     private final ApplicationInterfaceMapper applicationInterfaceMapper;
     private final ApplicationModuleMapper applicationModuleMapper;
@@ -70,8 +71,8 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     public ApplicationInterfaceService(
             ApplicationInterfaceRepository applicationInterfaceRepository,
             ApplicationModuleRepository applicationModuleRepository,
-            ApplicationInputRepository applicationInputRepository,
-            ApplicationOutputRepository applicationOutputRepository,
+            InputDataRepository inputDataRepository,
+            OutputDataRepository outputDataRepository,
             AppModuleMappingRepository appModuleMappingRepository,
             ApplicationInterfaceMapper applicationInterfaceMapper,
             ApplicationModuleMapper applicationModuleMapper,
@@ -79,8 +80,8 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.applicationInterfaceRepository = applicationInterfaceRepository;
         this.applicationModuleRepository = applicationModuleRepository;
-        this.applicationInputRepository = applicationInputRepository;
-        this.applicationOutputRepository = applicationOutputRepository;
+        this.inputDataRepository = inputDataRepository;
+        this.outputDataRepository = outputDataRepository;
         this.appModuleMappingRepository = appModuleMappingRepository;
         this.applicationInterfaceMapper = applicationInterfaceMapper;
         this.applicationModuleMapper = applicationModuleMapper;
@@ -171,7 +172,16 @@ public class ApplicationInterfaceService implements ApplicationInterface {
                 .collect(java.util.stream.Collectors.toList());
         entity.setApplicationModules(moduleIds);
 
-        return applicationInterfaceMapper.toModel(entity);
+        var model = applicationInterfaceMapper.toModel(entity);
+
+        // Map inputs and outputs from unified tables
+        List<InputDataEntity> inputEntities = inputDataRepository.findByApplicationId(interfaceId);
+        model.setApplicationInputs(inputDataObjectTypeMapper.toModelList(inputEntities));
+
+        List<OutputDataEntity> outputEntities = outputDataRepository.findByApplicationId(interfaceId);
+        model.setApplicationOutputs(outputDataObjectTypeMapper.toModelList(outputEntities));
+
+        return model;
     }
 
     @Override
@@ -244,14 +254,14 @@ public class ApplicationInterfaceService implements ApplicationInterface {
 
     @Override
     public List<InputDataObjectType> getApplicationInputs(String interfaceId) throws AppCatalogException {
-        List<ApplicationInputEntity> entities = applicationInputRepository.findByInterfaceId(interfaceId);
-        return inputDataObjectTypeMapper.toModelListFromApplication(entities);
+        List<InputDataEntity> entities = inputDataRepository.findByApplicationId(interfaceId);
+        return inputDataObjectTypeMapper.toModelList(entities);
     }
 
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String interfaceId) throws AppCatalogException {
-        List<ApplicationOutputEntity> entities = applicationOutputRepository.findByInterfaceId(interfaceId);
-        return outputDataObjectTypeMapper.toModelListFromApplication(entities);
+        List<OutputDataEntity> entities = outputDataRepository.findByApplicationId(interfaceId);
+        return outputDataObjectTypeMapper.toModelList(entities);
     }
 
     @Override
@@ -259,6 +269,9 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         if (!applicationInterfaceRepository.existsById(interfaceId)) {
             return false;
         }
+        // Delete associated inputs and outputs from unified tables
+        inputDataRepository.deleteByParentIdAndParentType(interfaceId, DataObjectParentType.APPLICATION);
+        outputDataRepository.deleteByParentIdAndParentType(interfaceId, DataObjectParentType.APPLICATION);
         applicationInterfaceRepository.deleteById(interfaceId);
         return true;
     }
@@ -317,27 +330,40 @@ public class ApplicationInterfaceService implements ApplicationInterface {
             applicationInterfaceEntity.setGatewayId(gatewayId);
         }
 
-        if (applicationInterfaceEntity.getApplicationInputs() != null) {
-            logger.debug("Populating the Primary Key of ApplicationInputs objects for the Application Interface");
-            applicationInterfaceEntity
-                    .getApplicationInputs()
-                    .forEach(applicationInputEntity -> applicationInputEntity.setInterfaceId(applicationInterfaceId));
-        }
-
-        if (applicationInterfaceEntity.getApplicationOutputs() != null) {
-            logger.debug("Populating the Primary Key of ApplicationOutputs objects for the Application Interface");
-            applicationInterfaceEntity
-                    .getApplicationOutputs()
-                    .forEach(applicationOutputEntity -> applicationOutputEntity.setInterfaceId(applicationInterfaceId));
-        }
-
         if (!isApplicationInterfaceExists(applicationInterfaceId)) {
             logger.debug("Checking if the Application Interface already exists");
             applicationInterfaceEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
         }
 
         applicationInterfaceEntity.setUpdateTime(AiravataUtils.getUniqueTimestamp());
-        return applicationInterfaceRepository.save(applicationInterfaceEntity);
+
+        // Save the entity first (without inputs/outputs which are now in unified tables)
+        var savedEntity = applicationInterfaceRepository.save(applicationInterfaceEntity);
+
+        // Delete existing inputs and outputs, then save new ones
+        inputDataRepository.deleteByParentIdAndParentType(applicationInterfaceId, DataObjectParentType.APPLICATION);
+        outputDataRepository.deleteByParentIdAndParentType(applicationInterfaceId, DataObjectParentType.APPLICATION);
+
+        // Save inputs to unified table
+        if (applicationInterfaceDescription.getApplicationInputs() != null) {
+            logger.debug("Saving ApplicationInputs to unified INPUT_DATA table");
+            for (var input : applicationInterfaceDescription.getApplicationInputs()) {
+                var inputEntity = inputDataObjectTypeMapper.toApplicationInputEntity(input, applicationInterfaceId);
+                inputDataRepository.save(inputEntity);
+            }
+        }
+
+        // Save outputs to unified table
+        if (applicationInterfaceDescription.getApplicationOutputs() != null) {
+            logger.debug("Saving ApplicationOutputs to unified OUTPUT_DATA table");
+            for (var output : applicationInterfaceDescription.getApplicationOutputs()) {
+                var outputEntity =
+                        outputDataObjectTypeMapper.toApplicationOutputEntity(output, applicationInterfaceId);
+                outputDataRepository.save(outputEntity);
+            }
+        }
+
+        return savedEntity;
     }
 
     private String saveApplicationModuleData(ApplicationModule applicationModule, String gatewayId)

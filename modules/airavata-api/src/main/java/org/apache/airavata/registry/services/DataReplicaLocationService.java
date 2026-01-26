@@ -20,13 +20,16 @@
 package org.apache.airavata.registry.services;
 
 import jakarta.persistence.EntityManager;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
+import org.apache.airavata.common.model.MetadataParentType;
+import org.apache.airavata.registry.entities.MetadataEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.exception.ReplicaCatalogException;
 import org.apache.airavata.registry.mappers.DataReplicaLocationMapper;
+import org.apache.airavata.registry.repositories.MetadataRepository;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.springframework.stereotype.Service;
@@ -37,16 +40,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataReplicaLocationService {
     private final DataReplicaLocationRepository dataReplicaLocationRepository;
     private final DataProductRepository dataProductRepository;
+    private final MetadataRepository metadataRepository;
     private final EntityManager entityManager;
     private final DataReplicaLocationMapper dataReplicaLocationMapper;
 
     public DataReplicaLocationService(
             DataReplicaLocationRepository dataReplicaLocationRepository,
             DataProductRepository dataProductRepository,
+            MetadataRepository metadataRepository,
             EntityManager entityManager,
             DataReplicaLocationMapper dataReplicaLocationMapper) {
         this.dataReplicaLocationRepository = dataReplicaLocationRepository;
         this.dataProductRepository = dataProductRepository;
+        this.metadataRepository = metadataRepository;
         this.entityManager = entityManager;
         this.dataReplicaLocationMapper = dataReplicaLocationMapper;
     }
@@ -71,6 +77,10 @@ public class DataReplicaLocationService {
             entity.setDataProduct(dataProduct);
         }
         DataReplicaLocationEntity saved = dataReplicaLocationRepository.save(entity);
+
+        // Save metadata to MetadataRepository if present
+        saveReplicaMetadata(saved.getReplicaId(), replicaLocationModel.getReplicaMetadata());
+
         return saved.getReplicaId();
     }
 
@@ -100,9 +110,10 @@ public class DataReplicaLocationService {
             model.setValidUntilTime(e.getValidUntilTime().getTime());
         }
 
-        // Copy metadata to a regular HashMap
-        if (e.getReplicaMetadata() != null && !e.getReplicaMetadata().isEmpty()) {
-            model.setReplicaMetadata(new HashMap<>(e.getReplicaMetadata()));
+        // Load metadata from MetadataRepository
+        Map<String, String> metadata = metadataRepository.getDataReplicaMetadataMap(replicaId);
+        if (metadata != null && !metadata.isEmpty()) {
+            model.setReplicaMetadata(metadata);
         }
 
         return model;
@@ -133,9 +144,10 @@ public class DataReplicaLocationService {
                 model.setValidUntilTime(e.getValidUntilTime().getTime());
             }
 
-            // Copy metadata to a regular HashMap
-            if (e.getReplicaMetadata() != null && !e.getReplicaMetadata().isEmpty()) {
-                model.setReplicaMetadata(new HashMap<>(e.getReplicaMetadata()));
+            // Load metadata from MetadataRepository
+            Map<String, String> metadata = metadataRepository.getDataReplicaMetadataMap(e.getReplicaId());
+            if (metadata != null && !metadata.isEmpty()) {
+                model.setReplicaMetadata(metadata);
             }
 
             result.add(model);
@@ -156,10 +168,41 @@ public class DataReplicaLocationService {
             entity.setDataProduct(dataProduct);
         }
         dataReplicaLocationRepository.save(entity);
+
+        // Update metadata in MetadataRepository
+        saveReplicaMetadata(replicaLocationModel.getReplicaId(), replicaLocationModel.getReplicaMetadata());
+
         return true;
     }
 
     public void removeReplicaLocation(String replicaId) throws ReplicaCatalogException {
+        // Delete metadata first
+        metadataRepository.deleteByDataReplicaId(replicaId);
         dataReplicaLocationRepository.deleteById(replicaId);
+    }
+
+    /**
+     * Saves replica metadata to the MetadataRepository.
+     * Deletes existing metadata and saves new metadata entries.
+     *
+     * @param replicaId the replica ID
+     * @param metadata the metadata map to save (can be null or empty)
+     */
+    private void saveReplicaMetadata(String replicaId, Map<String, String> metadata) {
+        if (replicaId == null) {
+            return;
+        }
+
+        // Delete existing metadata for this replica
+        metadataRepository.deleteByDataReplicaId(replicaId);
+
+        // Save new metadata entries if present
+        if (metadata != null && !metadata.isEmpty()) {
+            for (Map.Entry<String, String> entry : metadata.entrySet()) {
+                MetadataEntity metadataEntity = new MetadataEntity(
+                        MetadataParentType.DATA_REPLICA, replicaId, entry.getKey(), entry.getValue());
+                metadataRepository.save(metadataEntity);
+            }
+        }
     }
 }

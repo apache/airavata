@@ -28,6 +28,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
+/**
+ * Represents a connection between parser inputs and outputs in a connector.
+ * Uses unified {@link ParserIOEntity} for both input and output references.
+ */
 @Entity
 @Table(name = "PARSER_CONNECTOR_INPUT")
 public class ParserConnectorInputEntity implements Serializable {
@@ -49,13 +53,19 @@ public class ParserConnectorInputEntity implements Serializable {
     @Column(name = "PARSER_CONNECTOR_ID", nullable = false, insertable = false, updatable = false)
     private String parserConnectorId;
 
-    @ManyToOne(targetEntity = ParserInputEntity.class, cascade = CascadeType.MERGE)
+    /**
+     * Reference to the parser I/O entry for the input (should be INPUT direction).
+     */
+    @ManyToOne(targetEntity = ParserIOEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "PARSER_INPUT_ID")
-    private ParserInputEntity input;
+    private ParserIOEntity input;
 
-    @ManyToOne(targetEntity = ParserOutputEntity.class, cascade = CascadeType.MERGE)
+    /**
+     * Reference to the parser I/O entry for the output (should be OUTPUT direction).
+     */
+    @ManyToOne(targetEntity = ParserIOEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "PARSER_OUTPUT_ID")
-    private ParserOutputEntity output;
+    private ParserIOEntity output;
 
     @ManyToOne(targetEntity = ParserConnectorEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "PARSER_CONNECTOR_ID")
@@ -101,19 +111,19 @@ public class ParserConnectorInputEntity implements Serializable {
         this.parserConnectorId = parserConnectorId;
     }
 
-    public ParserInputEntity getInput() {
+    public ParserIOEntity getInput() {
         return input;
     }
 
-    public void setInput(ParserInputEntity input) {
+    public void setInput(ParserIOEntity input) {
         this.input = input;
     }
 
-    public ParserOutputEntity getOutput() {
+    public ParserIOEntity getOutput() {
         return output;
     }
 
-    public void setOutput(ParserOutputEntity output) {
+    public void setOutput(ParserIOEntity output) {
         this.output = output;
     }
 

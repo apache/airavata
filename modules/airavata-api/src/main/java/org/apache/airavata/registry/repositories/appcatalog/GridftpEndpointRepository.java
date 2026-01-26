@@ -27,11 +27,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Repository for GridFTP endpoint entities.
+ */
 @Repository
 public interface GridftpEndpointRepository extends JpaRepository<GridftpEndpointEntity, GridftpEndpointPK> {
 
-    @Query(
-            "SELECT gfe FROM GridftpEndpointEntity gfe WHERE gfe.gridftpDataMovement.dataMovementInterfaceId LIKE :dataMovementInterfaceId")
+    /**
+     * Find all endpoints for a specific data movement interface.
+     */
+    @Query("SELECT e FROM GridftpEndpointEntity e WHERE e.dataMovementInterfaceId = :dataMovementInterfaceId")
     List<GridftpEndpointEntity> findByDataMovementInterfaceId(
             @Param("dataMovementInterfaceId") String dataMovementInterfaceId);
+
+    /**
+     * Delete all endpoints for a specific data movement interface.
+     */
+    void deleteByDataMovementInterfaceId(String dataMovementInterfaceId);
 }

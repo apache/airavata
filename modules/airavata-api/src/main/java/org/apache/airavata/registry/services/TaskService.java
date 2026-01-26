@@ -69,7 +69,8 @@ public class TaskService {
         if (taskEntity.getTaskStatuses() != null) {
             logger.debug("Populating the Primary Key of TaskStatus objects for the Task");
             taskEntity.getTaskStatuses().forEach(taskStatusEntity -> {
-                taskStatusEntity.setTaskId(taskId);
+                taskStatusEntity.setParentId(taskId);
+                taskStatusEntity.setParentType(org.apache.airavata.common.model.StatusParentType.TASK);
                 taskStatusEntity.setTimeOfStateChange(AiravataUtils.getUniqueTimestamp());
             });
         }
@@ -77,7 +78,8 @@ public class TaskService {
         if (taskEntity.getTaskErrors() != null) {
             logger.debug("Populating the Primary Key of TaskError objects for the Task");
             taskEntity.getTaskErrors().forEach(taskErrorEntity -> {
-                taskErrorEntity.setTaskId(taskId);
+                taskErrorEntity.setParentId(taskId);
+                taskErrorEntity.setParentType(org.apache.airavata.common.model.ErrorParentType.TASK);
                 taskErrorEntity.setCreationTime(AiravataUtils.getUniqueTimestamp());
             });
         }

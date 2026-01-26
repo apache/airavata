@@ -47,10 +47,9 @@ import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
-import org.apache.airavata.registry.services.JobStatusService;
 import org.apache.airavata.registry.services.ProcessService;
-import org.apache.airavata.registry.services.ProcessStatusService;
 import org.apache.airavata.registry.services.ProjectService;
+import org.apache.airavata.registry.services.StatusService;
 import org.apache.airavata.registry.services.TaskService;
 
 /**
@@ -142,7 +141,7 @@ public class StateMachineTestUtils {
      * Verifies that a job has transitioned through the expected states in order.
      */
     public static void verifyJobStateTransition(
-            JobService jobService, JobStatusService jobStatusService, JobPK jobPK, List<JobState> expectedStates)
+            JobService jobService, StatusService statusService, JobPK jobPK, List<JobState> expectedStates)
             throws RegistryException {
         JobModel job = jobService.getJob(jobPK);
         assertNotNull(job, "Job should exist");
@@ -154,7 +153,7 @@ public class StateMachineTestUtils {
                 "Job should have at least " + expectedStates.size() + " status entries");
 
         // Verify latest status matches last expected state
-        JobStatus latestStatus = jobStatusService.getJobStatus(jobPK);
+        JobStatus latestStatus = statusService.getLatestJobStatus(jobPK.getJobId());
         assertNotNull(latestStatus, "Latest status should exist");
         assertEquals(
                 expectedStates.get(expectedStates.size() - 1),
@@ -173,7 +172,7 @@ public class StateMachineTestUtils {
      */
     public static void verifyProcessStateTransition(
             ProcessService processService,
-            ProcessStatusService processStatusService,
+            StatusService statusService,
             String processId,
             List<ProcessState> expectedStates)
             throws RegistryException {
@@ -187,7 +186,7 @@ public class StateMachineTestUtils {
                 "Process should have at least " + expectedStates.size() + " status entries");
 
         // Verify latest status matches last expected state
-        ProcessStatus latestStatus = processStatusService.getProcessStatus(processId);
+        ProcessStatus latestStatus = statusService.getLatestProcessStatus(processId);
         assertNotNull(latestStatus, "Latest status should exist");
         assertEquals(
                 expectedStates.get(expectedStates.size() - 1),
@@ -277,12 +276,12 @@ public class StateMachineTestUtils {
      * Waits for a job to reach a specific state.
      */
     public static void waitForJobState(
-            JobStatusService jobStatusService, JobPK jobPK, JobState expectedState, long timeoutMs)
+            StatusService statusService, JobPK jobPK, JobState expectedState, long timeoutMs)
             throws RegistryException, InterruptedException {
         waitForCondition(
                 () -> {
                     try {
-                        JobStatus status = jobStatusService.getJobStatus(jobPK);
+                        JobStatus status = statusService.getLatestJobStatus(jobPK.getJobId());
                         return status != null && status.getJobState() == expectedState;
                     } catch (RegistryException e) {
                         return false;
@@ -296,12 +295,12 @@ public class StateMachineTestUtils {
      * Waits for a process to reach a specific state.
      */
     public static void waitForProcessState(
-            ProcessStatusService processStatusService, String processId, ProcessState expectedState, long timeoutMs)
+            StatusService statusService, String processId, ProcessState expectedState, long timeoutMs)
             throws RegistryException, InterruptedException {
         waitForCondition(
                 () -> {
                     try {
-                        ProcessStatus status = processStatusService.getProcessStatus(processId);
+                        ProcessStatus status = statusService.getLatestProcessStatus(processId);
                         return status != null && status.getState() == expectedState;
                     } catch (RegistryException e) {
                         return false;
@@ -434,7 +433,7 @@ public class StateMachineTestUtils {
      */
     public static void verifyExperimentStateTransition(
             ExperimentService experimentService,
-            org.apache.airavata.registry.services.ExperimentStatusService experimentStatusService,
+            StatusService statusService,
             String experimentId,
             List<ExperimentState> expectedStates)
             throws RegistryException {
@@ -448,7 +447,7 @@ public class StateMachineTestUtils {
                 "Experiment should have at least " + expectedStates.size() + " status entries");
 
         // Verify latest status matches last expected state
-        ExperimentStatus latestStatus = experimentStatusService.getExperimentStatus(experimentId);
+        ExperimentStatus latestStatus = statusService.getLatestExperimentStatus(experimentId);
         assertNotNull(latestStatus, "Latest status should exist");
         assertEquals(
                 expectedStates.get(expectedStates.size() - 1),
@@ -467,7 +466,7 @@ public class StateMachineTestUtils {
      */
     public static void verifyTaskStateTransition(
             TaskService taskService,
-            org.apache.airavata.registry.services.TaskStatusService taskStatusService,
+            StatusService statusService,
             String taskId,
             List<org.apache.airavata.common.model.TaskState> expectedStates)
             throws RegistryException {
@@ -481,7 +480,7 @@ public class StateMachineTestUtils {
                 "Task should have at least " + expectedStates.size() + " status entries");
 
         // Verify latest status matches last expected state
-        var latestStatus = taskStatusService.getTaskStatus(taskId);
+        var latestStatus = statusService.getLatestTaskStatus(taskId);
         assertNotNull(latestStatus, "Latest status should exist");
         assertEquals(
                 expectedStates.get(expectedStates.size() - 1),

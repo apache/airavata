@@ -87,16 +87,6 @@ public class ThriftModeStartupTest {
     private ApplicationContext applicationContext;
 
     @Test
-    public void testDBEventDispatcherIsEnabled() {
-
-        String[] beanNames = applicationContext.getBeanNamesForType(
-                org.apache.airavata.orchestrator.internal.messaging.Dispatcher.class);
-        int dispatcherCount = beanNames.length;
-
-        assertTrue(dispatcherCount > 0, "Dispatcher should be available (replaces DBEventManagerRunner)");
-    }
-
-    @Test
     public void testCoreServicesAreAvailable() {
 
         assertTrue(

@@ -28,10 +28,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
- * The persistent class for the gridftp_endpoint database table.
+ * Entity representing a GridFTP endpoint associated with GridFTP data movement.
  */
 @Entity
 @Table(name = "GRIDFTP_ENDPOINT")
@@ -40,35 +41,19 @@ public class GridftpEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
-    private String dataMovementInterfaceId;
-
-    @Id
     @Column(name = "ENDPOINT", nullable = false)
     private String endpoint;
 
-    @Column(name = "CREATION_TIME", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp creationTime;
+    @Id
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", nullable = false)
+    private String dataMovementInterfaceId;
 
-    @Column(
-            name = "UPDATE_TIME",
-            nullable = false,
-            columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    private Timestamp updateTime;
-
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = GridftpDataMovementEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "DATA_MOVEMENT_INTERFACE_ID", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private GridftpDataMovementEntity gridftpDataMovement;
 
     public GridftpEndpointEntity() {}
-
-    public String getDataMovementInterfaceId() {
-        return dataMovementInterfaceId;
-    }
-
-    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
-        this.dataMovementInterfaceId = dataMovementInterfaceId;
-    }
 
     public String getEndpoint() {
         return endpoint;
@@ -78,27 +63,19 @@ public class GridftpEndpointEntity implements Serializable {
         this.endpoint = endpoint;
     }
 
+    public String getDataMovementInterfaceId() {
+        return dataMovementInterfaceId;
+    }
+
+    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+        this.dataMovementInterfaceId = dataMovementInterfaceId;
+    }
+
     public GridftpDataMovementEntity getGridftpDataMovement() {
         return gridftpDataMovement;
     }
 
     public void setGridftpDataMovement(GridftpDataMovementEntity gridftpDataMovement) {
         this.gridftpDataMovement = gridftpDataMovement;
-    }
-
-    public Timestamp getCreationTime() {
-        return creationTime;
-    }
-
-    public void setCreationTime(Timestamp creationTime) {
-        this.creationTime = creationTime;
-    }
-
-    public Timestamp getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
     }
 }
