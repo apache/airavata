@@ -231,12 +231,22 @@ public class ApplicationDeploymentService implements ApplicationDeployment {
             ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId)
             throws AppCatalogException {
 
-        if (applicationDeploymentDescription.getAppDeploymentId().trim().isEmpty()
-                || applicationDeploymentDescription.getAppDeploymentId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
+        String existingDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
+        if (existingDeploymentId == null 
+                || existingDeploymentId.trim().isEmpty()
+                || existingDeploymentId.equals(AiravataCommonsConstants.DEFAULT_ID)) {
+            // Auto-generate deployment ID from compute resource hostname and module ID
             ComputeResourceDescription computeResourceDescription =
                     computeResourceService.getComputeResource(applicationDeploymentDescription.getComputeHostId());
+            if (computeResourceDescription == null) {
+                throw new AppCatalogException("Compute resource not found: " + applicationDeploymentDescription.getComputeHostId());
+            }
+            String hostName = computeResourceDescription.getHostName();
+            if (hostName == null || hostName.trim().isEmpty()) {
+                hostName = applicationDeploymentDescription.getComputeHostId();
+            }
             applicationDeploymentDescription.setAppDeploymentId(
-                    computeResourceDescription.getHostName() + "_" + applicationDeploymentDescription.getAppModuleId());
+                    hostName + "_" + applicationDeploymentDescription.getAppModuleId());
         }
 
         String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();

@@ -20,10 +20,8 @@
 package org.apache.airavata.research.service.enums;
 
 public enum ResourceTypeEnum {
-    NOTEBOOK("NOTEBOOK"),
     DATASET("DATASET"),
-    REPOSITORY("REPOSITORY"),
-    MODEL("MODEL");
+    REPOSITORY("REPOSITORY");
 
     private String str;
 

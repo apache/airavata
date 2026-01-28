@@ -174,6 +174,14 @@ public class ResourcePreferenceEntity implements Serializable {
             columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp updateTime;
 
+    /**
+     * When true, this preference is enforced and cannot be overridden by lower-priority levels.
+     * For example, a GATEWAY-level preference with enforced=true cannot be overridden by GROUP or USER levels.
+     * A GROUP-level preference with enforced=true cannot be overridden by USER level.
+     */
+    @Column(name = "ENFORCED", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean enforced = false;
+
     public ResourcePreferenceEntity() {}
 
     // ========== Getters and Setters ==========
@@ -248,6 +256,14 @@ public class ResourcePreferenceEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public boolean isEnforced() {
+        return enforced;
+    }
+
+    public void setEnforced(boolean enforced) {
+        this.enforced = enforced;
     }
 
     // ========== Lifecycle Callbacks ==========

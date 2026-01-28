@@ -46,6 +46,21 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // Skip authentication for health endpoint
+        if (path.equals("/api/v1/health")) {
+            return true;
+        }
+
+        // Skip authentication for public catalog endpoints
+        if (path.startsWith("/api/v1/rf/resources/public")) {
+            return true;
+        }
+
+        // Skip authentication for catalog search (public)
+        if (path.equals("/api/v1/rf/resources/search")) {
+            return true;
+        }
+
         // Require authentication for all other /api/v1 endpoints
         if (path.startsWith("/api/v1")) {
             try {

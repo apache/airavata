@@ -23,6 +23,8 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -43,6 +45,10 @@ import org.apache.airavata.registry.entities.OutputDataEntity;
 @Table(name = "APPLICATION_INTERFACE")
 public class ApplicationInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    public enum ResourceScope {
+        USER, GATEWAY
+    }
 
     @Id
     @Column(name = "INTERFACE_ID", nullable = false)
@@ -66,6 +72,16 @@ public class ApplicationInterfaceEntity implements Serializable {
 
     @Column(name = "GATEWAY_ID", nullable = false, updatable = false)
     private String gatewayId;
+
+    @Column(name = "RESOURCE_SCOPE")
+    @Enumerated(EnumType.STRING)
+    private ResourceScope scope = ResourceScope.GATEWAY;
+
+    @Column(name = "OWNER_ID")
+    private String ownerId;
+
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    private String groupResourceProfileId;
 
     @Column(
             name = "UPDATE_TIME",
@@ -160,6 +176,30 @@ public class ApplicationInterfaceEntity implements Serializable {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public ResourceScope getScope() {
+        return scope;
+    }
+
+    public void setScope(ResourceScope scope) {
+        this.scope = scope;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
     }
 
     public Timestamp getUpdateTime() {

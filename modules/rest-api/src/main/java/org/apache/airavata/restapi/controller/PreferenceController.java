@@ -94,11 +94,18 @@ public class PreferenceController {
             @PathVariable PreferenceResourceType resourceType,
             @PathVariable String resourceId,
             @RequestParam PreferenceLevel level,
-            @RequestParam String ownerId) {
+            @RequestParam String ownerId,
+            @RequestParam(required = false, defaultValue = "false") boolean detailed) {
         try {
-            Map<String, String> prefs = preferenceResolutionService.getPreferencesAtLevel(
-                    resourceType, resourceId, ownerId, level);
-            return ResponseEntity.ok(prefs);
+            if (detailed) {
+                var prefs = preferenceResolutionService.getPreferencesAtLevelDetailed(
+                        resourceType, resourceId, ownerId, level);
+                return ResponseEntity.ok(prefs);
+            } else {
+                Map<String, String> prefs = preferenceResolutionService.getPreferencesAtLevel(
+                        resourceType, resourceId, ownerId, level);
+                return ResponseEntity.ok(prefs);
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
@@ -107,9 +114,10 @@ public class PreferenceController {
 
     /**
      * Set a preference at a specific level.
+     * If enforced is true, this preference cannot be overridden by lower-level preferences.
      */
     @PostMapping
-    @Operation(summary = "Set a preference at a specific level")
+    @Operation(summary = "Set a preference at a specific level with optional enforcement")
     public ResponseEntity<?> setPreference(@RequestBody SetPreferenceRequest request) {
         try {
             preferenceResolutionService.setPreference(
@@ -118,7 +126,8 @@ public class PreferenceController {
                     request.ownerId(),
                     request.level(),
                     request.key(),
-                    request.value());
+                    request.value(),
+                    request.enforced() != null ? request.enforced() : false);
             return ResponseEntity.ok(Map.of("success", true));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -172,5 +181,6 @@ public class PreferenceController {
             String ownerId,
             PreferenceLevel level,
             String key,
-            String value) {}
+            String value,
+            Boolean enforced) {}
 }

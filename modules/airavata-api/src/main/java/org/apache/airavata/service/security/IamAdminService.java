@@ -22,6 +22,7 @@ package org.apache.airavata.service.security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
@@ -174,10 +175,39 @@ public class IamAdminService {
     @Transactional
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
-        var keycloakclient = createKeycloakClient();
-        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            if (keycloakclient.enableUserAccount(authzToken.getAccessToken(), gatewayId, username)) {
+            // Use admin token to access Keycloak admin API
+            var client = createKeycloakRestClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            
+            // Try to get admin token - first try with gateway resource profile credentials,
+            // then fall back to super admin credentials
+            String adminToken;
+            try {
+                var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                // Try using the gateway's realm first (if admin-cli exists there)
+                try {
+                    adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                } catch (Exception e) {
+                    // If that fails, try master realm
+                    logger.debug("Failed to get admin token from gateway realm, trying master realm: {}", e.getMessage());
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                }
+            } catch (Exception e) {
+                // Fall back to super admin credentials
+                logger.debug("Failed to get tenant admin credentials, using super admin: {}", e.getMessage());
+                var superAdminCredentials = getSuperAdminPasswordCredential();
+                adminToken = client.obtainAdminToken("master", superAdminCredentials);
+            }
+            
+            // Search for user by username (exact match)
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, Boolean.TRUE, adminToken);
+            if (users != null && !users.isEmpty()) {
+                var userRepresentation = users.get(0);
+                userRepresentation.setEnabled(true);
+                userRepresentation.setEmailVerified(true);
+                client.updateUser(gatewayId, userRepresentation.getId(), userRepresentation, adminToken);
+                
                 // Check if user profile exists, if not create it
                 var lowerUsername = username.toLowerCase();
                 var userProfileExists = userRepository
@@ -185,7 +215,7 @@ public class IamAdminService {
                         .isPresent();
                 if (!userProfileExists) {
                     // Load basic user profile information from Keycloak and then save in UserRepository
-                    var userProfile = keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
+                    var userProfile = convertUserRepresentationToUserProfile(userRepresentation, gatewayId);
                     userProfile.setUserId(lowerUsername);
                     userProfile.setAiravataInternalUserId(lowerUsername + "@" + gatewayId);
                     userProfile.setCreationTime(
@@ -199,10 +229,59 @@ public class IamAdminService {
                 }
                 return true;
             } else {
+                logger.error("User not found: {}", username);
                 return false;
             }
         } catch (IamAdminServicesException ex) {
             throw ex;
+        } catch (Exception ex) {
+            throw new IamAdminServicesException("Error enabling user: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Transactional
+    public boolean disableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
+        if (!isIamConfigured()) return true;
+        try {
+            // Use admin token to access Keycloak admin API
+            var client = createKeycloakRestClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            
+            // Try to get admin token - first try with gateway resource profile credentials,
+            // then fall back to super admin credentials
+            String adminToken;
+            try {
+                var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                // Try using the gateway's realm first (if admin-cli exists there)
+                try {
+                    adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                } catch (Exception e) {
+                    // If that fails, try master realm
+                    logger.debug("Failed to get admin token from gateway realm, trying master realm: {}", e.getMessage());
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                }
+            } catch (Exception e) {
+                // Fall back to super admin credentials
+                logger.debug("Failed to get tenant admin credentials, using super admin: {}", e.getMessage());
+                var superAdminCredentials = getSuperAdminPasswordCredential();
+                adminToken = client.obtainAdminToken("master", superAdminCredentials);
+            }
+            
+            // Search for user by username (exact match)
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, Boolean.TRUE, adminToken);
+            if (users != null && !users.isEmpty()) {
+                var userRepresentation = users.get(0);
+                userRepresentation.setEnabled(false);
+                client.updateUser(gatewayId, userRepresentation.getId(), userRepresentation, adminToken);
+                return true;
+            } else {
+                logger.error("User not found: {}", username);
+                return false;
+            }
+        } catch (IamAdminServicesException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new IamAdminServicesException("Error disabling user: " + ex.getMessage(), ex);
         }
     }
 
@@ -241,11 +320,43 @@ public class IamAdminService {
             up.setGatewayId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
             return up;
         }
-        var keycloakclient = createKeycloakClient();
-        var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
-            return keycloakclient.getUser(authzToken.getAccessToken(), gatewayId, username);
+            // Use admin token to access Keycloak admin API
+            var client = createKeycloakRestClient();
+            var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            
+            // Try to get admin token - first try with gateway resource profile credentials,
+            // then fall back to super admin credentials
+            String adminToken;
+            try {
+                var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                // Try using the gateway's realm first (if admin-cli exists there)
+                try {
+                    adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                } catch (Exception e) {
+                    // If that fails, try master realm
+                    logger.debug("Failed to get admin token from gateway realm, trying master realm: {}", e.getMessage());
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                }
+            } catch (Exception e) {
+                // Fall back to super admin credentials
+                logger.debug("Failed to get tenant admin credentials, using super admin: {}", e.getMessage());
+                var superAdminCredentials = getSuperAdminPasswordCredential();
+                adminToken = client.obtainAdminToken("master", superAdminCredentials);
+            }
+            
+            // Search for user by username (exact match)
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, Boolean.TRUE, adminToken);
+            if (users != null && !users.isEmpty()) {
+                return convertUserRepresentationToUserProfile(users.get(0), gatewayId);
+            }
+            return null;
         } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while retrieving user=%s profile from IAM backend: %s", username, ex.getMessage());
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg, ex);
+        } catch (Exception ex) {
             String msg = String.format(
                     "Error while retrieving user=%s profile from IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
@@ -256,7 +367,6 @@ public class IamAdminService {
     public List<UserProfile> getUsers(AuthzToken authzToken, int offset, int limit, String search)
             throws IamAdminServicesException {
         if (!isIamConfigured()) return java.util.Collections.emptyList();
-        var keycloakclient = createKeycloakClient();
         var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         
         // Check if gatewayId is null or empty - this indicates IAM isn't properly configured for this gateway
@@ -269,8 +379,78 @@ public class IamAdminService {
         }
         
         try {
-            return keycloakclient.getUsers(authzToken.getAccessToken(), gatewayId, offset, limit, search);
+            // Use admin token to access Keycloak admin API (required for listing users)
+            var client = createKeycloakRestClient();
+            
+            // Get admin token - try multiple methods with fallbacks
+            String adminToken = null;
+            Exception lastException = null;
+            
+            // Method 1: Try using gateway realm with tenant admin credentials
+            try {
+                var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                logger.debug("Successfully obtained admin token from gateway realm");
+            } catch (Exception e) {
+                logger.debug("Failed to get admin token from gateway realm: {}", e.getMessage());
+                lastException = e;
+            }
+            
+            // Method 2: If that failed, try master realm with tenant admin credentials
+            if (adminToken == null) {
+                try {
+                    var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                    logger.debug("Successfully obtained admin token from master realm with tenant credentials");
+                } catch (Exception e) {
+                    logger.debug("Failed to get admin token from master realm with tenant credentials: {}", e.getMessage());
+                    lastException = e;
+                }
+            }
+            
+            // Method 3: Fall back to super admin credentials with master realm
+            if (adminToken == null) {
+                try {
+                    var superAdminCredentials = getSuperAdminPasswordCredential();
+                    adminToken = client.obtainAdminToken("master", superAdminCredentials);
+                    logger.debug("Successfully obtained admin token from master realm with super admin credentials");
+                } catch (Exception e) {
+                    logger.debug("Failed to get admin token from master realm with super admin credentials: {}", e.getMessage());
+                    lastException = e;
+                }
+            }
+            
+            // Method 4: Last resort - use hardcoded Keycloak admin credentials (for dev/test)
+            if (adminToken == null) {
+                try {
+                    var keycloakAdminCreds = new PasswordCredential();
+                    keycloakAdminCreds.setLoginUserName("admin");
+                    keycloakAdminCreds.setPassword("admin");
+                    adminToken = client.obtainAdminToken("master", keycloakAdminCreds);
+                    logger.debug("Successfully obtained admin token using Keycloak admin credentials");
+                } catch (Exception e) {
+                    logger.error("Failed to get admin token using Keycloak admin credentials: {}", e.getMessage());
+                    lastException = e;
+                }
+            }
+            
+            if (adminToken == null) {
+                throw new IamAdminServicesException("Failed to obtain admin token after trying all methods: " + 
+                    (lastException != null ? lastException.getMessage() : "Unknown error"));
+            }
+            
+            // Use KeycloakRestClient.searchUsers with admin token
+            var userRepresentationList = client.searchUsers(gatewayId, search, null, null, null, offset, limit, adminToken);
+            
+            // Convert UserRepresentation to UserProfile
+            return userRepresentationList.stream()
+                    .map(ur -> convertUserRepresentationToUserProfile(ur, gatewayId))
+                    .collect(Collectors.toList());
         } catch (IamAdminServicesException ex) {
+            String msg = String.format("Error while retrieving users from IAM backend: %s", ex.getMessage());
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg, ex);
+        } catch (Exception ex) {
             String msg = String.format("Error while retrieving users from IAM backend: %s", ex.getMessage());
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg, ex);
@@ -314,12 +494,56 @@ public class IamAdminService {
             return;
         }
         try {
-            var keycloakclient = createKeycloakClient();
-            keycloakclient.setProperties(properties);
-            var username = userDetails.getUserId();
+            // Use admin token to access Keycloak admin API
+            var client = createKeycloakRestClient();
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            keycloakclient.updateUserProfile(authzToken.getAccessToken(), gatewayId, username, userDetails);
+            
+            // Try to get admin token - first try with gateway resource profile credentials,
+            // then fall back to super admin credentials
+            String adminToken;
+            try {
+                var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                // Try using the gateway's realm first (if admin-cli exists there)
+                try {
+                    adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                } catch (Exception e) {
+                    // If that fails, try master realm
+                    logger.debug("Failed to get admin token from gateway realm, trying master realm: {}", e.getMessage());
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                }
+            } catch (Exception e) {
+                // Fall back to super admin credentials
+                logger.debug("Failed to get tenant admin credentials, using super admin: {}", e.getMessage());
+                var superAdminCredentials = getSuperAdminPasswordCredential();
+                adminToken = client.obtainAdminToken("master", superAdminCredentials);
+            }
+            
+            var username = userDetails.getUserId();
+            // Search for user by username (exact match)
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, Boolean.TRUE, adminToken);
+            if (users != null && !users.isEmpty()) {
+                var userRepresentation = users.get(0);
+                // Update user fields
+                if (userDetails.getFirstName() != null) {
+                    userRepresentation.setFirstName(userDetails.getFirstName());
+                }
+                if (userDetails.getLastName() != null) {
+                    userRepresentation.setLastName(userDetails.getLastName());
+                }
+                if (userDetails.getEmails() != null && !userDetails.getEmails().isEmpty()) {
+                    userRepresentation.setEmail(userDetails.getEmails().get(0));
+                }
+                client.updateUser(gatewayId, userRepresentation.getId(), userRepresentation, adminToken);
+            } else {
+                throw new IamAdminServicesException("User not found: " + username);
+            }
         } catch (IamAdminServicesException ex) {
+            String msg = String.format(
+                    "Error while updating user=%s profile in IAM backend: %s",
+                    userDetails.getUserId(), ex.getMessage());
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg, ex);
+        } catch (Exception ex) {
             String msg = String.format(
                     "Error while updating user=%s profile in IAM backend: %s",
                     userDetails.getUserId(), ex.getMessage());
@@ -329,14 +553,50 @@ public class IamAdminService {
     }
 
     public boolean deleteUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
+        if (!isIamConfigured()) return true;
         try {
-            var keycloakclient = createKeycloakClient();
+            // Use admin token to access Keycloak admin API
+            var client = createKeycloakRestClient();
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            return keycloakclient.deleteUser(authzToken.getAccessToken(), gatewayId, username);
+            
+            // Try to get admin token - first try with gateway resource profile credentials,
+            // then fall back to super admin credentials
+            String adminToken;
+            try {
+                var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                // Try using the gateway's realm first (if admin-cli exists there)
+                try {
+                    adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                } catch (Exception e) {
+                    // If that fails, try master realm
+                    logger.debug("Failed to get admin token from gateway realm, trying master realm: {}", e.getMessage());
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                }
+            } catch (Exception e) {
+                // Fall back to super admin credentials
+                logger.debug("Failed to get tenant admin credentials, using super admin: {}", e.getMessage());
+                var superAdminCredentials = getSuperAdminPasswordCredential();
+                adminToken = client.obtainAdminToken("master", superAdminCredentials);
+            }
+            
+            // Search for user by username (exact match)
+            var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, Boolean.TRUE, adminToken);
+            if (users != null && !users.isEmpty()) {
+                var userRepresentation = users.get(0);
+                client.deleteUser(gatewayId, userRepresentation.getId(), adminToken);
+                return true;
+            } else {
+                logger.error("User not found: {}", username);
+                return false;
+            }
         } catch (IamAdminServicesException ex) {
             String msg = String.format("Error while deleting user=%s in IAM backend: %s", username, ex.getMessage());
             logger.error(msg, ex);
             throw ex;
+        } catch (Exception ex) {
+            String msg = String.format("Error while deleting user=%s in IAM backend: %s", username, ex.getMessage());
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg, ex);
         }
     }
 
@@ -500,7 +760,17 @@ public class IamAdminService {
 
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId)
             throws IamAdminServicesException, RegistryException, CredentialStoreException {
-        var gwrp = registryService.getGatewayResourceProfile(tenantId);
-        return credentialStoreService.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+        try {
+            var gwrp = registryService.getGatewayResourceProfile(tenantId);
+            if (gwrp != null && gwrp.getIdentityServerPwdCredToken() != null) {
+                return credentialStoreService.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+            }
+        } catch (Exception e) {
+            logger.debug("Could not get admin credentials from gateway resource profile: {}", e.getMessage());
+        }
+        
+        // Fallback to super admin credentials from properties
+        logger.debug("Using super admin credentials from properties as fallback");
+        return getSuperAdminPasswordCredential();
     }
 }

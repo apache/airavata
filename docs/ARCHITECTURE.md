@@ -123,8 +123,99 @@ These services are accessible via the Thrift Server (port 8930) and are not sepa
 | **Orchestrator** | Constructs workflow DAGs, manages experiment lifecycle | `modules/airavata-api/.../service/orchestrator/` |
 | **Registry** | Manages metadata and application definitions | `modules/airavata-api/.../service/registry/` |
 | **Profile Service** | Manages users, tenants, compute resources | `modules/airavata-api/.../service/profile/` |
-| **Sharing Registry** | Handles permissions and sharing | `modules/airavata-api/.../service/sharing/` |
-| **Credential Store** | Secure storage of credentials | `modules/airavata-api/.../credential/` |
+| **Credential Services** | Credential storage and access control | `modules/airavata-api/.../credential/` |
+
+---
+
+## Credential-Centric Access Control
+
+Airavata uses a credential-centric architecture where credentials are the root of all compute resource access. This simplifies the access model and makes sharing more intuitive.
+
+### Core Model
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CREDENTIAL-CENTRIC MODEL                             │
+│                                                                              │
+│  ┌────────────────┐     ┌────────────────────────┐     ┌─────────────────┐  │
+│  │   Credential   │────▶│ CredentialComputeConfig│────▶│   Deployment    │  │
+│  │   (SSH Key)    │     │  (access settings)     │     │                 │  │
+│  └────────────────┘     └────────────────────────┘     └─────────────────┘  │
+│          │                         │                                         │
+│          │                         ▼                                         │
+│          │              ┌────────────────────────┐                          │
+│          │              │  CredentialQueueConfig │                          │
+│          │              │  (per-queue settings)  │                          │
+│          │              └────────────────────────┘                          │
+│          │                                                                   │
+│          ▼                                                                   │
+│  ┌────────────────┐     ┌────────────────────────┐     ┌─────────────────┐  │
+│  │CredentialGroup │────▶│ CredentialGroupMember  │     │   GroupPermission│ │
+│  │  (sharing)     │     │     (users)            │     │  (what's shared) │ │
+│  └────────────────┘     └────────────────────────┘     └─────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Entities
+
+| Entity | Purpose | Key Fields |
+|--------|---------|------------|
+| **CredentialComputeConfig** | Links credential to compute resource | `credentialToken`, `computeResourceId`, `loginUsername`, `scratchLocation` |
+| **CredentialQueueConfig** | Queue-specific settings | `queueName`, `allocationProjectNumber`, `maxNodeCount`, `defaultQueue` |
+| **CredentialQueueMacro** | Queue environment variables | `macroName`, `macroValue` |
+| **CredentialGroup** | Credential sharing group | `credentialToken`, `ownerId`, `members[]`, `permissions[]` |
+| **CredentialGroupMember** | User in a group | `userId`, `role` (OWNER/ADMIN/MEMBER/VIEWER) |
+| **CredentialGroupPermission** | Resource permission | `resourceType`, `resourceId`, `permissionLevel` (READ/USE/ADMIN) |
+
+### Application Deployment Model
+
+Deployments are bound to credential configs rather than directly to compute resources:
+
+```
+ApplicationDeployment {
+    applicationId      // What application to run
+    credentialConfigId // Which credential config provides access
+    executablePath     // How to run it
+    parallelism        // MPI, OpenMP, etc.
+}
+```
+
+This model ensures:
+- **Access inheritance**: Deployment inherits all access settings from the credential config
+- **Simple sharing**: Share via credential groups instead of complex ACLs
+- **Natural organization**: Users see deployments they have access to via their credentials
+
+### Access Resolution
+
+The `CredentialAccessService` handles access control:
+
+```java
+// Check if user can use a credential config
+credentialAccessService.hasConfigAccess(userId, configId, PermissionLevel.USE)
+
+// Get all configs a user can access
+credentialAccessService.getAccessibleConfigs(userId, gatewayId)
+
+// Get all deployments a user can access
+credentialAccessService.getAccessibleDeployments(userId, gatewayId)
+```
+
+Access is granted if:
+1. User owns the credential directly, OR
+2. User is a member of a credential group that has permission for the resource
+
+### REST API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/credential-configs` | GET | List credential configs |
+| `/api/v1/credential-configs` | POST | Create credential config |
+| `/api/v1/credential-configs/{id}` | GET/PUT/DELETE | Manage specific config |
+| `/api/v1/credential-groups` | GET | List groups user can access |
+| `/api/v1/credential-groups` | POST | Create sharing group |
+| `/api/v1/credential-groups/{id}/members` | GET/POST/DELETE | Manage group members |
+| `/api/v1/credential-groups/{id}/permissions` | GET/POST/DELETE | Manage permissions |
+| `/api/v1/application-deployments` | GET/POST | List/create deployments |
 
 ---
 
@@ -302,6 +393,130 @@ org.apache.airavata
     │   ├── post/                # Post workflow
     │   └── pre/                 # Pre workflow
     └── scheduling/               # Scheduling workflows
+```
+
+---
+
+---
+
+## Data Models
+
+### Credential-Based Resource Access Model
+
+Credentials in Airavata represent more than just authentication - they define an **access context** that determines what a user can do on a compute resource.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        CredentialEntity                         │
+│  (Authentication - SSH key, password, etc.)                     │
+│  - tokenId (unique identifier)                                  │
+│  - gatewayId                                                    │
+│  - credential (encrypted blob)                                  │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  CredentialComputeConfig                        │
+│  (Access Context - what this credential grants)                 │
+│  - configId                                                     │
+│  - credentialToken ──────────► Credential                       │
+│  - computeResourceId ────────► ComputeResource                  │
+│  - loginUsername                                                │
+│  - scratchLocation                                              │
+│  - allocationProjectNumber (default)                            │
+│  - jobSubmissionProtocol                                        │
+│  - dataMovementProtocol                                         │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  CredentialQueueConfig                          │
+│  (Queue-specific allocations and limits)                        │
+│  - queueName                                                    │
+│  - allocationProjectNumber (overrides default)                  │
+│  - maxNodeCount, maxCpuCount, maxWalltime                       │
+│  - defaultNodeCount, defaultCpuCount, defaultWalltime           │
+│  - qos (Quality of Service)                                     │
+│  - isDefaultQueue                                               │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  CredentialQueueMacro                           │
+│  (Queue-specific environment/macros)                            │
+│  - macroName                                                    │
+│  - macroValue                                                   │
+│  - description                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Key Insight:** On systems like SLURM clusters, a credential (SSH key pair) doesn't grant access to the entire cluster. It grants access to **specific queues** with **specific allocations**. Different queues may have:
+- Different allocation/account numbers
+- Different resource limits (max nodes, walltime)
+- Different environment configurations (CUDA paths, module loads)
+
+Example: A research group might have:
+- SSH key for user "jdoe" on cluster "stampede3"
+- Access to "normal" queue with allocation "TG-CHE140073", max 128 nodes
+- Access to "gpu" queue with allocation "TG-BIO210045", max 16 nodes, with CUDA environment
+
+### Simplified Application Model
+
+Applications are defined with inputs/outputs directly attached, without the legacy module/interface indirection:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         Application                             │
+│  - applicationId                                                │
+│  - applicationName, version, description                        │
+│  - gatewayId                                                    │
+│  - inputs[] ─────────────► InputDataEntity                      │
+│  - outputs[] ────────────► OutputDataEntity                     │
+│  - archiveWorkingDirectory                                      │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    ApplicationDeployment                        │
+│  (How to run an app on a resource via a credential)             │
+│  - deploymentId                                                 │
+│  - applicationId ────────────► Application                      │
+│  - credentialConfigId ───────► CredentialComputeConfig          │
+│      └── provides: computeResourceId, queues, allocations       │
+│  - executablePath                                               │
+│  - parallelism                                                  │
+│  - defaultQueueName                                             │
+│  - commands[], environment[], libraryPaths[]                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Deployment Resolution:** When a deployment specifies a `credentialConfigId`:
+1. The **compute resource** is derived from the credential config
+2. Available **queues** are determined by the credential's queue configs
+3. **Allocations and limits** are looked up per queue
+4. **Environment macros** are injected into the job
+
+### Entity Relationships Summary
+
+```
+Gateway
+├── Users[]
+├── Groups[]
+├── Credentials[] ─────────────► CredentialComputeConfig[]
+│                                 └── CredentialQueueConfig[]
+│                                      └── CredentialQueueMacro[]
+├── Applications[]
+│   ├── Inputs[]
+│   └── Outputs[]
+├── ApplicationDeployments[]
+│   ├── → Application
+│   └── → CredentialComputeConfig
+├── Projects[]
+│   └── Experiments[]
+│       └── Processes[]
+│           └── Tasks[]
+└── ComputeResources[] (reference data)
+    └── BatchQueues[] (available queues on resource)
 ```
 
 ---

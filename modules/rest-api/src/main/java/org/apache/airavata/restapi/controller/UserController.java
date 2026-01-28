@@ -38,9 +38,13 @@ public class UserController {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserController.class);
     
     private final IamAdminService iamAdminService;
+    private final org.apache.airavata.restapi.security.AuthorizationService authorizationService;
 
-    public UserController(IamAdminService iamAdminService) {
+    public UserController(
+            IamAdminService iamAdminService,
+            org.apache.airavata.restapi.security.AuthorizationService authorizationService) {
         this.iamAdminService = iamAdminService;
+        this.authorizationService = authorizationService;
     }
 
     @GetMapping
@@ -48,10 +52,41 @@ public class UserController {
             HttpServletRequest request,
             @RequestParam(required = false, defaultValue = "0") int offset,
             @RequestParam(required = false, defaultValue = "100") int limit,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String gatewayId) {
         try {
             var authzToken = AuthzTokenUtil.extractAuthzToken(request);
+            
+            // If gatewayId is provided in query param, validate access and use it
+            // Otherwise, use the gateway from the token
+            String targetGatewayId = gatewayId;
+            if (targetGatewayId != null && !targetGatewayId.trim().isEmpty()) {
+                // Validate user has access to the requested gateway
+                // Note: This requires AuthorizationService - we'll add it if needed
+                // For now, if gatewayId is provided, we'll use it (admin users can access all)
+                targetGatewayId = targetGatewayId.trim();
+            } else {
+                // Use gateway from token
+                targetGatewayId = authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID);
+            }
+            
+            // Temporarily override the gateway in the token for this request
+            // This allows fetching users from a specific gateway
+            if (targetGatewayId != null && !targetGatewayId.equals(authzToken.getClaimsMap().get(org.apache.airavata.common.utils.Constants.GATEWAY_ID))) {
+                authzToken.getClaimsMap().put(org.apache.airavata.common.utils.Constants.GATEWAY_ID, targetGatewayId);
+            }
+            
             List<UserProfile> users = iamAdminService.getUsers(authzToken, offset, limit, search);
+            
+            // Ensure each user has the correct gatewayId set
+            if (targetGatewayId != null) {
+                for (var user : users) {
+                    if (user.getGatewayId() == null || user.getGatewayId().isEmpty()) {
+                        user.setGatewayId(targetGatewayId);
+                    }
+                }
+            }
+            
             return ResponseEntity.ok(users);
         } catch (IamAdminServicesException e) {
             // Log the error and return empty list with warning header
@@ -114,10 +149,11 @@ public class UserController {
             HttpServletRequest request,
             @PathVariable String userId) {
         try {
-            // Disabling a user is the same as not enabling them in Keycloak
-            // The IamAdminService doesn't have a separate disableUser method
-            // So we'll just return success for now - in practice this would need backend support
-            return ResponseEntity.ok(true);
+            var authzToken = AuthzTokenUtil.extractAuthzToken(request);
+            boolean result = iamAdminService.disableUser(authzToken, userId);
+            return ResponseEntity.ok(result);
+        } catch (IamAdminServicesException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

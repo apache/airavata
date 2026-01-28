@@ -3966,10 +3966,21 @@ public class AiravataService {
                     experiment.getUserConfigurationData().setGroupResourceProfileId(groupResourceProfileId);
                     updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
                 } else {
-                    String msg = "User " + username + " in gateway " + gatewayId
-                            + " doesn't have access to any group resource profiles.";
-                    logger.error(msg);
-                    throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, null);
+                    // Auto-create a default group resource profile for the user
+                    logger.info("User {} in gateway {} doesn't have access to any group resource profiles. Creating default one.",
+                            username, gatewayId);
+                    try {
+                        String defaultGroupResourceProfileId = createDefaultGroupResourceProfileForUser(authzToken, gatewayId, username);
+                        logger.info("Created default group resource profile {} for user {} in gateway {}",
+                                defaultGroupResourceProfileId, username, gatewayId);
+                        experiment.getUserConfigurationData().setGroupResourceProfileId(defaultGroupResourceProfileId);
+                        updateExperimentConfiguration(airavataExperimentId, experiment.getUserConfigurationData());
+                    } catch (Exception e) {
+                        String msg = "User " + username + " in gateway " + gatewayId
+                                + " doesn't have access to any group resource profiles, and failed to create default one: " + e.getMessage();
+                        logger.error(msg, e);
+                        throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+                    }
                 }
             }
 
@@ -5003,5 +5014,43 @@ public class AiravataService {
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
+    }
+
+    /**
+     * Create a default group resource profile for a user if they don't have access to any.
+     * This is called automatically when launching an experiment if the user has no group resource profiles.
+     */
+    private String createDefaultGroupResourceProfileForUser(AuthzToken authzToken, String gatewayId, String username)
+            throws AuthorizationException, AiravataSystemException, SharingRegistryException, DuplicateEntryException,
+            InvalidRequestException {
+        String userId = username + "@" + gatewayId;
+        
+        // Create a default group resource profile
+        GroupResourceProfile defaultProfile = new GroupResourceProfile();
+        defaultProfile.setGatewayId(gatewayId);
+        defaultProfile.setGroupResourceProfileName("Default Resource Profile for " + username);
+        defaultProfile.setComputePreferences(new ArrayList<>());
+        
+        // Create the profile with sharing
+        String groupResourceProfileId = createGroupResourceProfileWithSharing(authzToken, defaultProfile);
+        
+        // Share it with the user so they have READ access
+        if (properties.isSharingEnabled()) {
+            try {
+                shareEntityWithUsers(
+                        gatewayId,
+                        groupResourceProfileId,
+                        Arrays.asList(userId),
+                        gatewayId + ":READ",
+                        true);
+                logger.info("Shared default group resource profile {} with user {}", groupResourceProfileId, userId);
+            } catch (SharingRegistryException e) {
+                logger.warn("Failed to share default group resource profile with user {}: {}. Profile was created but may not be accessible.",
+                        userId, e.getMessage());
+                // Don't fail if sharing fails - the profile was created and the user is the owner
+            }
+        }
+        
+        return groupResourceProfileId;
     }
 }

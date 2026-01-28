@@ -24,9 +24,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.exception.RegistryException;
 import org.apache.airavata.registry.model.ResultOrderType;
+import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.restapi.security.AuthorizationService;
 import org.apache.airavata.security.model.AuthzToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +47,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/projects")
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ProjectController {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectService projectService;
     private final AuthorizationService authorizationService;
+    private final GatewayService gatewayService;
 
-    public ProjectController(ProjectService projectService, AuthorizationService authorizationService) {
+    public ProjectController(ProjectService projectService, AuthorizationService authorizationService, GatewayService gatewayService) {
         this.projectService = projectService;
         this.authorizationService = authorizationService;
+        this.gatewayService = gatewayService;
     }
 
     private AuthzToken getAuthzToken(HttpServletRequest request) {
@@ -86,17 +92,60 @@ public class ProjectController {
         try {
             var authzToken = getAuthzToken(request);
             
+            // Log incoming parameters for debugging
+            logger.debug("Creating project - query param gatewayId: {}, body gatewayId: {}", 
+                    gatewayId, project.getGatewayId());
+            
+            // Ignore gatewayId from request body - use only query parameter or token
+            // This prevents conflicts if frontend sends gatewayId in both places
+            if (project.getGatewayId() != null) {
+                logger.debug("Ignoring gatewayId from request body: {}", project.getGatewayId());
+                project.setGatewayId(null);
+            }
+            
             // Validate and scope gateway ID
             String scopedGatewayId = authorizationService.validateAndScopeGateway(authzToken, gatewayId);
+            logger.debug("Scoped gateway ID: {}", scopedGatewayId);
             
+            // Ensure gateway exists before creating project (foreign key constraint)
+            try {
+                var gateway = gatewayService.getGateway(scopedGatewayId);
+                if (gateway == null) {
+                    logger.error("Gateway does not exist: {}", scopedGatewayId);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(Map.of("error", "Gateway does not exist: " + scopedGatewayId));
+                }
+            } catch (Exception e) {
+                logger.error("Error checking gateway existence: gatewayId={}, error={}", scopedGatewayId, e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Gateway does not exist: " + scopedGatewayId));
+            }
+            
+            logger.debug("Creating project: name={}, gatewayId={}", project.getName(), scopedGatewayId);
             var projectId = projectService.addProject(project, scopedGatewayId);
+            logger.info("Successfully created project: projectId={}, gatewayId={}", projectId, scopedGatewayId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("projectId", projectId));
         } catch (org.springframework.web.server.ResponseStatusException e) {
             throw e;
         } catch (RegistryException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            logger.error("RegistryException while creating project: gatewayId={}, error={}", gatewayId, e.getMessage(), e);
+            // Check if it's a foreign key constraint error
+            if (e.getMessage() != null && e.getMessage().contains("foreign key constraint")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Gateway does not exist. Please ensure the gateway is properly configured."));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            logger.error("Unexpected error while creating project: gatewayId={}, error={}", gatewayId, e.getMessage(), e);
+            // Check if it's a foreign key constraint error
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && (errorMessage.contains("foreign key constraint") || 
+                    errorMessage.contains("Cannot add or update a child row"))) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Gateway does not exist. Please ensure the gateway is properly configured."));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to create project: " + errorMessage));
         }
     }
 

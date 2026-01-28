@@ -24,6 +24,8 @@ import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
 import org.apache.airavata.registry.exception.AppCatalogException;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/application-interfaces")
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ApplicationInterfaceController {
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceController.class);
     private final ApplicationInterfaceService applicationInterfaceService;
 
     public ApplicationInterfaceController(ApplicationInterfaceService applicationInterfaceService) {
@@ -64,10 +67,33 @@ public class ApplicationInterfaceController {
     public ResponseEntity<?> createApplicationInterface(
             @RequestParam String gatewayId, @RequestBody ApplicationInterfaceDescription appInterface) {
         try {
+            logger.debug("Creating application interface: gatewayId={}, applicationName={}", 
+                    gatewayId, appInterface.getApplicationName());
+            
+            // Validate required fields
+            if (appInterface.getApplicationName() == null || appInterface.getApplicationName().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Application name is required"));
+            }
+            
+            if (appInterface.getApplicationModules() == null || appInterface.getApplicationModules().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "At least one application module is required"));
+            }
+            
             var interfaceId = applicationInterfaceService.addApplicationInterface(appInterface, gatewayId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("interfaceId", interfaceId));
+            logger.info("Successfully created application interface: interfaceId={}, gatewayId={}", 
+                    interfaceId, gatewayId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("applicationInterfaceId", interfaceId, "interfaceId", interfaceId));
         } catch (AppCatalogException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            logger.error("AppCatalogException while creating application interface: gatewayId={}, error={}", 
+                    gatewayId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error while creating application interface: gatewayId={}, error={}", 
+                    gatewayId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to create application interface: " + e.getMessage()));
         }
     }
 

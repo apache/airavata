@@ -68,7 +68,7 @@ public class ResourceController {
 
     @PostMapping("/notebook")
     public ResponseEntity<ResourceResponse> createNotebookResource(@RequestBody NotebookResource notebookResource) {
-        var response = resourceHandler.createResource(notebookResource, ResourceTypeEnum.NOTEBOOK);
+        var response = resourceHandler.createResource(notebookResource, ResourceTypeEnum.REPOSITORY);
         return ResponseEntity.ok(response);
     }
 
@@ -88,7 +88,7 @@ public class ResourceController {
 
     @PostMapping("/model")
     public ResponseEntity<ResourceResponse> createModelResource(@RequestBody ModelResource modelResource) {
-        var response = resourceHandler.createResource(modelResource, ResourceTypeEnum.MODEL);
+        var response = resourceHandler.createResource(modelResource, ResourceTypeEnum.REPOSITORY);
         return ResponseEntity.ok(response);
     }
 
@@ -121,10 +121,9 @@ public class ResourceController {
         var typeList = new ArrayList<Class<? extends Resource>>();
         for (ResourceTypeEnum resourceType : types) {
             if (resourceType == ResourceTypeEnum.REPOSITORY) {
+                // Include all repository types (RepositoryResource, NotebookResource, ModelResource)
                 typeList.add(RepositoryResource.class);
-            } else if (resourceType == ResourceTypeEnum.NOTEBOOK) {
                 typeList.add(NotebookResource.class);
-            } else if (resourceType == ResourceTypeEnum.MODEL) {
                 typeList.add(ModelResource.class);
             } else if (resourceType == ResourceTypeEnum.DATASET) {
                 typeList.add(DatasetResource.class);
@@ -190,8 +189,6 @@ public class ResourceController {
     private Class<? extends Resource> getResourceType(ResourceTypeEnum resourceTypeEnum) {
         return switch (resourceTypeEnum) {
             case REPOSITORY -> RepositoryResource.class;
-            case NOTEBOOK -> NotebookResource.class;
-            case MODEL -> ModelResource.class;
             case DATASET -> DatasetResource.class;
             default -> null;
         };

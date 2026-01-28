@@ -118,8 +118,17 @@ public class PreferenceResolutionService {
     }
 
     /**
-     * Resolve preferences by priority. For each key, the value from the highest
-     * priority level wins.
+     * Resolve preferences by priority, respecting the enforced flag.
+     *
+     * <p>Resolution algorithm:
+     * <ol>
+     *   <li>For each key, first check for any enforced preference at a higher level</li>
+     *   <li>If an enforced preference exists, use it (ignoring lower-level overrides)</li>
+     *   <li>Otherwise, use the value from the highest priority level (most specific wins)</li>
+     * </ol>
+     *
+     * <p>Enforced preferences enable top-down control: a GATEWAY admin can set a preference
+     * with enforced=true to prevent GROUP or USER levels from overriding it.
      *
      * @param preferences list of preferences at various levels
      * @return map of key to resolved value
@@ -135,13 +144,25 @@ public class PreferenceResolutionService {
             String key = entry.getKey();
             List<ResourcePreferenceEntity> keyPrefs = entry.getValue();
 
-            // Find the preference with highest priority level
-            ResourcePreferenceEntity winner = keyPrefs.stream()
-                    .max((a, b) -> Integer.compare(a.getLevel().getPriority(), b.getLevel().getPriority()))
+            // First, check for any enforced preference (lower priority level = higher in hierarchy)
+            // GATEWAY (priority 0) > GROUP (priority 1) > USER (priority 2) when enforced
+            ResourcePreferenceEntity enforcedPref = keyPrefs.stream()
+                    .filter(ResourcePreferenceEntity::isEnforced)
+                    .min((a, b) -> Integer.compare(a.getLevel().getPriority(), b.getLevel().getPriority()))
                     .orElse(null);
 
-            if (winner != null && winner.getValue() != null) {
-                resolved.put(key, winner.getValue());
+            if (enforcedPref != null && enforcedPref.getValue() != null) {
+                // Use the enforced preference (highest in hierarchy that's enforced)
+                resolved.put(key, enforcedPref.getValue());
+            } else {
+                // No enforced preference, use most specific wins (highest priority level)
+                ResourcePreferenceEntity winner = keyPrefs.stream()
+                        .max((a, b) -> Integer.compare(a.getLevel().getPriority(), b.getLevel().getPriority()))
+                        .orElse(null);
+
+                if (winner != null && winner.getValue() != null) {
+                    resolved.put(key, winner.getValue());
+                }
             }
         }
 
@@ -171,7 +192,7 @@ public class PreferenceResolutionService {
     }
 
     /**
-     * Get all preferences at a specific level (unresolved).
+     * Get all preferences at a specific level (unresolved) as simple key-value pairs.
      *
      * @param resourceType COMPUTE or STORAGE
      * @param resourceId the resource ID
@@ -192,6 +213,55 @@ public class PreferenceResolutionService {
     }
 
     /**
+     * Detailed preference information including enforcement status.
+     */
+    public static class PreferenceDetail {
+        private String key;
+        private String value;
+        private boolean enforced;
+
+        public PreferenceDetail(String key, String value, boolean enforced) {
+            this.key = key;
+            this.value = value;
+            this.enforced = enforced;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isEnforced() {
+            return enforced;
+        }
+    }
+
+    /**
+     * Get all preferences at a specific level with detailed information including enforcement status.
+     *
+     * @param resourceType COMPUTE or STORAGE
+     * @param resourceId the resource ID
+     * @param ownerId the owner ID (gatewayId, groupId, or userId@gatewayId)
+     * @param level the preference level
+     * @return list of preference details at that level
+     */
+    public List<PreferenceDetail> getPreferencesAtLevelDetailed(
+            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level) {
+
+        List<ResourcePreferenceEntity> prefs =
+                preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
+                        resourceType, resourceId, ownerId, level);
+
+        return prefs.stream()
+                .filter(p -> p.getValue() != null)
+                .map(p -> new PreferenceDetail(p.getKey(), p.getValue(), p.isEnforced()))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Set a preference at a specific level.
      *
      * @param resourceType COMPUTE or STORAGE
@@ -209,6 +279,29 @@ public class PreferenceResolutionService {
             PreferenceLevel level,
             String key,
             String value) {
+        setPreference(resourceType, resourceId, ownerId, level, key, value, false);
+    }
+
+    /**
+     * Set a preference at a specific level with optional enforcement.
+     *
+     * @param resourceType COMPUTE or STORAGE
+     * @param resourceId the resource ID
+     * @param ownerId the owner ID
+     * @param level the preference level
+     * @param key the preference key
+     * @param value the preference value
+     * @param enforced if true, this preference cannot be overridden by lower-level preferences
+     */
+    @Transactional
+    public void setPreference(
+            PreferenceResourceType resourceType,
+            String resourceId,
+            String ownerId,
+            PreferenceLevel level,
+            String key,
+            String value,
+            boolean enforced) {
 
         ResourcePreferenceEntity existing =
                 preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(
@@ -216,6 +309,7 @@ public class PreferenceResolutionService {
 
         if (existing != null) {
             existing.setValue(value);
+            existing.setEnforced(enforced);
             preferenceRepository.save(existing);
         } else {
             ResourcePreferenceEntity entity = new ResourcePreferenceEntity();
@@ -225,6 +319,7 @@ public class PreferenceResolutionService {
             entity.setLevel(level);
             entity.setKey(key);
             entity.setTypedValue(value);
+            entity.setEnforced(enforced);
             preferenceRepository.save(entity);
         }
     }

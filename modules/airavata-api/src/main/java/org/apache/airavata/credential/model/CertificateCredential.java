@@ -31,6 +31,11 @@ public class CertificateCredential extends Credential {
     private static final long serialVersionUID = 1L;
 
     /**
+     * Community user information for this certificate.
+     */
+    private CommunityUser communityUser;
+
+    /**
      * The X.509 certificate in PEM format.
      */
     private String x509Cert;
@@ -66,6 +71,14 @@ public class CertificateCredential extends Credential {
     private PrivateKey privateKeyObject;
 
     public CertificateCredential() {}
+
+    public CommunityUser getCommunityUser() {
+        return communityUser;
+    }
+
+    public void setCommunityUser(CommunityUser communityUser) {
+        this.communityUser = communityUser;
+    }
 
     public String getX509Cert() {
         return x509Cert;

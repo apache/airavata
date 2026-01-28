@@ -33,7 +33,7 @@ public class NotebookResource extends Resource {
 
     @Override
     public ResourceTypeEnum getType() {
-        return ResourceTypeEnum.NOTEBOOK;
+        return ResourceTypeEnum.REPOSITORY;
     }
 
     public String getNotebookPath() {

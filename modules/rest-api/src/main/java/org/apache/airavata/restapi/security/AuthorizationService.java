@@ -257,9 +257,27 @@ public class AuthorizationService {
      * Validate and scope gateway ID - ensures user has access and returns the scoped gateway ID.
      */
     public String validateAndScopeGateway(AuthzToken authzToken, String requestedGatewayId) {
+        // Clean up the gateway ID - remove any whitespace or duplicates
+        if (requestedGatewayId != null) {
+            requestedGatewayId = requestedGatewayId.trim();
+            // If it contains commas, take the first part (in case of accidental duplication)
+            if (requestedGatewayId.contains(",")) {
+                logger.warn("Gateway ID contains comma, using first part: {}", requestedGatewayId);
+                requestedGatewayId = requestedGatewayId.split(",")[0].trim();
+            }
+        }
+        
         if (requestedGatewayId == null || requestedGatewayId.isEmpty()) {
             // Use gateway from token if not specified
             requestedGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (requestedGatewayId != null) {
+                requestedGatewayId = requestedGatewayId.trim();
+                // Handle comma-separated values from token as well
+                if (requestedGatewayId.contains(",")) {
+                    logger.warn("Gateway ID from token contains comma, using first part: {}", requestedGatewayId);
+                    requestedGatewayId = requestedGatewayId.split(",")[0].trim();
+                }
+            }
         }
 
         if (requestedGatewayId == null || requestedGatewayId.isEmpty()) {

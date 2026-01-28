@@ -79,12 +79,12 @@ public class SchemaValidationTest {
     }
 
     @Test
-    public void testProfileEntitiesLoaded() {
+    public void testUserEntitiesLoaded() {
         var entities = entityManagerFactory.getMetamodel().getEntities();
-        boolean hasProfileEntities =
-                entities.stream().anyMatch(e -> e.getJavaType().getPackageName().contains("profile.entities"));
-        assertFalse(!hasProfileEntities, "Profile entities should be loaded");
-        logger.info("Profile entities are loaded");
+        boolean hasUserEntities =
+                entities.stream().anyMatch(e -> e.getJavaType().getSimpleName().contains("UserEntity"));
+        assertFalse(!hasUserEntities, "User entities should be loaded");
+        logger.info("User entities are loaded");
     }
 
     @Test

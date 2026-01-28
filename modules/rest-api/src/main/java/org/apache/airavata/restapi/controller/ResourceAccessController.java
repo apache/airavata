@@ -98,6 +98,33 @@ public class ResourceAccessController {
     @Operation(summary = "Create or update an access grant")
     public ResponseEntity<?> createAccessGrant(@RequestBody AccessGrantRequest request) {
         try {
+            // Validate required fields
+            if (request.resourceType() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "resourceType is required"));
+            }
+            if (request.resourceId() == null || request.resourceId().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "resourceId is required"));
+            }
+            if (request.ownerId() == null || request.ownerId().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "ownerId is required"));
+            }
+            if (request.ownerType() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "ownerType is required"));
+            }
+            if (request.gatewayId() == null || request.gatewayId().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "gatewayId is required"));
+            }
+            // Credential token is required (NOT NULL in database)
+            if (request.credentialToken() == null || request.credentialToken().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "credentialToken is required. Please select a credential."));
+            }
+
             // Check if grant already exists
             var existing = resourceAccessRepository.findByResourceTypeAndResourceIdAndOwnerIdAndOwnerType(
                     request.resourceType(), request.resourceId(), request.ownerId(), request.ownerType());
@@ -105,26 +132,31 @@ public class ResourceAccessController {
             ResourceAccessEntity entity;
             if (existing.isPresent()) {
                 entity = existing.get();
-                if (request.credentialToken() != null) {
-                    entity.setCredentialToken(request.credentialToken());
-                }
+                entity.setCredentialToken(request.credentialToken().trim());
                 entity.setEnabled(request.enabled() != null ? request.enabled() : true);
             } else {
                 entity = new ResourceAccessEntity();
                 entity.setResourceType(request.resourceType());
-                entity.setResourceId(request.resourceId());
-                entity.setOwnerId(request.ownerId());
+                entity.setResourceId(request.resourceId().trim());
+                entity.setOwnerId(request.ownerId().trim());
                 entity.setOwnerType(request.ownerType());
-                entity.setGatewayId(request.gatewayId());
-                entity.setCredentialToken(request.credentialToken());
+                entity.setGatewayId(request.gatewayId().trim());
+                entity.setCredentialToken(request.credentialToken().trim());
                 entity.setEnabled(request.enabled() != null ? request.enabled() : true);
             }
 
             var saved = resourceAccessRepository.save(entity);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            String errorMsg = "Database constraint violation: " + e.getMessage();
+            if (e.getMessage() != null && e.getMessage().contains("uk_resource_access")) {
+                errorMsg = "An access grant already exists for this resource, owner, and owner type combination.";
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", errorMsg));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Internal server error"));
         }
     }
 
@@ -204,6 +236,23 @@ public class ResourceAccessController {
         try {
             var grants = resourceAccessRepository.findByResourceTypeAndResourceIdAndEnabledTrue(
                     resourceType, resourceId);
+            return ResponseEntity.ok(grants);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Get all access grants for a gateway and resource type.
+     */
+    @GetMapping("/by-type")
+    @Operation(summary = "Get all access grants for a resource type")
+    public ResponseEntity<?> getAccessGrantsByType(
+            @RequestParam String gatewayId,
+            @RequestParam PreferenceResourceType resourceType) {
+        try {
+            var grants = resourceAccessRepository.findByGatewayIdAndResourceType(gatewayId, resourceType);
             return ResponseEntity.ok(grants);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

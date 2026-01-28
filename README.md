@@ -318,16 +318,27 @@ The registry layer follows a 4-tier architecture:
 
 ### Entity Organization
 
-Entities are organized by catalog type under `registry/entities/` (101 total):
+Entities are organized by catalog type under `registry/entities/`:
 
-| Catalog | Location | Files | Key Entities |
-|---------|----------|-------|--------------|
-| **App Catalog** | `appcatalog/` | 52 | `ApplicationInterfaceEntity`, `ApplicationDeploymentEntity`, `ComputeResourceEntity`, `StorageResourceEntity`, `ResourceProfileEntity`, `ResourcePreferenceEntity` |
-| **Exp Catalog** | `expcatalog/` | 20 | `ExperimentEntity`, `ProcessEntity`, `JobEntity`, `TaskEntity`, `ProjectEntity`, `NotificationEntity` |
-| **Airavata Workflow** | `airavataworkflowcatalog/` | 8 | `AiravataWorkflowEntity`, `WorkflowApplicationEntity`, `WorkflowConnectionEntity`, `WorkflowHandlerEntity` |
-| **Workflow Catalog** | `workflowcatalog/` | 6 | Composite key classes (`EdgePK`, `NodePK`, `PortPK`, etc.) |
-| **Replica Catalog** | `replicacatalog/` | 2 | `DataProductEntity`, `DataReplicaLocationEntity` |
-| **Root Level** | `entities/` | 13 | `GatewayEntity`, `UserEntity`, `StatusEntity`, `ErrorEntity`, `InputDataEntity`, `OutputDataEntity`, `MetadataEntity`, `ResourceAccessEntity` |
+| Catalog | Location | Key Entities |
+|---------|----------|--------------|
+| **App Catalog** | `appcatalog/` | `ApplicationEntity`, `ApplicationDeploymentEntity`, `ComputeResourceEntity`, `StorageResourceEntity` |
+| **Exp Catalog** | `expcatalog/` | `ExperimentEntity`, `ProcessEntity`, `JobEntity`, `TaskEntity`, `ProjectEntity`, `NotificationEntity` |
+| **Airavata Workflow** | `airavataworkflowcatalog/` | `AiravataWorkflowEntity`, `WorkflowApplicationEntity`, `WorkflowConnectionEntity` |
+| **Workflow Catalog** | `workflowcatalog/` | Composite key classes (`EdgePK`, `NodePK`, `PortPK`, etc.) |
+| **Replica Catalog** | `replicacatalog/` | `DataProductEntity`, `DataReplicaLocationEntity` |
+| **Root Level** | `entities/` | `GatewayEntity`, `UserEntity`, `StatusEntity`, `ErrorEntity`, `InputDataEntity`, `OutputDataEntity` |
+
+**Credential-Centric Entities** (under `credential/entities/`):
+
+| Entity | Purpose |
+|--------|---------|
+| `CredentialComputeConfigEntity` | Links credential to compute resource with access settings |
+| `CredentialQueueConfigEntity` | Queue-specific allocation and limits |
+| `CredentialQueueMacroEntity` | Queue-specific macros/environment variables |
+| `CredentialGroupEntity` | Credential sharing group |
+| `CredentialGroupMemberEntity` | User membership in a credential group |
+| `CredentialGroupPermissionEntity` | Resource permissions granted by a group |
 
 ### Unified Database Schema
 
@@ -384,76 +395,107 @@ The database uses a consolidated schema with unified entities for cross-cutting 
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Unified Multi-Level Preference System
+### Credential-Centric Access Control
 
-Airavata implements a hierarchical preference system where settings can be defined at multiple levels with automatic inheritance and override:
+Airavata implements a **credential-centric architecture** where credentials are the root of all compute resource access:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    PREFERENCE RESOLUTION ORDER                               │
+│                    CREDENTIAL-CENTRIC MODEL                                  │
 │                                                                              │
-│   USER level (highest priority)                                             │
-│        ↓ overrides                                                          │
-│   GROUP level                                                               │
-│        ↓ overrides                                                          │
-│   GATEWAY level (lowest priority, default)                                  │
+│   CREDENTIAL (SSH Key, etc.)                                                │
+│        ↓ grants access to                                                   │
+│   CREDENTIAL COMPUTE CONFIG (specific resource + allocation)                │
+│        ↓ used by                                                            │
+│   APPLICATION DEPLOYMENT (what to run + where to run it)                    │
+│        ↓ shared via                                                         │
+│   CREDENTIAL GROUP (controlled sharing with users)                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Supported Resource Types:**
+**Core Concepts:**
 
-| Resource Type | Resource ID Format | Example Use Cases |
-|---------------|-------------------|-------------------|
-| `COMPUTE` | computeResourceId | Login username, scratch location, allocation |
-| `STORAGE` | storageResourceId | File system root, credentials |
-| `PROFILE` | profileId | Profile-level metadata |
-| `BATCH_QUEUE` | computeResourceId:queueName | Max nodes, max walltime, queue access |
-| `APPLICATION` | applicationInterfaceId | Default resource, queue, input values |
-| `GATEWAY` | gatewayId | Feature flags, UI theme, maintenance mode |
-| `SYSTEM` | "GLOBAL" or gatewayId | Rate limits, session timeout, quotas |
+| Concept | Description |
+|---------|-------------|
+| **Credential** | SSH key or other authentication material |
+| **CredentialComputeConfig** | Links a credential to a compute resource with access settings (login, scratch, allocation) |
+| **CredentialQueueConfig** | Queue-specific settings (allocation, limits, macros) within a credential config |
+| **ApplicationDeployment** | Links an application to a credential config (what + where) |
+| **CredentialGroup** | Enables credential owners to share access with users |
 
 **Key Components:**
 
 ```
-PreferenceResourceType (enum)       PreferenceLevel (enum)
-├── COMPUTE                         ├── GATEWAY (priority 0)
-├── STORAGE                         ├── GROUP (priority 1)
-├── PROFILE                         └── USER (priority 2)
-├── BATCH_QUEUE
-├── APPLICATION
-├── GATEWAY
-└── SYSTEM
+CredentialComputeConfig                 CredentialGroup
+├── credentialToken                     ├── groupId, groupName
+├── computeResourceId                   ├── credentialToken
+├── loginUsername                       ├── ownerId, gatewayId
+├── scratchLocation                     ├── members (CredentialGroupMember[])
+├── allocationProjectNumber             │   ├── userId
+└── queueConfigs[]                      │   └── role (OWNER|ADMIN|MEMBER|VIEWER)
+    ├── queueName                       └── permissions (CredentialGroupPermission[])
+    ├── allocationProjectNumber             ├── resourceType (CONFIG|DEPLOYMENT|QUEUE)
+    ├── maxNodeCount, maxCpuCount           ├── resourceId
+    └── macros[]                            └── permissionLevel (READ|USE|ADMIN)
 
-PreferenceKeys (constants)
-├── BatchQueue.*     (maxNodes, maxCpus, maxWalltime, ...)
-├── Application.*    (defaultComputeResource, defaultQueue, ...)
-├── Gateway.*        (enableExperimentLaunch, featureFlags, ...)
-└── System.*         (maxExperimentsPerUser, sessionTimeout, ...)
+ApplicationDeployment
+├── applicationId      (what to run)
+├── credentialConfigId (where/how to run)
+├── executablePath
+└── parallelism, commands, environment
 ```
 
-**Preference Resolution Services:**
+**Access Resolution Services:**
 
 | Service | Purpose |
 |---------|---------|
-| `PreferenceResolutionService` | Core resolution logic (USER > GROUP > GATEWAY) |
-| `BatchQueuePreferenceService` | Queue policies and limits |
-| `ApplicationPreferenceService` | Application defaults and access |
-| `GatewayConfigService` | Gateway configuration and features |
-| `SystemConfigService` | System-wide settings with gateway overrides |
+| `CredentialGroupService` | Manage groups, members, and permissions |
+| `CredentialAccessService` | Unified access control (replaces old sharing) |
+| `CredentialComputeConfigService` | Manage credential-resource configurations |
+| `ApplicationDeploymentService` | Manage deployments bound to credentials |
 
-**Database Storage:**
-
-All preferences are stored in the unified `RESOURCE_PREFERENCE` table:
+**Database Schema:**
 
 ```sql
-RESOURCE_PREFERENCE (
-    RESOURCE_TYPE,      -- COMPUTE, STORAGE, BATCH_QUEUE, APPLICATION, GATEWAY, SYSTEM
-    RESOURCE_ID,        -- Resource identifier (format varies by type)
-    OWNER_ID,           -- gatewayId, groupId, or userId@gatewayId
-    PREFERENCE_LEVEL,   -- GATEWAY, GROUP, or USER
-    PREFERENCE_KEY,     -- Preference name (e.g., "maxNodes", "defaultQueue")
-    PREFERENCE_VALUE,   -- Value (can be JSON for complex types)
-    VALUE_TYPE          -- STRING, INTEGER, BOOLEAN, JSON, TIMESTAMP
+-- Credential configs link credentials to compute resources
+CREDENTIAL_COMPUTE_CONFIG (
+    CONFIG_ID,           -- Unique config identifier
+    CREDENTIAL_TOKEN,    -- Reference to credential (SSH key)
+    COMPUTE_RESOURCE_ID, -- Target compute resource
+    LOGIN_USERNAME,      -- Login username for this resource
+    SCRATCH_LOCATION,    -- Scratch directory path
+    ...
+)
+
+-- Queue-specific settings within a config
+CREDENTIAL_QUEUE_CONFIG (
+    CONFIG_ID,                  -- Reference to compute config
+    QUEUE_NAME,                 -- Queue name
+    ALLOCATION_PROJECT_NUMBER,  -- Allocation for this queue
+    MAX_NODE_COUNT,             -- Max nodes allowed
+    ...
+)
+
+-- Credential groups for sharing
+CREDENTIAL_GROUP (
+    GROUP_ID, GROUP_NAME, CREDENTIAL_TOKEN, OWNER_ID, GATEWAY_ID
+)
+
+CREDENTIAL_GROUP_MEMBER (
+    GROUP_ID, USER_ID, ROLE
+)
+
+CREDENTIAL_GROUP_PERMISSION (
+    GROUP_ID, RESOURCE_TYPE, RESOURCE_ID, PERMISSION_LEVEL
+)
+
+-- Deployments bound to credentials
+APPLICATION_DEPLOYMENT (
+    APP_DEPLOYMENT_ID,
+    APPLICATION_ID,       -- What to run
+    CREDENTIAL_CONFIG_ID, -- Where to run (credential + resource)
+    EXECUTABLE_PATH,
+    ...
 )
 ```
 

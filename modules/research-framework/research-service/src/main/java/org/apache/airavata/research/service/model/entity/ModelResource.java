@@ -36,7 +36,7 @@ public class ModelResource extends Resource {
 
     @Override
     public ResourceTypeEnum getType() {
-        return ResourceTypeEnum.MODEL;
+        return ResourceTypeEnum.REPOSITORY;
     }
 
     public String getApplicationInterfaceId() {
