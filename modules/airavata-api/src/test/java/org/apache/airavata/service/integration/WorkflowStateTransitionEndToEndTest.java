@@ -40,11 +40,11 @@ import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
-import org.apache.airavata.orchestrator.state.ExperimentStateValidator;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
@@ -167,8 +167,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.STARTED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.STARTED),
                 "CREATED -> STARTED should be valid");
 
         // 3. Create pre-execution tasks (simulating PreWorkflowManager)
@@ -205,8 +205,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         statusService.addProcessStatus(executing, testProcessId);
 
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.STARTED, ProcessState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.STARTED, ProcessState.EXECUTING),
                 "STARTED -> EXECUTING should be valid");
 
         // 6. Job completes -> PostWorkflowManager creates post-execution tasks
@@ -299,8 +299,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
                 "EXECUTING -> FAILED should be valid");
     }
 
@@ -318,8 +318,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         statusService.addProcessStatus(requeued, testProcessId);
 
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.REQUEUED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.REQUEUED),
                 "EXECUTING -> REQUEUED should be valid");
 
         // 3. Process transitions to QUEUED
@@ -327,8 +327,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         statusService.addProcessStatus(queued, testProcessId);
 
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.REQUEUED, ProcessState.QUEUED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.REQUEUED, ProcessState.QUEUED),
                 "REQUEUED -> QUEUED should be valid");
 
         // 4. Process transitions back to EXECUTING (requeue completed)
@@ -336,8 +336,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         statusService.addProcessStatus(executing2, testProcessId);
 
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.QUEUED, ProcessState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.QUEUED, ProcessState.EXECUTING),
                 "QUEUED -> EXECUTING should be valid");
 
         // Verify final state
@@ -373,12 +373,12 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
         // According to ExperimentStateValidator, CREATED -> LAUNCHED -> EXECUTING is the valid path
         // This test verifies the state transitions are valid for both experiment and process
         assertTrue(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, ExperimentState.LAUNCHED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, ExperimentState.LAUNCHED),
                 "Experiment CREATED -> LAUNCHED should be valid when process starts");
         assertTrue(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
                 "Experiment LAUNCHED -> EXECUTING should be valid when process transitions");
 
         // Process completes
@@ -387,8 +387,8 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
 
         // Experiment should transition to COMPLETED
         assertTrue(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.EXECUTING, ExperimentState.COMPLETED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.EXECUTING, ExperimentState.COMPLETED),
                 "Experiment EXECUTING -> COMPLETED should be valid when process completes");
     }
 
@@ -404,7 +404,7 @@ public class WorkflowStateTransitionEndToEndTest extends ServiceIntegrationTestB
             if (previousState != null) {
                 // Verify transition is valid
                 assertTrue(
-                        StateTransitionService.isValid(ProcessStateValidator.INSTANCE, previousState, currentState),
+                        StateModel.StateTransitionService.isValid(StateValidators.ProcessStateValidator.INSTANCE, previousState, currentState),
                         "Transition " + previousState + " -> " + currentState + " should be valid");
 
                 // Add status to verify it works

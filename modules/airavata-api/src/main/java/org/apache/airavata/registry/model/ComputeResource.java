@@ -35,7 +35,7 @@ import org.apache.airavata.common.model.SCPDataMovement;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.UnicoreDataMovement;
 import org.apache.airavata.common.model.UnicoreJobSubmission;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 
 public interface ComputeResource {
     /**

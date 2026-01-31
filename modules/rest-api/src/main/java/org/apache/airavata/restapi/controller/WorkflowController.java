@@ -21,7 +21,7 @@ package org.apache.airavata.restapi.controller;
 
 import java.util.Map;
 import org.apache.airavata.common.model.AiravataWorkflow;
-import org.apache.airavata.registry.exception.WorkflowCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.services.WorkflowService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;

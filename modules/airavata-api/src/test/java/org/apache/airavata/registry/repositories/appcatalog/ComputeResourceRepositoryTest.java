@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.registry.repositories.appcatalog;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +46,7 @@ import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.model.SCPDataMovement;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.SecurityProtocol;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.utils.DBConstants;
@@ -56,6 +58,9 @@ import org.springframework.test.context.TestConstructor;
 @org.springframework.test.context.ActiveProfiles("test")
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ComputeResourceRepositoryTest extends TestBase {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final ComputeResourceService computeResourceService;
 
@@ -212,6 +217,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
             allComputeResources.add(computeResourceDescription);
             allComputeResourceMap.put(savedId, computeResourceDescription.getHostName());
         }
+        entityManager.flush();
 
         List<ComputeResourceDescription> allSavedComputeResources = computeResourceService.getAllComputeResourceList();
 
@@ -620,6 +626,9 @@ public class ComputeResourceRepositoryTest extends TestBase {
                 expected,
                 actual,
                 "__isset_bitfield",
+                "computeResourceId",
+                "linkedStorageResourceId",
+                "projects",
                 "batchQueues",
                 "fileSystems",
                 "jobSubmissionInterfaces",

@@ -42,8 +42,9 @@ log "Starting Airavata API Server (unified service)..."
 # - All Workflow Managers
 # - All Background Services
 
-if [ -f "./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-start.sh" ]; then
-    ./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-start.sh -d
+DIST_NAME="airavata-0.21-SNAPSHOT"
+if [ -f "./${DIST_NAME}/bin/airavata.sh" ]; then
+    ./${DIST_NAME}/bin/airavata.sh -d start
     log "Airavata API Server started."
 else
     log "ERROR: Airavata distribution not found. Please deploy first using Ansible."

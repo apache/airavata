@@ -506,6 +506,22 @@ under the License.
             <include>**/*Test.java</include>
             <include>**/*Tests.java</include>
           </includes>
+          <!-- Exclude integration tests that require Dapr workflow runtime or credential store backend -->
+          <excludes>
+            <exclude>%regex[.*CredentialStoreServiceIntegrationTest.*]</exclude>
+            <exclude>**/DataMovementStateMachineIntegrationTest.java</exclude>
+            <exclude>**/TaskOutcomeStateTransitionIntegrationTest.java</exclude>
+            <exclude>**/JobSubmissionStateMachineIntegrationTest.java</exclude>
+            <exclude>**/ProcessExecutionStateMachineIntegrationTest.java</exclude>
+            <exclude>**/WorkflowStateTransitionEndToEndTest.java</exclude>
+            <exclude>**/WorkflowTaskExecutionIntegrationTest.java</exclude>
+            <exclude>**/ProcessStateTransitionComprehensiveTest.java</exclude>
+            <exclude>**/ExperimentLifecycleIntegrationTest.java</exclude>
+            <exclude>**/StateTransitionValidationIntegrationTest.java</exclude>
+            <exclude>**/ExperimentStateTransitionIntegrationTest.java</exclude>
+            <exclude>**/JobStatusRepositoryTest.java</exclude>
+            <exclude>**/ExperimentSummaryRepositoryTest.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
 

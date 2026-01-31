@@ -20,6 +20,7 @@
 package org.apache.airavata.security;
 
 import org.w3c.dom.Node;
+import org.apache.airavata.common.exception.AuthExceptions.AuthenticationException;
 
 /**
  * A generic interface to do request authentication. Specific authenticator will implement authenticate method.

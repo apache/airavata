@@ -33,9 +33,11 @@ import org.apache.airavata.cli.commands.TestCommand;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.config.FlywayConfig;
 import org.apache.airavata.config.JpaConfig;
+import org.apache.airavata.cli.util.ApplicationContextHolder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -66,7 +68,12 @@ import picocli.CommandLine.IFactory;
             "org.apache.airavata.credential.services",
             "org.apache.airavata.credential.repositories",
             "org.apache.airavata.credential.mappers",
+            "org.apache.airavata.accountprovisioning",
+            "org.apache.airavata.agents",
+            "org.apache.airavata.common",
             "org.apache.airavata.config",
+            "org.apache.airavata.orchestrator",
+            "org.apache.airavata.security",
             "org.apache.airavata.thriftapi"
         },
         exclude = {
@@ -94,7 +101,7 @@ import picocli.CommandLine.IFactory;
             TestCommand.class
         },
         mixinStandardHelpOptions = true)
-public class AiravataCommandLine implements CommandLineRunner {
+public class AiravataCommandLine implements CommandLineRunner, ApplicationContextAware {
 
     private final CommandLine commandLine;
 
@@ -113,6 +120,11 @@ public class AiravataCommandLine implements CommandLineRunner {
     }
 
     @Override
+    public void setApplicationContext(org.springframework.context.ApplicationContext ctx) {
+        ApplicationContextHolder.set(ctx);
+    }
+
+    @Override
     public void run(String... args) throws Exception {
         // Create CommandLine if it wasn't injected (e.g., when Spring uses no-arg constructor)
         CommandLine cmd = this.commandLine;
@@ -120,12 +132,12 @@ public class AiravataCommandLine implements CommandLineRunner {
             cmd = new CommandLine(this);
         }
         int exitCode = cmd.execute(args);
-        // Don't exit if serve command is running in foreground - it will block
-        // Only exit for other commands
+        // Don't exit if serve command is running in foreground (default) - it will block
+        // Only exit for other commands or when serve -d (detach) was used
         if (exitCode != 0 || !isServeCommandForeground(args)) {
             System.exit(exitCode);
         }
-        // For serve --foreground, the command will block, so we don't exit here
+        // For serve (foreground default), the command will block, so we don't exit here
     }
 
     private boolean isServeCommandForeground(String... args) {
@@ -133,17 +145,17 @@ public class AiravataCommandLine implements CommandLineRunner {
             return false;
         }
         boolean hasServe = false;
-        boolean hasForeground = false;
+        boolean hasDetach = false;
         for (String arg : args) {
             if (arg != null) {
                 if ("serve".equals(arg)) {
                     hasServe = true;
-                } else if ("--foreground".equals(arg)) {
-                    hasForeground = true;
+                } else if ("-d".equals(arg) || "--detach".equals(arg)) {
+                    hasDetach = true;
                 }
             }
         }
-        return hasServe && hasForeground;
+        return hasServe && !hasDetach;
     }
 
     public static void main(String[] args) {
@@ -174,14 +186,21 @@ public class AiravataCommandLine implements CommandLineRunner {
         defaults.put("airavata.server.enabled", "false");
         // CLI should not require DB connectivity just to start up.
         // Service startup uses AiravataServer (ServeCommand) and reads enable-flags from the config dir.
-        defaults.put("services.thrift.enabled", requiresDb ? "true" : "false");
+        // Init only needs DataSource for Flyway; do not load Thrift/REST/Orchestrator stack.
+        defaults.put("services.thrift.enabled", "false");
         defaults.put("services.rest.enabled", "false");
+        defaults.put("airavata.services.thrift.enabled", "false");
+        if (requiresDb) {
+            defaults.put("airavata.cli.command", "init");
+            defaults.put("spring.profiles.active", "init");
+        }
 
         if (!requiresDb || helpRequested) {
             // Keep CLI usable even without DB connectivity by avoiding eager bean creation
             // and excluding JPA auto-config that would otherwise require an EntityManagerFactory.
             defaults.put("spring.main.lazy-initialization", "true");
             defaults.put("flyway.enabled", "false");
+            defaults.put("airavata.flyway.enabled", "false");
             defaults.put(
                     "spring.autoconfigure.exclude",
                     String.join(
@@ -190,8 +209,8 @@ public class AiravataCommandLine implements CommandLineRunner {
                             "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration",
                             "org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration"));
         } else {
-            // init command: needs Flyway + datasources
-            defaults.put("flyway.enabled", "true");
+            // init command: InitDataSourceConfig provides DataSource; InitHandler runs Flyway programmatically.
+            defaults.put("airavata.flyway.enabled", "false");
         }
 
         app.setDefaultProperties(defaults);

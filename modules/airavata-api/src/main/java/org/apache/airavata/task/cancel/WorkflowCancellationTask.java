@@ -20,7 +20,7 @@
 package org.apache.airavata.task.cancel;
 
 import io.dapr.workflows.client.DaprWorkflowClient;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.orchestrator.WorkflowRuntimeHolder;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;

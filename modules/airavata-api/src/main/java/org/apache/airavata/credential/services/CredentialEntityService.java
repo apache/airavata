@@ -135,6 +135,7 @@ public class CredentialEntityService {
             entity.setTokenId(credential.getToken());
             entity.setCredential(convertObjectToByteArray(credential));
             entity.setUserId(credential.getUserId());
+            entity.setName(credential.getName());
             entity.setTimePersisted(AiravataUtils.getUniqueTimestamp());
             entity.setDescription(credential.getDescription());
             credentialRepository.save(entity);
@@ -147,7 +148,15 @@ public class CredentialEntityService {
     }
 
     /**
+     * Check if this credential is referenced by RESOURCE_ACCESS, RESOURCE_ACCESS_GRANT, or RESOURCE_PROFILE.
+     */
+    public boolean hasReferences(String gatewayId, String tokenId) {
+        return credentialRepository.countReferences(gatewayId, tokenId) > 0;
+    }
+
+    /**
      * Delete credentials.
+     * Fails if the credential is still referenced by resource access, grants, or profiles.
      */
     public void deleteCredential(String gatewayId, String tokenId) throws CredentialStoreException {
         try {
@@ -159,13 +168,26 @@ public class CredentialEntityService {
                 logger.debug("Credential not found for gateway: {}, token: {}, skipping delete", gatewayId, tokenId);
                 return;
             }
+            if (hasReferences(gatewayId, tokenId)) {
+                throw new CredentialStoreException(
+                        "Cannot delete credential: it is still referenced by resource access, resource access grants, or resource profiles. Remove those references first.");
+            }
             credentialRepository.deleteByGatewayIdAndTokenId(gatewayId, tokenId);
             credentialRepository.flush();
+        } catch (CredentialStoreException e) {
+            throw e;
         } catch (Exception e) {
             var msg = String.format("Error deleting credential for gateway: %s, token: %s", gatewayId, tokenId);
             logger.error(msg, e);
             throw new CredentialStoreException(msg, e);
         }
+    }
+
+    /**
+     * Check if a credential exists for the given gateway and token.
+     */
+    public boolean credentialExists(String gatewayId, String tokenId) {
+        return credentialRepository.existsByGatewayIdAndTokenId(gatewayId, tokenId);
     }
 
     /**
@@ -183,6 +205,7 @@ public class CredentialEntityService {
             var credential = (Credential) convertByteArrayToObject(entity.getCredential());
             credential.setToken(entity.getTokenId());
             credential.setUserId(entity.getUserId());
+            credential.setName(entity.getName());
             credential.setPersistedTime(entity.getTimePersisted());
             credential.setDescription(entity.getDescription());
             return credential;
@@ -238,6 +261,7 @@ public class CredentialEntityService {
                 var credential = (Credential) convertByteArrayToObject(entity.getCredential());
                 credential.setToken(entity.getTokenId());
                 credential.setUserId(entity.getUserId());
+                credential.setName(entity.getName());
                 credential.setPersistedTime(entity.getTimePersisted());
                 credential.setDescription(entity.getDescription());
                 credentials.add(credential);
@@ -250,6 +274,14 @@ public class CredentialEntityService {
             }
         }
         return credentials;
+    }
+
+    /**
+     * Get credential token IDs for a gateway owned by the given user (Airavata internal userId).
+     */
+    public List<String> getTokenIdsByGatewayIdAndUserId(String gatewayId, String userId) {
+        var entities = credentialRepository.findByGatewayIdAndUserId(gatewayId, userId);
+        return entities.stream().map(CredentialEntity::getTokenId).toList();
     }
 
     /**
@@ -278,8 +310,7 @@ public class CredentialEntityService {
     }
 
     /**
-     * Convert byte array to object (with decryption if enabled).
-     * FIXME verify if this works after setting up spring
+     * Convert byte array to object (with decryption if enabled). Depends on Spring context.
      */
     private Object convertByteArrayToObject(byte[] data) throws CredentialStoreException {
         ObjectInputStream objectInputStream = null;

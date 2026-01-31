@@ -20,7 +20,7 @@
 package org.apache.airavata.agents.api;
 
 /**
- * TODO: Class level comments please
+ * Result of a command execution (stdout, stderr, exit code).
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

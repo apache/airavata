@@ -22,9 +22,9 @@ package org.apache.airavata.task.aws;
 import java.util.UUID;
 import org.apache.airavata.agents.ssh.SSHUtil;
 import org.apache.airavata.common.model.AwsComputeResourcePreference;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -207,7 +207,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
         credential.setToken(UUID.randomUUID().toString());
         credential.setPrivateKey(privateKey);
         credential.setPublicKey(publicKey);
-        credential.setUsername(getProcessModel().getUserName());
+        // Login username is per resource/process; not stored on credential
 
         String savedToken = getCredentialStoreService().addSSHCredential(credential);
         LOGGER.info("Successfully saved temporary SSH credential with token {}", savedToken);
@@ -232,7 +232,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
         // 1. The user's IP address (if available from request context)
         // 2. A configured IP range from AwsComputeResourcePreference
         // 3. The gateway's IP range
-        // TODO: Add IP restriction configuration to AwsComputeResourcePreference
+        // IP restriction can be added to AwsComputeResourcePreference when needed
         // and use it here instead of 0.0.0.0/0
         String allowedCidr = "0.0.0.0/0"; // Should be restricted in production
         LOGGER.warn(

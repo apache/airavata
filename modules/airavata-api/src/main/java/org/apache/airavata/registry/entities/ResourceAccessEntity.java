@@ -23,10 +23,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -35,6 +39,7 @@ import java.sql.Timestamp;
 import org.apache.airavata.common.model.PreferenceLevel;
 import org.apache.airavata.common.model.PreferenceResourceType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.credential.entities.CredentialEntity;
 
 /**
  * Entity representing access to a resource with a specific credential.
@@ -94,6 +99,13 @@ import org.apache.airavata.common.utils.AiravataUtils;
  *   <li>GATEWAY: gatewayId</li>
  * </ul>
  *
+ * <h3>Credential–resource properties</h3>
+ * <p>When a credential is assigned to a resource, this row stores <b>resource-specific properties</b>
+ * of that assignment. The same credential on another resource can have different values (e.g. a
+ * different login username). {@code loginUsername} is the primary such property; any future
+ * columns (e.g. scratch path, default partition) are also properties of this credential–resource
+ * pair, not of the credential alone.
+ *
  * @see PreferenceLevel
  * @see PreferenceResourceType
  */
@@ -140,7 +152,8 @@ public class ResourceAccessEntity implements Serializable {
     private String ownerId;
 
     /**
-     * The type of owner (USER, GROUP, or GATEWAY).
+     * The type of owner (GATEWAY, GROUP, or USER deprecated).
+     * USER is deprecated: use GROUP with ownerId = user's personal group ID (userId@gatewayId_personal).
      */
     @Column(name = "OWNER_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -155,10 +168,20 @@ public class ResourceAccessEntity implements Serializable {
 
     /**
      * Token for the credential used to access this resource.
-     * References CREDENTIALS.TOKEN_ID.
+     * References CREDENTIALS(GATEWAY_ID, TOKEN_ID).
      */
     @Column(name = "CREDENTIAL_TOKEN", nullable = false)
     private String credentialToken;
+
+    /**
+     * JPA relationship to the credential. Read-only; use credentialToken and gatewayId for writes.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "CREDENTIAL_TOKEN", referencedColumnName = "TOKEN_ID", insertable = false, updatable = false)
+    })
+    private CredentialEntity credential;
 
     /**
      * Optional login username override for this access.
@@ -249,7 +272,11 @@ public class ResourceAccessEntity implements Serializable {
 
     /**
      * Create a user-level resource access.
+     *
+     * @deprecated Use {@link #forGroup(String, String, PreferenceResourceType, String, String)}
+     *     with groupId = userId + "@" + gatewayId + "_personal" (user's personal group).
      */
+    @Deprecated
     public static ResourceAccessEntity forUser(
             String userId,
             String gatewayId,
@@ -322,6 +349,14 @@ public class ResourceAccessEntity implements Serializable {
 
     public void setCredentialToken(String credentialToken) {
         this.credentialToken = credentialToken;
+    }
+
+    public CredentialEntity getCredential() {
+        return credential;
+    }
+
+    public void setCredential(CredentialEntity credential) {
+        this.credential = credential;
     }
 
     public String getLoginUsername() {

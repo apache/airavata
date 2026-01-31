@@ -21,6 +21,7 @@ package org.apache.airavata.security;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import org.apache.airavata.common.exception.AuthExceptions.AuthenticationException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,7 @@ public abstract class AbstractAuthenticator implements Authenticator {
         return enabled;
     }
 
+    @Override
     public boolean authenticate(Object credentials) throws AuthenticationException {
 
         boolean authenticated = doAuthentication(credentials);

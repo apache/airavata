@@ -35,7 +35,6 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.orchestrator.ParsingHandler;
 import org.apache.airavata.orchestrator.ProcessStatusUpdater;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.orchestrator.messaging.Topics;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.task.parsing.ProcessCompletionMessage;
 import org.apache.airavata.telemetry.CounterMetric;
@@ -119,7 +118,7 @@ public class ParserWorkflowManager extends WorkflowManager implements ParsingHan
     @Override
     protected void doStart() throws Exception {
         init();
-        logger.info("ParserWorkflowManager started; listening on topic {}", Topics.PARSING);
+        logger.info("ParserWorkflowManager started; receives parsing triggers via ParsingHandler.onParsingMessage");
     }
 
     @Override

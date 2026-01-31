@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentSearchFields;
@@ -38,8 +38,8 @@ import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.registry.exception.AppCatalogException;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +68,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
     }
 
     @org.junit.jupiter.api.BeforeEach
-    public void setUpRegistryTest() throws RegistryException, org.apache.airavata.registry.exception.RegistryException {
+    public void setUpRegistryTest() throws RegistryException {
         // Ensure gateway exists
         if (!registryService.isGatewayExist(TEST_GATEWAY_ID)) {
             org.apache.airavata.common.model.Gateway gateway = TestDataFactory.createTestGateway(TEST_GATEWAY_ID);
@@ -457,7 +457,7 @@ public class RegistryServiceIntegrationTest extends ServiceIntegrationTestBase {
         @Test
         @DisplayName("Should handle transaction rollback scenarios and maintain data integrity")
         void shouldRollbackOnError()
-                throws RegistryException, org.apache.airavata.common.exception.ProjectNotFoundException {
+                throws RegistryException, org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException {
             Project project = TestDataFactory.createTestProject("Rollback Test", TEST_GATEWAY_ID);
             String projectId = registryService.createProject(TEST_GATEWAY_ID, project);
 

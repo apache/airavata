@@ -29,9 +29,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.LaunchValidationException;
-import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
+import org.apache.airavata.common.exception.ValidationExceptions.LaunchValidationException;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidationResults;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.DataStageType;
 import org.apache.airavata.common.model.DataStagingTaskModel;
@@ -52,12 +52,12 @@ import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.orchestrator.AbstractOrchestrator;
 import org.apache.airavata.orchestrator.OrchestratorUtils;
 import org.apache.airavata.orchestrator.ValidationService;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.util.ExperimentModelUtil;
 import org.apache.airavata.workflow.process.pre.PreWorkflowManager;
@@ -218,7 +218,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                 throw new OrchestratorException("Compute Resource Id cannot be null at this point");
             }
 
-            // TODO - handle for different resource types
+            // Handle per resource type when needed
             var preferredJobSubmissionInterface =
                     orchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
             var preferredJobSubmissionProtocol =
@@ -226,7 +226,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             var taskIdList = new ArrayList<String>();
 
             if (preferredJobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
-                // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE
+                // UNICORE could be split into multiple tasks if needed
                 // here.
                 taskIdList.addAll(createAndSaveSubmissionTasks(
                         registryService, preferredJobSubmissionInterface, processModel, userGivenWallTime));
@@ -293,7 +293,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         var envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(
-                orchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // TODO support for CLOUD (AWS)
+                orchestratorUtils.getSecurityProtocol(processModel, gatewayId)); // CLOUD (AWS) support can be added
 
         var scratchLocation = orchestratorUtils.getScratchLocation(processModel, gatewayId);
         var workingDir = scratchLocation + File.separator + processModel.getProcessId();

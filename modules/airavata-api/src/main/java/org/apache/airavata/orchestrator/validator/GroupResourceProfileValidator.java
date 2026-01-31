@@ -21,14 +21,14 @@ package org.apache.airavata.orchestrator.validator;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ValidationResults;
-import org.apache.airavata.common.exception.ValidatorResult;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidationResults;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidatorResult;
 import org.apache.airavata.common.model.BatchQueueResourcePolicy;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

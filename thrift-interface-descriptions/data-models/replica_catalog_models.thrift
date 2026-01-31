@@ -55,6 +55,12 @@ struct DataReplicaLocationModel {
     12: optional map<string, string> replicaMetadata
 }
 
+struct DataProductTag {
+    1: optional string id,
+    2: optional string name,
+    3: optional string color
+}
+
 struct DataProductModel {
     1: optional string productUri,
     2: optional string gatewayId,
@@ -68,4 +74,15 @@ struct DataProductModel {
     10: optional i64 lastModifiedTime,
     11: optional map<string, string> productMetadata,
     12: optional list<DataReplicaLocationModel> replicaLocations,
+    13: optional string primaryStorageResourceId,
+    14: optional string primaryFilePath,
+    15: optional string status,
+    16: optional string privacy,
+    17: optional string scope,
+    18: optional string ownerId,
+    19: optional list<string> authors,
+    20: optional list<DataProductTag> tags,
+    21: optional string format,
+    22: optional string headerImage,
+    23: optional i64 updatedAt,
 }

@@ -21,7 +21,7 @@ package org.apache.airavata.restapi.controller;
 
 import java.util.Map;
 import org.apache.airavata.common.model.UserResourceProfile;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.services.UserResourceProfileService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;

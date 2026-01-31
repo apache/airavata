@@ -31,7 +31,7 @@ import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.junit.jupiter.api.AfterEach;

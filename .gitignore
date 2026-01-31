@@ -1,10 +1,15 @@
+# Local compose mode override (copy .env.example to .env)
+.devcontainer/.env
+
 # IDE and Editor files
 .idea/
+!.idea/runConfigurations/
 *.ipr
 *.iws
 *.iml
 .vscode/
 !.vscode/launch.json
+!.vscode/tasks.json
 .project
 .settings/
 .classpath

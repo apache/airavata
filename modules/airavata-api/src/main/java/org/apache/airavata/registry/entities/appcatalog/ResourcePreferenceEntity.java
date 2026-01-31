@@ -55,8 +55,8 @@ import org.apache.airavata.common.utils.AiravataUtils;
  * <ul>
  *   <li>loginUsername - SSH login username</li>
  *   <li>scratchLocation - Scratch directory path</li>
- *   <li>preferredBatchQueue - Default queue name</li>
- *   <li>allocationProjectNumber - Allocation/account number</li>
+ *   <li>preferredBatchQueue - Default queue/partition name (Slurm: always per cluster and credential)</li>
+ *   <li>allocationProjectNumber - Allocation/account number (Slurm: always per cluster and credential)</li>
  *   <li>preferredJobSubmissionProtocol - SSH, LOCAL, etc.</li>
  *   <li>preferredDataMovementProtocol - SCP, SFTP, etc.</li>
  *   <li>qualityOfService - QoS setting</li>

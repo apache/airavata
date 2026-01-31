@@ -18,22 +18,125 @@
  */
 package org.apache.airavata.restapi.controller;
 
+import org.apache.airavata.accountprovisioning.SSHUtil;
+import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.restapi.security.AuthorizationService;
+import org.apache.airavata.security.model.AuthzToken;
 
 @RestController
 @RequestMapping("/api/v1/connectivity-test")
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ConnectivityTestController {
+
+    private final CredentialStoreService credentialStoreService;
+    private final AuthorizationService authorizationService;
+
+    public ConnectivityTestController(
+            CredentialStoreService credentialStoreService,
+            AuthorizationService authorizationService) {
+        this.credentialStoreService = credentialStoreService;
+        this.authorizationService = authorizationService;
+    }
+
+    private AuthzToken getAuthzToken(HttpServletRequest request) {
+        return request != null ? (AuthzToken) request.getAttribute("authzToken") : null;
+    }
+
+    /**
+     * Validates SSH authentication using a stored credential (actual SSH login, not just port check).
+     * Request body: credentialToken, hostname, loginUsername (required), gatewayId (optional, from auth), port (optional, default 22).
+     * Login username is not stored on the credential; it is set per resource in the access grant and must be supplied here.
+     */
+    @PostMapping("/ssh/validate")
+    public ResponseEntity<?> validateSSHCredential(@RequestBody Map<String, Object> request, HttpServletRequest httpRequest) {
+        AuthzToken authzToken = getAuthzToken(httpRequest);
+        String gatewayId = request.get("gatewayId") != null ? request.get("gatewayId").toString().trim() : null;
+        if (gatewayId == null || gatewayId.isBlank()) {
+            if (authzToken != null && authzToken.getClaimsMap() != null && authzToken.getClaimsMap().get(Constants.GATEWAY_ID) != null) {
+                gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID).toString();
+            }
+        }
+        if (gatewayId == null || gatewayId.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "gatewayId is required"));
+        }
+        if (authzToken != null) {
+            authorizationService.requireGatewayAccess(authzToken, gatewayId);
+        }
+
+        String credentialToken = request.get("credentialToken") != null ? request.get("credentialToken").toString() : null;
+        String hostname = request.get("hostname") != null ? request.get("hostname").toString() : null;
+        String loginUsername = request.get("loginUsername") != null ? request.get("loginUsername").toString().trim() : null;
+        if (loginUsername != null && loginUsername.isEmpty()) {
+            loginUsername = null;
+        }
+        int port = 22;
+        if (request.get("port") != null) {
+            try {
+                port = request.get("port") instanceof Number n ? n.intValue() : Integer.parseInt(request.get("port").toString());
+            } catch (NumberFormatException e) {
+                port = 22;
+            }
+        }
+
+        if (credentialToken == null || credentialToken.isBlank() || hostname == null || hostname.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "credentialToken and hostname are required"));
+        }
+
+        SSHCredential sshCred;
+        try {
+            sshCred = credentialStoreService.getSSHCredential(credentialToken, gatewayId);
+        } catch (CredentialStoreException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false, "message", e.getMessage()));
+        }
+        if (sshCred == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("success", false, "message", "SSH credential not found"));
+        }
+
+        if (loginUsername == null || loginUsername.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message",
+                    "Login username is required. Pass loginUsername in the request (it is set per resource in the access grant)."));
+        }
+        String username = loginUsername;
+
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // Optional: test port first
+            boolean portOpen = testPort(hostname, port, 5000);
+            result.put("portAccessible", portOpen);
+            if (!portOpen) {
+                result.put("success", false);
+                result.put("message", "Port " + port + " is not accessible on " + hostname);
+                return ResponseEntity.ok(result);
+            }
+
+            SSHUtil.validate(hostname, port, username, sshCred);
+            result.put("success", true);
+            result.put("message", "SSH authentication successful");
+            result.put("username", username);
+            result.put("auth_validated", true);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            result.put("success", false);
+            result.put("message", "SSH authentication failed: " + e.getMessage());
+            result.put("auth_validated", false);
+            return ResponseEntity.ok(result);
+        }
+    }
 
     @PostMapping("/ssh")
     public ResponseEntity<?> testSSHConnection(@RequestBody Map<String, String> request) {

@@ -28,7 +28,7 @@ import org.apache.airavata.agent.connection.service.config.ClusterApplicationCon
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
 import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
-import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentModel;
@@ -218,7 +218,7 @@ public class AgentManagementHandler {
         computationalResourceSchedulingModel.setWallTimeLimit(req.getWallTime());
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
         computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
-        // TODO - Support for both HPC & Cloud services --> Need to change the ComputationalResourceSchedulingModel
+        // HPC and Cloud support may require changes to ComputationalResourceSchedulingModel
         computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
         computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(
                 extractSlurmAllocationProject(groupCompResourcePref));

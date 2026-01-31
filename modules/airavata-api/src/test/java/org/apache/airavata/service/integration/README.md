@@ -13,31 +13,22 @@ Before running these tests, you must start the required background services:
 
 **Important**: Services must be started before running tests. Tests will automatically detect and use existing services from `.devcontainer/docker-compose.yml` - no extra configuration needed.
 
-### Using the startup script (recommended):
+### Using init (from project root, recommended):
 
 ```bash
-cd .devcontainer
-./start-integration-services.sh
+./scripts/init.sh
 ```
 
-The script will automatically:
-- Detect and use `nerdctl compose`, `docker compose`, or `docker-compose` (whichever is available)
-- Start services: `db`, `redis`
-- Verify services are running
-- Perform basic health checks
+This ensures `db`, `redis`, and Keycloak are up and runs migrations. For state-machine tests you only need `db` and `redis`; you can also start them manually (see below).
 
 ### Manual startup:
 
 ```bash
-cd .devcontainer
-# Using nerdctl:
-nerdctl compose -f docker-compose.yml up -d db redis
+# From project root:
+docker compose -f .devcontainer/docker-compose.yml up -d db redis
 
-# Or using docker compose:
-docker compose -f docker-compose.yml up -d db redis
-
-# Or using docker-compose:
-docker-compose -f docker-compose.yml up -d db redis
+# Or with nerdctl:
+cd .devcontainer && nerdctl compose -f docker-compose.yml up -d db redis
 ```
 
 ### Verify services are running:
@@ -102,11 +93,11 @@ Tests automatically detect and use existing services from `.devcontainer/docker-
 ## Stopping Services
 
 ```bash
-cd .devcontainer
-docker compose -f docker-compose.yml down
+# From project root:
+docker compose -f .devcontainer/docker-compose.yml down
 
-# Or with nerdctl:
-nerdctl compose -f docker-compose.yml down
+# Or from .devcontainer:
+cd .devcontainer && docker compose -f docker-compose.yml down
 ```
 
 ## Troubleshooting

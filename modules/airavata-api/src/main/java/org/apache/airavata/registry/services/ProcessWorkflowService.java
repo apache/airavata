@@ -22,7 +22,7 @@ package org.apache.airavata.registry.services;
 import java.util.List;
 import org.apache.airavata.common.model.ProcessWorkflow;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessWorkflowRepository;
 import org.springframework.stereotype.Service;

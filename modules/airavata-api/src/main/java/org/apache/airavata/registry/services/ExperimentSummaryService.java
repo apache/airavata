@@ -36,7 +36,7 @@ import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentSummaryEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.ExperimentSummaryMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.utils.DBConstants;

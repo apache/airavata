@@ -29,8 +29,9 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.JobModelMapper;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
@@ -47,11 +48,14 @@ public class JobService {
     private final JobRepository jobRepository;
     private final JobModelMapper jobModelMapper;
     private final EntityManager entityManager;
+    private final StatusRepository statusRepository;
 
-    public JobService(JobRepository jobRepository, JobModelMapper jobModelMapper, EntityManager entityManager) {
+    public JobService(JobRepository jobRepository, JobModelMapper jobModelMapper, EntityManager entityManager,
+            StatusRepository statusRepository) {
         this.jobRepository = jobRepository;
         this.jobModelMapper = jobModelMapper;
         this.entityManager = entityManager;
+        this.statusRepository = statusRepository;
     }
 
     public void populateParentIds(JobEntity jobEntity) {
@@ -195,6 +199,7 @@ public class JobService {
                         }
                         statusEntity.setParentId(jobPK.getJobId());
                         statusEntity.setParentType(StatusParentType.JOB);
+                        statusEntity.setSequenceNum(statusRepository.getNextSequenceNum(jobPK.getJobId(), StatusParentType.JOB));
                         existingEntity.getJobStatuses().add(statusEntity);
                     }
                 }

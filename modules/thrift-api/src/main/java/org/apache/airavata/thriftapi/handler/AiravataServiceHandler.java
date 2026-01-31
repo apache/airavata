@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.CoreExceptions.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.security.interceptor.SecurityCheck;
 import org.apache.airavata.service.AiravataService;
@@ -215,14 +215,14 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
         if (e instanceof TException te) return te;
         TException thriftException = null;
         if (e instanceof ApplicationSettingsException
-                || e instanceof org.apache.airavata.common.exception.AiravataSystemException) {
+                || e instanceof org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException) {
             var ex = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
             if (e != null) {
                 ex.setMessage(e.getMessage());
                 ex.initCause(e);
             }
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+        } else if (e instanceof org.apache.airavata.common.exception.AuthExceptions.AuthorizationException) {
             var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
             if (e != null) {
                 ex.setMessage(e.getMessage());
@@ -236,28 +236,28 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
                 ex.initCause(e);
             }
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.InvalidRequestException) {
+        } else if (e instanceof org.apache.airavata.common.exception.CoreExceptions.InvalidRequestException) {
             var ex = new org.apache.airavata.thriftapi.exception.InvalidRequestException();
             if (e != null) {
                 ex.setMessage(e.getMessage());
                 ex.initCause(e);
             }
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.ExperimentNotFoundException) {
+        } else if (e instanceof org.apache.airavata.common.exception.CatalogExceptions.ExperimentNotFoundException) {
             var ex = new org.apache.airavata.thriftapi.exception.ExperimentNotFoundException();
             if (e != null) {
                 ex.setMessage(e.getMessage());
                 ex.initCause(e);
             }
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.ProjectNotFoundException) {
+        } else if (e instanceof org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException) {
             var ex = new org.apache.airavata.thriftapi.exception.ProjectNotFoundException();
             if (e != null) {
                 ex.setMessage(e.getMessage());
                 ex.initCause(e);
             }
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.AiravataClientException) {
+        } else if (e instanceof org.apache.airavata.common.exception.CoreExceptions.AiravataClientException) {
             var ex = new org.apache.airavata.thriftapi.exception.AiravataClientException();
             if (e != null) {
                 ex.setParameter(e.getMessage());
@@ -1963,7 +1963,7 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
         try {
             var domainSSH = sshJobSubmissionMapper.toDomain(sshJobSubmission);
             return airavataService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, domainSSH);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+        } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException e) {
             var thriftException = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
             thriftException.setMessage(e.getMessage());
             if (e.getAiravataErrorType() != null) {
@@ -1994,7 +1994,7 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
         try {
             var domainCloud = cloudJobSubmissionMapper.toDomain(cloudJobSubmission);
             return airavataService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, domainCloud);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+        } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException e) {
             var thriftException = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
             thriftException.setMessage(e.getMessage());
             if (e.getAiravataErrorType() != null) {
@@ -2025,7 +2025,7 @@ public class AiravataServiceHandler implements org.apache.airavata.thriftapi.ser
         try {
             var domainUnicore = unicoreJobSubmissionMapper.toDomain(unicoreJobSubmission);
             return airavataService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, domainUnicore);
-        } catch (org.apache.airavata.common.exception.AiravataSystemException e) {
+        } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException e) {
             var thriftException = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
             thriftException.setMessage(e.getMessage());
             if (e.getAiravataErrorType() != null) {

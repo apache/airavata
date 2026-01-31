@@ -19,37 +19,56 @@
 */
 package org.apache.airavata.registry.services;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.airavata.common.model.PreferenceKeys;
 import org.apache.airavata.common.model.PreferenceLevel;
 import org.apache.airavata.common.model.PreferenceResourceType;
+import org.apache.airavata.common.model.ProfileOwnerType;
+import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntity;
+import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntityPK;
 import org.apache.airavata.registry.entities.appcatalog.ResourcePreferenceEntity;
 import org.apache.airavata.registry.repositories.ResourcePreferenceRepository;
+import org.apache.airavata.registry.repositories.appcatalog.ResourceProfileRepository;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for resolving effective preferences using level-based precedence.
+ * Service for resolving effective preferences using 3-level hierarchy (Zanzibar-like).
  *
- * <p>Resolution follows "most specific wins" strategy:
- * USER (priority 2) > GROUP (priority 1) > GATEWAY (priority 0)
+ * <p>Resolution order (lower priority number = higher authority):
+ * SYSTEM (0) > GATEWAY (1) > GROUP (2)
  *
- * <p>For each preference key, the service checks levels in order of priority
- * and returns the first non-null value found.
+ * <p>When multiple groups at GROUP level have the same preference key, the user
+ * must explicitly select which group's value to use (conflict resolution).
  */
 @Service
 @Transactional(readOnly = true)
 public class PreferenceResolutionService {
 
     private final ResourcePreferenceRepository preferenceRepository;
+    private final UserGroupSelectionService selectionService;
+    private final CredentialStoreService credentialStoreService;
+    private final ResourceProfileRepository resourceProfileRepository;
 
     @Autowired
-    public PreferenceResolutionService(ResourcePreferenceRepository preferenceRepository) {
+    public PreferenceResolutionService(
+            ResourcePreferenceRepository preferenceRepository,
+            UserGroupSelectionService selectionService,
+            CredentialStoreService credentialStoreService,
+            ResourceProfileRepository resourceProfileRepository) {
         this.preferenceRepository = preferenceRepository;
+        this.selectionService = selectionService;
+        this.credentialStoreService = credentialStoreService;
+        this.resourceProfileRepository = resourceProfileRepository;
     }
 
     /**
@@ -105,68 +124,174 @@ public class PreferenceResolutionService {
             String gatewayId,
             String userId,
             List<String> groupIds) {
-
-        String airavataInternalUserId = userId + "@" + gatewayId;
-        List<String> effectiveGroupIds = groupIds != null ? groupIds : Collections.emptyList();
-
-        // Fetch all preferences at all levels in one query
-        List<ResourcePreferenceEntity> allPreferences = preferenceRepository.findAllForResolution(
-                resourceType, resourceId, gatewayId, effectiveGroupIds, airavataInternalUserId);
-
-        // Group by key and resolve
-        return resolveByPriority(allPreferences);
+        ResolvedPreferencesResult result = resolvePreferencesWithConflicts(
+                resourceType, resourceId, gatewayId, userId, groupIds);
+        return result.getResolved();
     }
 
     /**
-     * Resolve preferences by priority, respecting the enforced flag.
-     *
-     * <p>Resolution algorithm:
-     * <ol>
-     *   <li>For each key, first check for any enforced preference at a higher level</li>
-     *   <li>If an enforced preference exists, use it (ignoring lower-level overrides)</li>
-     *   <li>Otherwise, use the value from the highest priority level (most specific wins)</li>
-     * </ol>
-     *
-     * <p>Enforced preferences enable top-down control: a GATEWAY admin can set a preference
-     * with enforced=true to prevent GROUP or USER levels from overriding it.
-     *
-     * @param preferences list of preferences at various levels
-     * @return map of key to resolved value
+     * Resolve preferences with conflict detection. When multiple groups have the same key,
+     * returns conflict info and uses explicit selection if set.
      */
-    private Map<String, String> resolveByPriority(List<ResourcePreferenceEntity> preferences) {
-        // Group preferences by key
+    public ResolvedPreferencesResult resolvePreferencesWithConflicts(
+            PreferenceResourceType resourceType,
+            String resourceId,
+            String gatewayId,
+            String userId,
+            List<String> groupIds) {
+
+        String airavataInternalUserId = userId.contains("@") ? userId : userId + "@" + gatewayId;
+        List<String> effectiveGroupIds = new ArrayList<>(groupIds != null ? groupIds : Collections.emptyList());
+        String personalGroupId = airavataInternalUserId + "_personal";
+        if (!effectiveGroupIds.contains(personalGroupId)) {
+            effectiveGroupIds.add(personalGroupId);
+        }
+
+        List<ResourcePreferenceEntity> allPreferences = preferenceRepository.findAllForResolution(
+                resourceType, resourceId, gatewayId, effectiveGroupIds, airavataInternalUserId);
+
+        return resolveByPriorityWithConflicts(
+                allPreferences, airavataInternalUserId, gatewayId, resourceType, resourceId, effectiveGroupIds);
+    }
+
+    /**
+     * Resolve preferences by 3-level hierarchy with conflict detection.
+     * Lower priority number = higher authority (SYSTEM=0, GATEWAY=1, GROUP=2).
+     */
+    private ResolvedPreferencesResult resolveByPriorityWithConflicts(
+            List<ResourcePreferenceEntity> preferences,
+            String userId,
+            String domainId,
+            PreferenceResourceType resourceType,
+            String resourceId,
+            List<String> userGroupIds) {
+
         Map<String, List<ResourcePreferenceEntity>> byKey =
                 preferences.stream().collect(Collectors.groupingBy(ResourcePreferenceEntity::getKey));
 
         Map<String, String> resolved = new HashMap<>();
+        Set<String> conflictKeys = new HashSet<>();
+        Map<String, List<GroupPreferenceOption>> conflictOptions = new HashMap<>();
 
         for (Map.Entry<String, List<ResourcePreferenceEntity>> entry : byKey.entrySet()) {
             String key = entry.getKey();
             List<ResourcePreferenceEntity> keyPrefs = entry.getValue();
 
-            // First, check for any enforced preference (lower priority level = higher in hierarchy)
-            // GATEWAY (priority 0) > GROUP (priority 1) > USER (priority 2) when enforced
             ResourcePreferenceEntity enforcedPref = keyPrefs.stream()
                     .filter(ResourcePreferenceEntity::isEnforced)
                     .min((a, b) -> Integer.compare(a.getLevel().getPriority(), b.getLevel().getPriority()))
                     .orElse(null);
 
             if (enforcedPref != null && enforcedPref.getValue() != null) {
-                // Use the enforced preference (highest in hierarchy that's enforced)
                 resolved.put(key, enforcedPref.getValue());
-            } else {
-                // No enforced preference, use most specific wins (highest priority level)
+                continue;
+            }
+
+            List<ResourcePreferenceEntity> groupLevelPrefs = keyPrefs.stream()
+                    .filter(p -> p.getLevel().isGroupLevel())
+                    .collect(Collectors.toList());
+
+            if (groupLevelPrefs.isEmpty()) {
+                // No group-level: most specific wins = highest priority number (GROUP/USER > GATEWAY > SYSTEM)
                 ResourcePreferenceEntity winner = keyPrefs.stream()
                         .max((a, b) -> Integer.compare(a.getLevel().getPriority(), b.getLevel().getPriority()))
                         .orElse(null);
-
                 if (winner != null && winner.getValue() != null) {
                     resolved.put(key, winner.getValue());
                 }
+                continue;
             }
+
+            if (groupLevelPrefs.size() == 1) {
+                resolved.put(key, groupLevelPrefs.get(0).getValue());
+                continue;
+            }
+
+            // User's personal preference (USER level or GROUP for personal group) wins without requiring selection
+            String personalGroupId = userId + "_personal";
+            ResourcePreferenceEntity personalPref = groupLevelPrefs.stream()
+                    .filter(p -> (p.getLevel() == PreferenceLevel.USER && userId.equals(p.getOwnerId()))
+                            || (p.getLevel() == PreferenceLevel.GROUP && personalGroupId.equals(p.getOwnerId())))
+                    .findFirst()
+                    .orElse(null);
+            if (personalPref != null && personalPref.getValue() != null) {
+                resolved.put(key, personalPref.getValue());
+                continue;
+            }
+
+            String selectedGroupId = selectionService.getSelectedGroupId(
+                    userId, domainId, resourceType.name(), resourceId, key);
+
+            if (selectedGroupId != null && userGroupIds.contains(selectedGroupId)) {
+                String value = groupLevelPrefs.stream()
+                        .filter(p -> selectedGroupId.equals(p.getOwnerId()))
+                        .map(ResourcePreferenceEntity::getValue)
+                        .findFirst()
+                        .orElse(null);
+                if (value != null) {
+                    resolved.put(key, value);
+                    continue;
+                }
+            }
+
+            conflictKeys.add(key);
+            conflictOptions.put(key, groupLevelPrefs.stream()
+                    .map(p -> new GroupPreferenceOption(p.getOwnerId(), p.getValue()))
+                    .collect(Collectors.toList()));
         }
 
-        return resolved;
+        return new ResolvedPreferencesResult(resolved, conflictKeys, conflictOptions);
+    }
+
+    /**
+     * Result of preference resolution including conflicts that require explicit selection.
+     */
+    public static class ResolvedPreferencesResult {
+        private final Map<String, String> resolved;
+        private final Set<String> conflictKeys;
+        private final Map<String, List<GroupPreferenceOption>> conflictOptions;
+
+        public ResolvedPreferencesResult(
+                Map<String, String> resolved,
+                Set<String> conflictKeys,
+                Map<String, List<GroupPreferenceOption>> conflictOptions) {
+            this.resolved = resolved != null ? resolved : new HashMap<>();
+            this.conflictKeys = conflictKeys != null ? conflictKeys : new HashSet<>();
+            this.conflictOptions = conflictOptions != null ? conflictOptions : new HashMap<>();
+        }
+
+        public Map<String, String> getResolved() {
+            return resolved;
+        }
+
+        public Set<String> getConflictKeys() {
+            return conflictKeys;
+        }
+
+        public Map<String, List<GroupPreferenceOption>> getConflictOptions() {
+            return conflictOptions;
+        }
+    }
+
+    /**
+     * Option for a preference key when multiple groups have values (conflict).
+     */
+    public static class GroupPreferenceOption {
+        private final String groupId;
+        private final String value;
+
+        public GroupPreferenceOption(String groupId, String value) {
+            this.groupId = groupId;
+            this.value = value;
+        }
+
+        public String getGroupId() {
+            return groupId;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
     /**
@@ -303,6 +428,14 @@ public class PreferenceResolutionService {
             String value,
             boolean enforced) {
 
+        // Validate credential exists when saving resource-specific credential token
+        if (PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN.equals(key) && value != null) {
+            String gatewayId = resolveGatewayIdForPreference(ownerId, level);
+            if (gatewayId == null || !credentialStoreService.credentialExists(value, gatewayId)) {
+                throw new IllegalArgumentException("Credential does not exist for token: " + value);
+            }
+        }
+
         ResourcePreferenceEntity existing =
                 preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(
                         resourceType, resourceId, ownerId, level, key);
@@ -359,5 +492,23 @@ public class PreferenceResolutionService {
 
         preferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevel(
                 resourceType, resourceId, ownerId, level);
+    }
+
+    /**
+     * Resolve gateway ID from preference owner/level for credential validation.
+     * GATEWAY: ownerId is gatewayId; USER: ownerId is userId@gatewayId; GROUP: load profile.
+     */
+    private String resolveGatewayIdForPreference(String ownerId, PreferenceLevel level) {
+        return switch (level) {
+            case GATEWAY -> ownerId;
+            case USER -> ownerId.contains("@") ? ownerId.substring(ownerId.indexOf('@') + 1) : null;
+            case GROUP -> {
+                ResourceProfileEntity profile = resourceProfileRepository
+                        .findById(new ResourceProfileEntityPK(ownerId, ProfileOwnerType.GROUP))
+                        .orElse(null);
+                yield profile != null ? profile.getGatewayId() : null;
+            }
+            default -> null;
+        };
     }
 }

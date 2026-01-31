@@ -56,7 +56,7 @@ public class ComputeMonitorActivity implements WorkflowActivity {
 
         try {
             // Note: These properties are not in AiravataServerProperties yet, using defaults
-            // TODO: Add these to AiravataServerProperties if needed
+            // Add to AiravataServerProperties if needed
             final String metaUsername = ""; // properties.getMetascheduler().getUsername() when added
             final String metaGatewayId = ""; // properties.getMetascheduler().getGateway() when added
             final String metaGroupResourceProfileId = ""; // properties.getMetascheduler().getGrpId() when added
@@ -135,7 +135,7 @@ public class ComputeMonitorActivity implements WorkflowActivity {
         var resourceJobManager =
                 JobFactory.getResourceJobManager(registryService, jobSubmissionProtocol, jobSubmissionInterface);
 
-        // TODO: initial phase we are only supporting SLURM
+        // Currently supporting SLURM only
         if (resourceJobManager.getResourceJobManagerType().name().equals("SLURM")) {
             String baseCommand = "sinfo";
 

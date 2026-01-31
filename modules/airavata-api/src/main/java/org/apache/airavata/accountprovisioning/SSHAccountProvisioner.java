@@ -40,9 +40,9 @@ public interface SSHAccountProvisioner {
      * Return true if this user has an account on the compute host
      * @param userId the Airavata user id
      * @return
-     * @throws InvalidUsernameException
+     * @throws AccountProvisioningExceptions.InvalidUsernameException
      */
-    boolean hasAccount(String userId) throws InvalidUsernameException;
+    boolean hasAccount(String userId) throws AccountProvisioningExceptions.InvalidUsernameException;
 
     /**
      * Create an account for the user if no account exists.  May throw {@link UnsupportedOperationException} if
@@ -50,27 +50,27 @@ public interface SSHAccountProvisioner {
      * @param userId the Airavata user id
      * @param sshPublicKey the public key part of an Airavata managed SSH credential
      * @return username
-     * @throws InvalidUsernameException
+     * @throws AccountProvisioningExceptions.InvalidUsernameException
      */
-    String createAccount(String userId, String sshPublicKey) throws InvalidUsernameException;
+    String createAccount(String userId, String sshPublicKey) throws AccountProvisioningExceptions.InvalidUsernameException;
 
     /**
      * Return true if this sshPublicKey has been installed for this user account and all other related setup tasks are complete.
      * @param userId
      * @param sshPublicKey
      * @return
-     * @throws InvalidUsernameException
+     * @throws AccountProvisioningExceptions.InvalidUsernameException
      */
-    boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey) throws InvalidUsernameException;
+    boolean isSSHAccountProvisioningComplete(String userId, String sshPublicKey) throws AccountProvisioningExceptions.InvalidUsernameException;
 
     /**
      * Install an SSH key for the user on the compute host.
      * @param userId the Airavata user id
      * @param sshPublicKey the public key part of an Airavata managed SSH credential
      * @return username
-     * @throws InvalidUsernameException
+     * @throws AccountProvisioningExceptions.InvalidUsernameException
      */
-    String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException;
+    String installSSHKey(String userId, String sshPublicKey) throws AccountProvisioningExceptions.InvalidUsernameException;
 
     /**
      * Get the scratch location that should be created for the user. Note: this method doesn't create the scratch
@@ -79,7 +79,7 @@ public interface SSHAccountProvisioner {
      *
      * @param userId
      * @return a filesystem path (e.g. "/N/scratch/username/some-gateway")
-     * @throws InvalidUsernameException
+     * @throws AccountProvisioningExceptions.InvalidUsernameException
      */
-    String getScratchLocation(String userId) throws InvalidUsernameException;
+    String getScratchLocation(String userId) throws AccountProvisioningExceptions.InvalidUsernameException;
 }

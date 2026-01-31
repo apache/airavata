@@ -23,8 +23,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -32,6 +36,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import org.apache.airavata.common.model.ProfileOwnerType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.credential.entities.CredentialEntity;
 
 /**
  * Unified entity for resource profiles, consolidating the former GatewayProfileEntity
@@ -49,6 +54,10 @@ import org.apache.airavata.common.utils.AiravataUtils;
  *
  * <p>The gatewayId field is always populated and is extracted from the profileId for USER types.
  * This enables efficient queries for all profiles (gateway and user) within a specific gateway.
+ *
+ * <p><strong>Identity server fields:</strong> {@code identityServerPwdCredToken} and {@code identityServerTenant}
+ * are used for Keycloak/IAM admin and tenant configuration (IamAdminService, KeyCloakSecurityManager,
+ * TenantProfileService, GatewayGroupsInitializer). Keep when using internal identity/Keycloak integration.
  *
  * @see ProfileOwnerType
  * @see ResourceProfileEntityPK
@@ -86,10 +95,17 @@ public class ResourceProfileEntity implements Serializable {
 
     /**
      * Token for accessing the credential store.
-     * Used for secure storage and retrieval of credentials.
+     * References CREDENTIALS(GATEWAY_ID, TOKEN_ID). Nullable.
      */
     @Column(name = "CREDENTIAL_STORE_TOKEN")
     private String credentialStoreToken;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "CREDENTIAL_STORE_TOKEN", referencedColumnName = "TOKEN_ID", insertable = false, updatable = false)
+    })
+    private CredentialEntity credentialStoreCredential;
 
     /**
      * Identity server password credential token.
@@ -212,6 +228,14 @@ public class ResourceProfileEntity implements Serializable {
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
+    }
+
+    public CredentialEntity getCredentialStoreCredential() {
+        return credentialStoreCredential;
+    }
+
+    public void setCredentialStoreCredential(CredentialEntity credentialStoreCredential) {
+        this.credentialStoreCredential = credentialStoreCredential;
     }
 
     public String getIdentityServerPwdCredToken() {

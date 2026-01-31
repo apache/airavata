@@ -32,7 +32,7 @@ import org.apache.airavata.common.model.SCPDataMovement;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.SecurityProtocol;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -109,10 +109,9 @@ public class ComputeHandler {
                 throw new RuntimeException("Failed to register compute resource: " + e.getMessage(), e);
             }
 
-            // Create SSH credentials
+            // Create SSH credentials (login username is set per resource via RESOURCE_ACCESS, not on credential)
             var sshCredential = new SSHCredential();
             sshCredential.setGatewayId(gatewayId);
-            sshCredential.setUsername(loginUsername);
             sshCredential.setDescription("Compute resource credentials for " + name);
 
             if (sshKeyPath != null && !sshKeyPath.trim().isEmpty()) {

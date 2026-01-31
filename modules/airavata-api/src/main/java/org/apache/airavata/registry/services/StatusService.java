@@ -34,7 +34,7 @@ import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.StatusEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.StatusRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +78,7 @@ public class StatusService {
      * @param reason the reason for the state change
      * @return the saved status entity
      */
-    public StatusEntity addStatus(String statusId, String parentId, StatusParentType parentType, 
+    public StatusEntity addStatus(String statusId, String parentId, StatusParentType parentType,
                                   String state, String reason) {
         StatusEntity entity = new StatusEntity();
         entity.setStatusId(statusId);
@@ -86,6 +86,7 @@ public class StatusService {
         entity.setParentType(parentType);
         entity.setState(state);
         entity.setReason(reason);
+        entity.setSequenceNum(statusRepository.getNextSequenceNum(parentId, parentType));
         return statusRepository.save(entity);
     }
 
@@ -99,6 +100,24 @@ public class StatusService {
     public List<StatusEntity> getStatuses(String parentId, StatusParentType parentType) {
         entityManager.flush();
         return statusRepository.findByParentIdAndParentType(parentId, parentType);
+    }
+
+    /**
+     * Assigns DB-backed sequence numbers to status entities that have null sequenceNum.
+     * Call before persisting (e.g. before cascade save from Experiment/Process/Task).
+     *
+     * @param statuses list of status entities (may contain existing with sequenceNum already set)
+     * @param parentId the parent entity ID
+     * @param parentType the type of parent entity
+     */
+    public void assignSequenceNumbersForNewStatuses(
+            List<StatusEntity> statuses, String parentId, StatusParentType parentType) {
+        if (statuses == null) return;
+        for (StatusEntity s : statuses) {
+            if (s.getSequenceNum() == null) {
+                s.setSequenceNum(statusRepository.getNextSequenceNum(parentId, parentType));
+            }
+        }
     }
 
     /**
@@ -135,6 +154,7 @@ public class StatusService {
      */
     public String addExperimentStatus(ExperimentStatus status, String experimentId) throws RegistryException {
         StatusEntity entity = toEntity(status, experimentId, StatusParentType.EXPERIMENT);
+        entity.setSequenceNum(statusRepository.getNextSequenceNum(experimentId, StatusParentType.EXPERIMENT));
         StatusEntity saved = statusRepository.save(entity);
         entityManager.flush();
         return saved.getStatusId();
@@ -180,6 +200,7 @@ public class StatusService {
      */
     public String addProcessStatus(ProcessStatus status, String processId) throws RegistryException {
         StatusEntity entity = toEntity(status, processId, StatusParentType.PROCESS);
+        entity.setSequenceNum(statusRepository.getNextSequenceNum(processId, StatusParentType.PROCESS));
         StatusEntity saved = statusRepository.save(entity);
         entityManager.flush();
         return saved.getStatusId();
@@ -270,6 +291,7 @@ public class StatusService {
      */
     public String addJobStatus(JobStatus status, String jobId) throws RegistryException {
         StatusEntity entity = toEntity(status, jobId, StatusParentType.JOB);
+        entity.setSequenceNum(statusRepository.getNextSequenceNum(jobId, StatusParentType.JOB));
         StatusEntity saved = statusRepository.save(entity);
         entityManager.flush();
         return saved.getStatusId();
@@ -485,6 +507,8 @@ public class StatusService {
     public void createQueueStatuses(List<org.apache.airavata.common.model.QueueStatusModel> queueStatuses) throws RegistryException {
         for (org.apache.airavata.common.model.QueueStatusModel queueStatus : queueStatuses) {
             StatusEntity entity = toEntity(queueStatus);
+            String parentId = queueStatus.getHostName() + ":" + queueStatus.getQueueName();
+            entity.setSequenceNum(statusRepository.getNextSequenceNum(parentId, StatusParentType.QUEUE));
             statusRepository.save(entity);
         }
     }

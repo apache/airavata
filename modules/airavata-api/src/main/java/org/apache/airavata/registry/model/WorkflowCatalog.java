@@ -20,7 +20,7 @@
 package org.apache.airavata.registry.model;
 
 import org.apache.airavata.common.model.AiravataWorkflow;
-import org.apache.airavata.registry.exception.WorkflowCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.WorkflowCatalogException;
 
 public interface WorkflowCatalog {
 

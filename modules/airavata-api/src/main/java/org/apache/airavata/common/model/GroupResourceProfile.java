@@ -23,12 +23,24 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Domain model: GroupResourceProfile
+ * Domain model: GroupResourceProfile.
+ *
+ * <p>Group resource profiles are used primarily to manage shared allocations. A group can be
+ * created from projects available for accounts as discovered through each credential (see
+ * {@link org.apache.airavata.service.cluster.ClusterInfoService}). Partition and project
+ * properties are always specific to a Slurm cluster and credential; each compute preference
+ * in this profile carries resource-specific credential, allocation project, and partition.
+ *
+ * <p>Use {@link #designatedAllocationProjectName} to tag the logical project this group
+ * represents (e.g. for merging groups that represent the same project across runtimes into
+ * an {@link org.apache.airavata.common.model.AllocationPool}).
  */
 public class GroupResourceProfile {
     private String gatewayId;
     private String groupResourceProfileId;
     private String groupResourceProfileName;
+    /** Logical allocation project name this group is designated for (e.g. for pooling/merge). */
+    private String designatedAllocationProjectName;
     private List<GroupComputeResourcePreference> computePreferences;
     private List<ComputeResourcePolicy> computeResourcePolicies;
     private List<BatchQueueResourcePolicy> batchQueueResourcePolicies;
@@ -60,6 +72,14 @@ public class GroupResourceProfile {
 
     public void setGroupResourceProfileName(String groupResourceProfileName) {
         this.groupResourceProfileName = groupResourceProfileName;
+    }
+
+    public String getDesignatedAllocationProjectName() {
+        return designatedAllocationProjectName;
+    }
+
+    public void setDesignatedAllocationProjectName(String designatedAllocationProjectName) {
+        this.designatedAllocationProjectName = designatedAllocationProjectName;
     }
 
     public List<GroupComputeResourcePreference> getComputePreferences() {
@@ -132,6 +152,7 @@ public class GroupResourceProfile {
                 gatewayId,
                 groupResourceProfileId,
                 groupResourceProfileName,
+                designatedAllocationProjectName,
                 computePreferences,
                 computeResourcePolicies,
                 batchQueueResourcePolicies,
@@ -143,7 +164,8 @@ public class GroupResourceProfile {
     @Override
     public String toString() {
         return "GroupResourceProfile{" + "gatewayId=" + gatewayId + ", groupResourceProfileId=" + groupResourceProfileId
-                + ", groupResourceProfileName=" + groupResourceProfileName + ", computePreferences="
+                + ", groupResourceProfileName=" + groupResourceProfileName
+                + ", designatedAllocationProjectName=" + designatedAllocationProjectName + ", computePreferences="
                 + computePreferences + ", computeResourcePolicies=" + computeResourcePolicies
                 + ", batchQueueResourcePolicies=" + batchQueueResourcePolicies + ", creationTime=" + creationTime
                 + ", updatedTime=" + updatedTime + ", defaultCredentialStoreToken=" + defaultCredentialStoreToken + "}";

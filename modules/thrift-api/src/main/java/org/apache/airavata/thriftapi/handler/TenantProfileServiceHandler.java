@@ -67,7 +67,7 @@ public class TenantProfileServiceHandler
             ex.setMessage("Credential Store Error: " + e.getMessage());
             ex.initCause(e);
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+        } else if (e instanceof org.apache.airavata.common.exception.AuthExceptions.AuthorizationException) {
             var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
             ex.setMessage(e.getMessage());
             ex.initCause(e);

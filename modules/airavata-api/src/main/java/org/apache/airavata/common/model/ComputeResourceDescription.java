@@ -45,6 +45,23 @@ public class ComputeResourceDescription {
     private int defaultNodeCount;
     private int defaultCPUCount;
     private int defaultWalltime;
+    private ComputeResourceType resourceType = ComputeResourceType.SLURM;
+
+    /**
+     * ID of the linked storage resource (created automatically with this compute resource).
+     */
+    private String linkedStorageResourceId;
+
+    /**
+     * Storage protocol to use for the linked storage resource (used during creation, not persisted).
+     * E.g., "SFTP", "SCP", "GridFTP"
+     */
+    private transient String storageProtocol;
+
+    /**
+     * Projects/accounts configured for this compute resource with their queue access mappings.
+     */
+    private List<ComputeResourceProject> projects;
 
     public ComputeResourceDescription() {}
 
@@ -192,6 +209,38 @@ public class ComputeResourceDescription {
         this.defaultWalltime = defaultWalltime;
     }
 
+    public ComputeResourceType getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(ComputeResourceType resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public String getLinkedStorageResourceId() {
+        return linkedStorageResourceId;
+    }
+
+    public void setLinkedStorageResourceId(String linkedStorageResourceId) {
+        this.linkedStorageResourceId = linkedStorageResourceId;
+    }
+
+    public String getStorageProtocol() {
+        return storageProtocol;
+    }
+
+    public void setStorageProtocol(String storageProtocol) {
+        this.storageProtocol = storageProtocol;
+    }
+
+    public List<ComputeResourceProject> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<ComputeResourceProject> projects) {
+        this.projects = projects;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -214,7 +263,10 @@ public class ComputeResourceDescription {
                 && Objects.equals(cpusPerNode, that.cpusPerNode)
                 && Objects.equals(defaultNodeCount, that.defaultNodeCount)
                 && Objects.equals(defaultCPUCount, that.defaultCPUCount)
-                && Objects.equals(defaultWalltime, that.defaultWalltime);
+                && Objects.equals(defaultWalltime, that.defaultWalltime)
+                && Objects.equals(resourceType, that.resourceType)
+                && Objects.equals(linkedStorageResourceId, that.linkedStorageResourceId)
+                && Objects.equals(projects, that.projects);
     }
 
     @Override
@@ -237,7 +289,10 @@ public class ComputeResourceDescription {
                 cpusPerNode,
                 defaultNodeCount,
                 defaultCPUCount,
-                defaultWalltime);
+                defaultWalltime,
+                resourceType,
+                linkedStorageResourceId,
+                projects);
     }
 
     @Override
@@ -250,6 +305,7 @@ public class ComputeResourceDescription {
                 + gatewayUsageReporting + ", gatewayUsageModuleLoadCommand=" + gatewayUsageModuleLoadCommand
                 + ", gatewayUsageExecutable=" + gatewayUsageExecutable + ", cpusPerNode=" + cpusPerNode
                 + ", defaultNodeCount=" + defaultNodeCount + ", defaultCPUCount=" + defaultCPUCount
-                + ", defaultWalltime=" + defaultWalltime + "}";
+                + ", defaultWalltime=" + defaultWalltime + ", resourceType=" + resourceType
+                + ", linkedStorageResourceId=" + linkedStorageResourceId + ", projects=" + projects + "}";
     }
 }

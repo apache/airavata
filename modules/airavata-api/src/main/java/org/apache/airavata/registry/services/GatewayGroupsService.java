@@ -21,7 +21,7 @@ package org.apache.airavata.registry.services;
 
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.registry.entities.appcatalog.GatewayGroupsEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.GatewayGroupsMapper;
 import org.apache.airavata.registry.repositories.appcatalog.GatewayGroupsRepository;
 import org.springframework.stereotype.Service;

@@ -24,12 +24,15 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.TaskEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.TaskModelMapper;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.expcatalog.ProcessRepository;
 import org.apache.airavata.registry.repositories.expcatalog.TaskRepository;
 import org.apache.airavata.registry.utils.DBConstants;
@@ -49,18 +52,21 @@ public class TaskService {
     private final JobService jobService;
     private final TaskModelMapper taskModelMapper;
     private final EntityManager entityManager;
+    private final StatusRepository statusRepository;
 
     public TaskService(
             TaskRepository taskRepository,
             ProcessRepository processRepository,
             JobService jobService,
             TaskModelMapper taskModelMapper,
-            EntityManager entityManager) {
+            EntityManager entityManager,
+            StatusRepository statusRepository) {
         this.taskRepository = taskRepository;
         this.processRepository = processRepository;
         this.jobService = jobService;
         this.taskModelMapper = taskModelMapper;
         this.entityManager = entityManager;
+        this.statusRepository = statusRepository;
     }
 
     public void populateParentIds(TaskEntity taskEntity) {
@@ -240,6 +246,14 @@ public class TaskService {
         }
 
         populateParentIds(taskEntity);
+
+        if (taskEntity.getTaskStatuses() != null) {
+            for (StatusEntity s : taskEntity.getTaskStatuses()) {
+                if (s.getSequenceNum() == null) {
+                    s.setSequenceNum(statusRepository.getNextSequenceNum(taskId, StatusParentType.TASK));
+                }
+            }
+        }
 
         var savedTask = taskRepository.save(taskEntity);
         taskRepository.flush();

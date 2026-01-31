@@ -21,17 +21,14 @@ package org.apache.airavata.registry.entities.airavataworkflowcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.io.Serializable;
@@ -40,8 +37,6 @@ import java.util.List;
 import org.apache.airavata.common.model.HandlerType;
 import org.apache.airavata.registry.entities.InputDataEntity;
 import org.apache.airavata.registry.entities.OutputDataEntity;
-import org.apache.airavata.registry.entities.StatusEntity;
-import org.apache.airavata.registry.entities.ErrorEntity;
 
 @Entity
 @Table(name = "WORKFLOW_HANDLER")
@@ -71,23 +66,7 @@ public class WorkflowHandlerEntity implements Serializable {
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AiravataWorkflowEntity workflow;
 
-    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @jakarta.persistence.JoinColumns(value = {
-        @JoinColumn(
-                name = "PARENT_ID",
-                referencedColumnName = "ID",
-                insertable = false,
-                updatable = false)
-    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'HANDLER'")
-    private List<StatusEntity> statuses;
-
-    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @jakarta.persistence.JoinColumns(value = {
-        @JoinColumn(name = "PARENT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'HANDLER'")
-    private List<ErrorEntity> errors;
+    /** Status and error records live in unified STATUS/ERROR tables; load via StatusRepository/ErrorRepository by parentId=id, parentType=HANDLER. */
 
     /**
      * Transient field for handler inputs. Inputs are stored in the unified INPUT_DATA table
@@ -129,14 +108,6 @@ public class WorkflowHandlerEntity implements Serializable {
         this.workflow = workflow;
     }
 
-    public void setStatuses(List<StatusEntity> statuses) {
-        this.statuses = statuses;
-    }
-
-    public void setErrors(List<ErrorEntity> errors) {
-        this.errors = errors;
-    }
-
     public void setInputs(List<InputDataEntity> inputs) {
         this.inputs = inputs;
     }
@@ -167,14 +138,6 @@ public class WorkflowHandlerEntity implements Serializable {
 
     public AiravataWorkflowEntity getWorkflow() {
         return workflow;
-    }
-
-    public List<StatusEntity> getStatuses() {
-        return statuses;
-    }
-
-    public List<ErrorEntity> getErrors() {
-        return errors;
     }
 
     public List<InputDataEntity> getInputs() {

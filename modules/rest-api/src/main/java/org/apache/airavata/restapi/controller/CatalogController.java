@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.CatalogResource;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.CatalogResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.apache.airavata.security.model.AuthzToken;
@@ -87,7 +87,7 @@ public class CatalogController {
             // Get accessible group resource profiles for the user
             var groups = groupResourceProfileService.getAllGroupResourceProfiles(
                     gatewayId, 
-                    Collections.emptyList() // TODO: Get from sharing registry if enabled
+                    Collections.emptyList() // Get from sharing registry if enabled
             );
             return groups.stream()
                     .map(g -> g.getGroupResourceProfileId())

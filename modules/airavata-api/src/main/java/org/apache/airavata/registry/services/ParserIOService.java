@@ -26,7 +26,7 @@ import org.apache.airavata.common.model.ParserIO;
 import org.apache.airavata.common.model.ParserInput;
 import org.apache.airavata.common.model.ParserOutput;
 import org.apache.airavata.registry.entities.appcatalog.ParserIOEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.appcatalog.ParserIORepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

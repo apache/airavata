@@ -26,8 +26,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.sharing.entities.EntityEntity;
 import org.apache.airavata.sharing.entities.EntityPK;
+import org.apache.airavata.sharing.entities.ShareableEntity;
 import org.apache.airavata.sharing.entities.SharingEntity;
 import org.apache.airavata.sharing.mappers.EntityMapper;
 import org.apache.airavata.sharing.model.Entity;
@@ -67,8 +67,8 @@ public class EntityService {
     }
 
     public Entity update(Entity entity) throws SharingRegistryException {
-        var entityEntity = entityMapper.toEntity(entity);
-        var saved = entityRepository.save(entityEntity);
+        var shareableEntity = entityMapper.toEntity(entity);
+        var saved = entityRepository.save(shareableEntity);
         return entityMapper.toModel(saved);
     }
 
@@ -92,15 +92,15 @@ public class EntityService {
             throws SharingRegistryException {
         try {
             var cb = entityManager.getCriteriaBuilder();
-            var query = cb.createQuery(EntityEntity.class);
-            var entityRoot = query.from(EntityEntity.class);
+            var query = cb.createQuery(ShareableEntity.class);
+            var entityRoot = query.from(ShareableEntity.class);
 
             var predicates = new ArrayList<Predicate>();
 
             // Domain filter
             predicates.add(cb.equal(entityRoot.get("domainId"), domainId));
 
-            // Extract PERMISSION_TYPE_ID filter for use in subquery (it's on SharingEntity, not EntityEntity)
+            // Extract PERMISSION_TYPE_ID filter for use in subquery (it's on SharingEntity, not ShareableEntity)
             String permissionTypeFilter = null;
             if (filters != null) {
                 for (var criteria : filters) {
@@ -174,7 +174,7 @@ public class EntityService {
         }
     }
 
-    private Predicate buildPredicate(CriteriaBuilder cb, Root<EntityEntity> root, SearchCriteria criteria) {
+    private Predicate buildPredicate(CriteriaBuilder cb, Root<ShareableEntity> root, SearchCriteria criteria) {
         EntitySearchField field = criteria.getSearchField();
         String value = criteria.getValue();
         SearchCondition condition = criteria.getSearchCondition();
@@ -227,7 +227,7 @@ public class EntityService {
         };
     }
 
-    private Path<?> getFieldPath(Root<EntityEntity> root, EntitySearchField field) {
+    private Path<?> getFieldPath(Root<ShareableEntity> root, EntitySearchField field) {
         return switch (field) {
             case NAME -> root.get("name");
             case DESCRIPTION -> root.get("description");

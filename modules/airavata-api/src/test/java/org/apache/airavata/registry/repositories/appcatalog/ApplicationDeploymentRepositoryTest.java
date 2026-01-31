@@ -34,7 +34,7 @@ import org.apache.airavata.common.model.ApplicationParallelismType;
 import org.apache.airavata.common.model.CommandObject;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.SetEnvPaths;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
@@ -75,6 +75,13 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
         computeResourceDescription.setComputeResourceId("compHost" + tag);
         computeResourceDescription.setHostName("compHostName" + tag);
+        org.apache.airavata.common.model.BatchQueue queue = new org.apache.airavata.common.model.BatchQueue();
+        queue.setQueueName("default");
+        queue.setQueueDescription("Default queue");
+        queue.setMaxRunTime(24);
+        queue.setMaxNodes(1);
+        queue.setMaxJobsInQueue(10);
+        computeResourceDescription.setBatchQueues(java.util.Collections.singletonList(queue));
         return computeResourceService.addComputeResource(computeResourceDescription);
     }
 

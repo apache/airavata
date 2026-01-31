@@ -33,7 +33,7 @@ import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.StatusEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ExperimentService;

@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ShutdownFlag;
@@ -47,6 +47,7 @@ import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.email.EmailParser;
 import org.apache.airavata.monitor.email.ResourceConfig;
 import org.apache.airavata.orchestrator.JobStatusHandler;
+import org.apache.airavata.orchestrator.internal.monitoring.JobStatusEventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -66,6 +67,7 @@ public class EmailMonitorWorkflow extends ServerLifecycle {
     private final org.apache.airavata.service.registry.RegistryService registryService;
     private final ApplicationContext applicationContext;
     private final AbstractMonitor abstractMonitor;
+    private final JobStatusEventPublisher jobStatusEventPublisher;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -97,6 +99,13 @@ public class EmailMonitorWorkflow extends ServerLifecycle {
             // PostWorkflowManager may not be enabled
         }
         this.abstractMonitor = new AbstractMonitor(registryService, airavataProperties, handler);
+        JobStatusEventPublisher publisher = null;
+        try {
+            publisher = applicationContext.getBean(JobStatusEventPublisher.class);
+        } catch (Exception ignored) {
+            // Optional: when available, publish to status-change-topic (same path as realtime/notify API)
+        }
+        this.jobStatusEventPublisher = publisher;
         // Don't initialize here - wait for @PostConstruct when properties are injected
     }
 
@@ -373,7 +382,11 @@ public class EmailMonitorWorkflow extends ServerLifecycle {
             try {
                 JobStatusResult jobStatusResult = parse(message, publisherId);
                 log.info("read JobStatusUpdate<{}> from {}: {}", msgHash, publisherId, jobStatusResult);
-                abstractMonitor.submitJobStatus(jobStatusResult);
+                if (jobStatusEventPublisher != null) {
+                    jobStatusEventPublisher.publish(jobStatusResult);
+                } else {
+                    abstractMonitor.submitJobStatus(jobStatusResult);
+                }
                 processedMessages.add(message);
             } catch (Exception e) {
                 var msgTime = message.getReceivedDate().getTime();

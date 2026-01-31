@@ -29,7 +29,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.StorageInterfacePK;
 import org.apache.airavata.registry.entities.appcatalog.StorageResourceEntity;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.DataMovementInterfaceMapper;
 import org.apache.airavata.registry.mappers.StorageResourceMapper;
 import org.apache.airavata.registry.repositories.appcatalog.StorageInterfaceRepository;

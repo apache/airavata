@@ -21,9 +21,9 @@ package org.apache.airavata.service.experiment;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.AiravataSystemException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataErrorType;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentSearchFields;
 import org.apache.airavata.common.model.ExperimentState;
@@ -32,11 +32,11 @@ import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.orchestrator.config.OrchestratorConfig;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class ExperimentService {
 
     private AiravataSystemException airavataSystemException(
             AiravataErrorType errorType, String message, Throwable cause) {
-        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+        return org.apache.airavata.common.exception.ValidationExceptions.ExceptionHandlerUtil.wrapAsAiravataException(
                 errorType, message, cause);
     }
 

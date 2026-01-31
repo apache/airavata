@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 
 public interface UsrResourceProfile {
     /**

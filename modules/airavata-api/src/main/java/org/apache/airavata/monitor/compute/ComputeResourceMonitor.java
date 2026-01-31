@@ -23,7 +23,7 @@ import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.common.model.UserResourceProfile;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
 

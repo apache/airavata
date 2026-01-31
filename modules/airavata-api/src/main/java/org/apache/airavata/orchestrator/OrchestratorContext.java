@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.orchestrator;
 
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
 
 /**
  * This is the context object used in orchestrator which

@@ -23,7 +23,7 @@ import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
 
 /**
- * TODO: Class level comments please
+ * Support for fetching job and storage adaptors by gateway and protocol.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

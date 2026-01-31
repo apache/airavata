@@ -93,7 +93,7 @@ under the License.
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.9</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -102,7 +102,7 @@ under the License.
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
-                <version>1.19.8</version>
+                <version>1.20.5</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -135,7 +135,7 @@ under the License.
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>4.30.2</version>
+                <version>4.33.0</version>
             </dependency>
 
             <!-- Jackson -->
@@ -177,17 +177,17 @@ under the License.
             <dependency>
                 <groupId>io.dapr</groupId>
                 <artifactId>dapr-sdk</artifactId>
-                <version>1.16.0</version>
+                <version>1.16.1</version>
             </dependency>
             <dependency>
                 <groupId>io.dapr</groupId>
                 <artifactId>dapr-sdk-springboot</artifactId>
-                <version>1.16.0</version>
+                <version>1.16.1</version>
             </dependency>
             <dependency>
                 <groupId>io.dapr</groupId>
                 <artifactId>dapr-sdk-workflows</artifactId>
-                <version>1.16.0</version>
+                <version>1.16.1</version>
             </dependency>
             <!-- Prometheus simpleclient removed - using Spring Boot's micrometer-registry-prometheus -->
             <dependency>
@@ -198,29 +198,29 @@ under the License.
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-templates</artifactId>
-                <version>3.0.23</version>
+                <version>3.0.25</version>
             </dependency>
             <dependency>
                 <groupId>com.github.docker-java</groupId>
                 <artifactId>docker-java</artifactId>
-                <version>3.5.1</version>
+                <version>3.7.0</version>
             </dependency>
             <dependency>
                 <groupId>com.github.docker-java</groupId>
                 <artifactId>docker-java-transport-httpclient5</artifactId>
-                <version>3.5.1</version>
+                <version>3.7.0</version>
             </dependency>
             <!-- snakeyaml provided transitively by Spring Boot (for YAML config support) -->
             <!-- BouncyCastle - required by SSHJ for cipher support -->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.79</version>
+                <version>1.83</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk18on</artifactId>
-                <version>1.79</version>
+                <version>1.83</version>
             </dependency>
 
             <!-- Spring Boot starters, Spring Security, Micrometer - versions managed by Spring Boot BOM -->
@@ -242,14 +242,14 @@ under the License.
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty</artifactId>
-                <version>1.74.0</version>
+                <version>1.78.0</version>
             </dependency>
 
             <!-- OpenAPI -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>2.8.10</version>
+                <version>2.8.15</version>
             </dependency>
 
             <!-- Selenium removed - not used in codebase -->
@@ -260,7 +260,7 @@ under the License.
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-bom</artifactId>
-                <version>1.74.0</version>
+                <version>1.78.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -269,17 +269,17 @@ under the License.
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>ec2</artifactId>
-                <version>2.28.20</version>
+                <version>2.34.0</version>
             </dependency>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>auth</artifactId>
-                <version>2.28.20</version>
+                <version>2.34.0</version>
             </dependency>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>retries</artifactId>
-                <version>2.28.20</version>
+                <version>2.34.0</version>
             </dependency>
 
             <!-- CLI -->
@@ -507,12 +507,12 @@ under the License.
                     <artifactId>protobuf-maven-plugin</artifactId>
                     <version>3.10.3</version>
                     <configuration>
-                        <protocVersion>4.30.2</protocVersion>
+                        <protocVersion>4.33.0</protocVersion>
                         <binaryMavenPlugins>
                             <binaryMavenPlugin>
                                 <groupId>io.grpc</groupId>
                                 <artifactId>protoc-gen-grpc-java</artifactId>
-                                <version>1.74.0</version>
+                                <version>1.78.0</version>
                             </binaryMavenPlugin>
                         </binaryMavenPlugins>
                     </configuration>
@@ -520,7 +520,7 @@ under the License.
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>3.5.4</version>
+                    <version>3.5.9</version>
                 </plugin>
                 <!-- selenium-maven-plugin removed - Selenium not used in codebase -->
             </plugins>

@@ -178,7 +178,8 @@ public class CLIIntegrationTest {
             String output = getOutput();
             assertThat(output).contains("serve");
             assertThat(output).contains("Start all Airavata services");
-            assertThat(output).contains("--foreground");
+            assertThat(output).contains("-d");
+            assertThat(output).contains("--detach");
         }
     }
 

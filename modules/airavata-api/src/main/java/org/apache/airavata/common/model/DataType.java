@@ -29,7 +29,8 @@ public enum DataType {
     URI(3),
     URI_COLLECTION(4),
     STDOUT(5),
-    STDERR(6);
+    STDERR(6),
+    STDIN(7);
 
     private final int value;
 
@@ -57,6 +58,8 @@ public enum DataType {
                 return STDOUT;
             case 6:
                 return STDERR;
+            case 7:
+                return STDIN;
             default:
                 return null;
         }

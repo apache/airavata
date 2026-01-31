@@ -86,6 +86,9 @@ public class BatchQueueEntity implements Serializable {
     @Column(name = "IS_DEFAULT_QUEUE")
     private boolean isDefaultQueue;
 
+    @Column(name = "GPU_PER_NODE")
+    private int gpuPerNode;
+
     public BatchQueueEntity() {}
 
     public String getComputeResourceId() {
@@ -206,5 +209,13 @@ public class BatchQueueEntity implements Serializable {
 
     public void setIsDefaultQueue(boolean defaultQueue) {
         isDefaultQueue = defaultQueue;
+    }
+
+    public int getGpuPerNode() {
+        return gpuPerNode;
+    }
+
+    public void setGpuPerNode(int gpuPerNode) {
+        this.gpuPerNode = gpuPerNode;
     }
 }

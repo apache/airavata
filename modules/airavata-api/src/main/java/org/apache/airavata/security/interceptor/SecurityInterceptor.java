@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.exception.AuthExceptions.AuthorizationException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.security.AiravataSecurityException;

@@ -73,17 +73,13 @@ class SimStream(object):
         Read the config file and set up the specified, data collection and
         event handling resources.
         """
-        # TODO: Read in config
-        # TODO: Set up configuration dict
+        # Read config and set configuration dict when implemented
         pass
 
     def route_message(self, message):
         """
         Send a message to the correct reporter.
         """
-        # TODO: Create new MessageParser
-        # TODO: Run message through MessageParser
-        # TODO: Route message to the correct DataReporter/EventMonitor
         parser = MessageParser()
         parser(message)
         if parser.reporter_name in self.reporters:
@@ -113,9 +109,6 @@ class SimStream(object):
         """
         Set up all DataReporters and DataCollectors.
         """
-        # TODO: Create and configure all DataReporters
-        # TODO: Create and configure all DataCollectors
-        # TODO: Assign each DataCollector to the correct DataReporter
         if "reporters" in self.config:
             for reporter in self.config.reporters:
                 pass
@@ -123,10 +116,7 @@ class SimStream(object):
                 pass
 
     def setup_event_monitoring(self):
-        #TODO: Create and configure all EventMonitors
-        #TODO: Create and configure all EventHandlers
-        #TODO: Assign each EventHandler to the correct EventMonitor
-        #TODO: Assign each EventMonitor to the correct DataCollector
+        # Create and configure EventMonitors, EventHandlers, and wiring when implemented
         pass
 
     def setup_consumer(self):

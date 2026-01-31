@@ -85,8 +85,6 @@ public class ProcessManager {
             }
             command.add(nativeBinaryPath);
             command.add("serve");
-            // The forked process should run the server in the foreground. Otherwise, we'd recursively fork.
-            command.add("--foreground");
             pb = new ProcessBuilder(command);
             pb.directory(binary.getParentFile());
         } else if (jarPath != null && !jarPath.isEmpty()) {
@@ -107,8 +105,6 @@ public class ProcessManager {
             command.add("-jar");
             command.add(jarPath);
             command.add("serve");
-            // The forked process should run the server in the foreground. Otherwise, we'd recursively fork.
-            command.add("--foreground");
 
             pb = new ProcessBuilder(command);
             pb.directory(jar.getParentFile());

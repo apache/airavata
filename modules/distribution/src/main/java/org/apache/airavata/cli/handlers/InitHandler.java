@@ -19,115 +19,59 @@
 */
 package org.apache.airavata.cli.handlers;
 
+import java.io.File;
 import javax.sql.DataSource;
 import org.apache.airavata.cli.util.DatabaseInitializer;
+import org.apache.airavata.config.AiravataConfigUtils;
 import org.apache.airavata.config.DatabaseVersionConstants;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+/**
+ * Initializes the unified Airavata database using Flyway migrations.
+ * Uses the single primary DataSource and runs Flyway programmatically so that
+ * init does not depend on FlywayConfig beans (avoids migrate-on-init and shutdown ordering).
+ */
 @Service
 public class InitHandler {
     private static final Logger logger = LoggerFactory.getLogger(InitHandler.class);
 
-    private final Flyway profileServiceFlyway;
-    private final Flyway appCatalogFlyway;
-    private final Flyway expCatalogFlyway;
-    private final Flyway replicaCatalogFlyway;
-    private final Flyway sharingRegistryFlyway;
-    private final Flyway credentialStoreFlyway;
+    private static final String UNIFIED_DB_NAME = "airavata";
+    private static final String VERSION_CONFIG_KEY = "airavata.catalog.version";
+    private static final String CONFIG_VAL_COLUMN = "CONFIG_VAL";
 
-    private final DataSource profileServiceDataSource;
-    private final DataSource appCatalogDataSource;
-    private final DataSource registryDataSource;
-    private final DataSource replicaDataSource;
-    private final DataSource sharingDataSource;
-    private final DataSource credentialStoreDataSource;
+    private final DataSource dataSource;
 
-    public InitHandler(
-            @Qualifier("profileServiceFlyway") Flyway profileServiceFlyway,
-            @Qualifier("appCatalogFlyway") Flyway appCatalogFlyway,
-            @Qualifier("expCatalogFlyway") Flyway expCatalogFlyway,
-            @Qualifier("replicaCatalogFlyway") Flyway replicaCatalogFlyway,
-            @Qualifier("sharingRegistryFlyway") Flyway sharingRegistryFlyway,
-            @Qualifier("credentialStoreFlyway") Flyway credentialStoreFlyway,
-            @Qualifier("profileServiceDataSource") DataSource profileServiceDataSource,
-            @Qualifier("appCatalogDataSource") DataSource appCatalogDataSource,
-            @Qualifier("registryDataSource") DataSource registryDataSource,
-            @Qualifier("replicaDataSource") DataSource replicaDataSource,
-            @Qualifier("sharingDataSource") DataSource sharingDataSource,
-            @Qualifier("credentialStoreDataSource") DataSource credentialStoreDataSource) {
-        this.profileServiceFlyway = profileServiceFlyway;
-        this.appCatalogFlyway = appCatalogFlyway;
-        this.expCatalogFlyway = expCatalogFlyway;
-        this.replicaCatalogFlyway = replicaCatalogFlyway;
-        this.sharingRegistryFlyway = sharingRegistryFlyway;
-        this.credentialStoreFlyway = credentialStoreFlyway;
-        this.profileServiceDataSource = profileServiceDataSource;
-        this.appCatalogDataSource = appCatalogDataSource;
-        this.registryDataSource = registryDataSource;
-        this.replicaDataSource = replicaDataSource;
-        this.sharingDataSource = sharingDataSource;
-        this.credentialStoreDataSource = credentialStoreDataSource;
+    public InitHandler(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public void initializeDatabases(boolean clean) {
         logger.info("Starting database initialization (clean={})...", clean);
 
+        String configDir = AiravataConfigUtils.getConfigDir();
+        String migrationPath =
+                configDir + File.separator + "db" + File.separator + "migration" + File.separator + "airavata";
+        String location = "filesystem:" + migrationPath;
+        logger.debug("Flyway migration location: {}", location);
+
+        Flyway flyway = Flyway.configure()
+                .dataSource(dataSource)
+                .locations(location)
+                .baselineOnMigrate(true)
+                .validateOnMigrate(true)
+                .cleanDisabled(!clean)
+                .load();
+
         DatabaseInitializer.initializeDatabase(
-                "profile_service",
-                profileServiceFlyway,
-                profileServiceDataSource,
-                "user_profile_catalog_version",
-                DatabaseVersionConstants.PROFILE_SERVICE_VERSION,
-                "CONFIG_VAL",
-                false,
-                clean);
-        DatabaseInitializer.initializeDatabase(
-                "app_catalog",
-                appCatalogFlyway,
-                appCatalogDataSource,
-                "app_catalog_version",
+                UNIFIED_DB_NAME,
+                flyway,
+                dataSource,
+                VERSION_CONFIG_KEY,
                 DatabaseVersionConstants.APP_CATALOG_VERSION,
-                "CONFIG_VAL",
-                false,
-                clean);
-        DatabaseInitializer.initializeDatabase(
-                "experiment_catalog",
-                expCatalogFlyway,
-                registryDataSource,
-                "registry.version",
-                DatabaseVersionConstants.EXPERIMENT_CATALOG_VERSION,
-                "CONFIG_VAL",
-                true,
-                clean);
-        DatabaseInitializer.initializeDatabase(
-                "replica_catalog",
-                replicaCatalogFlyway,
-                replicaDataSource,
-                "data_catalog_version",
-                DatabaseVersionConstants.REPLICA_CATALOG_VERSION,
-                "CONFIG_VAL",
-                false,
-                clean);
-        DatabaseInitializer.initializeDatabase(
-                "sharing_registry",
-                sharingRegistryFlyway,
-                sharingDataSource,
-                "sharing_reg_version",
-                DatabaseVersionConstants.SHARING_REGISTRY_VERSION,
-                "CONFIG_VALUE",
-                false,
-                clean);
-        DatabaseInitializer.initializeDatabase(
-                "credential_store",
-                credentialStoreFlyway,
-                credentialStoreDataSource,
-                "credential_store_version",
-                DatabaseVersionConstants.CREDENTIAL_STORE_VERSION,
-                "CONFIG_VAL",
+                CONFIG_VAL_COLUMN,
                 false,
                 clean);
 

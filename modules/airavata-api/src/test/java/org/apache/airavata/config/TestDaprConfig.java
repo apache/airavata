@@ -26,9 +26,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 import io.dapr.client.DaprClient;
-import org.apache.airavata.orchestrator.internal.messaging.DaprSubscriptionRegistry;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprSubscriptionRegistry;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -72,10 +71,10 @@ public class TestDaprConfig {
             
             log.debug("MockDaprClient: publishing to pubsub={}, topic={}", pubsubName, topicName);
             
-            MessageHandler handler = registry.get(topicName);
-            if (handler != null && data instanceof MessageContext) {
+            MessagingContracts.MessageHandler handler = registry.get(topicName);
+            if (handler != null && data instanceof MessagingContracts.MessageContext) {
                 try {
-                    handler.onMessage((MessageContext) data);
+                    handler.onMessage((MessagingContracts.MessageContext) data);
                     log.debug("MockDaprClient: message delivered to handler for topic={}", topicName);
                 } catch (Exception e) {
                     log.warn("MockDaprClient: handler error for topic={}: {}", topicName, e.getMessage());
@@ -96,10 +95,10 @@ public class TestDaprConfig {
             
             log.debug("MockDaprClient: publishing to pubsub={}, topic={} (with metadata)", pubsubName, topicName);
             
-            MessageHandler handler = registry.get(topicName);
-            if (handler != null && data instanceof MessageContext) {
+            MessagingContracts.MessageHandler handler = registry.get(topicName);
+            if (handler != null && data instanceof MessagingContracts.MessageContext) {
                 try {
-                    handler.onMessage((MessageContext) data);
+                    handler.onMessage((MessagingContracts.MessageContext) data);
                     log.debug("MockDaprClient: message delivered to handler for topic={}", topicName);
                 } catch (Exception e) {
                     log.warn("MockDaprClient: handler error for topic={}: {}", topicName, e.getMessage());

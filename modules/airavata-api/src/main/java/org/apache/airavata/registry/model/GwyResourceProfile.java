@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.airavata.common.model.ComputeResourcePreference;
 import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.model.StoragePreference;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 
 public interface GwyResourceProfile {
     /**

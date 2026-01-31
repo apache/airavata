@@ -22,7 +22,7 @@ package org.apache.airavata.registry.services;
 import java.util.List;
 import org.apache.airavata.common.model.ParsingTemplate;
 import org.apache.airavata.registry.entities.appcatalog.ParsingTemplateEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.ParsingTemplateMapper;
 import org.apache.airavata.registry.repositories.appcatalog.ParsingTemplateRepository;
 import org.springframework.stereotype.Service;

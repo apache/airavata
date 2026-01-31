@@ -29,6 +29,7 @@ import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatus;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.ErrorEntity;
@@ -38,7 +39,7 @@ import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.ExperimentMapper;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
 import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
@@ -62,6 +63,7 @@ public class ExperimentService {
 
     private final ExperimentRepository experimentRepository;
     private final ProcessService processService;
+    private final StatusService statusService;
     private final ExperimentMapper experimentMapper;
     private final ProcessWorkflowMapper processWorkflowMapper;
     private final InputDataRepository inputDataRepository;
@@ -72,6 +74,7 @@ public class ExperimentService {
     public ExperimentService(
             ExperimentRepository experimentRepository,
             ProcessService processService,
+            StatusService statusService,
             ExperimentMapper experimentMapper,
             ProcessWorkflowMapper processWorkflowMapper,
             InputDataRepository inputDataRepository,
@@ -80,6 +83,7 @@ public class ExperimentService {
             OutputDataObjectTypeMapper outputDataObjectTypeMapper) {
         this.experimentRepository = experimentRepository;
         this.processService = processService;
+        this.statusService = statusService;
         this.experimentMapper = experimentMapper;
         this.processWorkflowMapper = processWorkflowMapper;
         this.inputDataRepository = inputDataRepository;
@@ -333,11 +337,17 @@ public class ExperimentService {
             newEntity.setEmailAddresses(emailAddressesStr);
             existingEntity.setEmailAddresses(emailAddressesStr);
 
-            // Properly merge lists using EntityMergeHelper (handles duplicates gracefully)
-            EntityMergeHelper.mergeLists(
-                    existingEntity.getExperimentStatus(),
-                    newEntity.getExperimentStatus(),
-                    StatusEntity::getStatusId);
+            // Merge status in place so we keep managed entities (avoids DuplicateKey when re-saving same status)
+            if (existingEntity.getExperimentStatus() == null) {
+                existingEntity.setExperimentStatus(
+                        newEntity.getExperimentStatus() != null
+                                ? new java.util.ArrayList<>(newEntity.getExperimentStatus())
+                                : new java.util.ArrayList<>());
+            } else {
+                EntityMergeHelper.mergeStatusListsInPlace(
+                        existingEntity.getExperimentStatus(),
+                        newEntity.getExperimentStatus());
+            }
             // Inputs and outputs are now managed separately via unified repositories
             EntityMergeHelper.mergeLists(
                     existingEntity.getErrors(), newEntity.getErrors(), ErrorEntity::getErrorId);
@@ -434,8 +444,10 @@ public class ExperimentService {
             logger.debug("Populating the Primary Key of ExperimentStatus objects for the Experiment");
             experimentEntity.getExperimentStatus().forEach(statusEntity -> {
                 statusEntity.setParentId(experimentId);
-                statusEntity.setParentType(org.apache.airavata.common.model.StatusParentType.EXPERIMENT);
+                statusEntity.setParentType(StatusParentType.EXPERIMENT);
             });
+            statusService.assignSequenceNumbersForNewStatuses(
+                    experimentEntity.getExperimentStatus(), experimentId, StatusParentType.EXPERIMENT);
         }
 
         if (experimentEntity.getErrors() != null) {

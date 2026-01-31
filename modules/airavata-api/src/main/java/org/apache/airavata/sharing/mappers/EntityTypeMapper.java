@@ -21,21 +21,21 @@ package org.apache.airavata.sharing.mappers;
 
 import java.util.List;
 import org.apache.airavata.registry.mappers.EntityMapperConfig;
-import org.apache.airavata.sharing.entities.EntityTypeEntity;
+import org.apache.airavata.sharing.entities.EntityTypeRecord;
 import org.apache.airavata.sharing.model.EntityType;
 import org.mapstruct.Mapper;
 
 /**
- * MapStruct mapper for converting between EntityTypeEntity and EntityType.
+ * MapStruct mapper for converting between EntityTypeRecord (table ENTITY_TYPE) and EntityType.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
 public interface EntityTypeMapper {
 
-    EntityType toModel(EntityTypeEntity entity);
+    EntityType toModel(EntityTypeRecord record);
 
-    EntityTypeEntity toEntity(EntityType model);
+    EntityTypeRecord toEntity(EntityType model);
 
-    List<EntityType> toModelList(List<EntityTypeEntity> entities);
+    List<EntityType> toModelList(List<EntityTypeRecord> records);
 
-    List<EntityTypeEntity> toEntityList(List<EntityType> models);
+    List<EntityTypeRecord> toEntityList(List<EntityType> models);
 }

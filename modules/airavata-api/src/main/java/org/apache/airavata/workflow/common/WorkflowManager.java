@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.workflow.common;
 
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessWorkflow;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.ServerLifecycle;
 import org.apache.airavata.orchestrator.ProcessStatusUpdater;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

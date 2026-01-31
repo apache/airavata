@@ -28,7 +28,7 @@ import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
 
 /**
- * TODO: Class level comments please
+ * In-memory cache of agent adaptors (job submission and data movement) per compute resource and credential.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

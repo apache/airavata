@@ -21,7 +21,7 @@ package org.apache.airavata.task.aws.utils;
 
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.common.model.AwsComputeResourcePreference;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -55,7 +55,7 @@ public final class AWSTaskUtil {
         LOGGER.info("Building EC2 client for token {} and gateway id {} in region {}", token, gatewayId, region);
         PasswordCredential pwdCred = credentialStoreService.getPasswordCredential(token, gatewayId);
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
-                pwdCred.getLoginUserName(), pwdCred.getPassword()); // TODO support using AWS Credential
+                pwdCred.getLoginUserName(), pwdCred.getPassword()); // AWS credential support can be added
         return Ec2Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))

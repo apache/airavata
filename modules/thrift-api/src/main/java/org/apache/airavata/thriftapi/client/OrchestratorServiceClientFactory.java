@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.thriftapi.client;
 
-import org.apache.airavata.common.exception.AiravataClientException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataClientException;
 import org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;

@@ -42,6 +42,12 @@ public interface ResourceAccessRepository extends JpaRepository<ResourceAccessEn
             PreferenceResourceType resourceType, String resourceId);
 
     /**
+     * Find all access grants for a specific resource and owner type.
+     */
+    List<ResourceAccessEntity> findByResourceTypeAndResourceIdAndOwnerType(
+            PreferenceResourceType resourceType, String resourceId, PreferenceLevel ownerType);
+
+    /**
      * Find all access grants for a specific owner.
      */
     List<ResourceAccessEntity> findByOwnerIdAndOwnerType(String ownerId, PreferenceLevel ownerType);

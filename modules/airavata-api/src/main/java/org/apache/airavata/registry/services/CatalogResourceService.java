@@ -29,7 +29,7 @@ import org.apache.airavata.registry.entities.catalog.CatalogResourceEntity;
 import org.apache.airavata.registry.entities.catalog.CatalogResourceEntity.Privacy;
 import org.apache.airavata.registry.entities.catalog.CatalogResourceEntity.ResourceScope;
 import org.apache.airavata.registry.entities.catalog.CatalogResourceEntity.ResourceType;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.catalog.CatalogResourceRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,10 +58,11 @@ import org.springframework.transaction.annotation.Transactional;
  * </ul>
  * 
  * <h3>Resource Types</h3>
- * <p>Only two resource types are supported:</p>
+ * <p>Catalog resources support REPOSITORY only for create/update. DATASET-type resources are deprecated here;</p>
+ * <p>datasets are managed as <b>Data Products</b> (see Data Product API). Only:</p>
  * <ul>
- *   <li><b>DATASET</b>: Data files and datasets</li>
- *   <li><b>REPOSITORY</b>: Code repositories, notebooks, models, or any version-controlled resource</li>
+ *   <li><b>REPOSITORY</b>: Code repositories, notebooks, models, or any version-controlled resource (create/update allowed)</li>
+ *   <li><b>DATASET</b>: Legacy type; creation and updates are rejected with "Datasets are managed as data products. Use the Data Product API instead."</li>
  * </ul>
  */
 @Service
@@ -208,6 +209,9 @@ public class CatalogResourceService {
     }
 
     public String createResource(CatalogResource resource) throws RegistryException {
+        if (resource.getType() != null && "DATASET".equalsIgnoreCase(resource.getType().trim())) {
+            throw new RegistryException("Datasets are managed as data products. Use the Data Product API instead.");
+        }
         CatalogResourceEntity entity = toEntity(resource);
 
         if (entity.getId() == null || entity.getId().isEmpty()) {
@@ -225,6 +229,12 @@ public class CatalogResourceService {
                 catalogResourceRepository.findById(resourceId).orElse(null);
         if (existing == null) {
             throw new RegistryException("Resource not found: " + resourceId);
+        }
+        if (existing.getType() == ResourceType.DATASET) {
+            throw new RegistryException("Datasets are managed as data products. Use the Data Product API instead.");
+        }
+        if (resource.getType() != null && "DATASET".equalsIgnoreCase(resource.getType().trim())) {
+            throw new RegistryException("Datasets are managed as data products. Use the Data Product API instead.");
         }
 
         // Update fields

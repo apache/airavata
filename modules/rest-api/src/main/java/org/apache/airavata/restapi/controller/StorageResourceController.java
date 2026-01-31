@@ -19,10 +19,16 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.airavata.common.model.PreferenceResourceType;
 import org.apache.airavata.common.model.StorageResourceDescription;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
+import org.apache.airavata.registry.entities.ResourceAccessEntity;
+import org.apache.airavata.registry.repositories.ResourceAccessRepository;
 import org.apache.airavata.registry.services.StorageResourceService;
+import org.apache.airavata.security.model.AuthzToken;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -40,16 +47,108 @@ import org.springframework.web.bind.annotation.RestController;
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class StorageResourceController {
     private final StorageResourceService storageResourceService;
+    private final ResourceAccessRepository resourceAccessRepository;
 
-    public StorageResourceController(StorageResourceService storageResourceService) {
+    public StorageResourceController(
+            StorageResourceService storageResourceService,
+            ResourceAccessRepository resourceAccessRepository) {
         this.storageResourceService = storageResourceService;
+        this.resourceAccessRepository = resourceAccessRepository;
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllStorageResources() {
+    public ResponseEntity<?> getAllStorageResources(
+            @RequestParam(required = false) String credentialToken,
+            @RequestParam(required = false) String gatewayId,
+            HttpServletRequest request) {
         try {
-            var storageResources = storageResourceService.getAllStorageResourceIdList();
-            return ResponseEntity.ok(storageResources);
+            var allStorageResources = storageResourceService.getAllStorageResourceIdList();
+            
+            // If credentialToken is provided, filter by accessible resources for that credential
+            if (credentialToken != null && !credentialToken.trim().isEmpty()) {
+                var accessGrants = resourceAccessRepository.findByCredentialToken(credentialToken.trim());
+                var accessibleResourceIds = accessGrants.stream()
+                        .filter(ra -> ra.getResourceType() == PreferenceResourceType.STORAGE && ra.isEnabled())
+                        .map(ResourceAccessEntity::getResourceId)
+                        .collect(Collectors.toSet());
+                
+                // Filter the list/map to only include accessible resources
+                if (allStorageResources instanceof Map) {
+                    Map<String, String> filteredResources = new HashMap<>();
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> resourcesMap = (Map<String, String>) allStorageResources;
+                    for (Map.Entry<String, String> entry : resourcesMap.entrySet()) {
+                        if (accessibleResourceIds.contains(entry.getKey())) {
+                            filteredResources.put(entry.getKey(), entry.getValue());
+                        }
+                    }
+                    return ResponseEntity.ok(filteredResources);
+                } else if (allStorageResources instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> resourcesList = (List<Map<String, Object>>) allStorageResources;
+                    List<Map<String, Object>> filteredResources = resourcesList.stream()
+                            .filter(resource -> {
+                                String resourceId = (String) resource.get("storageResourceId");
+                                return resourceId != null && accessibleResourceIds.contains(resourceId);
+                            })
+                            .collect(Collectors.toList());
+                    return ResponseEntity.ok(filteredResources);
+                }
+            }
+            
+            // If no credential token, try to filter by user's accessible resources
+            // Only filter if there are explicit resource access grants configured for this gateway
+            try {
+                var authzToken = (AuthzToken) request.getAttribute("authzToken");
+                if (authzToken != null && gatewayId != null) {
+                    // Check if any resource access grants are configured for this gateway
+                    var gatewayAccessGrants = resourceAccessRepository.findByGatewayIdAndResourceType(
+                            gatewayId, PreferenceResourceType.STORAGE);
+                    
+                    // Only apply filtering if there are explicit access grants configured
+                    if (!gatewayAccessGrants.isEmpty()) {
+                        String userId = authzToken.getClaimsMap() != null ? authzToken.getClaimsMap().get("userName") : null;
+                        if (userId != null) {
+                            String airavataInternalUserId = userId + "@" + gatewayId;
+                            // Get user's accessible resources
+                            var accessibleResourceIds = resourceAccessRepository.findAccessibleResourceIds(
+                                    PreferenceResourceType.STORAGE,
+                                    gatewayId,
+                                    Collections.emptyList(), // Get user's group IDs from sharing registry if enabled
+                                    airavataInternalUserId
+                            );
+                            
+                            // Filter the list/map to only include accessible resources
+                            if (allStorageResources instanceof Map) {
+                                Map<String, String> filteredResources = new HashMap<>();
+                                @SuppressWarnings("unchecked")
+                                Map<String, String> resourcesMap = (Map<String, String>) allStorageResources;
+                                for (Map.Entry<String, String> entry : resourcesMap.entrySet()) {
+                                    if (accessibleResourceIds.contains(entry.getKey())) {
+                                        filteredResources.put(entry.getKey(), entry.getValue());
+                                    }
+                                }
+                                return ResponseEntity.ok(filteredResources);
+                            } else if (allStorageResources instanceof List) {
+                                @SuppressWarnings("unchecked")
+                                List<Map<String, Object>> resourcesList = (List<Map<String, Object>>) allStorageResources;
+                                List<Map<String, Object>> filteredResources = resourcesList.stream()
+                                        .filter(resource -> {
+                                            String resourceId = (String) resource.get("storageResourceId");
+                                            return resourceId != null && accessibleResourceIds.contains(resourceId);
+                                        })
+                                        .collect(Collectors.toList());
+                                return ResponseEntity.ok(filteredResources);
+                            }
+                        }
+                    }
+                    // No access grants configured - return all resources
+                }
+            } catch (Exception e) {
+                // If filtering fails, return all resources
+            }
+            
+            return ResponseEntity.ok(allStorageResources);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -96,6 +195,65 @@ public class StorageResourceController {
             storageResourceService.removeStorageResource(storageResourceId);
             return ResponseEntity.ok().build();
         } catch (AppCatalogException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    /**
+     * Check if a storage resource exists at higher levels (GATEWAY or GROUP)
+     * and return information about where it's defined.
+     */
+    @GetMapping("/{storageResourceId}/hierarchy")
+    public ResponseEntity<?> getResourceHierarchy(
+            @PathVariable String storageResourceId,
+            @RequestParam String gatewayId,
+            HttpServletRequest request) {
+        try {
+            var authzToken = (AuthzToken) request.getAttribute("authzToken");
+            if (authzToken == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            // Check if resource exists globally
+            var resource = storageResourceService.getStorageResource(storageResourceId);
+            if (resource == null) {
+                return ResponseEntity.ok(Map.of(
+                    "exists", false,
+                    "canCreate", true,
+                    "level", "NONE"
+                ));
+            }
+
+            // Check if there are access grants at GATEWAY level for this gateway
+            var gatewayAccessGrants = resourceAccessRepository.findByResourceTypeAndResourceId(
+                PreferenceResourceType.STORAGE,
+                storageResourceId
+            ).stream()
+            .filter(ra -> ra.getOwnerType() == org.apache.airavata.common.model.PreferenceLevel.GATEWAY 
+                      && ra.getOwnerId().equals(gatewayId))
+            .collect(Collectors.toList());
+            boolean existsAtGateway = !gatewayAccessGrants.isEmpty();
+
+            // Check if there are access grants at GROUP level
+            var groupAccessGrants = resourceAccessRepository.findByResourceTypeAndResourceId(
+                PreferenceResourceType.STORAGE,
+                storageResourceId
+            ).stream()
+            .filter(ra -> ra.getOwnerType() == org.apache.airavata.common.model.PreferenceLevel.GROUP)
+            .collect(Collectors.toList());
+            boolean existsAtGroup = !groupAccessGrants.isEmpty();
+
+            String highestLevel = existsAtGateway ? "GATEWAY" : (existsAtGroup ? "GROUP" : "NONE");
+            boolean canCreate = highestLevel.equals("NONE");
+
+            return ResponseEntity.ok(Map.of(
+                "exists", true,
+                "canCreate", canCreate,
+                "canOverride", !canCreate,
+                "level", highestLevel,
+                "resourceId", storageResourceId
+            ));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

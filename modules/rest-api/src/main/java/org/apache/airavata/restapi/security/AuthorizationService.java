@@ -204,8 +204,7 @@ public class AuthorizationService {
 
         // For regular users, get gateways from their profiles
         try {
-            // TODO: Query user profiles to get list of accessible gateways
-            // For now, return the gateway from the token
+            // Return gateway from token; can be extended to query user profiles
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             List<String> gateways = gatewayId != null ? List.of(gatewayId) : List.of();
             

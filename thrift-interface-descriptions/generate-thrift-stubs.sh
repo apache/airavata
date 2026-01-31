@@ -219,8 +219,8 @@ generate_php_stubs() {
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
 
-    # For the generated java classes add the ASF V2 License header
-    ## TODO Write PHP license parser
+    # For the generated java classes add the ASF V2 License header.
+    # PHP generated classes can get the same header when a PHP license parser is added.
 
     # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
     #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.

@@ -218,6 +218,7 @@ public class TestDataFactory {
         computeResource.setHostName("ec2." + region + ".amazonaws.com");
         computeResource.setResourceDescription("Test AWS Compute Resource");
         computeResource.setEnabled(true);
+        computeResource.setResourceType(ComputeResourceType.AWS);
 
         // Create Cloud Job Submission for AWS
         CloudJobSubmission cloudJobSubmission = new CloudJobSubmission();
@@ -290,7 +291,6 @@ public class TestDataFactory {
     public static SSHCredential createSSHCredential(String gatewayId, String username) {
         SSHCredential sshCredential = new SSHCredential();
         sshCredential.setGatewayId(gatewayId);
-        sshCredential.setUsername(username);
         sshCredential.setDescription("Test SSH Credential");
         // Note: In real tests, you would generate actual key pairs
         return sshCredential;

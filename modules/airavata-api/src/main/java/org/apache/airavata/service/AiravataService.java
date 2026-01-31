@@ -31,21 +31,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.apache.airavata.accountprovisioning.InvalidSetupException;
-import org.apache.airavata.accountprovisioning.InvalidUsernameException;
+import java.util.concurrent.ExecutorService;
+import org.apache.airavata.accountprovisioning.AccountProvisioningExceptions.InvalidSetupException;
+import org.apache.airavata.accountprovisioning.AccountProvisioningExceptions.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.agents.api.AdaptorSupport;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.exception.AuthorizationException;
-import org.apache.airavata.common.exception.ExceptionHandlerUtil;
-import org.apache.airavata.common.exception.ExperimentNotFoundException;
-import org.apache.airavata.common.exception.InvalidRequestException;
-import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataErrorType;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException;
+import org.apache.airavata.common.exception.CoreExceptions.ApplicationSettingsException;
+import org.apache.airavata.common.exception.AuthExceptions.AuthorizationException;
+import org.apache.airavata.common.exception.ValidationExceptions.ExceptionHandlerUtil;
+import org.apache.airavata.common.exception.CatalogExceptions.ExperimentNotFoundException;
+import org.apache.airavata.common.exception.CoreExceptions.InvalidRequestException;
+import org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException;
 import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
@@ -66,7 +67,6 @@ import org.apache.airavata.common.model.ExperimentSearchFields;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ExperimentStatistics;
 import org.apache.airavata.common.model.ExperimentStatus;
-import org.apache.airavata.common.model.ExperimentSubmitEvent;
 import org.apache.airavata.common.model.ExperimentSummaryModel;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayGroups;
@@ -110,19 +110,20 @@ import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CredentialSummary;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.model.SummaryType;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.orchestrator.internal.util.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
 import org.apache.airavata.security.model.AuthzToken;
+import org.apache.airavata.service.orchestrator.OrchestratorService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.sharing.model.Domain;
 import org.apache.airavata.sharing.model.DuplicateEntryException;
@@ -218,7 +219,8 @@ public class AiravataService {
     private final AdaptorSupport adaptorSupport;
     private final MessagingFactory messagingFactory;
 
-    private Publisher experimentPublisher;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private OrchestratorService orchestratorService;
 
     public AiravataService(
             AiravataServerProperties properties,
@@ -271,15 +273,6 @@ public class AiravataService {
             // Don't throw - allow server to start without Dapr messaging
         }
 
-        try {
-            experimentPublisher = messagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
-            logger.info("[BEAN-INIT] Initialized ExperimentPublisher");
-        } catch (AiravataException e) {
-            String msg = String.format(
-                    "Error while getting ExperimentPublisher: %s. Publisher will be unavailable.", e.getMessage());
-            logger.warn(msg, e);
-            // Don't throw - allow server to start without Dapr messaging
-        }
     }
 
     @jakarta.annotation.PostConstruct
@@ -936,13 +929,23 @@ public class AiravataService {
                                     .name());
                 case CREATED -> logger.warn("Experiment termination is only allowed for launched experiments.");
                 default -> {
-                    publishExperimentCancelEvent(experimentPublisher, gatewayId, airavataExperimentId);
-                    logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
+                    if (orchestratorService != null) {
+                        orchestratorService.terminateExperiment(airavataExperimentId, gatewayId);
+                        logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
+                    } else {
+                        logger.error("OrchestratorService is not available. Cannot terminate experiment.");
+                        throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR,
+                                "OrchestratorService is not available. Enable orchestrator services to terminate experiments.", null);
+                    }
                 }
             }
         } catch (ExperimentNotFoundException e) {
             throw e;
         } catch (AiravataSystemException e) {
+            String msg = "Error occurred while cancelling the experiment: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
+        } catch (RegistryException | org.apache.airavata.orchestrator.exception.OrchestratorException e) {
             String msg = "Error occurred while cancelling the experiment: " + e.getMessage();
             logger.error(msg, e);
             throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
@@ -3086,7 +3089,6 @@ public class AiravataService {
             throws InvalidRequestException, AiravataSystemException {
         try {
             var sshCredential = new SSHCredential();
-            sshCredential.setUsername(userName);
             sshCredential.setGatewayId(gatewayId);
             sshCredential.setDescription(description);
             var key = credentialStoreService.addSSHCredential(sshCredential);
@@ -3250,7 +3252,7 @@ public class AiravataService {
     public String createProject(String gatewayId, Project project) throws AiravataSystemException {
         try {
             var projectId = projectService.createProject(gatewayId, project);
-            // TODO: verify that gatewayId and project.gatewayId match authzToken
+            // Gateway and project gateway are assumed to match for authz
             try {
                 sharingManager.createProjectEntity(projectId, project);
             } catch (AiravataSystemException ex) {
@@ -3526,60 +3528,6 @@ public class AiravataService {
         }
     }
 
-    // Event publishing methods
-    public void publishExperimentSubmitEvent(Publisher experimentPublisher, String gatewayId, String experimentId)
-            throws AiravataSystemException {
-        var event = new ExperimentSubmitEvent(experimentId, gatewayId);
-        var messageContext = new MessageContext(
-                event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
-        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        try {
-            experimentPublisher.publish(messageContext);
-        } catch (AiravataException e) {
-            String msg = "Error while publishing experiment submit event: " + experimentId + " " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
-    }
-
-    public void publishExperimentCancelEvent(Publisher experimentPublisher, String gatewayId, String experimentId)
-            throws AiravataSystemException {
-        var event = new ExperimentSubmitEvent(experimentId, gatewayId);
-        var messageContext = new MessageContext(
-                event,
-                MessageType.EXPERIMENT_CANCEL,
-                "CANCEL.EXP-" + UUID.randomUUID().toString(),
-                gatewayId);
-        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        try {
-            experimentPublisher.publish(messageContext);
-        } catch (AiravataException e) {
-            String msg = "Error while publishing experiment cancel event: " + experimentId + " " + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
-    }
-
-    public void publishExperimentIntermediateOutputsEvent(
-            Publisher experimentPublisher, String gatewayId, String experimentId, List<String> outputNames)
-            throws AiravataSystemException {
-        var event = new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
-        var messageContext = new MessageContext(
-                event,
-                MessageType.INTERMEDIATE_OUTPUTS,
-                "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(),
-                gatewayId);
-        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        try {
-            experimentPublisher.publish(messageContext);
-        } catch (AiravataException e) {
-            String msg = "Error while publishing experiment intermediate outputs event: " + experimentId + " "
-                    + e.getMessage();
-            logger.error(msg, e);
-            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
-        }
-    }
-
     /**
      * Validate and fetch intermediate outputs - checks access, job state, and
      * existing processes
@@ -3640,10 +3588,19 @@ public class AiravataService {
             }
 
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            publishExperimentIntermediateOutputsEvent(
-                    experimentPublisher, gatewayId, airavataExperimentId, outputNames);
+            if (orchestratorService != null) {
+                var event = new ExperimentIntermediateOutputsEvent(airavataExperimentId, gatewayId, outputNames);
+                orchestratorService.handleIntermediateOutputsEvent(event);
+            } else {
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR,
+                        "OrchestratorService is not available. Enable orchestrator services to fetch intermediate outputs.", null);
+            }
         } catch (AuthorizationException | InvalidRequestException e) {
             throw e;
+        } catch (org.apache.airavata.orchestrator.exception.OrchestratorException e) {
+            String msg = "Error handling intermediate outputs event: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 
@@ -3986,12 +3943,22 @@ public class AiravataService {
 
             // Validate access to group resource profile and application deployments
             validateLaunchExperimentAccess(authzToken, gatewayId, experiment);
-            publishExperimentSubmitEvent(experimentPublisher, gatewayId, airavataExperimentId);
+            if (orchestratorService != null) {
+                ExecutorService executor = OrchestratorServerThreadPoolExecutor.getCachedThreadPool();
+                orchestratorService.launchExperiment(airavataExperimentId, gatewayId, executor);
+            } else {
+                throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR,
+                        "OrchestratorService is not available. Enable orchestrator services to launch experiments.", null);
+            }
         } catch (InvalidRequestException
                 | AiravataSystemException
                 | AuthorizationException
                 | ExperimentNotFoundException e) {
             throw e;
+        } catch (org.apache.airavata.orchestrator.exception.OrchestratorException e) {
+            String msg = "Experiment launch failed: " + e.getMessage();
+            logger.error(msg, e);
+            throw airavataSystemException(AiravataErrorType.INTERNAL_ERROR, msg, e);
         }
     }
 

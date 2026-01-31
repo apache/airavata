@@ -20,8 +20,11 @@
 package org.apache.airavata.common.model;
 
 /**
- * Domain enum: race
+ * Domain enum: race. Only used by deprecated NSFDemographics; user/demographic data lives in Keycloak.
+ *
+ * @deprecated Not used for new development. Preserved for Thrift API compatibility only.
  */
+@Deprecated(since = "1.0", forRemoval = false)
 public enum race {
     ASIAN(0),
     AMERICAN_INDIAN_OR_ALASKAN_NATIVE(1),

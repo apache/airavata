@@ -21,7 +21,7 @@ package org.apache.airavata.accountprovisioning.provisioner;
 
 import java.util.Map;
 import org.apache.airavata.accountprovisioning.ConfigParam;
-import org.apache.airavata.accountprovisioning.InvalidUsernameException;
+import org.apache.airavata.accountprovisioning.AccountProvisioningExceptions.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
 
 public class TestSSHAccountProvisioner implements SSHAccountProvisioner {

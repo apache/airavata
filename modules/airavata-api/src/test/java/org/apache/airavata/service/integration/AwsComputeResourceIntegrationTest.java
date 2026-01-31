@@ -25,7 +25,7 @@ import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.GroupComputeResourcePreference;
 import org.apache.airavata.common.model.GroupResourceProfile;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;

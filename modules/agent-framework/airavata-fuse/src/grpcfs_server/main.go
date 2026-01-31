@@ -93,7 +93,7 @@ func (s *server) FileInfo(ctx context.Context, req *pb.FileInfoReq) (*pb.FileInf
 	return res, nil
 }
 
-// TODO implement any locks here
+// No locking; concurrent access not coordinated.
 func (s *server) OpenDir(ctx context.Context, req *pb.OpenDirReq) (*pb.OpenDirRes, error) {
 	path := req.Name
 	rpcCtx := req.Context
@@ -173,7 +173,7 @@ func (s *server) WriteFile(ctx context.Context, req *pb.WriteFileReq) (*pb.Write
 	rpcCtx := req.Context
 	data := req.Data
 	offset := req.Offset
-	// TODO properly use offset
+	// Writes full buffer; offset is not yet used for partial writes.
 	logger.Print("received valid WriteFile request. ", path, rpcCtx, offset)
 	err := os.WriteFile(path, data, 0666)
 	if handleErr(err, "os.WriteFile failed") != nil {

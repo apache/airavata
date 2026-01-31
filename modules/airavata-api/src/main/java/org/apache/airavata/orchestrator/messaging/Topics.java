@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.orchestrator.messaging;
 
-import org.apache.airavata.orchestrator.internal.messaging.DaprTopics;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
 
 /**
  * Public constants for messaging topic names.
@@ -29,22 +29,22 @@ import org.apache.airavata.orchestrator.internal.messaging.DaprTopics;
 public final class Topics {
 
     /** Topic for status change events (experiment, process, task, job status). */
-    public static final String STATUS = DaprTopics.STATUS;
+    public static final String STATUS = MessagingContracts.DaprTopics.STATUS;
 
     /** Topic for experiment launch and lifecycle events. */
-    public static final String EXPERIMENT = DaprTopics.EXPERIMENT;
+    public static final String EXPERIMENT = MessagingContracts.DaprTopics.EXPERIMENT;
 
     /** Topic for process launch and lifecycle events. */
-    public static final String PROCESS = DaprTopics.PROCESS;
+    public static final String PROCESS = MessagingContracts.DaprTopics.PROCESS;
 
     /** Topic for parsing completion messages. */
-    public static final String PARSING = DaprTopics.PARSING;
+    public static final String PARSING = MessagingContracts.DaprTopics.PARSING;
 
     /** Topic for monitoring messages. */
-    public static final String MONITORING = DaprTopics.MONITORING;
+    public static final String MONITORING = MessagingContracts.DaprTopics.MONITORING;
 
     /** Topic for job status monitoring messages. */
-    public static final String MONITORING_JOB_STATUS = DaprTopics.MONITORING_JOB_STATUS;
+    public static final String MONITORING_JOB_STATUS = MessagingContracts.DaprTopics.MONITORING_JOB_STATUS;
 
     private Topics() {
         // Utility class - prevent instantiation

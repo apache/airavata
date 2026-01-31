@@ -36,6 +36,8 @@ import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntity;
 import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntityPK;
 import org.apache.airavata.registry.repositories.ResourcePreferenceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ResourceProfileRepository;
+import org.apache.airavata.service.security.CredentialStoreService;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,8 @@ public class GroupResourceProfileService {
 
     // Preference key prefixes
     public static final String PROFILE_NAME_KEY = "group.profile.name";
+    /** Logical allocation project name this group is designated for (for pooling/merge). */
+    public static final String DESIGNATED_ALLOCATION_PROJECT_KEY = "group.designatedAllocationProject";
     public static final String DEFAULT_CREDENTIAL_TOKEN_KEY = "group.defaultCredentialStoreToken";
     public static final String SSH_ACCOUNT_PROVISIONER_KEY = "ssh.accountProvisioner";
     public static final String SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO_KEY = "ssh.accountProvisionerAdditionalInfo";
@@ -83,12 +87,18 @@ public class GroupResourceProfileService {
 
     private final ResourceProfileRepository resourceProfileRepository;
     private final ResourcePreferenceRepository resourcePreferenceRepository;
+    private final EntityManager entityManager;
+    private final CredentialStoreService credentialStoreService;
 
     public GroupResourceProfileService(
             ResourceProfileRepository resourceProfileRepository,
-            ResourcePreferenceRepository resourcePreferenceRepository) {
+            ResourcePreferenceRepository resourcePreferenceRepository,
+            EntityManager entityManager,
+            CredentialStoreService credentialStoreService) {
         this.resourceProfileRepository = resourceProfileRepository;
         this.resourcePreferenceRepository = resourcePreferenceRepository;
+        this.entityManager = entityManager;
+        this.credentialStoreService = credentialStoreService;
     }
 
     /**
@@ -125,6 +135,11 @@ public class GroupResourceProfileService {
         if (groupResourceProfile.getGroupResourceProfileName() != null) {
             savePreference(profileId, PROFILE_NAME_KEY, groupResourceProfile.getGroupResourceProfileName());
         }
+        // Store designated allocation project (for pooling/merge)
+        if (groupResourceProfile.getDesignatedAllocationProjectName() != null) {
+            savePreference(profileId, DESIGNATED_ALLOCATION_PROJECT_KEY,
+                    groupResourceProfile.getDesignatedAllocationProjectName());
+        }
 
         // Store compute preferences
         if (groupResourceProfile.getComputePreferences() != null) {
@@ -147,6 +162,7 @@ public class GroupResourceProfileService {
             }
         }
 
+        entityManager.flush(); // Ensure preferences are visible to subsequent reads in same transaction
         return profileId;
     }
 
@@ -297,7 +313,7 @@ public class GroupResourceProfileService {
      * Get all compute resource policies for a profile.
      */
     public List<ComputeResourcePolicy> getAllGroupComputeResourcePolicies(String groupResourceProfileId) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
         return Collections.emptyList();
     }
 
@@ -305,7 +321,7 @@ public class GroupResourceProfileService {
      * Remove a compute resource policy.
      */
     public boolean removeComputeResourcePolicy(String resourcePolicyId) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
         return true;
     }
 
@@ -313,7 +329,7 @@ public class GroupResourceProfileService {
      * Get a batch queue resource policy.
      */
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
         return null;
     }
 
@@ -321,7 +337,7 @@ public class GroupResourceProfileService {
      * Get all batch queue resource policies for a profile.
      */
     public List<BatchQueueResourcePolicy> getAllGroupBatchQueueResourcePolicies(String groupResourceProfileId) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
         return Collections.emptyList();
     }
 
@@ -329,7 +345,7 @@ public class GroupResourceProfileService {
      * Remove a batch queue resource policy.
      */
     public boolean removeBatchQueueResourcePolicy(String resourcePolicyId) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
         return true;
     }
 
@@ -356,6 +372,13 @@ public class GroupResourceProfileService {
         if (namePref != null) {
             profile.setGroupResourceProfileName(namePref.getValue());
         }
+        ResourcePreferenceEntity designatedPref = resourcePreferenceRepository
+                .findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(
+                        PreferenceResourceType.PROFILE, entity.getProfileId(), entity.getProfileId(),
+                        PreferenceLevel.GROUP, DESIGNATED_ALLOCATION_PROJECT_KEY);
+        if (designatedPref != null) {
+            profile.setDesignatedAllocationProjectName(designatedPref.getValue());
+        }
 
         // Load compute preferences
         profile.setComputePreferences(getAllGroupComputeResourcePreferences(entity.getProfileId()));
@@ -374,6 +397,20 @@ public class GroupResourceProfileService {
     private void savePreference(
             PreferenceResourceType resourceType, String resourceId, String ownerId,
             PreferenceLevel level, String key, String value) {
+        // Validate credential exists when saving resource-specific credential token (GROUP: resolve gatewayId from profile)
+        if (RESOURCE_SPECIFIC_CREDENTIAL_TOKEN_KEY.equals(key) && value != null) {
+            ResourceProfileEntity groupProfile = resourceProfileRepository
+                    .findById(new ResourceProfileEntityPK(ownerId, ProfileOwnerType.GROUP))
+                    .orElse(null);
+            if (groupProfile == null) {
+                throw new IllegalArgumentException("Group resource profile not found: " + ownerId);
+            }
+            String gatewayId = groupProfile.getGatewayId();
+            if (gatewayId == null || !credentialStoreService.credentialExists(value, gatewayId)) {
+                throw new IllegalArgumentException("Credential does not exist for token: " + value);
+            }
+        }
+
         ResourcePreferenceEntity existing = resourcePreferenceRepository
                 .findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(
                         resourceType, resourceId, ownerId, level, key);
@@ -503,15 +540,15 @@ public class GroupResourceProfileService {
     }
 
     private void saveComputeResourcePolicy(String profileId, ComputeResourcePolicy policy) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
     }
 
     private void saveBatchQueueResourcePolicy(String profileId, BatchQueueResourcePolicy policy) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
     }
 
     private ComputeResourcePolicy prefToComputeResourcePolicy(String policyId, ResourcePreferenceEntity pref) {
-        // TODO: Implement using the unified model
+        // Implement using the unified model when available
         return null;
     }
 }

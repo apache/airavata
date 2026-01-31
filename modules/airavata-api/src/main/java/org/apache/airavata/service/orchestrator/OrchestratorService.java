@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import org.apache.airavata.common.exception.ExperimentNotFoundException;
-import org.apache.airavata.common.exception.LaunchValidationException;
-import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.exception.CatalogExceptions.ExperimentNotFoundException;
+import org.apache.airavata.common.exception.ValidationExceptions.LaunchValidationException;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidationResults;
 import org.apache.airavata.common.logging.LoggingUtil;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
@@ -60,15 +60,15 @@ import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.model.UserConfigurationDataModel;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.orchestrator.HostScheduler;
 import org.apache.airavata.orchestrator.OrchestratorConstants;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.orchestrator.state.StateKeys;
-import org.apache.airavata.orchestrator.state.StateManager;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.util.ExperimentModelUtil;
 import org.apache.airavata.workflow.orchestrator.SimpleOrchestratorImpl;
@@ -91,7 +91,7 @@ public class OrchestratorService {
     private final SimpleOrchestratorImpl orchestrator;
     private final MessagingFactory messagingFactory;
     private final HostScheduler hostScheduler;
-    private final StateManager stateManager;
+    private final StateModel.StateManager stateManager;
 
     public OrchestratorService(
             RegistryService registryService,
@@ -100,7 +100,7 @@ public class OrchestratorService {
             ProcessScheduler processScheduler,
             MessagingFactory messagingFactory,
             HostScheduler hostScheduler,
-            @Autowired(required = false) StateManager stateManager) {
+            @Autowired(required = false) StateModel.StateManager stateManager) {
         this.registryService = registryService;
         this.properties = properties;
         this.orchestrator = orchestrator;
@@ -135,7 +135,7 @@ public class OrchestratorService {
             throws ExperimentNotFoundException, OrchestratorException, RegistryException, LaunchValidationException {
         if (stateManager != null && stateManager.isAvailable()) {
             try {
-                stateManager.saveState(StateKeys.cancelExperiment(experimentId), "");
+                stateManager.saveState(StateModel.StateKeys.cancelExperiment(experimentId), "");
             } catch (Exception e) {
                 logger.warn("Could not set cancel state for experiment {} at launch", experimentId, e);
             }
@@ -214,40 +214,68 @@ public class OrchestratorService {
             if (pi.getType().equals(DataType.URI)
                     && pi.getValue() != null
                     && pi.getValue().startsWith("airavata-dp://")) {
-                DataProductModel dataProductModel = registryService.getDataProduct(pi.getValue());
-                Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations().stream()
-                        .filter(rpModel ->
-                                rpModel.getReplicaLocationCategory().equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
-                        .findFirst();
-                if (rpLocation.isPresent()) {
-                    pi.setValue(rpLocation.get().getFilePath());
-                    pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
-                } else {
-                    logger.error("Could not find a replica for the URI " + pi.getValue());
-                }
+                resolveProductUriToPath(pi.getValue(), pi::setValue, pi::setStorageResourceId);
             } else if (pi.getType().equals(DataType.URI_COLLECTION)
                     && pi.getValue() != null
                     && pi.getValue().contains("airavata-dp://")) {
                 String[] uriList = pi.getValue().split(",");
                 final ArrayList<String> filePathList = new ArrayList<>();
                 for (String uri : uriList) {
-                    if (uri.startsWith("airavata-dp://")) {
-                        DataProductModel dataProductModel = registryService.getDataProduct(uri);
-                        Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations().stream()
-                                .filter(rpModel -> rpModel.getReplicaLocationCategory()
-                                        .equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
-                                .findFirst();
-                        if (rpLocation.isPresent()) {
-                            filePathList.add(rpLocation.get().getFilePath());
-                        } else {
-                            logger.error("Could not find a replica for the URI " + pi.getValue());
+                    String trimmed = uri != null ? uri.trim() : "";
+                    if (trimmed.startsWith("airavata-dp://")) {
+                        final String[] pathHolder = new String[1];
+                        resolveProductUriToPath(trimmed, p -> pathHolder[0] = p, s -> {});
+                        if (pathHolder[0] != null) {
+                            filePathList.add(pathHolder[0]);
                         }
-                    } else {
-                        filePathList.add(uri);
+                    } else if (!trimmed.isEmpty()) {
+                        filePathList.add(trimmed);
                     }
                 }
                 pi.setValue(String.join(",", filePathList));
             }
+        }
+    }
+
+    /**
+     * Resolve a data product URI (airavata-dp://...) to primary storage path and resource id.
+     * Uses primaryStorageResourceId and primaryFilePath when set; otherwise falls back to
+     * the first GATEWAY_DATA_STORE replica.
+     */
+    private void resolveProductUriToPath(String productUri, java.util.function.Consumer<String> setPath,
+            java.util.function.Consumer<String> setStorageResourceId) {
+        try {
+            DataProductModel dataProductModel = registryService.getDataProduct(productUri);
+            if (dataProductModel == null) {
+                logger.error("Data product not found for URI: {}", productUri);
+                return;
+            }
+            String path = null;
+            String storageResourceId = null;
+            if (dataProductModel.getPrimaryStorageResourceId() != null
+                    && dataProductModel.getPrimaryFilePath() != null) {
+                path = dataProductModel.getPrimaryFilePath();
+                storageResourceId = dataProductModel.getPrimaryStorageResourceId();
+            } else if (dataProductModel.getReplicaLocations() != null) {
+                Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations().stream()
+                        .filter(rp -> rp.getReplicaLocationCategory() != null
+                                && rp.getReplicaLocationCategory().equals(ReplicaLocationCategory.GATEWAY_DATA_STORE))
+                        .findFirst();
+                if (rpLocation.isPresent()) {
+                    path = rpLocation.get().getFilePath();
+                    storageResourceId = rpLocation.get().getStorageResourceId();
+                }
+            }
+            if (path != null) {
+                setPath.accept(path);
+                if (storageResourceId != null) {
+                    setStorageResourceId.accept(storageResourceId);
+                }
+            } else {
+                logger.error("Could not resolve primary storage or replica for data product URI: {}", productUri);
+            }
+        } catch (Exception e) {
+            logger.error("Error resolving data product URI {}: {}", productUri, e.getMessage(), e);
         }
     }
 
@@ -349,7 +377,7 @@ public class OrchestratorService {
                 orchestrator.cancelExperiment(experimentModel, token);
                 if (stateManager != null && stateManager.isAvailable()) {
                     try {
-                        stateManager.saveState(StateKeys.cancelExperiment(experimentId), "CANCEL_REQUEST");
+                        stateManager.saveState(StateModel.StateKeys.cancelExperiment(experimentId), "CANCEL_REQUEST");
                     } catch (Exception e) {
                         logger.error("Error setting Dapr cancel state for experiment {}", experimentId, e);
                         throw new OrchestratorException(
@@ -828,8 +856,8 @@ public class OrchestratorService {
             org.apache.airavata.common.model.ExperimentState currentState =
                     currentStatus != null ? currentStatus.getState() : null;
 
-            if (!org.apache.airavata.orchestrator.state.StateTransitionService.validateAndLog(
-                    org.apache.airavata.orchestrator.state.ExperimentStateValidator.INSTANCE,
+            if (!org.apache.airavata.orchestrator.state.StateModel.StateTransitionService.validateAndLog(
+                    org.apache.airavata.orchestrator.state.StateValidators.ExperimentStateValidator.INSTANCE,
                     currentState,
                     status.getState(),
                     experimentId,

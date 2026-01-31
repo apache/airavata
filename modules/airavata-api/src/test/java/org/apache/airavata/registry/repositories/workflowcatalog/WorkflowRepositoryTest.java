@@ -28,7 +28,7 @@ import org.apache.airavata.common.model.HandlerType;
 import org.apache.airavata.common.model.WorkflowApplication;
 import org.apache.airavata.common.model.WorkflowConnection;
 import org.apache.airavata.common.model.WorkflowHandler;
-import org.apache.airavata.registry.exception.WorkflowCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.WorkflowService;
 import org.junit.jupiter.api.Test;

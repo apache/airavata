@@ -29,11 +29,12 @@ import org.apache.airavata.common.model.ExperimentStatusChangeEvent;
 import org.apache.airavata.common.model.MessageType;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatusChangeEvent;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
-import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

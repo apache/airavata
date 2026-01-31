@@ -32,10 +32,11 @@ import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.ResourcePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntity;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.ResourceProfileMapper;
 import org.apache.airavata.registry.repositories.ResourcePreferenceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ResourceProfileRepository;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,14 +52,17 @@ public class UserResourceProfileService {
     private final ResourceProfileRepository resourceProfileRepository;
     private final ResourcePreferenceRepository resourcePreferenceRepository;
     private final ResourceProfileMapper resourceProfileMapper;
+    private final CredentialStoreService credentialStoreService;
 
     public UserResourceProfileService(
             ResourceProfileRepository resourceProfileRepository,
             ResourcePreferenceRepository resourcePreferenceRepository,
-            ResourceProfileMapper resourceProfileMapper) {
+            ResourceProfileMapper resourceProfileMapper,
+            CredentialStoreService credentialStoreService) {
         this.resourceProfileRepository = resourceProfileRepository;
         this.resourcePreferenceRepository = resourcePreferenceRepository;
         this.resourceProfileMapper = resourceProfileMapper;
+        this.credentialStoreService = credentialStoreService;
     }
 
     @Transactional
@@ -353,7 +357,15 @@ public class UserResourceProfileService {
             }
             return;
         }
-        
+
+        // Validate credential exists when saving resource-specific credential token (USER: ownerId = userId@gatewayId)
+        if (PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN.equals(key)) {
+            String gatewayId = ownerId.contains("@") ? ownerId.substring(ownerId.indexOf('@') + 1) : null;
+            if (gatewayId == null || !credentialStoreService.credentialExists(value, gatewayId)) {
+                throw new IllegalArgumentException("Credential does not exist for token: " + value);
+            }
+        }
+
         ResourcePreferenceEntity existing = resourcePreferenceRepository
                 .findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(resourceType, resourceId, ownerId, level, key);
         if (existing != null) {

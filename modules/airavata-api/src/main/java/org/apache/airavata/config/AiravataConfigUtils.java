@@ -82,6 +82,7 @@ public class AiravataConfigUtils {
      * Get the config directory path.
      * Resolution precedence:
      * <ol>
+     *   <li>System property -Dairavata.config.dir=XXX (if set and non-empty)</li>
      *   <li>System property -Dairavata.home=XXX (returns {airavataHome}/conf)</li>
      *   <li>Resources root (IDE mode, returns resources directory)</li>
      * </ol>
@@ -90,7 +91,18 @@ public class AiravataConfigUtils {
      * @throws IllegalStateException if config directory cannot be resolved
      */
     public static String getConfigDir() {
-        // Check system property
+        // Explicit config dir (e.g. from --config-dir or -Dairavata.config.dir)
+        var configDirProp = System.getProperty("airavata.config.dir");
+        if (configDirProp != null && !configDirProp.isEmpty()) {
+            var dir = new File(configDirProp);
+            if (dir.exists() && dir.isDirectory()) {
+                return dir.getAbsolutePath();
+            }
+            throw new IllegalStateException("Config directory does not exist: " + configDirProp
+                    + ". Please ensure -Dairavata.config.dir points to a valid directory.");
+        }
+
+        // Derive from airavata.home
         var systemPropertyHome = System.getProperty("airavata.home");
         if (systemPropertyHome != null && !systemPropertyHome.isEmpty()) {
             var confDir = new File(systemPropertyHome, "conf");
@@ -113,7 +125,7 @@ public class AiravataConfigUtils {
             return resourcesRoot;
         }
 
-        throw new IllegalStateException("airavata.home is not set. Please set -Dairavata.home=XXX.");
+        throw new IllegalStateException("airavata.home is not set. Please set -Dairavata.home=XXX or -Dairavata.config.dir=XXX.");
     }
 
     /**

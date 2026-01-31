@@ -160,6 +160,13 @@ public class UserEntity {
     @Column(name = "UPDATED_AT")
     private Long updatedAt;
 
+    /**
+     * Personal group ID for this user (Zanzibar-like model).
+     * Format: airavataInternalUserId + "_personal". Used for quick lookup.
+     */
+    @Column(name = "PERSONAL_GROUP_ID", length = 512)
+    private String personalGroupId;
+
     // ==================== Relationships ====================
 
     /**
@@ -294,6 +301,14 @@ public class UserEntity {
 
     public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getPersonalGroupId() {
+        return personalGroupId;
+    }
+
+    public void setPersonalGroupId(String personalGroupId) {
+        this.personalGroupId = personalGroupId;
     }
 
     public GatewayEntity getGateway() {

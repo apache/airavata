@@ -63,8 +63,9 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.registry.services.ProjectResourceAccountService;
 import org.apache.airavata.security.AiravataSecurityManager;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.profile.UserProfileService;
@@ -84,6 +85,7 @@ public class TaskContext {
     private Publisher statusPublisher;
     private RegistryService registryService;
     private UserProfileService profileService;
+    private ProjectResourceAccountService projectResourceAccountService;
 
     private String processId;
     private String gatewayId;
@@ -803,6 +805,14 @@ public class TaskContext {
         this.profileService = profileService;
     }
 
+    public ProjectResourceAccountService getProjectResourceAccountService() {
+        return projectResourceAccountService;
+    }
+
+    public void setProjectResourceAccountService(ProjectResourceAccountService projectResourceAccountService) {
+        this.projectResourceAccountService = projectResourceAccountService;
+    }
+
     public UserProfile getUserProfile() throws TaskOnFailException {
 
         if (this.userProfile == null) {
@@ -970,6 +980,7 @@ public class TaskContext {
         private final String taskId;
         private ProcessModel processModel;
         private ExperimentModel experimentModel;
+        private ProjectResourceAccountService projectResourceAccountService;
 
         @SuppressWarnings("WeakerAccess")
         public TaskContextBuilder(String processId, String gatewayId, String taskId) throws Exception {
@@ -991,6 +1002,11 @@ public class TaskContext {
             return this;
         }
 
+        public TaskContextBuilder setProjectResourceAccountService(ProjectResourceAccountService projectResourceAccountService) {
+            this.projectResourceAccountService = projectResourceAccountService;
+            return this;
+        }
+
         public TaskContext build() throws Exception {
 
             if (notValid(processModel)) {
@@ -1000,6 +1016,9 @@ public class TaskContext {
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setProcessModel(processModel);
             ctx.setExperimentModel(experimentModel);
+            if (projectResourceAccountService != null) {
+                ctx.setProjectResourceAccountService(projectResourceAccountService);
+            }
             // Services will be obtained from AiravataTask when needed
             return ctx;
         }

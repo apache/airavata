@@ -21,12 +21,12 @@ package org.apache.airavata.service.project;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataErrorType;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException;
+import org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.ProjectSearchFields;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class ProjectService {
 
     private AiravataSystemException airavataSystemException(
             AiravataErrorType errorType, String message, Throwable cause) {
-        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+        return org.apache.airavata.common.exception.ValidationExceptions.ExceptionHandlerUtil.wrapAsAiravataException(
                 errorType, message, cause);
     }
 

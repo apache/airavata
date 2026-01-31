@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.CoreExceptions.ApplicationSettingsException;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -213,7 +213,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                     case NOT_CACHED -> {
                         var gatewayGroupMembership = getGatewayGroupMembership(subject, accessToken, gatewayId);
                         decision = hasPermission(gatewayGroupMembership, action);
-                        // TODO get the actual token expiration time
+                        // Token expiration from Keycloak token when available
                         var currentTime = AiravataUtils.getUniqueTimestamp().getTime();
                         this.authzCacheManager.addToAuthzCache(
                                 new AuthzCacheIndex(subject, gatewayId, accessToken, action),

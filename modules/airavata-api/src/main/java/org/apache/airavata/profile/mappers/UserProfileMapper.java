@@ -52,7 +52,7 @@ import org.mapstruct.Named;
  *   <li>userModelVersion, middleName, namePrefix, nameSuffix, orcidId</li>
  *   <li>phones, country, nationality, homeOrganization, orginationAffiliation</li>
  *   <li>lastAccessTime, validUntil, State, comments, labeledURI, gpgKey</li>
- *   <li>nsfDemographics, customDashboard</li>
+ *   <li>Demographics and dashboard: not stored; user info lives in Keycloak.</li>
  * </ul>
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfig.class)
@@ -84,8 +84,6 @@ public interface UserProfileMapper {
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "labeledURI", ignore = true)
     @Mapping(target = "gpgKey", ignore = true)
-    @Mapping(target = "nsfDemographics", ignore = true)
-    @Mapping(target = "customDashboard", ignore = true)
     UserProfile toModel(UserEntity entity);
 
     /**

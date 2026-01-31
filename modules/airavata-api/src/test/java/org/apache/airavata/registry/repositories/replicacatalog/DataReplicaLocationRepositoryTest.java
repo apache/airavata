@@ -29,7 +29,7 @@ import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.common.model.DataProductType;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.common.model.ReplicaPersistentType;
-import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
 import org.apache.airavata.registry.services.DataReplicaLocationService;

@@ -1,12 +1,17 @@
 #!/bin/bash
-# Keycloak Configuration Setup Script
-# Configures Keycloak using REST API calls for version-independent setup
+# Keycloak Configuration Setup Script (single script with conditionals for init)
+# Configures Keycloak using REST API calls for version-independent setup.
+#
+# Init is controlled by conditionals:
+#   Init mode (wipe + setup): when KEYCLOAK_INIT_WIPE is true/1/yes, delete realm then run full setup.
+#   Idempotent (setup only if missing): when KEYCLOAK_INIT_WIPE is false/unset, create realm only if it does not exist.
 #
 # Required environment variables (must be set by docker-compose):
 #   KEYCLOAK_URL, KEYCLOAK_ADMIN, KEYCLOAK_ADMIN_PASSWORD, REALM_NAME
 #   PGA_CLIENT_SECRET, DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD
 #
 # Optional environment variables:
+#   KEYCLOAK_INIT_WIPE (default: false). If true/1/yes, init mode (wipe realm then full setup). Else idempotent.
 #   INCLUDE_CILOGON (default: false)
 #   INCLUDE_SIDECAR_AGENT (default: false)
 #   INCLUDE_JUPYTERLAB (default: false)
@@ -46,6 +51,13 @@ INCLUDE_CILOGON="${INCLUDE_CILOGON:-false}"
 INCLUDE_SIDECAR_AGENT="${INCLUDE_SIDECAR_AGENT:-false}"
 INCLUDE_JUPYTERLAB="${INCLUDE_JUPYTERLAB:-false}"
 DEFAULT_ADMIN_EMAIL="${DEFAULT_ADMIN_EMAIL:-${DEFAULT_ADMIN_USERNAME}@${REALM_NAME}}"
+# Init conditional: normalize to true/false (1, true, yes => init mode; else idempotent)
+_init_wipe="${KEYCLOAK_INIT_WIPE:-false}"
+if [ "$_init_wipe" = "1" ] || [ "$_init_wipe" = "true" ] || [ "$_init_wipe" = "yes" ]; then
+    INIT_MODE=true
+else
+    INIT_MODE=false
+fi
 
 # Validate CILogon vars if enabled
 if [ "$INCLUDE_CILOGON" = "true" ]; then
@@ -64,7 +76,7 @@ if [ "$INCLUDE_JUPYTERLAB" = "true" ]; then
 fi
 
 echo "=== Keycloak Configuration Setup ==="
-echo "URL: $KEYCLOAK_URL | Realm: $REALM_NAME"
+echo "URL: $KEYCLOAK_URL | Realm: $REALM_NAME | Init: $INIT_MODE (wipe+setup when true, else idempotent)"
 
 # Wait for Keycloak to be ready
 wait_for_keycloak() {
@@ -92,6 +104,32 @@ get_admin_token() {
 # Check if realm exists
 realm_exists() {
     [ "$(curl -sf -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $1" "$KEYCLOAK_URL/admin/realms/$REALM_NAME")" = "200" ]
+}
+
+# Delete realm (for init wipe). Idempotent; 404 is ok. Retry on 409 (realm in use) with backoff.
+wipe_realm() {
+    local token="$1"
+    echo "Wiping realm: $REALM_NAME"
+    local code
+    local attempt=1
+    local max_attempts=5
+    local delays="5 10 15 20"
+    while true; do
+        code=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: Bearer $token" "$KEYCLOAK_URL/admin/realms/$REALM_NAME")
+        if [ "$code" = "204" ] || [ "$code" = "404" ]; then
+            echo "  Realm removed or already missing"
+            return 0
+        fi
+        if [ "$code" = "409" ] && [ "$attempt" -lt "$max_attempts" ]; then
+            local delay
+            delay=$(echo "$delays" | cut -d' ' -f"$attempt")
+            echo "  Realm in use (409), retrying in ${delay}s (attempt $attempt/$max_attempts)..."
+            sleep "$delay"
+            attempt=$((attempt + 1))
+            continue
+        fi
+        echo "  Unexpected response $code" && return 1
+    done
 }
 
 # Create realm with essential settings
@@ -128,7 +166,33 @@ create_realm_roles() {
     echo "  Roles created"
 }
 
+# Add gateway_id protocol mapper to pga client (maps user attribute to OIDC claim)
+add_gateway_id_mapper() {
+    local token="$1"
+    local client_id="$2"
+    echo "Adding gateway_id protocol mapper to pga client..."
+    curl -sf -X POST "$KEYCLOAK_URL/admin/realms/$REALM_NAME/clients/$client_id/protocol-mappers/models" \
+        -H "Authorization: Bearer $token" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-attribute-mapper",
+            "name": "gateway_id",
+            "config": {
+                "user.attribute": "gateway_id",
+                "claim.name": "gateway_id",
+                "jsonType.label": "String",
+                "id.token.claim": "true",
+                "access.token.claim": "true",
+                "userinfo.token.claim": "true"
+            }
+        }'
+    echo "  gateway_id mapper added"
+}
+
 # Create pga client (primary OAuth client)
+# redirectUris must include the exact callback and optional wildcards for localhost and 127.0.0.1
+# so portal login works (Keycloak 400 on /login-actions/authenticate otherwise).
 create_pga_client() {
     local token="$1"
     echo "Creating pga client..."
@@ -141,7 +205,16 @@ create_pga_client() {
             "enabled": true,
             "clientAuthenticatorType": "client-secret",
             "secret": "'"$PGA_CLIENT_SECRET"'",
-            "redirectUris": ["http://localhost:3000/*", "http://localhost:8080/callback*", "https://localhost:8080/auth/callback*"],
+            "redirectUris": [
+                "http://localhost:3000/*",
+                "http://localhost:3000/api/auth/callback/keycloak",
+                "http://localhost:3000/login",
+                "http://127.0.0.1:3000/*",
+                "http://127.0.0.1:3000/api/auth/callback/keycloak",
+                "http://127.0.0.1:3000/login",
+                "http://localhost:8080/callback*",
+                "https://localhost:8080/auth/callback*"
+            ],
             "webOrigins": ["*"],
             "publicClient": false,
             "standardFlowEnabled": true,
@@ -151,13 +224,16 @@ create_pga_client() {
             "protocol": "openid-connect",
             "attributes": {
                 "oauth2.device.authorization.grant.enabled": "true",
-                "post.logout.redirect.uris": "http://localhost:3000/*##http://localhost:8080/*",
+                "post.logout.redirect.uris": "+",
                 "frontchannel.logout.session.required": "false",
                 "backchannel.logout.session.required": "false"
             },
             "fullScopeAllowed": true
         }'
-    echo "  pga client created"
+    echo "  pga client created (Valid redirect URIs: localhost:3000 and 127.0.0.1:3000)"
+
+    local pga_id=$(curl -sf "$KEYCLOAK_URL/admin/realms/$REALM_NAME/clients?clientId=pga" -H "Authorization: Bearer $token" | jq -r '.[0].id')
+    [ -n "$pga_id" ] && [ "$pga_id" != "null" ] && add_gateway_id_mapper "$token" "$pga_id"
 }
 
 # Create sidecar-agent client (optional)
@@ -280,8 +356,9 @@ create_admin_user() {
             "emailVerified": true,
             "enabled": true,
             "firstName": "Admin",
-            "lastName": "User"
-        }' 2>/dev/null || { echo "  User may exist"; return 0; }
+            "lastName": "User",
+            "attributes": {"gateway_id": ["default"]}
+        }' 2>/dev/null || echo "  User may already exist"
     
     local user_id=$(curl -sf "$KEYCLOAK_URL/admin/realms/$REALM_NAME/users?username=$DEFAULT_ADMIN_USERNAME" -H "Authorization: Bearer $token" | jq -r '.[0].id')
     [ -n "$user_id" ] && [ "$user_id" != "null" ] && \
@@ -296,39 +373,57 @@ create_admin_user() {
             -H "Authorization: Bearer $token" \
             -H "Content-Type: application/json" \
             -d "[$admin_role]" 2>/dev/null || true
+        # Ensure gateway_id attribute is set (OIDC claim source)
+        local user_json=$(curl -sf "$KEYCLOAK_URL/admin/realms/$REALM_NAME/users/$user_id" -H "Authorization: Bearer $token")
+        local merged=$(echo "$user_json" | jq '.attributes = ((.attributes // {}) | .gateway_id = ["default"])')
+        curl -sf -X PUT "$KEYCLOAK_URL/admin/realms/$REALM_NAME/users/$user_id" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            -d "$merged" 2>/dev/null || true
     }
     echo "  Admin user created"
 }
 
-# Main
+# Main: single script with conditionals for init
 main() {
     wait_for_keycloak
-    
+
     echo ""
     local token=$(get_admin_token)
     [ -z "$token" ] && echo "ERROR: Failed to get admin token" && exit 1
-    
-    if realm_exists "$token"; then
-        echo "Realm '$REALM_NAME' exists. Skipping setup."
-    else
+
+    # Conditional init: either wipe then setup (init mode), or setup only if realm missing (idempotent)
+    do_setup=false
+    if [ "$INIT_MODE" = "true" ]; then
+        wipe_realm "$token"
+        token=$(get_admin_token)
+        do_setup=true
+    elif ! realm_exists "$token"; then
+        do_setup=true
+    fi
+
+    if [ "$do_setup" = "true" ]; then
         create_realm "$token"
         token=$(get_admin_token)
         create_realm_roles "$token"
         create_pga_client "$token"
-        
+
         [ "$INCLUDE_SIDECAR_AGENT" = "true" ] && create_sidecar_agent_client "$token"
         [ "$INCLUDE_JUPYTERLAB" = "true" ] && create_jupyterlab_client "$token"
         [ "$INCLUDE_CILOGON" = "true" ] && create_cilogon_idp "$token"
-        
+
         grant_service_account_roles "$token"
         create_admin_user "$token"
+    else
+        echo "Realm '$REALM_NAME' exists. Skipping setup. (Set KEYCLOAK_INIT_WIPE=true for init / wipe+setup.)"
     fi
-    
+
     echo ""
     echo "=== Setup Complete ==="
     echo "Admin Console: $KEYCLOAK_URL/admin/$REALM_NAME/console/"
     echo "User: $DEFAULT_ADMIN_USERNAME"
-    echo "Client: pga"
+    echo "Client: pga (redirect URIs include http://localhost:3000 and http://127.0.0.1:3000)"
+    echo "Portal: use NEXTAUTH_URL=http://localhost:3000 and open http://localhost:3000 to sign in (avoids Keycloak 400)."
 }
 
 main "$@"

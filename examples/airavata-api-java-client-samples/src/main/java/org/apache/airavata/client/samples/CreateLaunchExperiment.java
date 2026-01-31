@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 public class CreateLaunchExperiment {
 
-    // FIXME: Read from a config file
+    // Read from config if available
     public static final String THRIFT_SERVER_HOST = "gw77.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
     //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";

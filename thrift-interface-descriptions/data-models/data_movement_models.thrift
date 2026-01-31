@@ -41,7 +41,7 @@ enum DMType {
  * SSH_KEYS:
  *  SSH Keys
  *
- * FIXME: Change GSI to a more precise generic security protocol - X509
+ * Consider X509 for a more precise generic security protocol in a future revision.
  *
 */
 enum SecurityProtocol {

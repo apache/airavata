@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Domain model: DataProductModel
+ * Domain model: DataProductModel.
+ * Unified model for catalog datasets and data products with catalog metadata,
+ * primary storage path, and optional replica locations.
  */
 public class DataProductModel {
     private String productUri;
@@ -39,8 +41,21 @@ public class DataProductModel {
     private int productSize;
     private long creationTime;
     private long lastModifiedTime;
-    private java.util.Map<java.lang.String, java.lang.String> productMetadata;
+    private Map<String, String> productMetadata;
     private List<DataReplicaLocationModel> replicaLocations;
+
+    private String primaryStorageResourceId;
+    private String primaryFilePath;
+    private String status;
+    private String privacy;
+    private String scope; // USER, GATEWAY (stored) or DELEGATED (inferred)
+    private String ownerId;
+    private String groupResourceProfileId;
+    private String headerImage;
+    private String format;
+    private long updatedAt;
+    private List<String> authors = new ArrayList<>();
+    private List<Tag> tags = new ArrayList<>();
 
     public DataProductModel() {}
 
@@ -146,6 +161,108 @@ public class DataProductModel {
         this.replicaLocations = replicaLocations;
     }
 
+    public String getPrimaryStorageResourceId() {
+        return primaryStorageResourceId;
+    }
+
+    public void setPrimaryStorageResourceId(String primaryStorageResourceId) {
+        this.primaryStorageResourceId = primaryStorageResourceId;
+    }
+
+    public String getPrimaryFilePath() {
+        return primaryFilePath;
+    }
+
+    public void setPrimaryFilePath(String primaryFilePath) {
+        this.primaryFilePath = primaryFilePath;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(String privacy) {
+        this.privacy = privacy;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
+    }
+
+    public String getHeaderImage() {
+        return headerImage;
+    }
+
+    public void setHeaderImage(String headerImage) {
+        this.headerImage = headerImage;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<String> getAuthors() {
+        if (authors == null) {
+            authors = new ArrayList<>();
+        }
+        return authors;
+    }
+
+    public void setAuthors(List<String> authors) {
+        this.authors = authors != null ? authors : new ArrayList<>();
+    }
+
+    public List<Tag> getTags() {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags != null ? tags : new ArrayList<>();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -162,7 +279,19 @@ public class DataProductModel {
                 && Objects.equals(creationTime, that.creationTime)
                 && Objects.equals(lastModifiedTime, that.lastModifiedTime)
                 && Objects.equals(productMetadata, that.productMetadata)
-                && Objects.equals(replicaLocations, that.replicaLocations);
+                && Objects.equals(replicaLocations, that.replicaLocations)
+                && Objects.equals(primaryStorageResourceId, that.primaryStorageResourceId)
+                && Objects.equals(primaryFilePath, that.primaryFilePath)
+                && Objects.equals(status, that.status)
+                && Objects.equals(privacy, that.privacy)
+                && Objects.equals(scope, that.scope)
+                && Objects.equals(ownerId, that.ownerId)
+                && Objects.equals(groupResourceProfileId, that.groupResourceProfileId)
+                && Objects.equals(headerImage, that.headerImage)
+                && Objects.equals(format, that.format)
+                && Objects.equals(updatedAt, that.updatedAt)
+                && Objects.equals(authors, that.authors)
+                && Objects.equals(tags, that.tags);
     }
 
     @Override
@@ -179,7 +308,19 @@ public class DataProductModel {
                 creationTime,
                 lastModifiedTime,
                 productMetadata,
-                replicaLocations);
+                replicaLocations,
+                primaryStorageResourceId,
+                primaryFilePath,
+                status,
+                privacy,
+                scope,
+                ownerId,
+                groupResourceProfileId,
+                headerImage,
+                format,
+                updatedAt,
+                authors,
+                tags);
     }
 
     @Override
@@ -188,6 +329,48 @@ public class DataProductModel {
                 + parentProductUri + ", productName=" + productName + ", productDescription=" + productDescription
                 + ", ownerName=" + ownerName + ", dataProductType=" + dataProductType + ", productSize=" + productSize
                 + ", creationTime=" + creationTime + ", lastModifiedTime=" + lastModifiedTime + ", productMetadata="
-                + productMetadata + ", replicaLocations=" + replicaLocations + "}";
+                + productMetadata + ", replicaLocations=" + replicaLocations + ", primaryStorageResourceId="
+                + primaryStorageResourceId + ", primaryFilePath=" + primaryFilePath + ", status=" + status
+                + ", privacy=" + privacy + ", scope=" + scope + ", ownerId=" + ownerId + ", format=" + format + "}";
+    }
+
+    /**
+     * Tag model for data product catalog metadata.
+     */
+    public static class Tag {
+        private String id;
+        private String name;
+        private String color;
+
+        public Tag() {}
+
+        public Tag(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
     }
 }

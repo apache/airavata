@@ -1,5 +1,20 @@
 # Unified Docker Compose for Airavata Development
-# 
+#
+# Modes (no partial service cleanups; pick one):
+#   Reuse:            Services already up or start them; then run init. Expect ready-to-go or init once.
+#   Clean-initialize: Full reset (down -v, up, init). Use when you want a clean slate.
+#
+# Profile / var switch:
+#   Reuse:            docker compose up -d   then  ./scripts/init.sh   (from project root)
+#   Clean-initialize: ./scripts/init.sh --clean   or   CLEAN_INIT=1 ./scripts/init.sh
+#                     Then start server: ./scripts/dev.sh serve or ./scripts/jar.sh serve
+#   Optional .env:    Copy .env.example to .env and set CLEAN_INIT=1 for clean-initialize when running init.sh.
+#
+# Service dependencies (deterministic startup):
+#   - db, redis, keycloak: no cross-deps; start in parallel; all have healthchecks.
+#   - keycloak-setup: depend on keycloak (condition: service_healthy). Run with: docker compose run --rm keycloak-setup
+#   - adminer: depends on db (condition: service_healthy).
+#
 # Profiles:
 #   - (none/default): Core services (keycloak, db, redis)
 #   - test: Additional test infrastructure (slurm, sftp)
@@ -54,23 +69,20 @@ services:
       keycloak:
         condition: service_healthy
     environment:
-      # Required - these must match keycloak service above
       KEYCLOAK_URL: http://keycloak:18080
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      # Required - realm and client configuration
       REALM_NAME: default
       PGA_CLIENT_SECRET: m36BXQIxX3j3VILadeHMK5IvbOeRlCCc
       DEFAULT_ADMIN_USERNAME: default-admin
       DEFAULT_ADMIN_PASSWORD: admin123
-      # Optional - uncomment to enable CILogon identity provider
+      KEYCLOAK_INIT_WIPE: "true"
       # INCLUDE_CILOGON: "true"
-      # CILOGON_CLIENT_ID: "cilogon:/client_id/392446d1fe4981d3eab8adb6da2a1952"
-      # CILOGON_CLIENT_SECRET: "xNgIF3suP5NFRiBnyDdBnJRP5XG3D5fgCfg5jxdkMlBUOe735UDXayX3OpOh2ra-zXY1VZKV4uou2qYw4WvAOg"
-      # Optional - uncomment to enable additional clients
+      # CILOGON_CLIENT_ID: "cilogon:/client_id/..."
+      # CILOGON_CLIENT_SECRET: "..."
       # INCLUDE_SIDECAR_AGENT: "true"
       # INCLUDE_JUPYTERLAB: "true"
-      # JUPYTERLAB_CLIENT_SECRET: "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1"
+      # JUPYTERLAB_CLIENT_SECRET: "..."
     volumes:
       - ./keycloak/setup-keycloak.sh:/setup-keycloak.sh:ro
     entrypoint: ["/bin/sh", "-c"]

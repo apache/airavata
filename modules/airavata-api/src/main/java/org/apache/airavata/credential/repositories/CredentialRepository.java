@@ -40,9 +40,19 @@ public interface CredentialRepository extends JpaRepository<CredentialEntity, Cr
     Optional<CredentialEntity> findByGatewayIdAndTokenId(String gatewayId, String tokenId);
 
     /**
+     * Check if a credential exists for the given gateway and token.
+     */
+    boolean existsByGatewayIdAndTokenId(String gatewayId, String tokenId);
+
+    /**
      * Find all credentials for a gateway.
      */
     List<CredentialEntity> findByGatewayId(String gatewayId);
+
+    /**
+     * Find all credentials for a gateway owned by a specific user (Airavata internal userId).
+     */
+    List<CredentialEntity> findByGatewayIdAndUserId(String gatewayId, String userId);
 
     /**
      * Find credentials for a gateway with specific token IDs.
@@ -61,4 +71,15 @@ public interface CredentialRepository extends JpaRepository<CredentialEntity, Cr
      * Delete credential by gateway ID and token ID.
      */
     void deleteByGatewayIdAndTokenId(String gatewayId, String tokenId);
+
+    /**
+     * Check if this credential is referenced by RESOURCE_ACCESS, RESOURCE_ACCESS_GRANT, or RESOURCE_PROFILE.
+     */
+    @Query(
+            nativeQuery = true,
+            value =
+                    "SELECT (SELECT COUNT(*) FROM RESOURCE_ACCESS ra WHERE ra.GATEWAY_ID = :gatewayId AND ra.CREDENTIAL_TOKEN = :tokenId)"
+                            + " + (SELECT COUNT(*) FROM RESOURCE_ACCESS_GRANT rag WHERE rag.GATEWAY_ID = :gatewayId AND rag.CREDENTIAL_TOKEN = :tokenId)"
+                            + " + (SELECT COUNT(*) FROM RESOURCE_PROFILE rp WHERE rp.GATEWAY_ID = :gatewayId AND rp.CREDENTIAL_STORE_TOKEN = :tokenId AND rp.CREDENTIAL_STORE_TOKEN IS NOT NULL)")
+    int countReferences(@Param("gatewayId") String gatewayId, @Param("tokenId") String tokenId);
 }

@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.orchestrator.internal.workflow;
 
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.orchestrator.ProcessStatusUpdater;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +55,8 @@ public class ProcessStatusUpdateHelper implements ProcessStatusUpdater {
         try {
             var currentStatus = registryService.getProcessStatus(processId);
             var currentState = currentStatus != null ? currentStatus.getState() : null;
-            if (!StateTransitionService.validateAndLog(
-                    ProcessStateValidator.INSTANCE, currentState, state, processId, "process")) {
+            if (!StateModel.StateTransitionService.validateAndLog(
+                    StateValidators.ProcessStateValidator.INSTANCE, currentState, state, processId, "process")) {
                 throw new AiravataException(String.format(
                         "Invalid process state transition rejected: processId=%s, %s -> %s",
                         processId, currentState != null ? currentState.name() : "(initial)", state.name()));

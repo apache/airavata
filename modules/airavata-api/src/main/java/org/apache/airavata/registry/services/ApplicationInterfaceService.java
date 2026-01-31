@@ -36,7 +36,7 @@ import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingEntity;
 import org.apache.airavata.registry.entities.appcatalog.AppModuleMappingPK;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationModuleEntity;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.ApplicationInterfaceMapper;
 import org.apache.airavata.registry.mappers.ApplicationModuleMapper;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
@@ -234,7 +234,26 @@ public class ApplicationInterfaceService implements ApplicationInterface {
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId)
             throws AppCatalogException {
         List<ApplicationInterfaceEntity> entities = applicationInterfaceRepository.findByGatewayId(gatewayId);
-        return applicationInterfaceMapper.toModelList(entities);
+        List<ApplicationInterfaceDescription> models = applicationInterfaceMapper.toModelList(entities);
+        // Populate applicationModules, applicationInputs, and applicationOutputs for each so list
+        // response has full info (e.g. for catalog cards showing input/output counts).
+        for (int i = 0; i < entities.size(); i++) {
+            ApplicationInterfaceEntity entity = entities.get(i);
+            ApplicationInterfaceDescription model = models.get(i);
+            String interfaceId = entity.getApplicationInterfaceId();
+            var mappings = appModuleMappingRepository.findByInterfaceId(interfaceId);
+            List<String> moduleIds =
+                    mappings.stream()
+                            .map(AppModuleMappingEntity::getModuleId)
+                            .distinct()
+                            .collect(java.util.stream.Collectors.toList());
+            model.setApplicationModules(moduleIds);
+            List<InputDataEntity> inputEntities = inputDataRepository.findByApplicationId(interfaceId);
+            model.setApplicationInputs(inputDataObjectTypeMapper.toModelList(inputEntities));
+            List<OutputDataEntity> outputEntities = outputDataRepository.findByApplicationId(interfaceId);
+            model.setApplicationOutputs(outputDataObjectTypeMapper.toModelList(outputEntities));
+        }
+        return models;
     }
 
     @Override
@@ -341,25 +360,86 @@ public class ApplicationInterfaceService implements ApplicationInterface {
         var savedEntity = applicationInterfaceRepository.save(applicationInterfaceEntity);
 
         // Delete existing inputs and outputs, then save new ones
-        inputDataRepository.deleteByParentIdAndParentType(applicationInterfaceId, DataObjectParentType.APPLICATION);
-        outputDataRepository.deleteByParentIdAndParentType(applicationInterfaceId, DataObjectParentType.APPLICATION);
-
-        // Save inputs to unified table
-        if (applicationInterfaceDescription.getApplicationInputs() != null) {
-            logger.debug("Saving ApplicationInputs to unified INPUT_DATA table");
-            for (var input : applicationInterfaceDescription.getApplicationInputs()) {
-                var inputEntity = inputDataObjectTypeMapper.toApplicationInputEntity(input, applicationInterfaceId);
-                inputDataRepository.save(inputEntity);
+        // Note: We preserve system inputs/outputs (STDIN, STDOUT, STDERR) by not deleting them
+        // Delete only non-system inputs and outputs
+        var existingInputs = inputDataRepository.findByParentIdAndParentType(applicationInterfaceId, DataObjectParentType.APPLICATION);
+        var existingOutputs = outputDataRepository.findByParentIdAndParentType(applicationInterfaceId, DataObjectParentType.APPLICATION);
+        
+        // Delete non-system inputs
+        for (var input : existingInputs) {
+            if (!"STDIN".equals(input.getName())) {
+                inputDataRepository.delete(input);
+            }
+        }
+        
+        // Delete non-system outputs
+        for (var output : existingOutputs) {
+            if (!"STDOUT".equals(output.getName()) && !"STDERR".equals(output.getName())) {
+                outputDataRepository.delete(output);
             }
         }
 
-        // Save outputs to unified table
+        // Ensure STDIN input exists (system input, non-editable)
+        boolean hasStdin = existingInputs.stream().anyMatch(input -> "STDIN".equals(input.getName()));
+        if (!hasStdin) {
+            var stdinInput = new InputDataObjectType();
+            stdinInput.setName("STDIN");
+            stdinInput.setType(org.apache.airavata.common.model.DataType.STDIN);
+            stdinInput.setStandardInput(true);
+            stdinInput.setIsReadOnly(true);
+            stdinInput.setUserFriendlyDescription("Standard input stream");
+            stdinInput.setInputOrder(-1); // System inputs come first
+            var stdinEntity = inputDataObjectTypeMapper.toApplicationInputEntity(stdinInput, applicationInterfaceId);
+            inputDataRepository.save(stdinEntity);
+            logger.debug("Auto-added STDIN system input for application interface: {}", applicationInterfaceId);
+        }
+
+        // Save user-provided inputs to unified table (excluding STDIN if user tried to add it)
+        if (applicationInterfaceDescription.getApplicationInputs() != null) {
+            logger.debug("Saving ApplicationInputs to unified INPUT_DATA table");
+            for (var input : applicationInterfaceDescription.getApplicationInputs()) {
+                // Skip STDIN if user tried to add it - it's system-managed
+                if (!"STDIN".equals(input.getName())) {
+                    var inputEntity = inputDataObjectTypeMapper.toApplicationInputEntity(input, applicationInterfaceId);
+                    inputDataRepository.save(inputEntity);
+                }
+            }
+        }
+
+        // Ensure STDOUT and STDERR outputs exist (system outputs, non-editable)
+        boolean hasStdout = existingOutputs.stream().anyMatch(output -> "STDOUT".equals(output.getName()));
+        boolean hasStderr = existingOutputs.stream().anyMatch(output -> "STDERR".equals(output.getName()));
+        
+        if (!hasStdout) {
+            var stdoutOutput = new OutputDataObjectType();
+            stdoutOutput.setName("STDOUT");
+            stdoutOutput.setType(org.apache.airavata.common.model.DataType.STDOUT);
+            stdoutOutput.setMetaData("Standard output stream");
+            var stdoutEntity = outputDataObjectTypeMapper.toApplicationOutputEntity(stdoutOutput, applicationInterfaceId);
+            outputDataRepository.save(stdoutEntity);
+            logger.debug("Auto-added STDOUT system output for application interface: {}", applicationInterfaceId);
+        }
+        
+        if (!hasStderr) {
+            var stderrOutput = new OutputDataObjectType();
+            stderrOutput.setName("STDERR");
+            stderrOutput.setType(org.apache.airavata.common.model.DataType.STDERR);
+            stderrOutput.setMetaData("Standard error stream");
+            var stderrEntity = outputDataObjectTypeMapper.toApplicationOutputEntity(stderrOutput, applicationInterfaceId);
+            outputDataRepository.save(stderrEntity);
+            logger.debug("Auto-added STDERR system output for application interface: {}", applicationInterfaceId);
+        }
+
+        // Save user-provided outputs to unified table (excluding STDOUT/STDERR if user tried to add them)
         if (applicationInterfaceDescription.getApplicationOutputs() != null) {
             logger.debug("Saving ApplicationOutputs to unified OUTPUT_DATA table");
             for (var output : applicationInterfaceDescription.getApplicationOutputs()) {
-                var outputEntity =
-                        outputDataObjectTypeMapper.toApplicationOutputEntity(output, applicationInterfaceId);
-                outputDataRepository.save(outputEntity);
+                // Skip STDOUT and STDERR if user tried to add them - they're system-managed
+                if (!"STDOUT".equals(output.getName()) && !"STDERR".equals(output.getName())) {
+                    var outputEntity =
+                            outputDataObjectTypeMapper.toApplicationOutputEntity(output, applicationInterfaceId);
+                    outputDataRepository.save(outputEntity);
+                }
             }
         }
 

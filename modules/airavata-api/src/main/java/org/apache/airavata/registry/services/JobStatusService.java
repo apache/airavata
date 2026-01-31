@@ -29,7 +29,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobEntity;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.expcatalog.JobRepository;
 import org.apache.airavata.registry.utils.ExpCatalogUtils;
@@ -288,6 +288,8 @@ public class JobStatusService {
             jobEntity.setJobStatuses(new java.util.ArrayList<>());
         }
 
+        entity.setSequenceNum(statusRepository.getNextSequenceNum(jobPK.getJobId(), StatusParentType.JOB));
+
         // Save the entity - it will be persisted when the transaction commits
         StatusEntity savedEntity = statusRepository.save(entity);
 
@@ -382,6 +384,8 @@ public class JobStatusService {
         if (jobEntity.getJobStatuses() == null) {
             jobEntity.setJobStatuses(new java.util.ArrayList<>());
         }
+
+        entity.setSequenceNum(statusRepository.getNextSequenceNum(jobPK.getJobId(), StatusParentType.JOB));
 
         // Save the entity - it will be persisted when the transaction commits
         StatusEntity savedEntity = statusRepository.save(entity);

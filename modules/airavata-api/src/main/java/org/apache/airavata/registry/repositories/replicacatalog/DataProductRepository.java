@@ -21,6 +21,9 @@ package org.apache.airavata.registry.repositories.replicacatalog;
 
 import java.util.List;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
+import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity.Privacy;
+import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity.ResourceScope;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,4 +41,53 @@ public interface DataProductRepository extends JpaRepository<DataProductEntity, 
             @Param("gatewayId") String gatewayId,
             @Param("ownerName") String ownerName,
             @Param("productName") String productName);
+
+    List<DataProductEntity> findByPrivacy(Privacy privacy);
+
+    @Query(value = "SELECT * FROM DATA_PRODUCT dp WHERE dp.PRIVACY = :privacy "
+            + "AND (:nameSearch IS NULL OR LOWER(CAST(dp.PRODUCT_NAME AS VARCHAR(512))) LIKE LOWER(CONCAT('%', :nameSearch, '%'))) "
+            + "ORDER BY dp.CREATION_TIME DESC", nativeQuery = true)
+    List<DataProductEntity> findPublicWithFilters(
+            @Param("privacy") String privacy,
+            @Param("nameSearch") String nameSearch,
+            Pageable pageable);
+
+    List<DataProductEntity> findByGatewayId(String gatewayId);
+
+    List<DataProductEntity> findByOwnerId(String ownerId);
+
+    @Query("SELECT dp FROM DataProductEntity dp WHERE dp.primaryStorageResourceId = :storageResourceId")
+    List<DataProductEntity> findByPrimaryStorageResourceId(@Param("storageResourceId") String storageResourceId);
+
+    @Query(value = "SELECT DISTINCT dpt.TAG FROM DATA_PRODUCT dp "
+            + "INNER JOIN DATA_PRODUCT_TAG dpt ON dp.PRODUCT_URI = dpt.PRODUCT_URI "
+            + "WHERE dp.PRIVACY = 'PUBLIC'", nativeQuery = true)
+    List<String> findAllPublicTags();
+
+    @Query("SELECT dp FROM DataProductEntity dp WHERE "
+            + "(dp.resourceScope = :scopeUser AND dp.ownerId = :userId) OR "
+            + "(dp.resourceScope = :scopeGateway AND dp.gatewayId = :gatewayId) OR "
+            + "(dp.groupResourceProfileId IN :groupIds)")
+    List<DataProductEntity> findAccessibleResources(
+            @Param("userId") String userId,
+            @Param("gatewayId") String gatewayId,
+            @Param("groupIds") List<String> groupIds,
+            @Param("scopeUser") ResourceScope scopeUser,
+            @Param("scopeGateway") ResourceScope scopeGateway,
+            Pageable pageable);
+
+    @Query(value = "SELECT * FROM DATA_PRODUCT dp WHERE "
+            + "((dp.RESOURCE_SCOPE = :scopeUser AND dp.OWNER_ID = :userId) OR "
+            + "(dp.RESOURCE_SCOPE = :scopeGateway AND dp.GATEWAY_ID = :gatewayId) OR "
+            + "(dp.GROUP_RESOURCE_PROFILE_ID IN :groupIds)) "
+            + "AND (:nameSearch IS NULL OR LOWER(CAST(dp.PRODUCT_NAME AS VARCHAR(512))) LIKE LOWER(CONCAT('%', :nameSearch, '%'))) "
+            + "ORDER BY dp.CREATION_TIME DESC", nativeQuery = true)
+    List<DataProductEntity> findAccessibleResourcesWithFilters(
+            @Param("userId") String userId,
+            @Param("gatewayId") String gatewayId,
+            @Param("groupIds") List<String> groupIds,
+            @Param("scopeUser") String scopeUser,
+            @Param("scopeGateway") String scopeGateway,
+            @Param("nameSearch") String nameSearch,
+            Pageable pageable);
 }

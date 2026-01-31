@@ -19,9 +19,7 @@
 */
 package org.apache.airavata.orchestrator.internal.monitoring;
 
-import org.apache.airavata.common.model.JobState;
-import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.orchestrator.JobStatusHandler;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * plus /api/v1/monitoring/job-status (e.g. http://airavata-api:8080/api/v1/monitoring/job-status).
  *
  * <p>Accepts JSON: {"jobName":"...", "status":"RUNNING"|"COMPLETED"|"FAILED"|..., "task":"taskId"}.
+ * Publishes canonical JobStatusUpdateEvent to status-change-topic (same path as email and realtime).
  */
 @RestController
 @RequestMapping("/api/v1/monitoring")
@@ -44,43 +43,32 @@ public class MonitoringJobStatusController {
 
     private static final Logger log = LoggerFactory.getLogger(MonitoringJobStatusController.class);
 
-    private final JobStatusHandler jobStatusHandler;
+    private final JobStatusEventPublisher jobStatusEventPublisher;
 
     @Autowired
-    public MonitoringJobStatusController(@Autowired(required = false) JobStatusHandler jobStatusHandler) {
-        this.jobStatusHandler = jobStatusHandler;
+    public MonitoringJobStatusController(@Autowired(required = false) JobStatusEventPublisher jobStatusEventPublisher) {
+        this.jobStatusEventPublisher = jobStatusEventPublisher;
     }
 
     @PostMapping("/job-status")
     public ResponseEntity<Void> jobStatus(@RequestBody JobStatusRequest req) {
-        if (jobStatusHandler == null) {
-            log.warn("job-status callback received but JobStatusHandler not available");
+        if (jobStatusEventPublisher == null) {
+            log.warn("job-status callback received but JobStatusEventPublisher not available");
             return ResponseEntity.ok().build();
         }
         if (req == null || req.jobName == null || req.status == null || req.task == null) {
             return ResponseEntity.badRequest().build();
         }
-        var state =
-                switch (req.status.toUpperCase()) {
-                    case "RUNNING" -> JobState.ACTIVE;
-                    case "COMPLETED" -> JobState.COMPLETE;
-                    case "FAILED" -> JobState.FAILED;
-                    case "SUBMITTED" -> JobState.SUBMITTED;
-                    case "QUEUED" -> JobState.QUEUED;
-                    case "CANCELED" -> JobState.CANCELED;
-                    case "SUSPENDED" -> JobState.SUSPENDED;
-                    case "NON_CRITICAL_FAIL" -> JobState.NON_CRITICAL_FAIL;
-                    default -> JobState.UNKNOWN;
-                };
-        var r = new JobStatusResult();
-        r.setJobId(req.jobName);
-        r.setJobName(req.jobName);
-        r.setState(state);
-        r.setPublisherName("job-callback");
         try {
-            jobStatusHandler.onJobStatusMessage(r);
+            var event = new MessagingContracts.JobStatusUpdateEvent(
+                    req.jobName(),
+                    req.status(),
+                    req.task(),
+                    "job-callback",
+                    null);
+            jobStatusEventPublisher.publish(event);
         } catch (Exception e) {
-            log.error("Error processing job-status callback jobName={} status={}", req.jobName, req.status, e);
+            log.error("Error publishing job-status callback jobName={} status={}", req.jobName(), req.status(), e);
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().build();

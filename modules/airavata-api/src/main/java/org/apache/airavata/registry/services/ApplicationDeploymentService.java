@@ -35,7 +35,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentCommandEntity;
 import org.apache.airavata.registry.entities.appcatalog.ApplicationDeploymentEntity;
 import org.apache.airavata.registry.entities.appcatalog.LibraryPathEntity;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.ApplicationDeploymentMapper;
 import org.apache.airavata.registry.mappers.CommandObjectMapper;
 import org.apache.airavata.registry.mappers.SetEnvPathsMapper;

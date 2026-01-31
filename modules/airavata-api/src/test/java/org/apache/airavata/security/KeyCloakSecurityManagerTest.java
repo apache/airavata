@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.CoreExceptions.ApplicationSettingsException;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.utils.Constants;

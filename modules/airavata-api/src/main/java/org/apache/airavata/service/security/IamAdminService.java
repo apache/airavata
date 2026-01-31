@@ -29,7 +29,7 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
@@ -38,7 +38,7 @@ import org.apache.airavata.profile.utils.TenantManagementKeycloakImpl;
 import org.apache.airavata.registry.repositories.UserRepository;
 import org.apache.airavata.profile.utils.keycloak.KeycloakRestClient;
 import org.apache.airavata.profile.utils.keycloak.dto.UserRepresentation;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
@@ -325,24 +325,61 @@ public class IamAdminService {
             var client = createKeycloakRestClient();
             var gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
             
-            // Try to get admin token - first try with gateway resource profile credentials,
-            // then fall back to super admin credentials
-            String adminToken;
+            // Get admin token - try multiple methods with fallbacks (same as getUsers)
+            String adminToken = null;
+            Exception lastException = null;
+            
+            // Method 1: Try using gateway realm with tenant admin credentials
             try {
                 var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-                // Try using the gateway's realm first (if admin-cli exists there)
-                try {
-                    adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
-                } catch (Exception e) {
-                    // If that fails, try master realm
-                    logger.debug("Failed to get admin token from gateway realm, trying master realm: {}", e.getMessage());
-                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
-                }
+                adminToken = client.obtainAdminToken(gatewayId, isRealmAdminCredentials);
+                logger.debug("Successfully obtained admin token from gateway realm");
             } catch (Exception e) {
-                // Fall back to super admin credentials
-                logger.debug("Failed to get tenant admin credentials, using super admin: {}", e.getMessage());
-                var superAdminCredentials = getSuperAdminPasswordCredential();
-                adminToken = client.obtainAdminToken("master", superAdminCredentials);
+                logger.debug("Failed to get admin token from gateway realm: {}", e.getMessage());
+                lastException = e;
+            }
+            
+            // Method 2: If that failed, try master realm with tenant admin credentials
+            if (adminToken == null) {
+                try {
+                    var isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+                    adminToken = client.obtainAdminToken("master", isRealmAdminCredentials);
+                    logger.debug("Successfully obtained admin token from master realm with tenant credentials");
+                } catch (Exception e) {
+                    logger.debug("Failed to get admin token from master realm with tenant credentials: {}", e.getMessage());
+                    lastException = e;
+                }
+            }
+            
+            // Method 3: Fall back to super admin credentials with master realm
+            if (adminToken == null) {
+                try {
+                    var superAdminCredentials = getSuperAdminPasswordCredential();
+                    adminToken = client.obtainAdminToken("master", superAdminCredentials);
+                    logger.debug("Successfully obtained admin token from master realm with super admin credentials");
+                } catch (Exception e) {
+                    logger.debug("Failed to get admin token from master realm with super admin credentials: {}", e.getMessage());
+                    lastException = e;
+                }
+            }
+            
+            // Method 4: Last resort - use hardcoded Keycloak admin credentials (for dev/test)
+            if (adminToken == null) {
+                try {
+                    var keycloakAdminCreds = new PasswordCredential();
+                    keycloakAdminCreds.setLoginUserName("admin");
+                    keycloakAdminCreds.setPassword("admin");
+                    adminToken = client.obtainAdminToken("master", keycloakAdminCreds);
+                    logger.debug("Successfully obtained admin token using Keycloak admin credentials");
+                } catch (Exception e) {
+                    logger.error("Failed to get admin token using Keycloak admin credentials: {}", e.getMessage());
+                    lastException = e;
+                }
+            }
+            
+            if (adminToken == null) {
+                throw new IamAdminServicesException("Failed to obtain admin token after trying all methods: " + 
+                    (lastException != null ? lastException.getMessage() : "Unknown error"));
             }
             
             // Search for user by username (exact match)

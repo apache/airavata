@@ -27,12 +27,11 @@ under the License.
   </formats>
 
   <fileSets>
-    <!-- Root metadata files -->
+    <!-- Root metadata files (project root = ../../ from modules/distribution) -->
     <fileSet>
-      <directory>../../</directory>
+      <directory>../..</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>INSTALL</include>
         <include>LICENSE</include>
         <include>NOTICE</include>
         <include>RELEASE_NOTES</include>
@@ -42,7 +41,7 @@ under the License.
 
     <!-- Startup script -->
     <fileSet>
-      <directory>../../../../src/main/resources/bin</directory>
+      <directory>../../src/main/resources/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>755</fileMode>
       <includes>
@@ -61,7 +60,7 @@ under the License.
 
     <!-- Keystores -->
     <fileSet>
-      <directory>../../../../src/main/resources/conf/keystores</directory>
+      <directory>../../src/main/resources/conf/keystores</directory>
       <outputDirectory>conf/keystores</outputDirectory>
       <includes>
         <include>*.jks</include>
@@ -69,25 +68,16 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Config files from root (META-INF/persistence.xml) -->
-    <fileSet>
-      <directory>../../../../src/main/resources</directory>
-      <outputDirectory>conf</outputDirectory>
-      <includes>
-        <include>META-INF/persistence.xml</include>
-      </includes>
-    </fileSet>
-
     <!-- Config files from root (application.properties, logback.xml, templates, email-config.yml) -->
     <fileSet>
-      <directory>../../../../src/main/resources</directory>
+      <directory>../../src/main/resources</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>application.properties</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../../../src/main/resources/conf</directory>
+      <directory>../../src/main/resources/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>logback.xml</include>
@@ -96,39 +86,12 @@ under the License.
       </includes>
     </fileSet>
 
-    <!-- Config files from agent-service -->
+    <!-- DB migrations (for init from tarball) -->
     <fileSet>
-      <directory>../agent-framework/agent-service/src/main/resources</directory>
-      <outputDirectory>conf</outputDirectory>
+      <directory>../../src/main/resources/conf/db</directory>
+      <outputDirectory>conf/db</outputDirectory>
       <includes>
-        <include>logback.xml</include>
-      </includes>
-    </fileSet>
-
-    <!-- Config files from research-service -->
-    <fileSet>
-      <directory>../research-framework/research-service/src/main/resources</directory>
-      <outputDirectory>conf</outputDirectory>
-      <includes>
-        <include>logback.xml</include>
-      </includes>
-    </fileSet>
-
-    <!-- Config files from file-server -->
-    <fileSet>
-      <directory>../file-server/src/main/resources</directory>
-      <outputDirectory>conf</outputDirectory>
-      <includes>
-        <include>logback.xml</include>
-      </includes>
-    </fileSet>
-
-    <!-- Config files from rest-api -->
-    <fileSet>
-      <directory>../rest-api/src/main/resources</directory>
-      <outputDirectory>conf</outputDirectory>
-      <includes>
-        <include>logback.xml</include>
+        <include>**/*.sql</include>
       </includes>
     </fileSet>
 

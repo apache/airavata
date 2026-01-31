@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.registry.repositories.common;
 
+import org.apache.airavata.credential.entities.CredentialEntity;
+import org.apache.airavata.credential.entities.CredentialEntityPK;
 import org.apache.airavata.config.IntegrationTestConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -116,6 +118,24 @@ public abstract class TestBase {
     protected void flushAndClear() {
         entityManager.flush();
         entityManager.clear();
+    }
+
+    /**
+     * Persist a minimal CREDENTIALS row so RESOURCE_PROFILE / RESOURCE_ACCESS / RESOURCE_ACCESS_GRANT
+     * foreign keys to (GATEWAY_ID, TOKEN_ID) are satisfied. Idempotent: safe to call multiple times
+     * for the same (gatewayId, tokenId) within the same transaction.
+     */
+    protected void ensureCredentialExists(String gatewayId, String tokenId) {
+        if (entityManager.find(CredentialEntity.class, new CredentialEntityPK(gatewayId, tokenId)) != null) {
+            return;
+        }
+        CredentialEntity cred = new CredentialEntity();
+        cred.setGatewayId(gatewayId);
+        cred.setTokenId(tokenId);
+        cred.setUserId("test-user");
+        cred.setCredential(new byte[] { 0 });
+        entityManager.persist(cred);
+        entityManager.flush();
     }
 
     /**

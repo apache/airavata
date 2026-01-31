@@ -312,8 +312,8 @@ class AiravataOperator:
 
   def upload_files(self, process_id: str | None, agent_ref: str | None, sr_host: str, local_files: list[Path], remote_dir: str) -> list[str]:
     """
-    Upload local files to a remote directory of a storage resource
-    TODO add data_svc fallback
+    Upload local files to a remote directory of a storage resource.
+    Uses connection service; data_svc fallback can be added.
 
     Return Path: /{project_name}/{experiment_name}
 
@@ -371,8 +371,8 @@ class AiravataOperator:
 
   def list_files(self, process_id: str, agent_ref: str, sr_host: str, remote_dir: str) -> list[str]:
     """
-    List files in a remote directory of a storage resource
-    TODO add data_svc fallback
+    List files in a remote directory of a storage resource.
+    Uses connection service; data_svc fallback can be added.
 
     Return Path: /{project_name}/{experiment_name}
 
@@ -407,8 +407,8 @@ class AiravataOperator:
 
   def download_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str, local_dir: str) -> str:
     """
-    Download files from a remote directory of a storage resource to a local directory
-    TODO add data_svc fallback
+    Download files from a remote directory of a storage resource to a local directory.
+    Uses connection service; data_svc fallback can be added.
 
     Return Path: /{project_name}/{experiment_name}
 
@@ -453,8 +453,8 @@ class AiravataOperator:
 
   def execute_cmd(self, agent_ref: str, cmd: str) -> bytes:
     """
-    Execute a command on a remote directory of a storage resource
-    TODO add data_svc fallback
+    Execute a command on a remote directory of a storage resource.
+    Uses connection service; data_svc fallback can be added.
 
     Return Path: /{project_name}/{experiment_name}
 
@@ -482,8 +482,7 @@ class AiravataOperator:
 
   def cat_file(self, process_id: str, agent_ref: str, sr_host: str, remote_file: str, remote_dir: str) -> bytes:
     """
-    Download files from a remote directory of a storage resource to a local directory
-    TODO add data_svc fallback
+    Return file content from a remote path (cat). Uses connection service; data_svc fallback can be added.
 
     Return Path: /{project_name}/{experiment_name}
 

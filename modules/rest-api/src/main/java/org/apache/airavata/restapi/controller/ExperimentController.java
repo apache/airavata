@@ -24,7 +24,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.apache.airavata.restapi.util.AuthzTokenUtil;

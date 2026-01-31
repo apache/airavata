@@ -19,10 +19,21 @@
 */
 package org.apache.airavata.restapi.controller;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.airavata.common.model.PreferenceResourceType;
 import org.apache.airavata.common.model.ComputeResourceDescription;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.common.model.StorageResourceDescription;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
+import org.apache.airavata.registry.entities.ResourceAccessEntity;
+import org.apache.airavata.registry.repositories.ResourceAccessRepository;
 import org.apache.airavata.registry.services.ComputeResourceService;
+import org.apache.airavata.registry.services.ResourceAccessGrantService;
+import org.apache.airavata.registry.services.StorageResourceService;
+import org.apache.airavata.security.model.AuthzToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,23 +44,90 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/compute-resources")
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class ComputeResourceController {
-    private final ComputeResourceService computeResourceService;
+    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceController.class);
 
-    public ComputeResourceController(ComputeResourceService computeResourceService) {
+    private final ComputeResourceService computeResourceService;
+    private final StorageResourceService storageResourceService;
+    private final ResourceAccessRepository resourceAccessRepository;
+    private final ResourceAccessGrantService resourceAccessGrantService;
+
+    public ComputeResourceController(
+            ComputeResourceService computeResourceService,
+            StorageResourceService storageResourceService,
+            ResourceAccessRepository resourceAccessRepository,
+            ResourceAccessGrantService resourceAccessGrantService) {
         this.computeResourceService = computeResourceService;
+        this.storageResourceService = storageResourceService;
+        this.resourceAccessRepository = resourceAccessRepository;
+        this.resourceAccessGrantService = resourceAccessGrantService;
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllComputeResources() {
+    public ResponseEntity<?> getAllComputeResources(
+            @RequestParam(required = false) String credentialToken,
+            @RequestParam(required = false) String gatewayId,
+            HttpServletRequest request) {
         try {
-            var computeResources = computeResourceService.getAllComputeResourceIdList();
-            return ResponseEntity.ok(computeResources);
+            var allComputeResources = computeResourceService.getAllComputeResourceIdList();
+            
+            // If credentialToken is provided, filter by merged resource access and grants
+            if (credentialToken != null && !credentialToken.trim().isEmpty()) {
+                var accessibleResourceIds = resourceAccessGrantService.getComputeResourceIdsForCredential(credentialToken.trim());
+                Map<String, String> filteredResources = new HashMap<>();
+                for (Map.Entry<String, String> entry : allComputeResources.entrySet()) {
+                    if (accessibleResourceIds.contains(entry.getKey())) {
+                        filteredResources.put(entry.getKey(), entry.getValue());
+                    }
+                }
+                return ResponseEntity.ok(filteredResources);
+            }
+            
+            // If no credential token, try to filter by user's accessible resources
+            // Only filter if there are explicit resource access grants configured for this gateway
+            try {
+                var authzToken = (AuthzToken) request.getAttribute("authzToken");
+                if (authzToken != null && gatewayId != null) {
+                    // Check if any resource access grants are configured for this gateway
+                    var gatewayAccessGrants = resourceAccessRepository.findByGatewayIdAndResourceType(
+                            gatewayId, PreferenceResourceType.COMPUTE);
+                    
+                    // Only apply filtering if there are explicit access grants configured
+                    if (!gatewayAccessGrants.isEmpty()) {
+                        String userId = authzToken.getClaimsMap() != null ? authzToken.getClaimsMap().get("userName") : null;
+                        if (userId != null) {
+                            String airavataInternalUserId = userId + "@" + gatewayId;
+                            // Get user's accessible resources
+                            var accessibleResourceIds = resourceAccessRepository.findAccessibleResourceIds(
+                                    PreferenceResourceType.COMPUTE,
+                                    gatewayId,
+                                    Collections.emptyList(), // Get user's group IDs from sharing registry if enabled
+                                    airavataInternalUserId
+                            );
+                            
+                            // Filter the map to only include accessible resources
+                            Map<String, String> filteredResources = new HashMap<>();
+                            for (Map.Entry<String, String> entry : allComputeResources.entrySet()) {
+                                if (accessibleResourceIds.contains(entry.getKey())) {
+                                    filteredResources.put(entry.getKey(), entry.getValue());
+                                }
+                            }
+                            return ResponseEntity.ok(filteredResources);
+                        }
+                    }
+                    // No access grants configured - return all resources
+                }
+            } catch (Exception e) {
+                // If filtering fails, return all resources
+            }
+            
+            return ResponseEntity.ok(allComputeResources);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -71,8 +149,33 @@ public class ComputeResourceController {
     @PostMapping
     public ResponseEntity<?> createComputeResource(@RequestBody ComputeResourceDescription computeResource) {
         try {
+            String linkedStorageResourceId = null;
+
+            // If storageProtocol is provided, create a linked storage resource
+            String storageProtocol = computeResource.getStorageProtocol();
+            if (storageProtocol != null && !storageProtocol.trim().isEmpty()) {
+                var storageResource = new StorageResourceDescription();
+                storageResource.setHostName(computeResource.getHostName());
+                storageResource.setStorageResourceDescription(
+                        "Linked storage for compute resource: " + computeResource.getHostName());
+                storageResource.setEnabled(true);
+
+                linkedStorageResourceId = storageResourceService.addStorageResource(storageResource);
+                logger.info("Created linked storage resource {} for compute resource {}",
+                        linkedStorageResourceId, computeResource.getHostName());
+
+                // Set the linked storage resource ID on the compute resource
+                computeResource.setLinkedStorageResourceId(linkedStorageResourceId);
+            }
+
             var computeResourceId = computeResourceService.addComputeResource(computeResource);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("computeResourceId", computeResourceId));
+
+            var response = new HashMap<String, String>();
+            response.put("computeResourceId", computeResourceId);
+            if (linkedStorageResourceId != null) {
+                response.put("linkedStorageResourceId", linkedStorageResourceId);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (AppCatalogException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -96,6 +199,65 @@ public class ComputeResourceController {
             computeResourceService.removeComputeResource(computeResourceId);
             return ResponseEntity.ok().build();
         } catch (AppCatalogException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    /**
+     * Check if a compute resource exists at higher levels (GATEWAY or GROUP)
+     * and return information about where it's defined.
+     */
+    @GetMapping("/{computeResourceId}/hierarchy")
+    public ResponseEntity<?> getResourceHierarchy(
+            @PathVariable String computeResourceId,
+            @RequestParam String gatewayId,
+            HttpServletRequest request) {
+        try {
+            var authzToken = (AuthzToken) request.getAttribute("authzToken");
+            if (authzToken == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            // Check if resource exists globally
+            var resource = computeResourceService.getComputeResource(computeResourceId);
+            if (resource == null) {
+                return ResponseEntity.ok(Map.of(
+                    "exists", false,
+                    "canCreate", true,
+                    "level", "NONE"
+                ));
+            }
+
+            // Check if there are access grants at GATEWAY level for this gateway
+            var gatewayAccessGrants = resourceAccessRepository.findByResourceTypeAndResourceId(
+                PreferenceResourceType.COMPUTE,
+                computeResourceId
+            ).stream()
+            .filter(ra -> ra.getOwnerType() == org.apache.airavata.common.model.PreferenceLevel.GATEWAY 
+                      && ra.getOwnerId().equals(gatewayId))
+            .collect(Collectors.toList());
+            boolean existsAtGateway = !gatewayAccessGrants.isEmpty();
+
+            // Check if there are access grants at GROUP level
+            var groupAccessGrants = resourceAccessRepository.findByResourceTypeAndResourceId(
+                PreferenceResourceType.COMPUTE,
+                computeResourceId
+            ).stream()
+            .filter(ra -> ra.getOwnerType() == org.apache.airavata.common.model.PreferenceLevel.GROUP)
+            .collect(Collectors.toList());
+            boolean existsAtGroup = !groupAccessGrants.isEmpty();
+
+            String highestLevel = existsAtGateway ? "GATEWAY" : (existsAtGroup ? "GROUP" : "NONE");
+            boolean canCreate = highestLevel.equals("NONE");
+
+            return ResponseEntity.ok(Map.of(
+                "exists", true,
+                "canCreate", canCreate,
+                "canOverride", !canCreate,
+                "level", highestLevel,
+                "resourceId", computeResourceId
+            ));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

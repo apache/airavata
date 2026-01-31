@@ -21,13 +21,16 @@ package org.apache.airavata.restapi.config;
 import org.apache.airavata.restapi.security.AuthenticationInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
 public class WebMvcConfig implements WebMvcConfigurer {
-    
+
+    private static final long CORS_MAX_AGE = 3600;
+
     private final AuthenticationInterceptor authenticationInterceptor;
 
     public WebMvcConfig(AuthenticationInterceptor authenticationInterceptor) {
@@ -38,5 +41,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor)
                 .addPathPatterns("/api/v1/**");
+    }
+
+    /**
+     * Enable CORS for /api/v1 so the portal (different origin) can call REST endpoints.
+     * Without this, browser preflight OPTIONS requests get 405 Method Not Allowed
+     * and credential (and other) GET/POST/DELETE requests fail.
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/v1/**")
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(CORS_MAX_AGE);
     }
 }

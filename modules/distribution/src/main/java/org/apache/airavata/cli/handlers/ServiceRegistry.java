@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-// TODO: These services don't exist yet - uncomment when implemented
+// Optional background services; uncomment when implemented
 // import org.apache.airavata.monitor.compute.ComputationalResourceMonitoringService;
 // import org.apache.airavata.scheduling.data.DataInterpreterService;
 // import org.apache.airavata.scheduling.scheduler.ProcessReschedulingService;
@@ -65,7 +65,6 @@ public class ServiceRegistry {
         // Airavata API is handled specially via WebServerApplicationContext
 
         // Background Services (if they implement SmartLifecycle)
-        // TODO: These services don't exist yet - uncomment when implemented
         // serviceNameToBeanClass.put("data-interpreter", DataInterpreterService.class);
         // serviceNameToBeanClass.put("process-rescheduler", ProcessReschedulingService.class);
         // serviceNameToBeanClass.put("compute-monitor", ComputationalResourceMonitoringService.class);

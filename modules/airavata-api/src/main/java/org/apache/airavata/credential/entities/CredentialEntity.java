@@ -59,6 +59,12 @@ public class CredentialEntity implements Serializable {
     @Column(name = "USER_ID", length = 256, nullable = false)
     private String userId;
 
+    /**
+     * User-given name to identify this credential (e.g. "Laptop SSH", "HPC login").
+     */
+    @Column(name = "NAME", length = 255)
+    private String name;
+
     @Column(
             name = "TIME_PERSISTED",
             nullable = false,
@@ -100,6 +106,14 @@ public class CredentialEntity implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Timestamp getTimePersisted() {

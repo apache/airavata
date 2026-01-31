@@ -42,17 +42,18 @@ import org.apache.airavata.common.model.ProcessStatusChangeEvent;
 import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
-import org.apache.airavata.orchestrator.state.ExperimentStateValidator;
-import org.apache.airavata.orchestrator.state.JobStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.orchestrator.state.TaskStateValidator;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
@@ -165,48 +166,48 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Test all valid JobState transitions according to JobStateValidator
         // SUBMITTED can transition to all other states
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.QUEUED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.QUEUED),
                 "SUBMITTED -> QUEUED should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.ACTIVE),
                 "SUBMITTED -> ACTIVE should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.COMPLETE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.COMPLETE),
                 "SUBMITTED -> COMPLETE should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.FAILED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.FAILED),
                 "SUBMITTED -> FAILED should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.CANCELED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.CANCELED),
                 "SUBMITTED -> CANCELED should be valid");
 
         // QUEUED can transition to multiple states
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.ACTIVE),
                 "QUEUED -> ACTIVE should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.COMPLETE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.COMPLETE),
                 "QUEUED -> COMPLETE should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.FAILED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.FAILED),
                 "QUEUED -> FAILED should be valid");
 
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.COMPLETE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.COMPLETE),
                 "ACTIVE -> COMPLETE should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.FAILED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.FAILED),
                 "ACTIVE -> FAILED should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.CANCELED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.ACTIVE, JobState.CANCELED),
                 "ACTIVE -> CANCELED should be valid");
 
         // NON_CRITICAL_FAIL can recover
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
                 "NON_CRITICAL_FAIL -> QUEUED should be valid");
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.ACTIVE),
                 "NON_CRITICAL_FAIL -> ACTIVE should be valid");
     }
 
@@ -215,23 +216,23 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Test invalid JobState transitions
         // COMPLETE cannot transition to other states
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.SUBMITTED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.SUBMITTED),
                 "COMPLETE -> SUBMITTED should be invalid");
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.ACTIVE),
                 "COMPLETE -> ACTIVE should be invalid");
 
         // FAILED cannot transition to SUBMITTED
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.FAILED, JobState.SUBMITTED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.FAILED, JobState.SUBMITTED),
                 "FAILED -> SUBMITTED should be invalid");
 
         // CANCELED cannot transition to active states
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.ACTIVE),
                 "CANCELED -> ACTIVE should be invalid");
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.QUEUED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.QUEUED),
                 "CANCELED -> QUEUED should be invalid");
     }
 
@@ -349,15 +350,15 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Test that JobStateValidator handles null states correctly
         // null -> any state should be valid (initial state)
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(null, JobState.SUBMITTED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(null, JobState.SUBMITTED),
                 "null -> SUBMITTED should be valid (initial state)");
 
         // any state -> null should be invalid
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, null), "SUBMITTED -> null should be invalid");
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, null), "SUBMITTED -> null should be invalid");
 
         // null -> null should be invalid
-        assertFalse(JobStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
+        assertFalse(StateValidators.JobStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
     }
 
     @Test
@@ -478,57 +479,57 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // Test all valid ExperimentState transitions
         // CREATED can transition to SCHEDULED, LAUNCHED, or FAILED
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.SCHEDULED),
                 "CREATED -> SCHEDULED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.LAUNCHED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.LAUNCHED),
                 "CREATED -> LAUNCHED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.FAILED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.FAILED),
                 "CREATED -> FAILED should be valid");
 
         // SCHEDULED can transition to LAUNCHED, SCHEDULED (self-loop), or CANCELING
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.LAUNCHED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.LAUNCHED),
                 "SCHEDULED -> LAUNCHED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.SCHEDULED),
                 "SCHEDULED -> SCHEDULED (self-loop) should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.CANCELING),
                 "SCHEDULED -> CANCELING should be valid");
 
         // LAUNCHED can transition to EXECUTING or CANCELING
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
                 "LAUNCHED -> EXECUTING should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.CANCELING),
                 "LAUNCHED -> CANCELING should be valid");
 
         // EXECUTING can transition to COMPLETED, FAILED, CANCELED, SCHEDULED (requeue), or CANCELING
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.COMPLETED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.FAILED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.FAILED),
                 "EXECUTING -> FAILED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELED),
                 "EXECUTING -> CANCELED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.SCHEDULED),
                 "EXECUTING -> SCHEDULED (requeue) should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELING),
                 "EXECUTING -> CANCELING should be valid");
 
         // CANCELING can transition to CANCELING (self-loop) or CANCELED
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELING),
                 "CANCELING -> CANCELING (self-loop) should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELED),
                 "CANCELING -> CANCELED should be valid");
     }
 
@@ -537,21 +538,21 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     public void testExperimentStateValidator_InvalidTransitions() {
         // Terminal states cannot transition out
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.COMPLETED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.COMPLETED, ExperimentState.EXECUTING),
                 "COMPLETED -> EXECUTING should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.FAILED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.FAILED, ExperimentState.EXECUTING),
                 "FAILED -> EXECUTING should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELED, ExperimentState.EXECUTING),
                 "CANCELED -> EXECUTING should be invalid");
 
         // Invalid jumps (skipping required states)
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.EXECUTING),
                 "CREATED -> EXECUTING (skipping SCHEDULED/LAUNCHED) should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.COMPLETED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.COMPLETED),
                 "CREATED -> COMPLETED should be invalid");
     }
 
@@ -560,18 +561,18 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     public void testTaskStateValidator_AllValidTransitions() {
         // CREATED can transition to EXECUTING
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.EXECUTING),
                 "CREATED -> EXECUTING should be valid");
 
         // EXECUTING can transition to COMPLETED, FAILED, or CANCELED
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.COMPLETED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid");
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.FAILED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.FAILED),
                 "EXECUTING -> FAILED should be valid");
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.CANCELED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.CANCELED),
                 "EXECUTING -> CANCELED should be valid");
     }
 
@@ -580,24 +581,24 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     public void testTaskStateValidator_InvalidTransitions() {
         // Terminal states cannot transition out
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.COMPLETED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.COMPLETED, TaskState.EXECUTING),
                 "COMPLETED -> EXECUTING should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.FAILED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.FAILED, TaskState.EXECUTING),
                 "FAILED -> EXECUTING should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CANCELED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CANCELED, TaskState.EXECUTING),
                 "CANCELED -> EXECUTING should be invalid");
 
         // Invalid jumps (skipping required states)
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.COMPLETED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.COMPLETED),
                 "CREATED -> COMPLETED (skipping EXECUTING) should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.FAILED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.FAILED),
                 "CREATED -> FAILED (skipping EXECUTING) should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.CANCELED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.CANCELED),
                 "CREATED -> CANCELED (skipping EXECUTING) should be invalid");
     }
 
@@ -606,16 +607,16 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     public void testExperimentStateValidator_NullHandling() {
         // null -> any state should be valid (initial state)
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(null, ExperimentState.CREATED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(null, ExperimentState.CREATED),
                 "null -> CREATED should be valid (initial state)");
 
         // any state -> null should be invalid
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, null),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, null),
                 "CREATED -> null should be invalid");
 
         // null -> null should be invalid
-        assertFalse(ExperimentStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
+        assertFalse(StateValidators.ExperimentStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
     }
 
     @Test
@@ -623,42 +624,42 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
     public void testTaskStateValidator_NullHandling() {
         // null -> any state should be valid (initial state)
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(null, TaskState.CREATED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(null, TaskState.CREATED),
                 "null -> CREATED should be valid (initial state)");
 
         // any state -> null should be invalid
-        assertFalse(TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, null), "CREATED -> null should be invalid");
+        assertFalse(StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, null), "CREATED -> null should be invalid");
 
         // null -> null should be invalid
-        assertFalse(TaskStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
+        assertFalse(StateValidators.TaskStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
     }
 
     @Test
     @DisplayName("Test StateTransitionService rejects invalid transitions through service layer")
     public void testStateTransitionServiceRejectsInvalidTransitions() {
-        // Test that StateTransitionService.validateAndLog() correctly rejects invalid transitions
+        // Test that StateModel.StateTransitionService.validateAndLog() correctly rejects invalid transitions
         assertFalse(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
                 "StateTransitionService should reject COMPLETED -> EXECUTING");
         assertFalse(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.COMPLETED, TaskState.EXECUTING),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.COMPLETED, TaskState.EXECUTING),
                 "StateTransitionService should reject COMPLETED -> EXECUTING");
         assertFalse(
-                StateTransitionService.isValid(JobStateValidator.INSTANCE, JobState.COMPLETE, JobState.SUBMITTED),
+                StateModel.StateTransitionService.isValid(StateValidators.JobStateValidator.INSTANCE, JobState.COMPLETE, JobState.SUBMITTED),
                 "StateTransitionService should reject COMPLETE -> SUBMITTED");
     }
 
     @Test
-    @DisplayName("Test StateTransitionService.validateAndLog() logs invalid transitions correctly")
+    @DisplayName("Test StateModel.StateTransitionService.validateAndLog() logs invalid transitions correctly")
     public void testStateTransitionServiceLogging() {
         // Test that validateAndLog() correctly logs and rejects invalid transitions
         String testEntityId = "test-entity-123";
         String testEntityType = "experiment";
 
         // Test invalid transition is rejected and logged
-        boolean result = StateTransitionService.validateAndLog(
-                ExperimentStateValidator.INSTANCE,
+        boolean result = StateModel.StateTransitionService.validateAndLog(
+                StateValidators.ExperimentStateValidator.INSTANCE,
                 ExperimentState.COMPLETED,
                 ExperimentState.EXECUTING,
                 testEntityId,
@@ -666,8 +667,8 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         assertFalse(result, "Invalid transition should be rejected");
 
         // Test valid transition is accepted and logged
-        boolean validResult = StateTransitionService.validateAndLog(
-                ExperimentStateValidator.INSTANCE,
+        boolean validResult = StateModel.StateTransitionService.validateAndLog(
+                StateValidators.ExperimentStateValidator.INSTANCE,
                 ExperimentState.CREATED,
                 ExperimentState.SCHEDULED,
                 testEntityId,
@@ -709,8 +710,8 @@ public class StateTransitionValidationIntegrationTest extends ServiceIntegration
         // provides the validation logic. This test verifies the validator correctly identifies
         // invalid transitions that should be rejected if validation is added to services.
         assertFalse(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
                 "COMPLETED -> EXECUTING should be rejected by validator");
     }
 

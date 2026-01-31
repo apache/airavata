@@ -25,7 +25,7 @@ import org.apache.airavata.common.model.JobSubmissionInterface;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.JobSubmissionInterfacePK;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.JobSubmissionInterfaceMapper;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;

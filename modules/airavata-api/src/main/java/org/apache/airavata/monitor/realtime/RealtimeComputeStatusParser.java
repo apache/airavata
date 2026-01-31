@@ -24,8 +24,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.apache.airavata.common.model.JobState;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.JobStatusUpdateEvent;
 import org.apache.airavata.monitor.JobStatusResult;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,23 @@ public class RealtimeComputeStatusParser {
         return null;
     }
 
-    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService registryService) {
+    /**
+     * Parse a typed job status event (from status-change-topic). Prefer publisherName from event when set.
+     */
+    public JobStatusResult parse(JobStatusUpdateEvent event, String fallbackPublisherId, RegistryService registryService) {
+        var jobName = event.getJobName();
+        var status = event.getStatus();
+        var taskId = event.getTaskId();
+        String publisherId = event.getPublisherName() != null && !event.getPublisherName().isEmpty()
+                ? event.getPublisherName() : fallbackPublisherId;
+        if (jobName == null || status == null || taskId == null) {
+            logger.error("Job name, taskId or status is null in event {}", event);
+            return null;
+        }
+        return buildJobStatusResult(jobName, status, taskId, publisherId, registryService);
+    }
 
+    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService registryService) {
         try {
             var objectMapper = new ObjectMapper();
             var asMap = objectMapper.readValue(rawMessage, new TypeReference<Map<String, Object>>() {});
@@ -69,43 +85,7 @@ public class RealtimeComputeStatusParser {
                 var taskId = (String) asMap.get("task");
 
                 if (jobName != null && status != null && taskId != null) {
-
-                    try {
-                        var jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registryService);
-                        if (jobId == null) {
-                            logger.error("No job id for job name {}", jobName);
-                            return null;
-                        }
-
-                        var jobState =
-                                switch (status) {
-                                    case "RUNNING" -> JobState.ACTIVE;
-                                    case "COMPLETED" -> JobState.COMPLETE;
-                                    case "FAILED" -> JobState.FAILED;
-                                    case "SUBMITTED" -> JobState.SUBMITTED;
-                                    case "QUEUED" -> JobState.QUEUED;
-                                    case "CANCELED" -> JobState.CANCELED;
-                                    case "SUSPENDED" -> JobState.SUSPENDED;
-                                    case "UNKNOWN" -> JobState.UNKNOWN;
-                                    case "NON_CRITICAL_FAIL" -> JobState.NON_CRITICAL_FAIL;
-                                    default -> null;
-                                };
-
-                        if (jobState == null) {
-                            logger.error("Invalid job state {}", status);
-                            return null;
-                        }
-
-                        var jobStatusResult = new JobStatusResult();
-                        jobStatusResult.setJobId(jobId);
-                        jobStatusResult.setJobName(jobName);
-                        jobStatusResult.setState(jobState);
-                        jobStatusResult.setPublisherName(publisherId);
-                        return jobStatusResult;
-                    } catch (Exception e) {
-                        logger.error("Failed to fetch job id for job name {}", jobName);
-                        return null;
-                    }
+                    return buildJobStatusResult(jobName, status, taskId, publisherId, registryService);
                 } else {
                     logger.error("Job name, taskId or status is null in message {}", rawMessage);
                     return null;
@@ -116,6 +96,46 @@ public class RealtimeComputeStatusParser {
             }
         } catch (JsonProcessingException e) {
             logger.error("Failed to parse raw data {} to type Map", rawMessage, e);
+            return null;
+        }
+    }
+
+    private JobStatusResult buildJobStatusResult(String jobName, String status, String taskId,
+            String publisherId, RegistryService registryService) {
+        try {
+            var jobId = getJobIdIdByJobNameWithRetry(jobName, taskId, registryService);
+            if (jobId == null) {
+                logger.error("No job id for job name {}", jobName);
+                return null;
+            }
+
+            var jobState =
+                    switch (status) {
+                        case "RUNNING" -> JobState.ACTIVE;
+                        case "COMPLETED" -> JobState.COMPLETE;
+                        case "FAILED" -> JobState.FAILED;
+                        case "SUBMITTED" -> JobState.SUBMITTED;
+                        case "QUEUED" -> JobState.QUEUED;
+                        case "CANCELED" -> JobState.CANCELED;
+                        case "SUSPENDED" -> JobState.SUSPENDED;
+                        case "UNKNOWN" -> JobState.UNKNOWN;
+                        case "NON_CRITICAL_FAIL" -> JobState.NON_CRITICAL_FAIL;
+                        default -> null;
+                    };
+
+            if (jobState == null) {
+                logger.error("Invalid job state {}", status);
+                return null;
+            }
+
+            var jobStatusResult = new JobStatusResult();
+            jobStatusResult.setJobId(jobId);
+            jobStatusResult.setJobName(jobName);
+            jobStatusResult.setState(jobState);
+            jobStatusResult.setPublisherName(publisherId);
+            return jobStatusResult;
+        } catch (Exception e) {
+            logger.error("Failed to fetch job id for job name {}", jobName);
             return null;
         }
     }

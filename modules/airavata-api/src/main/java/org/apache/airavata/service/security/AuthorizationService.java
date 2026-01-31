@@ -21,9 +21,9 @@ package org.apache.airavata.service.security;
 
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.AuthorizationException;
-import org.apache.airavata.common.exception.InvalidRequestException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException;
+import org.apache.airavata.common.exception.AuthExceptions.AuthorizationException;
+import org.apache.airavata.common.exception.CoreExceptions.InvalidRequestException;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;

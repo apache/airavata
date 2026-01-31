@@ -22,12 +22,12 @@ package org.apache.airavata.service.security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.exception.AuthExceptions.AuthorizationException;
 import org.apache.airavata.common.model.GroupModel;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.profile.exception.GroupManagerServiceException;
 import org.apache.airavata.security.model.AuthzToken;
 import org.apache.airavata.service.SharingRegistryService;
@@ -84,7 +84,8 @@ public class GroupManagerService {
         sharingUserGroup.setOwnerId(getUserId(authzToken));
 
         var groupId = getSharingService().createGroup(sharingUserGroup);
-        internalAddUsersToGroup(getSharingService(), gatewayId, groupModel.getMembers(), groupId);
+        var members = groupModel.getMembers() != null ? groupModel.getMembers() : java.util.Collections.<String>emptyList();
+        internalAddUsersToGroup(getSharingService(), gatewayId, members, groupId);
         if (groupModel.getAdmins() != null && !groupModel.getAdmins().isEmpty()) {
             try {
                 getSharingService().addGroupAdmins(gatewayId, groupId, groupModel.getAdmins());
@@ -294,6 +295,9 @@ public class GroupManagerService {
             SharingRegistryService sharingService, String domainId, List<String> userIds, String groupId)
             throws SharingRegistryException {
 
+        if (userIds == null) {
+            userIds = java.util.Collections.emptyList();
+        }
         // Workaround for UserProfiles that failed to sync to the sharing registry:
         // Create any missing users in the sharing registry to ensure group membership can be established.
         // This handles cases where user profiles exist in the profile service but haven't been

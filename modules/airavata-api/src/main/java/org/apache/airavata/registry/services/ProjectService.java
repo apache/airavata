@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.registry.entities.expcatalog.ProjectEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.ProjectMapper;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.repositories.expcatalog.ProjectRepository;
@@ -96,8 +96,7 @@ public class ProjectService {
             String orderByIdentifier,
             ResultOrderType resultOrderType)
             throws RegistryException {
-        // TODO: Implement complex search using Criteria API
-        // For now, return all projects filtered by gatewayId if present
+        // Complex search can use Criteria API; for now filter by gatewayId if present
         List<ProjectEntity> entities;
         if (filters != null && filters.containsKey("GATEWAY_ID")) {
             entities = projectRepository.findByGatewayId(filters.get("GATEWAY_ID"));
@@ -115,7 +114,7 @@ public class ProjectService {
             String orderByIdentifier,
             ResultOrderType resultOrderType)
             throws RegistryException {
-        // TODO: Implement complex search using Criteria API with accessibleProjectIds filter
+        // Complex search with accessibleProjectIds filter can use Criteria API
         // For now, return projects from accessibleProjectIds
         var result = new ArrayList<Project>();
         for (var projectId : accessibleProjectIds) {

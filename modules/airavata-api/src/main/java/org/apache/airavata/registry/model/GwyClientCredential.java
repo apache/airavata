@@ -20,7 +20,7 @@
 package org.apache.airavata.registry.model;
 
 import java.util.Map;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 
 public interface GwyClientCredential {
 

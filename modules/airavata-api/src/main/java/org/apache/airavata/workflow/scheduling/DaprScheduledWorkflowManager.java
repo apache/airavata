@@ -182,7 +182,7 @@ public class DaprScheduledWorkflowManager {
 
     private void startComputeMonitorWorkflows(DaprWorkflowClient workflowClient) {
         // Note: These properties are not in AiravataServerProperties yet, using defaults
-        // TODO: Add these to AiravataServerProperties if needed
+        // Add to AiravataServerProperties if needed
         final int parallelJobs = 1; // default
         final double scanningInterval = 1800; // default in seconds (30 minutes)
 

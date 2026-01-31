@@ -23,7 +23,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Domain model: SlurmComputeResourcePreference
+ * Domain model: SlurmComputeResourcePreference.
+ *
+ * <p>Allocation project number and preferred batch queue (partition) are always specific to
+ * a Slurm cluster and the credential used for that resource. When creating groups from
+ * credential-discovered projects, these values should match accounts/partitions returned
+ * for that credential via {@link org.apache.airavata.service.cluster.ClusterInfoService}.
  */
 public class SlurmComputeResourcePreference {
     private String allocationProjectNumber;

@@ -75,8 +75,6 @@ public interface UserMapper {
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "labeledURI", ignore = true)
     @Mapping(target = "gpgKey", ignore = true)
-    @Mapping(target = "nsfDemographics", ignore = true)
-    @Mapping(target = "customDashboard", ignore = true)
     UserProfile toModel(UserEntity entity);
 
     /**

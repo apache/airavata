@@ -22,7 +22,7 @@ package org.apache.airavata.registry.services;
 import java.util.List;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.registry.entities.UserEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.UserMapper;
 import org.apache.airavata.registry.repositories.UserRepository;
 import org.springframework.stereotype.Service;

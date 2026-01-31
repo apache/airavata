@@ -28,6 +28,10 @@ import java.sql.Timestamp;
 
 /**
  * The persistent class for the project database table.
+ * A project can have resource-account bindings: one account per compute resource
+ * (see {@link ProjectResourceAccountEntity}). Bindings are stored in PROJECT_RESOURCE_ACCOUNT
+ * and loaded via {@link org.apache.airavata.registry.repositories.expcatalog.ProjectResourceAccountRepository#findByProjectId};
+ * DB cascade deletes bindings when a project is deleted.
  */
 @Entity(name = "ExpCatalogProjectEntity")
 @Table(name = "PROJECT")

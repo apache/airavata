@@ -19,7 +19,13 @@
 */
 package org.apache.airavata.config;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -34,6 +40,7 @@ import org.springframework.context.annotation.Import;
  *   <li>Provides a minimal {@link AiravataServerProperties} for testing</li>
  *   <li>Scans only repository-related packages (not security, monitoring, etc.)</li>
  *   <li>Imports JPA and Testcontainers configurations</li>
+ *   <li>Provides a mock {@link CredentialStoreService} so registry services (e.g. PreferenceResolutionService) can be created</li>
  * </ul>
  *
  * <p>Usage:
@@ -72,4 +79,15 @@ public class IntegrationTestConfiguration {
 
     // Note: AiravataServerProperties is provided by @EnableConfigurationProperties
     // in test classes. This allows @DynamicPropertySource to inject container URLs.
+
+    /**
+     * Mock CredentialStoreService so registry services that depend on it (e.g. PreferenceResolutionService)
+     * can be instantiated in tests. Tests that need real credential behavior should @Import their own config.
+     */
+    @Bean
+    CredentialStoreService credentialStoreService() {
+        CredentialStoreService service = mock(CredentialStoreService.class);
+        when(service.credentialExists(anyString(), anyString())).thenReturn(true);
+        return service;
+    }
 }

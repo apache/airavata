@@ -24,10 +24,7 @@ Utility for monitoring collected data.
 Author: Jeff Kinnison (jkinniso@nd.edu)
 """
 
-# TODO: Add method to add handlers
-# TODO: Add method to create PikaProducer
-# TODO: Add method to use PikaProducer to respond to events
-# TODO: Add method to deactivate monitor
+# Handlers, PikaProducer integration, and deactivate can be added when needed
 
 
 class EventCheckerNotCallableException(Exception):

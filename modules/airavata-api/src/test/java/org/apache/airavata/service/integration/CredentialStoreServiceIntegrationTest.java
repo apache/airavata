@@ -68,7 +68,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         void shouldCreateAndRetrieveSSHCredential() throws Exception {
             // Given
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername("testuser");
+            sshCredential.setUserId(TEST_USERNAME);
             sshCredential.setGatewayId(TEST_GATEWAY_ID);
             sshCredential.setPassphrase("testpassphrase");
             sshCredential.setDescription("Test SSH credential for integration test");
@@ -83,7 +83,6 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
             // Retrieve and verify
             SSHCredential retrieved = credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID);
             assertNotNull(retrieved, "Retrieved credential should not be null");
-            assertEquals("testuser", retrieved.getUsername());
             assertEquals(TEST_GATEWAY_ID, retrieved.getGatewayId());
             assertNotNull(retrieved.getPrivateKey(), "Private key should be generated");
             assertNotNull(retrieved.getPublicKey(), "Public key should be generated");
@@ -97,7 +96,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
             String customPublicKey = generateDummyPublicKey();
 
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername("customkeyuser");
+            sshCredential.setUserId(TEST_USERNAME);
             sshCredential.setGatewayId(TEST_GATEWAY_ID);
             sshCredential.setPrivateKey(customPrivateKey);
             sshCredential.setPublicKey(customPublicKey);
@@ -110,7 +109,6 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
             assertNotNull(token);
             SSHCredential retrieved = credentialStoreService.getSSHCredential(token, TEST_GATEWAY_ID);
             assertNotNull(retrieved, "Retrieved credential should not be null");
-            assertEquals("customkeyuser", retrieved.getUsername(), "Username should match");
             assertEquals("SSH credential with custom keys", retrieved.getDescription(), "Description should match");
             // Keys are stored - verify they exist (may be encrypted)
             assertNotNull(retrieved.getPrivateKey(), "Private key should be stored");
@@ -122,7 +120,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         void shouldDeleteSSHCredential() throws Exception {
             // Given
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername("deleteuser");
+            sshCredential.setUserId(TEST_USERNAME);
             sshCredential.setGatewayId(TEST_GATEWAY_ID);
             String token = credentialStoreService.addSSHCredential(sshCredential);
 
@@ -211,13 +209,13 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         void shouldGetAllCredentialSummariesForGateway() throws Exception {
             // Given - Create multiple credentials
             SSHCredential ssh1 = new SSHCredential();
-            ssh1.setUsername("summary-user-1");
+            ssh1.setUserId(TEST_USERNAME);
             ssh1.setGatewayId(TEST_GATEWAY_ID);
             ssh1.setDescription("Summary test credential 1");
             String token1 = credentialStoreService.addSSHCredential(ssh1);
 
             SSHCredential ssh2 = new SSHCredential();
-            ssh2.setUsername("summary-user-2");
+            ssh2.setUserId(TEST_USERNAME);
             ssh2.setGatewayId(TEST_GATEWAY_ID);
             ssh2.setDescription("Summary test credential 2");
             String token2 = credentialStoreService.addSSHCredential(ssh2);
@@ -244,7 +242,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         void shouldGetCredentialSummaryByToken() throws Exception {
             // Given
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername("summary-single");
+            sshCredential.setUserId(TEST_USERNAME);
             sshCredential.setGatewayId(TEST_GATEWAY_ID);
             sshCredential.setDescription("Single summary test");
             String token = credentialStoreService.addSSHCredential(sshCredential);
@@ -255,8 +253,60 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
             // Then
             assertNotNull(summary, "Summary should not be null");
             assertEquals(token, summary.getToken());
-            assertEquals("summary-single", summary.getUsername());
+            assertNull(summary.getUsername(), "Login username is per resource, not on credential");
             assertEquals("Single summary test", summary.getDescription());
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Credential Summaries For User Tests")
+    class GetCredentialSummariesForUserTests {
+
+        @Test
+        @DisplayName("Should return owned credentials when userId is set (userId@gatewayId)")
+        void shouldGetCredentialSummariesForUserWithUserId() throws Exception {
+            String ownerId = "testuser@" + TEST_GATEWAY_ID;
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setUserId(ownerId);
+            sshCredential.setGatewayId(TEST_GATEWAY_ID);
+            sshCredential.setDescription("Owned credential for getCredentialSummariesForUser");
+            String token = credentialStoreService.addSSHCredential(sshCredential);
+
+            List<CredentialSummary> owned = credentialStoreService.getCredentialSummariesForUser(TEST_GATEWAY_ID, ownerId);
+
+            assertNotNull(owned, "Owned list should not be null");
+            assertTrue(owned.size() >= 1, "Should have at least one owned credential");
+            boolean found = owned.stream().anyMatch(s -> token.equals(s.getToken()));
+            assertTrue(found, "Should find the created credential in owned list");
+            assertNull(owned.stream().filter(s -> token.equals(s.getToken())).findFirst().get().getUsername(), "Login username is per resource");
+        }
+
+        @Test
+        @DisplayName("Should return owned credentials when userId is set on credential")
+        void shouldReturnOwnedCredentialsWhenUserIdIsSet() throws Exception {
+            String ownerId = "summary-owner-user@" + TEST_GATEWAY_ID;
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setUserId(ownerId);
+            sshCredential.setGatewayId(TEST_GATEWAY_ID);
+            sshCredential.setDescription("Credential with userId for owner lookup");
+            String token = credentialStoreService.addSSHCredential(sshCredential);
+
+            List<CredentialSummary> owned = credentialStoreService.getCredentialSummariesForUser(
+                    TEST_GATEWAY_ID, ownerId);
+
+            assertNotNull(owned, "Owned list should not be null");
+            assertTrue(owned.size() >= 1, "Should have at least one owned credential");
+            boolean found = owned.stream().anyMatch(s -> token.equals(s.getToken()));
+            assertTrue(found, "Should find the credential when looking up by userId");
+        }
+
+        @Test
+        @DisplayName("Should return empty list for user with no credentials")
+        void shouldReturnEmptyForUserWithNoCredentials() throws Exception {
+            String ownerId = "no-credentials-user@" + TEST_GATEWAY_ID;
+            List<CredentialSummary> owned = credentialStoreService.getCredentialSummariesForUser(TEST_GATEWAY_ID, ownerId);
+            assertNotNull(owned, "Owned list should not be null");
+            assertTrue(owned.isEmpty(), "Should return empty list for user with no credentials");
         }
     }
 
@@ -269,7 +319,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
         void shouldIsolateCredentialsByGateway() throws Exception {
             // Given - Create credential in default gateway
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername("isolated-user");
+            sshCredential.setUserId(TEST_USERNAME);
             sshCredential.setGatewayId(TEST_GATEWAY_ID);
             String token = credentialStoreService.addSSHCredential(sshCredential);
 

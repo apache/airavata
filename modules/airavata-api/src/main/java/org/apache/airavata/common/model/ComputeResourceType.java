@@ -24,7 +24,8 @@ package org.apache.airavata.common.model;
  */
 public enum ComputeResourceType {
     SLURM(0),
-    AWS(1);
+    AWS(1),
+    PLAIN(2);
 
     private final int value;
 
@@ -42,6 +43,8 @@ public enum ComputeResourceType {
                 return SLURM;
             case 1:
                 return AWS;
+            case 2:
+                return PLAIN;
             default:
                 return null;
         }

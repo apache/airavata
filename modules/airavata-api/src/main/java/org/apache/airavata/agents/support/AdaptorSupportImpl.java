@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
- * TODO: Class level comments please
+ * Default implementation of AdaptorSupport; resolves and caches agent adaptors for job submission and data movement.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

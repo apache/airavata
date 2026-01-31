@@ -40,15 +40,16 @@ import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
@@ -521,8 +522,8 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.STARTED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.STARTED),
                 "CREATED -> STARTED should be valid");
 
         // At STARTED state, PreWorkflowManager would create pre-execution tasks
@@ -563,8 +564,8 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
                 "EXECUTING -> FAILED should be valid when task fails");
 
         // Verify final state
@@ -604,8 +605,8 @@ public class ProcessExecutionStateMachineIntegrationTest extends ServiceIntegrat
 
         // Verify state transition
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.STARTED, ProcessState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.STARTED, ProcessState.EXECUTING),
                 "STARTED -> EXECUTING should be valid after tasks complete");
     }
 

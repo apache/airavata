@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.airavata.common.exception.AiravataClientException;
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataClientException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataErrorType;
+import org.apache.airavata.common.exception.CoreExceptions.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.thriftapi.security.model.AuthzToken;

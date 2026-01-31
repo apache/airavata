@@ -861,6 +861,7 @@ public class SharingRegistryServerHandler
                     thrift.getGroupCardinality().name()));
         if (thrift.isSetCreatedTime()) domain.setCreatedTime(thrift.getCreatedTime());
         if (thrift.isSetUpdatedTime()) domain.setUpdatedTime(thrift.getUpdatedTime());
+        if (thrift.isSetIsPersonalGroup()) domain.setIsPersonalGroup(thrift.isIsPersonalGroup());
         return domain;
     }
 
@@ -879,6 +880,7 @@ public class SharingRegistryServerHandler
                     domain.getGroupCardinality().name()));
         if (domain.getCreatedTime() != null) thrift.setCreatedTime(domain.getCreatedTime());
         if (domain.getUpdatedTime() != null) thrift.setUpdatedTime(domain.getUpdatedTime());
+        if (domain.getIsPersonalGroup() != null) thrift.setIsPersonalGroup(domain.getIsPersonalGroup());
         return thrift;
     }
 

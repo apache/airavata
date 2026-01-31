@@ -107,7 +107,7 @@ struct JobIdentifier {
 //    5: optional map<string, string> parameters;
 //    6: optional string jobName;
 //    7: optional i32 failedCount = 0;
-//    // FIXME - Job execution context
+//    // Job execution context
 //    //8:
 // }
 

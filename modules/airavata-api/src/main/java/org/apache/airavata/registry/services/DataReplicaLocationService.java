@@ -27,7 +27,7 @@ import org.apache.airavata.common.model.MetadataParentType;
 import org.apache.airavata.registry.entities.MetadataEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
-import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.mappers.DataReplicaLocationMapper;
 import org.apache.airavata.registry.repositories.MetadataRepository;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;

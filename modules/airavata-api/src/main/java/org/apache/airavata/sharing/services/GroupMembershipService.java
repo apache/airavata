@@ -146,12 +146,12 @@ public class GroupMembershipService {
         }
 
         // Then query User entities for those IDs
-        // Note: In unified entity, domainId maps to gatewayId
+        // Note: In unified entity, domainId maps to gatewayId; sharing userId (childId) maps to sub
         var userQuery = cb.createQuery(UserEntity.class);
         var userQueryRoot = userQuery.from(UserEntity.class);
         var userPredicates = new ArrayList<Predicate>();
         userPredicates.add(cb.equal(userQueryRoot.get("gatewayId"), domainId));
-        userPredicates.add(userQueryRoot.get("userId").in(userIds));
+        userPredicates.add(userQueryRoot.get("sub").in(userIds));
         userQuery.where(cb.and(userPredicates.toArray(new Predicate[0])));
 
         List<UserEntity> entities = entityManager.createQuery(userQuery).getResultList();

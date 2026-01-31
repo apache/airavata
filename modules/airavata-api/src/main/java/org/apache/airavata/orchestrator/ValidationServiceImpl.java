@@ -19,16 +19,16 @@
 */
 package org.apache.airavata.orchestrator;
 
-import org.apache.airavata.common.exception.LaunchValidationException;
-import org.apache.airavata.common.exception.ValidationResults;
+import org.apache.airavata.common.exception.ValidationExceptions.LaunchValidationException;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidationResults;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.orchestrator.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.validator.JobMetadataValidator;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

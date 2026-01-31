@@ -80,11 +80,18 @@ public class ApplicationDeploymentServiceIntegrationTest extends ServiceIntegrat
 
     @BeforeEach
     void setupTestData() throws Exception {
-        // Create a test compute resource
+        // Create a test compute resource (SLURM requires at least one batch queue)
         ComputeResourceDescription computeResource = new ComputeResourceDescription();
         computeResource.setHostName("test-cluster-" + UUID.randomUUID().toString().substring(0, 8));
         computeResource.setResourceDescription("Test compute resource for deployment tests");
         computeResource.setMaxMemoryPerNode(32768);
+        org.apache.airavata.common.model.BatchQueue queue = new org.apache.airavata.common.model.BatchQueue();
+        queue.setQueueName("default");
+        queue.setQueueDescription("Default queue");
+        queue.setMaxRunTime(24);
+        queue.setMaxNodes(1);
+        queue.setMaxJobsInQueue(10);
+        computeResource.setBatchQueues(java.util.Collections.singletonList(queue));
         testComputeResourceId = computeResourceService.addComputeResource(computeResource);
         logger.info("Created test compute resource: {}", testComputeResourceId);
 

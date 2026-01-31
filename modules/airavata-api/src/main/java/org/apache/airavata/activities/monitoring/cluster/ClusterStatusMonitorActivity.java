@@ -36,7 +36,7 @@ import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.monitor.compute.ComputeSubmissionTracker;
 import org.apache.airavata.orchestrator.WorkflowRuntimeHolder;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class ClusterStatusMonitorActivity implements WorkflowActivity {
 
                         var computeResourceDescription = registryService.getComputeResource(computeResourceId);
                         hostName = computeResourceDescription.getHostName();
-                        // FIXME This should come from compute resource description
+                        // Default SSH port when not provided in compute resource description
                         port = 22;
                         computeResourceDescription.getBatchQueues().forEach(q -> queueNames.add(q.getQueueName()));
 

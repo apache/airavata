@@ -22,9 +22,11 @@ package org.apache.airavata.restapi.controller;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.airavata.common.model.Project;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.common.model.ProjectResourceAccount;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.services.GatewayService;
+import org.apache.airavata.registry.services.ProjectResourceAccountService;
 import org.apache.airavata.registry.services.ProjectService;
 import org.apache.airavata.restapi.security.AuthorizationService;
 import org.apache.airavata.security.model.AuthzToken;
@@ -49,11 +51,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectService projectService;
+    private final ProjectResourceAccountService projectResourceAccountService;
     private final AuthorizationService authorizationService;
     private final GatewayService gatewayService;
 
-    public ProjectController(ProjectService projectService, AuthorizationService authorizationService, GatewayService gatewayService) {
+    public ProjectController(ProjectService projectService,
+            ProjectResourceAccountService projectResourceAccountService,
+            AuthorizationService authorizationService,
+            GatewayService gatewayService) {
         this.projectService = projectService;
+        this.projectResourceAccountService = projectResourceAccountService;
         this.authorizationService = authorizationService;
         this.gatewayService = gatewayService;
     }
@@ -224,6 +231,78 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    // --- Project resource accounts (one account per compute resource per project) ---
+
+    @GetMapping("/{projectId}/resource-accounts")
+    public ResponseEntity<?> getProjectResourceAccounts(@PathVariable String projectId, HttpServletRequest request) {
+        try {
+            var authzToken = getAuthzToken(request);
+            var project = projectService.getProject(projectId);
+            if (project == null) {
+                return ResponseEntity.notFound().build();
+            }
+            authorizationService.requireGatewayAccess(authzToken, project.getGatewayId());
+            var bindings = projectResourceAccountService.getBindings(projectId);
+            return ResponseEntity.ok(bindings);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{projectId}/resource-accounts")
+    public ResponseEntity<?> addOrUpdateProjectResourceAccount(
+            @PathVariable String projectId,
+            @RequestBody ProjectResourceAccount binding,
+            HttpServletRequest request) {
+        try {
+            var authzToken = getAuthzToken(request);
+            var project = projectService.getProject(projectId);
+            if (project == null) {
+                return ResponseEntity.notFound().build();
+            }
+            authorizationService.requireGatewayAccess(authzToken, project.getGatewayId());
+            binding.setProjectId(projectId);
+            if (binding.getGatewayId() == null || binding.getGatewayId().isBlank()) {
+                binding.setGatewayId(project.getGatewayId());
+            }
+            projectResourceAccountService.addOrUpdateBinding(binding);
+            return ResponseEntity.ok().build();
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{projectId}/resource-accounts/{computeResourceId}")
+    public ResponseEntity<?> removeProjectResourceAccount(
+            @PathVariable String projectId,
+            @PathVariable String computeResourceId,
+            HttpServletRequest request) {
+        try {
+            var authzToken = getAuthzToken(request);
+            var project = projectService.getProject(projectId);
+            if (project == null) {
+                return ResponseEntity.notFound().build();
+            }
+            authorizationService.requireGatewayAccess(authzToken, project.getGatewayId());
+            boolean removed = projectResourceAccountService.removeBinding(projectId, computeResourceId);
+            return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            throw e;
+        } catch (RegistryException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
 }

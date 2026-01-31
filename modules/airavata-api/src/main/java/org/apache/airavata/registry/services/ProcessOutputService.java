@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.OutputDataObjectType;
 import org.apache.airavata.registry.entities.OutputDataEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.OutputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.OutputDataRepository;
 import org.springframework.stereotype.Service;

@@ -1,11 +1,57 @@
 {
+  "version": "0.2.0",
   "configurations": [
     {
       "type": "java",
-      "name": "Start Airavata",
+      "name": "Init (clean)",
       "request": "launch",
-      "cwd": "${workspaceFolder}/modules/distribution",
-      "mainClass": "org.apache.airavata.AiravataServer",
+      "mainClass": "org.apache.airavata.AiravataCommandLine",
+      "projectName": "distribution",
+      "args": "init --clean",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-Dairavata.home=${workspaceFolder}/modules/distribution/target/classes -Dairavata.config.dir=${workspaceFolder}/modules/distribution/target/classes/conf",
+      "env": {
+        "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes"
+      }
+    },
+    {
+      "type": "java",
+      "name": "Init (reuse)",
+      "request": "launch",
+      "mainClass": "org.apache.airavata.AiravataCommandLine",
+      "projectName": "distribution",
+      "args": "init",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-Dairavata.home=${workspaceFolder}/modules/distribution/target/classes -Dairavata.config.dir=${workspaceFolder}/modules/distribution/target/classes/conf",
+      "env": {
+        "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes"
+      }
+    },
+    {
+      "type": "java",
+      "name": "Serve Airavata",
+      "request": "launch",
+      "mainClass": "org.apache.airavata.AiravataCommandLine",
+      "projectName": "distribution",
+      "args": "serve",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-Dairavata.home=${workspaceFolder}/modules/distribution/target/classes -Dairavata.config.dir=${workspaceFolder}/modules/distribution/target/classes/conf",
+      "env": {
+        "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes"
+      }
+    },
+    {
+      "type": "java",
+      "name": "Serve Airavata (Debug)",
+      "request": "launch",
+      "mainClass": "org.apache.airavata.AiravataCommandLine",
+      "projectName": "distribution",
+      "args": "serve",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-Dairavata.home=${workspaceFolder}/modules/distribution/target/classes -Dairavata.config.dir=${workspaceFolder}/modules/distribution/target/classes/conf -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
+      "env": {
+        "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes"
+      }
     }
-  ],
+  ]
 }

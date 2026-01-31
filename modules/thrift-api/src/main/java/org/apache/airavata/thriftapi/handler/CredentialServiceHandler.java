@@ -61,7 +61,7 @@ public class CredentialServiceHandler
                 ex.initCause(e);
             }
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.AiravataSystemException) {
+        } else if (e instanceof org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException) {
             var ex = new org.apache.airavata.thriftapi.exception.AiravataSystemException();
             if (e != null) {
                 ex.setMessage(e.getMessage());

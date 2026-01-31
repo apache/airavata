@@ -25,7 +25,7 @@ import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.orchestrator.ProcessStatusUpdater;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.airavata.workflow.common.WorkflowManager;

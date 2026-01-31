@@ -22,6 +22,8 @@ package org.apache.airavata.registry.services;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.apache.airavata.common.model.AiravataWorkflow;
 import org.apache.airavata.common.model.ApplicationState;
 import org.apache.airavata.common.model.ApplicationStatus;
@@ -39,6 +41,8 @@ import org.apache.airavata.common.model.WorkflowConnection;
 import org.apache.airavata.common.model.WorkflowExecutionState;
 import org.apache.airavata.common.model.WorkflowHandler;
 import org.apache.airavata.common.model.WorkflowStatus;
+import org.apache.airavata.common.model.ErrorParentType;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.entities.ErrorEntity;
 import org.apache.airavata.registry.entities.InputDataEntity;
@@ -48,8 +52,10 @@ import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowApp
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowConnectionEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowDataBlockEntity;
 import org.apache.airavata.registry.entities.airavataworkflowcatalog.WorkflowHandlerEntity;
-import org.apache.airavata.registry.exception.WorkflowCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.mappers.AiravataWorkflowMapper;
+import org.apache.airavata.registry.repositories.ErrorRepository;
+import org.apache.airavata.registry.repositories.StatusRepository;
 import org.apache.airavata.registry.repositories.workflowcatalog.WorkflowRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,12 +65,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkflowService {
     private final WorkflowRepository workflowRepository;
     private final AiravataWorkflowMapper airavataWorkflowMapper;
+    private final StatusRepository statusRepository;
+    private final ErrorRepository errorRepository;
 
     public WorkflowService(
             WorkflowRepository workflowRepository,
-            AiravataWorkflowMapper airavataWorkflowMapper) {
+            AiravataWorkflowMapper airavataWorkflowMapper,
+            StatusRepository statusRepository,
+            ErrorRepository errorRepository) {
         this.workflowRepository = workflowRepository;
         this.airavataWorkflowMapper = airavataWorkflowMapper;
+        this.statusRepository = statusRepository;
+        this.errorRepository = errorRepository;
     }
 
     public void registerWorkflow(AiravataWorkflow workflow, String experimentId) throws WorkflowCatalogException {
@@ -154,15 +166,14 @@ public class WorkflowService {
                     .map(this::convertConnection)
                     .toList());
         }
-        if (entity.getStatuses() != null) {
-            workflow.setStatuses(entity.getStatuses().stream()
-                    .map(this::convertWorkflowStatus)
-                    .toList());
-        }
-        if (entity.getErrors() != null) {
-            workflow.setErrors(
-                    entity.getErrors().stream().map(this::convertError).toList());
-        }
+        List<StatusEntity> workflowStatuses = statusRepository.findByWorkflowId(entity.getId());
+        workflow.setStatuses(workflowStatuses != null
+                ? workflowStatuses.stream().map(this::convertWorkflowStatus).toList()
+                : Collections.emptyList());
+        List<ErrorEntity> workflowErrors = errorRepository.findByWorkflowId(entity.getId());
+        workflow.setErrors(workflowErrors != null
+                ? workflowErrors.stream().map(this::convertError).toList()
+                : Collections.emptyList());
         return workflow;
     }
 
@@ -239,6 +250,21 @@ public class WorkflowService {
         if (entity == null) {
             throw new WorkflowCatalogException("Workflow not found: " + workflowId);
         }
+        // Delete status/error rows for workflow and each application/handler (unified tables, no FK cascade from entity)
+        statusRepository.deleteByParentIdAndParentType(workflowId, StatusParentType.WORKFLOW);
+        errorRepository.deleteByParentIdAndParentType(workflowId, ErrorParentType.WORKFLOW);
+        if (entity.getApplications() != null) {
+            for (var app : entity.getApplications()) {
+                statusRepository.deleteByParentIdAndParentType(app.getId(), StatusParentType.APPLICATION);
+                errorRepository.deleteByParentIdAndParentType(app.getId(), ErrorParentType.APPLICATION);
+            }
+        }
+        if (entity.getHandlers() != null) {
+            for (var handler : entity.getHandlers()) {
+                statusRepository.deleteByParentIdAndParentType(handler.getId(), StatusParentType.HANDLER);
+                errorRepository.deleteByParentIdAndParentType(handler.getId(), ErrorParentType.HANDLER);
+            }
+        }
         workflowRepository.delete(entity);
     }
 
@@ -255,16 +281,14 @@ public class WorkflowService {
         model.setPhysicalMemory(entity.getPhysicalMemory());
         model.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().getTime() : 0L);
         model.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().getTime() : 0L);
-        if (entity.getStatuses() != null) {
-            model.setStatuses(entity.getStatuses().stream()
-                    .map(this::convertApplicationStatus)
-                    .toList());
-        }
-        if (entity.getErrors() != null) {
-            model.setErrors(entity.getErrors().stream()
-                    .map(this::convertError)
-                    .toList());
-        }
+        List<StatusEntity> appStatuses = statusRepository.findByParentIdAndParentType(entity.getId(), StatusParentType.APPLICATION);
+        model.setStatuses(appStatuses != null
+                ? appStatuses.stream().map(this::convertApplicationStatus).toList()
+                : Collections.emptyList());
+        List<ErrorEntity> appErrors = errorRepository.findByApplicationId(entity.getId());
+        model.setErrors(appErrors != null
+                ? appErrors.stream().map(this::convertError).toList()
+                : Collections.emptyList());
         return model;
     }
 
@@ -314,15 +338,14 @@ public class WorkflowService {
             model.setOutputs(
                     entity.getOutputs().stream().map(this::convertOutputData).toList());
         }
-        if (entity.getStatuses() != null) {
-            model.setStatuses(entity.getStatuses().stream()
-                    .map(this::convertHandlerStatus)
-                    .toList());
-        }
-        if (entity.getErrors() != null) {
-            model.setErrors(
-                    entity.getErrors().stream().map(this::convertError).toList());
-        }
+        List<StatusEntity> handlerStatuses = statusRepository.findByParentIdAndParentType(entity.getId(), StatusParentType.HANDLER);
+        model.setStatuses(handlerStatuses != null
+                ? handlerStatuses.stream().map(this::convertHandlerStatus).toList()
+                : Collections.emptyList());
+        List<ErrorEntity> handlerErrors = errorRepository.findByHandlerId(entity.getId());
+        model.setErrors(handlerErrors != null
+                ? handlerErrors.stream().map(this::convertError).toList()
+                : Collections.emptyList());
         return model;
     }
 

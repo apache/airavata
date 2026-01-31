@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.thriftapi.mapper;
 
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

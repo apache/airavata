@@ -20,8 +20,11 @@
 package org.apache.airavata.common.model;
 
 /**
- * Domain enum: disability
+ * Domain enum: disability. Only used by deprecated NSFDemographics; user/demographic data lives in Keycloak.
+ *
+ * @deprecated Not used for new development. Preserved for Thrift API compatibility only.
  */
+@Deprecated(since = "1.0", forRemoval = false)
 public enum disability {
     HEARING_IMAPAIRED(0),
     VISUAL_IMPAIRED(1),

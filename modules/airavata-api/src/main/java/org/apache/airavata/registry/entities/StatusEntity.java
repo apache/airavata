@@ -32,7 +32,6 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.utils.AiravataUtils;
 
@@ -69,12 +68,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 @IdClass(StatusEntityPK.class)
 public class StatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    
-    /**
-     * Global sequence counter for deterministic ordering.
-     * Each status entity gets a unique sequence number that increases monotonically.
-     */
-    private static final AtomicLong SEQUENCE_COUNTER = new AtomicLong(System.currentTimeMillis());
 
     @Id
     @Column(name = "STATUS_ID", nullable = false)
@@ -109,17 +102,15 @@ public class StatusEntity implements Serializable {
     private String reason;
 
     /**
-     * Sequence number that guarantees deterministic ordering.
-     * Assigned by Java code using an AtomicLong counter, ensuring that status entities
-     * created later always have a higher sequence number regardless of timestamp precision.
+     * Sequence number that guarantees deterministic ordering per parent.
+     * Assigned by the service layer using DB-backed {@code SELECT MAX(SEQUENCE_NUM)+1 ... FOR UPDATE}
+     * so that ordering is correct in multi-instance deployments. If null at persist time,
+     * a fallback in-memory value is used (ordering then per-process only).
      */
     @Column(name = "SEQUENCE_NUM", nullable = false)
     private Long sequenceNum;
 
-    public StatusEntity() {
-        // Assign sequence number immediately for deterministic ordering
-        this.sequenceNum = SEQUENCE_COUNTER.incrementAndGet();
-    }
+    public StatusEntity() {}
 
     /**
      * Creates a status entity for a specific parent type.
@@ -135,11 +126,8 @@ public class StatusEntity implements Serializable {
         this.parentId = parentId;
         this.parentType = parentType;
         this.state = state;
-        // Set timestamp immediately to ensure correct ordering when multiple statuses
-        // are created in rapid succession (don't rely on @PrePersist which may fire later)
         this.timeOfStateChange = AiravataUtils.getUniqueTimestamp();
-        // Assign sequence number immediately for deterministic ordering
-        this.sequenceNum = SEQUENCE_COUNTER.incrementAndGet();
+        // sequenceNum must be set by the service layer via getNextSequenceNum() for DB-backed ordering
     }
 
     public String getStatusId() {
@@ -194,13 +182,18 @@ public class StatusEntity implements Serializable {
         return sequenceNum;
     }
 
+    public void setSequenceNum(Long sequenceNum) {
+        this.sequenceNum = sequenceNum;
+    }
+
     @PrePersist
     void setDefaults() {
         if (this.timeOfStateChange == null) {
             this.timeOfStateChange = AiravataUtils.getUniqueTimestamp();
         }
+        // sequenceNum: if still null, use timestamp-based fallback for single-instance compatibility
         if (this.sequenceNum == null) {
-            this.sequenceNum = SEQUENCE_COUNTER.incrementAndGet();
+            this.sequenceNum = System.currentTimeMillis();
         }
     }
 

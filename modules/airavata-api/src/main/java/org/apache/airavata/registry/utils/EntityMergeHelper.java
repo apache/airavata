@@ -19,12 +19,14 @@
 */
 package org.apache.airavata.registry.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.airavata.registry.entities.StatusEntity;
 
 /**
  * Utility class for merging entity lists during update operations.
@@ -161,5 +163,44 @@ public class EntityMergeHelper {
             K key = keyExtractor.apply(item);
             return key != null && !newMap.containsKey(key);
         });
+    }
+
+    /**
+     * Merges experiment (or other parent) status lists by updating existing entities in place.
+     * This keeps the same managed entity instances in the list so Hibernate does not see
+     * duplicate PKs when the same status is re-sent on update (e.g. getExperiment then updateExperiment).
+     *
+     * @param existingList the existing list of StatusEntity (managed, from DB)
+     * @param newList the new list from the mapper (may have same PKs as existing)
+     */
+    public static void mergeStatusListsInPlace(List<StatusEntity> existingList, List<StatusEntity> newList) {
+        if (existingList == null || newList == null) {
+            return;
+        }
+        Map<String, StatusEntity> existingById =
+                existingList.stream()
+                        .filter(s -> s.getStatusId() != null)
+                        .collect(Collectors.toMap(StatusEntity::getStatusId, s -> s, (a, b) -> a, LinkedHashMap::new));
+        List<StatusEntity> merged = new ArrayList<>();
+        for (StatusEntity newStatus : newList) {
+            if (newStatus.getStatusId() == null) {
+                merged.add(newStatus);
+                continue;
+            }
+            StatusEntity existing = existingById.get(newStatus.getStatusId());
+            if (existing != null) {
+                existing.setState(newStatus.getState());
+                existing.setReason(newStatus.getReason());
+                existing.setTimeOfStateChange(newStatus.getTimeOfStateChange());
+                if (newStatus.getSequenceNum() != null) {
+                    existing.setSequenceNum(newStatus.getSequenceNum());
+                }
+                merged.add(existing);
+            } else {
+                merged.add(newStatus);
+            }
+        }
+        existingList.clear();
+        existingList.addAll(merged);
     }
 }

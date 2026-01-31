@@ -23,7 +23,7 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.service.registry.RegistryService;
@@ -61,7 +61,7 @@ public class UGEEmailParser implements EmailParser {
             throws MessagingException, AiravataException {
         var subject = message.getSubject();
 
-        // FIXME - HACK to handle Little Dog email issue from SIU
+        // Special handling for SIU email format
         subject = subject.replace("Set in error state", "Failed");
 
         var pattern = Pattern.compile(REGEX);

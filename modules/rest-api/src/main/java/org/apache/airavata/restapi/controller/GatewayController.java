@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.airavata.common.model.Gateway;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.restapi.security.AuthorizationService;
 import org.apache.airavata.security.model.AuthzToken;

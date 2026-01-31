@@ -19,9 +19,10 @@
 */
 package org.apache.airavata.restapi.controller;
 
+import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.DataProductModel;
-import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.services.DataProductService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
@@ -186,6 +187,63 @@ public class DataProductController {
         } catch (Exception e) {
             logger.error("Unexpected error searching data products: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal server error"));
+        }
+    }
+
+    /**
+     * Get public data products with optional name search.
+     */
+    @GetMapping("/public")
+    public ResponseEntity<?> getPublicDataProducts(
+            @RequestParam(required = false) String nameSearch,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        try {
+            logger.debug("Getting public data products: nameSearch={}, pageNumber={}, pageSize={}", 
+                nameSearch, pageNumber, pageSize);
+            var products = dataProductService.getPublicDataProducts(
+                nameSearch != null ? nameSearch : "", pageNumber, pageSize);
+            return ResponseEntity.ok(products != null ? products : java.util.Collections.emptyList());
+        } catch (ReplicaCatalogException e) {
+            logger.error("Error getting public data products: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Get data products accessible to the user (owned, gateway, or via groups).
+     */
+    @GetMapping("/accessible")
+    public ResponseEntity<?> getAccessibleDataProducts(
+            @RequestParam String userId,
+            @RequestParam String gatewayId,
+            @RequestParam(required = false) List<String> groupIds,
+            @RequestParam(required = false) String nameSearch,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        try {
+            logger.debug("Getting accessible data products: userId={}, gatewayId={}, nameSearch={}", 
+                userId, gatewayId, nameSearch);
+            var products = dataProductService.getAccessibleDataProducts(
+                userId, gatewayId, groupIds, nameSearch != null ? nameSearch : "", pageNumber, pageSize);
+            return ResponseEntity.ok(products != null ? products : java.util.Collections.emptyList());
+        } catch (ReplicaCatalogException e) {
+            logger.error("Error getting accessible data products: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Get all distinct tag values from public data products.
+     */
+    @GetMapping("/tags/public")
+    public ResponseEntity<?> getPublicTags() {
+        try {
+            var tags = dataProductService.getPublicTags();
+            return ResponseEntity.ok(tags != null ? tags : java.util.Collections.emptyList());
+        } catch (ReplicaCatalogException e) {
+            logger.error("Error getting public tags: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
 }

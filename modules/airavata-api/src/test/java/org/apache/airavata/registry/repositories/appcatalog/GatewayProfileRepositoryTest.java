@@ -27,17 +27,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.exception.CoreExceptions.ApplicationSettingsException;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.ComputeResourcePreference;
 import org.apache.airavata.common.model.DataMovementProtocol;
 import org.apache.airavata.common.model.GatewayResourceProfile;
 import org.apache.airavata.common.model.JobSubmissionProtocol;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GwyResourceProfileService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,13 @@ public class GatewayProfileRepositoryTest extends TestBase {
         this.gwyResourceProfileService = gwyResourceProfileService;
         this.computeResourceService = computeResourceService;
         this.properties = properties;
+    }
+
+    @BeforeEach
+    public void ensureCredentialsForProfileFK() {
+        ensureCredentialExists(properties.defaultGateway(), "defaultCredential");
+        ensureCredentialExists("testGateway", "testCredential");
+        ensureCredentialExists("testGateway1", "testCredential");
     }
 
     @Test
@@ -90,14 +98,22 @@ public class GatewayProfileRepositoryTest extends TestBase {
         assertEquals(defaultGatewayId, defaultGateway.getGatewayID());
 
         GatewayResourceProfile gf = new GatewayResourceProfile();
+        org.apache.airavata.common.model.BatchQueue q = new org.apache.airavata.common.model.BatchQueue();
+        q.setQueueName("default");
+        q.setQueueDescription("Default");
+        q.setMaxRunTime(24);
+        q.setMaxNodes(1);
+        q.setMaxJobsInQueue(10);
         ComputeResourceDescription cm1 = new ComputeResourceDescription();
         cm1.setHostName("localhost");
         cm1.setResourceDescription("test compute host");
+        cm1.setBatchQueues(java.util.Collections.singletonList(q));
         String hostId1 = computeResourceService.addComputeResource(cm1);
 
         ComputeResourceDescription cm2 = new ComputeResourceDescription();
         cm2.setHostName("localhost");
         cm2.setResourceDescription("test compute host");
+        cm2.setBatchQueues(java.util.Collections.singletonList(q));
         String hostId2 = computeResourceService.addComputeResource(cm2);
 
         ComputeResourcePreference preference1 = new ComputeResourcePreference();

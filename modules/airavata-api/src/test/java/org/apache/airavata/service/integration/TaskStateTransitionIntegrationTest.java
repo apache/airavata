@@ -36,9 +36,9 @@ import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.orchestrator.state.TaskStateValidator;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
@@ -56,7 +56,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Comprehensive integration tests for TaskStateValidator.
+ * Comprehensive integration tests for StateValidators.TaskStateValidator.
  * Tests verify that all valid state transitions work correctly and invalid transitions are rejected.
  */
 @SpringBootTest(
@@ -150,7 +150,7 @@ public class TaskStateTransitionIntegrationTest extends ServiceIntegrationTestBa
     @DisplayName("Test valid transition: CREATED -> EXECUTING")
     public void testValidTransitionCreatedToExecuting() throws RegistryException {
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.EXECUTING),
                 "CREATED -> EXECUTING should be valid");
 
         TaskStatus executing = createTaskStatus(TaskState.EXECUTING, "Task started executing");
@@ -166,13 +166,13 @@ public class TaskStateTransitionIntegrationTest extends ServiceIntegrationTestBa
     public void testValidTransitionsFromExecuting() throws RegistryException {
         // EXECUTING can transition to COMPLETED, FAILED, or CANCELED
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.COMPLETED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid");
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.FAILED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.FAILED),
                 "EXECUTING -> FAILED should be valid");
         assertTrue(
-                TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.CANCELED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.EXECUTING, TaskState.CANCELED),
                 "EXECUTING -> CANCELED should be valid");
 
         // Test successful completion path
@@ -191,22 +191,22 @@ public class TaskStateTransitionIntegrationTest extends ServiceIntegrationTestBa
     public void testInvalidTransitionsFromTerminalStates() {
         // Terminal states: COMPLETED, FAILED, CANCELED (no transitions out)
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.COMPLETED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.COMPLETED, TaskState.EXECUTING),
                 "COMPLETED -> EXECUTING should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.COMPLETED, TaskState.CREATED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.COMPLETED, TaskState.CREATED),
                 "COMPLETED -> CREATED should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.FAILED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.FAILED, TaskState.EXECUTING),
                 "FAILED -> EXECUTING should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.FAILED, TaskState.CREATED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.FAILED, TaskState.CREATED),
                 "FAILED -> CREATED should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CANCELED, TaskState.EXECUTING),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CANCELED, TaskState.EXECUTING),
                 "CANCELED -> EXECUTING should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CANCELED, TaskState.CREATED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CANCELED, TaskState.CREATED),
                 "CANCELED -> CREATED should be invalid");
     }
 
@@ -214,31 +214,31 @@ public class TaskStateTransitionIntegrationTest extends ServiceIntegrationTestBa
     @DisplayName("Test invalid transition: CREATED -> COMPLETED (must go through EXECUTING)")
     public void testInvalidTransitionCreatedToCompleted() {
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.COMPLETED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.COMPLETED),
                 "CREATED -> COMPLETED (skipping EXECUTING) should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.FAILED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.FAILED),
                 "CREATED -> FAILED (skipping EXECUTING) should be invalid");
         assertFalse(
-                TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.CANCELED),
+                StateValidators.TaskStateValidator.INSTANCE.isValid(TaskState.CREATED, TaskState.CANCELED),
                 "CREATED -> CANCELED (skipping EXECUTING) should be invalid");
     }
 
     @Test
     @DisplayName("Test StateTransitionService validates transitions correctly")
     public void testStateTransitionServiceValidation() {
-        // Test that StateTransitionService.validateAndLog() correctly validates transitions
+        // Test that StateModel.StateTransitionService.validateAndLog() correctly validates transitions
         assertTrue(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.CREATED, TaskState.EXECUTING),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.CREATED, TaskState.EXECUTING),
                 "StateTransitionService should validate CREATED -> EXECUTING");
         assertTrue(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.EXECUTING, TaskState.COMPLETED),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.EXECUTING, TaskState.COMPLETED),
                 "StateTransitionService should validate EXECUTING -> COMPLETED");
         assertFalse(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.COMPLETED, TaskState.EXECUTING),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.COMPLETED, TaskState.EXECUTING),
                 "StateTransitionService should reject COMPLETED -> EXECUTING");
         assertFalse(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.CREATED, TaskState.COMPLETED),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.CREATED, TaskState.COMPLETED),
                 "StateTransitionService should reject CREATED -> COMPLETED");
     }
 
@@ -327,17 +327,17 @@ public class TaskStateTransitionIntegrationTest extends ServiceIntegrationTestBa
     public void testNullHandling() {
         // null -> any state should be valid (initial state)
         assertTrue(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, null, TaskState.CREATED),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, null, TaskState.CREATED),
                 "null -> CREATED should be valid (initial state)");
 
         // any state -> null should be invalid
         assertFalse(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.CREATED, null),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.CREATED, null),
                 "CREATED -> null should be invalid");
 
         // null -> null should be invalid
         assertFalse(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, null, null),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, null, null),
                 "null -> null should be invalid");
     }
 

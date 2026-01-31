@@ -25,7 +25,7 @@ import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 
 public interface ApplicationInterface {
     /**

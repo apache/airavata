@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.AuthorizationException;
+import org.apache.airavata.common.exception.AuthExceptions.AuthorizationException;
 import org.apache.airavata.common.model.GroupModel;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.profile.exception.GroupManagerServiceException;

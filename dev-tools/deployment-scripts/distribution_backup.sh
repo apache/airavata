@@ -37,7 +37,7 @@ log "Creating backup in: $BACKUP_DIR"
 # ================================
 # Backup the Unified Distribution
 # ================================
-DIST_NAME="apache-airavata-server-0.21-SNAPSHOT"
+DIST_NAME="airavata-0.21-SNAPSHOT"
 
 if [ -d "./${DIST_NAME}" ]; then
     log "Backing up distribution..."

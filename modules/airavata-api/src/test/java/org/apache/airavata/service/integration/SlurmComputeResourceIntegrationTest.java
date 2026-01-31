@@ -33,7 +33,7 @@ import org.apache.airavata.common.model.ResourceJobManager;
 import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.SecurityProtocol;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.GroupResourceProfileService;
 import org.junit.jupiter.api.DisplayName;

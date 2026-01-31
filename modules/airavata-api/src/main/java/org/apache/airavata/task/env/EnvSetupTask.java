@@ -21,7 +21,7 @@ package org.apache.airavata.task.env;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.common.model.ProcessState;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
@@ -46,7 +46,7 @@ public class EnvSetupTask extends AiravataTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory) {
+            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,

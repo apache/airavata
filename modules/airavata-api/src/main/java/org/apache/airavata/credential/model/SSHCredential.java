@@ -24,14 +24,10 @@ import org.apache.airavata.credential.Credential;
 
 /**
  * SSH key-based credential for authenticating to resources.
+ * Login username is not stored here; it is set per resource via RESOURCE_ACCESS (credential assignment).
  */
 public class SSHCredential extends Credential {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The login username for the target resource.
-     */
-    private String username;
 
     /**
      * The passphrase for the private key.
@@ -49,14 +45,6 @@ public class SSHCredential extends Credential {
     private String privateKey;
 
     public SSHCredential() {}
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getPassphrase() {
         return passphrase;
@@ -89,7 +77,6 @@ public class SSHCredential extends Credential {
         SSHCredential that = (SSHCredential) o;
         return Objects.equals(getGatewayId(), that.getGatewayId())
                 && Objects.equals(getUserId(), that.getUserId())
-                && Objects.equals(username, that.username)
                 && Objects.equals(passphrase, that.passphrase)
                 && Objects.equals(publicKey, that.publicKey)
                 && Objects.equals(privateKey, that.privateKey)
@@ -100,7 +87,7 @@ public class SSHCredential extends Credential {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getGatewayId(), getUserId(), username, passphrase, publicKey,
+        return Objects.hash(getGatewayId(), getUserId(), passphrase, publicKey,
                 privateKey, getPersistedTime(), getToken(), getDescription());
     }
 
@@ -109,7 +96,6 @@ public class SSHCredential extends Credential {
         return "SSHCredential{"
                 + "gatewayId='" + getGatewayId() + '\''
                 + ", userId='" + getUserId() + '\''
-                + ", username='" + username + '\''
                 + ", passphrase='" + (passphrase != null ? "***" : null) + '\''
                 + ", publicKey='" + (publicKey != null ? "***" : null) + '\''
                 + ", privateKey='" + (privateKey != null ? "***" : null) + '\''

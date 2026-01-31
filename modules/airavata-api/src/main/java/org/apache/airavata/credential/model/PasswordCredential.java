@@ -23,18 +23,18 @@ import java.util.Objects;
 import org.apache.airavata.credential.Credential;
 
 /**
- * Password-based credential for authenticating to resources.
+ * Password-based credential for authenticating to resources or IAM/AWS.
+ * For compute/storage resource login, use RESOURCE_ACCESS.loginUsername (per assignment).
+ * This field is used for IAM/Keycloak admin and AWS access key ID when stored in gateway config.
  */
 public class PasswordCredential extends Credential {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The login username for the target resource.
-     */
+    /** Used for IAM/Keycloak username or AWS access key ID; not for resource login (use RESOURCE_ACCESS). */
     private String loginUserName;
 
     /**
-     * The password for authentication.
+     * The password for authentication (or AWS secret key).
      */
     private String password;
 
@@ -63,7 +63,6 @@ public class PasswordCredential extends Credential {
         PasswordCredential that = (PasswordCredential) o;
         return Objects.equals(getGatewayId(), that.getGatewayId())
                 && Objects.equals(getUserId(), that.getUserId())
-                && Objects.equals(loginUserName, that.loginUserName)
                 && Objects.equals(password, that.password)
                 && Objects.equals(getDescription(), that.getDescription())
                 && Objects.equals(getPersistedTime(), that.getPersistedTime())

@@ -24,9 +24,7 @@ Utilties for collecting system data.
 Author: Jeff Kinnison (jkinniso@nd.edu)
 """
 
-# TODO: Refactor to iterate over producers, not collectors. Collectors should
-#       execute concurrently.
-# TODO: Add method to deactivate reporter
+# Refactor to iterate over producers and add deactivate when needed
 
 from threading import Thread, Event
 

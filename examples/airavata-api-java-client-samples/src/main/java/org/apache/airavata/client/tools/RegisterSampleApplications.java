@@ -1888,9 +1888,9 @@ public class RegisterSampleApplications {
             jobManagerCommandStringMap.put(JobManagerCommand.DELETION, "qdel");
             resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
         }
-        // TODO - set job manage commands for UGE and LSF type compute resources.
+        // Set job manage commands for UGE and LSF when needed.
 
-        // TODO - set parallelism command
+        // Set parallelism command when needed
 
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
         sshJobSubmission.setResourceJobManager(resourceJobManager);

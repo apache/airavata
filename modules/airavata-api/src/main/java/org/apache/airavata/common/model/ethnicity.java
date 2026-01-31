@@ -20,8 +20,11 @@
 package org.apache.airavata.common.model;
 
 /**
- * Domain enum: ethnicity
+ * Domain enum: ethnicity. Only used by deprecated NSFDemographics; user/demographic data lives in Keycloak.
+ *
+ * @deprecated Not used for new development. Preserved for Thrift API compatibility only.
  */
+@Deprecated(since = "1.0", forRemoval = false)
 public enum ethnicity {
     HISPANIC_LATINO(0),
     NOT_HISPANIC_LATINO(1);

@@ -24,12 +24,15 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import org.apache.airavata.common.model.ComputeResourceType;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -87,6 +90,13 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "DEFAULT_WALLTIME")
     private Integer defaultWalltime;
 
+    @Column(name = "RESOURCE_TYPE")
+    @Enumerated(EnumType.STRING)
+    private ComputeResourceType resourceType = ComputeResourceType.SLURM;
+
+    @Column(name = "LINKED_STORAGE_RESOURCE_ID")
+    private String linkedStorageResourceId;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "HOST_ALIAS", joinColumns = @JoinColumn(name = "RESOURCE_ID"))
     @Column(name = "ALIAS")
@@ -120,6 +130,14 @@ public class ComputeResourceEntity implements Serializable {
             orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<DataMovementInterfaceEntity> dataMovementInterfaces;
+
+    @OneToMany(
+            targetEntity = ComputeResourceProjectEntity.class,
+            cascade = CascadeType.ALL,
+            mappedBy = "computeResource",
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
+    private List<ComputeResourceProjectEntity> projects;
 
     public ComputeResourceEntity() {}
 
@@ -235,6 +253,22 @@ public class ComputeResourceEntity implements Serializable {
         this.defaultWalltime = defaultWalltime;
     }
 
+    public ComputeResourceType getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(ComputeResourceType resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public String getLinkedStorageResourceId() {
+        return linkedStorageResourceId;
+    }
+
+    public void setLinkedStorageResourceId(String linkedStorageResourceId) {
+        this.linkedStorageResourceId = linkedStorageResourceId;
+    }
+
     public List<String> getHostAliases() {
         return hostAliases;
     }
@@ -273,5 +307,13 @@ public class ComputeResourceEntity implements Serializable {
 
     public void setDataMovementInterfaces(List<DataMovementInterfaceEntity> dataMovementInterfaces) {
         this.dataMovementInterfaces = dataMovementInterfaces;
+    }
+
+    public List<ComputeResourceProjectEntity> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<ComputeResourceProjectEntity> projects) {
+        this.projects = projects;
     }
 }

@@ -38,6 +38,7 @@ public class BatchQueue {
     private int defaultWalltime;
     private String queueSpecificMacros;
     private boolean isDefaultQueue;
+    private int gpuPerNode;
 
     public BatchQueue() {}
 
@@ -145,6 +146,14 @@ public class BatchQueue {
         this.isDefaultQueue = isDefaultQueue;
     }
 
+    public int getGpuPerNode() {
+        return gpuPerNode;
+    }
+
+    public void setGpuPerNode(int gpuPerNode) {
+        this.gpuPerNode = gpuPerNode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -158,6 +167,7 @@ public class BatchQueue {
                 && Objects.equals(maxJobsInQueue, that.maxJobsInQueue)
                 && Objects.equals(maxMemory, that.maxMemory)
                 && Objects.equals(cpuPerNode, that.cpuPerNode)
+                && Objects.equals(gpuPerNode, that.gpuPerNode)
                 && Objects.equals(defaultNodeCount, that.defaultNodeCount)
                 && Objects.equals(defaultCPUCount, that.defaultCPUCount)
                 && Objects.equals(defaultWalltime, that.defaultWalltime)
@@ -176,6 +186,7 @@ public class BatchQueue {
                 maxJobsInQueue,
                 maxMemory,
                 cpuPerNode,
+                gpuPerNode,
                 defaultNodeCount,
                 defaultCPUCount,
                 defaultWalltime,
@@ -187,8 +198,9 @@ public class BatchQueue {
     public String toString() {
         return "BatchQueue{" + "queueName=" + queueName + ", queueDescription=" + queueDescription + ", maxRunTime="
                 + maxRunTime + ", maxNodes=" + maxNodes + ", maxProcessors=" + maxProcessors + ", maxJobsInQueue="
-                + maxJobsInQueue + ", maxMemory=" + maxMemory + ", cpuPerNode=" + cpuPerNode + ", defaultNodeCount="
-                + defaultNodeCount + ", defaultCPUCount=" + defaultCPUCount + ", defaultWalltime=" + defaultWalltime
-                + ", queueSpecificMacros=" + queueSpecificMacros + ", isDefaultQueue=" + isDefaultQueue + "}";
+                + maxJobsInQueue + ", maxMemory=" + maxMemory + ", cpuPerNode=" + cpuPerNode + ", gpuPerNode="
+                + gpuPerNode + ", defaultNodeCount=" + defaultNodeCount + ", defaultCPUCount=" + defaultCPUCount
+                + ", defaultWalltime=" + defaultWalltime + ", queueSpecificMacros=" + queueSpecificMacros
+                + ", isDefaultQueue=" + isDefaultQueue + "}";
     }
 }

@@ -23,7 +23,7 @@ package org.apache.airavata.orchestrator.internal.workflow;
  * Base interface for Dapr workflow definitions.
  *
  * <p>This interface defines the contract for workflow implementations.
- * While full Dapr Workflows integration is pending (see TODOs in workflow managers),
+ * Full Dapr Workflows integration can be extended in workflow managers.
  * this interface establishes the structure for future workflow definitions.
  *
  * <p>Workflow naming should follow conventions defined in {@link WorkflowNaming}.

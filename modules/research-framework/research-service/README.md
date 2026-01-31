@@ -78,8 +78,11 @@ The Research Service includes authentication and authorization:
 To run the Research Service, start the unified Airavata server:
 
 ```bash
-cd modules/distribution
-mvn exec:java -Dexec.args="serve --foreground"
+# From project root (no module path to specify)
+./scripts/dev.sh serve
+
+# Or from modules/distribution
+cd modules/distribution && mvn exec:java -Dexec.args="serve"
 ```
 
 The Research Service will be available at:

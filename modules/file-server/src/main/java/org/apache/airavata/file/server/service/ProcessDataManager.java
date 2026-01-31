@@ -26,7 +26,7 @@ import org.apache.airavata.agents.ssh.SSHJAgentAdaptor;
 import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;

@@ -42,8 +42,32 @@ The Airavata API provides HTTP endpoints that serve the same core functionalitie
 | Workflows | `WorkflowController` | Workflow definitions |
 | Data Products | `DataProductController` | Data product management |
 | Proxy | `ProxyController` | Proxy utilities |
+| Credentials | `CredentialController` | Credential summaries and SSH/password credential CRUD |
+| Resource Access | `ResourceAccessController` | Access grants (credential + resource + login username) |
+| Cluster Info | `ClusterInfoController` | SLURM partitions and grant-tied accounts per credential+resource |
+| Connectivity Test | `ConnectivityTestController` | SSH validation (credential + loginUsername required) |
 
 All endpoints are prefixed with `/api/v1/` and follow RESTful conventions.
+
+### Cluster info and grant-tied accounts on the portal
+
+When a credential is used to discover what is allowed on a resource, the system runs the bundled bash script (slurminfo.sh) via SSH and caches the result. The **cluster-info API** exposes this so the portal can show grant-tied partitions and accounts to users:
+
+- **POST** `/api/v1/cluster-info/fetch` — Body: `credentialToken`, `computeResourceId`, `hostname`, `port` (optional, default 22), `loginUsername` (required; from resource access/grant), `gatewayId` (optional, from auth). Fetches and caches partitions and accounts for this credential on this compute resource.
+- **GET** `/api/v1/cluster-info/{credentialToken}/{computeResourceId}` — Returns cached cluster info: `partitions` (list of partition objects with name, nodes, accounts, etc.) and `accounts` (list of Slurm account names). Use this to show "your accounts per resource" after fetch.
+- **DELETE** `/api/v1/cluster-info/{credentialToken}/{computeResourceId}` — Invalidates the cache.
+
+Portal flow: For each of the user's credential–resource pairs (e.g. from resource access grants), call fetch (once) then GET to display partitions and accounts. Users can then bind one account per resource to a project (see Project resource accounts).
+
+### Project resource accounts (one account per resource per project)
+
+A project can have **resource-account bindings**: for each compute resource, one Slurm account to use when running experiments in that project. This lets users work on a project with the correct accounts regardless of which resource runs.
+
+- **GET** `/api/v1/projects/{projectId}/resource-accounts` — List bindings for the project (each: computeResourceId, credentialToken, accountName, gatewayId).
+- **POST** `/api/v1/projects/{projectId}/resource-accounts` — Add or update a binding. Body: `{ "computeResourceId", "credentialToken", "accountName", "gatewayId" }` (gatewayId optional; defaults to project's gateway). The `accountName` must be one of the accounts returned by cluster-info for this credential and resource (fetch cluster info first).
+- **DELETE** `/api/v1/projects/{projectId}/resource-accounts/{computeResourceId}` — Remove the binding for that resource.
+
+Portal flow for editing a project's allocation: (1) List user's credential–resource pairs (e.g. from resource access). (2) For each, fetch cluster info and show accounts. (3) User selects one account per resource and POSTs to project resource-accounts. At job submit time, the system uses the project's account for the chosen compute resource when present. Credentials are stored without a login username; login username is set per resource in resource-access grants and must be supplied when testing connectivity.
 
 ## Internal Services Used
 

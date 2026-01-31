@@ -29,7 +29,7 @@ public class SecureClient {
     private static Logger logger = LoggerFactory.getLogger(SecureClient.class);
 
     public static void main(String[] args) throws Exception {
-        // TODO Implement in keycloak
+        // Implement via Keycloak when integrated
     }
 
     public static Airavata.Client createAiravataClient(String serverHost, int serverPort)

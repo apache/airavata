@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.airavata.common.model.DataObjectParentType;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.registry.entities.InputDataEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.InputDataObjectTypeMapper;
 import org.apache.airavata.registry.repositories.InputDataRepository;
 import org.springframework.stereotype.Service;

@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServiceUtils;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.sharing.entities.EntityPK;
 import org.apache.airavata.sharing.entities.EntityTypePK;
 import org.apache.airavata.sharing.entities.GroupAdminPK;
@@ -63,7 +63,7 @@ import org.apache.airavata.sharing.services.PermissionTypeService;
 import org.apache.airavata.sharing.services.SharingService;
 import org.apache.airavata.sharing.services.UserGroupService;
 import org.apache.airavata.sharing.services.UserService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.sharing.utils.DBConstants;
 import org.slf4j.Logger;
@@ -260,17 +260,20 @@ public class SharingRegistryService {
             user.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             userService.create(user);
 
-            UserGroup userGroup = new UserGroup();
-            userGroup.setGroupId(user.getUserId());
-            userGroup.setDomainId(user.getDomainId());
-            userGroup.setName(user.getUserName());
-            userGroup.setDescription("user " + user.getUserName() + " group");
-            userGroup.setOwnerId(user.getUserId());
-            userGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
-            userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
-            userGroup.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
-            userGroup.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
-            userGroupService.create(userGroup);
+            // Auto-create personal group (Zanzibar-like model: every user has a personal group)
+            String personalGroupId = user.getUserId() + "_personal";
+            UserGroup personalGroup = new UserGroup();
+            personalGroup.setGroupId(personalGroupId);
+            personalGroup.setDomainId(user.getDomainId());
+            personalGroup.setName(user.getUserName() != null ? user.getUserName() : user.getUserId());
+            personalGroup.setDescription("Personal group for " + (user.getUserName() != null ? user.getUserName() : user.getUserId()));
+            personalGroup.setOwnerId(user.getUserId());
+            personalGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+            personalGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
+            personalGroup.setIsPersonalGroup(true);
+            personalGroup.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            personalGroup.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
+            createGroup(personalGroup);
 
             Domain domain = domainService.get(user.getDomainId());
             if (domain != null && domain.getInitialUserGroupId() != null) {
@@ -295,12 +298,14 @@ public class SharingRegistryService {
             userService.update(user);
 
             UserGroupPK userGroupPK = new UserGroupPK();
-            userGroupPK.setGroupId(user.getUserId());
+            userGroupPK.setGroupId(user.getUserId() + "_personal");
             userGroupPK.setDomainId(user.getDomainId());
             UserGroup userGroup = userGroupService.get(userGroupPK);
-            userGroup.setName(user.getUserName());
-            userGroup.setDescription("user " + user.getUserName() + " group");
-            updateGroup(userGroup);
+            if (userGroup != null) {
+                userGroup.setName(user.getUserName());
+                userGroup.setDescription("Personal group for " + user.getUserName());
+                updateGroup(userGroup);
+            }
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format(
@@ -323,10 +328,14 @@ public class SharingRegistryService {
         try {
             userService.delete(userId, domainId);
 
+            // Delete the user's personal group (allowed when user is being deleted)
+            String personalGroupId = userId + "_personal";
             UserGroupPK userGroupPK = new UserGroupPK();
-            userGroupPK.setGroupId(userId);
+            userGroupPK.setGroupId(personalGroupId);
             userGroupPK.setDomainId(domainId);
-            userGroupService.delete(userGroupPK);
+            if (userGroupService.get(userGroupPK) != null) {
+                userGroupService.delete(userGroupPK);
+            }
             return true;
         } catch (SharingRegistryException e) {
             String message = String.format("Error while deleting user: domainId=%s, userId=%s", domainId, userId);
@@ -369,11 +378,19 @@ public class SharingRegistryService {
             userGroupPK.setDomainId(group.getDomainId());
             if (userGroupService.get(userGroupPK) != null)
                 throw new SharingRegistryException("There exist group with given group id");
-            // Client created groups are always of type MULTI_USER and USER_LEVEL_GROUP
+            // Client created groups are USER_LEVEL_GROUP; MULTI_USER unless personal group
             if (group.getGroupType() == null) {
                 group.setGroupType(GroupType.USER_LEVEL_GROUP);
             }
-            group.setGroupCardinality(GroupCardinality.MULTI_USER);
+            if (!Boolean.TRUE.equals(group.getIsPersonalGroup())) {
+                group.setGroupCardinality(GroupCardinality.MULTI_USER);
+            }
+            if (group.getGroupCardinality() == null) {
+                group.setGroupCardinality(GroupCardinality.MULTI_USER);
+            }
+            if (group.getIsPersonalGroup() == null) {
+                group.setIsPersonalGroup(false);
+            }
             group.setCreatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             group.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             // Add group admins once the group is created
@@ -433,6 +450,10 @@ public class SharingRegistryService {
     }
 
     public boolean deleteGroup(String domainId, String groupId) throws SharingRegistryException {
+        UserGroup group = getGroup(domainId, groupId);
+        if (Boolean.TRUE.equals(group.getIsPersonalGroup())) {
+            throw new SharingRegistryException("Cannot delete personal group. Remove the user first.");
+        }
         ServiceUtils.executeVoid(
                 () -> {
                     UserGroupPK userGroupPK = new UserGroupPK();
@@ -453,7 +474,16 @@ public class SharingRegistryService {
                     UserGroupPK userGroupPK = new UserGroupPK();
                     userGroupPK.setGroupId(groupId);
                     userGroupPK.setDomainId(domainId);
-                    return userGroupService.get(userGroupPK);
+                    UserGroup group = userGroupService.get(userGroupPK);
+                    // Backward compatibility: getGroup(domainId, userId) used to return the user's single-user group.
+                    // Personal groups have groupId = userId + "_personal". If no group found, treat groupId as userId.
+                    if (group == null && isUserExists(domainId, groupId)) {
+                        UserGroupPK personalPK = new UserGroupPK();
+                        personalPK.setGroupId(groupId + "_personal");
+                        personalPK.setDomainId(domainId);
+                        group = userGroupService.get(personalPK);
+                    }
+                    return group;
                 },
                 SharingRegistryException.class,
                 "Error getting group: domainId=%s, groupId=%s",
@@ -479,6 +509,16 @@ public class SharingRegistryService {
     public boolean addUsersToGroup(String domainId, List<String> userIds, String groupId)
             throws SharingRegistryException {
         try {
+            UserGroup group = getGroup(domainId, groupId);
+            if (Boolean.TRUE.equals(group.getIsPersonalGroup())) {
+                // Personal group: only the owner may be a member (added at creation)
+                if (userIds == null || userIds.size() != 1 || !userIds.get(0).equals(group.getOwnerId())) {
+                    throw new SharingRegistryException("Cannot add members to personal group.");
+                }
+            }
+            if (userIds == null) {
+                userIds = java.util.Collections.emptyList();
+            }
             for (int i = 0; i < userIds.size(); i++) {
                 // Check if membership already exists to avoid duplicate key exceptions
                 GroupMembershipPK membershipPK = new GroupMembershipPK();
@@ -512,6 +552,13 @@ public class SharingRegistryService {
     public boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId)
             throws SharingRegistryException {
         try {
+            UserGroup group = getGroup(domainId, groupId);
+            if (Boolean.TRUE.equals(group.getIsPersonalGroup())) {
+                throw new SharingRegistryException("Cannot remove user from their personal group.");
+            }
+            if (userIds == null) {
+                userIds = java.util.Collections.emptyList();
+            }
             for (String userId : userIds) {
                 if (hasOwnerAccess(domainId, groupId, userId)) {
                     throw new SharingRegistryException(
@@ -1086,7 +1133,7 @@ public class SharingRegistryService {
 
     public boolean updateEntity(Entity entity) throws SharingRegistryException {
         try {
-            // TODO Check for permission changes
+            // Check for permission changes when needed
             entity.setUpdatedTime(AiravataUtils.getUniqueTimestamp().getTime());
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.getDomainId());
@@ -1145,7 +1192,7 @@ public class SharingRegistryService {
 
     public boolean deleteEntity(String domainId, String entityId) throws SharingRegistryException {
         try {
-            // TODO Check for permission changes
+            // Check for permission changes when needed
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);

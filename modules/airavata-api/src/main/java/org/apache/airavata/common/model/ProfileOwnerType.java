@@ -37,7 +37,7 @@ package org.apache.airavata.common.model;
  * <ul>
  *   <li>{@code GATEWAY} maps to {@link PreferenceLevel#GATEWAY}</li>
  *   <li>{@code GROUP} maps to {@link PreferenceLevel#GROUP}</li>
- *   <li>{@code USER} maps to {@link PreferenceLevel#USER}</li>
+ *   <li>{@code USER} is deprecated; map to personal group and use {@link PreferenceLevel#GROUP}</li>
  * </ul>
  *
  * @see PreferenceLevel
@@ -51,15 +51,16 @@ public enum ProfileOwnerType {
 
     /**
      * Group-level profile. The profileId is the groupResourceProfileId.
-     * These profiles contain preferences shared by members of a group,
-     * overriding gateway defaults but overridden by user preferences.
+     * All groups (personal, admin, custom) are at this level.
      */
     GROUP,
 
     /**
-     * User-level profile. The profileId is formatted as "userId@gatewayId".
-     * These profiles contain user-specific preferences that override gateway and group defaults.
+     * User-level profile. Deprecated: use GROUP with profileId = user's personal group ID.
+     *
+     * @deprecated Map to personal group and use GROUP type instead.
      */
+    @Deprecated
     USER;
 
     /**
@@ -72,9 +73,8 @@ public enum ProfileOwnerType {
             case GATEWAY:
                 return PreferenceLevel.GATEWAY;
             case GROUP:
-                return PreferenceLevel.GROUP;
             case USER:
-                return PreferenceLevel.USER;
+                return PreferenceLevel.GROUP;
             default:
                 throw new IllegalStateException("Unknown ProfileOwnerType: " + this);
         }
@@ -88,12 +88,14 @@ public enum ProfileOwnerType {
      */
     public static ProfileOwnerType fromPreferenceLevel(PreferenceLevel level) {
         switch (level) {
+            case SYSTEM:
+                // SYSTEM has no ProfileOwnerType equivalent; use GATEWAY for legacy
+                return GATEWAY;
             case GATEWAY:
                 return GATEWAY;
             case GROUP:
-                return GROUP;
             case USER:
-                return USER;
+                return GROUP;
             default:
                 throw new IllegalArgumentException("Unknown PreferenceLevel: " + level);
         }

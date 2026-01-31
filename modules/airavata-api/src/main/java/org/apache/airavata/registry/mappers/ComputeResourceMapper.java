@@ -33,7 +33,7 @@ import org.mapstruct.Mapping;
 @Mapper(
         componentModel = "spring",
         config = EntityMapperConfig.class,
-        uses = {BatchQueueMapper.class, ComputeResourceDataMovementInterfaceMapper.class})
+        uses = {BatchQueueMapper.class, ComputeResourceDataMovementInterfaceMapper.class, ComputeResourceProjectMapper.class})
 public interface ComputeResourceMapper {
 
     @Mapping(target = "enabled", expression = "java(entity.getEnabled() != 0)")

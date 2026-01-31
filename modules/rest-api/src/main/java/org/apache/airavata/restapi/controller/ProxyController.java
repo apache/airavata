@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ConditionalOnProperty(name = "services.rest.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "kafka.enabled", havingValue = "true")
 public class ProxyController {
     private static final Logger log = LoggerFactory.getLogger(ProxyController.class);
 

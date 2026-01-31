@@ -22,7 +22,7 @@ package org.apache.airavata.restapi.controller;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.common.model.Notification;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.NotificationService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;

@@ -36,7 +36,7 @@ import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.DataType;
 import org.apache.airavata.common.model.InputDataObjectType;
 import org.apache.airavata.common.model.OutputDataObjectType;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
@@ -51,11 +51,28 @@ import org.springframework.test.context.TestConstructor;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class ApplicationInterfaceRepositoryTest extends TestBase {
 
+    private static final List<String> SYSTEM_INPUT_NAMES = List.of("STDIN");
+    private static final List<String> SYSTEM_OUTPUT_NAMES = List.of("STDOUT", "STDERR");
+
     private final ApplicationInterfaceService applicationInterfaceService;
     private final ComputeResourceService computeResourceService;
     private final ApplicationDeploymentService applicationDeploymentService;
 
     private String gatewayId = "testGateway";
+
+    /** Count user-defined inputs/outputs excluding system ones (STDIN, STDOUT, STDERR). */
+    private static int userInputCount(List<InputDataObjectType> inputs) {
+        return (int) inputs.stream().filter(i -> !SYSTEM_INPUT_NAMES.contains(i.getName())).count();
+    }
+    private static int userOutputCount(List<OutputDataObjectType> outputs) {
+        return (int) outputs.stream().filter(o -> !SYSTEM_OUTPUT_NAMES.contains(o.getName())).count();
+    }
+    private static InputDataObjectType getUserInputByName(List<InputDataObjectType> inputs, String name) {
+        return inputs.stream().filter(i -> name.equals(i.getName())).findFirst().orElse(null);
+    }
+    private static OutputDataObjectType getUserOutputByName(List<OutputDataObjectType> outputs, String name) {
+        return outputs.stream().filter(o -> name.equals(o.getName())).findFirst().orElse(null);
+    }
 
     public ApplicationInterfaceRepositoryTest(
             ApplicationInterfaceService applicationInterfaceService,
@@ -145,8 +162,16 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         ApplicationInterfaceDescription savedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
+        // Exclude inputs/outputs: service may auto-add system STDIN/STDOUT/STDERR
         Assertions.assertTrue(
-                ReflectionEquals.reflectionEquals(applicationInterfaceDescription, savedInterface, "__isset_bitfield"));
+                ReflectionEquals.reflectionEquals(
+                        applicationInterfaceDescription,
+                        savedInterface,
+                        "__isset_bitfield",
+                        "applicationInputs",
+                        "applicationOutputs"));
+        Assertions.assertEquals(0, userInputCount(savedInterface.getApplicationInputs()));
+        Assertions.assertEquals(0, userOutputCount(savedInterface.getApplicationOutputs()));
     }
 
     @Test
@@ -320,13 +345,17 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         ApplicationInterfaceDescription savedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
-        Assertions.assertEquals(1, savedInterface.getApplicationInputs().size());
-        Assertions.assertEquals(1, savedInterface.getApplicationOutputs().size());
+        Assertions.assertEquals(1, userInputCount(savedInterface.getApplicationInputs()),
+                "One user input (system STDIN may also be present)");
+        Assertions.assertEquals(1, userOutputCount(savedInterface.getApplicationOutputs()),
+                "One user output (system STDOUT/STDERR may also be present)");
 
         // Compare inputs and outputs - verify key fields explicitly for better error messages
-        InputDataObjectType savedInput = savedInterface.getApplicationInputs().get(0);
+        InputDataObjectType savedInput = getUserInputByName(savedInterface.getApplicationInputs(), "input1");
         OutputDataObjectType savedOutput =
-                savedInterface.getApplicationOutputs().get(0);
+                getUserOutputByName(savedInterface.getApplicationOutputs(), "output1");
+        Assertions.assertNotNull(savedInput, "User input input1 should be present");
+        Assertions.assertNotNull(savedOutput, "User output output1 should be present");
 
         // Verify key input fields explicitly
         Assertions.assertEquals(input.getName(), savedInput.getName(), "Input name should match");
@@ -376,15 +405,19 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         List<InputDataObjectType> savedInputs = applicationInterfaceService.getApplicationInputs(interfaceId);
         List<OutputDataObjectType> savedOutputs = applicationInterfaceService.getApplicationOutputs(interfaceId);
 
-        Assertions.assertEquals(1, savedInputs.size());
-        Assertions.assertEquals(1, savedOutputs.size());
+        Assertions.assertEquals(1, userInputCount(savedInputs), "One user input (system STDIN may also be present)");
+        Assertions.assertEquals(1, userOutputCount(savedOutputs), "One user output (system STDOUT/STDERR may also be present)");
 
+        InputDataObjectType savedInput1 = getUserInputByName(savedInputs, "input1");
+        OutputDataObjectType savedOutput1 = getUserOutputByName(savedOutputs, "output1");
+        Assertions.assertNotNull(savedInput1, "User input input1 should be present");
+        Assertions.assertNotNull(savedOutput1, "User output output1 should be present");
         // Verify saved inputs match
-        Assertions.assertEquals(input.getName(), savedInputs.get(0).getName(), "Saved input name should match");
-        Assertions.assertEquals(input.getType(), savedInputs.get(0).getType(), "Saved input type should match");
+        Assertions.assertEquals(input.getName(), savedInput1.getName(), "Saved input name should match");
+        Assertions.assertEquals(input.getType(), savedInput1.getType(), "Saved input type should match");
         // Verify saved outputs match
-        Assertions.assertEquals(output.getName(), savedOutputs.get(0).getName(), "Saved output name should match");
-        Assertions.assertEquals(output.getType(), savedOutputs.get(0).getType(), "Saved output type should match");
+        Assertions.assertEquals(output.getName(), savedOutput1.getName(), "Saved output name should match");
+        Assertions.assertEquals(output.getType(), savedOutput1.getType(), "Saved output type should match");
     }
 
     @Test
@@ -437,8 +470,8 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
         ApplicationInterfaceDescription savedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
-        Assertions.assertEquals(2, savedInterface.getApplicationInputs().size());
-        Assertions.assertEquals(2, savedInterface.getApplicationOutputs().size());
+        Assertions.assertEquals(2, userInputCount(savedInterface.getApplicationInputs()), "Two user inputs");
+        Assertions.assertEquals(2, userOutputCount(savedInterface.getApplicationOutputs()), "Two user outputs");
 
         savedInterface.setApplicationInputs(Arrays.asList(input));
         savedInterface.setApplicationOutputs(Arrays.asList(output));
@@ -446,8 +479,10 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
         applicationInterfaceService.updateApplicationInterface(interfaceId, savedInterface);
         ApplicationInterfaceDescription updatedInterface =
                 applicationInterfaceService.getApplicationInterface(interfaceId);
-        Assertions.assertEquals(1, updatedInterface.getApplicationInputs().size());
-        Assertions.assertEquals(1, updatedInterface.getApplicationOutputs().size());
+        Assertions.assertEquals(1, userInputCount(updatedInterface.getApplicationInputs()),
+                "One user input after remove (system STDIN may also be present)");
+        Assertions.assertEquals(1, userOutputCount(updatedInterface.getApplicationOutputs()),
+                "One user output after remove (system STDOUT/STDERR may also be present)");
     }
 
     @Test
@@ -537,15 +572,23 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
 
     @Test
     public void getAccessibleApplicationModulesTest() throws AppCatalogException {
+        org.apache.airavata.common.model.BatchQueue q = new org.apache.airavata.common.model.BatchQueue();
+        q.setQueueName("default");
+        q.setQueueDescription("Default");
+        q.setMaxRunTime(24);
+        q.setMaxNodes(1);
+        q.setMaxJobsInQueue(10);
 
         ComputeResourceDescription computeResourceDescription1 = new ComputeResourceDescription();
         computeResourceDescription1.setComputeResourceId("compHost1");
         computeResourceDescription1.setHostName("compHost1Name");
+        computeResourceDescription1.setBatchQueues(Collections.singletonList(q));
         String computeResourceId1 = computeResourceService.addComputeResource(computeResourceDescription1);
 
         ComputeResourceDescription computeResourceDescription2 = new ComputeResourceDescription();
         computeResourceDescription2.setComputeResourceId("compHost2");
         computeResourceDescription2.setHostName("compHost2Name");
+        computeResourceDescription2.setBatchQueues(Collections.singletonList(q));
         String computeResourceId2 = computeResourceService.addComputeResource(computeResourceDescription2);
 
         ApplicationModule applicationModule1 = new ApplicationModule();
@@ -677,7 +720,11 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
             Assertions.assertEquals(interfaceStore.get(gateway).size(), allApplicationInterfaces.size());
             for (int i = 0; i < allApplicationInterfaces.size(); i++) {
                 Assertions.assertTrue(ReflectionEquals.reflectionEquals(
-                        interfaceStore.get(gateway).get(i), allApplicationInterfaces.get(i), "__isset_bitfield"));
+                        interfaceStore.get(gateway).get(i),
+                        allApplicationInterfaces.get(i),
+                        "__isset_bitfield",
+                        "applicationInputs",
+                        "applicationOutputs"));
             }
         }
     }

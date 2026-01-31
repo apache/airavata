@@ -32,9 +32,10 @@ import org.apache.airavata.common.model.PreferenceLevel;
 import org.apache.airavata.common.model.PreferenceResourceType;
 import org.apache.airavata.common.model.StoragePreference;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.registry.entities.appcatalog.ResourcePreferenceEntity;
 import org.apache.airavata.registry.entities.appcatalog.ResourceProfileEntity;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.ResourceProfileMapper;
 import org.apache.airavata.registry.repositories.ResourcePreferenceRepository;
 import org.apache.airavata.registry.repositories.appcatalog.ResourceProfileRepository;
@@ -50,14 +51,17 @@ public class GwyResourceProfileService {
     private final ResourceProfileRepository resourceProfileRepository;
     private final ResourcePreferenceRepository resourcePreferenceRepository;
     private final ResourceProfileMapper resourceProfileMapper;
+    private final CredentialStoreService credentialStoreService;
 
     public GwyResourceProfileService(
             ResourceProfileRepository resourceProfileRepository,
             ResourcePreferenceRepository resourcePreferenceRepository,
-            ResourceProfileMapper resourceProfileMapper) {
+            ResourceProfileMapper resourceProfileMapper,
+            CredentialStoreService credentialStoreService) {
         this.resourceProfileRepository = resourceProfileRepository;
         this.resourcePreferenceRepository = resourcePreferenceRepository;
         this.resourceProfileMapper = resourceProfileMapper;
+        this.credentialStoreService = credentialStoreService;
     }
 
     @Transactional
@@ -357,6 +361,12 @@ public class GwyResourceProfileService {
                 resourcePreferenceRepository.delete(existing);
             }
             return;
+        }
+
+        // Validate credential exists when saving resource-specific credential token (GATEWAY: ownerId = gatewayId)
+        if (PreferenceKeys.RESOURCE_CREDENTIAL_TOKEN.equals(key)
+                && !credentialStoreService.credentialExists(value, ownerId)) {
+            throw new IllegalArgumentException("Credential does not exist for token: " + value);
         }
 
         ResourcePreferenceEntity existing = resourcePreferenceRepository

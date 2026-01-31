@@ -26,7 +26,7 @@ import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.common.model.JobStatus;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskResult;
@@ -50,7 +50,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
             org.apache.airavata.service.registry.RegistryService registryService,
             org.apache.airavata.service.profile.UserProfileService userProfileService,
             org.apache.airavata.service.security.CredentialStoreService credentialStoreService,
-            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory,
+            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory messagingFactory,
             org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder,
             org.apache.airavata.monitor.compute.ComputeSubmissionTracker computeSubmissionTracker) {
         super(

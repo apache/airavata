@@ -21,9 +21,11 @@ package org.apache.airavata.restapi.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
+import org.apache.airavata.registry.services.ResourceAccessGrantService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,13 +45,13 @@ public class ApplicationDeploymentController {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ApplicationDeploymentController.class);
     
     private final ApplicationDeploymentService applicationDeploymentService;
-    private final org.apache.airavata.registry.repositories.ResourceAccessRepository resourceAccessRepository;
+    private final ResourceAccessGrantService resourceAccessGrantService;
 
     public ApplicationDeploymentController(
             ApplicationDeploymentService applicationDeploymentService,
-            org.apache.airavata.registry.repositories.ResourceAccessRepository resourceAccessRepository) {
+            ResourceAccessGrantService resourceAccessGrantService) {
         this.applicationDeploymentService = applicationDeploymentService;
-        this.resourceAccessRepository = resourceAccessRepository;
+        this.resourceAccessGrantService = resourceAccessGrantService;
     }
 
     @GetMapping("/{deploymentId}")
@@ -139,20 +141,12 @@ public class ApplicationDeploymentController {
             logger.debug("Getting application deployments: appModuleId={}, computeHostId={}, credentialToken={}", 
                 appModuleId, computeHostId, credentialToken != null ? "***" : null);
             
-            // If credentialToken is provided, find deployments via resource access
+            // If credentialToken is provided, find deployments via merged resource access and grants
             if (credentialToken != null && !credentialToken.trim().isEmpty()) {
-                // Get all resource access entries for this credential token (COMPUTE resources)
-                var resourceAccesses = resourceAccessRepository.findByCredentialToken(credentialToken.trim());
-                var computeResourceIds = resourceAccesses.stream()
-                    .filter(ra -> ra.getResourceType() == org.apache.airavata.common.model.PreferenceResourceType.COMPUTE)
-                    .map(ra -> ra.getResourceId())
-                    .distinct()
-                    .collect(java.util.stream.Collectors.toList());
-                
+                var computeResourceIds = resourceAccessGrantService.getComputeResourceIdsForCredential(credentialToken.trim());
                 logger.debug("Found {} compute resources for credential token", computeResourceIds.size());
-                
-                // Get deployments for each compute resource
-                var allDeployments = new java.util.ArrayList<ApplicationDeploymentDescription>();
+
+                var allDeployments = new ArrayList<ApplicationDeploymentDescription>();
                 for (String computeId : computeResourceIds) {
                     var filters = new HashMap<String, String>();
                     filters.put("computeHostId", computeId);

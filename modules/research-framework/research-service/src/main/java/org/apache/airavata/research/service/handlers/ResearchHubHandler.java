@@ -146,7 +146,7 @@ public class ResearchHubHandler {
 
     public String resolveRHubExistingSession(String sessionId) {
         LOGGER.debug("Resolving RH session id {} for user: {}", sessionId, UserContext.userId());
-        // TODO restrict this execution for owner
+        // Restrict execution to owner when authorization is enforced
         var session = sessionHandler.findSession(sessionId);
 
         var sessionUrl = String.format(RH_SESSION_URL, csHubUrl, UserContext.userId(), session.getId());

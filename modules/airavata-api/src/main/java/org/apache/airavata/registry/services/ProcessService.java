@@ -32,11 +32,13 @@ import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ProcessModel;
 import org.apache.airavata.common.model.ProcessState;
 import org.apache.airavata.common.model.ProcessStatus;
+import org.apache.airavata.common.model.StatusParentType;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.StatusEntity;
 import org.apache.airavata.registry.entities.expcatalog.ExperimentEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.entities.expcatalog.ProcessWorkflowEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.ProcessMapper;
 import org.apache.airavata.registry.mappers.ProcessWorkflowMapper;
 import org.apache.airavata.registry.mappers.StatusMapper;
@@ -352,7 +354,7 @@ public class ProcessService {
     }
 
     public Map<String, Double> getAVGTimeDistribution(String gatewayId, double searchTime) {
-        // TODO: Migrate native queries to @Query annotations
+        // Native queries can be migrated to @Query annotations
         var timeDistributions = new HashMap<String, Double>();
         // These native queries need to be migrated to repository methods
         // For now, returning empty map - will be implemented when QueryConstants are migrated
@@ -430,6 +432,14 @@ public class ProcessService {
         processEntity.setExperiment(experimentEntity);
 
         populateParentIds(processEntity);
+
+        if (processEntity.getProcessStatuses() != null) {
+            for (StatusEntity s : processEntity.getProcessStatuses()) {
+                if (s.getSequenceNum() == null) {
+                    s.setSequenceNum(statusRepository.getNextSequenceNum(processId, StatusParentType.PROCESS));
+                }
+            }
+        }
 
         return processRepository.save(processEntity);
     }

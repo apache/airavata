@@ -40,16 +40,17 @@ import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.dapr.messaging.MessageVerificationUtils;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
-import org.apache.airavata.orchestrator.state.JobStateValidator;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageHandler;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Subscriber;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.JobService;
@@ -197,7 +198,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
         // state validator allows this transition
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.FAILED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.SUBMITTED, JobState.FAILED),
                 "SUBMITTED -> FAILED should be a valid transition");
     }
 
@@ -217,7 +218,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Final state should be ACTIVE");
 
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.QUEUED, JobState.ACTIVE),
                 "QUEUED -> ACTIVE should be a valid transition");
     }
 
@@ -243,7 +244,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         assertEquals(JobState.ACTIVE, latest.getJobState(), "Final state should be ACTIVE");
 
         assertTrue(
-                JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
                 "NON_CRITICAL_FAIL -> QUEUED should be a valid transition");
     }
 
@@ -252,17 +253,17 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
         // Test that invalid transitions are rejected by JobStateValidator
         // COMPLETE -> SUBMITTED should be invalid
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.SUBMITTED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.COMPLETE, JobState.SUBMITTED),
                 "COMPLETE -> SUBMITTED should be an invalid transition");
 
         // FAILED -> SUBMITTED should be invalid
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.FAILED, JobState.SUBMITTED),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.FAILED, JobState.SUBMITTED),
                 "FAILED -> SUBMITTED should be an invalid transition");
 
         // CANCELED -> ACTIVE should be invalid
         assertFalse(
-                JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.ACTIVE),
+                StateValidators.JobStateValidator.INSTANCE.isValid(JobState.CANCELED, JobState.ACTIVE),
                 "CANCELED -> ACTIVE should be an invalid transition");
     }
 
@@ -450,8 +451,8 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.COMPLETED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid when job completes");
 
         // Verify final state
@@ -505,7 +506,7 @@ public class JobSubmissionStateMachineIntegrationTest extends ServiceIntegration
 
         // Verify job state transition was valid
         assertTrue(
-                StateTransitionService.isValid(JobStateValidator.INSTANCE, JobState.SUBMITTED, JobState.COMPLETE),
+                StateModel.StateTransitionService.isValid(StateValidators.JobStateValidator.INSTANCE, JobState.SUBMITTED, JobState.COMPLETE),
                 "SUBMITTED -> COMPLETE should be valid for jobs");
     }
 

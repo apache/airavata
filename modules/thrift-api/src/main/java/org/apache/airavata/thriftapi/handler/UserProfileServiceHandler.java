@@ -58,7 +58,7 @@ public class UserProfileServiceHandler implements org.apache.airavata.thriftapi.
             ex.setMessage("IAM Admin Services Error: " + e.getMessage());
             ex.initCause(e);
             thriftException = ex;
-        } else if (e instanceof org.apache.airavata.common.exception.AuthorizationException) {
+        } else if (e instanceof org.apache.airavata.common.exception.AuthExceptions.AuthorizationException) {
             var ex = new org.apache.airavata.thriftapi.exception.AuthorizationException();
             ex.setMessage(e.getMessage());
             ex.initCause(e);

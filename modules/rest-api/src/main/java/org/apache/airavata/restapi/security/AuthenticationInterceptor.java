@@ -61,6 +61,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // Allow CORS preflight (OPTIONS) without auth so browser can complete actual request
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // Require authentication for all other /api/v1 endpoints
         if (path.startsWith("/api/v1")) {
             try {

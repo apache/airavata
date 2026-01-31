@@ -78,9 +78,9 @@ log "🔧 Starting the Unified Airavata API Server..."
 cd ${AIRAVATA_HOME}
 
 # Start the unified server (all services in one process)
-if [ -f "./bin/airavata-server-start.sh" ]; then
+if [ -f "./bin/airavata.sh" ]; then
     log "🚀 Starting unified Airavata server..."
-    ./bin/airavata-server-start.sh -d
+    ./bin/airavata.sh -d start
     log "✅ Unified Airavata server started"
     
     # Monitor the main log file
@@ -157,7 +157,7 @@ while true; do
     echo "[Status] $(date): Container active, monitoring logs from all services"
     
     # Check if the unified server process is still running
-    if ! pgrep -f "airavata-server" > /dev/null; then
+    if ! pgrep -f "airavata" > /dev/null 2>&1; then
         echo "[WARNING] Airavata server process not found"
     fi
     

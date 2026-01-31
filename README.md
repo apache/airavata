@@ -32,16 +32,15 @@ If you're a researcher, Airavata offers several ways to streamline your workflow
 
 | Requirement | Version | Verify |
 |-------------|---------|--------|
-| **Java JDK** | 25+ | `java --version` |
+| **Java JDK** | 25+ (LTS) | `java --version` |
 | **Apache Maven** | 3.8+ | `mvn -v` |
 | **Git** | Latest | `git --version` |
 | **Docker** | 20.10+ | `docker --version` |
 | **Docker Compose** | 2.0+ | `docker compose version` |
 
-**System Requirements:**
-- Minimum 8GB RAM (16GB recommended)
-- 10GB free disk space
-- Unix-based OS (Linux/macOS) or Windows with WSL2
+**System Requirements:** Minimum 8GB RAM (16GB recommended), 10GB free disk space. Unix-based OS (Linux/macOS) or Windows with WSL2.
+
+**One-click option:** Open in [Dev Container](#dev-container) (Docker only; no local Java/Maven).
 
 ### Step 1: Clone and Build
 
@@ -55,92 +54,76 @@ mvn clean install -DskipTests
 
 **Build time:** ~5-10 minutes (first build), ~2-3 minutes (subsequent builds)
 
-### Step 2: Start Infrastructure
+### Step 2: Initialize (Docker + Keycloak + databases)
+
+Init starts Docker (db, redis, keycloak) if needed, runs Keycloak setup (realm, pga client, default-admin), and applies DB migrations.
+
+**First time?** Use clean-initialize for a fresh slate:
 
 ```bash
-# Start core infrastructure services
-docker compose -f .devcontainer/docker-compose.yml up -d
-
-# Wait for services to be healthy (~60 seconds)
-docker compose -f .devcontainer/docker-compose.yml ps
-
-# (Optional) Start with test infrastructure (SLURM + SFTP)
-docker compose -f .devcontainer/docker-compose.yml --profile test up -d
+./scripts/init.sh --clean
 ```
 
-**Core Services (always started):**
-
-| Service | Port | Version | Purpose |
-|---------|------|---------|---------|
-| MariaDB | 13306 | 10.4.13 | Unified Airavata Database |
-| Keycloak | 18080 | 25.0 | Identity/Access Management |
-| Redis | 6379 | 7 | Dapr Pub/Sub and State Store |
-
-**Test Profile Services (optional, `--profile test`):**
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| SLURM Cluster | 10022 (SSH), 6817-6818 | Test batch job submission |
-| SFTP Server | 10023 | Test file transfers |
-
-Test credentials: `testuser` / `testpass`
-
-**Access points:**
-- Keycloak Admin: http://localhost:18080 (admin/admin)
-- Keycloak Realm: http://localhost:18080/realms/default
-
-### Step 3: Initialize Databases
+**Already ran init?** Reuse mode (no data wipe):
 
 ```bash
-cd modules/distribution
-
-# Initialize all databases with Flyway migrations
-mvn exec:java -Dexec.args="init"
-
-# OR with clean slate (drops existing data)
-mvn exec:java -Dexec.args="init --clean"
+./scripts/init.sh
 ```
 
-This initializes the unified `airavata` database with all required tables.
+Credentials: `default-admin` / `admin123`. Keycloak: http://localhost:18080 (admin/admin).
 
-### Step 4: Start Server
+### Step 3: Run
 
 ```bash
-cd modules/distribution
-
-# Start in foreground (logs to console)
-mvn exec:java -Dexec.args="serve --foreground"
+./scripts/dev.sh serve
 ```
 
-**Server ports:**
-
-| Port | Service |
-|------|---------|
-| 8930 | Thrift Endpoints for Airavata API functions |
-
-### Step 5: Verify Installation
+One-line cold start (build + init + serve):
 
 ```bash
-cd modules/distribution
-
-# Check CLI help
-mvn exec:java -Dexec.args="--help"
-
-# Test connectivity
-mvn exec:java -Dexec.args="test run"
+./scripts/quickstart.sh
 ```
+
+**Server ports:** Thrift 8930, HTTP 8080. See [CLI Commands Reference](#cli-commands-reference) for `serve -d`, `--debug`, and JAR mode.
+
+### Step 4 (optional): Run the Portal
+
+To use the web UI ([airavata-nextjs-portal](https://github.com/apache/airavata-portals) or equivalent):
+
+1. Clone the portal, `npm install`, copy `.env.example` to `.env.local`
+2. Set `API_URL=http://localhost:8080`, `KEYCLOAK_ISSUER=http://localhost:18080/realms/default`, `KEYCLOAK_CLIENT_ID=pga`, `KEYCLOAK_CLIENT_SECRET=m36BXQIxX3j3VILadeHMK5IvbOeRlCCc` (from [docker-compose](.devcontainer/docker-compose.yml)), `NEXTAUTH_URL=http://localhost:3000`, `NEXTAUTH_SECRET=<generate with: openssl rand -base64 32>`
+3. `npm run dev`, open http://localhost:3000, login `default-admin` / `admin123`
+
+### Dev Container
+
+Open the project in VS Code or Cursor with the **Dev Containers** extension; use "Reopen in Container." This uses Docker only—no local Java or Maven. The container includes Java 25, Maven, and the dev environment. Run `./scripts/init.sh --clean && ./scripts/dev.sh serve` inside the container.
+
+### Troubleshooting
+
+- **Database init failed:** Ensure `./scripts/dev.sh init` runs (check Flyway logs).
+- **Keycloak login 400/409:** Run `./scripts/init.sh --clean` to reset.
+- **Port in use:** See [Troubleshooting](#troubleshooting) below.
 
 ---
 
 ## CLI Commands Reference
 
-```bash
-# When using Maven (development)
-cd modules/distribution
-mvn exec:java -Dexec.args="<command> [options]"
+From the **project root**:
 
-# When using distribution bundle or native binary
-airavata <command> [options]
+```bash
+./scripts/dev.sh <command> [options]   # dev mode (hot reload, optional --debug)
+./scripts/jar.sh <command> [options]  # JAR mode (default command: serve)
+```
+
+Examples: `./scripts/dev.sh serve`, `./scripts/dev.sh --debug serve`, `./scripts/jar.sh serve`, `./scripts/dev.sh --help`.
+
+Alternatively, from `modules/distribution`: `mvn exec:java -Dexec.args="<command> [options]"`.
+
+When using the distribution bundle (tarball or fat JAR):
+
+```bash
+./bin/airavata.sh <command> [options]
+# Or: java -Dairavata.home=... -Dairavata.config.dir=... -jar airavata-*.jar <command> [options]
 ```
 
 ### Main Commands
@@ -151,8 +134,9 @@ airavata <command> [options]
 | `--version` | Show version |
 | `init` | Initialize databases |
 | `init --clean` | Drop and recreate all databases |
-| `serve` | Start as daemon (background) |
-| `serve --foreground` | Start in foreground |
+| `serve` | Start in foreground (default) |
+| `serve -d` | Start in background (daemon) |
+| `serve --dev` | Start in foreground with hot-reload (DevTools) |
 
 ### Management Commands
 
@@ -173,9 +157,57 @@ airavata <command> [options]
 
 Airavata is composed of 5 top-level services that work together to facilitate the full lifecycle of computational jobs. All services run in a unified Spring Boot application (`AiravataServer`) within a single JVM process.
 
-> For detailed architecture documentation including Dapr workflows, activities, state machines, and package structure, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
 ![image](assets/airavata-dataflow.png)
+
+### System overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            External Clients                                  │
+│   (Portals, SDKs, Agents, External Monitoring Systems)                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+           ┌────────────────────────┼────────────────────────┐
+           │                        │                        │
+           ▼                        ▼                        ▼
+┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│  Thrift Server   │   │   HTTP Server    │   │   gRPC Server    │
+│    (port 8930)   │   │   (port 8080)    │   │   (port 9090)    │
+│ Thrift Endpoints │   │ - Airavata API   │   │ - Agent Streams  │
+│ for Airavata API │   │ - File API       │   │ - Research API   │
+│                  │   │ - Agent API      │   │                  │
+└──────────────────┘   └──────────────────┘   └──────────────────┘
+           └────────────────────────┼────────────────────────┘
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Unified Spring Boot Application                        │
+│  Orchestrator │ Registry │ Profile Service │ Sharing Registry │ Credential   │
+│  Store │ Workflow Managers                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+           ▼                        ▼                        ▼
+┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│     MariaDB      │   │      Redis        │   │    Keycloak       │
+└──────────────────┘   └──────────────────┘   └──────────────────┘
+```
+
+### API layers
+
+- **Thrift (8930):** Multiplexed services: `Airavata`, `ProfileService.UserProfileService`, `ProfileService.TenantProfileService`, `RegistryService`, `CredentialStoreService`, `SharingRegistryService`. Implementation: `modules/thrift-api/`.
+- **HTTP (8080):** `/api/v1/` (Airavata API), `/list/`, `/download/`, `/upload/` (File API), `/api/v1/agent/`, `/api/v1/research/`. Implementation: `modules/rest-api/`, `modules/file-server/`, `modules/agent-framework/agent-service/`, `modules/research-framework/research-service/`.
+- **gRPC (9090):** Bidirectional streaming for agents and research API.
+
+### Dapr workflows and state machine
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| **ProcessPreWorkflow** | Process launch | Env setup → Input staging → Job submission |
+| **ProcessPostWorkflow** | Job completion | Output staging → Archive → Parsing trigger |
+| **ProcessCancelWorkflow** | Cancel request | Workflow cancellation → Job cancellation |
+| **ParsingWorkflow** | Parsing trigger | Data parsing execution |
+
+**Experiment state flow:** CREATED → SCHEDULED → LAUNCHED → EXECUTING → COMPLETED (or CANCELING → CANCELED, or FAILED).
+
+**Process state flow:** CREATED → VALIDATED → STARTED → PRE_PROCESSING → INPUT_DATA_STAGING → EXECUTING → MONITORING → OUTPUT_DATA_STAGING → POST_PROCESSING → COMPLETED.
 
 ### Unified Distribution
 
@@ -229,10 +261,10 @@ All services run in a unified Spring Boot application with the following server 
 |---------|---------|
 | **Dapr Workflows** | Manages task state transitions and workflow orchestration (ProcessPreWorkflow, ProcessPostWorkflow, ProcessCancelWorkflow, ParsingWorkflow) |
 | **Dapr Activities** | Executes tasks as Dapr activities (EnvSetup, InputDataStaging, JobSubmission, OutputDataStaging, etc.) |
-| **Dapr Pub/Sub** | Messaging for experiment/process events and status updates (backed by Redis) |
+| **Dapr Pub/Sub** | Messaging for experiment/process events and job status updates (single `status-change-topic`, backed by Redis) |
 | **Dapr State Store** | Persistent state management for workflows and process state (backed by Redis) |
-| **Email Monitor** | Monitors email for job status updates |
-| **Realtime Monitor** | Listens for state-change messages via Dapr Pub/Sub |
+| **Email Monitor** | Monitors email for job status updates; publishes to `status-change-topic` |
+| **Status Change Handler** | Subscribes to `status-change-topic`; resolves job and applies status via JobStatusHandler |
 | **Pre Workflow Manager** | Handles pre-execution phases (schedules ProcessPreWorkflow via Dapr) |
 | **Post Workflow Manager** | Handles post-execution phases (schedules ProcessPostWorkflow via Dapr) |
 | **Parser Workflow Manager** | Handles data parsing (schedules ParsingWorkflow via Dapr) |
@@ -325,7 +357,6 @@ Entities are organized by catalog type under `registry/entities/`:
 | **App Catalog** | `appcatalog/` | `ApplicationEntity`, `ApplicationDeploymentEntity`, `ComputeResourceEntity`, `StorageResourceEntity` |
 | **Exp Catalog** | `expcatalog/` | `ExperimentEntity`, `ProcessEntity`, `JobEntity`, `TaskEntity`, `ProjectEntity`, `NotificationEntity` |
 | **Airavata Workflow** | `airavataworkflowcatalog/` | `AiravataWorkflowEntity`, `WorkflowApplicationEntity`, `WorkflowConnectionEntity` |
-| **Workflow Catalog** | `workflowcatalog/` | Composite key classes (`EdgePK`, `NodePK`, `PortPK`, etc.) |
 | **Replica Catalog** | `replicacatalog/` | `DataProductEntity`, `DataReplicaLocationEntity` |
 | **Root Level** | `entities/` | `GatewayEntity`, `UserEntity`, `StatusEntity`, `ErrorEntity`, `InputDataEntity`, `OutputDataEntity` |
 
@@ -342,7 +373,7 @@ Entities are organized by catalog type under `registry/entities/`:
 
 ### Unified Database Schema
 
-The database uses a consolidated schema with unified entities for cross-cutting concerns:
+A full entity-relationship description is in [docs/ERD.md](docs/ERD.md). The database uses a consolidated schema with unified entities for cross-cutting concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -540,8 +571,12 @@ All 37 services are in `registry/services/`, organized by domain:
 - `WorkflowService` - Workflow management
 
 **Data Services:**
-- `DataProductService` - Data products
+- `DataProductService` - Data products (unified model for datasets and replica catalog)
 - `DataReplicaLocationService` - Replica locations
+
+**Data products and datasets:** Datasets are managed as **data products**, not as catalog resources. Each data product has catalog metadata (name, description, authors, tags, privacy, scope), a **primary storage path** (`primaryStorageResourceId` + `primaryFilePath`), and optional replica locations. Applications link to data products via `airavata-dp://{gatewayId}/{productUri}`; the orchestrator resolves this to the primary storage path at runtime.
+
+**Resource scope model:** The catalog uses a two-level scope with inferred delegation. **USER scope:** stored with `RESOURCE_SCOPE='USER'`, `OWNER_ID=userId`; any authenticated user can create; only owner can access (unless shared via groups). **GATEWAY scope:** stored with `RESOURCE_SCOPE='GATEWAY'`, `OWNER_ID=NULL`; gateway admins create; all gateway users can access. **DELEGATED scope:** not stored; inferred at runtime when resource has `GROUP_RESOURCE_PROFILE_ID` and user is a member of that group but does not directly own the resource. For catalog resources only **REPOSITORY** is supported for create/update; **DATASET** is deprecated (use Data Product API). The baseline schema includes `RESOURCE_SCOPE` and `GROUP_RESOURCE_PROFILE_ID` on application interfaces and data products.
 
 ### Mapper Pattern
 
@@ -588,11 +623,11 @@ The Agent Tunnel Server is **not a service started by Airavata**. It is a config
 
 ### Standard Paths
 
-| Path | Environment Variable | Description |
-|------|---------------------|-------------|
-| `/opt/apache-airavata` | `AIRAVATA_HOME` | Installation directory |
-| `/opt/apache-airavata/conf` | `AIRAVATA_CONFIG_DIR` | Configuration directory (defaults to `AIRAVATA_HOME/conf` if not explicitly set) |
-| `/opt/apache-airavata/logs` | - | Logs directory |
+| Path | How to set | Description |
+|------|------------|-------------|
+| `/opt/apache-airavata` | `--home` or `AIRAVATA_HOME` | Installation directory (home) |
+| `/opt/apache-airavata/conf` | `--config-dir` or `AIRAVATA_CONFIG_DIR` | Config directory (defaults to `{home}/conf` if not set) |
+| `/opt/apache-airavata/logs` | (under home or configured) | Logs directory |
 
 ### Configuration Files
 
@@ -608,33 +643,48 @@ The Agent Tunnel Server is **not a service started by Airavata**. It is a config
 
 ## Deployment Options
 
-### Option 1: Using Distribution Bundle
+### Option 1: Tarball or Fat JAR
+
+Distributions are a **tarball** (directory layout with `bin/`, `lib/`, `conf/`) and a **fat JAR** (single executable JAR with all dependencies). You can pass Airavata home and config directory via arguments or environment variables.
+
+**From tarball:**
 
 ```bash
 cd distribution
 tar -xzf airavata-0.21-SNAPSHOT.tar.gz
 cd airavata-0.21-SNAPSHOT
 
-# Copy configuration files from conf directory
+# Copy configuration files into conf/
 cp ../../conf/airavata.properties conf/
 cp ../../conf/airavata.sym.p12 conf/keystores/
 cp ../../conf/*.yml conf/
 cp ../../conf/logback.xml conf/
 
-# Start all services
+# Start (default: AIRAVATA_HOME = parent of bin/, config = AIRAVATA_HOME/conf)
 ./bin/airavata.sh -d start      # daemon mode
 ./bin/airavata.sh               # foreground mode
 
-# Stop/Restart
-./bin/airavata.sh -d stop
-./bin/airavata.sh -d restart
+# Or pass home and config dir as arguments
+./bin/airavata.sh --home /opt/apache-airavata --config-dir /etc/airavata/conf -d start
+./bin/airavata.sh --home /opt/apache-airavata --config-dir /etc/airavata/conf
 ```
 
-**Standard Paths:**
-- Installation directory: `/opt/apache-airavata` (set as `AIRAVATA_HOME` environment variable)
-- Configuration directory: `/opt/apache-airavata/conf` (defaults to `AIRAVATA_HOME/conf` if `AIRAVATA_CONFIG_DIR` is not explicitly set)
-- Logs directory: `/opt/apache-airavata/logs`
-- Configuration file: `/opt/apache-airavata/conf/airavata.properties` (or `conf/application.properties` in distribution bundle)
+**From fat JAR only:** put the JAR in a directory and point to install and config. Either use `bin/airavata.sh` (which sets `-Dairavata.home` and `-Dairavata.config.dir` from `--home`/`--config-dir` or env), or invoke Java directly:
+
+```bash
+# Recommended: use the script so home/config are set for you
+./bin/airavata.sh --home /path/to/install --config-dir /path/to/conf -d start
+
+# Or run Java directly (set airavata.home and airavata.config.dir)
+java -Dairavata.home=/path/to/install -Dairavata.config.dir=/path/to/conf -jar airavata-0.21-SNAPSHOT.jar serve
+```
+
+**Stop/Restart:** same script with `-d stop` / `-d restart` (use the same `--home`/`--config-dir` or env if you used them to start).
+
+**Paths:**
+- **Home:** installation root (e.g. `/opt/apache-airavata`). Set via `--home` or `AIRAVATA_HOME`.
+- **Config dir:** directory containing `application.properties`, `logback.xml`, etc. Set via `--config-dir` or `AIRAVATA_CONFIG_DIR`; defaults to `{AIRAVATA_HOME}/conf` if not set.
+- Logs directory: under home or as configured (e.g. `logs/`).
 
 ### Option 2: Docker (Experimental)
 
@@ -649,19 +699,7 @@ docker-compose -f modules/distribution/src/main/docker/docker-compose.yml up -d
 docker-compose -f modules/distribution/src/main/docker/docker-compose.yml down
 ```
 
-### Option 3: Native Binary (GraalVM)
-
-```bash
-cd modules/distribution
-mvn clean package -Pnative -DskipTests
-
-# Binary generated in distribution/ folder
-cd ../../distribution
-./airavata-0.21-SNAPSHOT-{arch} init --clean
-./airavata-0.21-SNAPSHOT-{arch} serve --config-dir /path/to/config
-```
-
-### Option 4: Ansible Deployment (Production)
+### Option 3: Ansible Deployment (Production)
 
 For production deployments, use the consolidated Ansible playbook:
 
@@ -690,34 +728,37 @@ See [dev-tools/ansible/README.md](dev-tools/ansible/README.md) for detailed Ansi
 
 ### IDE Setup
 
-**IntelliJ IDEA:**
-1. Import as Maven project
-2. Set Project SDK to Java 25+
-3. Enable annotation processing
-4. Run configuration:
-   - Main class: `org.apache.airavata.AiravataCommandLine`
-   - Program arguments: `serve --foreground`
-   - Working directory: `$MODULE_DIR$`
-   - Environment: `AIRAVATA_HOME=$MODULE_DIR$/target/classes`
+Import as Maven project. Set Project SDK to Java 25+. Enable annotation processing.
 
-**VS Code:**
-1. Install Java Extension Pack
-2. Create `.vscode/launch.json`:
+**VS Code:** [.vscode/launch.json](.vscode/launch.json) and [.vscode/tasks.json](.vscode/tasks.json) provide run configurations and tasks. Install Java Extension Pack, then use Run and Debug (F5) or Tasks (Terminal > Run Task).
 
-```json
-{
-  "version": "0.2.0",
-  "configurations": [{
-    "type": "java",
-    "name": "Airavata Server",
-    "request": "launch",
-    "mainClass": "org.apache.airavata.AiravataCommandLine",
-    "args": "serve --foreground",
-    "cwd": "${workspaceFolder}/modules/distribution",
-    "env": { "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes" }
-  }]
-}
-```
+| Launch config | Purpose |
+|---------------|---------|
+| Init (clean) | Initialize databases (wipe + migrate) |
+| Init (reuse) | Run DB migrations only |
+| Serve Airavata | Start server |
+| Serve Airavata (Debug) | Start server with jdwp on port 5005 |
+
+| Task | Purpose |
+|------|---------|
+| Initialize Services | Run `./scripts/init.sh` |
+| Initialize Services (clean) | Run `./scripts/init.sh --clean` |
+| Generate Distribution | `mvn package -pl modules/distribution` |
+| Run Tests (all) | `mvn test` |
+| Run Tests (airavata-api) | `mvn test -pl modules/airavata-api` |
+
+**IntelliJ:** [.idea/runConfigurations/](.idea/runConfigurations/) provides shared run configs. Use Run > Edit Configurations to select.
+
+| Run config | Purpose |
+|------------|---------|
+| Init (clean) | Initialize databases (wipe + migrate) |
+| Init (reuse) | Run DB migrations only |
+| Serve Airavata | Start server |
+| Serve Airavata (Debug) | Start server with jdwp on port 5005 |
+| Generate Distribution | `mvn package -pl modules/distribution` |
+| Run Tests | `mvn test` |
+
+**Note:** Run Init or Initialize Services before Serve. Ensure Docker (db, redis, keycloak) is up—use `./scripts/init.sh` for full init.
 
 ### Running Tests
 
@@ -727,9 +768,19 @@ mvn test -pl modules/airavata-api           # Specific module
 mvn test -Dtest=SomeTestClass               # Specific test
 ```
 
+**Test categories:**
+- **Unit and repository tests** run with Testcontainers (MariaDB, Redis) and do not require Dapr or external messaging. Many pass with `mvn test`; some repository tests may have environment-specific failures.
+- **Workflow/state-machine integration tests** (e.g. experiment lifecycle, process state transitions) expect Dapr workflows and activities to run; they are intended for environments where the full stack (including Dapr) is available. In CI without Dapr, these tests may remain in CREATED/SUBMITTED state and fail assertions; this is expected when the workflow runtime is disabled.
+- **Credential store integration tests** require a configured credential store backend (e.g. Vault); they may be skipped or fail if the backend is not available.
+- For a fast build without running tests: `mvn clean install -DskipTests`.
+
 ### Thrift Stubs
 
 Airavata's Thrift IDLs live in `thrift-interface-descriptions/`. See `thrift-interface-descriptions/README.md` for stub generation.
+
+### Schema migrations (contributors)
+
+The database schema is a single Flyway baseline: `src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql`. JPA entities are discovered via package scanning (no `persistence.xml`). For schema changes: (1) Add or update the Entity class. (2) Add a new versioned Flyway migration (e.g. `V2__Description.sql`) in that directory so the database schema matches the entity, or for major baseline changes coordinate updating V1. Use `IF NOT EXISTS`/`IF EXISTS` where appropriate. **Known issues:** Removals (drop column/table) must be done manually. The distribution tarball uses only these Flyway scripts for DB setup.
 
 ---
 

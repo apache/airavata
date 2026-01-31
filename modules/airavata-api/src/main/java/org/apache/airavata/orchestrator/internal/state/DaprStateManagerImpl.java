@@ -21,9 +21,9 @@ package org.apache.airavata.orchestrator.internal.state;
 
 import io.dapr.client.DaprClient;
 import java.util.Optional;
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.orchestrator.internal.config.DaprConfigConstants;
-import org.apache.airavata.orchestrator.state.StateManager;
+import org.apache.airavata.orchestrator.state.StateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +32,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
- * Dapr-based implementation of StateManager.
+ * Dapr-based implementation of StateModel.StateManager.
  */
 @Component
 @ConditionalOnProperty(prefix = "airavata.dapr", name = "enabled", havingValue = "true", matchIfMissing = false)
-public class DaprStateManagerImpl implements StateManager {
+public class DaprStateManagerImpl implements StateModel.StateManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DaprStateManagerImpl.class);
 

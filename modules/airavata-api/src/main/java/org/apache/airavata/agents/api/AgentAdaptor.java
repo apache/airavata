@@ -26,7 +26,7 @@ import org.apache.airavata.common.model.StorageDirectoryInfo;
 import org.apache.airavata.common.model.StorageVolumeInfo;
 
 /**
- * TODO: Class level comments please
+ * Adaptor for job submission and file operations on a compute resource.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

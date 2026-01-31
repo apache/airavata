@@ -24,8 +24,8 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.airavata.sharing.entities.EntityTypeEntity;
 import org.apache.airavata.sharing.entities.EntityTypePK;
+import org.apache.airavata.sharing.entities.EntityTypeRecord;
 import org.apache.airavata.sharing.mappers.EntityTypeMapper;
 import org.apache.airavata.sharing.model.EntityType;
 import org.apache.airavata.sharing.model.SharingRegistryException;
@@ -48,9 +48,9 @@ public class EntityTypeService {
     }
 
     public EntityType get(EntityTypePK pk) throws SharingRegistryException {
-        var entity = entityTypeRepository.findById(pk).orElse(null);
-        if (entity == null) return null;
-        return entityTypeMapper.toModel(entity);
+        var record = entityTypeRepository.findById(pk).orElse(null);
+        if (record == null) return null;
+        return entityTypeMapper.toModel(record);
     }
 
     public EntityType create(EntityType entityType) throws SharingRegistryException {
@@ -58,8 +58,8 @@ public class EntityTypeService {
     }
 
     public EntityType update(EntityType entityType) throws SharingRegistryException {
-        var entity = entityTypeMapper.toEntity(entityType);
-        var saved = entityTypeRepository.save(entity);
+        var record = entityTypeMapper.toEntity(entityType);
+        var saved = entityTypeRepository.save(record);
         return entityTypeMapper.toModel(saved);
     }
 
@@ -76,8 +76,8 @@ public class EntityTypeService {
             throws SharingRegistryException {
         // Use Criteria API for dynamic filtering
         var cb = entityManager.getCriteriaBuilder();
-        var query = cb.createQuery(EntityTypeEntity.class);
-        var root = query.from(EntityTypeEntity.class);
+        var query = cb.createQuery(EntityTypeRecord.class);
+        var root = query.from(EntityTypeRecord.class);
 
         var predicates = new ArrayList<Predicate>();
         if (filters != null) {
@@ -97,7 +97,7 @@ public class EntityTypeService {
             typedQuery.setMaxResults(limit);
         }
 
-        var entities = typedQuery.getResultList();
-        return entityTypeMapper.toModelList(entities);
+        var records = typedQuery.getResultList();
+        return entityTypeMapper.toModelList(records);
     }
 }

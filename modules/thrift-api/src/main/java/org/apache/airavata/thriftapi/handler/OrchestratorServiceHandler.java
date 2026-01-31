@@ -28,9 +28,11 @@ import org.apache.airavata.thriftapi.mapper.ProcessModelMapper;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "airavata.services.thrift.enabled", havingValue = "true")
 public class OrchestratorServiceHandler
         implements org.apache.airavata.thriftapi.orchestrator.model.OrchestratorService.Iface {
     private static Logger log = LoggerFactory.getLogger(OrchestratorServiceHandler.class);
@@ -54,9 +56,9 @@ public class OrchestratorServiceHandler
         if (e instanceof TException te) return te;
         TException thriftException = null;
 
-        if (e instanceof org.apache.airavata.common.exception.LaunchValidationException) {
+        if (e instanceof org.apache.airavata.common.exception.ValidationExceptions.LaunchValidationException) {
             var ex = new org.apache.airavata.thriftapi.exception.LaunchValidationException();
-            ex.setErrorMessage(((org.apache.airavata.common.exception.LaunchValidationException) e).getErrorMessage());
+            ex.setErrorMessage(((org.apache.airavata.common.exception.ValidationExceptions.LaunchValidationException) e).getErrorMessage());
             ex.initCause(e);
             thriftException = ex;
         } else if (e instanceof org.apache.airavata.orchestrator.exception.OrchestratorException) {

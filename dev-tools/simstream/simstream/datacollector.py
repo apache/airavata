@@ -30,7 +30,7 @@ from threading import Thread, Lock, Event
 
 import copy
 
-# TODO: Refactor into subclass of Thread
+# Can be refactored into explicit Thread subclass if desired
 
 class DataCollector(Thread):
     """Collects data by running user-specified routines.

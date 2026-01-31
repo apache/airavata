@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * This class implements selecting one compute resource out of enabled multiple compute resource polices.
- * //TODO: implemented for load testing, for proper usecases airavata should enable multiple compute resources in Experiment creation
+ * Used for load testing; for normal use enable multiple compute resources in experiment creation.
  */
 @Component
 @Profile("!test")

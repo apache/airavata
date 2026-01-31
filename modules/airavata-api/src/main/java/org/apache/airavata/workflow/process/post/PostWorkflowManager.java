@@ -32,11 +32,11 @@ import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.orchestrator.JobStatusHandler;
 import org.apache.airavata.orchestrator.ProcessStatusUpdater;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.orchestrator.state.JobStateValidator;
-import org.apache.airavata.orchestrator.state.StateKeys;
-import org.apache.airavata.orchestrator.state.StateManager;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.telemetry.CounterMetric;
 import org.apache.airavata.workflow.common.WorkflowManager;
@@ -77,7 +77,7 @@ public class PostWorkflowManager extends WorkflowManager implements JobStatusHan
     private DaprWorkflowClient workflowClient;
 
     @Autowired(required = false)
-    private StateManager stateManager;
+    private StateModel.StateManager stateManager;
 
     public PostWorkflowManager(
             AiravataServerProperties properties,
@@ -196,8 +196,8 @@ public class PostWorkflowManager extends WorkflowManager implements JobStatusHan
                 var currentJobStatus = jobModel.getJobStatuses().get(0).getJobState();
                 logger.info("Last known state of job {} is {}", jobId, jobName);
 
-                if (!StateTransitionService.validateAndLog(
-                        JobStateValidator.INSTANCE, currentJobStatus, jobState, jobId, "job")) {
+                if (!StateModel.StateTransitionService.validateAndLog(
+                        StateValidators.JobStateValidator.INSTANCE, currentJobStatus, jobState, jobId, "job")) {
                     return true;
                 }
 
@@ -215,7 +215,7 @@ public class PostWorkflowManager extends WorkflowManager implements JobStatusHan
                         jobState);
 
                 // Acquire distributed lock for process to prevent concurrent status updates
-                String lockKey = StateKeys.processLock(processId);
+                String lockKey = StateModel.StateKeys.processLock(processId);
                 boolean lockAcquired = acquireProcessLock(lockKey, processId);
                 try {
                     saveAndPublishJobStatus(jobId, task, processId, experimentId, gateway, jobState);
@@ -359,7 +359,7 @@ public class PostWorkflowManager extends WorkflowManager implements JobStatusHan
     /**
      * Acquire a distributed lock for a process to prevent concurrent status updates.
      *
-     * @param lockKey The lock key (generated using StateKeys.processLock)
+     * @param lockKey The lock key (generated using StateModel.StateKeys.processLock)
      * @param processId The process ID (for logging)
      * @return true if lock was acquired, false otherwise
      */
@@ -386,7 +386,7 @@ public class PostWorkflowManager extends WorkflowManager implements JobStatusHan
             stateManager.saveState(lockKey, lockValue);
             logger.debug("Acquired process lock for process {}", processId);
             return true;
-        } catch (org.apache.airavata.common.exception.AiravataException e) {
+        } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataException e) {
             logger.warn("Failed to acquire process lock for process {}: {}", processId, e.getMessage());
             // Graceful degradation: proceed without lock
             return false;
@@ -407,7 +407,7 @@ public class PostWorkflowManager extends WorkflowManager implements JobStatusHan
         try {
             stateManager.deleteState(lockKey);
             logger.debug("Released process lock for process {}", processId);
-        } catch (org.apache.airavata.common.exception.AiravataException e) {
+        } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataException e) {
             logger.warn("Failed to release process lock for process {}: {}", processId, e.getMessage());
             // Non-critical error - lock will expire or be cleaned up
         }

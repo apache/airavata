@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.credential.Credential;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
@@ -74,17 +74,22 @@ public class CredentialStoreService {
     public String addSSHCredential(SSHCredential sshCredential) throws CredentialStoreException {
         SSHCredential credential = new SSHCredential();
         credential.setGatewayId(sshCredential.getGatewayId());
-        credential.setUserId(sshCredential.getUsername());
-        credential.setUsername(sshCredential.getUsername());
-        // only username and gateway id will be sent by client.
+        String ownerId = sshCredential.getUserId();
+        if (ownerId != null && !ownerId.isEmpty()) {
+            credential.setUserId(ownerId);
+        }
+        // Login username is per resource (grant/deployment), not stored on credential.
         String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
         credential.setToken(token);
         credential.setPassphrase(String.valueOf(UUID.randomUUID()));
-        if (sshCredential.getPrivateKey() != null) {
-            credential.setPrivateKey(sshCredential.getPrivateKey());
+        if (sshCredential.getName() != null) {
+            credential.setName(sshCredential.getName());
         }
         if (sshCredential.getDescription() != null) {
             credential.setDescription(sshCredential.getDescription());
+        }
+        if (sshCredential.getPrivateKey() != null) {
+            credential.setPrivateKey(sshCredential.getPrivateKey());
         }
         if (sshCredential.getPublicKey() != null) {
             credential.setPublicKey(sshCredential.getPublicKey());
@@ -125,13 +130,23 @@ public class CredentialStoreService {
         PasswordCredential credential = new PasswordCredential();
         credential.setGatewayId(passwordCredential.getGatewayId());
         credential.setUserId(passwordCredential.getUserId());
-        credential.setLoginUserName(passwordCredential.getLoginUserName());
+        // Login username is per resource (grant/deployment), not stored on credential.
         credential.setPassword(passwordCredential.getPassword());
+        if (passwordCredential.getName() != null) {
+            credential.setName(passwordCredential.getName());
+        }
         credential.setDescription(passwordCredential.getDescription());
         String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
         credential.setToken(token);
         credentialEntityService.saveCredential(passwordCredential.getGatewayId(), credential);
         return token;
+    }
+
+    /**
+     * Check if a credential exists for the given gateway and token.
+     */
+    public boolean credentialExists(String tokenId, String gatewayId) {
+        return credentialEntityService.credentialExists(gatewayId, tokenId);
     }
 
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
@@ -148,6 +163,26 @@ public class CredentialStoreService {
         if (credential instanceof SSHCredential c) return c;
         // If not SSH, return null for test expectations
         return null;
+    }
+
+    /**
+     * Get all credential summaries owned by the given user (Airavata internal userId).
+     * Includes credentials with no access grants (e.g. newly created).
+     */
+    public java.util.List<CredentialSummary> getCredentialSummariesForUser(String gatewayId, String userId)
+            throws CredentialStoreException {
+        java.util.List<String> tokenIds =
+                credentialEntityService.getTokenIdsByGatewayIdAndUserId(gatewayId, userId);
+        java.util.List<CredentialSummary> out = new java.util.ArrayList<>();
+        for (String tokenId : tokenIds) {
+            try {
+                CredentialSummary s = getCredentialSummary(tokenId, gatewayId);
+                if (s != null) out.add(s);
+            } catch (Exception e) {
+                // Skip if not accessible
+            }
+        }
+        return out;
     }
 
     public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws CredentialStoreException {
@@ -271,7 +306,8 @@ public class CredentialStoreService {
     private CredentialSummary convertToCredentialSummary(SSHCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.SSH);
-        credentialSummary.setUsername(cred.getUserId());
+        credentialSummary.setName(cred.getName() != null ? cred.getName() : cred.getDescription());
+        credentialSummary.setUsername(null); // Login username is per resource (RESOURCE_ACCESS), not on credential
         credentialSummary.setGatewayId(cred.getGatewayId());
         credentialSummary.setPublicKey(new String(cred.getPublicKey()));
         credentialSummary.setToken(cred.getToken());
@@ -284,7 +320,8 @@ public class CredentialStoreService {
     private CredentialSummary convertToCredentialSummary(CertificateCredential cred, String gatewayId) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.CERT);
-        credentialSummary.setUsername(cred.getUserId());
+        credentialSummary.setName(cred.getName() != null ? cred.getName() : cred.getDescription());
+        credentialSummary.setUsername(null);
         credentialSummary.setGatewayId(gatewayId != null ? gatewayId : "");
 
         // For CertificateCredential, use the X509 certificate as the public key representation
@@ -309,7 +346,8 @@ public class CredentialStoreService {
     private CredentialSummary convertToCredentialSummary(PasswordCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.PASSWD);
-        credentialSummary.setUsername(cred.getUserId());
+        credentialSummary.setName(cred.getName() != null ? cred.getName() : cred.getDescription());
+        credentialSummary.setUsername(null); // Login username is per resource (RESOURCE_ACCESS), not on credential
         credentialSummary.setGatewayId(cred.getGatewayId());
         credentialSummary.setToken(cred.getToken());
         Date persistedTime = cred.getPersistedTime();

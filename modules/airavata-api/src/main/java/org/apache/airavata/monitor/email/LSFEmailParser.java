@@ -23,7 +23,7 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.JobState;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.service.registry.RegistryService;

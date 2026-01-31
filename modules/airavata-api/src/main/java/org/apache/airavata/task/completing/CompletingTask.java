@@ -21,8 +21,8 @@ package org.apache.airavata.task.completing;
 
 import org.apache.airavata.common.model.ExperimentCleanupStrategy;
 import org.apache.airavata.common.model.ProcessState;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;

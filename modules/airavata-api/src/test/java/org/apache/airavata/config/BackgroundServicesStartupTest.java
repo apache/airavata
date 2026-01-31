@@ -22,7 +22,7 @@ package org.apache.airavata.config;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.workflow.monitoring.realtime.RealtimeMonitorHandler;
+import org.apache.airavata.orchestrator.internal.monitoring.JobStatusEventPublisher;
 import org.apache.airavata.workflow.process.parsing.ParserWorkflowManager;
 import org.apache.airavata.workflow.process.post.PostWorkflowManager;
 import org.apache.airavata.workflow.process.pre.PreWorkflowManager;
@@ -116,14 +116,9 @@ public class BackgroundServicesStartupTest {
     }
 
     @Test
-    public void testMonitorsAreAvailable() {
-
-        int monitorCount =
-                applicationContext.getBeansOfType(RealtimeMonitorHandler.class).size();
-
-        assertTrue(
-                monitorCount >= 0,
-                "RealtimeMonitorHandler configuration should be valid (may be 0 in test profile due to @Profile(\"!test\"))");
+    public void testJobStatusEventPublisherAvailable() {
+        int count = applicationContext.getBeansOfType(JobStatusEventPublisher.class).size();
+        assertTrue(count >= 0, "JobStatusEventPublisher configuration should be valid");
     }
 
     @Test

@@ -92,7 +92,7 @@ All Airavata services run in a single Spring Boot application with the following
 - **Sharing Registry** - Handles permissions
 - **Credential Store** - Secure credential storage
 - **Workflow Managers** - Pre, Post, Parser (internal components)
-- **Background Services** - Email Monitor, Realtime Monitor, etc. (internal components)
+- **Background Services** - Email Monitor, Status Change Handler (status-change-topic), etc. (internal components)
 
 No separate service processes are needed - everything runs in one JVM.
 
@@ -125,21 +125,25 @@ systemctl restart apiorch
 
 ### Using Scripts
 
+The distribution tarball is named `airavata-0.21-SNAPSHOT`; the single launcher is `bin/airavata.sh`:
+
 ```bash
-# Start
-./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-start.sh -d
+# Start (daemon)
+./airavata-0.21-SNAPSHOT/bin/airavata.sh -d start
 
 # Stop
-./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-stop.sh -f
+./airavata-0.21-SNAPSHOT/bin/airavata.sh -d stop
 
-# Status
-./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-status.sh
+# Restart
+./airavata-0.21-SNAPSHOT/bin/airavata.sh -d restart
 ```
+
+Or run in foreground: `./airavata-0.21-SNAPSHOT/bin/airavata.sh` (no `-d start`).
 
 ## Logs
 
 All logs are written to:
-- `./apache-airavata-server-0.21-SNAPSHOT/logs/airavata.log`
+- `./airavata-0.21-SNAPSHOT/logs/airavata.log`
 
 The unified server writes all service logs to this single file.
 

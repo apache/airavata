@@ -28,10 +28,14 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.entities.replicacatalog.DataReplicaLocationEntity;
-import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.mappers.DataProductMapper;
 import org.apache.airavata.registry.repositories.replicacatalog.DataProductRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +75,39 @@ public class DataProductService {
         }
         if (entity.getLastModifiedTime() != null) {
             model.setLastModifiedTime(entity.getLastModifiedTime().getTime());
+        }
+        if (entity.getUpdatedAt() != null) {
+            model.setUpdatedAt(entity.getUpdatedAt().getTime());
+        }
+
+        model.setPrimaryStorageResourceId(entity.getPrimaryStorageResourceId());
+        model.setPrimaryFilePath(entity.getPrimaryFilePath());
+        model.setOwnerId(entity.getOwnerId());
+        model.setGroupResourceProfileId(entity.getGroupResourceProfileId());
+        model.setHeaderImage(entity.getHeaderImage());
+        model.setFormat(entity.getFormat());
+        if (entity.getStatus() != null) {
+            model.setStatus(entity.getStatus().name());
+        }
+        if (entity.getPrivacy() != null) {
+            model.setPrivacy(entity.getPrivacy().name());
+        }
+        if (entity.getResourceScope() != null) {
+            model.setScope(entity.getResourceScope().name());
+        }
+        if (entity.getAuthors() != null && !entity.getAuthors().isEmpty()) {
+            model.setAuthors(new ArrayList<>(entity.getAuthors()));
+        }
+        if (entity.getTags() != null && !entity.getTags().isEmpty()) {
+            var tagList = entity.getTags().stream()
+                    .map(s -> {
+                        var t = new DataProductModel.Tag();
+                        t.setId(s);
+                        t.setName(s);
+                        return t;
+                    })
+                    .collect(Collectors.toList());
+            model.setTags(tagList);
         }
 
         // Copy metadata to regular HashMap
@@ -211,6 +248,10 @@ public class DataProductService {
                     dataProductModel.getProductName() != null ? dataProductModel.getProductName() : "dataProduct");
             dataProductModel.setProductUri(productUri);
         }
+        var now = System.currentTimeMillis();
+        if (dataProductModel.getUpdatedAt() == 0) {
+            dataProductModel.setUpdatedAt(now);
+        }
         // Generate replicaIds for replicaLocations if not set
         if (dataProductModel.getReplicaLocations() != null) {
             for (var replica : dataProductModel.getReplicaLocations()) {
@@ -280,6 +321,53 @@ public class DataProductService {
         if (dataProductModel.getLastModifiedTime() > 0) {
             existing.setLastModifiedTime(new Timestamp(dataProductModel.getLastModifiedTime()));
         }
+        if (dataProductModel.getUpdatedAt() > 0) {
+            existing.setUpdatedAt(new Timestamp(dataProductModel.getUpdatedAt()));
+        }
+
+        if (dataProductModel.getPrimaryStorageResourceId() != null) {
+            existing.setPrimaryStorageResourceId(dataProductModel.getPrimaryStorageResourceId());
+        }
+        if (dataProductModel.getPrimaryFilePath() != null) {
+            existing.setPrimaryFilePath(dataProductModel.getPrimaryFilePath());
+        }
+        if (dataProductModel.getStatus() != null) {
+            try {
+                existing.setStatus(DataProductEntity.ResourceStatus.valueOf(dataProductModel.getStatus()));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        if (dataProductModel.getPrivacy() != null) {
+            try {
+                existing.setPrivacy(DataProductEntity.Privacy.valueOf(dataProductModel.getPrivacy()));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        if (dataProductModel.getScope() != null) {
+            try {
+                existing.setResourceScope(DataProductEntity.ResourceScope.valueOf(dataProductModel.getScope()));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        if (dataProductModel.getOwnerId() != null) {
+            existing.setOwnerId(dataProductModel.getOwnerId());
+        }
+        if (dataProductModel.getGroupResourceProfileId() != null) {
+            existing.setGroupResourceProfileId(dataProductModel.getGroupResourceProfileId());
+        }
+        if (dataProductModel.getHeaderImage() != null) {
+            existing.setHeaderImage(dataProductModel.getHeaderImage());
+        }
+        if (dataProductModel.getFormat() != null) {
+            existing.setFormat(dataProductModel.getFormat());
+        }
+        if (dataProductModel.getAuthors() != null) {
+            existing.setAuthors(new ArrayList<>(dataProductModel.getAuthors()));
+        }
+        if (dataProductModel.getTags() != null) {
+            var tagStrings = dataProductModel.getTags().stream()
+                    .map(t -> t.getId() != null ? t.getId() : t.getName())
+                    .filter(s -> s != null && !s.isEmpty())
+                    .collect(Collectors.toList());
+            existing.setTags(tagStrings);
+        }
 
         // Handle replica locations update - merge existing with new
         if (dataProductModel.getReplicaLocations() != null
@@ -322,5 +410,84 @@ public class DataProductService {
 
     public void removeDataProduct(String productUri) throws ReplicaCatalogException {
         dataProductRepository.deleteById(productUri);
+    }
+
+    /**
+     * Get public data products with optional name search.
+     */
+    @Transactional(readOnly = true)
+    public List<DataProductModel> getPublicDataProducts(String nameSearch, int pageNumber, int pageSize)
+            throws ReplicaCatalogException {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        var entities = dataProductRepository.findPublicWithFilters(
+                DataProductEntity.Privacy.PUBLIC.name(), nameSearch, pageable);
+        return entities.stream().map(this::entityToModelDetached).collect(Collectors.toList());
+    }
+
+    /**
+     * Get data products accessible to the user (owned, gateway, or via groups).
+     * Scope (USER/GATEWAY/DELEGATED) is inferred and set on each returned model.
+     */
+    @Transactional(readOnly = true)
+    public List<DataProductModel> getAccessibleDataProducts(
+            String userId, String gatewayId, List<String> groupIds, String nameSearch, int pageNumber, int pageSize)
+            throws ReplicaCatalogException {
+        var safeGroupIds = groupIds != null ? groupIds : new ArrayList<String>();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        var entities = dataProductRepository.findAccessibleResourcesWithFilters(
+                userId, gatewayId, safeGroupIds,
+                DataProductEntity.ResourceScope.USER.name(),
+                DataProductEntity.ResourceScope.GATEWAY.name(),
+                nameSearch,
+                pageable);
+        return entities.stream()
+                .map(e -> {
+                    var model = entityToModelDetached(e);
+                    model.setScope(inferScope(e, userId, gatewayId, groupIds));
+                    return model;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all distinct tag values from public data products.
+     */
+    @Transactional(readOnly = true)
+    public List<String> getPublicTags() throws ReplicaCatalogException {
+        return dataProductRepository.findAllPublicTags();
+    }
+
+    /**
+     * Infer effective scope (USER, GATEWAY, or DELEGATED) for a data product entity.
+     */
+    public String inferScope(DataProductEntity entity, String userId, String gatewayId, List<String> userGroupIds) {
+        if (entity.getResourceScope() == DataProductEntity.ResourceScope.USER && userId != null
+                && userId.equals(entity.getOwnerId())) {
+            return "USER";
+        }
+        if (entity.getResourceScope() == DataProductEntity.ResourceScope.GATEWAY && gatewayId != null
+                && gatewayId.equals(entity.getGatewayId())) {
+            return "GATEWAY";
+        }
+        if (entity.getGroupResourceProfileId() != null && userGroupIds != null
+                && userGroupIds.contains(entity.getGroupResourceProfileId())) {
+            return "DELEGATED";
+        }
+        return entity.getResourceScope() != null ? entity.getResourceScope().name() : "USER";
+    }
+
+    private DataProductModel entityToModelDetached(DataProductEntity e) {
+        if (e.getReplicaLocations() != null) {
+            for (var replicaEntity : e.getReplicaLocations()) {
+                var metadataCopy = new HashMap<String, String>();
+                if (replicaEntity.getReplicaMetadata() != null) {
+                    metadataCopy.putAll(replicaEntity.getReplicaMetadata());
+                }
+                entityManager.detach(replicaEntity);
+                replicaEntity.setReplicaMetadata(metadataCopy);
+            }
+        }
+        entityManager.detach(e);
+        return dataProductMapper.toModel(e);
     }
 }

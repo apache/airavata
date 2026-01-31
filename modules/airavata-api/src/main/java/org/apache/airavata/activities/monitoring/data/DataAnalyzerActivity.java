@@ -46,7 +46,7 @@ public class DataAnalyzerActivity implements WorkflowActivity {
         var properties = WorkflowRuntimeHolder.getBean(AiravataServerProperties.class);
 
         try {
-            // TODO: handle multiple gateways
+            // Single-gateway scope; multiple gateways can be supported later
             var gateway = properties.services().parser().enabledGateways();
 
             var state = JobState.SUBMITTED;

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.task.factory;
 
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -48,7 +48,7 @@ public class SlurmTaskFactory implements DaprTaskFactory {
     private final UserProfileService userProfileService;
     private final CredentialStoreService credentialStoreService;
     private final org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder;
-    private final org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory;
+    private final org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory messagingFactory;
 
     public SlurmTaskFactory(
             ApplicationContext applicationContext,
@@ -56,7 +56,7 @@ public class SlurmTaskFactory implements DaprTaskFactory {
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
             org.apache.airavata.task.submission.GroovyMapBuilder groovyMapBuilder,
-            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory messagingFactory) {
+            org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory messagingFactory) {
         this.applicationContext = applicationContext;
         this.registryService = registryService;
         this.userProfileService = userProfileService;

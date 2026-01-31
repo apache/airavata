@@ -22,7 +22,7 @@ package org.apache.airavata.registry.services;
 import org.apache.airavata.common.model.GatewayUsageReportingCommand;
 import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.registry.entities.expcatalog.GatewayUsageReportingPK;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.GatewayUsageReportingCommandMapper;
 import org.apache.airavata.registry.repositories.expcatalog.GatewayUsageReportingCommandRepository;
 import org.springframework.stereotype.Service;

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.registry.model;
 
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 
 public interface AppCatalog {
     /**

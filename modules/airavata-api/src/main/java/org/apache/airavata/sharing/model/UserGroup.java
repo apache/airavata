@@ -36,6 +36,7 @@ public class UserGroup {
     private Long createdTime;
     private Long updatedTime;
     private List<GroupAdmin> groupAdmins;
+    private Boolean isPersonalGroup;
 
     public UserGroup() {}
 
@@ -119,6 +120,14 @@ public class UserGroup {
         this.groupAdmins = groupAdmins;
     }
 
+    public Boolean getIsPersonalGroup() {
+        return isPersonalGroup;
+    }
+
+    public void setIsPersonalGroup(Boolean isPersonalGroup) {
+        this.isPersonalGroup = isPersonalGroup;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -133,7 +142,8 @@ public class UserGroup {
                 && Objects.equals(groupCardinality, that.groupCardinality)
                 && Objects.equals(createdTime, that.createdTime)
                 && Objects.equals(updatedTime, that.updatedTime)
-                && Objects.equals(groupAdmins, that.groupAdmins);
+                && Objects.equals(groupAdmins, that.groupAdmins)
+                && Objects.equals(isPersonalGroup, that.isPersonalGroup);
     }
 
     @Override
@@ -148,7 +158,8 @@ public class UserGroup {
                 groupCardinality,
                 createdTime,
                 updatedTime,
-                groupAdmins);
+                groupAdmins,
+                isPersonalGroup);
     }
 
     @Override
@@ -161,8 +172,9 @@ public class UserGroup {
                 + ownerId + ", " + "groupType="
                 + groupType + ", " + "groupCardinality="
                 + groupCardinality + ", " + "createdTime="
-                + createdTime + ", " + "updatedTime="
+                + createdTime                 + ", " + "updatedTime="
                 + updatedTime + ", " + "groupAdmins="
-                + groupAdmins + '}';
+                + groupAdmins + ", " + "isPersonalGroup="
+                + isPersonalGroup + '}';
     }
 }

@@ -28,8 +28,8 @@ import org.apache.airavata.common.model.ProfileOwnerType;
  *
  * <p>The key consists of:
  * <ul>
- *   <li>{@code profileId} - The profile identifier (gatewayId for GATEWAY, userId@gatewayId for USER)</li>
- *   <li>{@code profileType} - The type of profile owner (GATEWAY or USER)</li>
+ *   <li>{@code profileId} - The profile identifier (gatewayId for GATEWAY, userId@gatewayId for USER, groupResourceProfileId for GROUP)</li>
+ *   <li>{@code profileType} - The type of profile owner (GATEWAY, USER, or GROUP)</li>
  * </ul>
  */
 public class ResourceProfileEntityPK implements Serializable {
@@ -64,6 +64,16 @@ public class ResourceProfileEntityPK implements Serializable {
      */
     public static ResourceProfileEntityPK forUser(String userId, String gatewayId) {
         return new ResourceProfileEntityPK(userId + "@" + gatewayId, ProfileOwnerType.USER);
+    }
+
+    /**
+     * Create a primary key for a group profile.
+     *
+     * @param groupResourceProfileId the group resource profile ID
+     * @return the composite primary key
+     */
+    public static ResourceProfileEntityPK forGroup(String groupResourceProfileId) {
+        return new ResourceProfileEntityPK(groupResourceProfileId, ProfileOwnerType.GROUP);
     }
 
     public String getProfileId() {

@@ -96,6 +96,14 @@ enum JobManagerCommand {
     SHOW_NO_OF_PENDING_JOBS
 }
 
+/**
+ * Compute resource type: SLURM (batch queues required), AWS (cloud), PLAIN (SSH-only, no job scheduler).
+ */
+enum ComputeResourceType {
+    SLURM = 0,
+    AWS = 1,
+    PLAIN = 2
+}
 
 /**
  * Resource Job Manager Information
@@ -363,4 +371,5 @@ struct ComputeResourceDescription {
     16: optional i32 defaultNodeCount,
     17: optional i32 defaultCPUCount,
     18: optional i32 defaultWalltime,
+    19: optional ComputeResourceType resourceType = ComputeResourceType.SLURM,
 }

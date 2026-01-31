@@ -45,7 +45,7 @@ import org.apache.airavata.common.model.DataStagingTaskModel;
 import org.apache.airavata.common.model.StoragePreference;
 import org.apache.airavata.common.model.StorageResourceDescription;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingFactory;
+import org.apache.airavata.orchestrator.internal.messaging.DaprMessagingImpl.DaprMessagingFactory;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;

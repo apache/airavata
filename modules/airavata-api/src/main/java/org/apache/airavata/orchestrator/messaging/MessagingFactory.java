@@ -20,11 +20,8 @@
 package org.apache.airavata.orchestrator.messaging;
 
 import java.util.List;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.orchestrator.internal.messaging.MessageHandler;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Subscriber;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts;
 
 /**
  * Public interface for creating messaging publishers and subscribers.
@@ -36,11 +33,11 @@ import org.apache.airavata.orchestrator.internal.messaging.Type;
  *
  * <p>Related types from internal.messaging package:
  * <ul>
- *   <li>{@link Publisher} - for publishing messages</li>
- *   <li>{@link Subscriber} - for subscribing to messages</li>
- *   <li>{@link org.apache.airavata.orchestrator.internal.messaging.MessageContext} - message context</li>
- *   <li>{@link MessageHandler} - handler for processing messages</li>
- *   <li>{@link Type} - message type enumeration</li>
+ *   <li>{@link MessagingContracts.Publisher} - for publishing messages</li>
+ *   <li>{@link MessagingContracts.Subscriber} - for subscribing to messages</li>
+ *   <li>{@link MessagingContracts.MessageContext} - message context</li>
+ *   <li>{@link MessagingContracts.MessageHandler} - handler for processing messages</li>
+ *   <li>{@link MessagingContracts.Type} - message type enumeration</li>
  *   <li>{@link Topics} - topic name constants (public re-export)</li>
  * </ul>
  */
@@ -55,8 +52,8 @@ public interface MessagingFactory {
      * @return a subscriber instance
      * @throws AiravataException if subscriber creation fails
      */
-    Subscriber getSubscriber(MessageHandler messageHandler, List<String> routingKeys, Type type)
-            throws AiravataException;
+    MessagingContracts.Subscriber getSubscriber(MessagingContracts.MessageHandler messageHandler,
+            List<String> routingKeys, MessagingContracts.Type type) throws AiravataException;
 
     /**
      * Get a publisher for the specified message type.
@@ -65,7 +62,7 @@ public interface MessagingFactory {
      * @return a publisher instance
      * @throws AiravataException if publisher creation fails
      */
-    Publisher getPublisher(Type type) throws AiravataException;
+    MessagingContracts.Publisher getPublisher(MessagingContracts.Type type) throws AiravataException;
 
     /**
      * Check if the messaging system is available.

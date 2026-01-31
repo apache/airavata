@@ -21,21 +21,16 @@ package org.apache.airavata.registry.entities.airavataworkflowcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.registry.entities.StatusEntity;
-import org.apache.airavata.registry.entities.ErrorEntity;
 
 @Entity
 @Table(name = "WORKFLOW_APPLICATION")
@@ -85,23 +80,7 @@ public class WorkflowApplicationEntity implements Serializable {
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AiravataWorkflowEntity workflow;
 
-    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @jakarta.persistence.JoinColumns(value = {
-        @JoinColumn(
-                name = "PARENT_ID",
-                referencedColumnName = "ID",
-                insertable = false,
-                updatable = false)
-    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'APPLICATION'")
-    private List<StatusEntity> statuses;
-
-    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @jakarta.persistence.JoinColumns(value = {
-        @JoinColumn(name = "PARENT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'APPLICATION'")
-    private List<ErrorEntity> errors;
+    /** Status and error records live in unified STATUS/ERROR tables; load via StatusRepository/ErrorRepository by parentId=id, parentType=APPLICATION. */
 
     public WorkflowApplicationEntity() {}
 
@@ -157,14 +136,6 @@ public class WorkflowApplicationEntity implements Serializable {
         this.workflow = workflow;
     }
 
-    public void setStatuses(List<StatusEntity> statuses) {
-        this.statuses = statuses;
-    }
-
-    public void setErrors(List<ErrorEntity> errors) {
-        this.errors = errors;
-    }
-
     public String getId() {
         return id;
     }
@@ -215,13 +186,5 @@ public class WorkflowApplicationEntity implements Serializable {
 
     public AiravataWorkflowEntity getWorkflow() {
         return workflow;
-    }
-
-    public List<StatusEntity> getStatuses() {
-        return statuses;
-    }
-
-    public List<ErrorEntity> getErrors() {
-        return errors;
     }
 }

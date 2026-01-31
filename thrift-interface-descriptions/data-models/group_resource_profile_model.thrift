@@ -42,10 +42,6 @@ struct ComputeResourceReservation {
     5: required i64 endTime,
 }
 
-enum ComputeResourceType {
-  SLURM = 0,
-  AWS = 1,
-}
 
 struct SlurmComputeResourcePreference {
     1: optional string allocationProjectNumber,
@@ -78,7 +74,7 @@ struct GroupComputeResourcePreference {
     6: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
     7: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
     8: optional string resourceSpecificCredentialStoreToken,
-    9: required ComputeResourceType resourceType,
+    9: required compute_resource_model.ComputeResourceType resourceType,
     10: optional EnvironmentSpecificPreferences specificPreferences
 }
 

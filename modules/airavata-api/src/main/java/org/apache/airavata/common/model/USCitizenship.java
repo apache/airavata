@@ -20,8 +20,11 @@
 package org.apache.airavata.common.model;
 
 /**
- * Domain enum: USCitizenship
+ * Domain enum: USCitizenship. Only used by deprecated NSFDemographics; user/demographic data lives in Keycloak.
+ *
+ * @deprecated Not used for new development. Preserved for Thrift API compatibility only.
  */
+@Deprecated(since = "1.0", forRemoval = false)
 public enum USCitizenship {
     US_CITIZEN(0),
     US_PERMANENT_RESIDENT(1),

@@ -226,7 +226,7 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     }
 
     private ProjectNotFoundException convertToThriftProjectNotFoundException(
-            org.apache.airavata.common.exception.ProjectNotFoundException e) {
+            org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException e) {
         ProjectNotFoundException exception = new ProjectNotFoundException();
         exception.setMessage(e.getMessage());
         return exception;
@@ -380,7 +380,7 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
         try {
             org.apache.airavata.common.model.Project domainProject = registryService.getProject(projectId);
             return projectMapper.toThrift(domainProject);
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
+        } catch (org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException e) {
             throw convertToThriftProjectNotFoundException(e);
         } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Failed to get project");
@@ -401,7 +401,7 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
     public boolean deleteProject(String projectId) throws RegistryServiceException, ProjectNotFoundException {
         try {
             return registryService.deleteProject(projectId);
-        } catch (org.apache.airavata.common.exception.ProjectNotFoundException e) {
+        } catch (org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException e) {
             throw convertToThriftProjectNotFoundException(e);
         } catch (Throwable e) {
             throw convertToRegistryServiceException(e, "Failed to delete project");
@@ -540,13 +540,13 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      * * @return ExperimentModel
      * *   This method will return the previously stored experiment metadata.
      * *
-     * * @throws org.apache.airavata.common.exception.InvalidRequestException
+     * * @throws org.apache.airavata.common.exception.CoreExceptions.InvalidRequestException
      * *    For any incorrect forming of the request itself.
      * *
-     * * @throws org.apache.airavata.common.exception.ExperimentNotFoundException
+     * * @throws org.apache.airavata.common.exception.CatalogExceptions.ExperimentNotFoundException
      * *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * *
-     * * @throws org.apache.airavata.common.exception.AiravataClientException
+     * * @throws org.apache.airavata.common.exception.CoreExceptions.AiravataClientException
      * *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      * *
      * *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -559,7 +559,7 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      * *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      * *         is implemented, the authorization will be more substantial.
      * *
-     * * @throws org.apache.airavata.common.exception.AiravataSystemException
+     * * @throws org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException
      * *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      * *       rather an Airavata Administrator will be notified to take corrective action.
      * *
@@ -2997,10 +2997,10 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      * * @return
      * *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
      * *
-     * * @throws org.apache.airavata.common.exception.InvalidRequestException
+     * * @throws org.apache.airavata.common.exception.CoreExceptions.InvalidRequestException
      * *    For any incorrect forming of the request itself.
      * *
-     * * @throws org.apache.airavata.common.exception.AiravataClientException
+     * * @throws org.apache.airavata.common.exception.CoreExceptions.AiravataClientException
      * *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      * *
      * *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -3013,7 +3013,7 @@ public class RegistryServiceHandler implements org.apache.airavata.thriftapi.reg
      * *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      * *         is implemented, the authorization will be more substantial.
      * *
-     * * @throws org.apache.airavata.common.exception.AiravataSystemException
+     * * @throws org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException
      * *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      * *       rather an Airavata Administrator will be notified to take corrective action.
      * *

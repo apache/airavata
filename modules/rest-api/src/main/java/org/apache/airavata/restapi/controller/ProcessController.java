@@ -22,7 +22,7 @@ package org.apache.airavata.restapi.controller;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ProcessService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

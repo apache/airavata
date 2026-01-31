@@ -182,7 +182,7 @@ public record AiravataServerProperties(
                     int connectionRetryInterval,
                     int expiryMins) {}
 
-            /** Realtime: Dapr delivers monitoring-data-topic to /api/v1/dapr/pubsub/monitoring-data-topic. */
+            /** Realtime: Dapr delivers status-change-topic to /api/v1/dapr/pubsub/status-change-topic. */
             public record Realtime(boolean enabled) {}
 
             /** Compute: Dapr for status; job-status-callback-url for job script curl when set. */

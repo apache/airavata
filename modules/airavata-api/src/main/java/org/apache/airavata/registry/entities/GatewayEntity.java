@@ -48,7 +48,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
  * (UserGroup, Entity, EntityType, PermissionType, GroupMembership, Sharing, GroupAdmin)
  * reference this gateway via its gatewayId for domain-scoped operations.
  *
- * <p>Domain-specific fields included:
+ * <p>Domain-specific fields (source of truth for sharing domain metadata; used by DomainMapper and SharingRegistryService):
  * <ul>
  *   <li>{@code domainDescription} - Description for the sharing domain</li>
  *   <li>{@code domainCreatedTime} - When the sharing domain was created (Unix timestamp)</li>

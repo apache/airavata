@@ -54,8 +54,7 @@ public interface AiravataWorkflowMapper {
     @Mapping(target = "applications", ignore = true) // Handled manually in service layer
     @Mapping(target = "handlers", ignore = true) // Handled manually in service layer
     @Mapping(target = "connections", ignore = true) // Handled manually in service layer
-    @Mapping(target = "statuses", ignore = true) // Handled manually in service layer
-    @Mapping(target = "errors", ignore = true) // Handled manually in service layer
+    // statuses/errors live in unified STATUS/ERROR tables; not on entity
     AiravataWorkflowEntity toEntity(AiravataWorkflow model);
 
     List<AiravataWorkflow> toModelList(List<AiravataWorkflowEntity> entities);

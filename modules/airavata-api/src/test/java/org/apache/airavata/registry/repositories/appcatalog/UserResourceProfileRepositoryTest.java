@@ -26,9 +26,10 @@ import java.util.Arrays;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.UserResourceProfileService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;
 
@@ -43,6 +44,12 @@ public class UserResourceProfileRepositoryTest extends TestBase {
 
     public UserResourceProfileRepositoryTest(UserResourceProfileService userResourceProfileService) {
         this.userResourceProfileService = userResourceProfileService;
+    }
+
+    @BeforeEach
+    void ensureCredentialsExist() {
+        ensureCredentialExists(gatewayId, "token");
+        ensureCredentialExists(gatewayId, "token1");
     }
 
     @Test

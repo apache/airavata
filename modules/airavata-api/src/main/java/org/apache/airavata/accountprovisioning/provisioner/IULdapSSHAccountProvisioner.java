@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Function;
 import org.apache.airavata.accountprovisioning.ConfigParam;
-import org.apache.airavata.accountprovisioning.InvalidUsernameException;
+import org.apache.airavata.accountprovisioning.AccountProvisioningExceptions.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
 import org.apache.directory.api.ldap.model.entry.DefaultAttribute;

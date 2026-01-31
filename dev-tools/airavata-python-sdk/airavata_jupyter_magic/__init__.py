@@ -316,7 +316,7 @@ def terminate_tunnel(access_token: str, rt_name: str, tunnel_id: str) -> None:
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
 
-    # TODO: send actual API call to terminate tunnel
+    # Terminate tunnel via API when backend supports it
     assert access_token is not None
 
     # cleanup state after termination
@@ -1108,7 +1108,7 @@ def meta_scheduler(use_list: list[str]) -> tuple[str, str]:
     @returns: tuple of cluster and queue
 
     """
-    # TODO: replace with actual scheduler
+    # Random selection; replace with actual scheduler when available
     idx = random.randint(0, len(use_list) - 1)
 
     cluster, queue = use_list[idx].split(":", maxsplit=1)

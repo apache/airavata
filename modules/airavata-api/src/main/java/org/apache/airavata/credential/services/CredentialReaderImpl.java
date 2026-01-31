@@ -64,7 +64,7 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
     @Override
     public List<Credential> getAllCredentialsPerUser(String userId) throws CredentialStoreException {
-        // TODO: Implement when needed - would require a new repository method
+        // Implement when needed; would require a new repository method
         return null;
     }
 

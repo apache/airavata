@@ -27,6 +27,7 @@ import org.apache.airavata.common.model.AiravataCommonsConstants;
 import org.apache.airavata.common.model.ApplicationParallelismType;
 import org.apache.airavata.common.model.CloudJobSubmission;
 import org.apache.airavata.common.model.ComputeResourceDescription;
+import org.apache.airavata.common.model.ComputeResourceType;
 import org.apache.airavata.common.model.DMType;
 import org.apache.airavata.common.model.DataMovementInterface;
 import org.apache.airavata.common.model.FileSystems;
@@ -42,9 +43,12 @@ import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.UnicoreDataMovement;
 import org.apache.airavata.common.model.UnicoreJobSubmission;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.model.ComputeResourceProject;
 import org.apache.airavata.registry.entities.appcatalog.BatchQueueEntity;
 import org.apache.airavata.registry.entities.appcatalog.CloudJobSubmissionEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourceEntity;
+import org.apache.airavata.registry.entities.appcatalog.ComputeResourceProjectEntity;
+import org.apache.airavata.registry.entities.appcatalog.ProjectQueueAccessEntity;
 import org.apache.airavata.registry.entities.appcatalog.ComputeResourceFileSystemEntity;
 import org.apache.airavata.registry.entities.appcatalog.DataMovementInterfaceEntity;
 import org.apache.airavata.registry.entities.appcatalog.GridftpDataMovementEntity;
@@ -60,7 +64,7 @@ import org.apache.airavata.registry.entities.appcatalog.ScpDataMovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.SshJobSubmissionEntity;
 import org.apache.airavata.registry.entities.appcatalog.UnicoreDatamovementEntity;
 import org.apache.airavata.registry.entities.appcatalog.UnicoreSubmissionEntity;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.mappers.BatchQueueMapper;
 import org.apache.airavata.registry.mappers.CloudJobSubmissionMapper;
 import org.apache.airavata.registry.mappers.ComputeResourceDataMovementInterfaceBaseMapper;
@@ -193,17 +197,36 @@ public class ComputeResourceService {
         this.computeResourceDataMovementInterfaceBaseMapper = computeResourceDataMovementInterfaceBaseMapper;
     }
 
+    private void validateBatchQueues(ComputeResourceDescription resource) throws AppCatalogException {
+        ComputeResourceType type = resource.getResourceType() != null
+                ? resource.getResourceType()
+                : ComputeResourceType.SLURM;
+        if (type == ComputeResourceType.SLURM) {
+            if (resource.getBatchQueues() == null || resource.getBatchQueues().isEmpty()) {
+                throw new AppCatalogException("SLURM resources require at least one batch queue");
+            }
+        } else {
+            if (resource.getBatchQueues() != null && !resource.getBatchQueues().isEmpty()) {
+                throw new AppCatalogException(type + " resources do not support batch queues");
+            }
+        }
+    }
+
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
         if (description.getComputeResourceId() == null
                 || description.getComputeResourceId().equals("")
                 || description.getComputeResourceId().equals(AiravataCommonsConstants.DEFAULT_ID)) {
             description.setComputeResourceId(AppCatalogUtils.getID(description.getHostName()));
         }
+        if (description.getResourceType() == null) {
+            description.setResourceType(ComputeResourceType.SLURM);
+        }
         return saveComputeResourceDescriptorData(description);
     }
 
     private String saveComputeResourceDescriptorData(ComputeResourceDescription description)
             throws AppCatalogException {
+        validateBatchQueues(description);
         ComputeResourceEntity computeResourceEntity = saveComputeResource(description);
         saveFileSystems(description, computeResourceEntity);
         return computeResourceEntity.getComputeResourceId();
@@ -232,8 +255,17 @@ public class ComputeResourceService {
             existingEntity.setDefaultNodeCount(newEntity.getDefaultNodeCount());
             existingEntity.setDefaultCPUCount(newEntity.getDefaultCPUCount());
             existingEntity.setDefaultWalltime(newEntity.getDefaultWalltime());
+            existingEntity.setResourceType(newEntity.getResourceType());
             existingEntity.setIpAddresses(newEntity.getIpAddresses());
             existingEntity.setHostAliases(newEntity.getHostAliases());
+
+            // AWS/PLAIN: clear batch queues (not applicable)
+            if (newEntity.getResourceType() == ComputeResourceType.AWS
+                    || newEntity.getResourceType() == ComputeResourceType.PLAIN) {
+                if (existingEntity.getBatchQueues() != null) {
+                    existingEntity.getBatchQueues().clear();
+                }
+            }
 
             // For ElementCollections (ipAddresses, hostAliases), replace the list to avoid duplicates
             if (description.getIpAddresses() != null) {
@@ -255,6 +287,8 @@ public class ComputeResourceService {
                     existingEntity.getJobSubmissionInterfaces(),
                     newEntity.getJobSubmissionInterfaces(),
                     computeResourceId);
+            // Merge projects
+            mergeProjects(existingEntity, description, computeResourceId);
 
             computeResourceEntity = existingEntity;
         } else {
@@ -273,6 +307,11 @@ public class ComputeResourceService {
             if (computeResourceEntity.getJobSubmissionInterfaces() == null) {
                 computeResourceEntity.setJobSubmissionInterfaces(new java.util.ArrayList<>());
             }
+            if (computeResourceEntity.getProjects() == null) {
+                computeResourceEntity.setProjects(new java.util.ArrayList<>());
+            }
+            // Initialize projects from description
+            initializeProjects(computeResourceEntity, description, computeResourceId);
             // Manually link JobSubmissionInterfaces from description (mapper ignores them due to polymorphism)
             if (description.getJobSubmissionInterfaces() != null
                     && !description.getJobSubmissionInterfaces().isEmpty()) {
@@ -1116,6 +1155,7 @@ public class ComputeResourceService {
                 existing.setMaxRuntime(newEntity.getMaxRuntime());
                 existing.setQueueDescription(newEntity.getQueueDescription());
                 existing.setCpuPerNode(newEntity.getCpuPerNode());
+                existing.setGpuPerNode(newEntity.getGpuPerNode());
                 existing.setDefaultNodeCount(newEntity.getDefaultNodeCount());
                 existing.setDefaultCPUCount(newEntity.getDefaultCPUCount());
                 existing.setDefaultWalltime(newEntity.getDefaultWalltime());
@@ -1134,6 +1174,7 @@ public class ComputeResourceService {
                 freshEntity.setMaxRuntime(newEntity.getMaxRuntime());
                 freshEntity.setQueueDescription(newEntity.getQueueDescription());
                 freshEntity.setCpuPerNode(newEntity.getCpuPerNode());
+                freshEntity.setGpuPerNode(newEntity.getGpuPerNode());
                 freshEntity.setDefaultNodeCount(newEntity.getDefaultNodeCount());
                 freshEntity.setDefaultCPUCount(newEntity.getDefaultCPUCount());
                 freshEntity.setDefaultWalltime(newEntity.getDefaultWalltime());
@@ -1280,6 +1321,120 @@ public class ComputeResourceService {
         existingList.removeIf(entity -> {
             String interfaceId = entity.getJobSubmissionInterfaceId();
             return interfaceId != null && !newMap.containsKey(interfaceId);
+        });
+    }
+
+    /**
+     * Initialize projects from description for a new compute resource.
+     */
+    private void initializeProjects(
+            ComputeResourceEntity entity,
+            ComputeResourceDescription description,
+            String computeResourceId) {
+        if (description.getProjects() == null || description.getProjects().isEmpty()) {
+            return;
+        }
+        for (ComputeResourceProject project : description.getProjects()) {
+            ComputeResourceProjectEntity projectEntity = new ComputeResourceProjectEntity();
+            projectEntity.setComputeResourceId(computeResourceId);
+            projectEntity.setProjectName(project.getProjectName());
+            projectEntity.setDescription(project.getDescription());
+            projectEntity.setQueueAccess(new java.util.ArrayList<>());
+
+            // Add queue access entries
+            if (project.getAllowedQueues() != null) {
+                for (String queueName : project.getAllowedQueues()) {
+                    ProjectQueueAccessEntity accessEntity = new ProjectQueueAccessEntity();
+                    accessEntity.setComputeResourceId(computeResourceId);
+                    accessEntity.setProjectName(project.getProjectName());
+                    accessEntity.setQueueName(queueName);
+                    accessEntity.setHasAccess(true);
+                    projectEntity.getQueueAccess().add(accessEntity);
+                }
+            }
+            entity.getProjects().add(projectEntity);
+        }
+    }
+
+    /**
+     * Merge projects from description into existing compute resource entity.
+     */
+    private void mergeProjects(
+            ComputeResourceEntity existingEntity,
+            ComputeResourceDescription description,
+            String computeResourceId) {
+        if (existingEntity.getProjects() == null) {
+            existingEntity.setProjects(new java.util.ArrayList<>());
+        }
+        List<ComputeResourceProjectEntity> existingProjects = existingEntity.getProjects();
+
+        if (description.getProjects() == null || description.getProjects().isEmpty()) {
+            // Clear all projects if none in description
+            existingProjects.clear();
+            return;
+        }
+
+        // Create map of existing projects by name
+        Map<String, ComputeResourceProjectEntity> existingMap = new HashMap<>();
+        for (ComputeResourceProjectEntity existing : existingProjects) {
+            if (existing.getProjectName() != null) {
+                existingMap.put(existing.getProjectName(), existing);
+            }
+        }
+
+        // Track project names from the description
+        java.util.Set<String> newProjectNames = new java.util.HashSet<>();
+
+        for (ComputeResourceProject project : description.getProjects()) {
+            String projectName = project.getProjectName();
+            newProjectNames.add(projectName);
+            ComputeResourceProjectEntity existing = existingMap.get(projectName);
+
+            if (existing != null) {
+                // Update existing project
+                existing.setDescription(project.getDescription());
+                // Update queue access
+                if (existing.getQueueAccess() == null) {
+                    existing.setQueueAccess(new java.util.ArrayList<>());
+                }
+                // Clear and rebuild queue access
+                existing.getQueueAccess().clear();
+                if (project.getAllowedQueues() != null) {
+                    for (String queueName : project.getAllowedQueues()) {
+                        ProjectQueueAccessEntity accessEntity = new ProjectQueueAccessEntity();
+                        accessEntity.setComputeResourceId(computeResourceId);
+                        accessEntity.setProjectName(projectName);
+                        accessEntity.setQueueName(queueName);
+                        accessEntity.setHasAccess(true);
+                        existing.getQueueAccess().add(accessEntity);
+                    }
+                }
+            } else {
+                // Create new project
+                ComputeResourceProjectEntity projectEntity = new ComputeResourceProjectEntity();
+                projectEntity.setComputeResourceId(computeResourceId);
+                projectEntity.setProjectName(projectName);
+                projectEntity.setDescription(project.getDescription());
+                projectEntity.setQueueAccess(new java.util.ArrayList<>());
+
+                if (project.getAllowedQueues() != null) {
+                    for (String queueName : project.getAllowedQueues()) {
+                        ProjectQueueAccessEntity accessEntity = new ProjectQueueAccessEntity();
+                        accessEntity.setComputeResourceId(computeResourceId);
+                        accessEntity.setProjectName(projectName);
+                        accessEntity.setQueueName(queueName);
+                        accessEntity.setHasAccess(true);
+                        projectEntity.getQueueAccess().add(accessEntity);
+                    }
+                }
+                existingProjects.add(projectEntity);
+            }
+        }
+
+        // Remove projects not in description
+        existingProjects.removeIf(entity -> {
+            String projectName = entity.getProjectName();
+            return projectName != null && !newProjectNames.contains(projectName);
         });
     }
 }

@@ -42,15 +42,15 @@ public class UserContentStore {
     private static final Map<String, Map<String, String>> jobContent = new ConcurrentHashMap<>();
     private static final Map<String, Map<String, String>> taskContent = new ConcurrentHashMap<>();
 
-    // StateManager will be injected by subclasses that have access to Spring context
+    // StateModel.StateManager will be injected by subclasses that have access to Spring context
     // For now, we'll use a static holder pattern or fallback to in-memory
-    private static org.apache.airavata.orchestrator.state.StateManager stateManager;
+    private static org.apache.airavata.orchestrator.state.StateModel.StateManager stateManager;
 
     /**
-     * Set the StateManager for use by UserContentStore.
+     * Set the StateModel.StateManager for use by UserContentStore.
      * Called during application initialization.
      */
-    public static void setStateManager(org.apache.airavata.orchestrator.state.StateManager manager) {
+    public static void setStateManager(org.apache.airavata.orchestrator.state.StateModel.StateManager manager) {
         stateManager = manager;
     }
 
@@ -68,7 +68,7 @@ public class UserContentStore {
                 if (value.isPresent()) {
                     return value.get();
                 }
-            } catch (org.apache.airavata.common.exception.AiravataException e) {
+            } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataException e) {
                 org.slf4j.LoggerFactory.getLogger(UserContentStore.class)
                         .warn("Failed to get content from State Store, falling back to in-memory: {}", e.getMessage());
             }
@@ -92,7 +92,7 @@ public class UserContentStore {
                 String stateKey = buildStateKey(contextKey, scope, key);
                 stateManager.saveState(stateKey, value);
                 return;
-            } catch (org.apache.airavata.common.exception.AiravataException e) {
+            } catch (org.apache.airavata.common.exception.CoreExceptions.AiravataException e) {
                 org.slf4j.LoggerFactory.getLogger(UserContentStore.class)
                         .warn("Failed to save content to State Store, falling back to in-memory: {}", e.getMessage());
             }

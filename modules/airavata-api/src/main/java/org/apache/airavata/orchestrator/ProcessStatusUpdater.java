@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.orchestrator;
 
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.ProcessState;
 
 /**

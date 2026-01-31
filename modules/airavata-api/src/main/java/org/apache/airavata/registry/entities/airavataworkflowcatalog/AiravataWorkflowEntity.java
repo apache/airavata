@@ -21,19 +21,14 @@ package org.apache.airavata.registry.entities.airavataworkflowcatalog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.registry.entities.ErrorEntity;
-import org.apache.airavata.registry.entities.StatusEntity;
 
 @Entity
 @Table(name = "AIRAVATA_WORKFLOW")
@@ -77,24 +72,7 @@ public class AiravataWorkflowEntity implements Serializable {
             fetch = FetchType.EAGER)
     private List<WorkflowConnectionEntity> connections;
 
-    @OneToMany(targetEntity = StatusEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @jakarta.persistence.JoinColumns(value = {
-        @JoinColumn(
-                name = "PARENT_ID",
-                referencedColumnName = "ID",
-                insertable = false,
-                updatable = false)
-    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'WORKFLOW'")
-    private List<StatusEntity> statuses;
-
-    @OneToMany(targetEntity = ErrorEntity.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @jakarta.persistence.JoinColumns(value = {
-        @JoinColumn(name = "PARENT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    }, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @org.hibernate.annotations.SQLRestriction("PARENT_TYPE = 'WORKFLOW'")
-    private List<ErrorEntity> errors;
-
+    /** Status and error records live in unified STATUS/ERROR tables; load via StatusRepository/ErrorRepository by parentId=id, parentType=WORKFLOW. */
     public AiravataWorkflowEntity() {}
 
     public void setId(String id) {
@@ -129,14 +107,6 @@ public class AiravataWorkflowEntity implements Serializable {
         this.connections = connections;
     }
 
-    public void setStatuses(List<StatusEntity> statuses) {
-        this.statuses = statuses;
-    }
-
-    public void setErrors(List<ErrorEntity> errors) {
-        this.errors = errors;
-    }
-
     public String getId() {
         return id;
     }
@@ -167,13 +137,5 @@ public class AiravataWorkflowEntity implements Serializable {
 
     public List<WorkflowConnectionEntity> getConnections() {
         return connections;
-    }
-
-    public List<StatusEntity> getStatuses() {
-        return statuses;
-    }
-
-    public List<ErrorEntity> getErrors() {
-        return errors;
     }
 }

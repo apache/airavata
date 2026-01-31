@@ -31,8 +31,9 @@ log() {
 # ================================
 log "Stopping Airavata API Server (unified service)..."
 
-if [ -f "./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-stop.sh" ]; then
-    ./apache-airavata-server-0.21-SNAPSHOT/bin/airavata-server-stop.sh -f
+DIST_NAME="airavata-0.21-SNAPSHOT"
+if [ -f "./${DIST_NAME}/bin/airavata.sh" ]; then
+    ./${DIST_NAME}/bin/airavata.sh -d stop
     log "Airavata API Server stopped."
 else
     log "ERROR: Airavata distribution not found."

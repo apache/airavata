@@ -18,35 +18,49 @@
 # under the License.
 
 # ==========================================================================
-# Airavata CLI
+# Airavata CLI (tarball + fat JAR)
 # ==========================================================================
-# This program invokes Airavata CLI with the passed args
-# and ensures that AIRAVATA_HOME is correctly set.
+# Invokes Airavata with the passed args. You can pass --home and --config-dir
+# as arguments; otherwise AIRAVATA_HOME and AIRAVATA_CONFIG_DIR env vars
+# (or script-relative defaults) are used.
 # ==========================================================================
 
-
-# Get the script location
 PRG="$0"
 while [ -L "$PRG" ]; do
   PRG=$(readlink "$PRG")
 done
 PRGDIR=$(dirname "$PRG")
 
-# Set AIRAVATA_HOME (defaults to parent directory of this script)
+# Defaults: parent of bin/ and conf under home
 [ -z "$AIRAVATA_HOME" ] && AIRAVATA_HOME=$(cd "$PRGDIR/.." && pwd)
-
-# Set AIRAVATA_CONFIG_DIR (defaults to AIRAVATA_HOME/conf)
 [ -z "$AIRAVATA_CONFIG_DIR" ] && AIRAVATA_CONFIG_DIR="${AIRAVATA_HOME}/conf"
 
-# Find JAR file
-JAR_FILE=$(find "${AIRAVATA_HOME}/lib" -name "airavata-*.jar" | head -1)
+# Parse optional --home and --config-dir from args (so they work as arguments)
+ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --home)
+      AIRAVATA_HOME="$2"
+      AIRAVATA_CONFIG_DIR="${AIRAVATA_CONFIG_DIR:-$AIRAVATA_HOME/conf}"
+      shift 2
+      ;;
+    --config-dir)
+      AIRAVATA_CONFIG_DIR="$2"
+      shift 2
+      ;;
+    *)
+      ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+# Find fat JAR (single executable JAR with all dependencies)
+JAR_FILE=$(find "${AIRAVATA_HOME}/lib" -name "airavata-*.jar" -type f | head -1)
 if [[ -z "$JAR_FILE" ]]; then
-  echo "Error: Could not find Airavata JAR file in ${AIRAVATA_HOME}/lib"
+  echo "Error: Could not find Airavata JAR in ${AIRAVATA_HOME}/lib"
   exit 1
 fi
 
-# Define JAVA_OPTS
 JAVA_OPTS="-Dairavata.home=${AIRAVATA_HOME} -Dairavata.config.dir=${AIRAVATA_CONFIG_DIR}"
-
-# Start Airavata
-java $JAVA_OPTS -jar "$JAR_FILE" "$@"
+exec java $JAVA_OPTS -jar "$JAR_FILE" "${ARGS[@]}"

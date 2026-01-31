@@ -45,9 +45,14 @@ public class ServeCommand implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ServeCommand.class);
 
     @Option(
-            names = {"--foreground"},
-            description = "Run server in foreground (current process, for debugging)")
-    private boolean foreground = false;
+            names = {"-d", "--detach"},
+            description = "Run server in background (daemon)")
+    private boolean detach = false;
+
+    @Option(
+            names = {"--dev"},
+            description = "Enable hot-reload (Spring Boot DevTools restart on classpath changes)")
+    private boolean dev = false;
 
     @Override
     public void run() {
@@ -86,7 +91,7 @@ public class ServeCommand implements Runnable {
             return;
         }
 
-        if (foreground) {
+        if (!detach) {
             logger.info(
                     "Starting Airavata services in foreground with airavata.home: {}, config directory: {}",
                     airavataHome,
@@ -111,6 +116,10 @@ public class ServeCommand implements Runnable {
             // Disable the property mapper to rely only on ServerBuilderCustomizer
             System.setProperty("spring.boot.grpc.server.property-mapper.enabled", "false");
 
+            if (dev) {
+                System.setProperty("spring.devtools.restart.enabled", "true");
+            }
+
             var app = new SpringApplication(AiravataServer.class);
             var defaultProps = new HashMap<String, Object>();
             defaultProps.put("spring.main.allow-bean-definition-overriding", "true");
@@ -118,6 +127,9 @@ public class ServeCommand implements Runnable {
             defaultProps.put("spring.main.lazy-initialization", "true");
             defaultProps.put("airavata.cli.enabled", "false");
             defaultProps.put("airavata.server.enabled", "true");
+            if (dev) {
+                defaultProps.put("spring.devtools.restart.enabled", true);
+            }
 
             app.setDefaultProperties(defaultProps);
             app.setRegisterShutdownHook(true);

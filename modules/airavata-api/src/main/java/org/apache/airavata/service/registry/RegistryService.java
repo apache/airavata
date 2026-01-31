@@ -25,7 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.exception.ProjectNotFoundException;
+import org.apache.airavata.common.exception.CatalogExceptions.ProjectNotFoundException;
 import org.apache.airavata.common.model.ApplicationDeploymentDescription;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
@@ -90,12 +90,12 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.model.UserResourceProfile;
 import org.apache.airavata.common.model.UserStoragePreference;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.exception.AppCatalogException;
-import org.apache.airavata.registry.exception.RegistryException;
-import org.apache.airavata.registry.exception.ReplicaCatalogException;
-import org.apache.airavata.registry.exception.WorkflowCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.WorkflowCatalogException;
 import org.apache.airavata.registry.model.ExpCatChildDataType;
 import org.apache.airavata.registry.model.ResultOrderType;
 import org.apache.airavata.registry.services.ApplicationDeploymentService;
@@ -769,7 +769,7 @@ public class RegistryService {
 
     public List<ProcessModel> getProcessListInState(ProcessState processState) throws RegistryException {
         try {
-            // TODO: This method needs to be reimplemented using StatusService with state-based query
+            // Can be reimplemented using StatusService with state-based query
             // For now, return empty list since processStatusService was removed
             logger.warn("getProcessListInState: This method needs reimplementation with unified StatusService");
             return new ArrayList<ProcessModel>();

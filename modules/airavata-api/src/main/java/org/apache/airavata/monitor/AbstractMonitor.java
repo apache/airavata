@@ -21,7 +21,7 @@ package org.apache.airavata.monitor;
 
 import org.apache.airavata.config.AiravataServerProperties;
 import org.apache.airavata.orchestrator.JobStatusHandler;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

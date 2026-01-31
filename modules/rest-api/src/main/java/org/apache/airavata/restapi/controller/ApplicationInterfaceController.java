@@ -22,7 +22,7 @@ package org.apache.airavata.restapi.controller;
 import java.util.Map;
 import org.apache.airavata.common.model.ApplicationInterfaceDescription;
 import org.apache.airavata.common.model.ApplicationModule;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.services.ApplicationInterfaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

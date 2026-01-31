@@ -30,7 +30,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.common.model.ComputeResourceDescription;
 import org.apache.airavata.common.model.DataProductModel;
 import org.apache.airavata.common.model.DataProductType;
@@ -56,14 +56,15 @@ import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskStatusChangeEvent;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
-import org.apache.airavata.orchestrator.internal.messaging.MessageContext;
-import org.apache.airavata.orchestrator.internal.messaging.Publisher;
-import org.apache.airavata.orchestrator.internal.messaging.Type;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.MessageContext;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Publisher;
+import org.apache.airavata.orchestrator.internal.messaging.MessagingContracts.Type;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.orchestrator.state.TaskStateValidator;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.registry.services.ProjectResourceAccountService;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -278,8 +279,8 @@ public abstract class AiravataTask extends AbstractTask {
                 ProcessStatus currentStatus = getRegistryService().getProcessStatus(getProcessId());
                 ProcessState currentState = currentStatus != null ? currentStatus.getState() : null;
 
-                if (!StateTransitionService.validateAndLog(
-                        ProcessStateValidator.INSTANCE, currentState, state, getProcessId(), "process")) {
+                if (!StateModel.StateTransitionService.validateAndLog(
+                        StateValidators.ProcessStateValidator.INSTANCE, currentState, state, getProcessId(), "process")) {
                     logger.warn(
                             "Invalid process state transition rejected: processId={}, {} -> {}",
                             getProcessId(),
@@ -311,8 +312,8 @@ public abstract class AiravataTask extends AbstractTask {
                 ProcessStatus currentStatus = getRegistryService().getProcessStatus(getProcessId());
                 ProcessState currentState = currentStatus != null ? currentStatus.getState() : null;
 
-                if (!StateTransitionService.validateAndLog(
-                        ProcessStateValidator.INSTANCE, currentState, newState, getProcessId(), "process")) {
+                if (!StateModel.StateTransitionService.validateAndLog(
+                        StateValidators.ProcessStateValidator.INSTANCE, currentState, newState, getProcessId(), "process")) {
                     logger.warn(
                             "Invalid process state transition rejected: processId={}, {} -> {}",
                             getProcessId(),
@@ -603,6 +604,13 @@ public abstract class AiravataTask extends AbstractTask {
                             getProcessId(), getGatewayId(), getTaskId())
                     .setExperimentModel(getExperimentModel())
                     .setProcessModel(getProcessModel());
+            try {
+                ProjectResourceAccountService projectResourceAccountService =
+                        getApplicationContext().getBean(ProjectResourceAccountService.class);
+                taskContextBuilder.setProjectResourceAccountService(projectResourceAccountService);
+            } catch (Exception ignored) {
+                // Optional: not available in all runtime contexts
+            }
 
             this.taskContext = taskContextBuilder.build();
             logger.info("Task " + this.taskName + " initialized");
@@ -623,8 +631,8 @@ public abstract class AiravataTask extends AbstractTask {
         try {
             TaskState currentState = taskContext != null ? taskContext.getTaskState() : null;
 
-            if (!StateTransitionService.validateAndLog(
-                    TaskStateValidator.INSTANCE, currentState, ts, getTaskId(), "task")) {
+            if (!StateModel.StateTransitionService.validateAndLog(
+                    StateValidators.TaskStateValidator.INSTANCE, currentState, ts, getTaskId(), "task")) {
                 logger.warn(
                         "Invalid task state transition rejected: taskId={}, {} -> {}",
                         getTaskId(),

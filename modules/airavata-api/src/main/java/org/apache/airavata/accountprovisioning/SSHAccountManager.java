@@ -19,6 +19,9 @@
 */
 package org.apache.airavata.accountprovisioning;
 
+import org.apache.airavata.accountprovisioning.AccountProvisioningExceptions.InvalidSetupException;
+import org.apache.airavata.accountprovisioning.AccountProvisioningExceptions.InvalidUsernameException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -31,7 +34,7 @@ import org.apache.airavata.common.model.SSHJobSubmission;
 import org.apache.airavata.common.model.UserComputeResourcePreference;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.springframework.stereotype.Component;
@@ -169,7 +172,7 @@ public class SSHAccountManager {
             throw new InvalidSetupException("User [" + userId + "] doesn't have account and [" + computeResourceId
                     + "] doesn't " + "have a SSH Account Provisioner that supports creating accounts.");
         }
-        // TODO: create account for user if user doesn't have account
+        // Create account for user when not present if provisioning is enabled
 
         String username = null;
         // Install SSH key

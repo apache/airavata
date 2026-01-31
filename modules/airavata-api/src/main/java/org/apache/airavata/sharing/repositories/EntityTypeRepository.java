@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.sharing.repositories;
 
-import org.apache.airavata.sharing.entities.EntityTypeEntity;
 import org.apache.airavata.sharing.entities.EntityTypePK;
+import org.apache.airavata.sharing.entities.EntityTypeRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EntityTypeRepository extends JpaRepository<EntityTypeEntity, EntityTypePK> {}
+public interface EntityTypeRepository extends JpaRepository<EntityTypeRecord, EntityTypePK> {}

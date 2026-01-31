@@ -105,7 +105,7 @@ public class NotifierBootstrap extends TimerTask {
                         var message = String.format(MESSAGE, userId, certificateCredential.getNotAfter());
                         log.warn(message);
 
-                        // TODO: To send email notifications, integrate with UserService
+                        // For email notifications, integrate with UserService
                         // to fetch user email by userId, then use credentialStoreNotifier
                     }
                 }

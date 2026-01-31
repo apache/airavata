@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.model.JobModel;
 import org.apache.airavata.registry.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.JobService;
 import org.apache.airavata.registry.utils.DBConstants;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

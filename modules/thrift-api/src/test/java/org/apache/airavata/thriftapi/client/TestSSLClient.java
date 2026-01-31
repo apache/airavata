@@ -55,7 +55,6 @@ public class TestSSLClient {
                     SSHCredential stored = new SSHCredential();
                     stored.setToken(token);
                     stored.setGatewayId(incoming.getGatewayId());
-                    stored.setUsername(incoming.getUsername());
                     stored.setPrivateKey("private");
                     stored.setPublicKey("public");
                     sshStore.put(token, stored);
@@ -99,7 +98,6 @@ public class TestSSLClient {
     public void testSSHCredential(CredentialStoreService credentialService) {
         try {
             SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername("test");
             sshCredential.setGatewayId("testGateway");
             sshCredential.setPassphrase("mypassphrase");
             String token = credentialService.addSSHCredential(sshCredential);

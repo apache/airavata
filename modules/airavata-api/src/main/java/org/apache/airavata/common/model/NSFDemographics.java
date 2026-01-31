@@ -23,8 +23,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Domain model: NSFDemographics
+ * Domain model: NSFDemographics.
+ *
+ * @deprecated Not used. User/demographic data lives in the identity provider (Keycloak).
+ *             Preserved for Thrift API compatibility only. Do not use for new development.
+ *             Airavata focuses on facilitating research; user info is in Keycloak.
  */
+@Deprecated(since = "1.0", forRemoval = false)
 public class NSFDemographics {
     private String airavataInternalUserId;
     private String gender;

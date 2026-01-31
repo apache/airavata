@@ -35,9 +35,9 @@ import org.apache.airavata.common.model.ProcessStatus;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskTypes;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
@@ -153,7 +153,7 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
 
         // Test valid transition: CREATED -> VALIDATED
         assertTrue(
-                StateTransitionService.isValid(ProcessStateValidator.INSTANCE, currentState, ProcessState.VALIDATED),
+                StateModel.StateTransitionService.isValid(StateValidators.ProcessStateValidator.INSTANCE, currentState, ProcessState.VALIDATED),
                 "CREATED -> VALIDATED should be valid");
 
         ProcessStatus validated = StateMachineTestUtils.createProcessStatus(ProcessState.VALIDATED, "Validated");
@@ -161,8 +161,8 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
 
         // Test invalid transition: VALIDATED -> COMPLETED (skipping required states)
         assertFalse(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.VALIDATED, ProcessState.COMPLETED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.VALIDATED, ProcessState.COMPLETED),
                 "VALIDATED -> COMPLETED (skipping STARTED/EXECUTING) should be invalid");
 
         // Verify state was updated correctly
@@ -262,8 +262,8 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
         // At STARTED state, PreWorkflowManager would create pre-execution tasks
         // This test verifies the state transition is valid for workflow execution
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.STARTED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.STARTED),
                 "CREATED -> STARTED should be valid for pre-workflow");
 
         // EXECUTING -> COMPLETED should trigger PostWorkflowManager
@@ -319,14 +319,14 @@ public class WorkflowTaskExecutionIntegrationTest extends ServiceIntegrationTest
 
         // Terminal states cannot transition
         assertFalse(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.COMPLETED, ProcessState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.COMPLETED, ProcessState.EXECUTING),
                 "COMPLETED -> EXECUTING should be invalid");
 
         // Invalid jumps are rejected
         assertFalse(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.COMPLETED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.COMPLETED),
                 "CREATED -> COMPLETED (skipping required states) should be invalid");
 
         // This ensures tasks cannot execute if state transition is invalid

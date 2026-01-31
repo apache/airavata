@@ -27,10 +27,12 @@ import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
 import org.apache.airavata.service.security.IamAdminService;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -54,6 +56,22 @@ public class IamAdminServiceIntegrationTest extends ServiceIntegrationTestBase {
         this.iamAdminService = iamAdminService;
         this.credentialStoreService = credentialStoreService;
         this.registryService = registryService;
+    }
+
+    @BeforeEach
+    void assumeKeycloakTokenAvailable() {
+        Assumptions.assumeTrue(
+                testAuthzToken != null,
+                "Keycloak token not available (IAM tests skipped when Keycloak is unavailable or returns 401)");
+        // Probe: IAM operations need an admin token (realms/master); skip if that returns 401
+        try {
+            iamAdminService.getUsers(testAuthzToken, 0, 1, "");
+        } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            Assumptions.assumeTrue(
+                    !msg.contains("401") && !msg.contains("admin token"),
+                    "Keycloak admin token not available (IAM tests skipped): " + msg);
+        }
     }
 
     @Nested

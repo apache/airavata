@@ -24,7 +24,7 @@ import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.GatewayApprovalStatus;
 import org.apache.airavata.registry.entities.GatewayEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.GatewayMapper;
 import org.apache.airavata.registry.repositories.GatewayRepository;
 import org.springframework.stereotype.Service;

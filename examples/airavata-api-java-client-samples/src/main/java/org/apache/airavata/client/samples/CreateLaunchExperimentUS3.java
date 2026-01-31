@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class CreateLaunchExperimentUS3 {
 
-    // FIXME: Read from a config file
+    // Read from config if available
     public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
     private static final Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);

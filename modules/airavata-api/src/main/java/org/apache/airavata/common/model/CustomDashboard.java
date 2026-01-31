@@ -22,8 +22,13 @@ package org.apache.airavata.common.model;
 import java.util.Objects;
 
 /**
- * Domain model: CustomDashboard
+ * Domain model: CustomDashboard (UI preferences).
+ *
+ * @deprecated Not used. Dashboard/UI preferences are handled on the frontend or in Keycloak.
+ *             Preserved for Thrift API compatibility only. Do not use for new development.
+ *             Airavata focuses on facilitating research; user preferences live in Keycloak.
  */
+@Deprecated(since = "1.0", forRemoval = false)
 public class CustomDashboard {
     private String airavataInternalUserId;
     private String experimentId;

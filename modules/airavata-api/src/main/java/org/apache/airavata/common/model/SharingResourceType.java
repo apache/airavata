@@ -67,7 +67,10 @@ public enum SharingResourceType {
     COMPUTE_RESOURCE(8),
 
     /** Storage resources (file systems, object stores, etc.) */
-    STORAGE_RESOURCE(9);
+    STORAGE_RESOURCE(9),
+
+    /** Allocation pools (merged groups: same project across runtimes, pool of credentials/runtimes) */
+    ALLOCATION_POOL(10);
 
     private final int value;
 
@@ -101,6 +104,8 @@ public enum SharingResourceType {
                 return COMPUTE_RESOURCE;
             case 9:
                 return STORAGE_RESOURCE;
+            case 10:
+                return ALLOCATION_POOL;
             default:
                 return null;
         }

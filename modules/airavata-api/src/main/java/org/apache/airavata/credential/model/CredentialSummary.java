@@ -22,11 +22,16 @@ package org.apache.airavata.credential.model;
 import java.util.Objects;
 
 /**
- * Domain model: CredentialSummary
+ * Summary view of a stored credential for listing and access-control.
+ * Credentials do not store a login username; that is set per resource in RESOURCE_ACCESS.
+ * The optional {@code username} field is only populated from resource context (e.g. access grant) when applicable.
  */
 public class CredentialSummary {
     private SummaryType type;
     private String gatewayId;
+    /** User-given name to identify this credential. */
+    private String name;
+    /** Optional; when present, from resource context (e.g. access grant). Credentials do not store login username. */
     private String username;
     private String publicKey;
     private Long persistedTime;
@@ -49,6 +54,14 @@ public class CredentialSummary {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUsername() {
@@ -98,6 +111,7 @@ public class CredentialSummary {
         CredentialSummary that = (CredentialSummary) o;
         return type == that.type
                 && Objects.equals(gatewayId, that.gatewayId)
+                && Objects.equals(name, that.name)
                 && Objects.equals(username, that.username)
                 && Objects.equals(publicKey, that.publicKey)
                 && Objects.equals(persistedTime, that.persistedTime)
@@ -107,14 +121,15 @@ public class CredentialSummary {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, gatewayId, username, publicKey, persistedTime, token, description);
+        return Objects.hash(type, gatewayId, name, username, publicKey, persistedTime, token, description);
     }
 
     @Override
     public String toString() {
         return "CredentialSummary{" + "type="
                 + type + ", gatewayId='"
-                + gatewayId + '\'' + ", username='"
+                + gatewayId + '\'' + ", name='"
+                + name + '\'' + ", username='"
                 + username + '\'' + ", publicKey='"
                 + (publicKey != null ? "***" : null) + '\'' + ", persistedTime="
                 + persistedTime + ", token='"

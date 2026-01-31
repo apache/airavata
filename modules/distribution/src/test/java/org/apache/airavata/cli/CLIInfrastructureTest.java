@@ -244,16 +244,16 @@ public class CLIInfrastructureTest {
     class ServeCommandTests {
 
         @Test
-        @DisplayName("Serve command should have foreground option")
-        void serveCommandShouldHaveForegroundOption() throws NoSuchFieldException {
-            // Verify the serve command has the foreground option
-            java.lang.reflect.Field foregroundField =
-                    org.apache.airavata.cli.commands.ServeCommand.class.getDeclaredField("foreground");
-            assertThat(foregroundField).isNotNull();
+        @DisplayName("Serve command should have detach option")
+        void serveCommandShouldHaveDetachOption() throws NoSuchFieldException {
+            // Verify the serve command has the detach (-d) option for background mode
+            java.lang.reflect.Field detachField =
+                    org.apache.airavata.cli.commands.ServeCommand.class.getDeclaredField("detach");
+            assertThat(detachField).isNotNull();
 
-            picocli.CommandLine.Option option = foregroundField.getAnnotation(picocli.CommandLine.Option.class);
+            picocli.CommandLine.Option option = detachField.getAnnotation(picocli.CommandLine.Option.class);
             assertThat(option).isNotNull();
-            assertThat(option.names()).contains("--foreground");
+            assertThat(option.names()).contains("-d", "--detach");
         }
 
         @Test

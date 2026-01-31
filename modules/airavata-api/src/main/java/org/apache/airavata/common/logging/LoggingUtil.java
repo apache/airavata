@@ -24,6 +24,19 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 /**
+ * MDC key constants for log correlation and tracing.
+ */
+final class MDCKeys {
+    static final String EXPERIMENT_ID = "experiment_id";
+    static final String GATEWAY_ID = "gateway_id";
+    static final String EXPERIMENT_NAME = "experiment_name";
+    static final String PROCESS_ID = "process_id";
+    static final String TOKEN_ID = "token_id";
+
+    private MDCKeys() {}
+}
+
+/**
  * Utility class for standardized logging patterns across the Airavata API.
  *
  * <p>This class provides helper methods to ensure consistent logging:
@@ -194,13 +207,13 @@ public class LoggingUtil {
      */
     public static void setExperimentContext(String experimentId, String gatewayId, String processId) {
         if (experimentId != null) {
-            MDC.put(MDCConstants.EXPERIMENT_ID, experimentId);
+            MDC.put(MDCKeys.EXPERIMENT_ID, experimentId);
         }
         if (gatewayId != null) {
-            MDC.put(MDCConstants.GATEWAY_ID, gatewayId);
+            MDC.put(MDCKeys.GATEWAY_ID, gatewayId);
         }
         if (processId != null) {
-            MDC.put(MDCConstants.PROCESS_ID, processId);
+            MDC.put(MDCKeys.PROCESS_ID, processId);
         }
     }
 

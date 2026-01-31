@@ -20,12 +20,12 @@
 package org.apache.airavata.orchestrator.validator;
 
 import java.util.ArrayList;
-import org.apache.airavata.common.exception.ValidationResults;
-import org.apache.airavata.common.exception.ValidatorResult;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidationResults;
+import org.apache.airavata.common.exception.ValidationExceptions.ValidatorResult;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.ExperimentState;
 import org.apache.airavata.common.model.ProcessModel;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;

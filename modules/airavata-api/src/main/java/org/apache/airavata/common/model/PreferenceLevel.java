@@ -4,9 +4,9 @@
 * or more contributor license agreements. See the NOTICE file
 * distributed with this work for additional information
 * regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
+* to you under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 *
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -21,36 +21,44 @@ package org.apache.airavata.common.model;
 
 /**
  * Enum representing the level at which a preference is set.
- * Used for hierarchical preference resolution where more specific levels
- * override less specific ones.
+ * Used for hierarchical preference resolution (Zanzibar-like model).
  *
- * <p>Resolution order (most specific wins): USER > GROUP > GATEWAY
+ * <p>Resolution order (lower number = higher authority): SYSTEM > GATEWAY > GROUP
  *
  * <p>When resolving effective preferences for a user:
  * <ol>
- *   <li>Start with GATEWAY preferences as the base/default</li>
- *   <li>Overlay GROUP preferences (if user belongs to groups with preferences)</li>
- *   <li>Overlay USER preferences (highest priority, user's personal settings)</li>
+ *   <li>SYSTEM preferences (cross-gateway root authority)</li>
+ *   <li>GATEWAY preferences (gateway-level defaults)</li>
+ *   <li>GROUP preferences (all groups including personal groups - equal at this level)</li>
  * </ol>
+ *
+ * <p>User-specific preferences are stored at GROUP level under the user's personal group.
  */
 public enum PreferenceLevel {
     /**
-     * Gateway-level preferences. These are the default settings that apply
-     * to all users in a gateway unless overridden at a more specific level.
+     * System-level preferences. Cross-gateway root authority.
+     * Highest priority. Set only by system admins.
      */
-    GATEWAY(0),
+    SYSTEM(0),
 
     /**
-     * Group-level preferences. These override gateway defaults for users
-     * who belong to the group. Multiple group preferences may apply if
-     * a user belongs to multiple groups.
+     * Gateway-level preferences. Default settings for all users in a gateway.
      */
-    GROUP(1),
+    GATEWAY(1),
 
     /**
-     * User-level preferences. These are the most specific and always take
-     * precedence over group and gateway preferences.
+     * Group-level preferences. All groups (personal, admin, custom) are equal at this level.
+     * When multiple groups have the same preference key, user must explicitly select.
      */
+    GROUP(2),
+
+    /**
+     * User-level preferences. Deprecated: use GROUP level with ownerId = user's personal group ID.
+     * Kept for backward compatibility when reading pre-migration data.
+     *
+     * @deprecated Map to personal group and use GROUP level instead.
+     */
+    @Deprecated
     USER(2);
 
     private final int priority;
@@ -60,8 +68,7 @@ public enum PreferenceLevel {
     }
 
     /**
-     * Get the priority value. Higher values indicate higher priority
-     * in preference resolution.
+     * Get the priority value. Lower values indicate higher authority.
      *
      * @return the priority value
      */
@@ -70,13 +77,13 @@ public enum PreferenceLevel {
     }
 
     /**
-     * Check if this level has higher priority than another level.
+     * Check if this level has higher authority than another level.
      *
      * @param other the other level to compare against
      * @return true if this level should override the other level
      */
     public boolean overrides(PreferenceLevel other) {
-        return this.priority > other.priority;
+        return this.priority < other.priority;
     }
 
     /**
@@ -88,13 +95,20 @@ public enum PreferenceLevel {
     public static PreferenceLevel findByPriority(int priority) {
         switch (priority) {
             case 0:
-                return GATEWAY;
+                return SYSTEM;
             case 1:
-                return GROUP;
+                return GATEWAY;
             case 2:
-                return USER;
+                return GROUP;
             default:
                 return null;
         }
+    }
+
+    /**
+     * Whether this level represents a group-level preference (GROUP or deprecated USER).
+     */
+    public boolean isGroupLevel() {
+        return this == GROUP || this == USER;
     }
 }

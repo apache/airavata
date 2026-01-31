@@ -46,8 +46,19 @@ import org.springframework.stereotype.Repository;
 public interface StatusRepository extends JpaRepository<StatusEntity, StatusEntityPK> {
 
     /**
+     * Returns the next sequence number for a parent, with row lock for safe use in clustered deployments.
+     * Call within the same transaction as the subsequent save.
+     *
+     * @param parentId the parent entity ID
+     * @param parentType the type of parent entity
+     * @return next sequence number (1-based per parent)
+     */
+    @Query(value = "SELECT COALESCE(MAX(s.SEQUENCE_NUM), 0) + 1 FROM STATUS s WHERE s.PARENT_ID = :parentId AND s.PARENT_TYPE = :parentType FOR UPDATE", nativeQuery = true)
+    long getNextSequenceNum(@Param("parentId") String parentId, @Param("parentType") StatusParentType parentType);
+
+    /**
      * Find all statuses for a specific parent entity, ordered by creation (most recent first).
-     * Uses sequenceNum as primary sort key for deterministic ordering (auto-increment guarantees creation order).
+     * Uses sequenceNum as primary sort key for deterministic ordering (DB-backed when clustering is used).
      *
      * @param parentId the parent entity ID
      * @param parentType the type of parent entity

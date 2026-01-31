@@ -120,18 +120,7 @@ public class UserProfileSample {
         userProfile.setLastAccessTime(currentTime);
         userProfile.setValidUntil(currentTime);
         userProfile.setState(Status.ACTIVE);
-        userProfile.setNsfDemographics(getNSFDemographics(userIdValue));
+        // User/demographic data lives in Keycloak; Airavata focuses on research facilitation.
         return userProfile;
-    }
-
-    private static NSFDemographics getNSFDemographics(int userIdValue) {
-        // construct nsfdemographics object
-        NSFDemographics nsfDemographics = new NSFDemographics();
-        nsfDemographics.setAiravataInternalUserId("test-user-internal-" + userIdValue);
-        nsfDemographics.setGender("male");
-        nsfDemographics.setUsCitizenship(USCitizenship.US_CITIZEN);
-        nsfDemographics.addToEthnicities(ethnicity.NOT_HISPANIC_LATINO);
-        nsfDemographics.addToRaces(race.AMERICAN_INDIAN_OR_ALASKAN_NATIVE);
-        return nsfDemographics;
     }
 }

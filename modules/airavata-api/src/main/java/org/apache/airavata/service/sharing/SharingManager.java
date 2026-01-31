@@ -19,15 +19,15 @@
 */
 package org.apache.airavata.service.sharing;
 
-import org.apache.airavata.common.exception.AiravataErrorType;
-import org.apache.airavata.common.exception.AiravataSystemException;
-import org.apache.airavata.common.exception.AuthorizationException;
-import org.apache.airavata.common.exception.InvalidRequestException;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataErrorType;
+import org.apache.airavata.common.exception.CoreExceptions.AiravataSystemException;
+import org.apache.airavata.common.exception.AuthExceptions.AuthorizationException;
+import org.apache.airavata.common.exception.CoreExceptions.InvalidRequestException;
 import org.apache.airavata.common.model.ExperimentModel;
 import org.apache.airavata.common.model.GatewayGroups;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.security.GatewayGroupsInitializer;
 import org.apache.airavata.service.SharingRegistryService;
 import org.apache.airavata.service.registry.RegistryService;
@@ -65,7 +65,7 @@ public class SharingManager {
 
     private AiravataSystemException airavataSystemException(
             AiravataErrorType errorType, String message, Throwable cause) {
-        return org.apache.airavata.common.exception.ExceptionHandlerUtil.wrapAsAiravataException(
+        return org.apache.airavata.common.exception.ValidationExceptions.ExceptionHandlerUtil.wrapAsAiravataException(
                 errorType, message, cause);
     }
 

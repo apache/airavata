@@ -53,7 +53,12 @@ public abstract class Credential implements Serializable {
     private String gatewayId;
 
     /**
-     * Human-readable description of this credential.
+     * User-given name to identify this credential (e.g. "Laptop SSH", "HPC login").
+     */
+    private String name;
+
+    /**
+     * Optional longer description or notes.
      */
     private String description;
 
@@ -63,6 +68,14 @@ public abstract class Credential implements Serializable {
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {

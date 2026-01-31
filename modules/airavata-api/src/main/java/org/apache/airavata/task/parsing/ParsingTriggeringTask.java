@@ -19,12 +19,9 @@
 */
 package org.apache.airavata.task.parsing;
 
-import io.dapr.client.DaprClient;
-import java.util.Collections;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
-import org.apache.airavata.orchestrator.config.OrchestratorConfig;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
+import org.apache.airavata.orchestrator.ParsingHandler;
 import org.apache.airavata.orchestrator.messaging.MessagingFactory;
-import org.apache.airavata.orchestrator.messaging.Topics;
 import org.apache.airavata.service.profile.UserProfileService;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.service.security.CredentialStoreService;
@@ -36,18 +33,12 @@ import org.apache.airavata.task.base.AiravataTask;
 import org.apache.airavata.task.base.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
- * Publishes {@link ProcessCompletionMessage} to Dapr parsing-data-topic when a process
- * completes, triggering the ParserWorkflowManager. Replaces Kafka producer.
- *
- * <p>Note: This task uses DaprClient directly (rather than DaprPublisher) because
- * ProcessCompletionMessage is published in a custom format expected by ParsingHandler,
- * not wrapped in MessageContext like standard messaging events.
+ * Triggers the ParserWorkflowManager when a process completes by calling
+ * ParsingHandler.onParsingMessage directly (same-JVM call, no pub/sub).
  */
 @TaskDef(name = "Parsing Triggering Task")
 @Component
@@ -56,8 +47,8 @@ public class ParsingTriggeringTask extends AiravataTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ParsingTriggeringTask.class);
 
-    private final DaprClient daprClient;
-    private final String pubsubName;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private ParsingHandler parsingHandler;
 
     public ParsingTriggeringTask(
             TaskUtil taskUtil,
@@ -65,10 +56,7 @@ public class ParsingTriggeringTask extends AiravataTask {
             RegistryService registryService,
             UserProfileService userProfileService,
             CredentialStoreService credentialStoreService,
-            MessagingFactory messagingFactory,
-            @Autowired(required = false) DaprClient daprClient,
-            @Value("${" + OrchestratorConfig.PUBSUB_NAME + ":" + OrchestratorConfig.DEFAULT_PUBSUB_NAME + "}")
-                    String pubsubName) {
+            MessagingFactory messagingFactory) {
         super(
                 taskUtil,
                 applicationContext,
@@ -76,23 +64,16 @@ public class ParsingTriggeringTask extends AiravataTask {
                 userProfileService,
                 credentialStoreService,
                 messagingFactory);
-        this.daprClient = daprClient;
-        this.pubsubName = pubsubName;
     }
 
     public void submitMessageToParserEngine(ProcessCompletionMessage completionMessage) {
-        if (daprClient == null) {
-            throw new IllegalStateException("DaprClient not available; enable airavata.dapr.enabled for parsing.");
+        if (parsingHandler != null) {
+            parsingHandler.onParsingMessage(completionMessage);
+            logger.info("ParsingTriggeringTask invoked ParsingHandler for experiment {}", completionMessage.getExperimentId());
+        } else {
+            logger.debug("ParsingHandler not available; parsing workflow not triggered for experiment {}",
+                    completionMessage.getExperimentId());
         }
-        var experimentId = completionMessage.getExperimentId();
-        daprClient
-                .publishEvent(
-                        pubsubName,
-                        Topics.PARSING,
-                        completionMessage,
-                        Collections.singletonMap("routingKey", experimentId))
-                .block();
-        logger.info("ParsingTriggeringTask posted to {}: {}->{}", Topics.PARSING, experimentId, completionMessage);
     }
 
     @Override

@@ -45,7 +45,7 @@ import org.apache.airavata.common.model.ResourceJobManagerType;
 import org.apache.airavata.common.model.SetEnvPaths;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.config.AiravataServerProperties;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.service.registry.RegistryService;
 import org.apache.airavata.task.base.TaskContext;
 import org.apache.airavata.task.base.TaskOnFailException;

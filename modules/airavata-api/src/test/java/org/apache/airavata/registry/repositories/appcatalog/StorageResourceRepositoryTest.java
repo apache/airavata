@@ -29,7 +29,7 @@ import org.apache.airavata.common.model.GridFTPDataMovement;
 import org.apache.airavata.common.model.SCPDataMovement;
 import org.apache.airavata.common.model.SecurityProtocol;
 import org.apache.airavata.common.model.StorageResourceDescription;
-import org.apache.airavata.registry.exception.AppCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.AppCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.ComputeResourceService;
 import org.apache.airavata.registry.services.StorageResourceService;

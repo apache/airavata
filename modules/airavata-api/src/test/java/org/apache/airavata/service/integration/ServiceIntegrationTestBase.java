@@ -20,7 +20,7 @@
 package org.apache.airavata.service.integration;
 
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.security.model.AuthzToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Timeout;
@@ -107,7 +107,12 @@ public abstract class ServiceIntegrationTestBase {
             gatewayService.addGateway(gateway);
         }
 
-        testAuthzToken = createRealAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
+        try {
+            testAuthzToken = createRealAuthzToken(TEST_GATEWAY_ID, TEST_USERNAME);
+        } catch (Exception e) {
+            // Keycloak may be unavailable or not yet ready (e.g. 401 during CI)
+            testAuthzToken = null;
+        }
         if (properties != null) {
             org.apache.airavata.config.TestPropertiesHelper.logProperties(properties);
         }

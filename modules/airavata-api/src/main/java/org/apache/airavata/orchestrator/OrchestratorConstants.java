@@ -20,8 +20,7 @@
 package org.apache.airavata.orchestrator;
 
 /**
- * This class contains all the constants in orchestrator-core
- *
+ * This class contains all the constants in orchestrator-core.
  */
 public class OrchestratorConstants {
     public static final String ENABLE_VALIDATION = "enable.validation";
@@ -30,4 +29,9 @@ public class OrchestratorConstants {
     public static final String EXPERIMENT_ERROR = "EXPERIMENT_ERROR";
     public static final String PROCESS_ERROR = "PROCESS_ERROR";
     public static final String TASK_ERROR = "TASK_ERROR";
+
+    /** Server configuration keys (from legacy Constants). */
+    public static final String ORCHESTRATOT_SERVER_PORT = "orchestrator.server.port";
+    public static final String ORCHESTRATOT_SERVER_HOST = "orchestrator.server.host";
+    public static final String ORCHESTRATOT_SERVER_MIN_THREADS = "orchestrator.server.min.threads";
 }

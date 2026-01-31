@@ -118,13 +118,14 @@ public interface ResourcePreferenceRepository
 
     /**
      * Get all preferences for resolution: finds all preferences for a resource
-     * at all specified owner/level combinations. Useful for bulk resolution.
+     * at SYSTEM, GATEWAY, GROUP, and USER (legacy) levels.
      */
     @Query(
             "SELECT r FROM ResourcePreferenceEntity r "
                     + "WHERE r.resourceType = :resourceType "
                     + "AND r.resourceId = :resourceId "
-                    + "AND ((r.ownerId = :gatewayId AND r.level = 'GATEWAY') "
+                    + "AND ((r.ownerId = 'SYSTEM' AND r.level = 'SYSTEM') "
+                    + "    OR (r.ownerId = :gatewayId AND r.level = 'GATEWAY') "
                     + "    OR (r.ownerId IN :groupIds AND r.level = 'GROUP') "
                     + "    OR (r.ownerId = :userId AND r.level = 'USER')) "
                     + "ORDER BY r.level ASC")

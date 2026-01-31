@@ -33,9 +33,9 @@ import org.apache.airavata.common.model.ExperimentType;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.orchestrator.state.ExperimentStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;
@@ -52,7 +52,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Comprehensive integration tests for ExperimentStateValidator.
+ * Comprehensive integration tests for StateValidators.ExperimentStateValidator.
  * Tests verify that all valid state transitions work correctly and invalid transitions are rejected.
  */
 @SpringBootTest(
@@ -134,13 +134,13 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testValidTransitionsFromCreated() throws RegistryException {
         // CREATED can transition to SCHEDULED, LAUNCHED, or FAILED
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.SCHEDULED),
                 "CREATED -> SCHEDULED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.LAUNCHED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.LAUNCHED),
                 "CREATED -> LAUNCHED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.FAILED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.FAILED),
                 "CREATED -> FAILED should be valid");
 
         // Test actual transitions through service
@@ -155,13 +155,13 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testValidTransitionsFromScheduled() throws RegistryException {
         // SCHEDULED can transition to LAUNCHED, SCHEDULED (self-loop), or CANCELING
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.LAUNCHED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.LAUNCHED),
                 "SCHEDULED -> LAUNCHED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.SCHEDULED),
                 "SCHEDULED -> SCHEDULED (self-loop) should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.CANCELING),
                 "SCHEDULED -> CANCELING should be valid");
 
         // Test transition: CREATED -> SCHEDULED -> LAUNCHED
@@ -179,10 +179,10 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testValidTransitionsFromLaunched() throws RegistryException {
         // LAUNCHED can transition to EXECUTING or CANCELING
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
                 "LAUNCHED -> EXECUTING should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.LAUNCHED, ExperimentState.CANCELING),
                 "LAUNCHED -> CANCELING should be valid");
 
         // Test transition: CREATED -> LAUNCHED -> EXECUTING
@@ -200,19 +200,19 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testValidTransitionsFromExecuting() throws RegistryException {
         // EXECUTING can transition to COMPLETED, FAILED, CANCELED, SCHEDULED (requeue), or CANCELING
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.COMPLETED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.FAILED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.FAILED),
                 "EXECUTING -> FAILED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELED),
                 "EXECUTING -> CANCELED should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.SCHEDULED),
                 "EXECUTING -> SCHEDULED (requeue) should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.EXECUTING, ExperimentState.CANCELING),
                 "EXECUTING -> CANCELING should be valid");
 
         // Test successful completion path
@@ -233,10 +233,10 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testCancellationFlow() throws RegistryException {
         // CANCELING can transition to CANCELING (self-loop) or CANCELED
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELING),
                 "CANCELING -> CANCELING (self-loop) should be valid");
         assertTrue(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELING, ExperimentState.CANCELED),
                 "CANCELING -> CANCELED should be valid");
 
         // Test cancellation from SCHEDULED
@@ -257,22 +257,22 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testInvalidTransitionsFromTerminalStates() {
         // Terminal states: COMPLETED, FAILED, CANCELED (no transitions out)
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.COMPLETED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.COMPLETED, ExperimentState.EXECUTING),
                 "COMPLETED -> EXECUTING should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.COMPLETED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.COMPLETED, ExperimentState.SCHEDULED),
                 "COMPLETED -> SCHEDULED should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.FAILED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.FAILED, ExperimentState.EXECUTING),
                 "FAILED -> EXECUTING should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.FAILED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.FAILED, ExperimentState.SCHEDULED),
                 "FAILED -> SCHEDULED should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELED, ExperimentState.EXECUTING),
                 "CANCELED -> EXECUTING should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELED, ExperimentState.SCHEDULED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CANCELED, ExperimentState.SCHEDULED),
                 "CANCELED -> SCHEDULED should be invalid");
     }
 
@@ -281,27 +281,27 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testInvalidTransitionsSkippingStates() {
         // Invalid jumps
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.EXECUTING),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.EXECUTING),
                 "CREATED -> EXECUTING (skipping SCHEDULED/LAUNCHED) should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.COMPLETED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.CREATED, ExperimentState.COMPLETED),
                 "CREATED -> COMPLETED should be invalid");
         assertFalse(
-                ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.COMPLETED),
+                StateValidators.ExperimentStateValidator.INSTANCE.isValid(ExperimentState.SCHEDULED, ExperimentState.COMPLETED),
                 "SCHEDULED -> COMPLETED (skipping LAUNCHED/EXECUTING) should be invalid");
     }
 
     @Test
     @DisplayName("Test StateTransitionService validates transitions correctly")
     public void testStateTransitionServiceValidation() {
-        // Test that StateTransitionService.validateAndLog() correctly validates transitions
+        // Test that StateModel.StateTransitionService.validateAndLog() correctly validates transitions
         assertTrue(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, ExperimentState.SCHEDULED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, ExperimentState.SCHEDULED),
                 "StateTransitionService should validate CREATED -> SCHEDULED");
         assertFalse(
-                StateTransitionService.isValid(
-                        ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.COMPLETED, ExperimentState.EXECUTING),
                 "StateTransitionService should reject COMPLETED -> EXECUTING");
     }
 
@@ -402,17 +402,17 @@ public class ExperimentStateTransitionIntegrationTest extends ServiceIntegration
     public void testNullHandling() {
         // null -> any state should be valid (initial state)
         assertTrue(
-                StateTransitionService.isValid(ExperimentStateValidator.INSTANCE, null, ExperimentState.CREATED),
+                StateModel.StateTransitionService.isValid(StateValidators.ExperimentStateValidator.INSTANCE, null, ExperimentState.CREATED),
                 "null -> CREATED should be valid (initial state)");
 
         // any state -> null should be invalid
         assertFalse(
-                StateTransitionService.isValid(ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, null),
+                StateModel.StateTransitionService.isValid(StateValidators.ExperimentStateValidator.INSTANCE, ExperimentState.CREATED, null),
                 "CREATED -> null should be invalid");
 
         // null -> null should be invalid
         assertFalse(
-                StateTransitionService.isValid(ExperimentStateValidator.INSTANCE, null, null),
+                StateModel.StateTransitionService.isValid(StateValidators.ExperimentStateValidator.INSTANCE, null, null),
                 "null -> null should be invalid");
     }
 

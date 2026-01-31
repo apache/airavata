@@ -63,6 +63,8 @@
       "secret": "m36BXQIxX3j3VILadeHMK5IvbOeRlCCc",
       "redirectUris": [
         "http://localhost:3000/*",
+        "http://localhost:3000/api/auth/callback/keycloak",
+        "http://localhost:3000/login",
         "http://localhost:8008/callback*",
         "https://localhost:8009/auth/callback*",
         "*"

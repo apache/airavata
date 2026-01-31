@@ -119,7 +119,8 @@ struct UserGroup {
  7: optional GroupCardinality groupCardinality,
  8: optional i64 createdTime,
  9: optional i64 updatedTime,
- 10: optional list<GroupAdmin> groupAdmins
+ 10: optional list<GroupAdmin> groupAdmins,
+ 11: optional bool isPersonalGroup
 }
 
 /**

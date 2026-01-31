@@ -20,19 +20,19 @@
 package org.apache.airavata.sharing.repositories;
 
 import java.util.List;
-import org.apache.airavata.sharing.entities.EntityEntity;
 import org.apache.airavata.sharing.entities.EntityPK;
+import org.apache.airavata.sharing.entities.ShareableEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EntityRepository extends JpaRepository<EntityEntity, EntityPK> {
+public interface EntityRepository extends JpaRepository<ShareableEntity, EntityPK> {
 
     @Query(
-            "SELECT e FROM EntityEntity e WHERE e.domainId = :domainId AND e.parentEntityId = :parentId ORDER BY e.originalEntityCreationTime DESC")
-    List<EntityEntity> findByDomainIdAndParentEntityIdOrderByOriginalEntityCreationTimeDesc(
+            "SELECT e FROM ShareableEntity e WHERE e.domainId = :domainId AND e.parentEntityId = :parentId ORDER BY e.originalEntityCreationTime DESC")
+    List<ShareableEntity> findByDomainIdAndParentEntityIdOrderByOriginalEntityCreationTimeDesc(
             @Param("domainId") String domainId, @Param("parentId") String parentId);
 
     // Note: searchEntities method with complex dynamic queries should be implemented

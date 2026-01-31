@@ -55,6 +55,7 @@ public class UserGroupEntity {
     private Long createdTime;
     private Long updatedTime;
     private List<GroupAdminEntity> groupAdmins;
+    private Boolean isPersonalGroup;
 
     @Id
     @Column(name = "GROUP_ID", nullable = false)
@@ -173,6 +174,16 @@ public class UserGroupEntity {
         this.groupAdmins = groupAdmins;
     }
 
+    @Basic
+    @Column(name = "IS_PERSONAL_GROUP", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    public Boolean getIsPersonalGroup() {
+        return isPersonalGroup != null ? isPersonalGroup : false;
+    }
+
+    public void setIsPersonalGroup(Boolean isPersonalGroup) {
+        this.isPersonalGroup = isPersonalGroup;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -193,6 +204,8 @@ public class UserGroupEntity {
             return false;
         if (getUpdatedTime() != null ? !getUpdatedTime().equals(that.getUpdatedTime()) : that.getUpdatedTime() != null)
             return false;
+        if (getIsPersonalGroup() != null ? !getIsPersonalGroup().equals(that.getIsPersonalGroup()) : that.getIsPersonalGroup() != null)
+            return false;
 
         return true;
     }
@@ -205,6 +218,7 @@ public class UserGroupEntity {
         result = 31 * result + (getGroupType() != null ? getGroupType().hashCode() : 0);
         result = 31 * result + (getCreatedTime() != null ? getCreatedTime().hashCode() : 0);
         result = 31 * result + (getUpdatedTime() != null ? getUpdatedTime().hashCode() : 0);
+        result = 31 * result + (getIsPersonalGroup() != null ? getIsPersonalGroup().hashCode() : 0);
         return result;
     }
 }

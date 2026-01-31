@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.common.model.Notification;
 import org.apache.airavata.registry.entities.expcatalog.NotificationEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.mappers.NotificationMapper;
 import org.apache.airavata.registry.repositories.expcatalog.NotificationRepository;
 import org.springframework.stereotype.Service;

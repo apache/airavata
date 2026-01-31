@@ -34,7 +34,8 @@ enum DataType{
 	URI,
 	URI_COLLECTION,
 	STDOUT,
-	STDERR
+	STDERR,
+	STDIN
 }
 
 /**

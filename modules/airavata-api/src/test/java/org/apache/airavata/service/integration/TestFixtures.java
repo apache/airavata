@@ -22,7 +22,7 @@ package org.apache.airavata.service.integration;
 import java.util.UUID;
 import org.apache.airavata.common.model.Gateway;
 import org.apache.airavata.common.model.Project;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProjectService;

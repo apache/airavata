@@ -25,8 +25,9 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * Mapper for converting between domain DataProductModel and thrift DataProductModel.
+ * Handles catalog metadata fields, primary storage, authors, and tags.
  */
-@Mapper(config = ModelMapper.class)
+@Mapper(config = ModelMapper.class, uses = DataProductTagMapper.class)
 public interface DataProductModelMapper extends ModelMapper {
 
     DataProductModelMapper INSTANCE = Mappers.getMapper(DataProductModelMapper.class);

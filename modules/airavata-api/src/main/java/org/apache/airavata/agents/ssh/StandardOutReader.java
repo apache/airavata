@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.airavata.agents.api.CommandOutput;
 
 /**
- * TODO: Class level comments please
+ * Captures stdout, stderr, and exit code from a command execution.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

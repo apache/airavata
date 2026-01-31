@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.model.ErrorModel;
 import org.apache.airavata.common.model.ErrorParentType;
 import org.apache.airavata.registry.entities.ErrorEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.ErrorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

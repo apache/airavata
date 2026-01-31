@@ -23,7 +23,7 @@ import java.io.Serializable;
 import org.apache.airavata.agents.api.AdaptorParams;
 
 /**
- * TODO: Class level comments please
+ * Parameters for SSH-based job submission and file access.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT

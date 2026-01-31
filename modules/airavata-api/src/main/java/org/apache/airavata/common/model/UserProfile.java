@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Domain model: UserProfile
+ * Domain model: minimal user identity for research context.
+ * Extended user info (demographics, dashboard prefs, contact details) lives in the identity provider (Keycloak).
+ * This model and AIRAVATA_USER store only what is needed to associate users with gateways and resource profiles.
  */
 public class UserProfile {
     private String userModelVersion;
@@ -247,22 +249,6 @@ public class UserProfile {
         this.timeZone = timeZone;
     }
 
-    public NSFDemographics getNsfDemographics() {
-        return nsfDemographics;
-    }
-
-    public void setNsfDemographics(NSFDemographics nsfDemographics) {
-        this.nsfDemographics = nsfDemographics;
-    }
-
-    public CustomDashboard getCustomDashboard() {
-        return customDashboard;
-    }
-
-    public void setCustomDashboard(CustomDashboard customDashboard) {
-        this.customDashboard = customDashboard;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -291,9 +277,7 @@ public class UserProfile {
                 && Objects.equals(comments, that.comments)
                 && Objects.equals(labeledURI, that.labeledURI)
                 && Objects.equals(gpgKey, that.gpgKey)
-                && Objects.equals(timeZone, that.timeZone)
-                && Objects.equals(nsfDemographics, that.nsfDemographics)
-                && Objects.equals(customDashboard, that.customDashboard);
+                && Objects.equals(timeZone, that.timeZone);
     }
 
     @Override
@@ -337,6 +321,6 @@ public class UserProfile {
                 + ", orginationAffiliation=" + orginationAffiliation + ", creationTime=" + creationTime
                 + ", lastAccessTime=" + lastAccessTime + ", validUntil=" + validUntil + ", State=" + State
                 + ", comments=" + comments + ", labeledURI=" + labeledURI + ", gpgKey=" + gpgKey + ", timeZone="
-                + timeZone + ", nsfDemographics=" + nsfDemographics + ", customDashboard=" + customDashboard + "}";
+                + timeZone + "}";
     }
 }

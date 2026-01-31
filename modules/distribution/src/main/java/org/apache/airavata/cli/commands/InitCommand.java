@@ -20,6 +20,7 @@
 package org.apache.airavata.cli.commands;
 
 import org.apache.airavata.cli.handlers.InitHandler;
+import org.apache.airavata.cli.util.ApplicationContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
@@ -32,7 +33,7 @@ import picocli.CommandLine.Option;
         mixinStandardHelpOptions = true)
 public class InitCommand implements Runnable {
 
-    @Autowired
+    @Autowired(required = false)
     private InitHandler initHandler;
 
     @Option(
@@ -42,6 +43,16 @@ public class InitCommand implements Runnable {
 
     @Override
     public void run() {
-        initHandler.initializeDatabases(clean);
+        InitHandler handler = initHandler;
+        if (handler == null) {
+            var ctx = ApplicationContextHolder.get();
+            if (ctx == null) {
+                throw new IllegalStateException("InitHandler not available and ApplicationContext not set");
+            }
+            handler = ctx.getBean(InitHandler.class);
+        }
+        handler.initializeDatabases(clean);
+        // Exit immediately so Spring does not proceed to shutdown or any other command.
+        System.exit(0);
     }
 }

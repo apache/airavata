@@ -34,10 +34,10 @@ import org.apache.airavata.common.model.TaskModel;
 import org.apache.airavata.common.model.TaskState;
 import org.apache.airavata.common.model.TaskStatus;
 import org.apache.airavata.common.model.TaskTypes;
-import org.apache.airavata.orchestrator.state.ProcessStateValidator;
-import org.apache.airavata.orchestrator.state.StateTransitionService;
-import org.apache.airavata.orchestrator.state.TaskStateValidator;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.orchestrator.state.StateModel;
+import org.apache.airavata.orchestrator.state.StateValidators;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.services.ExperimentService;
 import org.apache.airavata.registry.services.GatewayService;
 import org.apache.airavata.registry.services.ProcessService;
@@ -164,7 +164,7 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Verify task state transition was valid
         assertTrue(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.EXECUTING, TaskState.COMPLETED),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.EXECUTING, TaskState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid for tasks");
     }
 
@@ -188,8 +188,8 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
         // This is handled by AiravataTask.onFail() which calls saveAndPublishProcessStatus(FAILED)
         // Verify the state transition is valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
                 "EXECUTING -> FAILED should be valid when task fails");
     }
 
@@ -213,8 +213,8 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.COMPLETED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid");
     }
 
@@ -244,8 +244,8 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.FAILED),
                 "EXECUTING -> FAILED should be valid when task fails");
     }
 
@@ -271,8 +271,8 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Verify state transition was valid
         assertTrue(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.REQUEUED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.EXECUTING, ProcessState.REQUEUED),
                 "EXECUTING -> REQUEUED should be valid when autoSchedule is enabled");
     }
 
@@ -284,19 +284,19 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Terminal states cannot transition
         assertFalse(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.COMPLETED, ProcessState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.COMPLETED, ProcessState.EXECUTING),
                 "COMPLETED -> EXECUTING should be rejected even if task tries to update");
 
         assertFalse(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.FAILED, ProcessState.EXECUTING),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.FAILED, ProcessState.EXECUTING),
                 "FAILED -> EXECUTING should be rejected even if task tries to update");
 
         // Invalid jumps are rejected
         assertFalse(
-                StateTransitionService.isValid(
-                        ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.COMPLETED),
+                StateModel.StateTransitionService.isValid(
+                        StateValidators.ProcessStateValidator.INSTANCE, ProcessState.CREATED, ProcessState.COMPLETED),
                 "CREATED -> COMPLETED should be rejected even if task tries to update");
 
         // This ensures tasks cannot bypass state machine rules
@@ -313,7 +313,7 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Valid transition: CREATED -> EXECUTING
         assertTrue(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.CREATED, TaskState.EXECUTING),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.CREATED, TaskState.EXECUTING),
                 "CREATED -> EXECUTING should be valid for tasks");
 
         TaskStatus executing = StateMachineTestUtils.createTaskStatus(TaskState.EXECUTING, "Executing");
@@ -321,7 +321,7 @@ public class TaskOutcomeStateTransitionIntegrationTest extends ServiceIntegratio
 
         // Invalid transition: EXECUTING -> CREATED (cannot go backwards)
         assertFalse(
-                StateTransitionService.isValid(TaskStateValidator.INSTANCE, TaskState.EXECUTING, TaskState.CREATED),
+                StateModel.StateTransitionService.isValid(StateValidators.TaskStateValidator.INSTANCE, TaskState.EXECUTING, TaskState.CREATED),
                 "EXECUTING -> CREATED should be invalid");
 
         // This ensures task state transitions are validated before process state can be updated

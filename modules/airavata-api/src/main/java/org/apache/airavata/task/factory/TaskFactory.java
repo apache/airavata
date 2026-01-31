@@ -22,7 +22,7 @@ package org.apache.airavata.task.factory;
 import java.util.EnumMap;
 import java.util.Map;
 import org.apache.airavata.common.model.ComputeResourceType;
-import org.apache.airavata.config.conditional.ConditionalOnParticipant;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnParticipant;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,10 +31,11 @@ public class TaskFactory {
 
     private final Map<ComputeResourceType, DaprTaskFactory> factories;
 
-    public TaskFactory(SlurmTaskFactory slurmTaskFactory, AWSTaskFactory awsTaskFactory) {
+    public TaskFactory(SlurmTaskFactory slurmTaskFactory, AWSTaskFactory awsTaskFactory, PlainTaskFactory plainTaskFactory) {
         this.factories = new EnumMap<>(ComputeResourceType.class);
         this.factories.put(ComputeResourceType.SLURM, slurmTaskFactory);
         this.factories.put(ComputeResourceType.AWS, awsTaskFactory);
+        this.factories.put(ComputeResourceType.PLAIN, plainTaskFactory);
     }
 
     public DaprTaskFactory getFactory(ComputeResourceType type) {

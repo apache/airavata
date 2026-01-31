@@ -27,12 +27,12 @@ import org.apache.airavata.common.model.Status;
 import org.apache.airavata.common.model.UserProfile;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.config.conditional.ConditionalOnApiService;
+import org.apache.airavata.config.conditional.ServiceConditionals.ConditionalOnApiService;
 import org.apache.airavata.profile.exception.IamAdminServicesException;
 import org.apache.airavata.profile.exception.UserProfileServiceException;
 import org.apache.airavata.profile.mappers.UserProfileMapper;
 import org.apache.airavata.registry.entities.UserEntity;
-import org.apache.airavata.registry.exception.RegistryException;
+import org.apache.airavata.registry.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.registry.repositories.UserRepository;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.AiravataSecurityManager;
@@ -377,38 +377,35 @@ public class UserProfileService {
     }
 
     private UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
-        UserEntity entity = userProfileMapper.toEntity(userProfile);
+        String airavataInternalUserId = userProfile.getUserId() != null && userProfile.getGatewayId() != null
+                ? userProfile.getUserId() + "@" + userProfile.getGatewayId()
+                : null;
         UserEntity persistedCopy;
         try {
-            // If updating an existing entity, preserve creationTime and lastAccessTime from the database
-            // These fields are required and should not be null
-            if (entity.getAiravataInternalUserId() != null) {
-                UserEntity existingEntity =
-                        entityManager.find(UserEntity.class, entity.getAiravataInternalUserId());
+            if (airavataInternalUserId != null) {
+                UserEntity existingEntity = entityManager.find(UserEntity.class, airavataInternalUserId);
                 if (existingEntity != null) {
-                    // Entity exists - update it with new values while preserving timestamps
-                    // Copy non-null fields from the new entity to the existing one
-                    // UserEntity now uses OIDC standard claims:
-                    // - sub (replaces userId)
-                    // - givenName (replaces firstName)
-                    // - familyName (replaces lastName)
-                    // - email (replaces emails list)
-                    // - state and validUntil are removed (not in OIDC scope)
-                    if (entity.getSub() != null) existingEntity.setSub(entity.getSub());
-                    if (entity.getGatewayId() != null) existingEntity.setGatewayId(entity.getGatewayId());
-                    if (entity.getGivenName() != null) existingEntity.setGivenName(entity.getGivenName());
-                    if (entity.getFamilyName() != null) existingEntity.setFamilyName(entity.getFamilyName());
-                    if (entity.getEmail() != null) existingEntity.setEmail(entity.getEmail());
-                    if (entity.getPreferredUsername() != null) existingEntity.setPreferredUsername(entity.getPreferredUsername());
-                    if (entity.getZoneinfo() != null) existingEntity.setZoneinfo(entity.getZoneinfo());
-                    // Use existing entity (with preserved timestamps) for merge
-                    entity = existingEntity;
+                    // Update in place to avoid "different object with same identifier" (never create second instance)
+                    if (userProfile.getUserId() != null) existingEntity.setSub(userProfile.getUserId());
+                    if (userProfile.getGatewayId() != null) existingEntity.setGatewayId(userProfile.getGatewayId());
+                    if (userProfile.getFirstName() != null) existingEntity.setGivenName(userProfile.getFirstName());
+                    if (userProfile.getLastName() != null) existingEntity.setFamilyName(userProfile.getLastName());
+                    if (userProfile.getEmails() != null && !userProfile.getEmails().isEmpty()) {
+                        existingEntity.setEmail(userProfile.getEmails().get(0));
+                    }
+                    if (userProfile.getTimeZone() != null) existingEntity.setZoneinfo(userProfile.getTimeZone());
+                    persistedCopy = existingEntity;
+                    entityManager.flush();
+                } else {
+                    UserEntity entity = userProfileMapper.toEntity(userProfile);
+                    persistedCopy = entityManager.merge(entity);
+                    entityManager.flush();
                 }
-                // If existingEntity is null, this is a new entity - use the mapped entity as-is
+            } else {
+                UserEntity entity = userProfileMapper.toEntity(userProfile);
+                persistedCopy = entityManager.merge(entity);
+                entityManager.flush();
             }
-            // For new entities, @PrePersist will set creationTime and lastAccessTime
-            persistedCopy = entityManager.merge(entity);
-            entityManager.flush(); // Ensure entity is persisted and visible in same transaction
         } catch (RuntimeException e) {
             // If database operations fail, log and rethrow - this will be caught by the outer transaction handler
             logger.error("Database operation failed during user profile update: {}", e.getMessage(), e);

@@ -31,8 +31,8 @@ log() {
 # ================================
 log "Updating the Airavata unified server distribution..."
 
-DIST_NAME="apache-airavata-server-0.21-SNAPSHOT"
-DIST_ARCHIVE="${DIST_NAME}-bin.tar.gz"
+DIST_NAME="airavata-0.21-SNAPSHOT"
+DIST_ARCHIVE="${DIST_NAME}.tar.gz"
 
 if [ ! -f "./${DIST_ARCHIVE}" ]; then
     log "ERROR: Distribution archive not found: ${DIST_ARCHIVE}"
@@ -40,9 +40,9 @@ if [ ! -f "./${DIST_ARCHIVE}" ]; then
 fi
 
 # Stop the server if running
-if [ -f "./${DIST_NAME}/bin/airavata-server-stop.sh" ]; then
+if [ -f "./${DIST_NAME}/bin/airavata.sh" ]; then
     log "Stopping current server..."
-    ./${DIST_NAME}/bin/airavata-server-stop.sh -f
+    ./${DIST_NAME}/bin/airavata.sh -d stop
     sleep 5
 fi
 
@@ -87,4 +87,4 @@ else
 fi
 
 log "Distribution update completed."
-log "You can now start the server using: ./${DIST_NAME}/bin/airavata-server-start.sh"
+log "You can now start the server using: ./${DIST_NAME}/bin/airavata.sh -d start"

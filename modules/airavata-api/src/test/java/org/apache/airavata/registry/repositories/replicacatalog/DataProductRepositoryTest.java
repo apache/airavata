@@ -31,7 +31,7 @@ import org.apache.airavata.common.model.DataProductType;
 import org.apache.airavata.common.model.DataReplicaLocationModel;
 import org.apache.airavata.common.model.ReplicaLocationCategory;
 import org.apache.airavata.common.model.ReplicaPersistentType;
-import org.apache.airavata.registry.exception.ReplicaCatalogException;
+import org.apache.airavata.registry.exception.RegistryExceptions.ReplicaCatalogException;
 import org.apache.airavata.registry.repositories.common.TestBase;
 import org.apache.airavata.registry.services.DataProductService;
 import org.junit.jupiter.api.Test;

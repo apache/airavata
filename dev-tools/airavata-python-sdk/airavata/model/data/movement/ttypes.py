@@ -39,8 +39,7 @@ class SecurityProtocol(IntEnum):
     SSH_KEYS:
      SSH Keys
 
-    FIXME: Change GSI to a more precise generic security protocol - X509
-
+    GSI may be refined to a more precise generic security protocol (e.g. X509).
 
     """
     USERNAME_PASSWORD = 0

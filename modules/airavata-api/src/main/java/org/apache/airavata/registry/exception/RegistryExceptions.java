@@ -1,0 +1,123 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.registry.exception;
+
+/**
+ * Registry-related exceptions. Use nested classes for type-safe catch and clarity.
+ */
+public final class RegistryExceptions {
+
+    private RegistryExceptions() {}
+
+    public static class AppCatalogException extends Exception {
+        private static final long serialVersionUID = -2849422320139467602L;
+
+        public AppCatalogException(Throwable e) {
+            super(e);
+        }
+
+        public AppCatalogException(String message) {
+            super(message, null);
+        }
+
+        public AppCatalogException(String message, Throwable e) {
+            super(message, e);
+        }
+    }
+
+    public static class ExperimentCatalogException extends Exception {
+        private static final long serialVersionUID = -2849422320139467602L;
+
+        public ExperimentCatalogException(Throwable e) {
+            super(e);
+        }
+
+        public ExperimentCatalogException(String message) {
+            super(message, null);
+        }
+
+        public ExperimentCatalogException(String message, Throwable e) {
+            super(message, e);
+        }
+    }
+
+    /**
+     * Exception thrown by registry service operations.
+     */
+    public static class RegistryException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        private String message;
+
+        public RegistryException() {
+            super();
+        }
+
+        public RegistryException(String message) {
+            super(message);
+            this.message = message;
+        }
+
+        public RegistryException(String message, Throwable cause) {
+            super(message, cause);
+            this.message = message;
+        }
+
+        @Override
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    public static class ReplicaCatalogException extends RegistryException {
+
+        public ReplicaCatalogException(Throwable e) {
+            super(e.getMessage(), e);
+        }
+
+        public ReplicaCatalogException(String message) {
+            super(message, null);
+        }
+
+        public ReplicaCatalogException(String message, Throwable e) {
+            super(message, e);
+        }
+    }
+
+    public static class WorkflowCatalogException extends Exception {
+        private static final long serialVersionUID = -2849422320139467602L;
+
+        public WorkflowCatalogException(Throwable e) {
+            super(e);
+        }
+
+        public WorkflowCatalogException(String message) {
+            super(message, null);
+        }
+
+        public WorkflowCatalogException(String message, Throwable e) {
+            super(message, e);
+        }
+    }
+}
