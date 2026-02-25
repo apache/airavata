@@ -30,6 +30,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,39 +48,35 @@ public class RestEndpointRegistrationTest {
      */
     private static final Map<String, String> EXPECTED_CONTROLLERS = new HashMap<>() {
         {
-            put(
-                    "org.apache.airavata.restapi.controller.ApplicationDeploymentController",
-                    "/api/v1/application-deployments");
-            put(
-                    "org.apache.airavata.restapi.controller.ApplicationInterfaceController",
-                    "/api/v1/application-interfaces");
-            // ApplicationModuleController is a nested class in ApplicationInterfaceController; not loaded via
-            // Class.forName here
+            put("org.apache.airavata.restapi.controller.AllocationProjectController", "/api/v1/allocation-projects");
+            put("org.apache.airavata.restapi.controller.ApplicationController", "/api/v1/applications");
+            put("org.apache.airavata.restapi.controller.ApplicationInstallationController", "/api/v1/installations");
             put("org.apache.airavata.restapi.controller.AuthController", "/api/v1/auth");
-            put("org.apache.airavata.restapi.controller.ComputeResourceController", "/api/v1/compute-resources");
             put("org.apache.airavata.restapi.controller.ConnectivityTestController", "/api/v1/connectivity-test");
             put("org.apache.airavata.restapi.controller.CredentialController", "/api/v1");
-            put("org.apache.airavata.restapi.controller.ArtifactController", "/api/v1/artifacts");
             put("org.apache.airavata.restapi.controller.ExperimentController", "/api/v1/experiments");
+            put("org.apache.airavata.restapi.controller.GatewayConfigController", "/api/v1/gateway-config");
             put("org.apache.airavata.restapi.controller.GatewayController", "/api/v1/gateways");
             put("org.apache.airavata.restapi.controller.GroupController", "/api/v1/groups");
-            put(
-                    "org.apache.airavata.restapi.controller.GroupResourceProfileController",
-                    "/api/v1/group-resource-profiles");
             put("org.apache.airavata.restapi.controller.JobController", "/api/v1/jobs");
+            put("org.apache.airavata.restapi.controller.NoticeController", "/api/v1/notices");
             put("org.apache.airavata.restapi.controller.ProcessController", "/api/v1/processes");
             put("org.apache.airavata.restapi.controller.ProjectController", "/api/v1/projects");
-            put("org.apache.airavata.restapi.controller.ResourceAccessController", "/api/v1/resource-access");
+            put("org.apache.airavata.restapi.controller.ResearchArtifactController", "/api/v1/research/artifacts");
+            put("org.apache.airavata.restapi.controller.ResearchHubController", "/api/v1/research-hub");
             put(
-                    "org.apache.airavata.restapi.controller.ResourceAccessGrantController",
-                    "/api/v1/resource-access-grants");
+                    "org.apache.airavata.restapi.controller.ResearchProjectController",
+                    "/api/v1/research/artifacts/projects");
+            put("org.apache.airavata.restapi.controller.ResearchSessionController", "/api/v1/research-hub/sessions");
+            put("org.apache.airavata.restapi.controller.ResourceBindingController", "/api/v1/bindings");
+            put("org.apache.airavata.restapi.controller.ResourceController", "/api/v1/resources");
             put("org.apache.airavata.restapi.controller.SSHKeyController", "/api/v1/ssh-keygen");
-            put("org.apache.airavata.restapi.controller.StorageResourceController", "/api/v1/storage-resources");
+            put("org.apache.airavata.restapi.controller.StatisticsController", "/api/v1/statistics");
+            put("org.apache.airavata.restapi.controller.SystemConfigController", "/api/v1/system-config");
+            put("org.apache.airavata.restapi.controller.SystemController", "/api/v1");
             put("org.apache.airavata.restapi.controller.UserController", "/api/v1/users");
-            put(
-                    "org.apache.airavata.restapi.controller.UserResourceProfileController",
-                    "/api/v1/user-resource-profiles");
             put("org.apache.airavata.restapi.controller.WorkflowController", "/api/v1/workflows");
+            put("org.apache.airavata.restapi.controller.WorkflowRunController", "/api/v1/workflow-runs");
         }
     };
 
@@ -89,27 +86,33 @@ public class RestEndpointRegistrationTest {
      */
     private static final Map<String, Integer> MINIMUM_ENDPOINTS_PER_CONTROLLER = new HashMap<>() {
         {
-            put("ApplicationDeploymentController", 3);
-            put("ApplicationInterfaceController", 5);
+            put("AllocationProjectController", 3);
+            put("ApplicationController", 6);
+            put("ApplicationInstallationController", 4);
             put("AuthController", 2);
-            put("ComputeResourceController", 4);
-            put("ConnectivityTestController", 3);
-            put("CredentialController", 5);
-            put("ArtifactController", 5);
-            put("ExperimentController", 4);
-            put("GatewayController", 4);
-            put("GroupController", 5);
-            put("GroupResourceProfileController", 5);
-            put("JobController", 3);
-            put("ProcessController", 5);
-            put("ProjectController", 4);
-            put("ResourceAccessController", 4);
-            put("ResourceAccessGrantController", 3);
+            put("ConnectivityTestController", 4);
+            put("CredentialController", 7);
+            put("ExperimentController", 8);
+            put("GatewayConfigController", 9);
+            put("GatewayController", 5);
+            put("GroupController", 7);
+            put("JobController", 4);
+            put("NoticeController", 5);
+            put("ProcessController", 4);
+            put("ProjectController", 5);
+            put("ResearchArtifactController", 13);
+            put("ResearchHubController", 2);
+            put("ResearchProjectController", 4);
+            put("ResearchSessionController", 3);
+            put("ResourceBindingController", 5);
+            put("ResourceController", 5);
             put("SSHKeyController", 1);
-            put("StorageResourceController", 4);
-            put("UserController", 5);
-            put("UserResourceProfileController", 5);
-            put("WorkflowController", 5);
+            put("StatisticsController", 2);
+            put("SystemConfigController", 7);
+            put("SystemController", 2);
+            put("UserController", 8);
+            put("WorkflowController", 7);
+            put("WorkflowRunController", 3);
         }
     };
 
@@ -258,15 +261,17 @@ public class RestEndpointRegistrationTest {
 
     @Test
     public void shouldHaveCrudOperationsForResourceControllers() {
-        // Controllers that should have full CRUD operations
+        // Controllers that should have full CRUD operations (GET, POST, PUT, DELETE)
         List<String> crudControllers = Arrays.asList(
-                "ComputeResourceController",
-                "StorageResourceController",
-                "GatewayController",
-                "ProjectController",
+                "ApplicationController",
                 "ExperimentController",
+                "GatewayController",
                 "GroupController",
-                "GroupResourceProfileController",
+                "NoticeController",
+                "ProjectController",
+                "ResourceBindingController",
+                "ResourceController",
+                "UserController",
                 "WorkflowController");
 
         List<String> missingCrud = new ArrayList<>();
@@ -348,7 +353,8 @@ public class RestEndpointRegistrationTest {
             if (method.isAnnotationPresent(GetMapping.class)
                     || method.isAnnotationPresent(PostMapping.class)
                     || method.isAnnotationPresent(PutMapping.class)
-                    || method.isAnnotationPresent(DeleteMapping.class)) {
+                    || method.isAnnotationPresent(DeleteMapping.class)
+                    || method.isAnnotationPresent(PatchMapping.class)) {
                 count++;
             }
         }
@@ -395,6 +401,14 @@ public class RestEndpointRegistrationTest {
                     ? deleteMapping.value()[0]
                     : (deleteMapping.path().length > 0 ? deleteMapping.path()[0] : "");
             return "DELETE " + basePath + path + " -> " + method.getName() + "()";
+        }
+
+        PatchMapping patchMapping = method.getAnnotation(PatchMapping.class);
+        if (patchMapping != null) {
+            String path = patchMapping.value().length > 0
+                    ? patchMapping.value()[0]
+                    : (patchMapping.path().length > 0 ? patchMapping.path()[0] : "");
+            return "PATCH " + basePath + path + " -> " + method.getName() + "()";
         }
 
         return null;

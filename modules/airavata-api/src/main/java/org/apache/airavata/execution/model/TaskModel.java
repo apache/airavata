@@ -22,7 +22,7 @@ package org.apache.airavata.execution.model;
 import java.util.List;
 import java.util.Objects;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.TaskState;
+import org.apache.airavata.core.model.TaskState;
 import org.apache.airavata.status.model.ErrorModel;
 import org.apache.airavata.compute.resource.model.JobModel;
 

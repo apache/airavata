@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.storage.client;
 
-import org.apache.airavata.execution.dag.DagTaskResult;
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.task.TaskContext;
 
 /**

@@ -96,7 +96,8 @@ public class ProcessEntity implements Serializable {
     @JoinColumn(name = "experiment_id", insertable = false, updatable = false)
     private ExperimentEntity experiment;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "process", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "process_id")
     private List<JobEntity> jobs;
 
     public ProcessEntity() {}

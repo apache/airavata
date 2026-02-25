@@ -22,7 +22,7 @@ package org.apache.airavata.execution.state;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.execution.model.TaskState;
+import org.apache.airavata.core.model.TaskState;
 import org.apache.airavata.execution.state.StateValidators;
 import org.junit.jupiter.api.Test;
 

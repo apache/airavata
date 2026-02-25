@@ -20,91 +20,20 @@
 package org.apache.airavata.research.application.service;
 
 import java.util.List;
-import java.util.UUID;
-import org.apache.airavata.research.application.entity.ApplicationInstallationEntity;
 import org.apache.airavata.research.application.model.ApplicationInstallation;
-import org.apache.airavata.research.application.repository.ApplicationInstallationRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class ApplicationInstallationService {
+/**
+ * Service contract for managing application installations on compute resources.
+ */
+public interface ApplicationInstallationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationInstallationService.class);
+    ApplicationInstallation getInstallation(String installationId);
 
-    private final ApplicationInstallationRepository installationRepository;
+    List<ApplicationInstallation> getInstallationsByApplication(String applicationId);
 
-    public ApplicationInstallationService(ApplicationInstallationRepository installationRepository) {
-        this.installationRepository = installationRepository;
-    }
+    String createInstallation(ApplicationInstallation installation);
 
-    private ApplicationInstallation toModel(ApplicationInstallationEntity entity) {
-        var model = new ApplicationInstallation();
-        model.setInstallationId(entity.getInstallationId());
-        model.setApplicationId(entity.getApplicationId());
-        model.setResourceId(entity.getResourceId());
-        model.setLoginUsername(entity.getLoginUsername());
-        model.setInstallPath(entity.getInstallPath());
-        model.setStatus(entity.getStatus());
-        model.setInstalledAt(entity.getInstalledAt());
-        model.setErrorMessage(entity.getErrorMessage());
-        model.setCreatedAt(entity.getCreatedAt());
-        return model;
-    }
+    void updateInstallation(String installationId, ApplicationInstallation installation);
 
-    private ApplicationInstallationEntity toEntity(ApplicationInstallation model) {
-        var entity = new ApplicationInstallationEntity();
-        entity.setInstallationId(model.getInstallationId());
-        entity.setApplicationId(model.getApplicationId());
-        entity.setResourceId(model.getResourceId());
-        entity.setLoginUsername(model.getLoginUsername());
-        entity.setInstallPath(model.getInstallPath());
-        entity.setStatus(model.getStatus());
-        entity.setInstalledAt(model.getInstalledAt());
-        entity.setErrorMessage(model.getErrorMessage());
-        entity.setCreatedAt(model.getCreatedAt());
-        return entity;
-    }
-
-    public ApplicationInstallation getInstallation(String installationId) {
-        return installationRepository
-                .findById(installationId)
-                .map(this::toModel)
-                .orElse(null);
-    }
-
-    public List<ApplicationInstallation> getInstallationsByApplication(String applicationId) {
-        return installationRepository.findByApplicationId(applicationId).stream().map(this::toModel).toList();
-    }
-
-    @Transactional
-    public String createInstallation(ApplicationInstallation installation) {
-        if (installation.getInstallationId() == null
-                || installation.getInstallationId().isBlank()) {
-            installation.setInstallationId(UUID.randomUUID().toString());
-        }
-        var entity = toEntity(installation);
-        var saved = installationRepository.save(entity);
-        logger.debug("Created application installation with id={}", saved.getInstallationId());
-        return saved.getInstallationId();
-    }
-
-    @Transactional
-    public void updateInstallation(String installationId, ApplicationInstallation installation) {
-        if (!installationRepository.existsById(installationId)) {
-            throw new IllegalArgumentException("ApplicationInstallation not found: " + installationId);
-        }
-        installation.setInstallationId(installationId);
-        var entity = toEntity(installation);
-        installationRepository.save(entity);
-        logger.debug("Updated application installation with id={}", installationId);
-    }
-
-    @Transactional
-    public void deleteInstallation(String installationId) {
-        installationRepository.deleteById(installationId);
-        logger.debug("Deleted application installation with id={}", installationId);
-    }
+    void deleteInstallation(String installationId);
 }

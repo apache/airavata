@@ -21,7 +21,7 @@ package org.apache.airavata.storage.client.sftp;
 
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.execution.task.TaskContext;
-import org.apache.airavata.execution.task.TaskFailureException;
+import org.apache.airavata.core.exception.TaskFailureException;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentAdapter;
 import org.apache.airavata.protocol.StorageResourceAdapter;

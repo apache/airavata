@@ -27,7 +27,7 @@ import java.util.Objects;
 import org.apache.airavata.research.application.model.ApplicationInput;
 import org.apache.airavata.research.application.model.ApplicationOutput;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.status.model.ErrorModel;
 import org.apache.airavata.compute.resource.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.compute.resource.model.JobModel;

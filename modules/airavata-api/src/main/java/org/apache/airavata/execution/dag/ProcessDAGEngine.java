@@ -22,6 +22,7 @@ package org.apache.airavata.execution.dag;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

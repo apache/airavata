@@ -28,7 +28,7 @@ import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.execution.entity.ProcessEntity;
 import org.apache.airavata.execution.mapper.ProcessMapper;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.repository.ProcessRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

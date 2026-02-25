@@ -31,9 +31,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.model.TaskModel;
 import org.apache.airavata.execution.model.TaskTypes;
 import org.apache.airavata.execution.task.TaskContext;

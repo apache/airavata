@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.execution.task.TaskContext;
 import org.junit.jupiter.api.BeforeEach;

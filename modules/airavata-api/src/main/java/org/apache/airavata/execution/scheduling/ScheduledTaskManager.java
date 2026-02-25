@@ -20,7 +20,7 @@
 package org.apache.airavata.execution.scheduling;
 
 import org.apache.airavata.config.ServerProperties;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.service.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

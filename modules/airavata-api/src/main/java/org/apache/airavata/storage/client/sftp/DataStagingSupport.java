@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.core.telemetry.CounterMetric;
 import org.apache.airavata.execution.task.TaskContext;
-import org.apache.airavata.execution.task.TaskFailureException;
+import org.apache.airavata.core.exception.TaskFailureException;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.protocol.AgentAdapter;

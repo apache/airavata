@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.UUID;
 import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.execution.dag.DagTaskResult;
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.dag.TaskInterceptor;
 import org.apache.airavata.execution.dag.TaskNode;
 import org.apache.airavata.execution.task.TaskContext;

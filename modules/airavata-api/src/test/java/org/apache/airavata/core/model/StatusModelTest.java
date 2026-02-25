@@ -21,8 +21,8 @@ package org.apache.airavata.core.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.airavata.execution.model.ProcessState;
-import org.apache.airavata.execution.model.TaskState;
+import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.core.model.TaskState;
 import org.junit.jupiter.api.Test;
 
 /**

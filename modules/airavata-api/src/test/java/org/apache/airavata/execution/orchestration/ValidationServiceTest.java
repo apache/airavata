@@ -64,7 +64,7 @@ public class ValidationServiceTest {
 
     @BeforeEach
     void setUp() {
-        validationService = new ValidationService(properties, errorService);
+        validationService = new DefaultValidationService(properties, errorService);
     }
 
     // ---------------------------------------------------------------------------

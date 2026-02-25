@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.dag;
 
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.task.TaskContext;
 
 /**

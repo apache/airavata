@@ -39,7 +39,7 @@ import java.util.Optional;
 import org.apache.airavata.core.model.ResourceIdentifier;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.model.TaskModel;
 import org.apache.airavata.execution.model.TaskTypes;
 import org.apache.airavata.execution.service.ProcessService;

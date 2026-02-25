@@ -34,7 +34,7 @@ import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.model.ResourceBinding;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.research.application.model.Application;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

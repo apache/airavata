@@ -39,7 +39,7 @@ import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.model.AwsComputeResourcePreference;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.execution.dag.DagTaskResult;
+import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
 import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.execution.task.TaskContext;

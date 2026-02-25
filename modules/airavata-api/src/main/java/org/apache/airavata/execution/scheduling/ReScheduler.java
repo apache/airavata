@@ -32,7 +32,7 @@ import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.compute.resource.service.JobService;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;

@@ -32,7 +32,7 @@ import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.compute.resource.service.JobService;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.ProcessState;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.status.service.StatusService;
