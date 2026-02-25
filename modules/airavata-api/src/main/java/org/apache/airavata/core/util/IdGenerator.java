@@ -72,22 +72,19 @@ public class IdGenerator {
             int microsecondFraction = (int) ((nanoTime % 1_000_000) / 1000);
 
             // Ensure timestamp is always increasing, even if called in rapid succession
-            if (currentTimeMillis < lastTimestampMillis) {
-                // Time went backwards (shouldn't happen, but handle it)
-                lastTimestampMillis = currentTimeMillis;
-                lastMicrosecondFraction = microsecondFraction;
-            } else if (currentTimeMillis == lastTimestampMillis) {
-                // Same millisecond - ensure microsecond fraction is increasing
-                if (microsecondFraction <= lastMicrosecondFraction) {
-                    // nanoTime didn't advance enough, increment manually
+            if (currentTimeMillis <= lastTimestampMillis) {
+                // Same millisecond, or real time hasn't caught up to our incremented value.
+                // Either way, keep incrementing from where we are.
+                if (currentTimeMillis == lastTimestampMillis && microsecondFraction > lastMicrosecondFraction) {
+                    // nanoTime advanced within the same millisecond, use it
+                    lastMicrosecondFraction = microsecondFraction;
+                } else {
+                    // Increment manually to stay monotonic
                     lastMicrosecondFraction = (lastMicrosecondFraction + 1) % 1000;
                     if (lastMicrosecondFraction == 0) {
                         // Wrapped around all 1000 microseconds, increment millisecond
-                        lastTimestampMillis = currentTimeMillis + 1;
+                        lastTimestampMillis++;
                     }
-                } else {
-                    // nanoTime advanced, use it
-                    lastMicrosecondFraction = microsecondFraction;
                 }
             } else {
                 // New millisecond - use current microsecond fraction

@@ -255,6 +255,11 @@ under the License.
                     <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
                     <systemPropertyVariables>
                     </systemPropertyVariables>
+                    <environmentVariables>
+                        <!-- Rancher Desktop / Docker Desktop: Ryuk container must mount the
+                             in-VM socket path, not the host-side socket path -->
+                        <TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>/var/run/docker.sock</TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE>
+                    </environmentVariables>
                     <excludes>
                         <exclude>**/IT.java</exclude>
                         <exclude>**/*TestWithMyProxyAuth.java</exclude>
