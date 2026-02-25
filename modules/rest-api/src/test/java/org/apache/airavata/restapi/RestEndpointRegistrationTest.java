@@ -265,6 +265,7 @@ public class RestEndpointRegistrationTest {
         List<String> crudControllers = Arrays.asList(
                 "ApplicationController",
                 "ExperimentController",
+                "GatewayConfigController",
                 "GatewayController",
                 "GroupController",
                 "NoticeController",
