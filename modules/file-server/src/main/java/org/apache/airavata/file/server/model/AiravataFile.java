@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.file.server.model;
 
-import org.apache.airavata.agents.api.FileMetadata;
+import org.apache.airavata.protocol.FileMetadata;
 
 public class AiravataFile {
     private String fileName;
@@ -28,9 +28,8 @@ public class AiravataFile {
     private long updatedTime;
 
     public static AiravataFile fromMetadata(FileMetadata metadata) {
-        // replace System.currentTimeMillis() with correct times
-        return new AiravataFile(
-                metadata.getName(), metadata.getSize(), System.currentTimeMillis(), System.currentTimeMillis());
+        long currentTime = System.currentTimeMillis();
+        return new AiravataFile(metadata.getName(), metadata.getSize(), currentTime, currentTime);
     }
 
     public AiravataFile(String fileName, long fileSize, long createdTime, long updatedTime) {

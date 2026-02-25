@@ -1,63 +1,90 @@
 #!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# Simplified Distribution Update Script
+# 
+# Updates the unified Airavata server distribution.
 
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
 # ================================
-# Update the Distribution
+# Update the Unified Distribution
 # ================================
-log "Updating the API Server..."
-rm -rf ./apache-airavata-api-server-0.21-SNAPSHOT
-tar -xvf ./apache-airavata-api-server-0.21-SNAPSHOT.tar.gz -C .
-log "API Server updated."
+log "Updating the Airavata unified server distribution..."
 
-log "Updating the Agent Service..."
-rm -rf ./apache-airavata-agent-service-0.21-SNAPSHOT
-tar -xvf ./apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz -C .
-log "Agent Service updated."
+DIST_NAME="airavata-0.21-SNAPSHOT"
+DIST_ARCHIVE="${DIST_NAME}.tar.gz"
 
-log "Updating the Research Service..."
-rm -rf ./apache-airavata-research-service-0.21-SNAPSHOT
-tar -xvf ./apache-airavata-research-service-0.21-SNAPSHOT.tar.gz -C .
-log "Research Service updated."
+if [ ! -f "./${DIST_ARCHIVE}" ]; then
+    log "ERROR: Distribution archive not found: ${DIST_ARCHIVE}"
+    exit 1
+fi
 
-log "Updating the File Service..."
-rm -rf ./apache-airavata-file-server-0.21-SNAPSHOT
-tar -xvf ./apache-airavata-file-server-0.21-SNAPSHOT.tar.gz -C .
-log "File Service updated."
+# Stop the server if running
+if [ -f "./${DIST_NAME}/bin/airavata.sh" ]; then
+    log "Stopping current server..."
+    ./${DIST_NAME}/bin/airavata.sh -d stop
+    sleep 5
+fi
 
-log "Updating the REST proxy..."
-rm -rf ./apache-airavata-restproxy-0.21-SNAPSHOT
-tar -xvf ./apache-airavata-restproxy-0.21-SNAPSHOT.tar.gz -C .
-log "REST proxy updated."
+# Remove old distribution
+if [ -d "./${DIST_NAME}" ]; then
+    log "Removing old distribution..."
+    rm -rf ./${DIST_NAME}
+fi
+
+# Extract new distribution
+log "Extracting new distribution..."
+tar -xvf ./${DIST_ARCHIVE}
+log "Distribution extracted."
 
 # ================================
-# Update the config files
+# Update Configuration Files
 # ================================
-mkdir -p ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/
-cp vault/airavata-server.properties ./apache-airavata-api-server-0.21-SNAPSHOT/conf/airavata-server.properties
-cp vault/airavata.sym.p12 ./apache-airavata-api-server-0.21-SNAPSHOT/conf/keystores/airavata.sym.p12
-cp vault/email-config.yml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/email-config.yml
-cp vault/log4j2.xml ./apache-airavata-api-server-0.21-SNAPSHOT/conf/log4j2.xml
-log "API Server config files updated."
+log "Updating configuration files..."
 
-mkdir -p ./apache-airavata-agent-service-0.21-SNAPSHOT/conf
-cp vault/application-agent-service.yml ./apache-airavata-agent-service-0.21-SNAPSHOT/conf/application.yml
-cp vault/log4j2.xml ./apache-airavata-agent-service-0.21-SNAPSHOT/conf/log4j2.xml
-log "Agent Service config files updated."
+# Create conf directory structure
+mkdir -p ./${DIST_NAME}/conf/keystores/
 
-mkdir -p ./apache-airavata-research-service-0.21-SNAPSHOT/conf
-cp vault/application-research-service.yml ./apache-airavata-research-service-0.21-SNAPSHOT/conf/application.yml
-cp vault/log4j2.xml ./apache-airavata-research-service-0.21-SNAPSHOT/conf/log4j2.xml
-log "Research Service config files updated."
+# Copy configuration files from conf (if exists)
+if [ -d "./conf" ]; then
+    if [ -f "./conf/airavata.properties" ]; then
+        cp ./conf/airavata.properties ./${DIST_NAME}/conf/airavata.properties
+        log "Configuration file updated."
+    fi
+    
+    if [ -f "./conf/airavata.sym.p12" ]; then
+        cp ./conf/airavata.sym.p12 ./${DIST_NAME}/conf/keystores/airavata.sym.p12
+        log "Keystore file updated."
+    fi
+    
+    if [ -f "./conf/logback.xml" ]; then
+        cp ./conf/logback.xml ./${DIST_NAME}/conf/logback.xml
+        log "Logback configuration updated."
+    fi
+else
+    log "WARNING: conf directory not found. Configuration files not updated."
+    log "Please ensure configuration is set up before starting the server."
+fi
 
-mkdir -p ./apache-airavata-file-server-0.21-SNAPSHOT/conf
-cp vault/application-file-server.properties ./apache-airavata-file-server-0.21-SNAPSHOT/conf/application.properties
-cp vault/log4j2.xml ./apache-airavata-file-server-0.21-SNAPSHOT/conf/log4j2.xml
-log "File Service config files updated."
-
-mkdir -p ./apache-airavata-restproxy-0.21-SNAPSHOT/conf
-cp vault/application-restproxy.properties ./apache-airavata-restproxy-0.21-SNAPSHOT/conf/application.properties
-cp vault/log4j2.xml ./apache-airavata-restproxy-0.21-SNAPSHOT/conf/log4j2.xml
-log "REST proxy config files updated."
+log "Distribution update completed."
+log "You can now start the server using: ./${DIST_NAME}/bin/airavata.sh -d start"

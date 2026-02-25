@@ -1,0 +1,203 @@
+# Airavata development: core services + devcontainer
+# Credentials: .devcontainer/dev.env.defaults (single source of truth)
+#
+# ./scripts/run  or  init.sh [--clean] [--run] then dev.sh serve
+# Profiles: (none) = core | test = + slurm, sftp
+
+networks:
+  airavata-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  slurm-data:
+  slurm-config:
+  slurm-logs:
+  sftp-data:
+  sftp-keys:
+
+services:
+  # ===========================================
+  # CORE SERVICES (always started)
+  # ===========================================
+
+  keycloak:
+    image: keycloak/keycloak:26.5
+    container_name: keycloak
+    restart: always
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
+    command: ["start"]
+    networks:
+      - airavata-network
+    ports:
+      - "18080:18080"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/18080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  keycloak-setup:
+    image: alpine:3.19
+    container_name: keycloak-setup
+    env_file:
+      - ./dev.env.defaults
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_URL: http://keycloak:18080
+      KEYCLOAK_INIT_WIPE: "true"
+      # INCLUDE_CILOGON: "true"
+      # CILOGON_CLIENT_ID: "cilogon:/client_id/..."
+      # CILOGON_CLIENT_SECRET: "..."
+      # INCLUDE_SIDECAR_AGENT: "true"
+      # INCLUDE_JUPYTERLAB: "true"
+      # JUPYTERLAB_CLIENT_SECRET: "..."
+    volumes:
+      - ./keycloak/setup-keycloak.sh:/setup-keycloak.sh:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["apk add --no-cache bash curl jq >/dev/null 2>&1 && bash /setup-keycloak.sh"]
+    networks:
+      - airavata-network
+    restart: "no"
+
+  db:
+    image: mariadb:11.7
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: airavata
+      MYSQL_USER: airavata
+      MYSQL_PASSWORD: 123456
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    command:
+      - mariadbd
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --sql-mode=NO_ENGINE_SUBSTITUTION
+    networks:
+      - airavata-network
+    ports:
+      - "13306:3306"
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "airavata", "-p123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  temporal:
+    image: temporalio/admin-tools:latest
+    container_name: temporal
+    restart: always
+    entrypoint: ["temporal"]
+    command: ["server", "start-dev", "--ip", "0.0.0.0", "--db-filename", "/tmp/temporal.db"]
+    networks:
+      - airavata-network
+    ports:
+      - "7233:7233"
+      - "8233:8233"
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    networks:
+      - airavata-network
+    ports:
+      - "8081:8080"
+
+  devcontainer:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    container_name: airavata-devcontainer
+    depends_on:
+      db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    volumes:
+      - ..:/home/developer/workspace:cached
+    working_dir: /home/developer/workspace
+    network_mode: host
+    command: sleep infinity
+
+  # ===========================================
+  # TEST PROFILE SERVICES
+  # ===========================================
+  # Start with: docker compose --profile test up
+
+  slurm-test-cluster:
+    build:
+      context: ./test-infra/slurm
+      dockerfile: Dockerfile
+    image: airavata-test-slurm:latest
+    container_name: airavata-test-slurm
+    hostname: slurm-test-cluster
+    profiles:
+      - test
+    ports:
+      - "10022:22"
+      - "6817:6817"
+      - "6818:6818"
+    environment:
+      SLURM_CONF: /etc/slurm/slurm.conf
+    volumes:
+      - slurm-data:/var/lib/slurm
+      - slurm-config:/etc/slurm
+      - slurm-logs:/var/log/slurm
+    networks:
+      - airavata-network
+    healthcheck:
+      test: ["CMD", "sinfo", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: /usr/sbin/slurmd -D
+
+  sftp-test-server:
+    build:
+      context: ./test-infra/sftp
+      dockerfile: Dockerfile
+    image: airavata-test-sftp:latest
+    container_name: airavata-test-sftp
+    hostname: sftp-test-server
+    profiles:
+      - test
+    ports:
+      - "10023:22"
+    environment:
+      SFTP_USER: testuser
+      SFTP_PASSWORD: testpass
+      SFTP_ROOT: /home/testuser/data
+    volumes:
+      - sftp-data:/home/testuser/data
+      - sftp-keys:/home/testuser/.ssh
+    networks:
+      - airavata-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "22"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -1,0 +1,462 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.execution.monitoring;
+
+import jakarta.mail.Address;
+import jakarta.mail.Flags;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.search.FlagTerm;
+import jakarta.mail.search.SearchTerm;
+import java.io.InputStream;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import org.apache.airavata.core.exception.CoreExceptions.AiravataException;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
+import org.apache.airavata.execution.monitoring.JobStatusMonitor;
+import org.apache.airavata.execution.monitoring.JobStatusResult;
+import org.apache.airavata.compute.provider.slurm.SLURMEmailParser;
+import org.apache.airavata.compute.provider.slurm.ResourceConfiguration;
+import org.apache.airavata.config.ConfigResolver;
+import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.ServerLifecycle;
+import org.apache.airavata.compute.resource.service.JobService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
+
+@Component
+@Profile("!test")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.email", name = "enabled", havingValue = "true")
+public class EmailMonitorWorkflow implements ServerLifecycle {
+
+    private static final Logger log = LoggerFactory.getLogger(EmailMonitorWorkflow.class);
+
+    private volatile boolean running = false;
+    private volatile boolean stopRequested = false;
+    private final ServerProperties airavataProperties;
+    private final JobService jobService;
+    private final ApplicationContext applicationContext;
+    private final JobStatusMonitor jobStatusMonitor;
+
+    private static final String IMAPS = "imaps";
+    private static final String POP3 = "pop3";
+
+    private Store store;
+    private Folder emailFolder;
+    private Properties properties;
+    private String host, emailAddress, password, storeProtocol, folderName;
+    private final Map<ResourceJobManagerType, SLURMEmailParser> emailParserMap = new HashMap<>();
+    private final Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
+    private Message[] flushUnseenMessages;
+    private final Map<ResourceJobManagerType, ResourceConfiguration> resourceConfigs = new HashMap<>();
+    private long emailExpirationTimeMinutes;
+    private String publisherId;
+    private Thread emailThread;
+
+    public EmailMonitorWorkflow(
+            JobService jobService, ServerProperties airavataProperties, ApplicationContext applicationContext)
+            throws Exception {
+        this.jobService = jobService;
+        this.airavataProperties = airavataProperties;
+        this.applicationContext = applicationContext;
+        JobStatusMonitor monitor = null;
+        try {
+            monitor = applicationContext.getBean(JobStatusMonitor.class);
+        } catch (Exception ignored) {
+            // JobStatusMonitor may not be enabled (e.g. test profile)
+        }
+        this.jobStatusMonitor = monitor;
+        // Don't initialize here - wait for @PostConstruct when properties are injected
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        try {
+            loadContext();
+        } catch (Exception e) {
+            log.error("Error loading email context", e);
+            throw new RuntimeException("Failed to initialize EmailMonitorWorkflow", e);
+        }
+        host = airavataProperties.services().monitor().email().host();
+        emailAddress = airavataProperties.services().monitor().email().address();
+        password = airavataProperties.services().monitor().email().password();
+        storeProtocol = airavataProperties.services().monitor().email().storeProtocol();
+        folderName = airavataProperties.services().monitor().email().folderName();
+        emailExpirationTimeMinutes =
+                airavataProperties.services().monitor().email().expiryMins();
+        publisherId = airavataProperties.services().monitor().compute().emailPublisherId();
+        if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
+            throw new RuntimeException(
+                    "Unsupported store protocol , expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);
+        }
+        properties = new Properties();
+        properties.put("mail.store.protocol", storeProtocol);
+        try {
+            populateAddressAndParserMap(resourceConfigs);
+        } catch (Exception e) {
+            log.error("Error populating address and parser map", e);
+            throw new RuntimeException("Failed to initialize EmailMonitorWorkflow", e);
+        }
+    }
+
+    private void loadContext() throws Exception {
+        Yaml yaml = new Yaml();
+        // loadFile() will throw IllegalStateException if configDir is not found or file is missing
+        java.net.URL emailConfigUrl = ConfigResolver.loadFile("email-config.yml");
+        InputStream emailConfigStream = emailConfigUrl.openStream();
+        Object load = yaml.load(emailConfigStream);
+
+        if (load == null) {
+            log.warn("Could not load email-config.yml. Email monitoring will use default configuration.");
+            return; // Use default configuration
+        }
+
+        if (load instanceof Map<?, ?> rawMap) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> loadMap = (Map<String, Object>) rawMap;
+            Map<String, Object> configMap = (Map<String, Object>) loadMap.get("config");
+            List<Map<String, Object>> resourceObjs = (List<Map<String, Object>>) configMap.get("resources");
+            if (resourceObjs != null) {
+                resourceObjs.forEach(resource -> {
+                    ResourceConfiguration resourceConfig = new ResourceConfiguration();
+                    String identifier = resource.get("jobManagerType").toString();
+                    resourceConfig.setJobManagerType(ResourceJobManagerType.valueOf(identifier));
+                    Object emailParser = resource.get("emailParser");
+                    if (emailParser != null) {
+                        resourceConfig.setEmailParser(emailParser.toString());
+                    }
+                    List<String> emailAddressList = (List<String>) resource.get("resourceEmailAddresses");
+                    resourceConfig.setResourceEmailAddresses(emailAddressList);
+                    resourceConfigs.put(resourceConfig.getJobManagerType(), resourceConfig);
+                });
+            }
+        }
+        // populateAddressAndParserMap will be called from init() after properties are loaded
+    }
+
+    private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfiguration> resourceConfigs)
+            throws AiravataException {
+        for (Map.Entry<ResourceJobManagerType, ResourceConfiguration> resourceConfigEntry :
+                resourceConfigs.entrySet()) {
+            ResourceJobManagerType type = resourceConfigEntry.getKey();
+            ResourceConfiguration config = resourceConfigEntry.getValue();
+            List<String> resourceEmailAddresses = config.getResourceEmailAddresses();
+            if (resourceEmailAddresses != null && !resourceEmailAddresses.isEmpty()) {
+                for (String resourceEmailAddress : resourceEmailAddresses) {
+                    addressMap.put(resourceEmailAddress, type);
+                }
+                try {
+                    // Extract simple class name from full class name
+                    String parserClassName = config.getEmailParser();
+                    String simpleClassName = parserClassName.substring(parserClassName.lastIndexOf('.') + 1);
+                    // Spring default bean name is simple class name with first letter lowercase
+                    String beanName = simpleClassName.substring(0, 1).toLowerCase() + simpleClassName.substring(1);
+
+                    SLURMEmailParser emailParser = applicationContext.getBean(beanName, SLURMEmailParser.class);
+                    emailParserMap.put(type, emailParser);
+                } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
+                    throw new AiravataException(
+                            "SLURMEmailParser bean not found: " + config.getEmailParser()
+                                    + ". Make sure it's a Spring bean with @Component annotation.",
+                            e);
+                } catch (Exception e) {
+                    throw new AiravataException("Error while getting email parser bean: " + config.getEmailParser(), e);
+                }
+            }
+        }
+    }
+
+    public void monitor(String jobId) {
+        log.info("[EJM]: Added monitor Id : {} to email based monitor map", jobId);
+    }
+
+    private JobStatusResult parse(Message message, String publisherId) throws MessagingException, AiravataException {
+        Address fromAddress = message.getFrom()[0];
+        String addressStr = fromAddress.toString();
+        ResourceJobManagerType jobMonitorType = getJobMonitorType(addressStr);
+        SLURMEmailParser emailParser = emailParserMap.get(jobMonitorType);
+        if (emailParser == null) {
+            throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
+                    + " for email monitoring -->  " + addressStr);
+        }
+        try {
+            JobStatusResult jobStatusResult = emailParser.parseEmail(message, jobService);
+            jobStatusResult.setPublisherName(publisherId);
+            var jobId = jobStatusResult.getJobId();
+            var jobName = jobStatusResult.getJobName();
+            var jobStatus = jobStatusResult.getState();
+            log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
+            return jobStatusResult;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
+        for (Map.Entry<String, ResourceJobManagerType> addressEntry : addressMap.entrySet()) {
+            if (addressStr.contains(addressEntry.getKey())) {
+                return addressEntry.getValue();
+            }
+        }
+        throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+    }
+
+    @Override
+    public String getServerName() {
+        return "Email Monitor";
+    }
+
+    @Override
+    public String getServerVersion() {
+        return "1.0";
+    }
+
+    @Override
+    public int getPhase() {
+        return 40; // Start after realtime monitor
+    }
+
+    @Override
+    public void start() {
+        if (running) {
+            log.debug("{} is already running", getServerName());
+            return;
+        }
+        try {
+            log.info("Starting {} (version: {})...", getServerName(), getServerVersion());
+            doStart();
+            running = true;
+            log.info("{} started successfully", getServerName());
+        } catch (Exception e) {
+            log.error("Failed to start " + getServerName(), e);
+            running = false;
+            throw new RuntimeException("Failed to start " + getServerName(), e);
+        }
+    }
+
+    private void doStart() throws Exception {
+        emailThread = new Thread(() -> {
+            while (!stopRequested && !Thread.currentThread().isInterrupted()) {
+                try {
+                    Session session = Session.getDefaultInstance(properties);
+                    store = session.getStore(storeProtocol);
+                    store.connect(host, emailAddress, password);
+                    emailFolder = store.getFolder(folderName);
+                    // first we search for all unread messages.
+                    SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+                    while (!stopRequested && !Thread.currentThread().isInterrupted()) {
+                        Thread.sleep(
+                                airavataProperties.services().monitor().email().period()); // sleep for long enough
+                        if (!store.isConnected()) {
+                            store.connect();
+                            emailFolder = store.getFolder(folderName);
+                        }
+                        log.info("[EJM]: Retrieving unseen emails");
+                        if (emailFolder == null) {
+                            return;
+                        }
+                        emailFolder.open(Folder.READ_WRITE);
+                        if (emailFolder.isOpen()) {
+                            // flush if any message left in flushUnseenMessage
+                            if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+                                try {
+                                    emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                                    flushUnseenMessages = null;
+                                } catch (MessagingException e) {
+                                    if (!store.isConnected()) {
+                                        store.connect();
+                                        emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                                        flushUnseenMessages = null;
+                                    }
+                                }
+                            }
+                            Message[] searchMessages = emailFolder.search(unseenBefore);
+                            if (searchMessages == null || searchMessages.length == 0) {
+                                log.info("[EJM]: No new email messages");
+                            } else {
+                                log.info("[EJM]: {} new email/s received", searchMessages.length);
+                                processMessages(searchMessages);
+                            }
+                            emailFolder.close(false);
+                        }
+                    }
+                } catch (MessagingException e) {
+                    log.error("[EJM]: Couldn't connect to the store ", e);
+                    try {
+                        Thread.sleep(
+                                airavataProperties.services().monitor().email().connectionRetryInterval());
+                    } catch (InterruptedException ie) {
+                        log.error("[EJM]: Interrupted while waiting before retry", ie);
+                        Thread.currentThread().interrupt();
+                    }
+                } catch (InterruptedException e) {
+                    log.error("[EJM]: Interrupt exception while sleep ", e);
+                } catch (Throwable e) {
+                    log.error("[EJM]: Caught a throwable ", e);
+                } finally {
+                    try {
+                        if (emailFolder != null) {
+                            emailFolder.close(false);
+                        }
+                        if (store != null) {
+                            store.close();
+                        }
+                    } catch (MessagingException e) {
+                        log.error("[EJM]: Store close operation failed, couldn't close store", e);
+                    } catch (Throwable e) {
+                        log.error("[EJM]: Caught a throwable while closing email store ", e);
+                    }
+                }
+            }
+            log.info("[EJM]: Email monitoring daemon stopped");
+        });
+        emailThread.setName("EmailMonitorWorkflow-Worker");
+        emailThread.setDaemon(true);
+        emailThread.start();
+    }
+
+    @Override
+    public void stop() {
+        if (!running) {
+            log.debug("{} is not running", getServerName());
+            return;
+        }
+        try {
+            log.info("Stopping {}...", getServerName());
+            doStop();
+            running = false;
+            log.info("{} stopped successfully", getServerName());
+        } catch (Exception e) {
+            log.error("Error stopping " + getServerName(), e);
+            running = false;
+        }
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        stop();
+        if (callback != null) {
+            callback.run();
+        }
+    }
+
+    @Override
+    public boolean isAutoStartup() {
+        return true;
+    }
+
+    private void doStop() throws Exception {
+        stopRequested = true;
+        if (emailThread != null) {
+            emailThread.interrupt();
+            try {
+                emailThread.join(5000); // Wait up to 5 seconds
+            } catch (InterruptedException e) {
+                log.warn("Interrupted while waiting for email thread to stop", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+        // Close email connections
+        try {
+            if (emailFolder != null) {
+                emailFolder.close(false);
+            }
+            if (store != null) {
+                store.close();
+            }
+        } catch (MessagingException e) {
+            log.warn("Error closing email store", e);
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running && emailThread != null && emailThread.isAlive();
+    }
+
+    private void processMessages(Message[] searchMessages) throws MessagingException {
+        List<Message> processedMessages = new ArrayList<>();
+        List<Message> unreadMessages = new ArrayList<>();
+        for (Message message : searchMessages) {
+            var msgHash = message.hashCode();
+            try {
+                JobStatusResult jobStatusResult = parse(message, publisherId);
+                log.info("read JobStatusUpdate<{}> from {}: {}", msgHash, publisherId, jobStatusResult);
+                if (jobStatusMonitor != null) {
+                    jobStatusMonitor.publish(jobStatusResult);
+                } else {
+                    log.warn("[EJM]: JobStatusMonitor not available; job status result dropped for job {}",
+                            jobStatusResult.getJobId());
+                }
+                processedMessages.add(message);
+            } catch (Exception e) {
+                var msgTime = message.getReceivedDate().getTime();
+                var msgExpiryTime =
+                        msgTime + Duration.ofMinutes(emailExpirationTimeMinutes).toMillis();
+                if (IdGenerator.getUniqueTimestamp().getTime() > msgExpiryTime) {
+                    processedMessages.add(message);
+                    log.error("cannot read JobStatusUpdate<{}> from {}. marked as timeout", msgHash, publisherId, e);
+                } else {
+                    log.error("cannot read JobStatusUpdate<{}> from {}. marked as requeue", msgHash, publisherId, e);
+                    unreadMessages.add(message);
+                }
+            }
+        }
+        if (!processedMessages.isEmpty()) {
+            Message[] seenMessages = new Message[processedMessages.size()];
+            processedMessages.toArray(seenMessages);
+            try {
+                emailFolder.setFlags(seenMessages, new Flags(Flags.Flag.SEEN), true);
+            } catch (MessagingException e) {
+                if (!store.isConnected()) {
+                    store.connect();
+                    emailFolder.setFlags(seenMessages, new Flags(Flags.Flag.SEEN), true);
+                }
+            }
+        }
+        if (!unreadMessages.isEmpty()) {
+            Message[] unseenMessages = new Message[unreadMessages.size()];
+            unreadMessages.toArray(unseenMessages);
+            try {
+                emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
+            } catch (MessagingException e) {
+                // anyway we need to push this update.
+                if (!store.isConnected()) {
+                    store.connect();
+                    emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
+                }
+                flushUnseenMessages = unseenMessages;
+            }
+        }
+    }
+}

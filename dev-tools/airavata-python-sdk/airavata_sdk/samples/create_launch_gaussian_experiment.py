@@ -40,7 +40,7 @@ token = authenticator.get_token_and_user_info_password_flow(
     gateway_id=gateway_id,
 )
 
-api_server_client = APIServerClient()
+api_server_client = APIServerClient(access_token=token)
 
 airavata_util = APIServerClientUtil(
     gateway_id=gateway_id,
@@ -53,7 +53,7 @@ data_model_client = DataModelCreationUtil(
     password=password,
 )
 
-credential_store_client = CredentialStoreClient()
+credential_store_client = CredentialStoreClient(access_token=token)
 
 executionId = airavata_util.get_execution_id("Gaussian")
 projectId = airavata_util.get_project_id("Default Project")
@@ -102,20 +102,19 @@ experiment = data_model_client.configure_input_and_outputs(experiment, input_fil
                                                            application_name="Gaussian")
 
 # create experiment
-ex_id = api_server_client.create_experiment(token, "cyberwater", experiment)
+ex_id = api_server_client.create_experiment(experiment, "cyberwater")
 
 # launch experiment
-api_server_client.launch_experiment(token, ex_id, "cyberwater")
+api_server_client.launch_experiment(ex_id, "cyberwater")
 
-status = api_server_client.get_experiment_status(token, ex_id);
+status = api_server_client.get_experiment_status(ex_id)
 
 if status is not None:
-    print("Initial state " + str(status.state))
-while status.state <= 6:
-    status = api_server_client.get_experiment_status(token,
-                                                     ex_id);
+    print("Initial state " + str(status.get("state")))
+while status and status.get("state", "COMPLETED") not in ["COMPLETED", "FAILED", "CANCELED"]:
+    status = api_server_client.get_experiment_status(ex_id)
     time.sleep(30)
-    print("State " + str(status.state))
+    print("State " + str(status.get("state")))
 
 print("Completed")
 

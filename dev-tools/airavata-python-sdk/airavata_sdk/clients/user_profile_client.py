@@ -15,37 +15,48 @@
 #
 
 import logging
+from typing import Optional
 
-from airavata_sdk.transport import utils
 from airavata_sdk import Settings
+from airavata_sdk.transport.utils import RestClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
 
 
 class UserProfileClient(object):
+    """Client for user profile operations via the unified REST API."""
 
-    def __init__(self):
+    def __init__(self, access_token: str, base_url: Optional[str] = None):
         self.settings = Settings()
-        self.client = utils.initialize_user_profile_client(
-            self.settings.PROFILE_SERVICE_HOST,
-            self.settings.PROFILE_SERVICE_PORT,
-            self.settings.PROFILE_SERVICE_SECURE,
+        self.client = RestClient(
+            access_token=access_token,
+            base_url=base_url or self.settings.API_SERVER_URL,
         )
-        # expose the needed functions
-        self.get_api_version = self.client.getAPIVersion
-        self.initialize_user_profile = self.client.initializeUserProfile
-        self.add_user_profile = self.client.addUserProfile
-        self.update_user_profile = self.client.updateUserProfile
-        self.get_user_profile_by_id = self.client.getUserProfileById
-        self.delete_user_profile = self.client.deleteUserProfile
-        self.get_all_user_profiles_in_gateway = self.client.getAllUserProfilesInGateway
-        self.does_user_exist = self.client.doesUserExist
+
+    def get_api_version(self) -> str:
+        health = self.client.get("/health")
+        return health.get("version", "1.0")
+
+    def initialize_user_profile(self) -> str:
+        return self.client.post("/users", json={})
+
+    def add_user_profile(self, user_profile: dict) -> str:
+        return self.client.post("/users", json=user_profile)
+
+    def update_user_profile(self, user_profile: dict) -> bool:
+        user_id = user_profile.get("userId") or user_profile.get("airavataInternalUserId")
+        self.client.put(f"/users/{user_id}", json=user_profile)
+        return True
+
+    def get_user_profile_by_id(self, user_id: str, gateway_id: str = None) -> dict:
+        return self.client.get(f"/users/{user_id}", params={"gatewayId": gateway_id})
+
+    def delete_user_profile(self, user_id: str, gateway_id: str = None) -> None:
+        self.client.delete(f"/users/{user_id}")
+
+    def get_all_user_profiles_in_gateway(self, gateway_id: str, offset: int = 0, limit: int = -1) -> list[dict]:
+        return self.client.get("/users", params={"gatewayId": gateway_id, "offset": offset, "limit": limit})
+
+    def does_user_exist(self, user_id: str, gateway_id: str = None) -> bool:
+        return self.client.get(f"/users/{user_id}/exists", params={"gatewayId": gateway_id})

@@ -4,26 +4,29 @@ on:
   pull_request:
     branches:
       - master
+      - service-layer-improvements
   push:
     branches:
       - master
+      - service-layer-improvements
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Set up JDK 17
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "17"
-      - name: Checkout code
-        uses: actions/checkout@v4
+          java-version: "25"
+          cache: "maven"
       - name: Run Spotless Check
-        run: mvn spotless:check
+        run: ./mvnw spotless:check
       - name: Run Spotless Apply if Check Fails
         if: failure()
-        run: mvn spotless:apply
+        run: ./mvnw spotless:apply
       - name: Generate Spotless Patch
         if: failure()
         run: |

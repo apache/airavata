@@ -8,32 +8,34 @@ The Apache Airavata Python SDK lets third-party clients interact with Airavata t
 * **Airavata SDK** - Create research groups, manage resource allocations, and setup scientific apps on different HPC resources.
 
 ## Project Layout
-```bash
-  airavata_python_sdk/
-  ├── airavata/
-  │   ├── api/
-  │   ├── base/
-  │   ├── model/
-  │   ├── service/
-  │   └── __init__.py
-  ├── airavata_experiments/
-  │   ├── md/
-  │   ├── neuro/
-  │   ├── __init__.py
-  │   ├── airavata.py
-  │   ├── base.py
-  │   ├── plan.py
-  │   ├── runtime.py
-  │   ├── scripter.py
-  │   ├── sftp.py
-  │   └── task.py
-  ├── airavata_jupyter_magic/
-  │   └── __init__.py
-  ├── airavata_auth/
-  │   └── device_auth.py
-  └── airavata_sdk/
-      ├── clients/
-      ├── samples/
-      ├── transport/
-      └── __init__.py
+
+```mermaid
+flowchart TB
+    subgraph Root["airavata_python_sdk/"]
+        subgraph airavata["airavata/"]
+            a_api["api/"]
+            a_base["base/"]
+            a_model["model/"]
+            a_service["service/"]
+            a_init["__init__.py"]
+        end
+        subgraph experiments["airavata_experiments/"]
+            e_md["md/"]
+            e_neuro["neuro/"]
+            e_init["__init__.py"]
+            e_py["airavata.py, base.py, plan.py, runtime.py, scripter.py, sftp.py, task.py"]
+        end
+        subgraph jupyter["airavata_jupyter_magic/"]
+            j_init["__init__.py"]
+        end
+        subgraph auth["airavata_auth/"]
+            auth_device["device_auth.py"]
+        end
+        subgraph sdk["airavata_sdk/"]
+            s_clients["clients/"]
+            s_samples["samples/"]
+            s_transport["transport/"]
+            s_init["__init__.py"]
+        end
+    end
 ```

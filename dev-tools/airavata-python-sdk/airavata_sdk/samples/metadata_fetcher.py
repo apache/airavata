@@ -26,26 +26,26 @@ logger.setLevel(logging.DEBUG)
 authenticator = Authenticator()
 token = authenticator.get_token_and_user_info_password_flow("username", "password", "cyberwater")
 
-api_server_client = APIServerClient()
+api_server_client = APIServerClient(access_token=token)
 
 # fetch all application deployments
-deployments = api_server_client.get_all_application_deployments(token, "cyberwater");
-print(deployments);
+deployments = api_server_client.get_all_application_deployments("cyberwater")
+print(deployments)
 # appModuleId  for execution Id
 
 
 # compute resource names and Ids
-compute_resoure_name = api_server_client.get_all_compute_resource_names(token);
-print(compute_resoure_name);
+compute_resource_name = api_server_client.get_all_compute_resource_names()
+print(compute_resource_name)
 
 # get  resource profiles
-resource_profile = api_server_client.get_all_gateway_resource_profiles(token);
-print(resource_profile);
+resource_profile = api_server_client.get_all_gateway_resource_profiles()
+print(resource_profile)
 
 # get resource profiles
-group_resource_list = api_server_client.get_group_resource_list(token, "cyberwater");
-print(group_resource_list);
+group_resource_list = api_server_client.get_group_resource_list("cyberwater")
+print(group_resource_list)
 
 # provides storage resources
-storage_resource = api_server_client.get_all_storage_resource_names(token)
-print(storage_resource);
+storage_resource = api_server_client.get_all_storage_resource_names()
+print(storage_resource)

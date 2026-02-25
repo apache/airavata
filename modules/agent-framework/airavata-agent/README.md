@@ -66,7 +66,7 @@ chmod +x airavata-agent
 ### Run the agent
 ```
 ./airavata-agent \
-  --server <connection_server_url>:19900 \
+  --server <connection_server_url>:9090 \
   --agent <agent_id> \
   --environ <environment_id> \
   --lib "python=3.10,pip,<packages>" \
@@ -77,7 +77,7 @@ Replace placeholders with your actual configuration values.
 #### Example:
 ```
 ./airavata-agent
---server loalhost:19900
+--server localhost:9090
 --agent agent_dd9667fe-78d1-4ffa-a0d2-19074e41dd45
 --environ base
 --lib "python=3.10,pip,mattersim,torchmetrics,numpy"
@@ -108,7 +108,7 @@ go run agent.go <connection_server_url> --agent <agent_id> --environ <env>
 
 #### Example
 ```
-go run agent.go --server localhost:19900 --agent agent1 --environ base
+go run agent.go --server localhost:9090 --agent agent1 --environ base
 ```
 
 ## Build the agent
@@ -127,7 +127,7 @@ env GOOS=linux GOARCH=amd64 go build
 
 Execute a Shell Command
 ```
-POST http://localhost:18880/api/v1/agent/execute/shell
+POST http://localhost:8090/api/v1/agents/execute/shell
 
 {
     "agentId": "agent1",
@@ -146,12 +146,12 @@ Response
 
 To extract the result, pass the executionId
 ```
-GET http://localhost:18880/api/v1/agent/execute/shell/78fe66aa-4895-4768-8701-5ef50367732e
+GET http://localhost:8090/api/v1/agents/execute/shell/78fe66aa-4895-4768-8701-5ef50367732e
 ```
 
 Execute Jupyter Code
 ```
-http://localhost:18880/api/v1/agent/execute/jupyter
+http://localhost:8090/api/v1/agents/execute/jupyter
 
 {
     "sessionId": "session1",
@@ -168,7 +168,7 @@ Response
 }
 ```
 ```
-http://localhost:18880/api/v1/agent/execute/jupyter/22f02087-87cc-4e90-bc3b-3b969179c31b
+http://localhost:8090/api/v1/agents/execute/jupyter/22f02087-87cc-4e90-bc3b-3b969179c31b
 
 Response
 
@@ -182,7 +182,7 @@ Response
 
 Set Up a tcp Tunnel
 ```
-POST http://localhost:18880/api/v1/agent/setup/tunnel
+POST http://localhost:8090/api/v1/agents/setup/tunnel
 
 {
     "agentId": "agent1",
@@ -202,7 +202,7 @@ Response
 Get tunnel info
 
 ```
-GET http://localhost:18880/api/v1/agent/setup/tunnel/<execution_id>
+GET http://localhost:8090/api/v1/agents/setup/tunnel/<execution_id>
 
 Response
 
@@ -218,7 +218,7 @@ Response
 Terminate tunnel
 
 ```
-POST http://localhost:18880/api/v1/agent/terminate/tunnel
+POST http://localhost:8090/api/v1/agents/terminate/tunnel
 
 {
     "agentId": "agent1",

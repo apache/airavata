@@ -223,10 +223,10 @@ class Remote(Runtime):
     av = AiravataOperator(AuthContext.get_access_token())
     # prioritize job state, fallback to experiment state
     job_id, job_state = av.get_task_status(task.ref)
-    if job_state in [AiravataOperator.JobState.UNKNOWN, AiravataOperator.JobState.NON_CRITICAL_FAIL]:
-      return job_id, av.get_experiment_status(task.ref).name
+    if job_state in ["UNKNOWN", "NON_CRITICAL_FAIL"]:
+      return job_id, av.get_experiment_status(task.ref)
     else:
-      return job_id, job_state.name
+      return job_id, job_state
 
   def signal(self, signal: str, task: Task) -> None:
     assert task.ref is not None
@@ -296,18 +296,18 @@ def find_runtimes(
   from .airavata import AiravataOperator
   av = AiravataOperator(AuthContext.get_access_token())
   grps = av.get_available_groups()
-  grp_names = [str(x.groupResourceProfileName) for x in grps]
+  grp_names = [str(x["groupResourceProfileName"]) for x in grps]
   if group is not None:
     assert group in grp_names, f"Group {group} was not found. Available groups: {repr(grp_names)}"
-    groups = [g for g in grps if str(g.groupResourceProfileName) == group]
+    groups = [g for g in grps if str(g["groupResourceProfileName"]) == group]
   else:
     groups = grps
   runtimes = []
   for g in groups:
     matched_runtimes = []
-    assert g.groupResourceProfileName is not None, f"Group {g} has no name"
+    assert g["groupResourceProfileName"] is not None, f"Group {g} has no name"
     r: Runtime
-    for r in av.get_available_runtimes(group=g.groupResourceProfileName):
+    for r in av.get_available_runtimes(group=g["groupResourceProfileName"]):
       if (node_count or 1) > int(r.args["node_count"]):
         continue
       if (cpu_count or 1) > int(r.args["cpu_count"]):

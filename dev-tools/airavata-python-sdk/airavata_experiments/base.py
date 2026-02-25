@@ -141,7 +141,7 @@ class Experiment(Generic[T], abc.ABC):
       agg_inputs = {**self.inputs, **t.inputs}
       task_inputs = {k: {"value": agg_inputs[v[0]], "type": v[1]} for k, v in self.input_mapping.items()}
       task = Task(name=t.name, app_id=self.application.app_id, inputs=task_inputs, runtime=t.runtime)
-      # task.freeze()  # TODO upload the task-related data and freeze the task
+      # task.freeze()  # Upload task-related data and freeze when supported
       tasks.append(task)
     plan = Plan(tasks=tasks)
     plan.save()

@@ -1,3 +1,13 @@
 *.retry
 vault-password.txt
 ENV/
+tests/.pytest_cache/
+tests/__pycache__/
+tests/**/__pycache__/
+tests/**/*.pyc
+tests/.coverage
+tests/htmlcov/
+tests/.tox/
+tests/test_key*
+tests/inventory_*.yml
+tests/ansible.cfg

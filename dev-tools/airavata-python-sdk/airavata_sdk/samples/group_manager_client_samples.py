@@ -16,8 +16,6 @@
 
 import logging
 
-from airavata.api.error.ttypes import TException
-from airavata.model.group.ttypes import GroupModel
 from airavata_sdk.clients.group_manager_client import GroupManagerClient
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 
@@ -25,55 +23,52 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-authenticator = Authenticator();
-token = authenticator.get_token_and_user_info_password_flow("default-admin", "123456", "default")
+authenticator = Authenticator()
+token = authenticator.get_token_and_user_info_password_flow("default-admin", "admin123", "default")
 
 # load GroupManagerClient with default configuration
-client = GroupManagerClient()
+client = GroupManagerClient(access_token=token)
 
 
 # create group in airavata
 def create_group():
     try:
-        group_model = GroupModel()
-        group_model.id = "testing_group"
-        group_model.name = "testing_group_name"
-        group_model.ownerId = "default-admin"
-        group_model.description = "This group is used for testing users"
-
-        users = ['default-admin']
-
-        group_model.members = users
-        group_model.admins = users
-
-        created_group = client.create_group(token, group_model)
+        group_model = {
+            "id": "testing_group",
+            "name": "testing_group_name",
+            "ownerId": "default-admin",
+            "description": "This group is used for testing users",
+            "members": ["default-admin"],
+            "admins": ["default-admin"],
+        }
+        created_group = client.create_group(group_model)
         print(created_group)
-    except TException:
+    except Exception:
         logger.exception("Exception occurred")
 
 
 # get all groups
 def get_groups():
     try:
-        created_group = client.get_groups(token)
+        created_group = client.get_groups()
         print("Groups :", created_group)
-    except TException:
+    except Exception:
         logger.exception("Exception occurred")
 
 
 def add_group_admin():
     try:
-        created_group = client.add_group_admins(token, "testing_group", ["default-admin"])
+        created_group = client.add_group_admins("testing_group", ["default-admin"])
         print("Groups :", created_group)
-    except TException:
+    except Exception:
         logger.exception("Exception occurred")
 
 
 def has_owner_access():
     try:
-        has_access = client.has_owner_access(token, "testing_group", "default-admin")
-        print("Is have accesss ", has_access)
-    except TException:
+        has_access = client.has_owner_access("testing_group", "default-admin")
+        print("Is have access ", has_access)
+    except Exception:
         logger.exception("Exception occurred")
 
 get_groups()

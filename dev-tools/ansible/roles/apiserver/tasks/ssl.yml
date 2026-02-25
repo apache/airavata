@@ -1,0 +1,113 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Set HAProxy variables
+  ansible.builtin.set_fact:
+    haproxy_config_path: "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version] if ansible_os_family == 'RedHat' else haproxy_config_dir['Ubuntu'] }}"
+    haproxy_service: "{{ haproxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version] if ansible_os_family == 'RedHat' else haproxy_service_name['Ubuntu'] }}"
+
+- name: Allow HTTP for Let's Encrypt certificate renewal
+  ansible.posix.firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    service: http
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Allow HTTP for Let's Encrypt certificate renewal
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Copy prepareLetsEncryptCertificates.sh script
+  ansible.builtin.copy:
+    src: prepareLetsEncryptCertificates.sh
+    dest: "{{ haproxy_config_path }}"
+    mode: "0755"
+  become: true
+
+- name: Check if SSL certificate exists
+  ansible.builtin.stat:
+    path: "{{ api_server_letsencrypt_ssl_cert }}"
+  register: ssl_cert_exists
+  become: true
+
+- name: Generate certificate if it doesn't exist
+  ansible.builtin.command: "certbot --standalone --non-interactive --agree-tos --email {{ letsencrypt_email }} -d {{ api_server_public_hostname }} certonly"
+  become: true
+  when: not ssl_cert_exists.stat.exists
+
+- name: Set certificate renewal post-hook
+  ansible.builtin.command: "certbot renew --force-renewal --installer null --standalone --post-hook \"{{ haproxy_config_path }}/prepareLetsEncryptCertificates.sh && systemctl reload {{ haproxy_service }}.service\" --quiet"
+  become: true
+  ignore_errors: true
+
+- name: Allow HAProxy to bind to TCP ports
+  ansible.posix.seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Install HAProxy
+  ansible.builtin.package:
+    name: "{{ 'haproxy18' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else 'haproxy' }}"
+    state: present
+  become: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: Install HAProxy
+  ansible.builtin.dnf:
+    name: haproxy
+    state: present
+  become: true
+  when: ansible_distribution == "Rocky" and ansible_distribution_major_version == "8"
+
+- name: Install HAProxy
+  ansible.builtin.apt:
+    name: haproxy
+    state: present
+    update_cache: yes
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Copy HAProxy config file
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: "{{ haproxy_config_path }}/haproxy.cfg"
+    backup: yes
+  become: true
+  notify:
+    - restart haproxy
+
+- name: Start and enable HAProxy
+  ansible.builtin.systemd:
+    name: "{{ haproxy_service }}"
+    state: started
+    enabled: true
+    daemon_reload: yes
+  become: true

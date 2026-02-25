@@ -43,44 +43,24 @@ class Settings:
         return str(os.getenv("AUTH_SERVER_URL", "https://auth.cybershuttle.org"))
 
     # ------------------------------------------------------------
-    # Thrift Connection Settings
+    # API Server Connection Settings
     # ------------------------------------------------------------
 
     @property
-    def THRIFT_CLIENT_POOL_KEEPALIVE(self):
-        return int(os.getenv("THRIFT_CLIENT_POOL_KEEPALIVE", 5))
+    def API_SERVER_URL(self):
+        return str(os.getenv("API_SERVER_URL", "https://api.gateway.cybershuttle.org"))
 
     @property
     def VERIFY_SSL(self):
         return bool(os.getenv("VERIFY_SSL", True))
 
     @property
-    def THRIFT_CONNECTION_MAX_RETRIES(self):
-        return int(os.getenv("THRIFT_CONNECTION_MAX_RETRIES", 3))
+    def CONNECTION_MAX_RETRIES(self):
+        return int(os.getenv("CONNECTION_MAX_RETRIES", 3))
 
     @property
-    def THRIFT_CONNECTION_RETRY_DELAY(self):
-        return float(os.getenv("THRIFT_CONNECTION_RETRY_DELAY", 1.0))
-
-    # ------------------------------------------------------------
-    # API Server Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def API_SERVER_HOSTNAME(self):
-        return str(os.getenv("API_SERVER_HOSTNAME", "api.gateway.cybershuttle.org"))
-
-    @property
-    def API_SERVER_PORT(self):
-        return int(os.getenv("API_SERVER_PORT", 8930))
-
-    @property
-    def API_SERVER_URL(self):
-        return str(os.getenv("API_SERVER_URL", f"https://{self.API_SERVER_HOSTNAME}"))
-
-    @property
-    def API_SERVER_SECURE(self):
-        return bool(os.getenv("API_SERVER_SECURE", False))
+    def CONNECTION_RETRY_DELAY(self):
+        return float(os.getenv("CONNECTION_RETRY_DELAY", 1.0))
 
     @property
     def MONITOR_STATUS(self):
@@ -92,55 +72,8 @@ class Settings:
 
     @property
     def FILE_SVC_URL(self):
-        return str(os.getenv("FILE_SVC_URL", f"http://{self.API_SERVER_HOSTNAME}:8050"))
-
-    # ------------------------------------------------------------
-    # Profile Service Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def PROFILE_SERVICE_HOST(self):
-        return str(os.getenv("PROFILE_SERVICE_HOST", self.API_SERVER_HOSTNAME))
-
-    @property
-    def PROFILE_SERVICE_PORT(self):
-        return int(os.getenv("PROFILE_SERVICE_PORT", 8962))
-
-    @property
-    def PROFILE_SERVICE_SECURE(self):
-        return bool(os.getenv("PROFILE_SERVICE_SECURE", False))
-
-    # ------------------------------------------------------------
-    # Sharing Service Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def SHARING_API_HOST(self):
-        return str(os.getenv("SHARING_API_HOST", self.API_SERVER_HOSTNAME))
-
-    @property
-    def SHARING_API_PORT(self):
-        return int(os.getenv("SHARING_API_PORT", 7878))
-
-    @property
-    def SHARING_API_SECURE(self):
-        return bool(os.getenv("SHARING_API_SECURE", False))
-
-    # ------------------------------------------------------------
-    # Credential Store Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def CREDENTIAL_STORE_API_HOST(self):
-        return str(os.getenv("CREDENTIAL_STORE_API_HOST", self.API_SERVER_HOSTNAME))
-
-    @property
-    def CREDENTIAL_STORE_API_PORT(self):
-        return int(os.getenv("CREDENTIAL_STORE_API_PORT", 8960))
-
-    @property
-    def CREDENTIAL_STORE_API_SECURE(self):
-        return bool(os.getenv("CREDENTIAL_STORE_API_SECURE", False))
+        """Base URL for File API (list, upload, download). Default: same server at /api/v1/files."""
+        return str(os.getenv("FILE_SVC_URL", f"{self.API_SERVER_URL}/api/v1/files"))
 
     # ------------------------------------------------------------
     # Gateway Settings

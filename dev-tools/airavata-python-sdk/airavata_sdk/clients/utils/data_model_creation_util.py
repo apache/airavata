@@ -17,10 +17,6 @@
 import logging
 from typing import Optional
 
-from airavata.model.application.io.ttypes import InputDataObjectType
-from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
-from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
 from airavata_sdk.clients.api_server_client import APIServerClient
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.utils.api_server_client_util import APIServerClientUtil
@@ -34,14 +30,14 @@ class DataModelCreationUtil(object):
     def __init__(self, gateway_id: str, username: str, password: Optional[str], access_token: Optional[str] = None):
         self.authenticator = Authenticator()
         if access_token:
-            self.token = self.authenticator.get_airavata_authz_token(
+            self.access_token = self.authenticator.get_airavata_authz_token(
                 gateway_id=gateway_id,
                 username=username,
                 token=access_token,
             )
         else:
             assert password is not None
-            self.token = self.authenticator.get_token_and_user_info_password_flow(
+            self.access_token = self.authenticator.get_token_and_user_info_password_flow(
                 gateway_id=gateway_id,
                 username=username,
                 password=password,
@@ -49,7 +45,7 @@ class DataModelCreationUtil(object):
         self.gateway_id = gateway_id
         self.username = username
         self.password = password
-        self.api_server_client = APIServerClient()
+        self.api_server_client = APIServerClient(access_token=self.access_token)
         self.airavata_util = APIServerClientUtil(
             self.gateway_id,
             self.username,
@@ -61,19 +57,19 @@ class DataModelCreationUtil(object):
         execution_id = self.airavata_util.get_execution_id(application_name)
         project_id = self.airavata_util.get_project_id(project_name)
         assert project_id is not None
-        experiment = ExperimentModel()
-        experiment.experimentName = experiment_name
-        experiment.gatewayId = self.gateway_id
-        experiment.userName = self.username
-        experiment.description = description
-        experiment.projectId = project_id
-        experiment.experimentType = ExperimentType.SINGLE_APPLICATION
-        experiment.executionId = execution_id
-        return experiment
+        return {
+            "experimentName": experiment_name,
+            "gatewayId": self.gateway_id,
+            "userName": self.username,
+            "description": description,
+            "projectId": project_id,
+            "experimentType": "SINGLE_APPLICATION",
+            "executionId": execution_id,
+        }
 
     def configure_computation_resource_scheduling(
             self,
-            experiment_model: ExperimentModel,
+            experiment_model: dict,
             computation_resource_name: str,
             group_resource_profile_name: str,
             inputStorageId: str,
@@ -87,24 +83,20 @@ class DataModelCreationUtil(object):
     ):
         resource_host_id = self.airavata_util.get_resource_host_id(computation_resource_name)
         groupResourceProfileId = self.airavata_util.get_group_resource_profile_id(group_resource_profile_name)
-        computRes = ComputationalResourceSchedulingModel()
-        computRes.resourceHostId = resource_host_id
-        computRes.nodeCount = node_count
-        computRes.totalCPUCount = total_cpu_count
-        computRes.queueName = queue_name
-        computRes.wallTimeLimit = wall_time_limit
-
-        userConfigData = UserConfigurationDataModel()
-        userConfigData.computationalResourceScheduling = computRes
-
-        userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.inputStorageResourceId = inputStorageId
-        userConfigData.outputStorageResourceId = outputStorageId
-
-        userConfigData.experimentDataDir = experiment_dir_path
-        userConfigData.airavataAutoSchedule = auto_schedule
-        experiment_model.userConfigurationData = userConfigData
-
+        experiment_model["userConfigurationData"] = {
+            "computationalResourceScheduling": {
+                "resourceHostId": resource_host_id,
+                "nodeCount": node_count,
+                "totalCPUCount": total_cpu_count,
+                "queueName": queue_name,
+                "wallTimeLimit": wall_time_limit,
+            },
+            "groupResourceProfileId": groupResourceProfileId,
+            "inputStorageResourceId": inputStorageId,
+            "outputStorageResourceId": outputStorageId,
+            "experimentDataDir": experiment_dir_path,
+            "airavataAutoSchedule": auto_schedule,
+        }
         return experiment_model
 
     def register_input_file(
@@ -115,56 +107,54 @@ class DataModelCreationUtil(object):
             input_file_name: str,
             uploaded_storage_path: str,
     ):
-        dataProductModel = DataProductModel()
-        dataProductModel.gatewayId = self.gateway_id
-        dataProductModel.ownerName = self.username
-        dataProductModel.productName = file_identifier
-        dataProductModel.dataProductType = DataProductType.FILE
-
-        replicaLocation = DataReplicaLocationModel()
-        replicaLocation.storageResourceId = storageId
-        replicaLocation.replicaName = "{} gateway data store copy".format(input_file_name)
-        replicaLocation.replicaLocationCategory = ReplicaLocationCategory.GATEWAY_DATA_STORE
-        replicaLocation.filePath = "file://{}:{}".format(storage_name, uploaded_storage_path + input_file_name)
-        dataProductModel.replicaLocations = [replicaLocation]
-
-        return self.api_server_client.register_data_product(self.token, dataProductModel)
+        artifact = {
+            "gatewayId": self.gateway_id,
+            "ownerName": self.username,
+            "name": file_identifier,
+            "artifactType": "DATASET",
+            "replicaLocations": [{
+                "replicaName": "{} gateway data store copy".format(input_file_name),
+                "replicaLocationCategory": "GATEWAY_DATA_STORE",
+                "storageResourceId": storageId,
+                "filePath": "file://{}:{}".format(storage_name, uploaded_storage_path + input_file_name),
+            }],
+        }
+        return self.api_server_client.register_artifact(artifact)
 
     def configure_input_and_outputs(
         self,
-        experiment_model: ExperimentModel,
+        experiment_model: dict,
         input_files: list[str],
         application_name: str,
         file_mapping: dict[str, str]={},
     ):
         execution_id = self.airavata_util.get_execution_id(application_name)
         assert execution_id is not None
-        inputs = self.api_server_client.get_application_inputs(self.token, execution_id)
+        inputs = self.api_server_client.get_application_inputs(execution_id)
 
         configured_inputs = []
-        if (len(file_mapping.keys()) == 0):
+        if len(file_mapping.keys()) == 0:
             count = 0
             for obj in inputs:
-                if isinstance(inputs[count], InputDataObjectType) and len(input_files) > count:
-                    inputs[count].value = input_files[count]
+                if len(input_files) > count:
+                    inputs[count]["value"] = input_files[count]
                     count = count + 1
             configured_inputs = inputs
         else:
             for key in file_mapping.keys():
-                for input in inputs:
-                    if key == input.name:
-                        if input.type == 3:
-                            input.value = file_mapping[key]
-                            configured_inputs.append(input)
-                        elif input.type == 4:
+                for inp in inputs:
+                    if key == inp["name"]:
+                        if inp["type"] == 3:
+                            inp["value"] = file_mapping[key]
+                            configured_inputs.append(inp)
+                        elif inp["type"] == 4:
                             val = ','.join(file_mapping[key])
-                            input.value = val
-                            configured_inputs.append(input)
+                            inp["value"] = val
+                            configured_inputs.append(inp)
 
-        experiment_model.experimentInputs = configured_inputs
+        experiment_model["experimentInputs"] = configured_inputs
 
-        outputs = self.api_server_client.get_application_outputs(self.token, execution_id)
-
-        experiment_model.experimentOutputs = outputs
+        outputs = self.api_server_client.get_application_outputs(execution_id)
+        experiment_model["experimentOutputs"] = outputs
 
         return experiment_model

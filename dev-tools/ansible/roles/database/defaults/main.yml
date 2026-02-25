@@ -18,4 +18,24 @@
 # under the License.
 #
 
+---
 mysql_root_password: "admin"
+
+mysql_packages:
+  CentOS: ["MariaDB-server", "MariaDB-client"]
+  Rocky: ["mariadb-server", "mariadb"]
+  Debian: ["mariadb-server", "mariadb-client"]
+
+mysql_service:
+  CentOS: mysql
+  Rocky: mariadb
+  Debian: mariadb
+
+mysql_python_packages:
+  CentOS: MySQL-python
+  Rocky: python3-mysql
+  Debian: python3-pymysql
+
+policycoreutils_packages:
+  CentOS: policycoreutils-python
+  Rocky: policycoreutils-python-utils

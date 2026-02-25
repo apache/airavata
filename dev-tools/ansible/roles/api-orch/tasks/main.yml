@@ -39,6 +39,48 @@
   become: yes
   become_user: root
 
+- name: Delete previous deployments
+  file: path="{{ api_orch_dir }}/{{ airavata_dist }}" state=absent
+
+
+- name: Copy distribution to api-orcheatrator deployment directory
+  unarchive: src="{{ airavata_source_dir }}/modules/distribution/target/{{ airavata_dist_name }}"
+             dest="{{ api_orch_dir }}/"
+             copy=no
+
+- name: set api-orch private ip
+  set_fact:
+    api_server_host: "{{ api_server_bind_host }}"
+    orchestrator_host: "{{ orchestrator_bind_host }}"
+    cred_store_server_host: "{{ cred_store_server_bind_host }}"
+    registry_host: "{{ registry_bind_host }}"
+    sharing_registry_host: "{{ sharing_registry_bind_host }}"
+    profile_service_host: "{{ profile_service_bind_host }}"
+
+
+- name: Copy Airavata server properties file
+  template: src=airavata.properties.j2
+            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata.properties"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: Copy logback configuration file
+  template: src=logback.xml.j2
+            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/logback.xml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: create logs directory
+  file: path="{{ api_orch_log_dir }}" state=directory owner={{ user }} group={{ group }}
+
+- name: Copy MariaDB connector jar to lib
+  get_url: url="{{ mariadb_connector_jar_url }}"
+          dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/"
+          owner={{ user }}
+          group={{ group }}
+
 # Create a SSL certificate for the api server
 
 - name: allow http for Let's Encrypt certificate renewal

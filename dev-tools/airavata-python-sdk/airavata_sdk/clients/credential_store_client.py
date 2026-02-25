@@ -15,21 +15,44 @@
 #
 
 import logging
+from typing import Optional
 
-from airavata_sdk.transport import utils
 from airavata_sdk import Settings
+from airavata_sdk.transport.utils import RestClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class CredentialStoreClient(object):
 
-    def __init__(self):
+class CredentialStoreClient(object):
+    """Client for credential store operations via the unified REST API."""
+
+    def __init__(self, access_token: str, base_url: Optional[str] = None):
         self.settings = Settings()
-        self.client = utils.initialize_credential_store_client(
-            self.settings.CREDENTIAL_STORE_API_HOST,
-            self.settings.CREDENTIAL_STORE_API_PORT,
-            self.settings.CREDENTIAL_STORE_API_SECURE,
+        self.client = RestClient(
+            access_token=access_token,
+            base_url=base_url or self.settings.API_SERVER_URL,
         )
-        # expose the needed functions
-        self.get_SSH_credential = self.client.getSSHCredential
+
+    def get_SSH_credential(self, token: str, gateway_id: str = None) -> dict:
+        return self.client.get(f"/credentials/ssh/{token}", params={"gatewayId": gateway_id})
+
+    def get_password_credential(self, token: str, gateway_id: str = None) -> dict:
+        return self.client.get(f"/credentials/password/{token}", params={"gatewayId": gateway_id})
+
+    def add_ssh_credential(self, credential: dict) -> str:
+        return self.client.post("/credentials/ssh", json=credential)
+
+    def add_password_credential(self, credential: dict) -> str:
+        return self.client.post("/credentials/password", json=credential)
+
+    def delete_credential(self, token: str, gateway_id: str = None) -> None:
+        self.client.delete(f"/credentials/{token}", params={"gatewayId": gateway_id})
+
+    def get_all_credential_summaries(self, gateway_id: str = None, credential_type: str = None) -> list[dict]:
+        params = {}
+        if gateway_id:
+            params["gatewayId"] = gateway_id
+        if credential_type:
+            params["type"] = credential_type
+        return self.client.get("/credential-summaries", params=params)

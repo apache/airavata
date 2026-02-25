@@ -70,21 +70,20 @@ class ProcessState(IntEnum):
     CREATED = 0
     VALIDATED = 1
     LAUNCHED = 2
-    STARTED = 3
-    PRE_PROCESSING = 4
-    CONFIGURING_WORKSPACE = 5
-    INPUT_DATA_STAGING = 6
-    EXECUTING = 7
-    MONITORING = 8
-    OUTPUT_DATA_STAGING = 9
-    POST_PROCESSING = 10
-    COMPLETED = 11
-    FAILED = 12
-    CANCELING = 13
-    CANCELED = 14
-    QUEUED = 15
-    DEQUEUING = 16
-    REQUEUED = 17
+    PRE_PROCESSING = 3
+    CONFIGURING_WORKSPACE = 4
+    INPUT_DATA_STAGING = 5
+    EXECUTING = 6
+    MONITORING = 7
+    OUTPUT_DATA_STAGING = 8
+    POST_PROCESSING = 9
+    COMPLETED = 10
+    FAILED = 11
+    CANCELING = 12
+    CANCELED = 13
+    QUEUED = 14
+    DEQUEUING = 15
+    REQUEUED = 16
 
 
 RuntimeInfo = NamedTuple('RuntimeInfo', [
@@ -110,7 +109,6 @@ PENDING_STATES = [
     ProcessState.CREATED,
     ProcessState.LAUNCHED,
     ProcessState.VALIDATED,
-    ProcessState.STARTED,
     ProcessState.PRE_PROCESSING,
     ProcessState.CONFIGURING_WORKSPACE,
     ProcessState.INPUT_DATA_STAGING,
@@ -172,7 +170,7 @@ def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str):
         raise InvalidStateError(msg)
 
     # third, check the state of agent
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/{rt.agentId}"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/{rt.agentId}"
     res = requests.get(url)
     code = res.status_code
     astate = "CREATING_WORKSPACE"
@@ -197,7 +195,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
         raise Exception(f"Runtime {rt_name} not found.")
     
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/execute/asyncshell"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/execute/asyncshell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -215,7 +213,7 @@ def execute_shell_async(access_token: str, rt_name: str, arguments: list[str]) -
 
     # Check if the request was successful
     while True:
-        url = f"{settings.API_SERVER_URL}/api/v1/agent/execute/asyncshell/{executionId}"
+        url = f"{settings.API_SERVER_URL}/api/v1/agents/execute/asyncshell/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
 
@@ -241,7 +239,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
         raise Exception(f"Runtime {rt_name} not found.")
 
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/execute/shell"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/execute/shell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -257,7 +255,7 @@ def get_hostname(access_token: str, rt_name: str) -> str | None:
         return print(f"Failed to get hostname for runtime={rt_name}")
 
     while True:
-        url = f"{settings.API_SERVER_URL}/api/v1/agent/execute/shell/{executionId}"
+        url = f"{settings.API_SERVER_URL}/api/v1/agents/execute/shell/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
         if data.get('executed'):
@@ -280,7 +278,7 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
         raise Exception(f"Runtime {rt_name} not found.")
 
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/setup/tunnel"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/setup/tunnel"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -296,7 +294,7 @@ def open_tunnel(access_token: str, rt_name: str, rt_hostname: str, rt_port: int)
         return print(f"Failed to setup tunnel for runtime={rt_name}")
 
     while True:
-        url = f"{settings.API_SERVER_URL}/api/v1/agent/setup/tunnel/{executionId}"
+        url = f"{settings.API_SERVER_URL}/api/v1/agents/setup/tunnel/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
         if data.get('status') == "OK":
@@ -316,7 +314,7 @@ def terminate_tunnel(access_token: str, rt_name: str, tunnel_id: str) -> None:
     if rt is None:
         raise Exception(f"Runtime {rt_name} not found.")
 
-    # TODO: send actual API call to terminate tunnel
+    # Terminate tunnel via API when backend supports it
     assert access_token is not None
 
     # cleanup state after termination
@@ -336,7 +334,7 @@ def terminate_shell_async(access_token: str, rt_name: str, process_id: str, proc
         raise Exception(f"Runtime {rt_name} not found.")
 
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/terminate/asyncshell"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/terminate/asyncshell"
     headers = generate_headers(access_token, rt_name)
     res = requests.post(url, headers=headers, data=json.dumps({
         "agentId": rt.agentId,
@@ -365,7 +363,7 @@ def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessStat
 
     """
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/exp/{experiment_id}"
+    url = f"{settings.API_SERVER_URL}/api/v1/experiments/{experiment_id}"
     res = requests.get(url, headers=headers)
     code = res.status_code
     if code != 200:
@@ -390,7 +388,7 @@ def get_process_state(experiment_id: str, headers: dict) -> tuple[str, ProcessSt
 
     """
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/exp/{experiment_id}/process"
+    url = f"{settings.API_SERVER_URL}/api/v1/experiments/{experiment_id}/process"
     pid, pstate = "", ProcessState.CREATED
     while not pid:
         res = requests.get(url, headers=headers)
@@ -481,7 +479,7 @@ def submit_agent_job(
     """
     # URL to which the POST request will be sent
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/exp/launch"
+    url = f"{settings.API_SERVER_URL}/api/v1/experiments/launch"
 
     # data from file
     min_cpu: int = 1
@@ -680,7 +678,7 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
 
     """
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/setup/restart"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/setup/restart"
 
     decode = jwt.decode(access_token, options={"verify_signature": False})
     user_id = decode['preferred_username']
@@ -710,7 +708,7 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
 
     # Check if the request was successful
     while True:
-        url = f"{settings.API_SERVER_URL}/api/v1/agent/setup/restart/{executionId}"
+        url = f"{settings.API_SERVER_URL}/api/v1/agents/setup/restart/{executionId}"
         res = requests.get(url, headers={'Accept': 'application/json'})
         data = res.json()
         if data.get('restarted'):
@@ -730,7 +728,7 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
 
     """
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/exp/terminate/{runtime.experimentId}"
+    url = f"{settings.API_SERVER_URL}/api/v1/experiments/{runtime.experimentId}/terminate"
 
     decode = jwt.decode(access_token, options={"verify_signature": False})
     user_id = decode['preferred_username']
@@ -747,7 +745,7 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
     }
 
     # Send the POST request
-    res = requests.get(url, headers=headers)
+    res = requests.post(url, headers=headers)
     status = res.status_code
 
     # Check if the request was successful
@@ -767,7 +765,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
         return False
 
     settings = Settings()
-    url = f"{settings.API_SERVER_URL}/api/v1/agent/execute/jupyter"
+    url = f"{settings.API_SERVER_URL}/api/v1/agents/execute/jupyter"
     data = {
         "agentId": rt.agentId,
         "envName": rt.envName,
@@ -790,7 +788,7 @@ def run_on_runtime(rt_name: str, code_obj: str, result: ExecutionResult) -> bool
         return False
 
     while True:
-        url = f"{settings.API_SERVER_URL}/api/v1/agent/execute/jupyter/{execution_id}"
+        url = f"{settings.API_SERVER_URL}/api/v1/agents/execute/jupyter/{execution_id}"
         response = requests.get(url, headers={'Accept': 'application/json'})
         json_response = response.json()
         if json_response.get('executed'):
@@ -1108,7 +1106,7 @@ def meta_scheduler(use_list: list[str]) -> tuple[str, str]:
     @returns: tuple of cluster and queue
 
     """
-    # TODO: replace with actual scheduler
+    # Random selection; replace with actual scheduler when available
     idx = random.randint(0, len(use_list) - 1)
 
     cluster, queue = use_list[idx].split(":", maxsplit=1)

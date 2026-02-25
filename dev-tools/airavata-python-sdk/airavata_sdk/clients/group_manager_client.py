@@ -15,43 +15,66 @@
 #
 
 import logging
+from typing import Optional
 
-from airavata_sdk.transport import utils
 from airavata_sdk import Settings
+from airavata_sdk.transport.utils import RestClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
 
 
 class GroupManagerClient(object):
+    """Client for group management operations via the unified REST API."""
 
-    def __init__(self):
+    def __init__(self, access_token: str, base_url: Optional[str] = None):
         self.settings = Settings()
-        self.client = utils.initialize_group_manager_client(
-            self.settings.PROFILE_SERVICE_HOST,
-            self.settings.PROFILE_SERVICE_PORT,
-            self.settings.PROFILE_SERVICE_SECURE,
+        self.client = RestClient(
+            access_token=access_token,
+            base_url=base_url or self.settings.API_SERVER_URL,
         )
-        # expose the needed functions
-        self.get_api_version = self.client.getAPIVersion
-        self.create_group = self.client.createGroup
-        self.update_group = self.client.updateGroup
-        self.delete_group = self.client.deleteGroup
-        self.get_group = self.client.getGroup
-        self.get_groups = self.client.getGroups
-        self.get_all_groups_user_belongs = self.client.getAllGroupsUserBelongs
-        self.add_users_to_group = self.client.addUsersToGroup
-        self.remove_users_from_group = self.client.removeUsersFromGroup
-        self.transfer_group_ownership = self.client.transferGroupOwnership
-        self.add_group_admins = self.client.addGroupAdmins
-        self.remove_group_admins = self.client.removeGroupAdmins
-        self.has_admin_access = self.client.hasAdminAccess
-        self.has_owner_access = self.client.hasOwnerAccess
+
+    def create_group(self, group: dict) -> str:
+        return self.client.post("/groups", json=group)
+
+    def update_group(self, group_id: str, group: dict) -> dict:
+        return self.client.put(f"/groups/{group_id}", json=group)
+
+    def delete_group(self, group_id: str, owner_id: str = None) -> None:
+        self.client.delete(f"/groups/{group_id}", params={"ownerId": owner_id})
+
+    def get_group(self, group_id: str) -> dict:
+        return self.client.get(f"/groups/{group_id}")
+
+    def get_groups(self, gateway_id: str = None) -> list[dict]:
+        return self.client.get("/groups", params={"gatewayId": gateway_id})
+
+    def get_all_groups_user_belongs(self, user_name: str) -> list[dict]:
+        return self.client.get("/groups", params={"userName": user_name})
+
+    def add_users_to_group(self, group_id: str, user_ids: list[str]) -> None:
+        for user_id in user_ids:
+            self.client.post(f"/groups/{group_id}/members", json={"userId": user_id})
+
+    def remove_users_from_group(self, group_id: str, user_ids: list[str]) -> None:
+        for user_id in user_ids:
+            self.client.delete(f"/groups/{group_id}/members/{user_id}")
+
+    def transfer_group_ownership(self, group_id: str, new_owner_id: str) -> dict:
+        group = self.get_group(group_id)
+        group["ownerId"] = new_owner_id
+        return self.update_group(group_id, group)
+
+    def add_group_admins(self, group_id: str, admin_ids: list[str]) -> None:
+        self.add_users_to_group(group_id, admin_ids)
+
+    def remove_group_admins(self, group_id: str, admin_ids: list[str]) -> None:
+        self.remove_users_from_group(group_id, admin_ids)
+
+    def has_admin_access(self, group_id: str, admin_id: str) -> bool:
+        group = self.get_group(group_id)
+        return admin_id in (group.get("adminIds") or [])
+
+    def has_owner_access(self, group_id: str, owner_id: str) -> bool:
+        group = self.get_group(group_id)
+        return group.get("ownerId") == owner_id

@@ -42,11 +42,6 @@ class ExperimentHandlerUtil(object):
         self.access_token = access_token
         decode = jwt.decode(access_token, options={"verify_signature": False})
         self.user_id = decode['preferred_username']
-        self.airavata_token = self.authenticator.get_airavata_authz_token(
-            gateway_id=self.settings.GATEWAY_ID,
-            username=self.user_id,
-            token=access_token,
-        )
         self.airavata_util = APIServerClientUtil(
             gateway_id=self.settings.GATEWAY_ID,
             username=self.user_id,
@@ -60,7 +55,7 @@ class ExperimentHandlerUtil(object):
                                                        gateway_id=self.settings.GATEWAY_ID,
                                                        access_token=access_token)
 
-        self.api_server_client = APIServerClient()
+        self.api_server_client = APIServerClient(access_token=access_token)
 
     def queue_names(self, computation_resource_name: str):
         resource_id = self.airavata_util.get_resource_host_id(computation_resource_name)
@@ -193,18 +188,17 @@ class ExperimentHandlerUtil(object):
                 experiment = self.data_model_client.configure_input_and_outputs(experiment, input_files=data_uris,
                                                                                 application_name=application_name)
             else:
-                inputs = self.api_server_client.get_application_inputs(self.airavata_token, execution_id)
-                experiment.experimentInputs = inputs
+                inputs = self.api_server_client.get_application_inputs(execution_id)
+                experiment["experimentInputs"] = inputs
 
-        outputs = self.api_server_client.get_application_outputs(self.airavata_token, execution_id)
-
-        experiment.experimentOutputs = outputs
+        outputs = self.api_server_client.get_application_outputs(execution_id)
+        experiment["experimentOutputs"] = outputs
 
         # create experiment
-        ex_id = self.api_server_client.create_experiment(self.airavata_token, self.settings.GATEWAY_ID, experiment)
+        ex_id = self.api_server_client.create_experiment(experiment, self.settings.GATEWAY_ID)
 
         # launch experiment
-        self.api_server_client.launch_experiment(self.airavata_token, ex_id, self.settings.GATEWAY_ID)
+        self.api_server_client.launch_experiment(ex_id, self.settings.GATEWAY_ID)
 
         logger.info("experiment launched id: %s", ex_id)
 
@@ -212,17 +206,18 @@ class ExperimentHandlerUtil(object):
         logger.info("For more information visit %s", experiment_url)
 
         if self.settings.MONITOR_STATUS:
-            status = self.api_server_client.get_experiment_status(self.airavata_token, ex_id)
-            status_dict = {'0': 'EXECUTING', '4': 'JOB_ACTIVE', '7': 'COMPLETED'}
+            status = self.api_server_client.get_experiment_status(ex_id)
+            status_dict = {0: 'EXECUTING', 4: 'JOB_ACTIVE', 7: 'COMPLETED'}
 
             if status is not None:
-                logger.info("Initial state " + status_dict[str(status.state)])
-            while status.state <= 6:
-                status = self.api_server_client.get_experiment_status(self.airavata_token,
-                                                                      ex_id);
+                state = status.get("state", 0)
+                logger.info("Initial state " + status_dict.get(state, str(state)))
+            while status and status.get("state", 0) <= 6:
+                status = self.api_server_client.get_experiment_status(ex_id)
                 time.sleep(30)
-                if (str(status.state) in status_dict.keys()):
-                      logger.info("State " + status_dict[str(status.state)])
+                state = status.get("state", 0)
+                if state in status_dict:
+                    logger.info("State " + status_dict[state])
 
             logger.info("Completed")
             remote_path = path_suffix.split(self.user_id)[1]

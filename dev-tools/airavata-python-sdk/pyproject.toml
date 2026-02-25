@@ -14,8 +14,6 @@ dependencies = [
   "oauthlib",
   "requests",
   "requests-oauthlib",
-  "thrift",
-  "thrift_connector",
   "paramiko",
   "scp",
   "pysftp",
@@ -36,9 +34,8 @@ notebook = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["airavata*"]
+include = ["airavata_sdk*", "airavata_experiments*", "airavata_auth*", "airavata_jupyter_magic*"]
 exclude = ["*.egg-info"]
 
 [tool.setuptools.package-data]
-"airavata_sdk.transport" = ["*.ini"]
 "airavata_sdk.samples.resources" = ["*.pem"]

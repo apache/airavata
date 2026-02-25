@@ -16,8 +16,6 @@
 
 import logging
 
-from airavata.api.error.ttypes import TException
-from airavata.model.user.ttypes import Status, UserProfile
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.user_profile_client import UserProfileClient
 
@@ -25,36 +23,37 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-authenticator = Authenticator();
-token = authenticator.get_token_and_user_info_password_flow("default-admin", "123456", "default")
+authenticator = Authenticator()
+token = authenticator.get_token_and_user_info_password_flow("default-admin", "admin123", "default")
 
-# load GroupManagerClient with default configuration
-client = UserProfileClient()
+# load UserProfileClient with default configuration
+client = UserProfileClient(access_token=token)
 
 
 def add_user_profile():
     try:
-        profile = UserProfile()
-        profile.gatewayId = "default"
-        profile.userId = "default-admin"
-        profile.emails = ['gw@scigap.org']
-        profile.airavataInternalUserId = "default-admin"
-        profile.userModelVersion = "1.0.0"
-        profile.firstName = "Isuru"
-        profile.lastName = "Ranawaka"
-        profile.creationTime = 1576103354
-        profile.lastAccessTime = 1576103296
-        profile.validUntil = 1607725696
-        profile.State = Status.ACTIVE
-        added_profile = client.add_user_profile(token, profile)
-        print("Add user proflile", added_profile)
-    except TException:
+        profile = {
+            "gatewayId": "default",
+            "userId": "default-admin",
+            "emails": ["gw@scigap.org"],
+            "airavataInternalUserId": "default-admin",
+            "userModelVersion": "1.0.0",
+            "firstName": "Isuru",
+            "lastName": "Ranawaka",
+            "creationTime": 1576103354,
+            "lastAccessTime": 1576103296,
+            "validUntil": 1607725696,
+            "state": "ACTIVE",
+        }
+        added_profile = client.add_user_profile(profile)
+        print("Add user profile", added_profile)
+    except Exception:
         logger.exception("Error Occurred")
 
 
 def get_all_user_profiles_in_gateway():
     try:
-        profiles = client.get_all_user_profiles_in_gateway(token, "default", 0, -1)
+        profiles = client.get_all_user_profiles_in_gateway("default", 0, -1)
         print("User Profiles ", profiles)
-    except TException:
+    except Exception:
         logger.exception("Error Occurred")

@@ -1,52 +1,43 @@
 #!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# Simplified Airavata Service Shutdown Script
+# 
+# This script stops the unified Airavata API server.
 
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
 # ================================
-# Shutdown the API Server
+# Stop the Unified Airavata Server
 # ================================
-log "Stopping the API Services..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d stop api-orch
-log "Orchestrator stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/controller.sh -d stop
-log "Controller stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/participant.sh -d stop
-log "Participant stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/pre-wm.sh -d stop
-log "Pre-Workflow Manager stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/post-wm.sh -d stop
-log "Post-Workflow Manager stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/email-monitor.sh -d stop
-log "Email Monitor stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/realtime-monitor.sh -d stop
-log "Realtime Monitor stopped."
+log "Stopping Airavata API Server (unified service)..."
 
-# ================================
-# Shutdown the Agent Service
-# ================================
-log "Stopping the Agent Service..."
-./apache-airavata-agent-service-0.21-SNAPSHOT/bin/agent-service.sh -d stop
-log "Agent Service stopped."
+DIST_NAME="airavata-0.21-SNAPSHOT"
+if [ -f "./${DIST_NAME}/bin/airavata.sh" ]; then
+    ./${DIST_NAME}/bin/airavata.sh -d stop
+    log "Airavata API Server stopped."
+else
+    log "ERROR: Airavata distribution not found."
+    exit 1
+fi
 
-# ================================
-# Shutdown the Research Service
-# ================================
-log "Stopping the Research Service..."
-./apache-airavata-research-service-0.21-SNAPSHOT/bin/research-service.sh -d stop
-log "Research Service stopped."
-
-# ================================
-# Shutdown the File Service
-# ================================
-log "Stopping the File Service..."
-./apache-airavata-file-server-0.21-SNAPSHOT/bin/file-service.sh -d stop
-log "File Service stopped."
-
-# ================================
-# Shutdown the REST proxy
-# ================================
-log "Stopping the REST proxy..."
-./apache-airavata-restproxy-0.21-SNAPSHOT/bin/restproxy.sh -d stop
-log "REST proxy stopped."
+log "All Airavata services have been stopped."

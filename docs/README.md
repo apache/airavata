@@ -1,0 +1,6 @@
+# Airavata documentation
+
+- **[ERD.md](ERD.md)** – Entity-relationship description of the unified database schema (27 tables, keys, relationships). Reflects the finalized V1 schema: EXPERIMENT -> PROCESS only (task/job role engulfed by PROCESS_TYPE + PROCESS_METADATA), unified IO_VALUE table (replaces EXPERIMENT_INPUT/OUTPUT and PROCESS_INPUT/OUTPUT), DATA_PRODUCT with PRODUCT_METADATA and REPLICAS JSON (METADATA table dropped), EVENTS table (merged STATUS + ERROR with EVENT_KIND discriminator), APPLICATION.MODULE_METADATA (merged from APPLICATION_MODULE), EXPERIMENT_DATA_PRODUCT for input data products, REPOSITORY table.
+- **Schema migrations** – [dev-tools/migrations/README.md](../dev-tools/migrations/README.md) and [schema_simplification/README.md](../dev-tools/migrations/schema_simplification/README.md) for migration scripts.
+- **Quick start and architecture** – See the main [README](../README.md) in the project root.
+- **Key packages** – `execution/` (orchestration, DAG execution, Temporal activities), `research/` (experiment, application, artifact, project, session), `status/` (event and status management), `compute/`, `storage/`, `core/` (DRY infrastructure). See the main README for the full package tree.

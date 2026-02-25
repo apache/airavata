@@ -144,10 +144,10 @@ class Plan(pydantic.BaseModel):
     import requests
     if self.id is None:
       self.id = str(uuid.uuid4())
-      response = requests.post(f"{settings.API_SERVER_URL}/api/v1/plan", headers=headers, json=self.model_dump())
+      response = requests.post(f"{settings.API_SERVER_URL}/api/v1/plans", headers=headers, json=self.model_dump())
       print(f"Plan saved: {self.id}")
     else:
-      response = requests.put(f"{settings.API_SERVER_URL}/api/v1/plan/{self.id}", headers=headers, json=self.model_dump())
+      response = requests.put(f"{settings.API_SERVER_URL}/api/v1/plans/{self.id}", headers=headers, json=self.model_dump())
       print(f"Plan updated: {self.id}")
 
     if response.status_code == 200:
@@ -175,7 +175,7 @@ def load(id: str | None) -> Plan:
         'X-Claims': json.dumps(az.claimsMap)
     }
     import requests
-    response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plan/{id}", headers=headers)
+    response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plans/{id}", headers=headers)
 
     if response.status_code == 200:
       body = response.json()
@@ -196,7 +196,7 @@ def query() -> list[Plan]:
         'X-Claims': json.dumps(az.claimsMap)
     }
     import requests
-    response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plan/user", headers=headers)
+    response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plans/user", headers=headers)
 
     if response.status_code == 200:
       items: list = response.json()

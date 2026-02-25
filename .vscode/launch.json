@@ -1,26 +1,27 @@
 {
+  "version": "0.2.0",
   "configurations": [
     {
       "type": "java",
-      "name": "Start API Server",
+      "name": "Serve Airavata",
       "request": "launch",
-      "cwd": "${workspaceFolder}/modules/ide-integration",
-      "mainClass": "org.apache.airavata.ide.integration.APIServerStarter",
-      "vmArgs": "-javaagent:/home/vscode/.m2/repository/org/apache/openjpa/openjpa/4.0.1/openjpa-4.0.1.jar",
+      "mainClass": "org.apache.airavata.AiravataCommandLine",
+      "projectName": "distribution",
+      "args": "serve",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-Dairavata.home=${workspaceFolder}/modules/distribution/target/classes -Dairavata.config.dir=${workspaceFolder}/modules/distribution/target/classes/conf",
+      "env": { "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes" }
     },
     {
       "type": "java",
-      "name": "Start Job Engine",
+      "name": "Serve Airavata (Debug)",
       "request": "launch",
-      "cwd": "${workspaceFolder}/modules/ide-integration",
-      "mainClass": "org.apache.airavata.ide.integration.JobEngineStarter"
-    },
-    {
-      "type": "java",
-      "name": "Start Job Monitor",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/modules/ide-integration",
-      "mainClass": "org.apache.airavata.ide.integration.JobMonitorStarter"
+      "mainClass": "org.apache.airavata.AiravataCommandLine",
+      "projectName": "distribution",
+      "args": "serve",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-Dairavata.home=${workspaceFolder}/modules/distribution/target/classes -Dairavata.config.dir=${workspaceFolder}/modules/distribution/target/classes/conf -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
+      "env": { "AIRAVATA_HOME": "${workspaceFolder}/modules/distribution/target/classes" }
     }
-  ],
+  ]
 }

@@ -18,16 +18,16 @@ password: str = "password"
 gateway_id: str = "cyberwater"
 token = authenticator.get_token_and_user_info_password_flow(username=username, password=password, gateway_id=gateway_id)
 
-api_server_client = APIServerClient()
+api_server_client = APIServerClient(access_token=token)
 
 data_model_client = DataModelCreationUtil(
     gateway_id=gateway_id,
     username=username,
     password=password,
-    access_token=token.accessToken,
+    access_token=token,
 )
 
-credential_store_client = CredentialStoreClient()
+credential_store_client = CredentialStoreClient(access_token=token)
 
 airavata_util = APIServerClientUtil(
     gateway_id=gateway_id,
@@ -54,16 +54,10 @@ experiment = data_model_client.get_experiment_data_model_for_single_application(
     description="Testing")
 
 sftp_connector = SFTPConnector(host="cyberwater.scigap.org", port=9000, username="isuru_janith",
-                               password=token.accessToken)
+                               password=token)
 path_suffix = sftp_connector.upload_files("/Users/isururanawaka/Documents/Cyberwater/poc2/resources/storage",
                                           "Default_Project",
-                                          experiment.experimentName)
-
-sftp_connector = SFTPConnector(host="cyberwater.scigap.org", port=9000, username="isuru_janith",
-                               password=token.accessToken)
-path_suffix = sftp_connector.upload_files("/Users/isururanawaka/Documents/Cyberwater/poc2/resources/storage",
-                                          "Default_Project",
-                                          experiment.experimentName)
+                                          experiment["experimentName"])
 
 path = Settings().GATEWAY_DATA_STORE_DIR + path_suffix
 
@@ -79,31 +73,29 @@ experiment = data_model_client.configure_computation_resource_scheduling(experim
                                                                          queue_name="batch",
                                                                          experiment_dir_path=path)
 
-inputs = api_server_client.get_application_inputs(token, executionId)
+inputs = api_server_client.get_application_inputs(executionId)
 
-experiment.experimentInputs = inputs
+experiment["experimentInputs"] = inputs
 
-outputs = api_server_client.get_application_outputs(token, executionId)
+outputs = api_server_client.get_application_outputs(executionId)
 
-experiment.experimentOutputs = outputs
+experiment["experimentOutputs"] = outputs
 
 # create experiment
-ex_id = api_server_client.create_experiment(token, gateway_id, experiment)
+ex_id = api_server_client.create_experiment(experiment, gateway_id)
 print(ex_id)
 # launch experiment
-api_server_client.launch_experiment(token, ex_id,
-                                    gateway_id)
+api_server_client.launch_experiment(ex_id, gateway_id)
 
-status = api_server_client.get_experiment_status(token, ex_id);
+status = api_server_client.get_experiment_status(ex_id)
 
 if status is not None:
-    print("Initial state " + str(status.state))
-while status.state <= 6:
-    status = api_server_client.get_experiment_status(token,
-                                                     ex_id);
+    print("Initial state " + str(status.get("state")))
+while status and status.get("state", "COMPLETED") not in ["COMPLETED", "FAILED", "CANCELED"]:
+    status = api_server_client.get_experiment_status(ex_id)
     time.sleep(30)
-    print("State " + str(status.state))
+    print("State " + str(status.get("state")))
 
 print("Completed")
 
-sftp_connector.download_files(".", f"Default_Project/{experiment.experimentName}")
+sftp_connector.download_files(".", f"Default_Project/{experiment['experimentName']}")

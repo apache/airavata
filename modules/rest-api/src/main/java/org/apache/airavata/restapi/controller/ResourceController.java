@@ -1,0 +1,75 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.restapi.controller;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import org.apache.airavata.compute.resource.model.Resource;
+import org.apache.airavata.compute.resource.service.ResourceService;
+import org.apache.airavata.restapi.exception.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/resources")
+@Tag(name = "Resources")
+public class ResourceController {
+
+    private final ResourceService resourceService;
+
+    public ResourceController(ResourceService resourceService) {
+        this.resourceService = resourceService;
+    }
+
+    @GetMapping
+    public List<Resource> getResources(@RequestParam String gatewayId) {
+        return resourceService.getResources(gatewayId);
+    }
+
+    @GetMapping("/{resourceId}")
+    public Resource getResource(@PathVariable("resourceId") String resourceId) {
+        Resource resource = resourceService.getResource(resourceId);
+        if (resource == null) {
+            throw new ResourceNotFoundException("Resource", resourceId);
+        }
+        return resource;
+    }
+
+    @PostMapping
+    public ResponseEntity<Resource> createResource(@RequestBody Resource resource) {
+        String resourceId = resourceService.createResource(resource);
+        Resource created = resourceService.getResource(resourceId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{resourceId}")
+    public ResponseEntity<Void> updateResource(
+            @PathVariable("resourceId") String resourceId, @RequestBody Resource resource) {
+        resourceService.updateResource(resourceId, resource);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{resourceId}")
+    public ResponseEntity<Void> deleteResource(@PathVariable("resourceId") String resourceId) {
+        resourceService.deleteResource(resourceId);
+        return ResponseEntity.ok().build();
+    }
+}

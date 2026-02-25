@@ -1,0 +1,55 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.compute.resource.model;
+
+import org.apache.airavata.compute.resource.model.ComputeResourceType;
+
+public enum ResourceJobManagerType {
+    FORK,
+    SLURM,
+    CLOUD;
+
+    /**
+     * Parse a string (case-insensitive) to a ResourceJobManagerType.
+     * Returns FORK for null or unrecognised values.
+     */
+    public static ResourceJobManagerType fromString(String value) {
+        if (value == null) {
+            return FORK;
+        }
+        return switch (value.toUpperCase()) {
+            case "SLURM" -> SLURM;
+            case "CLOUD" -> CLOUD;
+            default -> FORK;
+        };
+    }
+
+    /**
+     * Map this job manager type to the coarser ComputeResourceType used by
+     * task factories and workflow dispatch.
+     */
+    public ComputeResourceType toComputeResourceType() {
+        return switch (this) {
+            case SLURM -> ComputeResourceType.SLURM;
+            case CLOUD -> ComputeResourceType.AWS;
+            case FORK -> ComputeResourceType.PLAIN;
+        };
+    }
+}

@@ -1,11 +1,12 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+// For format details, see https://aka.ms/devcontainer.json
 {
   "name": "Airavata",
-  "dockerComposeFile": "docker-compose.yml",
+  "dockerComposeFile": "compose.yml",
   "service": "devcontainer",
-  "features": {},
   "workspaceFolder": "/home/developer/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": { "version": "25", "installMaven": "true" }
+  },
   "forwardPorts": [],
   "customizations": {
     "vscode": {
@@ -20,8 +21,8 @@
         "ms-python.isort",
         "ms-toolsai.jupyter",
         "njpwerner.autodocstring",
-        "vscjava.vscode-java-pack",
+        "vscjava.vscode-java-pack"
       ]
-    },
+    }
   }
 }

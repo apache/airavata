@@ -19,85 +19,67 @@
 */
 package org.apache.airavata.file.server.service;
 
-import java.util.UUID;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.common.utils.ThriftClientPool;
-import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
-import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
-import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
-import org.apache.airavata.helix.task.api.support.AdaptorSupport;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
-import org.apache.airavata.model.credential.store.SSHCredential;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.registry.api.RegistryService;
+import java.util.Map;
+import org.apache.airavata.research.experiment.model.ExperimentModel;
+import org.apache.airavata.research.experiment.service.ExperimentService;
+import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.execution.service.ProcessService;
+import org.apache.airavata.protocol.AdapterSupport;
+import org.apache.airavata.protocol.AgentAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessDataManager extends OutputDataStagingTask {
+/**
+ * Lightweight helper that resolves the SSH adapter and working directory
+ * for a given process.  Does not extend any task class — it is only used
+ * by the file-server module to browse and transfer files.
+ */
+public class ProcessDataManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessDataManager.class);
 
-    private String processId;
-    private AdaptorSupport adaptorSupport;
-
-    private ProcessModel process;
-    ExperimentModel experiment;
+    private final ProcessModel process;
+    private final ExperimentModel experiment;
+    private final AdapterSupport adapterSupport;
 
     public ProcessDataManager(
-            ThriftClientPool<RegistryService.Client> registryClientPool,
+            ProcessService processService,
+            ExperimentService experimentService,
             String processId,
-            AdaptorSupport adaptorSupport)
+            AdapterSupport adapterSupport)
             throws Exception {
-
-        this.adaptorSupport = adaptorSupport;
-        RegistryService.Client regClient = registryClientPool.getResource();
+        this.adapterSupport = adapterSupport;
         try {
-            process = regClient.getProcess(processId);
-            experiment = regClient.getExperiment(process.getExperimentId());
-
-            setTaskId(UUID.randomUUID().toString());
-            setProcessId(processId);
-            setExperimentId(process.getExperimentId());
-            setGatewayId(experiment.getGatewayId());
-            loadContext();
-
-            registryClientPool.returnResource(regClient);
+            this.process = processService.getProcess(processId);
+            this.experiment = experimentService.getExperiment(process.getExperimentId());
         } catch (Exception e) {
-            logger.error("Failed to initialize the output data mover for process {}", processId, e);
-            registryClientPool.returnBrokenResource(regClient);
+            logger.error("Failed to initialize ProcessDataManager for process {}", processId, e);
             throw e;
         }
-        this.processId = processId;
     }
 
-    public AgentAdaptor getAgentAdaptor() throws Exception {
-        if (getTaskContext().getGroupComputeResourcePreference().getResourceType() == ResourceType.AWS) {
-            logger.info("Using AWS adaptor for process {}", processId);
-
-            AWSProcessContextManager awsContext = new AWSProcessContextManager(getTaskContext());
-            SSHCredential sshCredential = AgentUtils.getCredentialClient()
-                    .getSSHCredential(awsContext.getSSHCredentialToken(), getGatewayId());
-
-            logger.info("Using SSHCredential {} for AWS process {}", sshCredential.getPublicKey(), processId);
-            logger.info("AWS public ip is {}", awsContext.getPublicIp());
-            SSHJAgentAdaptor adaptor = new SSHJAgentAdaptor();
-            adaptor.init(
-                    getTaskContext().getComputeResourceLoginUserName(),
-                    awsContext.getPublicIp(),
-                    22,
-                    sshCredential.getPublicKey(),
-                    sshCredential.getPrivateKey(),
-                    sshCredential.getPassphrase());
-
-            return adaptor;
+    public AgentAdapter getAgentAdapter() throws Exception {
+        String loginUserName = null;
+        Map<String, Object> schedule = process.getProcessResourceSchedule();
+        if (schedule != null) {
+            loginUserName = (String) schedule.get("overrideLoginUserName");
         }
-
-        return getComputeResourceAdaptor(adaptorSupport);
+        return adapterSupport.fetchComputeSSHAdapter(
+                experiment.getGatewayId(),
+                process.getComputeResourceId(),
+                process.getComputeResourceCredentialToken(),
+                process.getUserName(),
+                loginUserName);
     }
 
-    public String getBaseDir() throws Exception {
-        return getTaskContext().getWorkingDir();
+    public String getBaseDir() {
+        Map<String, Object> schedule = process.getProcessResourceSchedule();
+        if (schedule != null) {
+            String scratch = (String) schedule.get("overrideScratchLocation");
+            if (scratch != null && !scratch.isEmpty()) {
+                return scratch;
+            }
+        }
+        return "/tmp";
     }
 }

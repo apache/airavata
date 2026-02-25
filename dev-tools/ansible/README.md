@@ -1,187 +1,424 @@
-# Apache Airavata Ansible Deployment
+# Airavata Ansible Deployment
 
-Ansible playbooks for deploying and managing Apache Airavata and its dependencies.
+Ansible scripts for deploying Apache Airavata.
 
-## Quick Start
+## Overview
 
-### Prerequisites
+Airavata uses a streamlined architecture with minimal components. All Airavata services run in a single Spring Boot application.
 
-- Python 3.8+
-- SSH access to target servers with sudo privileges
-- DNS configured (for Let's Encrypt SSL certificates)
+## Architecture
 
-### Installation
+```mermaid
+flowchart TB
+    subgraph External["External Services"]
+        MariaDB["MariaDB (Database)"]
+        Temporal["Temporal (Workflow Engine)"]
+        Keycloak["Keycloak (IAM)"]
+        Portals["(Optional) Portals"]
+    end
 
-```bash
-cd dev-tools/ansible
+    subgraph Server["Airavata API Server (Spring Boot)"]
+        REST["REST API (8090)"]
+        HTTPS["HTTPS via HAProxy (443)"]
+        Orch["Orchestrator (internal)"]
+        Reg["Registry (internal)"]
+        Profile["Profile Service (internal)"]
+        Sharing["Sharing Registry (internal)"]
+        Cred["Credential Store (internal)"]
+        WF["Workflow Managers"]
+        Exec["Task Executors"]
+    end
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+    MariaDB --> Server
+    Temporal --> Server
+    Keycloak --> Server
 ```
 
-## Main Playbooks
+### Components
 
-| Playbook | Purpose |
-|----------|---------|
-| `airavata_setup.yml` | Complete initial setup from scratch |
-| `airavata_update.yml` | Update existing deployment (rebuilds and redeploys) |
-| `start_services.yml` | Start all Airavata services |
-| `stop_services.yml` | Stop all Airavata services |
+1. **MariaDB Database**: Single unified `airavata` database containing all tables for experiments, applications, profiles, sharing, credentials, and workflows. A separate `keycloak` database is used for IAM.
 
-## Common Operations
+2. **Temporal**: Workflow engine for orchestrating job execution (Pre/Post/Cancel workflows). Runs as a separate service on port 7233.
 
-### Updating Existing Deployments
+3. **Airavata API Server**: Airavata services (single JVM). See the main [README Architecture section](../../README.md#architecture) for the full API layer and internal service overview. External access is typically via HTTPS via HAProxy (port 443) or directly on port 8090.
 
-#### Development Server
-```bash
-cd dev-tools/ansible
-source venv/bin/activate
+4. **Keycloak**: Identity and Access Management (IAM) server for user authentication, OAuth2/OIDC tokens, and authorization.
 
-# Update services (stops, rebuilds, redeploys, starts)
-ansible-playbook -i inventories/dev airavata_update.yml --ask-vault-pass
+## Prerequisites
 
-# Or use vault password file
-ansible-playbook -i inventories/dev airavata_update.yml --vault-pass-file=./vault-password.txt
-```
-
-#### Production Server
-```bash
-cd dev-tools/ansible
-source venv/bin/activate
-
-# Update services (stops, rebuilds, redeploys, starts)
-ansible-playbook -i inventories/prod airavata_update.yml --ask-vault-pass
-
-# Or use vault password file
-ansible-playbook -i inventories/prod airavata_update.yml --vault-pass-file=./vault-password.txt
-```
-
-### Starting/Stopping Services
-
-```bash
-# Start all services
-ansible-playbook -i inventories/dev start_services.yml --ask-vault-pass
-
-# Stop all services
-ansible-playbook -i inventories/dev stop_services.yml --ask-vault-pass
-```
-
-### Initial Setup (First Time)
-
-For setting up a new deployment from scratch, see [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md#setting-up-a-new-environment).
-
-## Setup Flow Overview
-
-The `airavata_setup.yml` playbook executes roles in the following order:
-
-```
-1. env_setup            → System user, firewall, basic requirements
-2. java                 → Java installation
-3. common               → Maven, Git, Airavata source checkout
-4. zookeeper            → Zookeeper installation
-5. kafka                → Kafka installation
-6. rabbitmq             → RabbitMQ installation
-7. database             → MariaDB installation and database setup
-8. letsencrypt          → SSL certificate generation
-9. keycloak             → Keycloak IAM server (24.0.0+ uses Quarkus)
-10. reverse_proxy       → Apache2 reverse proxy for Keycloak
-11. api-orch            → HAProxy for API server SSL termination
-12. airavata_services   → Build and deploy all Airavata services
-```
-
-**For detailed information about each role, dependencies, and multi-host configuration, see [SETUP_FLOW.md](SETUP_FLOW.md).**
-
-## Setting Up a New Deployment
-
-If you need to spin up a new deployment (new environment, new server, etc.), follow the [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md#setting-up-a-new-environment).
-
-### Quick Summary
-
-1. **Copy template inventory:**
-   ```bash
-   cp -r inventories/template inventories/my-env
-   ```
-   
-2. **Edit configuration files:**
-   - `inventories/my-env/hosts` - Server IPs and host groups
-   - `inventories/my-env/group_vars/all/vars.yml` - Non-sensitive variables (ports, paths, versions)
-   - `inventories/my-env/group_vars/all/vault.yml` - **Sensitive variables** (passwords, API keys, database URLs)
-   - `inventories/my-env/host_vars/<hostname>/vault.yml` - Host-specific sensitive variables (SSH credentials)
-
-
-3. **Key properties to change in `vault.yml`:**
-   - All `CHANGEME_*` values (database passwords, IAM passwords, OAuth secrets, etc.)
-   - Database hostnames/IPs in JDBC URLs
-   - Keycloak server URL (`iam_server_url`)
-   - Keycloak admin password (`keycloak_master_account_password`)
-   - Keycloak database password (`keycloak_db_password`)
-   - Keycloak client secrets (`keycloak_pga_client_secret`, `keycloak_jupyterlab_client_secret`, `keycloak_cilogon_client_secret`)
-   - Keycloak redirect URIs (update hostnames for your environment)
-   - Email credentials
-   - Keystore passwords
-
-
-4. **Encrypt vault files:**
-   ```bash
-   ansible-vault encrypt inventories/my-env/group_vars/all/vault.yml
-   ansible-vault encrypt inventories/my-env/host_vars/<hostname>/vault.yml
-   ```
-   
-5. **Run setup:**
-   ```bash
-   ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
-   ```
+- Python 3.12+
+- Ansible Core 2.20.1+ (installed via pyproject.toml)
+- Ansible Collections (installed via requirements.yml)
+- SSH access to target servers
+- Root or sudo access on target servers
 
 ## Supported Operating Systems
 
-- **Ubuntu**: 20.04, 22.04, 24.04
-- **CentOS**: 7
-- **Rocky Linux**: 8
+- **Ubuntu** 18.04+ (fully supported)
+- **CentOS** 7 (fully supported)
+- **Rocky Linux** 8 (fully supported)
 
-## Documentation
+## Component Versions
 
-- **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** - Complete guide for developers:
-  - Setting up new environments
-  - Vault file management (encrypt, decrypt, edit)
-  - Service management (start, stop, update)
-  - Configuration file locations
-  - Troubleshooting common issues
+These versions match the current codebase configuration:
 
+- **Java**: 25 (OpenJDK) - configured in `pom.xml` (`maven-compiler-plugin` release 25)
+- **Keycloak**: 26.5 (Quarkus-based) - matches `.devcontainer/compose.yml`
+- **MariaDB**: 11.8 LTS - matches `.devcontainer/compose.yml`
+- **Temporal**: latest - matches `.devcontainer/compose.yml` (temporalio/admin-tools)
+- **Maven**: 3.9.6 - configured in Ansible variables
 
-- **[SETUP_FLOW.md](SETUP_FLOW.md)** - Detailed technical documentation:
-  - Role execution order and dependencies
-  - Role-by-role breakdown
-  - Multi-host deployment configuration
-  - Network requirements
-  - Variable reference
+## Installation
 
-## Key Roles
+1. Create a virtual environment:
 
-- **env_setup** - System user, firewall, basic requirements
-- **java** - Java installation (OpenJDK)
-- **common** - Maven, Git, Airavata source checkout
-- **zookeeper** - Zookeeper installation
-- **kafka** - Kafka installation
-- **rabbitmq** - RabbitMQ installation (uses distro packages)
-- **database** - MariaDB installation and database setup
-- **letsencrypt** - SSL certificate generation (Let's Encrypt)
-- **keycloak** - Keycloak IAM server (24.0.0+ uses Quarkus with MariaDB driver)
-- **reverse_proxy** - Apache2 reverse proxy for Keycloak
-- **api-orch** - HAProxy for API server SSL termination
-- **airavata_services** - Build and deploy all Airavata services
+```bash
+cd airavata/dev-tools/ansible
+python3 -m venv ENV
+source ENV/bin/activate
+```
+
+2. Install Python dependencies:
+
+```bash
+pip install -e .
+```
+
+3. Install Ansible collections:
+
+```bash
+ansible-galaxy collection install -r requirements.yml
+```
+
+## Quick Start
+
+1. **Copy and customize inventory**:
+
+```bash
+cp -r inventories/template inventories/my-deployment
+cd inventories/my-deployment
+```
+
+2. **Edit `hosts` file** - Replace with actual hostnames/IPs:
+
+```ini
+[database]
+db.example.com
+
+[temporal]
+temporal.example.com
+
+[apiserver]
+api.example.com
+
+[keycloak]
+iam.example.com
+```
+
+3. **Edit `group_vars/all/vars.yml`** - Update all `CHANGEME` values with your configuration:
+   - Database credentials
+   - Temporal host
+   - API server configuration
+   - Keycloak configuration
+   - SSL certificates
+
+4. **Deploy everything**:
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml
+```
+
+## Deployment Guide
+
+### Deploy All Components
+
+Deploy the complete stack with a single command:
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml
+```
+
+### Deploy Individual Components
+
+You can deploy individual components using tags:
+
+#### Deploy Database Only
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml --tags database
+```
+
+This will:
+- Install MariaDB
+- Create `airavata` database
+- Create `keycloak` database
+- Set up database users and permissions
+- Configure firewall rules
+
+#### Deploy Temporal Only
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml --tags temporal
+```
+
+This will:
+- Install and configure Temporal server
+- Start and enable Temporal service
+
+#### Deploy API Server Only
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml --tags apiserver
+```
+
+This will:
+- Install Java 25 JDK
+- Checkout and build Airavata source
+- Deploy unified API server (all services in one Spring Boot app)
+- Configure SSL certificates (Let's Encrypt)
+- Set up HAProxy for TLS termination on port 443
+- Configure firewall rules (port 443 for HTTPS, port 8090 for HTTP if exposed, port 9090 for gRPC if exposed)
+- Start Airavata service
+
+#### Deploy Keycloak Only
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml --tags keycloak
+```
+
+This will:
+- Install Keycloak 26.5 (Quarkus-based)
+- Configure Keycloak database connection
+- Set up SSL certificates
+- Start Keycloak service
+
+### Single Server Deployment
+
+For development or small deployments, all services can run on a single server:
+
+```ini
+[database]
+localhost
+
+[temporal]
+localhost
+
+[apiserver]
+localhost
+
+[keycloak]
+localhost
+```
+
+Update `group_vars/all/vars.yml` to use `localhost` for host references.
+
+## Configuration
+
+### Airavata Configuration
+
+Main configuration file: `/opt/apache-airavata/conf/airavata.properties` (or `conf/application.properties` in distribution)
+
+**Standard Paths:**
+- Installation directory: `/opt/apache-airavata` (AIRAVATA_HOME)
+- Configuration directory: `/opt/apache-airavata/conf` (AIRAVATA_CONFIG_DIR, defaults to `AIRAVATA_HOME/conf` if not explicitly set)
+- Logs directory: `/opt/apache-airavata/logs`
+
+Key settings:
+- Database connections (MariaDB)
+- Temporal connection (workflow engine)
+- Keycloak IAM URL
+- Server ports:
+  - HTTP Server port (8090)
+  - gRPC Server port (9090)
+  - Temporal port (7233)
+- Agent Tunnel Server configuration (remote server location, not a service started by Airavata):
+  - `airavata.services.agent.tunnelserver.host` - Remote tunnel server hostname
+  - `airavata.services.agent.tunnelserver.port` - Remote tunnel server port (typically 17000)
+  - `airavata.services.agent.tunnelserver.url` - Remote tunnel server API URL
+  - `airavata.services.agent.tunnelserver.token` - Authentication token for tunnel server
+- TLS/SSL keystore configuration
+- Service enablement flags
+
+### Temporal Configuration
+
+Temporal is configured via Spring Boot `application.properties`:
+- `spring.temporal.connection.target=localhost:7233`
+- Temporal namespace and worker configuration
+
+### Keycloak Configuration
+
+Keycloak 26.5 (Quarkus-based) configuration:
+- Configuration file: `conf/keycloak.conf` (Quarkus configuration format)
+- Database connection (MariaDB) - built-in MySQL connector, no additional JDBC driver setup needed
+- Admin credentials (set via `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` environment variables)
+- SSL certificates (Let's Encrypt via certbot)
+- Service startup: `kc.sh start --optimized` (systemd service)
+
+### OS-Specific Configuration
+
+The deployment automatically handles OS-specific differences:
+
+- **Package Managers**: Uses `apt` for Ubuntu/Debian, `yum` for CentOS, `dnf` for Rocky
+- **Firewall**: Uses `ufw` for Ubuntu/Debian, `firewalld` for CentOS/Rocky
+- **HAProxy**: Different package names and config directories per OS
+- **Auto-updates**: Uses `unattended-upgrades` for Ubuntu, `yum-cron` for CentOS, `dnf-automatic` for Rocky
+
+## Verification
+
+### Check Services
+
+```bash
+# Database
+systemctl status mariadb  # or mysql on CentOS
+
+# Temporal
+systemctl status temporal
+
+# Airavata
+systemctl status apiserver
+tail -f {{ apiserver_log_dir }}/airavata.log
+
+# Keycloak
+systemctl status keycloak
+```
+
+### Test Connectivity
+
+```bash
+# REST API
+curl http://api.example.com:8090/api/v1/
+
+# HTTPS via HAProxy
+curl https://api.example.com:443
+
+# Keycloak
+curl https://iam.example.com/health
+```
 
 ## Troubleshooting
 
-See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md#troubleshooting) for common issues and solutions.
+### Build Fails
 
-## Legacy Playbooks
+- Ensure Maven has sufficient memory: `MAVEN_OPTS="-Xmx2048m"`
+- Check Java version: Requires JDK 25
+- Verify network connectivity for Maven downloads
 
-The following playbooks are still available but deprecated in favor of `airavata_setup.yml`:
-- `database.yml` - Database setup only
-- `airavata.yml` - Airavata services only
-- `keycloak.yml` - Keycloak setup only
-- `site.yml` - Master playbook (includes all above)
+### Service Won't Start
+
+1. Check logs: `{{ apiserver_log_dir }}/airavata.log`
+2. Verify AIRAVATA_HOME is set correctly in systemd service
+3. Verify `conf/application.properties` exists and is readable
+4. Verify database connectivity: `mysql -h db.example.com -u airavata -p`
+5. Verify Temporal is accessible: `temporal operator cluster health --address temporal.example.com:7233`
+6. Verify Keycloak is running
+7. Check Java version: `java --version` (must be 25+)
+8. Check service status: `systemctl status apiserver`
+
+### Database Connection Issues
+
+1. Verify MariaDB is running: `systemctl status mariadb`
+2. Check firewall rules (firewalld on RedHat, ufw on Ubuntu)
+3. Verify credentials in `vars.yml`
+4. Test connection: `mysql -h db.example.com -u airavata -p`
+
+### Temporal Issues
+
+1. Verify Temporal is running and accessible on port 7233
+2. Check Temporal worker logs
+3. Verify `spring.temporal.connection.target` in configuration
+4. Check Temporal Web UI at port 8233
+
+### SSL Certificate Issues
+
+1. Ensure Let's Encrypt email is set in `vars.yml`
+2. Check firewall allows HTTP (port 80) for certificate renewal
+3. Verify DNS points to the server
+4. Check certbot logs: `/var/log/letsencrypt/`
+
+### OS-Specific Issues
+
+**Ubuntu/Debian**:
+- Ensure `ufw` is installed and configured
+- Check `unattended-upgrades` configuration
+- Verify apt repositories are accessible
+
+**CentOS**:
+- Ensure EPEL repository is enabled
+- Check SELinux policies if MariaDB fails
+- Verify `yum-cron` is running for auto-updates
+
+**Rocky**:
+- Ensure EPEL repository is enabled
+- Check SELinux policies if MariaDB fails
+- Verify `dnf-automatic` timer is enabled
+
+## Maintenance
+
+### Update Airavata
+
+```bash
+ansible-playbook -i inventories/my-deployment deploy.yml --tags apiserver
+```
+
+This will rebuild and redeploy the API server with the latest code.
+
+### Backup Database
+
+```bash
+mysqldump -u airavata -p --all-databases > backup.sql
+```
+
+## Roles
+
+Essential roles (consolidated structure):
+
+- **base**: User/group creation, Java 25 installation, firewall setup, Let's Encrypt certbot (OS-specific)
+- **database**: MariaDB installation and database creation (OS-specific)
+- **apiserver**: Airavata API server deployment including source checkout, Maven build, keystore setup, HAProxy, and SSL (OS-specific)
+- **keycloak**: Keycloak 26.5 (Quarkus-based) IAM server deployment
+
+Each role is organized into logical task files for easier maintenance and debugging.
+
+See [roles/README.md](roles/README.md) for detailed role documentation.
+
+## Inventory Structure
+
+```
+inventories/
+  my-deployment/
+    hosts                    # Server inventory
+    group_vars/
+      all/
+        vars.yml            # All configuration variables
+```
+
+## Variables Reference
+
+Key variables in `group_vars/all/vars.yml`:
+
+- `db_server`: MariaDB hostname
+- `db_user` / `db_password`: Database credentials
+- `db_name`: Database name (default: "airavata")
+- `temporal_host`: Temporal hostname
+- `api_server_host`: API server hostname
+- `iam_server_url`: Keycloak URL
+- `default_gateway`: Default gateway ID
+- `haproxy_config_dir`: OS-specific HAProxy config directory
+- `haproxy_service_name`: OS-specific HAProxy service name
+
+See `inventories/template/group_vars/all/vars.yml` for complete variable list.
+
+## High Availability
+
+For production HA deployments:
+
+1. **Database**: Use MariaDB Galera Cluster
+2. **Temporal**: Use Temporal cluster mode with multiple history shards
+3. **API Server**: Deploy multiple instances behind load balancer
+4. **Keycloak**: Use Keycloak HA cluster mode
+
+## Additional Resources
+
+- [Airavata Documentation](https://airavata.apache.org)
+- [Temporal Documentation](https://docs.temporal.io)
+- [Keycloak Documentation](https://www.keycloak.org/documentation)

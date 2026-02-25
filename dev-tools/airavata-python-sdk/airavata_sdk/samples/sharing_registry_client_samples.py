@@ -17,8 +17,6 @@
 
 import logging
 
-from airavata.api.error.ttypes import TException
-from airavata.model.sharing.ttypes import Domain, Entity, EntityType
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.sharing_registry_client import SharingRegistryClient
 
@@ -26,60 +24,29 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-authenticator = Authenticator();
-token = authenticator.get_token_and_user_info_password_flow("default-admin", "123456", "default")
+authenticator = Authenticator()
+token = authenticator.get_token_and_user_info_password_flow("default-admin", "admin123", "default")
 
-# load GroupManagerClient with default configuration
-client = SharingRegistryClient()
+# load SharingRegistryClient with default configuration
+client = SharingRegistryClient(access_token=token)
 
-# create domian
-def create_domain():
+# grant resource access
+def grant_access():
     try:
-        domain = Domain()
-        domain.domainId = "gw@scigap.org"
-        domain.name = "gw"
-        domain.description = "this domain is used by testing server"
-
-        domain = client.create_domain(domain)
-        print("Domian created :", domain)
-
-    except TException:
+        client.grant_access({
+            "resourceId": "test-resource",
+            "userId": "default-admin",
+            "permission": "READ",
+        })
+        print("Access granted")
+    except Exception:
         logger.exception("Error occurred")
 
 
-# get domain
-def get_domain():
+# get resource access
+def get_access():
     try:
-
-        domains = client.get_domain("gw")
-        print("Domians created :", domains)
-
-    except TException:
+        grants = client.get_resource_access("test-resource")
+        print("Access grants:", grants)
+    except Exception:
         logger.exception("Error occurred")
-
-
-def create_entity_type():
-    try:
-        entity_type = EntityType()
-        entity_type.domainId = "gw@scigap.org"
-        entity_type.description = "project entity type"
-        entity_type.name = "PROJECT"
-        entity_type.entityTypeId = "gw@scigap.org:PROJECT"
-        en_type = client.create_entity_type(entity_type)
-        print("Entity Type ", en_type)
-    except TException:
-        logger.exception("Error occurred")
-
-
-def create_entity():
-    try:
-        entity = Entity()
-        entity.entityTypeId = "gw@scigap.org:PROJECT"
-        entity.name = "PROJECT_ENTITY"
-        entity.domainId = "gw"
-        entity.ownerId = "default-admin"
-        en_type = client.create_entity(entity)
-        print("Entity Type ", en_type)
-    except TException:
-        logger.exception("Error occurred")
-

@@ -14,47 +14,70 @@
 #  limitations under the License.
 #
 
-import configparser
 import logging
 from typing import Optional
 
-from airavata_sdk.transport import utils
 from airavata_sdk import Settings
+from airavata_sdk.transport.utils import RestClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
 
 
 class IAMAdminClient(object):
+    """Client for IAM admin operations via the unified REST API."""
 
-    def __init__(self):
+    def __init__(self, access_token: str, base_url: Optional[str] = None):
         self.settings = Settings()
-        self.client = utils.initialize_iam_admin_client(
-            self.settings.PROFILE_SERVICE_HOST,
-            self.settings.PROFILE_SERVICE_PORT,
-            self.settings.PROFILE_SERVICE_SECURE,
+        self.client = RestClient(
+            access_token=access_token,
+            base_url=base_url or self.settings.API_SERVER_URL,
         )
-        # expose the needed functions
-        self.set_up_gateway = self.client.setUpGateway
-        self.is_username_available = self.client.isUsernameAvailable
-        self.register_user = self.client.registerUser
-        self.enable_user = self.client.enableUser
-        self.is_user_enabled = self.client.isUserEnabled
-        self.is_user_exist = self.client.isUserExist
-        self.get_user = self.client.getUser
-        self.get_users = self.client.getUsers
-        self.reset_user_password = self.client.resetUserPassword
-        self.find_users = self.client.findUsers
-        self.update_user_profile = self.client.updateUserProfile
-        self.delete_user = self.client.deleteUser
-        self.add_role_to_user = self.client.addRoleToUser
-        self.remove_role_from_user = self.client.removeRoleFromUser
-        self.get_users_with_role = self.client.getUsersWithRole
+
+    def is_username_available(self, user_name: str) -> bool:
+        result = self.client.get(f"/users/{user_name}/exists")
+        return not result
+
+    def register_user(self, user: dict) -> str:
+        return self.client.post("/users", json=user)
+
+    def enable_user(self, user_id: str) -> bool:
+        self.client.post(f"/users/{user_id}/enable")
+        return True
+
+    def is_user_enabled(self, user_id: str) -> bool:
+        return self.client.get(f"/users/{user_id}/enabled")
+
+    def is_user_exist(self, user_id: str) -> bool:
+        return self.client.get(f"/users/{user_id}/exists")
+
+    def get_user(self, user_id: str) -> dict:
+        return self.client.get(f"/users/{user_id}")
+
+    def get_users(self, gateway_id: str = None) -> list[dict]:
+        return self.client.get("/users", params={"gatewayId": gateway_id})
+
+    def reset_user_password(self, user_id: str, new_password: str) -> None:
+        self.client.put(f"/users/{user_id}", json={"password": new_password})
+
+    def find_users(self, search_filter: str) -> list[dict]:
+        return self.client.get("/users", params={"search": search_filter})
+
+    def update_user_profile(self, user: dict) -> bool:
+        user_id = user.get("userId") or user.get("airavataInternalUserId")
+        self.client.put(f"/users/{user_id}", json=user)
+        return True
+
+    def delete_user(self, user_id: str) -> None:
+        self.client.delete(f"/users/{user_id}")
+
+    def add_role_to_user(self, user_id: str, role: str) -> bool:
+        self.client.put(f"/users/{user_id}", json={"roles": [role]})
+        return True
+
+    def remove_role_from_user(self, user_id: str, role: str) -> bool:
+        self.client.put(f"/users/{user_id}", json={"removeRoles": [role]})
+        return True
+
+    def get_users_with_role(self, role: str) -> list[dict]:
+        return self.client.get("/users", params={"role": role})
