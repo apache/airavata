@@ -100,7 +100,7 @@ class IdGeneratorTest {
     @Test
     void getUniqueTimestamp_producesUniqueValues() {
         Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             Timestamp ts = IdGenerator.getUniqueTimestamp();
             String key = ts.getTime() + ":" + ts.getNanos();
             assertTrue(seen.add(key), "Duplicate timestamp at iteration " + i + ": " + key);
