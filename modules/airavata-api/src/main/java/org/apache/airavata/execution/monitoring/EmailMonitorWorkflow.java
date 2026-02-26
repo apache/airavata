@@ -41,7 +41,7 @@ import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
 import org.apache.airavata.execution.monitoring.JobStatusMonitor;
 import org.apache.airavata.execution.monitoring.JobStatusResult;
 import org.apache.airavata.compute.provider.slurm.SLURMEmailParser;
-import org.apache.airavata.compute.provider.slurm.ResourceConfiguration;
+import org.apache.airavata.compute.provider.slurm.ResourceConfig;
 import org.apache.airavata.config.ConfigResolver;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.ServerLifecycle;
@@ -78,7 +78,7 @@ public class EmailMonitorWorkflow implements ServerLifecycle {
     private final Map<ResourceJobManagerType, SLURMEmailParser> emailParserMap = new HashMap<>();
     private final Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
-    private final Map<ResourceJobManagerType, ResourceConfiguration> resourceConfigs = new HashMap<>();
+    private final Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
     private long emailExpirationTimeMinutes;
     private String publisherId;
     private Thread emailThread;
@@ -148,7 +148,7 @@ public class EmailMonitorWorkflow implements ServerLifecycle {
             List<Map<String, Object>> resourceObjs = (List<Map<String, Object>>) configMap.get("resources");
             if (resourceObjs != null) {
                 resourceObjs.forEach(resource -> {
-                    ResourceConfiguration resourceConfig = new ResourceConfiguration();
+                    ResourceConfig resourceConfig = new ResourceConfig();
                     String identifier = resource.get("jobManagerType").toString();
                     resourceConfig.setJobManagerType(ResourceJobManagerType.valueOf(identifier));
                     Object emailParser = resource.get("emailParser");
@@ -164,12 +164,12 @@ public class EmailMonitorWorkflow implements ServerLifecycle {
         // populateAddressAndParserMap will be called from init() after properties are loaded
     }
 
-    private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfiguration> resourceConfigs)
+    private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs)
             throws AiravataException {
-        for (Map.Entry<ResourceJobManagerType, ResourceConfiguration> resourceConfigEntry :
+        for (Map.Entry<ResourceJobManagerType, ResourceConfig> resourceConfigEntry :
                 resourceConfigs.entrySet()) {
             ResourceJobManagerType type = resourceConfigEntry.getKey();
-            ResourceConfiguration config = resourceConfigEntry.getValue();
+            ResourceConfig config = resourceConfigEntry.getValue();
             List<String> resourceEmailAddresses = config.getResourceEmailAddresses();
             if (resourceEmailAddresses != null && !resourceEmailAddresses.isEmpty()) {
                 for (String resourceEmailAddress : resourceEmailAddresses) {
