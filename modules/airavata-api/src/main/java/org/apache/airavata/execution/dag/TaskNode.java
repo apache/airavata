@@ -33,11 +33,7 @@ import java.util.Map;
  *                     (e.g. "processState" for status publishing)
  */
 public record TaskNode(
-        String id,
-        String taskBeanName,
-        String onSuccess,
-        String onFailure,
-        Map<String, String> metadata) {
+        String id, String taskBeanName, String onSuccess, String onFailure, Map<String, String> metadata) {
 
     public TaskNode(String id, String taskBeanName, String onSuccess, String onFailure) {
         this(id, taskBeanName, onSuccess, onFailure, Map.of());

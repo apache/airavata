@@ -20,14 +20,9 @@
 package org.apache.airavata.protocol;
 
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
-import org.apache.airavata.protocol.AdapterSupport;
-import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.AgentException;
-import org.apache.airavata.protocol.ResourceLookup;
-import org.apache.airavata.protocol.StorageResourceAdapter;
+import org.apache.airavata.iam.service.CredentialStoreService;
 import org.apache.airavata.protocol.ssh.SSHJAgentAdapter;
 import org.apache.airavata.protocol.ssh.SSHJStorageAdapter;
-import org.apache.airavata.iam.service.CredentialStoreService;
 import org.apache.airavata.storage.resource.model.DataMovementProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +47,7 @@ public class DefaultAdapterSupport implements AdapterSupport {
     private final ResourceLookup resourceLookup;
     private final CredentialStoreService credentialStoreService;
 
-    public DefaultAdapterSupport(
-            ResourceLookup resourceLookup, CredentialStoreService credentialStoreService) {
+    public DefaultAdapterSupport(ResourceLookup resourceLookup, CredentialStoreService credentialStoreService) {
         this.resourceLookup = resourceLookup;
         this.credentialStoreService = credentialStoreService;
     }
@@ -120,8 +114,7 @@ public class DefaultAdapterSupport implements AdapterSupport {
                             + ". Creating new one");
                     switch (protocol) {
                         case SCP:
-                            var storageResourceAdapter =
-                                    new SSHJStorageAdapter(resourceLookup, credentialStoreService);
+                            var storageResourceAdapter = new SSHJStorageAdapter(resourceLookup, credentialStoreService);
                             storageResourceAdapter.init(storageResourceId, gatewayId, userId, authToken);
                             agentStore.putStorageAdapter(
                                     storageResourceId, protocol, authToken, userId, storageResourceAdapter);

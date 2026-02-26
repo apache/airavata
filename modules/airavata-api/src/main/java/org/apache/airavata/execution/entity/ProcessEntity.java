@@ -19,9 +19,6 @@
 */
 package org.apache.airavata.execution.entity;
 
-import org.apache.airavata.status.entity.EventEntity;
-import org.apache.airavata.research.experiment.entity.ExperimentEntity;
-import org.apache.airavata.compute.resource.entity.JobEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,6 +34,9 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.compute.resource.entity.JobEntity;
+import org.apache.airavata.research.experiment.entity.ExperimentEntity;
+import org.apache.airavata.status.entity.EventEntity;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;

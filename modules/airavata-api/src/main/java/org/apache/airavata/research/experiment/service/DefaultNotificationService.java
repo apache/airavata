@@ -22,10 +22,10 @@ package org.apache.airavata.research.experiment.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import org.apache.airavata.research.experiment.model.Notification;
-import org.apache.airavata.research.experiment.entity.NotificationEntity;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.research.experiment.entity.NotificationEntity;
 import org.apache.airavata.research.experiment.mapper.NotificationMapper;
+import org.apache.airavata.research.experiment.model.Notification;
 import org.apache.airavata.research.experiment.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +48,8 @@ public class DefaultNotificationService implements NotificationService {
 
     @Override
     public Notification getNotification(String notificationId) throws RegistryException {
-        return notificationRepository.findById(notificationId)
+        return notificationRepository
+                .findById(notificationId)
                 .map(mapper::toModel)
                 .orElse(null);
     }

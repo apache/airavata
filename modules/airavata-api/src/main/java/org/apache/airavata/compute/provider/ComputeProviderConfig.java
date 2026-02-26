@@ -41,51 +41,81 @@ public class ComputeProviderConfig {
     // ---- AWS ----------------------------------------------------------------
 
     @Bean("awsProvisioningTask")
-    DagTask awsProvision(AwsComputeProvider p) { return p::provision; }
+    DagTask awsProvision(AwsComputeProvider p) {
+        return p::provision;
+    }
 
     @Bean("awsSubmitTask")
-    DagTask awsSubmit(AwsComputeProvider p) { return p::submit; }
+    DagTask awsSubmit(AwsComputeProvider p) {
+        return p::submit;
+    }
 
     @Bean("awsMonitoringTask")
-    DagTask awsMonitor(AwsComputeProvider p) { return p::monitor; }
+    DagTask awsMonitor(AwsComputeProvider p) {
+        return p::monitor;
+    }
 
     @Bean("awsCancelTask")
-    DagTask awsCancel(AwsComputeProvider p) { return p::cancel; }
+    DagTask awsCancel(AwsComputeProvider p) {
+        return p::cancel;
+    }
 
     @Bean("awsDeprovisioningTask")
-    DagTask awsDeprovision(AwsComputeProvider p) { return p::deprovision; }
+    DagTask awsDeprovision(AwsComputeProvider p) {
+        return p::deprovision;
+    }
 
     // ---- SLURM --------------------------------------------------------------
 
     @Bean("slurmProvisioningTask")
-    DagTask slurmProvision(SlurmComputeProvider p) { return p::provision; }
+    DagTask slurmProvision(SlurmComputeProvider p) {
+        return p::provision;
+    }
 
     @Bean("slurmSubmitTask")
-    DagTask slurmSubmit(SlurmComputeProvider p) { return p::submit; }
+    DagTask slurmSubmit(SlurmComputeProvider p) {
+        return p::submit;
+    }
 
     @Bean("slurmMonitoringTask")
-    DagTask slurmMonitor(SlurmComputeProvider p) { return p::monitor; }
+    DagTask slurmMonitor(SlurmComputeProvider p) {
+        return p::monitor;
+    }
 
     @Bean("slurmCancelTask")
-    DagTask slurmCancel(SlurmComputeProvider p) { return p::cancel; }
+    DagTask slurmCancel(SlurmComputeProvider p) {
+        return p::cancel;
+    }
 
     @Bean("slurmDeprovisioningTask")
-    DagTask slurmDeprovision(SlurmComputeProvider p) { return p::deprovision; }
+    DagTask slurmDeprovision(SlurmComputeProvider p) {
+        return p::deprovision;
+    }
 
     // ---- Local (PLAIN) ------------------------------------------------------
 
     @Bean("localProvisioningTask")
-    DagTask localProvision(LocalComputeProvider p) { return p::provision; }
+    DagTask localProvision(LocalComputeProvider p) {
+        return p::provision;
+    }
 
     @Bean("localSubmitTask")
-    DagTask localSubmit(LocalComputeProvider p) { return p::submit; }
+    DagTask localSubmit(LocalComputeProvider p) {
+        return p::submit;
+    }
 
     @Bean("localMonitoringTask")
-    DagTask localMonitor(LocalComputeProvider p) { return p::monitor; }
+    DagTask localMonitor(LocalComputeProvider p) {
+        return p::monitor;
+    }
 
     @Bean("localCancelTask")
-    DagTask localCancel(LocalComputeProvider p) { return p::cancel; }
+    DagTask localCancel(LocalComputeProvider p) {
+        return p::cancel;
+    }
 
     @Bean("localDeprovisioningTask")
-    DagTask localDeprovision(LocalComputeProvider p) { return p::deprovision; }
+    DagTask localDeprovision(LocalComputeProvider p) {
+        return p::deprovision;
+    }
 }

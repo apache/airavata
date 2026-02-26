@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.execution.dag;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -29,17 +29,16 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.model.DagTaskResult;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.model.TaskModel;
 import org.apache.airavata.execution.model.TaskTypes;
+import org.apache.airavata.execution.orchestration.ExperimentStatusManager;
 import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.research.application.model.ApplicationOutput;
-import org.apache.airavata.execution.orchestration.ExperimentStatusManager;
 import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.status.service.StatusService;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,10 +64,10 @@ public class DecisionTasksTest {
     // Shared test fixture constants
     // -------------------------------------------------------------------------
 
-    private static final String PROCESS_ID    = "proc-test-001";
+    private static final String PROCESS_ID = "proc-test-001";
     private static final String EXPERIMENT_ID = "exp-test-001";
-    private static final String GATEWAY_ID    = "gw-test-001";
-    private static final String TASK_ID       = "task-test-001";
+    private static final String GATEWAY_ID = "gw-test-001";
+    private static final String TASK_ID = "task-test-001";
 
     // -------------------------------------------------------------------------
     // Shared helper: build a minimal TaskContext backed by a given ProcessModel
@@ -120,11 +119,9 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Success.class, result,
-                    "Expected Success when process has outputs");
+            assertInstanceOf(DagTaskResult.Success.class, result, "Expected Success when process has outputs");
             DagTaskResult.Success success = (DagTaskResult.Success) result;
-            assertTrue(success.message().contains("2"),
-                    "Success message should contain the output count");
+            assertTrue(success.message().contains("2"), "Success message should contain the output count");
         }
 
         @Test
@@ -136,10 +133,10 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Failure.class, result,
-                    "Expected Failure when processOutputs is null");
+            assertInstanceOf(DagTaskResult.Failure.class, result, "Expected Failure when processOutputs is null");
             DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(failure.reason().contains("No outputs defined"),
+            assertTrue(
+                    failure.reason().contains("No outputs defined"),
                     "Failure reason must indicate no outputs are defined");
         }
 
@@ -152,10 +149,10 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Failure.class, result,
-                    "Expected Failure when processOutputs is empty");
+            assertInstanceOf(DagTaskResult.Failure.class, result, "Expected Failure when processOutputs is empty");
             DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(failure.reason().contains("No outputs defined"),
+            assertTrue(
+                    failure.reason().contains("No outputs defined"),
                     "Failure reason must indicate no outputs are defined");
         }
     }
@@ -189,10 +186,13 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Success.class, result,
+            assertInstanceOf(
+                    DagTaskResult.Success.class,
+                    result,
                     "Expected Success when at least one output has dataMovement=true");
             DagTaskResult.Success success = (DagTaskResult.Success) result;
-            assertTrue(success.message().contains("Data movement outputs found"),
+            assertTrue(
+                    success.message().contains("Data movement outputs found"),
                     "Success message must confirm data movement outputs were found");
         }
 
@@ -211,10 +211,11 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Failure.class, result,
-                    "Expected Failure when no outputs have dataMovement=true");
+            assertInstanceOf(
+                    DagTaskResult.Failure.class, result, "Expected Failure when no outputs have dataMovement=true");
             DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(failure.reason().contains("No data movement outputs"),
+            assertTrue(
+                    failure.reason().contains("No data movement outputs"),
                     "Failure reason must indicate no data movement outputs exist");
         }
 
@@ -227,10 +228,10 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Failure.class, result,
-                    "Expected Failure when processOutputs is null");
+            assertInstanceOf(DagTaskResult.Failure.class, result, "Expected Failure when processOutputs is null");
             DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(failure.reason().contains("No outputs defined"),
+            assertTrue(
+                    failure.reason().contains("No outputs defined"),
                     "Failure reason must indicate that no outputs are defined");
         }
     }
@@ -264,10 +265,13 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Success.class, result,
+            assertInstanceOf(
+                    DagTaskResult.Success.class,
+                    result,
                     "Expected Success when process has at least one OUTPUT_FETCHING task");
             DagTaskResult.Success success = (DagTaskResult.Success) result;
-            assertTrue(success.message().contains("Intermediate transfer tasks found"),
+            assertTrue(
+                    success.message().contains("Intermediate transfer tasks found"),
                     "Success message must confirm intermediate transfer tasks were found");
         }
 
@@ -289,10 +293,11 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Failure.class, result,
-                    "Expected Failure when no OUTPUT_FETCHING task is present");
+            assertInstanceOf(
+                    DagTaskResult.Failure.class, result, "Expected Failure when no OUTPUT_FETCHING task is present");
             DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(failure.reason().contains("No intermediate transfer tasks"),
+            assertTrue(
+                    failure.reason().contains("No intermediate transfer tasks"),
                     "Failure reason must indicate no intermediate transfer tasks exist");
         }
 
@@ -305,10 +310,10 @@ public class DecisionTasksTest {
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Failure.class, result,
-                    "Expected Failure when task list is empty");
+            assertInstanceOf(DagTaskResult.Failure.class, result, "Expected Failure when task list is empty");
             DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(failure.reason().contains("No intermediate transfer tasks"),
+            assertTrue(
+                    failure.reason().contains("No intermediate transfer tasks"),
                     "Failure reason must indicate no intermediate transfer tasks exist");
         }
     }
@@ -334,17 +339,19 @@ public class DecisionTasksTest {
         }
 
         @Test
-        void execute_publishesFailedStatusForBothProcessAndExperiment_andReturnsSuccess()
-                throws Exception {
+        void execute_publishesFailedStatusForBothProcessAndExperiment_andReturnsSuccess() throws Exception {
             ProcessModel model = newProcessModel();
             TaskContext context = contextFor(model);
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Success.class, result,
+            assertInstanceOf(
+                    DagTaskResult.Success.class,
+                    result,
                     "MarkFailedTask must always return Success regardless of what it marks");
             DagTaskResult.Success success = (DagTaskResult.Success) result;
-            assertTrue(success.message().contains("Marked as FAILED"),
+            assertTrue(
+                    success.message().contains("Marked as FAILED"),
                     "Success message must confirm the FAILED mark was applied");
 
             verify(statusService, times(1)).addProcessStatus(any(), eq(PROCESS_ID));
@@ -354,25 +361,28 @@ public class DecisionTasksTest {
         @Test
         void execute_returnsSuccess_evenWhenStatusServiceThrows() throws Exception {
             doThrow(new RegistryException("Status DB unavailable"))
-                    .when(statusService).addProcessStatus(any(), any());
+                    .when(statusService)
+                    .addProcessStatus(any(), any());
 
             ProcessModel model = newProcessModel();
             TaskContext context = contextFor(model);
 
             DagTaskResult result = task.execute(context);
 
-            assertInstanceOf(DagTaskResult.Success.class, result,
+            assertInstanceOf(
+                    DagTaskResult.Success.class,
+                    result,
                     "MarkFailedTask must swallow StatusService exceptions and still return Success");
             DagTaskResult.Success success = (DagTaskResult.Success) result;
-            assertTrue(success.message().contains("Marked as FAILED"),
+            assertTrue(
+                    success.message().contains("Marked as FAILED"),
                     "Success message must be returned even after a StatusService failure");
         }
 
         @Test
         @SuppressWarnings("unchecked")
         void execute_setsCorrectStateAndReasonOnProcessStatus() throws Exception {
-            ArgumentCaptor<StatusModel<ProcessState>> processStatusCaptor =
-                    ArgumentCaptor.forClass(StatusModel.class);
+            ArgumentCaptor<StatusModel<ProcessState>> processStatusCaptor = ArgumentCaptor.forClass(StatusModel.class);
 
             ProcessModel model = newProcessModel();
             TaskContext context = contextFor(model);
@@ -383,14 +393,13 @@ public class DecisionTasksTest {
             StatusModel<ProcessState> captured = processStatusCaptor.getValue();
 
             org.junit.jupiter.api.Assertions.assertEquals(
-                    ProcessState.FAILED,
-                    captured.getState(),
-                    "Process status state must be FAILED");
+                    ProcessState.FAILED, captured.getState(), "Process status state must be FAILED");
             org.junit.jupiter.api.Assertions.assertEquals(
                     "DAG execution failed",
                     captured.getReason(),
                     "Process status reason must be 'DAG execution failed'");
-            assertTrue(captured.getTimeOfStateChange() > 0,
+            assertTrue(
+                    captured.getTimeOfStateChange() > 0,
                     "Process status timeOfStateChange must be set to a positive timestamp");
         }
 
@@ -405,18 +414,18 @@ public class DecisionTasksTest {
 
             task.execute(context);
 
-            verify(experimentStatusManager).updateExperimentStatus(eq(EXPERIMENT_ID), experimentStatusCaptor.capture(), eq(GATEWAY_ID));
+            verify(experimentStatusManager)
+                    .updateExperimentStatus(eq(EXPERIMENT_ID), experimentStatusCaptor.capture(), eq(GATEWAY_ID));
             StatusModel<ExperimentState> captured = experimentStatusCaptor.getValue();
 
             org.junit.jupiter.api.Assertions.assertEquals(
-                    ExperimentState.FAILED,
-                    captured.getState(),
-                    "Experiment status state must be FAILED");
+                    ExperimentState.FAILED, captured.getState(), "Experiment status state must be FAILED");
             org.junit.jupiter.api.Assertions.assertEquals(
                     "Process execution failed",
                     captured.getReason(),
                     "Experiment status reason must be 'Process execution failed'");
-            assertTrue(captured.getTimeOfStateChange() > 0,
+            assertTrue(
+                    captured.getTimeOfStateChange() > 0,
                     "Experiment status timeOfStateChange must be set to a positive timestamp");
         }
     }

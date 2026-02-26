@@ -166,8 +166,7 @@ public class ConfigResolver {
             }
             var loaded = new Properties();
             // Try classpath first
-            try (InputStream is =
-                    ConfigResolver.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES)) {
+            try (InputStream is = ConfigResolver.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES)) {
                 if (is != null) {
                     loaded.load(is);
                     cachedProperties = loaded;

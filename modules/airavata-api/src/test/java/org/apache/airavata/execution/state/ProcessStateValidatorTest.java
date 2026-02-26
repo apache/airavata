@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.airavata.core.model.ProcessState;
-import org.apache.airavata.execution.state.StateValidators;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -36,20 +35,16 @@ public class ProcessStateValidatorTest {
     public void testProcessStateValidator_CreatedTransitions() {
         // CREATED can go to VALIDATED, LAUNCHED, FAILED (also CANCELING per the validator)
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CREATED, ProcessState.VALIDATED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CREATED, ProcessState.VALIDATED),
                 "CREATED -> VALIDATED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CREATED, ProcessState.LAUNCHED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CREATED, ProcessState.LAUNCHED),
                 "CREATED -> LAUNCHED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CREATED, ProcessState.FAILED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CREATED, ProcessState.FAILED),
                 "CREATED -> FAILED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CREATED, ProcessState.CANCELING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CREATED, ProcessState.CANCELING),
                 "CREATED -> CANCELING should be valid");
     }
 
@@ -69,20 +64,16 @@ public class ProcessStateValidatorTest {
                         ProcessState.LAUNCHED, ProcessState.INPUT_DATA_STAGING),
                 "LAUNCHED -> INPUT_DATA_STAGING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.LAUNCHED, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.LAUNCHED, ProcessState.EXECUTING),
                 "LAUNCHED -> EXECUTING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.LAUNCHED, ProcessState.QUEUED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.LAUNCHED, ProcessState.QUEUED),
                 "LAUNCHED -> QUEUED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.LAUNCHED, ProcessState.CANCELING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.LAUNCHED, ProcessState.CANCELING),
                 "LAUNCHED -> CANCELING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.LAUNCHED, ProcessState.FAILED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.LAUNCHED, ProcessState.FAILED),
                 "LAUNCHED -> FAILED should be valid");
     }
 
@@ -90,8 +81,7 @@ public class ProcessStateValidatorTest {
     public void testProcessStateValidator_ExecutingTransitions() {
         // EXECUTING can go to MONITORING, OUTPUT_DATA_STAGING, COMPLETED, FAILED, REQUEUED (and more)
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.MONITORING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.MONITORING),
                 "EXECUTING -> MONITORING should be valid");
         assertTrue(
                 StateValidators.ProcessStateValidator.INSTANCE.isValid(
@@ -102,28 +92,22 @@ public class ProcessStateValidatorTest {
                         ProcessState.EXECUTING, ProcessState.POST_PROCESSING),
                 "EXECUTING -> POST_PROCESSING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.COMPLETED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.COMPLETED),
                 "EXECUTING -> COMPLETED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.FAILED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.FAILED),
                 "EXECUTING -> FAILED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.QUEUED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.QUEUED),
                 "EXECUTING -> QUEUED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.REQUEUED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.REQUEUED),
                 "EXECUTING -> REQUEUED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.CANCELING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.CANCELING),
                 "EXECUTING -> CANCELING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.EXECUTING, ProcessState.CANCELED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.EXECUTING, ProcessState.CANCELED),
                 "EXECUTING -> CANCELED should be valid");
     }
 
@@ -131,30 +115,24 @@ public class ProcessStateValidatorTest {
     public void testProcessStateValidator_QueuingCycleTransitions() {
         // QUEUED -> DEQUEUING -> EXECUTING cycle
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.QUEUED, ProcessState.DEQUEUING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.QUEUED, ProcessState.DEQUEUING),
                 "QUEUED -> DEQUEUING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.QUEUED, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.QUEUED, ProcessState.EXECUTING),
                 "QUEUED -> EXECUTING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.DEQUEUING, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.DEQUEUING, ProcessState.EXECUTING),
                 "DEQUEUING -> EXECUTING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.DEQUEUING, ProcessState.QUEUED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.DEQUEUING, ProcessState.QUEUED),
                 "DEQUEUING -> QUEUED should be valid");
 
         // REQUEUED can return to QUEUED or continue to EXECUTING
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.REQUEUED, ProcessState.QUEUED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.REQUEUED, ProcessState.QUEUED),
                 "REQUEUED -> QUEUED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.REQUEUED, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.REQUEUED, ProcessState.EXECUTING),
                 "REQUEUED -> EXECUTING should be valid");
     }
 
@@ -162,12 +140,10 @@ public class ProcessStateValidatorTest {
     public void testProcessStateValidator_CancelingTransitions() {
         // CANCELING can go to CANCELED, FAILED
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CANCELING, ProcessState.CANCELED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CANCELING, ProcessState.CANCELED),
                 "CANCELING -> CANCELED should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CANCELING, ProcessState.FAILED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CANCELING, ProcessState.FAILED),
                 "CANCELING -> FAILED should be valid");
     }
 
@@ -183,8 +159,7 @@ public class ProcessStateValidatorTest {
                         ProcessState.MONITORING, ProcessState.POST_PROCESSING),
                 "MONITORING -> POST_PROCESSING should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.MONITORING, ProcessState.COMPLETED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.MONITORING, ProcessState.COMPLETED),
                 "MONITORING -> COMPLETED should be valid");
         assertTrue(
                 StateValidators.ProcessStateValidator.INSTANCE.isValid(
@@ -204,16 +179,13 @@ public class ProcessStateValidatorTest {
     public void testProcessStateValidator_TerminalIdempotency() {
         // Terminal states allow idempotent self-transitions
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.COMPLETED, ProcessState.COMPLETED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.COMPLETED, ProcessState.COMPLETED),
                 "COMPLETED -> COMPLETED (idempotent) should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.FAILED, ProcessState.FAILED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.FAILED, ProcessState.FAILED),
                 "FAILED -> FAILED (idempotent) should be valid");
         assertTrue(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CANCELED, ProcessState.CANCELED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CANCELED, ProcessState.CANCELED),
                 "CANCELED -> CANCELED (idempotent) should be valid");
     }
 
@@ -221,22 +193,18 @@ public class ProcessStateValidatorTest {
     public void testProcessStateValidator_InvalidTransitions() {
         // Terminal states cannot transition to active states
         assertFalse(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.COMPLETED, ProcessState.LAUNCHED),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.COMPLETED, ProcessState.LAUNCHED),
                 "COMPLETED -> LAUNCHED should be invalid");
         assertFalse(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.FAILED, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.FAILED, ProcessState.EXECUTING),
                 "FAILED -> EXECUTING should be invalid");
         assertFalse(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.COMPLETED, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.COMPLETED, ProcessState.EXECUTING),
                 "COMPLETED -> EXECUTING should be invalid");
 
         // CREATED cannot skip directly to EXECUTING
         assertFalse(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(
-                        ProcessState.CREATED, ProcessState.EXECUTING),
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(ProcessState.CREATED, ProcessState.EXECUTING),
                 "CREATED -> EXECUTING should be invalid");
     }
 
@@ -257,7 +225,6 @@ public class ProcessStateValidatorTest {
 
         // null -> null should be invalid
         assertFalse(
-                StateValidators.ProcessStateValidator.INSTANCE.isValid(null, null),
-                "null -> null should be invalid");
+                StateValidators.ProcessStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
     }
 }

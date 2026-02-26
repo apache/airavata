@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.submission.JobOutputParser;
 import org.apache.airavata.compute.resource.submission.JobStateParser;
-import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.core.model.StatusModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,8 @@ public class SlurmOutputParser implements JobOutputParser {
         return null;
     }
 
-    public void parseJobStatuses(String userName, Map<String, StatusModel<JobState>> statusMap, String rawOutput) throws Exception {
+    public void parseJobStatuses(String userName, Map<String, StatusModel<JobState>> statusMap, String rawOutput)
+            throws Exception {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];

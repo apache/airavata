@@ -21,10 +21,10 @@ package org.apache.airavata.compute.resource.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.entity.JobEntity;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.repository.JobRepository;
+import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

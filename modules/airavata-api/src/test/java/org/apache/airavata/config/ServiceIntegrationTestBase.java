@@ -246,8 +246,7 @@ public abstract class ServiceIntegrationTestBase {
                 org.springframework.core.env.Environment environment) {
             return org.springframework.boot.context.properties.bind.Binder.get(environment)
                     .bind("airavata", org.apache.airavata.config.ServerProperties.class)
-                    .orElseThrow(() ->
-                            new IllegalStateException("Failed to bind ServerProperties from environment"));
+                    .orElseThrow(() -> new IllegalStateException("Failed to bind ServerProperties from environment"));
         }
 
         @Bean

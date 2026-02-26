@@ -42,8 +42,7 @@ public class TaskTypesTest {
 
     @Test
     public void taskTypes_hasExactlySixValues() {
-        assertEquals(6, TaskTypes.values().length,
-                "TaskTypes must declare exactly 6 constants");
+        assertEquals(6, TaskTypes.values().length, "TaskTypes must declare exactly 6 constants");
     }
 
     // ===========================================================================
@@ -52,8 +51,7 @@ public class TaskTypesTest {
 
     @Test
     public void taskTypes_containsProvisioning() {
-        assertNotNull(TaskTypes.PROVISIONING,
-                "PROVISIONING constant must be present (renamed from ENV_SETUP)");
+        assertNotNull(TaskTypes.PROVISIONING, "PROVISIONING constant must be present (renamed from ENV_SETUP)");
     }
 
     @Test
@@ -68,8 +66,7 @@ public class TaskTypesTest {
 
     @Test
     public void taskTypes_containsDeprovisioning() {
-        assertNotNull(TaskTypes.DEPROVISIONING,
-                "DEPROVISIONING constant must be present (renamed from ENV_CLEANUP)");
+        assertNotNull(TaskTypes.DEPROVISIONING, "DEPROVISIONING constant must be present (renamed from ENV_CLEANUP)");
     }
 
     @Test
@@ -87,30 +84,34 @@ public class TaskTypesTest {
     // ===========================================================================
 
     @ParameterizedTest(name = "TaskTypes.valueOf(\"{0}\") resolves correctly")
-    @ValueSource(strings = {
-        "PROVISIONING",
-        "DATA_STAGING",
-        "JOB_SUBMISSION",
-        "DEPROVISIONING",
-        "MONITORING",
-        "OUTPUT_FETCHING"
-    })
+    @ValueSource(
+            strings = {
+                "PROVISIONING",
+                "DATA_STAGING",
+                "JOB_SUBMISSION",
+                "DEPROVISIONING",
+                "MONITORING",
+                "OUTPUT_FETCHING"
+            })
     public void taskTypes_valueOf_resolvesEachActiveConstant(String name) {
         TaskTypes resolved = TaskTypes.valueOf(name);
         assertNotNull(resolved, "valueOf must not return null for a valid constant name");
-        assertEquals(name, resolved.name(),
-                "resolved constant name must match the input string");
+        assertEquals(name, resolved.name(), "resolved constant name must match the input string");
     }
 
     @Test
     public void taskTypes_valueOf_provisioning_returnsSameInstance() {
-        assertSame(TaskTypes.PROVISIONING, TaskTypes.valueOf("PROVISIONING"),
+        assertSame(
+                TaskTypes.PROVISIONING,
+                TaskTypes.valueOf("PROVISIONING"),
                 "valueOf must return the canonical enum singleton");
     }
 
     @Test
     public void taskTypes_valueOf_deprovisioning_returnsSameInstance() {
-        assertSame(TaskTypes.DEPROVISIONING, TaskTypes.valueOf("DEPROVISIONING"),
+        assertSame(
+                TaskTypes.DEPROVISIONING,
+                TaskTypes.valueOf("DEPROVISIONING"),
                 "valueOf must return the canonical enum singleton");
     }
 
@@ -120,14 +121,16 @@ public class TaskTypesTest {
 
     @Test
     public void taskTypes_valueOf_envSetup_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(
+                IllegalArgumentException.class,
                 () -> TaskTypes.valueOf("ENV_SETUP"),
                 "ENV_SETUP was removed and must no longer be resolvable");
     }
 
     @Test
     public void taskTypes_valueOf_envCleanup_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(
+                IllegalArgumentException.class,
                 () -> TaskTypes.valueOf("ENV_CLEANUP"),
                 "ENV_CLEANUP was removed and must no longer be resolvable");
     }
@@ -138,11 +141,11 @@ public class TaskTypesTest {
 
     @Test
     public void taskTypes_name_matchesConstantIdentifier() {
-        assertEquals("PROVISIONING",   TaskTypes.PROVISIONING.name());
-        assertEquals("DATA_STAGING",   TaskTypes.DATA_STAGING.name());
+        assertEquals("PROVISIONING", TaskTypes.PROVISIONING.name());
+        assertEquals("DATA_STAGING", TaskTypes.DATA_STAGING.name());
         assertEquals("JOB_SUBMISSION", TaskTypes.JOB_SUBMISSION.name());
         assertEquals("DEPROVISIONING", TaskTypes.DEPROVISIONING.name());
-        assertEquals("MONITORING",     TaskTypes.MONITORING.name());
+        assertEquals("MONITORING", TaskTypes.MONITORING.name());
         assertEquals("OUTPUT_FETCHING", TaskTypes.OUTPUT_FETCHING.name());
     }
 
@@ -157,17 +160,19 @@ public class TaskTypesTest {
 
     @Test
     public void taskTypes_declaringClass_isTaskTypes() {
-        assertSame(TaskTypes.class, TaskTypes.PROVISIONING.getDeclaringClass(),
+        assertSame(
+                TaskTypes.class,
+                TaskTypes.PROVISIONING.getDeclaringClass(),
                 "Declaring class of every TaskTypes constant must be TaskTypes");
     }
 
     @Test
     public void taskTypes_ordinals_areStable() {
-        assertEquals(0, TaskTypes.PROVISIONING.ordinal(),   "PROVISIONING must be ordinal 0");
-        assertEquals(1, TaskTypes.DATA_STAGING.ordinal(),   "DATA_STAGING must be ordinal 1");
+        assertEquals(0, TaskTypes.PROVISIONING.ordinal(), "PROVISIONING must be ordinal 0");
+        assertEquals(1, TaskTypes.DATA_STAGING.ordinal(), "DATA_STAGING must be ordinal 1");
         assertEquals(2, TaskTypes.JOB_SUBMISSION.ordinal(), "JOB_SUBMISSION must be ordinal 2");
         assertEquals(3, TaskTypes.DEPROVISIONING.ordinal(), "DEPROVISIONING must be ordinal 3");
-        assertEquals(4, TaskTypes.MONITORING.ordinal(),     "MONITORING must be ordinal 4");
+        assertEquals(4, TaskTypes.MONITORING.ordinal(), "MONITORING must be ordinal 4");
         assertEquals(5, TaskTypes.OUTPUT_FETCHING.ordinal(), "OUTPUT_FETCHING must be ordinal 5");
     }
 }

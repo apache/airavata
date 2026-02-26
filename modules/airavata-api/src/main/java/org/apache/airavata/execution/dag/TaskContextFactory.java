@@ -91,14 +91,16 @@ public class TaskContextFactory {
      */
     public TaskContext buildContext(String processId, String gatewayId, String taskId) {
         // Load process entity
-        ProcessEntity processEntity = processRepository.findById(processId)
+        ProcessEntity processEntity = processRepository
+                .findById(processId)
                 .orElseThrow(() -> new IllegalStateException("Process not found: " + processId));
         ProcessModel processModel = toProcessModel(processEntity);
 
         // Load experiment entity
-        ExperimentEntity experimentEntity = experimentRepository.findById(processEntity.getExperimentId())
-                .orElseThrow(() -> new IllegalStateException(
-                        "Experiment not found: " + processEntity.getExperimentId()));
+        ExperimentEntity experimentEntity = experimentRepository
+                .findById(processEntity.getExperimentId())
+                .orElseThrow(
+                        () -> new IllegalStateException("Experiment not found: " + processEntity.getExperimentId()));
         ExperimentModel experimentModel = toExperimentModel(experimentEntity);
 
         // Enrich processModel with experiment inputs converted to ApplicationInput
@@ -140,11 +142,12 @@ public class TaskContextFactory {
                     String protocolStr = resource.getCapabilities().getCompute().getProtocol();
                     if (protocolStr != null && !protocolStr.isBlank()) {
                         try {
-                            context.setJobSubmissionProtocol(
-                                    JobSubmissionProtocol.valueOf(protocolStr.toUpperCase()));
+                            context.setJobSubmissionProtocol(JobSubmissionProtocol.valueOf(protocolStr.toUpperCase()));
                         } catch (IllegalArgumentException ex) {
-                            logger.warn("Unknown job submission protocol '{}' on resource {}; skipping protocol set",
-                                    protocolStr, processModel.getResourceId());
+                            logger.warn(
+                                    "Unknown job submission protocol '{}' on resource {}; skipping protocol set",
+                                    protocolStr,
+                                    processModel.getResourceId());
                         }
                     }
                 }

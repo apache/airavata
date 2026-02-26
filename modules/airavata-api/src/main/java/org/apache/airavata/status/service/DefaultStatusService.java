@@ -20,19 +20,17 @@
 package org.apache.airavata.status.service;
 
 import jakarta.persistence.EntityManager;
-import java.util.Arrays;
-import java.util.Collections;
+import org.apache.airavata.compute.resource.model.JobState;
+import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
+import org.apache.airavata.core.model.TaskState;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.status.entity.EventEntity;
+import org.apache.airavata.status.mapper.StatusMapper;
 import org.apache.airavata.status.model.ErrorModel;
 import org.apache.airavata.status.model.EventKind;
-import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.compute.resource.model.JobState;
-import org.apache.airavata.core.model.ProcessState;
-import org.apache.airavata.status.entity.EventEntity;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.status.repository.EventRepository;
-import org.apache.airavata.status.mapper.StatusMapper;
-import org.apache.airavata.core.model.TaskState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +51,8 @@ public class DefaultStatusService implements StatusService {
     private final EntityManager entityManager;
     private final StatusMapper statusMapper;
 
-    public DefaultStatusService(EventRepository eventRepository, EntityManager entityManager, StatusMapper statusMapper) {
+    public DefaultStatusService(
+            EventRepository eventRepository, EntityManager entityManager, StatusMapper statusMapper) {
         this.eventRepository = eventRepository;
         this.entityManager = entityManager;
         this.statusMapper = statusMapper;

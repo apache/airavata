@@ -19,25 +19,17 @@
 */
 package org.apache.airavata.execution.scheduling;
 
-import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.research.application.model.ApplicationInput;
-import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
-import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
-import org.apache.airavata.core.exception.CoreExceptions.ApplicationSettingsException;
-import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.compute.resource.model.ComputationalResourceSchedulingModel;
-import org.apache.airavata.config.ServerProperties;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.compute.resource.service.JobService;
-import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.execution.service.ProcessService;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.research.experiment.model.ExperimentModel;
+import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.status.service.StatusService;
-import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -94,13 +86,15 @@ public class ReScheduler {
                             "Cleaned up job stack for process {} experimentId {}",
                             processModel.getProcessId(),
                             processModel.getExperimentId());
-                    StatusModel<ProcessState> processStatus = statusService.getLatestProcessStatus(processModel.getProcessId());
+                    StatusModel<ProcessState> processStatus =
+                            statusService.getLatestProcessStatus(processModel.getProcessId());
                     long pastValue = processStatus.getTimeOfStateChange();
                     int value = fib(currentCount);
                     long currentTime = IdGenerator.getUniqueTimestamp().getTime();
                     double scanningInterval = properties.services().scheduler().jobScanningInterval();
                     if (currentTime >= (pastValue + value * scanningInterval * 1000)) {
-                        statusService.addProcessStatus(StatusModel.of(ProcessState.DEQUEUING), processModel.getProcessId());
+                        statusService.addProcessStatus(
+                                StatusModel.of(ProcessState.DEQUEUING), processModel.getProcessId());
                     }
                 }
             }

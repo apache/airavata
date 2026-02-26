@@ -22,15 +22,15 @@ package org.apache.airavata.cli.handlers;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.research.application.adapter.ApplicationAdapter;
-import org.apache.airavata.research.application.model.ApplicationDeploymentDescription;
-import org.apache.airavata.research.application.model.ApplicationInterfaceDescription;
 import org.apache.airavata.core.exception.ValidationExceptions.LaunchValidationException;
 import org.apache.airavata.core.exception.ValidationExceptions.ValidationResults;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.execution.orchestration.OrchestratorException;
 import org.apache.airavata.execution.orchestration.ValidationService;
+import org.apache.airavata.research.application.adapter.ApplicationAdapter;
+import org.apache.airavata.research.application.model.ApplicationDeploymentDescription;
+import org.apache.airavata.research.application.model.ApplicationInterfaceDescription;
+import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.springframework.stereotype.Service;
 
 @Service

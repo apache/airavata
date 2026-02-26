@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.apache.airavata.execution.activity.ProcessActivity.Activities;
 import org.apache.airavata.execution.activity.ProcessActivity.CancelInput;
@@ -61,10 +60,10 @@ public class ProcessActivityTest {
     // Shared fixtures
     // -------------------------------------------------------------------------
 
-    private static final String PROCESS_ID    = "proc-unit-001";
+    private static final String PROCESS_ID = "proc-unit-001";
     private static final String EXPERIMENT_ID = "exp-unit-001";
-    private static final String GATEWAY_ID    = "gw-unit-001";
-    private static final String TOKEN_ID      = "tok-unit-001";
+    private static final String GATEWAY_ID = "gw-unit-001";
+    private static final String TOKEN_ID = "tok-unit-001";
 
     // -------------------------------------------------------------------------
     // 1. TASK_QUEUE constant
@@ -72,10 +71,7 @@ public class ProcessActivityTest {
 
     @Test
     public void taskQueueConstant_equalsExpectedValue() {
-        assertEquals(
-                "airavata-workflows",
-                ProcessActivity.TASK_QUEUE,
-                "TASK_QUEUE must equal 'airavata-workflows'");
+        assertEquals("airavata-workflows", ProcessActivity.TASK_QUEUE, "TASK_QUEUE must equal 'airavata-workflows'");
     }
 
     @Test
@@ -92,10 +88,10 @@ public class ProcessActivityTest {
     public void preInput_recordAccessors_returnCorrectValues() {
         PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
 
-        assertEquals(PROCESS_ID,    input.processId(),    "processId accessor mismatch");
+        assertEquals(PROCESS_ID, input.processId(), "processId accessor mismatch");
         assertEquals(EXPERIMENT_ID, input.experimentId(), "experimentId accessor mismatch");
-        assertEquals(GATEWAY_ID,    input.gatewayId(),    "gatewayId accessor mismatch");
-        assertEquals(TOKEN_ID,      input.tokenId(),      "tokenId accessor mismatch");
+        assertEquals(GATEWAY_ID, input.gatewayId(), "gatewayId accessor mismatch");
+        assertEquals(TOKEN_ID, input.tokenId(), "tokenId accessor mismatch");
     }
 
     @Test
@@ -116,9 +112,9 @@ public class ProcessActivityTest {
     public void postInput_recordAccessors_withForceRunTrue() {
         PostInput input = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
 
-        assertEquals(PROCESS_ID,    input.processId(),    "processId accessor mismatch");
+        assertEquals(PROCESS_ID, input.processId(), "processId accessor mismatch");
         assertEquals(EXPERIMENT_ID, input.experimentId(), "experimentId accessor mismatch");
-        assertEquals(GATEWAY_ID,    input.gatewayId(),    "gatewayId accessor mismatch");
+        assertEquals(GATEWAY_ID, input.gatewayId(), "gatewayId accessor mismatch");
         assertTrue(input.forceRun(), "forceRun must be true");
     }
 
@@ -126,9 +122,9 @@ public class ProcessActivityTest {
     public void postInput_recordAccessors_withForceRunFalse() {
         PostInput input = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, false);
 
-        assertEquals(PROCESS_ID,    input.processId(),    "processId accessor mismatch");
+        assertEquals(PROCESS_ID, input.processId(), "processId accessor mismatch");
         assertEquals(EXPERIMENT_ID, input.experimentId(), "experimentId accessor mismatch");
-        assertEquals(GATEWAY_ID,    input.gatewayId(),    "gatewayId accessor mismatch");
+        assertEquals(GATEWAY_ID, input.gatewayId(), "gatewayId accessor mismatch");
         assertFalse(input.forceRun(), "forceRun must be false");
     }
 
@@ -140,9 +136,9 @@ public class ProcessActivityTest {
     public void cancelInput_recordAccessors_returnCorrectValues() {
         CancelInput input = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
 
-        assertEquals(PROCESS_ID,    input.processId(),    "processId accessor mismatch");
+        assertEquals(PROCESS_ID, input.processId(), "processId accessor mismatch");
         assertEquals(EXPERIMENT_ID, input.experimentId(), "experimentId accessor mismatch");
-        assertEquals(GATEWAY_ID,    input.gatewayId(),    "gatewayId accessor mismatch");
+        assertEquals(GATEWAY_ID, input.gatewayId(), "gatewayId accessor mismatch");
     }
 
     // -------------------------------------------------------------------------
@@ -155,16 +151,16 @@ public class ProcessActivityTest {
 
         PreInput deserialized = serializeDeserialize(original, PreInput.class);
 
-        assertEquals(original.processId(),    deserialized.processId(),    "processId lost during serialization");
+        assertEquals(original.processId(), deserialized.processId(), "processId lost during serialization");
         assertEquals(original.experimentId(), deserialized.experimentId(), "experimentId lost during serialization");
-        assertEquals(original.gatewayId(),    deserialized.gatewayId(),    "gatewayId lost during serialization");
-        assertEquals(original.tokenId(),      deserialized.tokenId(),      "tokenId lost during serialization");
+        assertEquals(original.gatewayId(), deserialized.gatewayId(), "gatewayId lost during serialization");
+        assertEquals(original.tokenId(), deserialized.tokenId(), "tokenId lost during serialization");
         assertEquals(original, deserialized, "Deserialized PreInput must equal the original");
     }
 
     @Test
     public void preInput_serialization_withNullTokenId_roundTrip() throws Exception {
-        PreInput original    = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, null);
+        PreInput original = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, null);
         PreInput deserialized = serializeDeserialize(original, PreInput.class);
 
         assertEquals(null, deserialized.tokenId(), "null tokenId must survive serialization round-trip");
@@ -177,19 +173,19 @@ public class ProcessActivityTest {
 
     @Test
     public void postInput_serialization_roundTrip_withForceRunTrue() throws Exception {
-        PostInput original    = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
+        PostInput original = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
         PostInput deserialized = serializeDeserialize(original, PostInput.class);
 
-        assertEquals(original.processId(),    deserialized.processId(),    "processId lost during serialization");
+        assertEquals(original.processId(), deserialized.processId(), "processId lost during serialization");
         assertEquals(original.experimentId(), deserialized.experimentId(), "experimentId lost during serialization");
-        assertEquals(original.gatewayId(),    deserialized.gatewayId(),    "gatewayId lost during serialization");
+        assertEquals(original.gatewayId(), deserialized.gatewayId(), "gatewayId lost during serialization");
         assertTrue(deserialized.forceRun(), "forceRun=true must survive serialization round-trip");
         assertEquals(original, deserialized, "Deserialized PostInput must equal the original");
     }
 
     @Test
     public void postInput_serialization_roundTrip_withForceRunFalse() throws Exception {
-        PostInput original    = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, false);
+        PostInput original = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, false);
         PostInput deserialized = serializeDeserialize(original, PostInput.class);
 
         assertFalse(deserialized.forceRun(), "forceRun=false must survive serialization round-trip");
@@ -202,12 +198,12 @@ public class ProcessActivityTest {
 
     @Test
     public void cancelInput_serialization_roundTrip_preservesAllFields() throws Exception {
-        CancelInput original    = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
+        CancelInput original = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
         CancelInput deserialized = serializeDeserialize(original, CancelInput.class);
 
-        assertEquals(original.processId(),    deserialized.processId(),    "processId lost during serialization");
+        assertEquals(original.processId(), deserialized.processId(), "processId lost during serialization");
         assertEquals(original.experimentId(), deserialized.experimentId(), "experimentId lost during serialization");
-        assertEquals(original.gatewayId(),    deserialized.gatewayId(),    "gatewayId lost during serialization");
+        assertEquals(original.gatewayId(), deserialized.gatewayId(), "gatewayId lost during serialization");
         assertEquals(original, deserialized, "Deserialized CancelInput must equal the original");
     }
 
@@ -217,7 +213,7 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_equality_twoIdenticalRecords_areEqual() {
-        PreInput first  = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput first = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
         PreInput second = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
 
         assertEquals(first, second, "Two PreInputs with identical fields must be equal");
@@ -226,7 +222,7 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_equality_differentProcessId_notEqual() {
-        PreInput first  = new PreInput("proc-A", EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput first = new PreInput("proc-A", EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
         PreInput second = new PreInput("proc-B", EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
 
         assertNotEquals(first, second, "PreInputs with different processId must not be equal");
@@ -234,7 +230,7 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_equality_differentTokenId_notEqual() {
-        PreInput first  = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, "token-X");
+        PreInput first = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, "token-X");
         PreInput second = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, "token-Y");
 
         assertNotEquals(first, second, "PreInputs with different tokenId must not be equal");
@@ -253,7 +249,7 @@ public class ProcessActivityTest {
 
     @Test
     public void postInput_equality_twoIdenticalRecords_areEqual() {
-        PostInput first  = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
+        PostInput first = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
         PostInput second = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
 
         assertEquals(first, second, "Two PostInputs with identical fields must be equal");
@@ -262,11 +258,10 @@ public class ProcessActivityTest {
 
     @Test
     public void postInput_equality_differentForceRun_notEqual() {
-        PostInput withForce    = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
+        PostInput withForce = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
         PostInput withoutForce = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, false);
 
-        assertNotEquals(withForce, withoutForce,
-                "PostInputs differing only in forceRun must not be equal");
+        assertNotEquals(withForce, withoutForce, "PostInputs differing only in forceRun must not be equal");
     }
 
     // -------------------------------------------------------------------------
@@ -275,7 +270,7 @@ public class ProcessActivityTest {
 
     @Test
     public void cancelInput_equality_twoIdenticalRecords_areEqual() {
-        CancelInput first  = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
+        CancelInput first = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
         CancelInput second = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
 
         assertEquals(first, second, "Two CancelInputs with identical fields must be equal");
@@ -284,7 +279,7 @@ public class ProcessActivityTest {
 
     @Test
     public void cancelInput_equality_differentGatewayId_notEqual() {
-        CancelInput first  = new CancelInput(PROCESS_ID, EXPERIMENT_ID, "gw-A");
+        CancelInput first = new CancelInput(PROCESS_ID, EXPERIMENT_ID, "gw-A");
         CancelInput second = new CancelInput(PROCESS_ID, EXPERIMENT_ID, "gw-B");
 
         assertNotEquals(first, second, "CancelInputs with different gatewayId must not be equal");
@@ -302,62 +297,65 @@ public class ProcessActivityTest {
                 .filter(m -> m.getDeclaringClass().equals(Activities.class))
                 .count();
 
-        assertEquals(2, count,
-                "Activities interface must declare exactly 2 methods but found: " + count);
+        assertEquals(2, count, "Activities interface must declare exactly 2 methods but found: " + count);
     }
 
     @Test
     public void activitiesInterface_hasResolveResourceTypeMethod() {
         Set<String> methodNames = getActivitiesMethodNames();
-        assertTrue(methodNames.contains("resolveResourceType"),
+        assertTrue(
+                methodNames.contains("resolveResourceType"),
                 "Activities interface must declare 'resolveResourceType' method");
     }
 
     @Test
     public void activitiesInterface_hasExecuteDagNodeMethod() {
         Set<String> methodNames = getActivitiesMethodNames();
-        assertTrue(methodNames.contains("executeDagNode"),
-                "Activities interface must declare 'executeDagNode' method");
+        assertTrue(methodNames.contains("executeDagNode"), "Activities interface must declare 'executeDagNode' method");
     }
 
     @Test
     public void activitiesInterface_allTwoExpectedMethodsPresent() {
         Set<String> expected = Set.of("resolveResourceType", "executeDagNode");
-        Set<String> actual   = getActivitiesMethodNames();
+        Set<String> actual = getActivitiesMethodNames();
 
-        Set<String> missing = expected.stream()
-                .filter(m -> !actual.contains(m))
-                .collect(Collectors.toSet());
+        Set<String> missing = expected.stream().filter(m -> !actual.contains(m)).collect(Collectors.toSet());
 
-        assertTrue(missing.isEmpty(),
-                "Activities interface is missing expected methods: " + missing);
+        assertTrue(missing.isEmpty(), "Activities interface is missing expected methods: " + missing);
     }
 
     @Test
     public void activitiesInterface_doesNotContainOldStepMethods() {
         Set<String> methodNames = getActivitiesMethodNames();
 
-        assertFalse(methodNames.contains("provisioning"),
+        assertFalse(
+                methodNames.contains("provisioning"),
                 "Activities interface must not declare legacy 'provisioning' method");
-        assertFalse(methodNames.contains("inputDataStaging"),
+        assertFalse(
+                methodNames.contains("inputDataStaging"),
                 "Activities interface must not declare legacy 'inputDataStaging' method");
-        assertFalse(methodNames.contains("jobSubmission"),
+        assertFalse(
+                methodNames.contains("jobSubmission"),
                 "Activities interface must not declare legacy 'jobSubmission' method");
-        assertFalse(methodNames.contains("deprovisioning"),
+        assertFalse(
+                methodNames.contains("deprovisioning"),
                 "Activities interface must not declare legacy 'deprovisioning' method");
-        assertFalse(methodNames.contains("monitoring"),
-                "Activities interface must not declare legacy 'monitoring' method");
-        assertFalse(methodNames.contains("outputStaging"),
+        assertFalse(
+                methodNames.contains("monitoring"), "Activities interface must not declare legacy 'monitoring' method");
+        assertFalse(
+                methodNames.contains("outputStaging"),
                 "Activities interface must not declare legacy 'outputStaging' method");
-        assertFalse(methodNames.contains("archive"),
-                "Activities interface must not declare legacy 'archive' method");
-        assertFalse(methodNames.contains("markFailed"),
-                "Activities interface must not declare legacy 'markFailed' method");
-        assertFalse(methodNames.contains("executePreDag"),
+        assertFalse(methodNames.contains("archive"), "Activities interface must not declare legacy 'archive' method");
+        assertFalse(
+                methodNames.contains("markFailed"), "Activities interface must not declare legacy 'markFailed' method");
+        assertFalse(
+                methodNames.contains("executePreDag"),
                 "Activities interface must not declare replaced 'executePreDag' method");
-        assertFalse(methodNames.contains("executePostDag"),
+        assertFalse(
+                methodNames.contains("executePostDag"),
                 "Activities interface must not declare replaced 'executePostDag' method");
-        assertFalse(methodNames.contains("executeCancelDag"),
+        assertFalse(
+                methodNames.contains("executeCancelDag"),
                 "Activities interface must not declare replaced 'executeCancelDag' method");
     }
 
@@ -369,7 +367,9 @@ public class ProcessActivityTest {
     public void activitiesInterface_resolveResourceType_returnTypeIsComputeResourceType() throws Exception {
         Method method = Activities.class.getMethod("resolveResourceType", String.class);
 
-        assertEquals(ComputeResourceType.class, method.getReturnType(),
+        assertEquals(
+                ComputeResourceType.class,
+                method.getReturnType(),
                 "'resolveResourceType' must return ComputeResourceType");
     }
 
@@ -377,58 +377,57 @@ public class ProcessActivityTest {
     public void activitiesInterface_resolveResourceType_takesOneStringParameter() throws Exception {
         Method method = Activities.class.getMethod("resolveResourceType", String.class);
 
-        assertEquals(1, method.getParameterCount(),
-                "'resolveResourceType' must accept exactly 1 parameter");
-        assertEquals(String.class, method.getParameterTypes()[0],
+        assertEquals(1, method.getParameterCount(), "'resolveResourceType' must accept exactly 1 parameter");
+        assertEquals(
+                String.class,
+                method.getParameterTypes()[0],
                 "'resolveResourceType' first parameter must be String (processId)");
     }
 
     @Test
     public void activitiesInterface_executeDagNode_returnTypeIsNodeResult() throws Exception {
-        Method method = Activities.class.getMethod("executeDagNode",
-                String.class, String.class, String.class, String.class, Map.class, Map.class);
+        Method method = Activities.class.getMethod(
+                "executeDagNode", String.class, String.class, String.class, String.class, Map.class, Map.class);
 
-        assertEquals(NodeResult.class, method.getReturnType(),
-                "'executeDagNode' must return NodeResult");
+        assertEquals(NodeResult.class, method.getReturnType(), "'executeDagNode' must return NodeResult");
     }
 
     @Test
     public void activitiesInterface_executeDagNode_takesSixParameters() throws Exception {
-        Method method = Activities.class.getMethod("executeDagNode",
-                String.class, String.class, String.class, String.class, Map.class, Map.class);
+        Method method = Activities.class.getMethod(
+                "executeDagNode", String.class, String.class, String.class, String.class, Map.class, Map.class);
 
-        assertEquals(6, method.getParameterCount(),
-                "'executeDagNode' must accept exactly 6 parameters");
-        assertEquals(String.class, method.getParameterTypes()[0],
-                "'executeDagNode' parameter 0 must be String (processId)");
-        assertEquals(String.class, method.getParameterTypes()[1],
-                "'executeDagNode' parameter 1 must be String (gatewayId)");
-        assertEquals(String.class, method.getParameterTypes()[2],
-                "'executeDagNode' parameter 2 must be String (nodeId)");
-        assertEquals(String.class, method.getParameterTypes()[3],
+        assertEquals(6, method.getParameterCount(), "'executeDagNode' must accept exactly 6 parameters");
+        assertEquals(
+                String.class, method.getParameterTypes()[0], "'executeDagNode' parameter 0 must be String (processId)");
+        assertEquals(
+                String.class, method.getParameterTypes()[1], "'executeDagNode' parameter 1 must be String (gatewayId)");
+        assertEquals(
+                String.class, method.getParameterTypes()[2], "'executeDagNode' parameter 2 must be String (nodeId)");
+        assertEquals(
+                String.class,
+                method.getParameterTypes()[3],
                 "'executeDagNode' parameter 3 must be String (taskBeanName)");
-        assertEquals(Map.class, method.getParameterTypes()[4],
-                "'executeDagNode' parameter 4 must be Map (dagState)");
-        assertEquals(Map.class, method.getParameterTypes()[5],
-                "'executeDagNode' parameter 5 must be Map (nodeMetadata)");
+        assertEquals(Map.class, method.getParameterTypes()[4], "'executeDagNode' parameter 4 must be Map (dagState)");
+        assertEquals(
+                Map.class, method.getParameterTypes()[5], "'executeDagNode' parameter 5 must be Map (nodeMetadata)");
     }
 
     @Test
     public void activitiesInterface_bothMethods_existWithCorrectSignatures() throws Exception {
         // resolveResourceType: ComputeResourceType f(String)
         Method resolveMethod = Activities.class.getMethod("resolveResourceType", String.class);
-        assertEquals(ComputeResourceType.class, resolveMethod.getReturnType(),
+        assertEquals(
+                ComputeResourceType.class,
+                resolveMethod.getReturnType(),
                 "resolveResourceType must return ComputeResourceType");
-        assertEquals(1, resolveMethod.getParameterCount(),
-                "resolveResourceType must accept exactly 1 parameter");
+        assertEquals(1, resolveMethod.getParameterCount(), "resolveResourceType must accept exactly 1 parameter");
 
         // executeDagNode: NodeResult f(String, String, String, String, Map, Map)
-        Method executeMethod = Activities.class.getMethod("executeDagNode",
-                String.class, String.class, String.class, String.class, Map.class, Map.class);
-        assertEquals(NodeResult.class, executeMethod.getReturnType(),
-                "executeDagNode must return NodeResult");
-        assertEquals(6, executeMethod.getParameterCount(),
-                "executeDagNode must accept exactly 6 parameters");
+        Method executeMethod = Activities.class.getMethod(
+                "executeDagNode", String.class, String.class, String.class, String.class, Map.class, Map.class);
+        assertEquals(NodeResult.class, executeMethod.getReturnType(), "executeDagNode must return NodeResult");
+        assertEquals(6, executeMethod.getParameterCount(), "executeDagNode must accept exactly 6 parameters");
     }
 
     // -------------------------------------------------------------------------
@@ -438,43 +437,42 @@ public class ProcessActivityTest {
     @Test
     public void preInput_toString_containsAllFieldValues() {
         PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
-        String str     = input.toString();
+        String str = input.toString();
 
-        assertTrue(str.contains(PROCESS_ID),    "toString must contain processId");
+        assertTrue(str.contains(PROCESS_ID), "toString must contain processId");
         assertTrue(str.contains(EXPERIMENT_ID), "toString must contain experimentId");
-        assertTrue(str.contains(GATEWAY_ID),    "toString must contain gatewayId");
-        assertTrue(str.contains(TOKEN_ID),      "toString must contain tokenId");
+        assertTrue(str.contains(GATEWAY_ID), "toString must contain gatewayId");
+        assertTrue(str.contains(TOKEN_ID), "toString must contain tokenId");
     }
 
     @Test
     public void postInput_toString_containsAllFieldValues() {
         PostInput input = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, false);
-        String str      = input.toString();
+        String str = input.toString();
 
-        assertTrue(str.contains(PROCESS_ID),    "toString must contain processId");
+        assertTrue(str.contains(PROCESS_ID), "toString must contain processId");
         assertTrue(str.contains(EXPERIMENT_ID), "toString must contain experimentId");
-        assertTrue(str.contains(GATEWAY_ID),    "toString must contain gatewayId");
+        assertTrue(str.contains(GATEWAY_ID), "toString must contain gatewayId");
     }
 
     @Test
     public void postInput_toString_containsForceRunValue() {
-        PostInput withForce    = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
+        PostInput withForce = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, true);
         PostInput withoutForce = new PostInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, false);
 
-        assertTrue(withForce.toString().contains("true"),
-                "toString of forceRun=true PostInput must contain 'true'");
-        assertTrue(withoutForce.toString().contains("false"),
-                "toString of forceRun=false PostInput must contain 'false'");
+        assertTrue(withForce.toString().contains("true"), "toString of forceRun=true PostInput must contain 'true'");
+        assertTrue(
+                withoutForce.toString().contains("false"), "toString of forceRun=false PostInput must contain 'false'");
     }
 
     @Test
     public void cancelInput_toString_containsAllFieldValues() {
         CancelInput input = new CancelInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
-        String str        = input.toString();
+        String str = input.toString();
 
-        assertTrue(str.contains(PROCESS_ID),    "toString must contain processId");
+        assertTrue(str.contains(PROCESS_ID), "toString must contain processId");
         assertTrue(str.contains(EXPERIMENT_ID), "toString must contain experimentId");
-        assertTrue(str.contains(GATEWAY_ID),    "toString must contain gatewayId");
+        assertTrue(str.contains(GATEWAY_ID), "toString must contain gatewayId");
     }
 
     // -------------------------------------------------------------------------

@@ -20,10 +20,10 @@
 package org.apache.airavata.iam.service;
 
 import java.util.List;
+import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.gateway.model.Gateway;
 import org.apache.airavata.iam.exception.IamAdminServicesException;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.iam.model.UserProfile;
 

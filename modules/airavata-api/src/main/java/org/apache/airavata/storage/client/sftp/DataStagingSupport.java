@@ -34,11 +34,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import org.apache.airavata.core.telemetry.CounterMetric;
-import org.apache.airavata.execution.task.TaskContext;
-import org.apache.airavata.core.exception.TaskFailureException;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
+import org.apache.airavata.core.exception.TaskFailureException;
+import org.apache.airavata.core.telemetry.CounterMetric;
+import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.protocol.AgentAdapter;
 import org.apache.airavata.protocol.AgentException;
 import org.apache.airavata.protocol.FileMetadata;
@@ -269,8 +269,11 @@ public class DataStagingSupport {
     }
 
     public void transferFileToComputeResource(
-            String sourcePath, String destPath, AgentAdapter computeAdapter,
-            StorageResourceAdapter storageAdapter, String processId)
+            String sourcePath,
+            String destPath,
+            AgentAdapter computeAdapter,
+            StorageResourceAdapter storageAdapter,
+            String processId)
             throws TaskFailureException {
 
         try {
@@ -311,8 +314,7 @@ public class DataStagingSupport {
             if (!fileExists) {
                 logger.warn("File {} not found at source path. Will be retried by Temporal.", sourcePath);
                 throw new TaskFailureException(
-                        "Source file not found: " + sourcePath, false,
-                        new java.io.FileNotFoundException(sourcePath));
+                        "Source file not found: " + sourcePath, false, new java.io.FileNotFoundException(sourcePath));
             }
         } catch (AgentException e) {
             logger.error("Error while checking the file {} existence", sourcePath, e);

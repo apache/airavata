@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.compute.provider.ComputeProvider;
+import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.model.JobModel;
@@ -40,10 +41,9 @@ import org.apache.airavata.compute.resource.submission.JobSubmissionData;
 import org.apache.airavata.compute.resource.submission.JobSubmissionDataBuilder;
 import org.apache.airavata.compute.resource.submission.JobSubmissionSupport;
 import org.apache.airavata.compute.resource.submission.RawCommandInfo;
-import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
-import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.core.model.DagTaskResult;
+import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
 import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.execution.task.TaskContext;
@@ -148,8 +148,8 @@ public class AwsComputeProvider implements ComputeProvider {
             // Operators configure awsRegion/awsAmiId/awsInstanceType in the ResourceBinding
             // metadata for this compute resource; resourceSchedule values serve as per-experiment
             // overrides when the binding does not carry a value.
-            ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
-                    context.getComputeResourceId(), context.getGatewayId());
+            ResourceBindingEntity binding =
+                    resourceProfileAdapter.getBinding(context.getComputeResourceId(), context.getGatewayId());
             String region = resolveAwsConfig(binding, context, "awsRegion", "us-east-1");
 
             ec2Client = awsTaskUtil.buildEc2Client(credentialToken, context.getGatewayId(), region);
@@ -235,15 +235,17 @@ public class AwsComputeProvider implements ComputeProvider {
             if (instanceId == null || sshCredentialToken == null) {
                 logger.error(
                         "Could not find instanceId: {} or sshCredentialToken: {} in the AWS process context {}",
-                        instanceId, sshCredentialToken, context.getProcessId());
+                        instanceId,
+                        sshCredentialToken,
+                        context.getProcessId());
                 return new DagTaskResult.Failure(
                         "Could not find instanceId: " + instanceId + " or sshCredentialToken: " + sshCredentialToken
                                 + " in the AWS process context: " + context.getProcessId(),
                         true);
             }
 
-            ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
-                    context.getComputeResourceId(), context.getGatewayId());
+            ResourceBindingEntity binding =
+                    resourceProfileAdapter.getBinding(context.getComputeResourceId(), context.getGatewayId());
             String region = resolveAwsConfig(binding, context, "awsRegion", "us-east-1");
 
             String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, region, context);
@@ -259,11 +261,12 @@ public class AwsComputeProvider implements ComputeProvider {
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
             logger.info("Generated job submission script for AWS:\n{}", scriptContent);
 
-            JobModel jobModel = jobSubmissionSupport.createJobModel(context.getProcessId(), context.getTaskId(), mapData);
+            JobModel jobModel =
+                    jobSubmissionSupport.createJobModel(context.getProcessId(), context.getTaskId(), mapData);
             jobModel.setJobId("DEFAULT_JOB_ID");
             jobModel.setJobDescription(scriptContent);
-            jobSubmissionSupport.publishJobStatus(jobModel, JobState.SUBMITTED,
-                    "Job submitted to EC2 instance with PID: DEFAULT_JOB_ID");
+            jobSubmissionSupport.publishJobStatus(
+                    jobModel, JobState.SUBMITTED, "Job submitted to EC2 instance with PID: DEFAULT_JOB_ID");
             jobService.saveJob(jobModel);
 
             File localScriptFile = new File(
@@ -364,7 +367,8 @@ public class AwsComputeProvider implements ComputeProvider {
             String sshCredentialToken = getProviderState(context, AWS_SSH_CREDENTIAL_TOKEN);
 
             if (publicIp == null || sshCredentialToken == null) {
-                return new DagTaskResult.Success("No AWS instance info for monitoring process " + context.getProcessId());
+                return new DagTaskResult.Success(
+                        "No AWS instance info for monitoring process " + context.getProcessId());
             }
 
             SSHJAgentAdapter adapter = initSSHJAgentAdapter(sshCredentialToken, publicIp, context);
@@ -377,8 +381,10 @@ public class AwsComputeProvider implements ComputeProvider {
             return new DagTaskResult.Success("Job monitoring completed for process " + context.getProcessId());
 
         } catch (Exception e) {
-            logger.error("Error during AWS job monitoring for process {} — continuing (non-critical)",
-                    context.getProcessId(), e);
+            logger.error(
+                    "Error during AWS job monitoring for process {} — continuing (non-critical)",
+                    context.getProcessId(),
+                    e);
             return new DagTaskResult.Success("Job monitoring encountered errors but continuing (non-critical)");
         }
     }
@@ -455,8 +461,8 @@ public class AwsComputeProvider implements ComputeProvider {
      * @param defaultValue fallback value when neither binding metadata nor schedule carries the key
      * @return the resolved configuration value, or {@code defaultValue} if not found
      */
-    private String resolveAwsConfig(ResourceBindingEntity binding, TaskContext context,
-            String key, String defaultValue) {
+    private String resolveAwsConfig(
+            ResourceBindingEntity binding, TaskContext context, String key, String defaultValue) {
         // 1. Try binding metadata
         if (binding != null) {
             String fromBinding = ResourceProfileAdapter.getMetadataString(binding.getMetadata(), key);
@@ -471,8 +477,12 @@ public class AwsComputeProvider implements ComputeProvider {
                 return schedule.get(key).toString();
             }
         } catch (Exception e) {
-            logger.warn("Could not read resource schedule key '{}' for process {}; using default '{}'",
-                    key, context.getProcessId(), defaultValue, e);
+            logger.warn(
+                    "Could not read resource schedule key '{}' for process {}; using default '{}'",
+                    key,
+                    context.getProcessId(),
+                    defaultValue,
+                    e);
         }
         return defaultValue;
     }
@@ -491,8 +501,11 @@ public class AwsComputeProvider implements ComputeProvider {
 
             CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
             if (output.getExitCode() != 0) {
-                logger.warn("Monitor command failed for job {}: stdout={}, stderr={}",
-                        job.getJobId(), output.getStdOut(), output.getStdError());
+                logger.warn(
+                        "Monitor command failed for job {}: stdout={}, stderr={}",
+                        job.getJobId(),
+                        output.getStdOut(),
+                        output.getStdError());
                 return;
             }
 
@@ -519,8 +532,7 @@ public class AwsComputeProvider implements ComputeProvider {
     }
 
     private String createSecurityGroup(Ec2Client ec2, TaskContext context) throws Exception {
-        var vpcs = ec2.describeVpcs(
-                        req -> req.filters(f -> f.name("is-default").values("true")))
+        var vpcs = ec2.describeVpcs(req -> req.filters(f -> f.name("is-default").values("true")))
                 .vpcs();
         if (vpcs.isEmpty()) {
             throw new Exception("No default VPC found in the AWS account");
@@ -547,15 +559,14 @@ public class AwsComputeProvider implements ComputeProvider {
     private String verifyInstanceIsRunning(String token, String instanceId, String region, TaskContext context)
             throws Exception {
         try (Ec2Client ec2Client = awsTaskUtil.buildEc2Client(token, context.getGatewayId(), region)) {
-            DescribeInstancesRequest request = DescribeInstancesRequest.builder()
-                    .instanceIds(instanceId)
-                    .build();
+            DescribeInstancesRequest request =
+                    DescribeInstancesRequest.builder().instanceIds(instanceId).build();
             DescribeInstancesResponse response = ec2Client.describeInstances(request);
 
             if (response.reservations().isEmpty()
                     || response.reservations().get(0).instances().isEmpty()) {
-                throw new Exception("No instance found with ID: " + instanceId
-                        + " for process: " + context.getProcessId());
+                throw new Exception(
+                        "No instance found with ID: " + instanceId + " for process: " + context.getProcessId());
             }
 
             Instance instance = response.reservations().get(0).instances().get(0);
@@ -573,8 +584,8 @@ public class AwsComputeProvider implements ComputeProvider {
             if (state == InstanceStateName.SHUTTING_DOWN
                     || state == InstanceStateName.TERMINATED
                     || state == InstanceStateName.STOPPED) {
-                throw new Exception("Instance entered failure state: " + state
-                        + " for process: " + context.getProcessId());
+                throw new Exception(
+                        "Instance entered failure state: " + state + " for process: " + context.getProcessId());
             }
 
             // Still pending — throw so Temporal retries
@@ -591,10 +602,11 @@ public class AwsComputeProvider implements ComputeProvider {
         return new DagTaskResult.Failure(reason, false);
     }
 
-    private SSHJAgentAdapter initSSHJAgentAdapter(String sshCredentialToken, String publicIpAddress,
-            TaskContext context) throws Exception {
+    private SSHJAgentAdapter initSSHJAgentAdapter(
+            String sshCredentialToken, String publicIpAddress, TaskContext context) throws Exception {
         SSHJAgentAdapter adapter = new SSHJAgentAdapter(computeResourceAdapter, credentialStoreService);
-        SSHCredential sshCredential = credentialStoreService.getSSHCredential(sshCredentialToken, context.getGatewayId());
+        SSHCredential sshCredential =
+                credentialStoreService.getSSHCredential(sshCredentialToken, context.getGatewayId());
         adapter.init(
                 context.getComputeResourceLoginUserName(),
                 publicIpAddress,

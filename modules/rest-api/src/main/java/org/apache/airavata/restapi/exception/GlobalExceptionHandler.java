@@ -21,11 +21,11 @@ package org.apache.airavata.restapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import org.apache.airavata.iam.exception.AuthExceptions;
+import org.apache.airavata.core.exception.RegistryExceptions;
 import org.apache.airavata.credential.exception.CredentialStoreException;
+import org.apache.airavata.iam.exception.AuthExceptions;
 import org.apache.airavata.iam.exception.GroupManagerServiceException;
 import org.apache.airavata.iam.exception.IamAdminServicesException;
-import org.apache.airavata.core.exception.RegistryExceptions;
 import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.exception.UserProfileServiceException;
 import org.slf4j.Logger;

@@ -23,9 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.apache.airavata.credential.util.KeyStorePasswordCallback;
-import org.apache.airavata.credential.util.SecurityUtil;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -135,9 +132,6 @@ public class SecurityUtilTest {
     }
 
     @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.credential.util"
-            })
+    @ComponentScan(basePackages = {"org.apache.airavata.credential.util"})
     static class TestConfiguration {}
 }

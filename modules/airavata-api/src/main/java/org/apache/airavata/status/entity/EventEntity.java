@@ -30,8 +30,8 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
-import org.apache.airavata.status.model.EventKind;
 import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.status.model.EventKind;
 
 /**
  * Unified EventEntity that consolidates status and error records for processes.
@@ -50,7 +50,9 @@ import org.apache.airavata.core.util.IdGenerator;
         indexes = {
             @Index(name = "idx_event_parent", columnList = "parent_id"),
             @Index(name = "idx_event_kind", columnList = "event_kind"),
-            @Index(name = "idx_event_parent_type_kind_seq", columnList = "parent_id, parent_type, event_kind, sequence_num"),
+            @Index(
+                    name = "idx_event_parent_type_kind_seq",
+                    columnList = "parent_id, parent_type, event_kind, sequence_num"),
             @Index(name = "idx_event_time", columnList = "event_time")
         })
 public class EventEntity implements Serializable {

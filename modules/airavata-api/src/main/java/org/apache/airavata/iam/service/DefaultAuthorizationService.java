@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.iam.service;
 
-import org.apache.airavata.iam.exception.AuthExceptions.AuthorizationException;
-import org.apache.airavata.core.util.Constants;
 import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.util.Constants;
+import org.apache.airavata.iam.exception.AuthExceptions.AuthorizationException;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +39,7 @@ public class DefaultAuthorizationService implements AuthorizationService {
     private final ServerProperties properties;
     private final SharingService sharingService;
 
-    public DefaultAuthorizationService(
-            ServerProperties properties,
-            SharingService sharingService) {
+    public DefaultAuthorizationService(ServerProperties properties, SharingService sharingService) {
         this.properties = properties;
         this.sharingService = sharingService;
     }
@@ -133,5 +131,4 @@ public class DefaultAuthorizationService implements AuthorizationService {
             }
         }
     }
-
 }

@@ -20,8 +20,8 @@
 package org.apache.airavata.status.model;
 
 import java.util.Objects;
-import org.apache.airavata.core.model.ResourceIdentifier;
 import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.core.model.ResourceIdentifier;
 
 public class ProcessStatusChangedEvent {
     private ProcessState state;

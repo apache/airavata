@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.airavata.core.model.TaskState;
-import org.apache.airavata.execution.state.StateValidators;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -89,8 +88,6 @@ public class TaskStateValidatorTest {
                 "CREATED -> null should be invalid");
 
         // null -> null should be invalid
-        assertFalse(
-                StateValidators.TaskStateValidator.INSTANCE.isValid(null, null),
-                "null -> null should be invalid");
+        assertFalse(StateValidators.TaskStateValidator.INSTANCE.isValid(null, null), "null -> null should be invalid");
     }
 }

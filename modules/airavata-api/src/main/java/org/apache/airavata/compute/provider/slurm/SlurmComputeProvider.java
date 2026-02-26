@@ -38,10 +38,10 @@ import org.apache.airavata.compute.resource.submission.JobSubmissionSupport;
 import org.apache.airavata.compute.resource.submission.RawCommandInfo;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
-import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.core.telemetry.CounterMetric;
 import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.core.model.StatusModel;
+import org.apache.airavata.core.telemetry.CounterMetric;
 import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
 import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.protocol.AdapterSupport;
@@ -124,7 +124,8 @@ public class SlurmComputeProvider implements ComputeProvider {
                     context.getComputeResourceLoginUserName());
 
             String workingDir = context.getWorkingDir();
-            logger.info("Creating directory {} on compute resource {} by user {} using token {}",
+            logger.info(
+                    "Creating directory {} on compute resource {} by user {} using token {}",
                     workingDir,
                     context.getComputeResourceId(),
                     context.getComputeResourceLoginUserName(),
@@ -176,9 +177,13 @@ public class SlurmComputeProvider implements ComputeProvider {
             var jobModel = jobSubmissionSupport.createJobModel(context.getProcessId(), context.getTaskId(), mapData);
 
             var submissionOutput = jobSubmissionSupport.submitBatchJob(
-                    adapter, mapData, mapData.getWorkingDirectory(),
-                    context.getComputeResource(), context.getProcessId(),
-                    computeSubmissionTracker, computeId);
+                    adapter,
+                    mapData,
+                    mapData.getWorkingDirectory(),
+                    context.getComputeResource(),
+                    context.getProcessId(),
+                    computeSubmissionTracker,
+                    computeId);
 
             jobModel.setJobDescription(submissionOutput.getDescription());
             jobModel.setExitCode(submissionOutput.getExitCode());
@@ -191,7 +196,8 @@ public class SlurmComputeProvider implements ComputeProvider {
 
                 jobModel.setJobId(DEFAULT_JOB_ID);
                 if (submissionOutput.isJobSubmissionFailed()) {
-                    jobSubmissionSupport.publishJobStatus(jobModel, JobState.FAILED, submissionOutput.getFailureReason());
+                    jobSubmissionSupport.publishJobStatus(
+                            jobModel, JobState.FAILED, submissionOutput.getFailureReason());
                     jobService.saveJob(jobModel);
                     logger.error(
                             "Job submission failed for job name {}. Exit code : {}, Submission failed : {}",
@@ -233,8 +239,11 @@ public class SlurmComputeProvider implements ComputeProvider {
                 jobModel.setJobId(jobId);
                 jobService.saveJob(jobModel);
 
-                jobSubmissionSupport.publishJobStatus(jobModel, JobState.SUBMITTED,
-                        "Successfully Submitted to " + context.getComputeResource().getHostName());
+                jobSubmissionSupport.publishJobStatus(
+                        jobModel,
+                        JobState.SUBMITTED,
+                        "Successfully Submitted to "
+                                + context.getComputeResource().getHostName());
 
                 if (verifyJobSubmissionByJobId(adapter, jobId, context)) {
                     jobSubmissionSupport.publishJobStatus(jobModel, JobState.QUEUED, "Verification step succeeded");
@@ -275,8 +284,7 @@ public class SlurmComputeProvider implements ComputeProvider {
             if (jobId != null && !jobId.isEmpty()) {
                 logger.warn("Job {} has already being submitted. Trying to cancel the job", jobId);
                 try {
-                    boolean cancelled = jobSubmissionSupport.cancelJob(
-                            adapter, jobId, context.getComputeResource());
+                    boolean cancelled = jobSubmissionSupport.cancelJob(adapter, jobId, context.getComputeResource());
                     if (cancelled) {
                         logger.info("Job {} cancellation triggered", jobId);
                     } else {
@@ -335,8 +343,10 @@ public class SlurmComputeProvider implements ComputeProvider {
             return new DagTaskResult.Success("Job monitoring completed for process " + context.getProcessId());
 
         } catch (Exception e) {
-            logger.error("Error during job monitoring for process {} — continuing (non-critical)",
-                    context.getProcessId(), e);
+            logger.error(
+                    "Error during job monitoring for process {} — continuing (non-critical)",
+                    context.getProcessId(),
+                    e);
             return new DagTaskResult.Success("Job monitoring encountered errors but continuing (non-critical)");
         }
     }
@@ -374,13 +384,15 @@ public class SlurmComputeProvider implements ComputeProvider {
 
             CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
             if (output.getExitCode() != 0) {
-                logger.warn("Monitor command failed for job {}: stdout={}, stderr={}",
-                        job.getJobId(), output.getStdOut(), output.getStdError());
+                logger.warn(
+                        "Monitor command failed for job {}: stdout={}, stderr={}",
+                        job.getJobId(),
+                        output.getStdOut(),
+                        output.getStdError());
                 return;
             }
 
-            StatusModel<JobState> jobStatus = config.getParser()
-                    .parseJobStatus(job.getJobId(), output.getStdOut());
+            StatusModel<JobState> jobStatus = config.getParser().parseJobStatus(job.getJobId(), output.getStdOut());
             if (jobStatus != null) {
                 logger.info("Job {} status: {}", job.getJobId(), jobStatus.getState());
             }
@@ -403,7 +415,8 @@ public class SlurmComputeProvider implements ComputeProvider {
         return status != null && status.getState() != JobState.UNKNOWN;
     }
 
-    private String verifyJobSubmission(AgentAdapter agentAdapter, String jobName, String userName, TaskContext context) {
+    private String verifyJobSubmission(
+            AgentAdapter agentAdapter, String jobName, String userName, TaskContext context) {
         String jobId = null;
         try {
             jobId = jobSubmissionSupport.getJobIdByJobName(
@@ -428,8 +441,10 @@ public class SlurmComputeProvider implements ComputeProvider {
                         && currentState != ProcessState.OUTPUT_DATA_STAGING
                         && currentState != ProcessState.POST_PROCESSING
                         && currentState != ProcessState.COMPLETED) {
-                    logger.info("Process {} at state {}, transitioning through EXECUTING before COMPLETED",
-                            context.getProcessId(), currentState);
+                    logger.info(
+                            "Process {} at state {}, transitioning through EXECUTING before COMPLETED",
+                            context.getProcessId(),
+                            currentState);
                     publishProcessStatus(context, ProcessState.EXECUTING);
                 }
             }
@@ -455,9 +470,7 @@ public class SlurmComputeProvider implements ComputeProvider {
     private void cleanupLocalData(TaskContext context) {
         try {
             String localDataPath = serverProperties.localDataLocation();
-            localDataPath = (localDataPath.endsWith(File.separator)
-                    ? localDataPath
-                    : localDataPath + File.separator);
+            localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);
             localDataPath = localDataPath + context.getProcessId();
 
             Path path = Path.of(localDataPath);
@@ -515,15 +528,17 @@ public class SlurmComputeProvider implements ComputeProvider {
             return;
         }
 
-        logger.info("Found {} jobs for process {} — checking states and cancelling",
-                jobs.size(), context.getProcessId());
+        logger.info(
+                "Found {} jobs for process {} — checking states and cancelling", jobs.size(), context.getProcessId());
 
         JobManagerSpec jobManagerConfig;
         try {
             jobManagerConfig = jobFactory.getJobManagerConfiguration(context.getComputeResource());
         } catch (Exception e) {
-            logger.warn("Failed to resolve job manager configuration for process {}. Skipping cancellation.",
-                    context.getProcessId(), e);
+            logger.warn(
+                    "Failed to resolve job manager configuration for process {}. Skipping cancellation.",
+                    context.getProcessId(),
+                    e);
             return;
         }
 
@@ -545,8 +560,11 @@ public class SlurmComputeProvider implements ComputeProvider {
 
                 CommandOutput cancelOutput = adapter.executeCommand(cancelCommand.getRawCommand(), null);
                 if (cancelOutput.getExitCode() != 0) {
-                    logger.warn("Cancel command failed for job {}: stdout={}, stderr={}",
-                            job.getJobId(), cancelOutput.getStdOut(), cancelOutput.getStdError());
+                    logger.warn(
+                            "Cancel command failed for job {}: stdout={}, stderr={}",
+                            job.getJobId(),
+                            cancelOutput.getStdOut(),
+                            cancelOutput.getStdError());
                 }
             } catch (Exception ex) {
                 logger.error("Error cancelling job {} of process {}", job.getJobId(), context.getProcessId());
@@ -565,8 +583,10 @@ public class SlurmComputeProvider implements ComputeProvider {
             if (lastStatus != null) {
                 switch (lastStatus.getState()) {
                     case FAILED, CANCELED, COMPLETED, SUSPENDED -> {
-                        logger.info("Job {} already in saturated state {} (monitoring)",
-                                job.getJobId(), lastStatus.getState());
+                        logger.info(
+                                "Job {} already in saturated state {} (monitoring)",
+                                job.getJobId(),
+                                lastStatus.getState());
                         return true;
                     }
                     default -> {}
@@ -582,13 +602,15 @@ public class SlurmComputeProvider implements ComputeProvider {
 
             CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
             if (output.getExitCode() == 0) {
-                StatusModel<JobState> clusterStatus = config.getParser()
-                        .parseJobStatus(job.getJobId(), output.getStdOut());
+                StatusModel<JobState> clusterStatus =
+                        config.getParser().parseJobStatus(job.getJobId(), output.getStdOut());
                 if (clusterStatus != null) {
                     switch (clusterStatus.getState()) {
                         case COMPLETED, CANCELED, SUSPENDED, FAILED -> {
-                            logger.info("Job {} already in saturated state {} (cluster)",
-                                    job.getJobId(), clusterStatus.getState());
+                            logger.info(
+                                    "Job {} already in saturated state {} (cluster)",
+                                    job.getJobId(),
+                                    clusterStatus.getState());
                             return true;
                         }
                         default -> {}
@@ -596,8 +618,7 @@ public class SlurmComputeProvider implements ComputeProvider {
                 }
             }
         } catch (Exception e) {
-            logger.warn("Error checking cluster status for job {} — proceeding with cancellation",
-                    job.getJobId(), e);
+            logger.warn("Error checking cluster status for job {} — proceeding with cancellation", job.getJobId(), e);
         }
 
         return false;

@@ -253,7 +253,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
 
     private String executeSelectQuery(Connection conn, String query) {
         try (var statement = conn.createStatement();
-             var rs = statement.executeQuery(query)) {
+                var rs = statement.executeQuery(query)) {
             if (rs != null && rs.next()) {
                 return rs.getString(1);
             }

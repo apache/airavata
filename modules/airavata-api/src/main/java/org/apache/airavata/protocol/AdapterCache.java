@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
-import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.StorageResourceAdapter;
 import org.apache.airavata.storage.resource.model.DataMovementProtocol;
 
 /**

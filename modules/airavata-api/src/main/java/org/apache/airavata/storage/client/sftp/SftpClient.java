@@ -20,8 +20,8 @@
 package org.apache.airavata.storage.client.sftp;
 
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
-import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.core.exception.TaskFailureException;
+import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentAdapter;
 import org.apache.airavata.protocol.StorageResourceAdapter;
@@ -48,8 +48,12 @@ public class SftpClient {
      * @throws TaskFailureException if the adapter cannot be obtained
      */
     public StorageResourceAdapter resolveStorageAdapter(
-            String overrideStorageId, String label,
-            AdapterSupport adapterSupport, TaskContext taskContext, String taskId) throws TaskFailureException {
+            String overrideStorageId,
+            String label,
+            AdapterSupport adapterSupport,
+            TaskContext taskContext,
+            String taskId)
+            throws TaskFailureException {
         String storageId;
         if (overrideStorageId != null && !overrideStorageId.isBlank()) {
             storageId = overrideStorageId;
@@ -71,8 +75,8 @@ public class SftpClient {
         }
     }
 
-    public AgentAdapter getComputeResourceAdapter(
-            AdapterSupport adapterSupport, TaskContext taskContext, String taskId) throws TaskFailureException {
+    public AgentAdapter getComputeResourceAdapter(AdapterSupport adapterSupport, TaskContext taskContext, String taskId)
+            throws TaskFailureException {
         String computeId = null;
         try {
             computeId = taskContext.getComputeResourceId();

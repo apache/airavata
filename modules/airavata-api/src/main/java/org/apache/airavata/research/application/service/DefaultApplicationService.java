@@ -67,5 +67,4 @@ public class DefaultApplicationService extends AbstractCrudService<ApplicationEn
     protected String entityName() {
         return "Application";
     }
-
 }

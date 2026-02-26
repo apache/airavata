@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.status.service;
 
-import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.compute.resource.model.JobState;
-import org.apache.airavata.core.model.ProcessState;
-import org.apache.airavata.status.model.ErrorModel;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.model.TaskState;
+import org.apache.airavata.status.model.ErrorModel;
 
 /**
  * Process-level status service. All status events are scoped to a process.

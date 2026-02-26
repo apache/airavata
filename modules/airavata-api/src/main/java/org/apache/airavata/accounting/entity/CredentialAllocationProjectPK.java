@@ -63,7 +63,8 @@ public class CredentialAllocationProjectPK implements Serializable {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         CredentialAllocationProjectPK that = (CredentialAllocationProjectPK) obj;
-        return Objects.equals(credentialId, that.credentialId) && Objects.equals(allocationProjectId, that.allocationProjectId);
+        return Objects.equals(credentialId, that.credentialId)
+                && Objects.equals(allocationProjectId, that.allocationProjectId);
     }
 
     @Override

@@ -26,12 +26,12 @@ import java.util.stream.Collectors;
 import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.workflow.entity.WorkflowEntity;
 import org.apache.airavata.workflow.entity.WorkflowRunEntity;
-import org.apache.airavata.workflow.repository.WorkflowRepository;
-import org.apache.airavata.workflow.repository.WorkflowRunRepository;
 import org.apache.airavata.workflow.model.Workflow;
 import org.apache.airavata.workflow.model.WorkflowRun;
 import org.apache.airavata.workflow.model.WorkflowRunStepState;
 import org.apache.airavata.workflow.model.WorkflowStep;
+import org.apache.airavata.workflow.repository.WorkflowRepository;
+import org.apache.airavata.workflow.repository.WorkflowRunRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,9 +51,7 @@ public class DefaultWorkflowService implements WorkflowService {
     private final WorkflowRepository workflowRepository;
     private final WorkflowRunRepository workflowRunRepository;
 
-    public DefaultWorkflowService(
-            WorkflowRepository workflowRepository,
-            WorkflowRunRepository workflowRunRepository) {
+    public DefaultWorkflowService(WorkflowRepository workflowRepository, WorkflowRunRepository workflowRunRepository) {
         this.workflowRepository = workflowRepository;
         this.workflowRunRepository = workflowRunRepository;
     }

@@ -58,10 +58,7 @@ public class DefaultResourceService implements ResourceService {
     }
 
     public Resource getResource(String resourceId) {
-        return resourceRepository
-                .findById(resourceId)
-                .map(mapper::toModel)
-                .orElse(null);
+        return resourceRepository.findById(resourceId).map(mapper::toModel).orElse(null);
     }
 
     public List<Resource> getResources(String gatewayId) {
@@ -122,8 +119,11 @@ public class DefaultResourceService implements ResourceService {
 
         binding.setBindingId(saved.getBindingId());
         allocationProjectService.syncFromBinding(
-                binding.getBindingId(), binding.getResourceId(), binding.getGatewayId(),
-                binding.getCredentialId(), binding.getMetadata());
+                binding.getBindingId(),
+                binding.getResourceId(),
+                binding.getGatewayId(),
+                binding.getCredentialId(),
+                binding.getMetadata());
 
         return saved.getBindingId();
     }
@@ -138,8 +138,11 @@ public class DefaultResourceService implements ResourceService {
         logger.debug("Updated resource binding id={}", bindingId);
 
         allocationProjectService.syncFromBinding(
-                binding.getBindingId(), binding.getResourceId(), binding.getGatewayId(),
-                binding.getCredentialId(), binding.getMetadata());
+                binding.getBindingId(),
+                binding.getResourceId(),
+                binding.getGatewayId(),
+                binding.getCredentialId(),
+                binding.getMetadata());
     }
 
     @Transactional

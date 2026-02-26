@@ -88,8 +88,6 @@ import org.springframework.context.annotation.Import;
             @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Credential.*"),
             @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Security.*"),
             @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Monitor.*"),
-            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Kafka.*"),
-            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*Rabbit.*"),
             // Services that need external beans not available in minimal test context
             // (ResourceProfileAdapter, IamAdminService, GatewayGroupsInitializer, etc.)
             @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*DefaultUserService.*"),

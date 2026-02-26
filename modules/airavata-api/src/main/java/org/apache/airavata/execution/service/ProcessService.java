@@ -20,9 +20,9 @@
 package org.apache.airavata.execution.service;
 
 import java.util.List;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.execution.model.ProcessModel;
 
 public interface ProcessService {
 

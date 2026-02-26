@@ -569,5 +569,4 @@ public class DefaultUserService implements UserService {
         }
         return false;
     }
-
 }

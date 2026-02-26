@@ -28,21 +28,21 @@ import org.apache.airavata.agent.config.ClusterApplicationConfiguration;
 import org.apache.airavata.agent.model.AgentLaunchRequest;
 import org.apache.airavata.agent.model.AgentLaunchResponse;
 import org.apache.airavata.agent.model.AgentTerminateResponse;
-import org.apache.airavata.research.application.adapter.ApplicationAdapter;
-import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
-import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.compute.resource.service.ResourceService;
+import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.research.application.adapter.ApplicationAdapter;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.project.model.Project;
+import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.apache.airavata.research.experiment.service.ExperimentSearchService;
 import org.apache.airavata.research.experiment.service.ExperimentService;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
-import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
+import org.apache.airavata.research.project.model.Project;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,8 +155,7 @@ public class AgentManagementService {
 
             var experimentId = experimentService.createExperiment(experiment.getGatewayId(), experiment);
             LOGGER.info("Launching the application, Id: {}, Name: {}", experimentId, experiment.getExperimentName());
-            experimentService.launchExperiment(
-                    UserContext.authzToken(), experiment.getGatewayId(), experimentId);
+            experimentService.launchExperiment(UserContext.authzToken(), experiment.getGatewayId(), experimentId);
             return new AgentLaunchResponse(agentId, experimentId, envName);
         } catch (Exception e) {
             LOGGER.error("Error while creating the experiment with the name: {}", req.getExperimentName(), e);
@@ -218,8 +217,7 @@ public class AgentManagementService {
         computationalResourceSchedulingModel.setResourceHostId(binding.getResourceId());
         computationalResourceSchedulingModel.setOverrideScratchLocation(
                 ResourceProfileAdapter.getMetadataString(binding.getMetadata(), "scratchLocation"));
-        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(
-                extractSlurmAllocationProject(binding));
+        computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(extractSlurmAllocationProject(binding));
         computationalResourceSchedulingModel.setOverrideLoginUserName(binding.getLoginUsername());
 
         var userConfigurationDataModel = new UserConfigurationDataModel();
@@ -372,9 +370,8 @@ public class AgentManagementService {
         List<Resource> gatewayResources = resourceService.getResources(gatewayId);
 
         if (gatewayResources == null || gatewayResources.isEmpty()) {
-            throw new RuntimeException(
-                    "No compute resources registered for gateway: " + gatewayId
-                            + ". Cannot resolve binding for cluster: " + remoteCluster);
+            throw new RuntimeException("No compute resources registered for gateway: " + gatewayId
+                    + ". Cannot resolve binding for cluster: " + remoteCluster);
         }
 
         String clusterLower = remoteCluster != null ? remoteCluster.toLowerCase() : "";
@@ -382,7 +379,8 @@ public class AgentManagementService {
 
         for (Resource resource : gatewayResources) {
             String nameLower = resource.getName() != null ? resource.getName().toLowerCase() : "";
-            String hostLower = resource.getHostName() != null ? resource.getHostName().toLowerCase() : "";
+            String hostLower =
+                    resource.getHostName() != null ? resource.getHostName().toLowerCase() : "";
 
             boolean matchesCluster = nameLower.startsWith(clusterLower) || hostLower.startsWith(clusterLower);
             if (!matchesCluster) {
@@ -398,14 +396,16 @@ public class AgentManagementService {
             if (binding != null) {
                 LOGGER.debug(
                         "Resolved binding id={} for cluster={}, group={}, gatewayId={}",
-                        binding.getBindingId(), remoteCluster, group, gatewayId);
+                        binding.getBindingId(),
+                        remoteCluster,
+                        group,
+                        gatewayId);
                 return binding;
             }
         }
 
-        throw new RuntimeException(
-                "Could not find a resource binding for cluster='" + remoteCluster
-                        + "', group='" + group + "', gatewayId='" + gatewayId
-                        + "' for user: " + UserContext.username());
+        throw new RuntimeException("Could not find a resource binding for cluster='" + remoteCluster
+                + "', group='" + group + "', gatewayId='" + gatewayId
+                + "' for user: " + UserContext.username());
     }
 }

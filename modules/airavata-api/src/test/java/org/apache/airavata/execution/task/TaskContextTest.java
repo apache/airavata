@@ -32,11 +32,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.model.ResourceBinding;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.research.application.model.Application;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -230,10 +229,7 @@ class TaskContextTest {
         @DisplayName("getWorkingDir returns same instance on second call (lazy cache)")
         void lazyWorkingDirIsCached() throws Exception {
             TaskContext ctx = new TaskContext(
-                    PROCESS_ID,
-                    GATEWAY_ID,
-                    TASK_ID,
-                    processModelWithSchedule("staticWorkingDir", "/cached/dir"));
+                    PROCESS_ID, GATEWAY_ID, TASK_ID, processModelWithSchedule("staticWorkingDir", "/cached/dir"));
 
             String first = ctx.getWorkingDir();
             String second = ctx.getWorkingDir();
@@ -320,8 +316,7 @@ class TaskContextTest {
 
             RuntimeException ex = assertThrows(RuntimeException.class, ctx::getScratchLocation);
             assertTrue(
-                    ex.getMessage().contains(PROCESS_ID),
-                    "Exception message should include processId for diagnostics");
+                    ex.getMessage().contains(PROCESS_ID), "Exception message should include processId for diagnostics");
         }
 
         @Test
@@ -740,8 +735,7 @@ class TaskContextTest {
             ProcessModel pm = processModelWithSchedule("staticWorkingDir", "/jobs/wdir4");
             TaskContext ctx = new TaskContext(PROCESS_ID, GATEWAY_ID, TASK_ID, pm);
 
-            assertNotNull(ctx.getJobModel().getCreatedAt(),
-                    "JobModel createdAt should be set to a non-null Instant");
+            assertNotNull(ctx.getJobModel().getCreatedAt(), "JobModel createdAt should be set to a non-null Instant");
         }
 
         @Test

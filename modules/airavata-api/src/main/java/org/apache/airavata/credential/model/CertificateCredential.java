@@ -46,8 +46,10 @@ public final class CertificateCredential implements Credential {
     private String privateKey;
     private Long lifeTime;
     private String notBefore;
+
     @JsonIgnore
     private X509Certificate[] certificates;
+
     @JsonIgnore
     private PrivateKey privateKeyObject;
 

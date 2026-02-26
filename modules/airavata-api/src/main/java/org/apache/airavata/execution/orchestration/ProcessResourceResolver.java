@@ -23,21 +23,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.research.application.adapter.ApplicationAdapter;
-import org.apache.airavata.research.application.model.ApplicationDeploymentDescription;
 import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
 import org.apache.airavata.compute.resource.model.SecurityProtocol;
-import org.apache.airavata.credential.service.CredentialEntityService;
 import org.apache.airavata.core.exception.CoreExceptions.AiravataException;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
-import org.apache.airavata.storage.resource.model.DataMovementProtocol;
+import org.apache.airavata.credential.service.CredentialEntityService;
+import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.research.application.adapter.ApplicationAdapter;
+import org.apache.airavata.research.application.model.ApplicationDeploymentDescription;
+import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
+import org.apache.airavata.storage.resource.model.DataMovementProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -163,10 +163,10 @@ public class ProcessResourceResolver {
             throws OrchestratorException {
         try {
             var resource = computeResourceAdapter.getResource(model.getComputeResourceId());
-            if (resource == null || resource.getCapabilities() == null
+            if (resource == null
+                    || resource.getCapabilities() == null
                     || resource.getCapabilities().getCompute() == null) {
-                throw new OrchestratorException(
-                        "Compute resource should have compute capabilities defined...");
+                throw new OrchestratorException("Compute resource should have compute capabilities defined...");
             }
             return computeResourceAdapter.mapJobSubmissionProtocol(
                     resource.getCapabilities().getCompute().getProtocol());
@@ -186,10 +186,10 @@ public class ProcessResourceResolver {
             throws OrchestratorException {
         try {
             var resource = computeResourceAdapter.getResource(model.getComputeResourceId());
-            if (resource == null || resource.getCapabilities() == null
+            if (resource == null
+                    || resource.getCapabilities() == null
                     || resource.getCapabilities().getStorage() == null) {
-                throw new OrchestratorException(
-                        "Compute resource should have storage capabilities defined...");
+                throw new OrchestratorException("Compute resource should have storage capabilities defined...");
             }
             return computeResourceAdapter.mapDataMovementProtocol(
                     resource.getCapabilities().getStorage().getProtocol());
@@ -292,7 +292,8 @@ public class ProcessResourceResolver {
 
     public ComputeResourceType getComputeResourceType(ProcessModel model) {
         var resource = computeResourceAdapter.getResource(model.getComputeResourceId());
-        if (resource != null && resource.getCapabilities() != null
+        if (resource != null
+                && resource.getCapabilities() != null
                 && resource.getCapabilities().getCompute() != null) {
             return resource.getCapabilities().getCompute().getComputeResourceType();
         }

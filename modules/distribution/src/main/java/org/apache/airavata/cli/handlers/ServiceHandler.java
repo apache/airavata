@@ -44,8 +44,6 @@ public class ServiceHandler {
 
     static {
         // Background Services
-        SERVICE_MAP.put("dapr-controller", new ServiceInfo("DaprController", "services.controller.enabled"));
-        SERVICE_MAP.put("dapr-participant", new ServiceInfo("GlobalParticipant", "services.participant.enabled"));
         SERVICE_MAP.put("workflow-manager", new ServiceInfo("ProcessActivityManager", "services.controller.enabled"));
         SERVICE_MAP.put("realtime-monitor", new ServiceInfo("RealtimeMonitor", "services.monitor.realtime.enabled"));
         SERVICE_MAP.put("email-monitor", new ServiceInfo("EmailMonitor", "services.monitor.email.enabled"));
@@ -143,8 +141,6 @@ public class ServiceHandler {
     private boolean getServiceEnabledFromProperties(String serviceName) {
         try {
             return switch (serviceName) {
-                case "dapr-controller" -> properties.services().controller().enabled();
-                case "dapr-participant" -> properties.services().participant().enabled();
                 case "workflow-manager" -> properties.services().controller().enabled();
                 case "realtime-monitor" ->
                     properties.services().monitor().realtime().enabled();

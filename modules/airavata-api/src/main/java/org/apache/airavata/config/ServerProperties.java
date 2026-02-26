@@ -145,10 +145,10 @@ public record ServerProperties(
                     int connectionRetryInterval,
                     int expiryMins) {}
 
-            /** Realtime: Dapr delivers status-change-topic to /api/v1/dapr/pubsub/status-change-topic. */
+            /** Realtime: In-process delivery via Spring ApplicationEvents. */
             public record Realtime(boolean enabled) {}
 
-            /** Compute: Dapr for status; job-status-callback-url for job script curl when set. */
+            /** Compute: monitoring configuration; job-status-callback-url for job script curl when set. */
             public record Compute(
                     boolean enabled,
                     String emailPublisherId,

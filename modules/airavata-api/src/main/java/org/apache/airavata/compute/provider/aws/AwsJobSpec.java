@@ -21,10 +21,10 @@ package org.apache.airavata.compute.provider.aws;
 
 import java.io.File;
 import java.util.Optional;
+import org.apache.airavata.compute.resource.submission.CustomCommandOutputParser;
 import org.apache.airavata.compute.resource.submission.JobManagerSpec;
 import org.apache.airavata.compute.resource.submission.JobOutputParser;
 import org.apache.airavata.compute.resource.submission.RawCommandInfo;
-import org.apache.airavata.compute.resource.submission.CustomCommandOutputParser;
 
 /**
  * Job manager for executing jobs directly on a cloud VM via SSH.

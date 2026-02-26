@@ -142,7 +142,16 @@ public class Resource {
     @Override
     public int hashCode() {
         return Objects.hash(
-                resourceId, gatewayId, name, hostName, port, description, resourceType, capabilities, createdAt, updatedAt);
+                resourceId,
+                gatewayId,
+                name,
+                hostName,
+                port,
+                description,
+                resourceType,
+                capabilities,
+                createdAt,
+                updatedAt);
     }
 
     @Override

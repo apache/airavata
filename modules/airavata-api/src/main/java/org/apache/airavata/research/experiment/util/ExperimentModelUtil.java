@@ -21,12 +21,12 @@ package org.apache.airavata.research.experiment.util;
 
 import java.util.List;
 import org.apache.airavata.core.util.EnumUtil;
+import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.research.application.model.ApplicationInput;
 import org.apache.airavata.research.application.model.ApplicationOutput;
 import org.apache.airavata.research.experiment.model.ExperimentInput;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.experiment.model.ExperimentOutput;
-import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.storage.resource.model.DataType;
 
 public class ExperimentModelUtil {

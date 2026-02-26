@@ -40,8 +40,8 @@ public class CheckIntermediateTransferTask implements DagTask {
     @Override
     public DagTaskResult execute(TaskContext context) {
         var processModel = context.getProcessModel();
-        boolean hasIntermediate = processModel.getTasks().stream()
-                .anyMatch(task -> task.getTaskType() == TaskTypes.OUTPUT_FETCHING);
+        boolean hasIntermediate =
+                processModel.getTasks().stream().anyMatch(task -> task.getTaskType() == TaskTypes.OUTPUT_FETCHING);
         if (hasIntermediate) {
             return new DagTaskResult.Success("Intermediate transfer tasks found");
         }

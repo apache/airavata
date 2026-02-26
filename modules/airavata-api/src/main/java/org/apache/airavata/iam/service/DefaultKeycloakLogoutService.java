@@ -200,5 +200,4 @@ public class DefaultKeycloakLogoutService implements KeycloakLogoutService {
         }
         return null;
     }
-
 }

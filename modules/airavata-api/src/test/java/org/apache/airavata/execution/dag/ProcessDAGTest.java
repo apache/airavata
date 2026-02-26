@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,25 +40,20 @@ public class ProcessDAGTest {
 
     @Test
     public void builder_setsEntryNodeId() {
-        ProcessDAG dag = ProcessDAG.builder("first")
-                .node("first", "someTask")
-                    .terminal()
-                .build();
+        ProcessDAG dag =
+                ProcessDAG.builder("first").node("first", "someTask").terminal().build();
 
-        assertEquals("first", dag.entryNodeId(),
-                "entryNodeId must match the id passed to builder()");
+        assertEquals("first", dag.entryNodeId(), "entryNodeId must match the id passed to builder()");
     }
 
     @Test
     public void build_throwsIllegalState_whenEntryNodeNotDefined() {
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                ProcessDAG.builder("missing")
-                        .node("other", "someTask")
-                            .terminal()
-                        .build());
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> ProcessDAG.builder("missing")
+                .node("other", "someTask")
+                .terminal()
+                .build());
 
-        assertTrue(ex.getMessage().contains("missing"),
-                "Exception message must name the undefined entry node");
+        assertTrue(ex.getMessage().contains("missing"), "Exception message must name the undefined entry node");
     }
 
     // ===========================================================================
@@ -70,9 +64,10 @@ public class ProcessDAGTest {
     public void getNode_returnsNode_byId() {
         ProcessDAG dag = ProcessDAG.builder("alpha")
                 .node("alpha", "alphaTask")
-                    .onSuccess("beta").onFailure("beta")
+                .onSuccess("beta")
+                .onFailure("beta")
                 .node("beta", "betaTask")
-                    .terminal()
+                .terminal()
                 .build();
 
         TaskNode alpha = dag.getNode("alpha");
@@ -83,20 +78,20 @@ public class ProcessDAGTest {
 
     @Test
     public void getNode_returnsNull_forUnknownId() {
-        ProcessDAG dag = ProcessDAG.builder("only")
-                .node("only", "onlyTask")
-                    .terminal()
-                .build();
+        ProcessDAG dag =
+                ProcessDAG.builder("only").node("only", "onlyTask").terminal().build();
 
-        assertNull(dag.getNode("nonExistent"),
-                "getNode must return null for an id not in the DAG");
+        assertNull(dag.getNode("nonExistent"), "getNode must return null for an id not in the DAG");
     }
 
     @Test
     public void nodes_returnsAllDefinedNodes() {
         ProcessDAG dag = ProcessDAG.builder("a")
-                .node("a", "taskA").onSuccess("b").onFailure("b")
-                .node("b", "taskB").terminal()
+                .node("a", "taskA")
+                .onSuccess("b")
+                .onFailure("b")
+                .node("b", "taskB")
+                .terminal()
                 .build();
 
         Map<String, TaskNode> nodes = dag.nodes();
@@ -113,39 +108,43 @@ public class ProcessDAGTest {
     public void node_onSuccess_setsSuccessorId() {
         ProcessDAG dag = ProcessDAG.builder("start")
                 .node("start", "startTask")
-                    .onSuccess("next").onFailure("err")
-                .node("next", "nextTask").terminal()
-                .node("err", "errTask").terminal()
+                .onSuccess("next")
+                .onFailure("err")
+                .node("next", "nextTask")
+                .terminal()
+                .node("err", "errTask")
+                .terminal()
                 .build();
 
-        assertEquals("next", dag.getNode("start").onSuccess(),
-                "onSuccess edge must resolve to 'next'");
+        assertEquals("next", dag.getNode("start").onSuccess(), "onSuccess edge must resolve to 'next'");
     }
 
     @Test
     public void node_onFailure_setsFailureSuccessorId() {
         ProcessDAG dag = ProcessDAG.builder("start")
                 .node("start", "startTask")
-                    .onSuccess("next").onFailure("err")
-                .node("next", "nextTask").terminal()
-                .node("err", "errTask").terminal()
+                .onSuccess("next")
+                .onFailure("err")
+                .node("next", "nextTask")
+                .terminal()
+                .node("err", "errTask")
+                .terminal()
                 .build();
 
-        assertEquals("err", dag.getNode("start").onFailure(),
-                "onFailure edge must resolve to 'err'");
+        assertEquals("err", dag.getNode("start").onFailure(), "onFailure edge must resolve to 'err'");
     }
 
     @Test
     public void node_onSuccess_canBeNull_forPartialTerminal() {
         ProcessDAG dag = ProcessDAG.builder("gate")
                 .node("gate", "gateTask")
-                    .onSuccess(null).onFailure("fallback")
+                .onSuccess(null)
+                .onFailure("fallback")
                 .node("fallback", "fallbackTask")
-                    .terminal()
+                .terminal()
                 .build();
 
-        assertNull(dag.getNode("gate").onSuccess(),
-                "onSuccess may be null to express a terminal success path");
+        assertNull(dag.getNode("gate").onSuccess(), "onSuccess may be null to express a terminal success path");
         assertEquals("fallback", dag.getNode("gate").onFailure());
     }
 
@@ -153,13 +152,13 @@ public class ProcessDAGTest {
     public void node_onFailure_canBeNull_forPartialTerminal() {
         ProcessDAG dag = ProcessDAG.builder("gate")
                 .node("gate", "gateTask")
-                    .onSuccess("happy").onFailure(null)
+                .onSuccess("happy")
+                .onFailure(null)
                 .node("happy", "happyTask")
-                    .terminal()
+                .terminal()
                 .build();
 
-        assertNull(dag.getNode("gate").onFailure(),
-                "onFailure may be null to express a terminal failure path");
+        assertNull(dag.getNode("gate").onFailure(), "onFailure may be null to express a terminal failure path");
     }
 
     // ===========================================================================
@@ -168,39 +167,31 @@ public class ProcessDAGTest {
 
     @Test
     public void terminal_setsOnSuccessToNull() {
-        ProcessDAG dag = ProcessDAG.builder("leaf")
-                .node("leaf", "leafTask")
-                    .terminal()
-                .build();
+        ProcessDAG dag =
+                ProcessDAG.builder("leaf").node("leaf", "leafTask").terminal().build();
 
-        assertNull(dag.getNode("leaf").onSuccess(),
-                "terminal() must set onSuccess to null");
+        assertNull(dag.getNode("leaf").onSuccess(), "terminal() must set onSuccess to null");
     }
 
     @Test
     public void terminal_setsOnFailureToNull() {
-        ProcessDAG dag = ProcessDAG.builder("leaf")
-                .node("leaf", "leafTask")
-                    .terminal()
-                .build();
+        ProcessDAG dag =
+                ProcessDAG.builder("leaf").node("leaf", "leafTask").terminal().build();
 
-        assertNull(dag.getNode("leaf").onFailure(),
-                "terminal() must set onFailure to null");
+        assertNull(dag.getNode("leaf").onFailure(), "terminal() must set onFailure to null");
     }
 
     @Test
     public void terminal_overridesPreviousEdgeAssignments() {
         ProcessDAG dag = ProcessDAG.builder("leaf")
                 .node("leaf", "leafTask")
-                    .onSuccess("somewhere")
-                    .onFailure("somewhere")
-                    .terminal()   // must win
+                .onSuccess("somewhere")
+                .onFailure("somewhere")
+                .terminal() // must win
                 .build();
 
-        assertNull(dag.getNode("leaf").onSuccess(),
-                "terminal() called after onSuccess must nullify the success edge");
-        assertNull(dag.getNode("leaf").onFailure(),
-                "terminal() called after onFailure must nullify the failure edge");
+        assertNull(dag.getNode("leaf").onSuccess(), "terminal() called after onSuccess must nullify the success edge");
+        assertNull(dag.getNode("leaf").onFailure(), "terminal() called after onFailure must nullify the failure edge");
     }
 
     // ===========================================================================
@@ -211,12 +202,14 @@ public class ProcessDAGTest {
     public void node_metadata_isStoredOnTaskNode() {
         ProcessDAG dag = ProcessDAG.builder("work")
                 .node("work", "workTask")
-                    .metadata("processState", "EXECUTING")
-                    .terminal()
+                .metadata("processState", "EXECUTING")
+                .terminal()
                 .build();
 
         TaskNode work = dag.getNode("work");
-        assertEquals("EXECUTING", work.metadata().get("processState"),
+        assertEquals(
+                "EXECUTING",
+                work.metadata().get("processState"),
                 "metadata key 'processState' must be stored with value 'EXECUTING'");
     }
 
@@ -224,9 +217,9 @@ public class ProcessDAGTest {
     public void node_metadata_supportsMultipleEntries() {
         ProcessDAG dag = ProcessDAG.builder("work")
                 .node("work", "workTask")
-                    .metadata("processState", "EXECUTING")
-                    .metadata("phase", "pre")
-                    .terminal()
+                .metadata("processState", "EXECUTING")
+                .metadata("phase", "pre")
+                .terminal()
                 .build();
 
         Map<String, String> meta = dag.getNode("work").metadata();
@@ -237,10 +230,8 @@ public class ProcessDAGTest {
 
     @Test
     public void node_withNoMetadata_hasEmptyMetadataMap() {
-        ProcessDAG dag = ProcessDAG.builder("bare")
-                .node("bare", "bareTask")
-                    .terminal()
-                .build();
+        ProcessDAG dag =
+                ProcessDAG.builder("bare").node("bare", "bareTask").terminal().build();
 
         Map<String, String> meta = dag.getNode("bare").metadata();
         assertNotNull(meta, "metadata map must never be null");
@@ -255,11 +246,13 @@ public class ProcessDAGTest {
     public void nodeBuilder_node_transitionsToNewNode() {
         ProcessDAG dag = ProcessDAG.builder("first")
                 .node("first", "firstTask")
-                    .onSuccess("second").onFailure("second")
-                .node("second", "secondTask")   // chained from NodeBuilder
-                    .onSuccess("third").onFailure("third")
+                .onSuccess("second")
+                .onFailure("second")
+                .node("second", "secondTask") // chained from NodeBuilder
+                .onSuccess("third")
+                .onFailure("third")
                 .node("third", "thirdTask")
-                    .terminal()
+                .terminal()
                 .build();
 
         assertEquals(3, dag.nodes().size(), "All three chained nodes must be registered");
@@ -273,16 +266,15 @@ public class ProcessDAGTest {
         // so its edges are captured before the new node begins.
         ProcessDAG dag = ProcessDAG.builder("a")
                 .node("a", "taskA")
-                    .onSuccess("b").onFailure("b")
+                .onSuccess("b")
+                .onFailure("b")
                 .node("b", "taskB")
-                    .terminal()
+                .terminal()
                 .build();
 
         // If flushing was broken, node 'a' would lose its edges
-        assertEquals("b", dag.getNode("a").onSuccess(),
-                "Flushed node must retain its onSuccess edge");
-        assertEquals("b", dag.getNode("a").onFailure(),
-                "Flushed node must retain its onFailure edge");
+        assertEquals("b", dag.getNode("a").onSuccess(), "Flushed node must retain its onSuccess edge");
+        assertEquals("b", dag.getNode("a").onFailure(), "Flushed node must retain its onFailure edge");
     }
 
     // ===========================================================================
@@ -293,26 +285,26 @@ public class ProcessDAGTest {
     public void nodeBuilder_build_flushesLastNodeAndReturnsDag() {
         ProcessDAG dag = ProcessDAG.builder("only")
                 .node("only", "onlyTask")
-                    .onSuccess(null).onFailure(null)
-                    .build();   // build() called on NodeBuilder, not Builder
+                .onSuccess(null)
+                .onFailure(null)
+                .build(); // build() called on NodeBuilder, not Builder
 
         assertNotNull(dag, "build() on NodeBuilder must return a non-null ProcessDAG");
         assertEquals("only", dag.entryNodeId());
-        assertNotNull(dag.getNode("only"),
-                "Last node must be flushed when build() is called on NodeBuilder");
+        assertNotNull(dag.getNode("only"), "Last node must be flushed when build() is called on NodeBuilder");
     }
 
     @Test
     public void nodeBuilder_build_includesEdgeSetBeforeCall() {
         ProcessDAG dag = ProcessDAG.builder("head")
                 .node("head", "headTask")
-                    .onSuccess("tail").onFailure("tail")
+                .onSuccess("tail")
+                .onFailure("tail")
                 .node("tail", "tailTask")
-                    .terminal()
-                    .build();
+                .terminal()
+                .build();
 
-        assertEquals("tail", dag.getNode("head").onSuccess(),
-                "Edges set before NodeBuilder.build() must be preserved");
+        assertEquals("tail", dag.getNode("head").onSuccess(), "Edges set before NodeBuilder.build() must be preserved");
     }
 
     // ===========================================================================
@@ -321,11 +313,10 @@ public class ProcessDAGTest {
 
     @Test
     public void nodes_map_isUnmodifiable() {
-        ProcessDAG dag = ProcessDAG.builder("x")
-                .node("x", "xTask").terminal()
-                .build();
+        ProcessDAG dag = ProcessDAG.builder("x").node("x", "xTask").terminal().build();
 
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(
+                UnsupportedOperationException.class,
                 () -> dag.nodes().put("y", new TaskNode("y", "yTask", null, null)),
                 "nodes() must return an unmodifiable map");
     }
@@ -337,10 +328,17 @@ public class ProcessDAGTest {
     @Test
     public void fullLinearChain_isWiredCorrectly() {
         ProcessDAG dag = ProcessDAG.builder("a")
-                .node("a", "taskA").onSuccess("b").onFailure("f")
-                .node("b", "taskB").onSuccess("c").onFailure("f")
-                .node("c", "taskC").onSuccess(null).onFailure("f")
-                .node("f", "failTask").terminal()
+                .node("a", "taskA")
+                .onSuccess("b")
+                .onFailure("f")
+                .node("b", "taskB")
+                .onSuccess("c")
+                .onFailure("f")
+                .node("c", "taskC")
+                .onSuccess(null)
+                .onFailure("f")
+                .node("f", "failTask")
+                .terminal()
                 .build();
 
         assertEquals("a", dag.entryNodeId());

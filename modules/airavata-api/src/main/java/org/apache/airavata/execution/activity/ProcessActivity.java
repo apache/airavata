@@ -117,16 +117,21 @@ public class ProcessActivity {
         ComputeResourceType resolveResourceType(String processId);
 
         @ActivityMethod
-        NodeResult executeDagNode(String processId, String gatewayId, String nodeId,
-                String taskBeanName, Map<String, String> dagState, Map<String, String> nodeMetadata);
+        NodeResult executeDagNode(
+                String processId,
+                String gatewayId,
+                String nodeId,
+                String taskBeanName,
+                Map<String, String> dagState,
+                Map<String, String> nodeMetadata);
     }
 
     // -------------------------------------------------------------------------
     // DAG walking helper (deterministic — safe for workflow code)
     // -------------------------------------------------------------------------
 
-    private static String walkDag(ProcessDAG dag, String processId, String gatewayId,
-            Map<RetryTier, Activities> tierStubs) {
+    private static String walkDag(
+            ProcessDAG dag, String processId, String gatewayId, Map<RetryTier, Activities> tierStubs) {
         String currentNodeId = dag.entryNodeId();
         Map<String, String> dagState = new HashMap<>();
         String lastMessage = null;
@@ -134,18 +139,15 @@ public class ProcessActivity {
         while (currentNodeId != null) {
             TaskNode node = dag.getNode(currentNodeId);
             if (node == null) {
-                throw ApplicationFailure.newFailure(
-                        "DAG node '" + currentNodeId + "' not found", "DAG_ERROR");
+                throw ApplicationFailure.newFailure("DAG node '" + currentNodeId + "' not found", "DAG_ERROR");
             }
 
-            RetryTier tier = RetryTier.valueOf(
-                    node.metadata().getOrDefault("retryTier", "INFRASTRUCTURE"));
+            RetryTier tier = RetryTier.valueOf(node.metadata().getOrDefault("retryTier", "INFRASTRUCTURE"));
             Activities activities = tierStubs.get(tier);
 
             try {
                 NodeResult result = activities.executeDagNode(
-                        processId, gatewayId, node.id(), node.taskBeanName(),
-                        dagState, node.metadata());
+                        processId, gatewayId, node.id(), node.taskBeanName(), dagState, node.metadata());
                 dagState.putAll(result.output());
                 lastMessage = result.message();
                 currentNodeId = node.onSuccess();
@@ -170,11 +172,12 @@ public class ProcessActivity {
     }
 
     private static Activities buildSetupStub() {
-        return Workflow.newActivityStub(Activities.class,
+        return Workflow.newActivityStub(
+                Activities.class,
                 ActivityOptions.newBuilder()
                         .setStartToCloseTimeout(Duration.ofSeconds(30))
-                        .setRetryOptions(RetryOptions.newBuilder()
-                                .setMaximumAttempts(3).build())
+                        .setRetryOptions(
+                                RetryOptions.newBuilder().setMaximumAttempts(3).build())
                         .build());
     }
 
@@ -256,7 +259,8 @@ public class ProcessActivity {
             try {
                 var processModel = processService.getProcess(processId);
                 Resource resource = resourceService.getResource(processModel.getResourceId());
-                if (resource != null && resource.getCapabilities() != null
+                if (resource != null
+                        && resource.getCapabilities() != null
                         && resource.getCapabilities().getCompute() != null) {
                     return resource.getCapabilities().getCompute().getComputeResourceType();
                 }
@@ -267,8 +271,13 @@ public class ProcessActivity {
         }
 
         @Override
-        public NodeResult executeDagNode(String processId, String gatewayId, String nodeId,
-                String taskBeanName, Map<String, String> dagState, Map<String, String> nodeMetadata) {
+        public NodeResult executeDagNode(
+                String processId,
+                String gatewayId,
+                String nodeId,
+                String taskBeanName,
+                Map<String, String> dagState,
+                Map<String, String> nodeMetadata) {
             String taskId = UUID.randomUUID().toString();
             TaskContext context = contextFactory.buildContext(processId, gatewayId, taskId);
             context.getDagState().putAll(dagState);
@@ -304,11 +313,9 @@ public class ProcessActivity {
                         interceptor.afterFailure(context, node, failure);
                     }
                     if (failure.fatal()) {
-                        throw ApplicationFailure.newNonRetryableFailure(
-                                failure.reason(), "FATAL_TASK_FAILURE");
+                        throw ApplicationFailure.newNonRetryableFailure(failure.reason(), "FATAL_TASK_FAILURE");
                     }
-                    throw ApplicationFailure.newFailure(
-                            failure.reason(), "TASK_FAILURE");
+                    throw ApplicationFailure.newFailure(failure.reason(), "TASK_FAILURE");
                 }
             };
         }

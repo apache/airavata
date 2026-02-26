@@ -20,10 +20,10 @@
 package org.apache.airavata.compute.provider.local;
 
 import java.util.Map;
-import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.submission.JobOutputParser;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.compute.resource.model.JobState;
+import org.apache.airavata.core.util.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

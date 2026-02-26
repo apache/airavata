@@ -161,16 +161,15 @@ public class EmailMonitorWorkflow {
         private final Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
 
         public MonitorActivitiesImpl(
-                JobService jobService,
-                ServerProperties airavataProperties,
-                ApplicationContext applicationContext) {
+                JobService jobService, ServerProperties airavataProperties, ApplicationContext applicationContext) {
             this.jobService = jobService;
             this.airavataProperties = airavataProperties;
             this.applicationContext = applicationContext;
             JobStatusMonitor monitor = null;
             try {
                 monitor = applicationContext.getBean(JobStatusMonitor.class);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             this.jobStatusMonitor = monitor;
         }
 
@@ -187,11 +186,12 @@ public class EmailMonitorWorkflow {
             password = airavataProperties.services().monitor().email().password();
             storeProtocol = airavataProperties.services().monitor().email().storeProtocol();
             folderName = airavataProperties.services().monitor().email().folderName();
-            emailExpirationTimeMinutes = airavataProperties.services().monitor().email().expiryMins();
+            emailExpirationTimeMinutes =
+                    airavataProperties.services().monitor().email().expiryMins();
             publisherId = airavataProperties.services().monitor().compute().emailPublisherId();
             if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
-                throw new RuntimeException(
-                        "Unsupported store protocol, expected " + IMAPS + " or " + POP3 + " but found " + storeProtocol);
+                throw new RuntimeException("Unsupported store protocol, expected " + IMAPS + " or " + POP3
+                        + " but found " + storeProtocol);
             }
             mailProperties = new Properties();
             mailProperties.put("mail.store.protocol", storeProtocol);
@@ -297,8 +297,7 @@ public class EmailMonitorWorkflow {
                         SLURMEmailParser emailParser = applicationContext.getBean(beanName, SLURMEmailParser.class);
                         emailParserMap.put(type, emailParser);
                     } catch (org.springframework.beans.factory.NoSuchBeanDefinitionException e) {
-                        throw new AiravataException(
-                                "SLURMEmailParser bean not found: " + config.getEmailParser(), e);
+                        throw new AiravataException("SLURMEmailParser bean not found: " + config.getEmailParser(), e);
                     } catch (Exception e) {
                         throw new AiravataException("Error getting email parser bean: " + config.getEmailParser(), e);
                     }
@@ -316,18 +315,22 @@ public class EmailMonitorWorkflow {
                     if (jobStatusMonitor != null) {
                         jobStatusMonitor.publish(jobStatusResult);
                     } else {
-                        log.warn("[EJM]: JobStatusMonitor not available; dropping result for job {}",
+                        log.warn(
+                                "[EJM]: JobStatusMonitor not available; dropping result for job {}",
                                 jobStatusResult.getJobId());
                     }
                     processedMessages.add(message);
                 } catch (Exception e) {
                     var msgTime = message.getReceivedDate().getTime();
-                    var msgExpiryTime = msgTime + Duration.ofMinutes(emailExpirationTimeMinutes).toMillis();
+                    var msgExpiryTime = msgTime
+                            + Duration.ofMinutes(emailExpirationTimeMinutes).toMillis();
                     if (IdGenerator.getUniqueTimestamp().getTime() > msgExpiryTime) {
                         processedMessages.add(message);
-                        log.error("cannot read JobStatusUpdate<{}> from {}. marked as timeout", msgHash, publisherId, e);
+                        log.error(
+                                "cannot read JobStatusUpdate<{}> from {}. marked as timeout", msgHash, publisherId, e);
                     } else {
-                        log.error("cannot read JobStatusUpdate<{}> from {}. marked as requeue", msgHash, publisherId, e);
+                        log.error(
+                                "cannot read JobStatusUpdate<{}> from {}. marked as requeue", msgHash, publisherId, e);
                     }
                 }
             }
@@ -355,8 +358,12 @@ public class EmailMonitorWorkflow {
             }
             JobStatusResult jobStatusResult = emailParser.parseEmail(message, jobService);
             jobStatusResult.setPublisherName(publisherId);
-            log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}",
-                    publisherId, jobStatusResult.getJobId(), jobStatusResult.getJobName(), jobStatusResult.getState());
+            log.info(
+                    "Parsed Job Status: From=[{}], Id={}, Name={}, State={}",
+                    publisherId,
+                    jobStatusResult.getJobId(),
+                    jobStatusResult.getJobName(),
+                    jobStatusResult.getState());
             return jobStatusResult;
         }
 
@@ -366,7 +373,8 @@ public class EmailMonitorWorkflow {
                     return entry.getValue();
                 }
             }
-            throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+            throw new AiravataException(
+                    "[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
         }
     }
 

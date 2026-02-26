@@ -23,8 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.apache.airavata.iam.exception.AuthExceptions;
 import org.apache.airavata.core.exception.RegistryExceptions;
+import org.apache.airavata.iam.exception.AuthExceptions;
 import org.apache.airavata.restapi.exception.GlobalExceptionHandler;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;

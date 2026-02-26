@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.compute.resource.model;
 
-import org.apache.airavata.compute.resource.model.ComputeResourceType;
-
 public enum ResourceJobManagerType {
     FORK,
     SLURM,

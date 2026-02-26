@@ -29,17 +29,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.config.ConfigResolver;
 import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.iam.exception.IamAdminServicesException;
+import org.apache.airavata.iam.dto.TokenResponse;
 import org.apache.airavata.iam.exception.AiravataSecurityException;
+import org.apache.airavata.iam.exception.IamAdminServicesException;
 import org.apache.airavata.iam.model.ClientRepresentation;
 import org.apache.airavata.iam.model.CredentialRepresentation;
 import org.apache.airavata.iam.model.RealmRepresentation;
 import org.apache.airavata.iam.model.RoleRepresentation;
-import org.apache.airavata.iam.dto.TokenResponse;
 import org.apache.airavata.iam.model.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,10 +77,7 @@ public class KeycloakRestClient {
      * Constructor with Spring-injected RestTemplate and ObjectMapper.
      */
     public KeycloakRestClient(
-            String serverUrl,
-            ServerProperties properties,
-            RestTemplate restTemplate,
-            ObjectMapper objectMapper) {
+            String serverUrl, ServerProperties properties, RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.serverUrl = serverUrl;
         this.properties = properties;
         this.restTemplate = restTemplate;
@@ -232,7 +229,9 @@ public class KeycloakRestClient {
 
     public void createRealm(RealmRepresentation realm) throws IamAdminServicesException {
         var adminToken = obtainAdminToken("master", getSuperAdminCredentials());
-        var url = UriComponentsBuilder.fromUriString(serverUrl).pathSegment("admin", "realms").toUriString();
+        var url = UriComponentsBuilder.fromUriString(serverUrl)
+                .pathSegment("admin", "realms")
+                .toUriString();
         var request = new HttpEntity<>(realm, createAuthHeaders(adminToken));
         try {
             restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
@@ -469,8 +468,8 @@ public class KeycloakRestClient {
     public List<RoleRepresentation> getAvailableClientRoles(
             String realm, String userId, String clientId, String accessToken) throws IamAdminServicesException {
         var url = UriComponentsBuilder.fromUriString(serverUrl)
-                .pathSegment("admin", "realms", realm, "users", userId, "role-mappings", "clients", clientId,
-                        "available")
+                .pathSegment(
+                        "admin", "realms", realm, "users", userId, "role-mappings", "clients", clientId, "available")
                 .toUriString();
         var headers = createAuthHeaders(accessToken);
         var request = new HttpEntity<Void>(headers);

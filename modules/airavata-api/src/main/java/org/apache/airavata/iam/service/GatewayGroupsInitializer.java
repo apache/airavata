@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.iam.service;
 
-import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.gateway.model.GatewayGroups;
 import org.apache.airavata.gateway.service.GatewayService;
 import org.apache.airavata.iam.exception.SharingRegistryException;
@@ -45,9 +45,7 @@ public class GatewayGroupsInitializer {
     private final ServerProperties properties;
 
     public GatewayGroupsInitializer(
-            GatewayService gatewayGroupsService,
-            SharingService sharingService,
-            ServerProperties properties) {
+            GatewayService gatewayGroupsService, SharingService sharingService, ServerProperties properties) {
         this.gatewayGroupsService = gatewayGroupsService;
         this.sharingService = sharingService;
         this.properties = properties;
@@ -96,11 +94,7 @@ public class GatewayGroupsInitializer {
     }
 
     private UserGroup createGroup(
-            SharingService sharingService,
-            String gatewayId,
-            String ownerId,
-            String groupName,
-            String groupDescription)
+            SharingService sharingService, String gatewayId, String ownerId, String groupName, String groupDescription)
             throws SharingRegistryException {
 
         UserGroup userGroup = new UserGroup();
@@ -117,5 +111,4 @@ public class GatewayGroupsInitializer {
 
         return userGroup;
     }
-
 }

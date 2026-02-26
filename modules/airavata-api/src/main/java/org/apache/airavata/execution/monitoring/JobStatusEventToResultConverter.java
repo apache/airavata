@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.monitoring;
 
-import org.apache.airavata.execution.monitoring.JobStatusResult;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.service.JobService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;

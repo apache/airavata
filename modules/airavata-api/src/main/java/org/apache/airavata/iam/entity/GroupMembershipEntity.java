@@ -30,15 +30,17 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(
-    name = "group_membership",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_group_user", columnNames = {"group_id", "user_id", "domain_id"})
-    },
-    indexes = {
-        @Index(name = "idx_gm_group", columnList = "group_id"),
-        @Index(name = "idx_gm_user", columnList = "user_id"),
-        @Index(name = "idx_gm_domain", columnList = "domain_id")
-    })
+        name = "group_membership",
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "uk_group_user",
+                    columnNames = {"group_id", "user_id", "domain_id"})
+        },
+        indexes = {
+            @Index(name = "idx_gm_group", columnList = "group_id"),
+            @Index(name = "idx_gm_user", columnList = "user_id"),
+            @Index(name = "idx_gm_domain", columnList = "domain_id")
+        })
 public class GroupMembershipEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -63,16 +65,51 @@ public class GroupMembershipEntity implements Serializable {
 
     public GroupMembershipEntity() {}
 
-    public String getMembershipId() { return membershipId; }
-    public void setMembershipId(String membershipId) { this.membershipId = membershipId; }
-    public String getGroupId() { return groupId; }
-    public void setGroupId(String groupId) { this.groupId = groupId; }
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
-    public String getDomainId() { return domainId; }
-    public void setDomainId(String domainId) { this.domainId = domainId; }
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public String getMembershipId() {
+        return membershipId;
+    }
+
+    public void setMembershipId(String membershipId) {
+        this.membershipId = membershipId;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
 }

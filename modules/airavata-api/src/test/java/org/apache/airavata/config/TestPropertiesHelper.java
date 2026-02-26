@@ -38,7 +38,7 @@ public class TestPropertiesHelper {
 
     /**
      * Gets test property overrides for messaging/state backends.
-     * Kafka, RabbitMQ, and Zookeeper have been replaced by Temporal.
+     * Kafka and Zookeeper have been replaced by Temporal.
      *
      * @return Map of property overrides; currently empty.
      */

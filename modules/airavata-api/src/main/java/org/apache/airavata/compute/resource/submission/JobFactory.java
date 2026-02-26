@@ -20,15 +20,15 @@
 package org.apache.airavata.compute.resource.submission;
 
 import java.util.Map;
-import org.apache.airavata.compute.resource.model.ComputeCapability;
-import org.apache.airavata.compute.resource.model.JobManagerCommand;
-import org.apache.airavata.compute.resource.model.Resource;
-import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
 import org.apache.airavata.compute.provider.aws.AwsJobSpec;
 import org.apache.airavata.compute.provider.local.LocalJobSpec;
 import org.apache.airavata.compute.provider.local.LocalOutputParser;
 import org.apache.airavata.compute.provider.slurm.SlurmJobSpec;
 import org.apache.airavata.compute.provider.slurm.SlurmOutputParser;
+import org.apache.airavata.compute.resource.model.ComputeCapability;
+import org.apache.airavata.compute.resource.model.JobManagerCommand;
+import org.apache.airavata.compute.resource.model.Resource;
+import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -52,7 +52,9 @@ public class JobFactory {
      * Returns {@link ResourceJobManagerType#FORK} when the resource or its compute capability is absent.
      */
     public ResourceJobManagerType getResourceJobManagerType(Resource resource) {
-        if (resource == null || resource.getCapabilities() == null || resource.getCapabilities().getCompute() == null) {
+        if (resource == null
+                || resource.getCapabilities() == null
+                || resource.getCapabilities().getCompute() == null) {
             return ResourceJobManagerType.FORK;
         }
         return resource.getCapabilities().getCompute().getJobManagerTypeEnum();
@@ -67,7 +69,9 @@ public class JobFactory {
         String templateFileName = "templates/" + getTemplateFileName(type);
         String binPath = null;
         Map<JobManagerCommand, String> commands = null;
-        if (resource != null && resource.getCapabilities() != null && resource.getCapabilities().getCompute() != null) {
+        if (resource != null
+                && resource.getCapabilities() != null
+                && resource.getCapabilities().getCompute() != null) {
             ComputeCapability compute = resource.getCapabilities().getCompute();
             binPath = compute.getJobManagerBinPath();
             commands = compute.getJobManagerCommands();
@@ -79,5 +83,4 @@ public class JobFactory {
             default -> throw new Exception("Could not find a job manager spec for job manager type " + type);
         };
     }
-
 }

@@ -65,5 +65,6 @@ public interface ArtifactService {
 
     List<TagEntity> getAllTagsByAlphabeticalOrder();
 
-    List<ResearchArtifactEntity> getAllArtifactsByTypeAndName(Class<? extends ResearchArtifactEntity> type, String name);
+    List<ResearchArtifactEntity> getAllArtifactsByTypeAndName(
+            Class<? extends ResearchArtifactEntity> type, String name);
 }

@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.protocol.ssh;
 
-import org.apache.airavata.protocol.ResourceLookup;
-import org.apache.airavata.protocol.AgentException;
-import org.apache.airavata.protocol.StorageResourceAdapter;
 import org.apache.airavata.iam.service.CredentialStoreService;
+import org.apache.airavata.protocol.AgentException;
+import org.apache.airavata.protocol.ResourceLookup;
+import org.apache.airavata.protocol.StorageResourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -82,5 +82,4 @@ public class SSHJStorageAdapter extends SSHJAgentAdapter implements StorageResou
                     e);
         }
     }
-
 }

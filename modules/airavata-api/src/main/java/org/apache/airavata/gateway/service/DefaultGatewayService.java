@@ -188,7 +188,8 @@ public class DefaultGatewayService implements GatewayService {
      */
     @Override
     public GatewayGroups getGatewayGroups(String gatewayId) throws RegistryException {
-        GatewayEntity entity = gatewayRepository.findByGatewayNameOrId(gatewayId).orElse(null);
+        GatewayEntity entity =
+                gatewayRepository.findByGatewayNameOrId(gatewayId).orElse(null);
         if (entity == null) return null;
         return toGatewayGroupsModel(entity);
     }
@@ -225,7 +226,8 @@ public class DefaultGatewayService implements GatewayService {
      */
     @Override
     public void deleteGatewayGroups(String gatewayId) throws RegistryException {
-        GatewayEntity entity = gatewayRepository.findByGatewayNameOrId(gatewayId).orElse(null);
+        GatewayEntity entity =
+                gatewayRepository.findByGatewayNameOrId(gatewayId).orElse(null);
         if (entity != null) {
             entity.setAdminsGroupId(null);
             entity.setReadOnlyAdminsGroupId(null);
@@ -341,7 +343,8 @@ public class DefaultGatewayService implements GatewayService {
         var passwordCredential = new PasswordCredential();
         passwordCredential.setUserId(properties.security().iam().superAdmin().username());
         passwordCredential.setGatewayId(defaultGateway);
-        passwordCredential.setLoginUserName(properties.security().iam().superAdmin().username());
+        passwordCredential.setLoginUserName(
+                properties.security().iam().superAdmin().username());
         passwordCredential.setPassword(properties.security().iam().superAdmin().password());
         passwordCredential.setDescription("Credentials for default gateway=" + defaultGateway);
         logger.info("Creating password credential for default gateway={}", defaultGateway);
@@ -404,13 +407,9 @@ public class DefaultGatewayService implements GatewayService {
                     SharingResourceType.APPLICATION_INTERFACE.name(),
                     "Application Interface entity type");
             createEntityType(
-                    domain.getDomainId(),
-                    SharingResourceType.COMPUTE_RESOURCE.name(),
-                    "Compute Resource entity type");
+                    domain.getDomainId(), SharingResourceType.COMPUTE_RESOURCE.name(), "Compute Resource entity type");
             createEntityType(
-                    domain.getDomainId(),
-                    SharingResourceType.STORAGE_RESOURCE.name(),
-                    "Storage Resource entity type");
+                    domain.getDomainId(), SharingResourceType.STORAGE_RESOURCE.name(), "Storage Resource entity type");
 
             createPermissionType(domain.getDomainId(), "READ", "Read permission type");
             createPermissionType(domain.getDomainId(), "WRITE", "Write permission type");

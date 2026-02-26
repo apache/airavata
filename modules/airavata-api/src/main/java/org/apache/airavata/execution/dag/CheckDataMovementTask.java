@@ -20,8 +20,8 @@
 package org.apache.airavata.execution.dag;
 
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.research.application.model.ApplicationOutput;
 import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.research.application.model.ApplicationOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

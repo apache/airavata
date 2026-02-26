@@ -31,7 +31,12 @@ import org.springframework.stereotype.Repository;
 public interface SharingPermissionRepository extends JpaRepository<SharingPermissionEntity, String> {
 
     Optional<SharingPermissionEntity> findByDomainIdAndResourceTypeAndResourceIdAndGranteeTypeAndGranteeIdAndPermission(
-            String domainId, String resourceType, String resourceId, String granteeType, String granteeId, String permission);
+            String domainId,
+            String resourceType,
+            String resourceId,
+            String granteeType,
+            String granteeId,
+            String permission);
 
     List<SharingPermissionEntity> findByDomainIdAndResourceTypeAndResourceId(
             String domainId, String resourceType, String resourceId);

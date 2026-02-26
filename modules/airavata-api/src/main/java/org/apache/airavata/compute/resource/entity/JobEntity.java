@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.compute.resource.entity;
 
-import org.apache.airavata.execution.entity.ProcessEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,8 +31,9 @@ import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
-import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.compute.resource.model.JobState;
+import org.apache.airavata.core.model.StatusModel;
+import org.apache.airavata.execution.entity.ProcessEntity;
 
 @Entity
 @Table(

@@ -176,9 +176,7 @@ public class ServiceStartupRangeTest {
                 Arguments.of(
                         "2 services: Controller + Participant",
                         2,
-                        ServiceConfigurationBuilder.minimal()
-                                .enableController()
-                                .enableParticipant()),
+                        ServiceConfigurationBuilder.minimal().enableController().enableParticipant()),
                 Arguments.of(
                         "3 services: Controller + Participant + Realtime Monitor",
                         3,
@@ -195,9 +193,7 @@ public class ServiceStartupRangeTest {
                                 .enableRealtimeMonitor()
                                 .enableEmailMonitor()),
                 Arguments.of(
-                        "4 services: All enabled (REST not counted)",
-                        4,
-                        ServiceConfigurationBuilder.allEnabled()));
+                        "4 services: All enabled (REST not counted)", 4, ServiceConfigurationBuilder.allEnabled()));
     }
 
     /**

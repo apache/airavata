@@ -22,8 +22,6 @@ package org.apache.airavata.compute.resource.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.airavata.compute.resource.model.JobManagerCommand;
-import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
 
 /**
  * Domain model: ComputeCapability

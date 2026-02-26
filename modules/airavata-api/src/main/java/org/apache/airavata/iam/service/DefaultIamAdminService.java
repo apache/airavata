@@ -23,22 +23,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.iam.model.Status;
-import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.core.util.Constants;
 import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.core.util.Constants;
+import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.gateway.model.Gateway;
 import org.apache.airavata.iam.exception.IamAdminServicesException;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
-import org.apache.airavata.iam.mapper.UserProfileMapper;
-import org.apache.airavata.iam.repository.UserRepository;
 import org.apache.airavata.iam.keycloak.KeycloakGatewayManagement;
 import org.apache.airavata.iam.keycloak.KeycloakRestClient;
+import org.apache.airavata.iam.mapper.UserProfileMapper;
 import org.apache.airavata.iam.model.AuthzToken;
-import org.apache.airavata.iam.model.UserRepresentation;
+import org.apache.airavata.iam.model.Status;
 import org.apache.airavata.iam.model.UserProfile;
+import org.apache.airavata.iam.model.UserRepresentation;
+import org.apache.airavata.iam.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -116,8 +116,7 @@ public class DefaultIamAdminService implements IamAdminService {
             // Gateway setup no longer uses identityServerPasswordToken (dropped in V2 schema).
             // The tenant admin account is created without a pre-stored credential token.
             // Callers must perform any post-setup credential provisioning separately.
-            if (!keycloakclient.createTenantAdminAccount(
-                    isSuperAdminCredentials, gateway, "")) {
+            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway, "")) {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             var gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);

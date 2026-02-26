@@ -78,7 +78,9 @@ public class DefaultApplicationInstallationService implements ApplicationInstall
 
     @Override
     public List<ApplicationInstallation> getInstallationsByApplication(String applicationId) {
-        return installationRepository.findByApplicationId(applicationId).stream().map(this::toModel).toList();
+        return installationRepository.findByApplicationId(applicationId).stream()
+                .map(this::toModel)
+                .toList();
     }
 
     @Override

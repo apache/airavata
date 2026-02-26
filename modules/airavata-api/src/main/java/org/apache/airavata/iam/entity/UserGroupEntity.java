@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.iam.entity;
 
-import org.apache.airavata.gateway.entity.GatewayEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +31,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.List;
+import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.apache.airavata.iam.model.GroupMember;
 
 /**

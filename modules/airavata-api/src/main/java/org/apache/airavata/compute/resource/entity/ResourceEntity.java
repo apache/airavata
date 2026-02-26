@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.compute.resource.entity;
 
-import org.apache.airavata.gateway.entity.GatewayEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -31,6 +30,7 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 import org.apache.airavata.compute.resource.model.ResourceCapabilities;
+import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;

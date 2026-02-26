@@ -28,9 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
-
 import org.apache.airavata.core.model.DagTaskResult;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -49,8 +47,7 @@ public class DagTaskResultTest {
     public void success_storesMessage() {
         DagTaskResult.Success result = new DagTaskResult.Success("job submitted", Map.of("jobId", "42"));
 
-        assertEquals("job submitted", result.message(),
-                "Success must store the message passed to the constructor");
+        assertEquals("job submitted", result.message(), "Success must store the message passed to the constructor");
     }
 
     @Test
@@ -58,8 +55,7 @@ public class DagTaskResultTest {
         Map<String, String> output = Map.of("jobId", "42", "queue", "default");
         DagTaskResult.Success result = new DagTaskResult.Success("ok", output);
 
-        assertEquals(output, result.output(),
-                "Success must store the output map passed to the constructor");
+        assertEquals(output, result.output(), "Success must store the output map passed to the constructor");
     }
 
     @Test
@@ -84,10 +80,8 @@ public class DagTaskResultTest {
     public void success_convenienceConstructor_createsEmptyOutputMap() {
         DagTaskResult.Success result = new DagTaskResult.Success("finished");
 
-        assertNotNull(result.output(),
-                "Single-arg constructor must produce a non-null output map");
-        assertTrue(result.output().isEmpty(),
-                "Single-arg constructor must produce an empty output map");
+        assertNotNull(result.output(), "Single-arg constructor must produce a non-null output map");
+        assertTrue(result.output().isEmpty(), "Single-arg constructor must produce an empty output map");
     }
 
     @Test
@@ -105,8 +99,7 @@ public class DagTaskResultTest {
     public void success_isInstanceOfDagTaskResult() {
         DagTaskResult result = new DagTaskResult.Success("ok");
 
-        assertInstanceOf(DagTaskResult.class, result,
-                "Success must implement DagTaskResult");
+        assertInstanceOf(DagTaskResult.class, result, "Success must implement DagTaskResult");
     }
 
     @Test
@@ -126,24 +119,22 @@ public class DagTaskResultTest {
         RuntimeException cause = new RuntimeException("ssh error");
         DagTaskResult.Failure result = new DagTaskResult.Failure("SSH connection refused", true, cause);
 
-        assertEquals("SSH connection refused", result.reason(),
-                "Failure must store the reason passed to the constructor");
+        assertEquals(
+                "SSH connection refused", result.reason(), "Failure must store the reason passed to the constructor");
     }
 
     @Test
     public void failure_storesFatalFlag_true() {
         DagTaskResult.Failure result = new DagTaskResult.Failure("disk full", true, null);
 
-        assertTrue(result.fatal(),
-                "fatal flag must be true when constructed with fatal=true");
+        assertTrue(result.fatal(), "fatal flag must be true when constructed with fatal=true");
     }
 
     @Test
     public void failure_storesFatalFlag_false() {
         DagTaskResult.Failure result = new DagTaskResult.Failure("timeout", false, null);
 
-        assertFalse(result.fatal(),
-                "fatal flag must be false when constructed with fatal=false");
+        assertFalse(result.fatal(), "fatal flag must be false when constructed with fatal=false");
     }
 
     @Test
@@ -151,16 +142,14 @@ public class DagTaskResultTest {
         RuntimeException cause = new RuntimeException("underlying error");
         DagTaskResult.Failure result = new DagTaskResult.Failure("wrapped", false, cause);
 
-        assertEquals(cause, result.cause(),
-                "Failure must store the cause exception passed to the constructor");
+        assertEquals(cause, result.cause(), "Failure must store the cause exception passed to the constructor");
     }
 
     @Test
     public void failure_cause_canBeNull() {
         DagTaskResult.Failure result = new DagTaskResult.Failure("no cause", false, null);
 
-        assertNull(result.cause(),
-                "cause may legitimately be null when no exception is available");
+        assertNull(result.cause(), "cause may legitimately be null when no exception is available");
     }
 
     // ===========================================================================
@@ -171,8 +160,7 @@ public class DagTaskResultTest {
     public void failure_twoArgConstructor_setsNullCause() {
         DagTaskResult.Failure result = new DagTaskResult.Failure("resource unavailable", true);
 
-        assertNull(result.cause(),
-                "Two-arg constructor must leave cause as null");
+        assertNull(result.cause(), "Two-arg constructor must leave cause as null");
     }
 
     @Test
@@ -187,7 +175,7 @@ public class DagTaskResultTest {
         DagTaskResult.Failure fatal = new DagTaskResult.Failure("critical", true);
         DagTaskResult.Failure nonFatal = new DagTaskResult.Failure("transient", false);
 
-        assertTrue(fatal.fatal(),  "fatal must be true");
+        assertTrue(fatal.fatal(), "fatal must be true");
         assertFalse(nonFatal.fatal(), "fatal must be false");
     }
 
@@ -199,16 +187,14 @@ public class DagTaskResultTest {
     public void failure_singleArgConstructor_setsNullCause() {
         DagTaskResult.Failure result = new DagTaskResult.Failure("unexpected error");
 
-        assertNull(result.cause(),
-                "Single-arg constructor must leave cause as null");
+        assertNull(result.cause(), "Single-arg constructor must leave cause as null");
     }
 
     @Test
     public void failure_singleArgConstructor_setsFatalToFalse() {
         DagTaskResult.Failure result = new DagTaskResult.Failure("timeout waiting for job");
 
-        assertFalse(result.fatal(),
-                "Single-arg constructor must default fatal to false");
+        assertFalse(result.fatal(), "Single-arg constructor must default fatal to false");
     }
 
     @Test
@@ -226,8 +212,7 @@ public class DagTaskResultTest {
     public void failure_isInstanceOfDagTaskResult() {
         DagTaskResult result = new DagTaskResult.Failure("bad");
 
-        assertInstanceOf(DagTaskResult.class, result,
-                "Failure must implement DagTaskResult");
+        assertInstanceOf(DagTaskResult.class, result, "Failure must implement DagTaskResult");
     }
 
     @Test
@@ -246,25 +231,29 @@ public class DagTaskResultTest {
     public void patternMatchingSwitch_classifiesSuccess() {
         DagTaskResult result = new DagTaskResult.Success("all good");
 
-        String classification = switch (result) {
-            case DagTaskResult.Success s -> "success:" + s.message();
-            case DagTaskResult.Failure f -> "failure:" + f.reason();
-        };
+        String classification =
+                switch (result) {
+                    case DagTaskResult.Success s -> "success:" + s.message();
+                    case DagTaskResult.Failure f -> "failure:" + f.reason();
+                };
 
-        assertEquals("success:all good", classification,
-                "Pattern matching switch must route Success to the success branch");
+        assertEquals(
+                "success:all good", classification, "Pattern matching switch must route Success to the success branch");
     }
 
     @Test
     public void patternMatchingSwitch_classifiesFailure() {
         DagTaskResult result = new DagTaskResult.Failure("timed out", true);
 
-        String classification = switch (result) {
-            case DagTaskResult.Success s -> "success:" + s.message();
-            case DagTaskResult.Failure f -> "failure:" + f.reason();
-        };
+        String classification =
+                switch (result) {
+                    case DagTaskResult.Success s -> "success:" + s.message();
+                    case DagTaskResult.Failure f -> "failure:" + f.reason();
+                };
 
-        assertEquals("failure:timed out", classification,
+        assertEquals(
+                "failure:timed out",
+                classification,
                 "Pattern matching switch must route Failure to the failure branch");
     }
 
@@ -272,26 +261,26 @@ public class DagTaskResultTest {
     public void patternMatchingSwitch_extractsOutputFromSuccess() {
         DagTaskResult result = new DagTaskResult.Success("submitted", Map.of("jobId", "99"));
 
-        String jobId = switch (result) {
-            case DagTaskResult.Success s -> s.output().get("jobId");
-            case DagTaskResult.Failure f -> null;
-        };
+        String jobId =
+                switch (result) {
+                    case DagTaskResult.Success s -> s.output().get("jobId");
+                    case DagTaskResult.Failure f -> null;
+                };
 
-        assertEquals("99", jobId,
-                "Pattern matching must allow access to Success output fields");
+        assertEquals("99", jobId, "Pattern matching must allow access to Success output fields");
     }
 
     @Test
     public void patternMatchingSwitch_extractsFatalFlagFromFailure() {
         DagTaskResult result = new DagTaskResult.Failure("disk full", true, null);
 
-        boolean isFatal = switch (result) {
-            case DagTaskResult.Success s -> false;
-            case DagTaskResult.Failure f -> f.fatal();
-        };
+        boolean isFatal =
+                switch (result) {
+                    case DagTaskResult.Success s -> false;
+                    case DagTaskResult.Failure f -> f.fatal();
+                };
 
-        assertTrue(isFatal,
-                "Pattern matching must allow access to Failure.fatal()");
+        assertTrue(isFatal, "Pattern matching must allow access to Failure.fatal()");
     }
 
     @Test
@@ -299,13 +288,13 @@ public class DagTaskResultTest {
         RuntimeException cause = new RuntimeException("root cause");
         DagTaskResult result = new DagTaskResult.Failure("wrapped", false, cause);
 
-        Throwable extracted = switch (result) {
-            case DagTaskResult.Success s -> null;
-            case DagTaskResult.Failure f -> f.cause();
-        };
+        Throwable extracted =
+                switch (result) {
+                    case DagTaskResult.Success s -> null;
+                    case DagTaskResult.Failure f -> f.cause();
+                };
 
-        assertEquals(cause, extracted,
-                "Pattern matching must expose the stored Throwable cause");
+        assertEquals(cause, extracted, "Pattern matching must expose the stored Throwable cause");
     }
 
     // ===========================================================================
@@ -316,7 +305,8 @@ public class DagTaskResultTest {
     public void success_output_fromMapOf_isUnmodifiable() {
         DagTaskResult.Success result = new DagTaskResult.Success("ok", Map.of("k", "v"));
 
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(
+                UnsupportedOperationException.class,
                 () -> result.output().put("extra", "value"),
                 "Output map created via Map.of must be unmodifiable");
     }
@@ -325,7 +315,8 @@ public class DagTaskResultTest {
     public void success_convenienceConstructor_output_isUnmodifiable() {
         DagTaskResult.Success result = new DagTaskResult.Success("ok");
 
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(
+                UnsupportedOperationException.class,
                 () -> result.output().put("extra", "value"),
                 "Output map from single-arg constructor (Map.of()) must be unmodifiable");
     }

@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
-
 import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.execution.task.TaskContext;
@@ -59,9 +58,9 @@ public class SaveExperimentOutputsTaskTest {
     // -------------------------------------------------------------------------
 
     private static final String EXPERIMENT_ID = "exp-test-001";
-    private static final String PROCESS_ID    = "proc-test-001";
-    private static final String GATEWAY_ID    = "gw-test-001";
-    private static final String TASK_ID       = "task-test-001";
+    private static final String PROCESS_ID = "proc-test-001";
+    private static final String GATEWAY_ID = "gw-test-001";
+    private static final String TASK_ID = "task-test-001";
 
     @Mock
     private ExperimentRepository experimentRepository;
@@ -90,15 +89,13 @@ public class SaveExperimentOutputsTaskTest {
 
         DagTaskResult result = task.execute(context);
 
-        assertInstanceOf(DagTaskResult.Success.class, result,
-                "Result must be a Success");
+        assertInstanceOf(DagTaskResult.Success.class, result, "Result must be a Success");
 
         ArgumentCaptor<ExperimentEntity> captor = ArgumentCaptor.forClass(ExperimentEntity.class);
         verify(experimentRepository).save(captor.capture());
 
         ExperimentEntity saved = captor.getValue();
-        assertEquals(2, saved.getOutputs().size(),
-                "Entity must have exactly 2 output entries after persistence");
+        assertEquals(2, saved.getOutputs().size(), "Entity must have exactly 2 output entries after persistence");
 
         // Verify the output names and values are correct (order may vary, so check by name)
         boolean foundStdout = false;
@@ -133,10 +130,11 @@ public class SaveExperimentOutputsTaskTest {
 
         DagTaskResult result = task.execute(context);
 
-        assertInstanceOf(DagTaskResult.Success.class, result,
-                "Result must be a Success even when no prefixed entries exist");
+        assertInstanceOf(
+                DagTaskResult.Success.class, result, "Result must be a Success even when no prefixed entries exist");
         DagTaskResult.Success success = (DagTaskResult.Success) result;
-        assertTrue(success.message().contains("No experiment outputs"),
+        assertTrue(
+                success.message().contains("No experiment outputs"),
                 "Message must indicate no outputs to persist; got: " + success.message());
 
         verify(experimentRepository, never()).save(org.mockito.ArgumentMatchers.any());
@@ -156,10 +154,11 @@ public class SaveExperimentOutputsTaskTest {
 
         DagTaskResult result = task.execute(context);
 
-        assertInstanceOf(DagTaskResult.Success.class, result,
-                "Result must be a Success even when experiment is not found");
+        assertInstanceOf(
+                DagTaskResult.Success.class, result, "Result must be a Success even when experiment is not found");
         DagTaskResult.Success success = (DagTaskResult.Success) result;
-        assertTrue(success.message().contains("skipped"),
+        assertTrue(
+                success.message().contains("skipped"),
                 "Message must indicate that output persistence was skipped; got: " + success.message());
 
         verify(experimentRepository, never()).save(org.mockito.ArgumentMatchers.any());
@@ -191,18 +190,23 @@ public class SaveExperimentOutputsTaskTest {
 
         DagTaskResult result = task.execute(context);
 
-        assertInstanceOf(DagTaskResult.Success.class, result,
-                "Result must be a Success");
+        assertInstanceOf(DagTaskResult.Success.class, result, "Result must be a Success");
 
         ArgumentCaptor<ExperimentEntity> captor = ArgumentCaptor.forClass(ExperimentEntity.class);
         verify(experimentRepository).save(captor.capture());
 
         ExperimentEntity saved = captor.getValue();
-        assertEquals(1, saved.getOutputs().size(),
+        assertEquals(
+                1,
+                saved.getOutputs().size(),
                 "Existing output must be updated, not duplicated — count should remain 1");
-        assertEquals("/data/out/new-stdout.txt", saved.getOutputs().get(0).getValue(),
+        assertEquals(
+                "/data/out/new-stdout.txt",
+                saved.getOutputs().get(0).getValue(),
                 "Existing output value must be updated to the new value");
-        assertEquals("existing-output-id", saved.getOutputs().get(0).getOutputId(),
+        assertEquals(
+                "existing-output-id",
+                saved.getOutputs().get(0).getOutputId(),
                 "Existing output ID must be preserved (not regenerated)");
     }
 
@@ -226,21 +230,24 @@ public class SaveExperimentOutputsTaskTest {
 
         DagTaskResult result = task.execute(context);
 
-        assertInstanceOf(DagTaskResult.Success.class, result,
-                "Result must be a Success");
+        assertInstanceOf(DagTaskResult.Success.class, result, "Result must be a Success");
         DagTaskResult.Success success = (DagTaskResult.Success) result;
-        assertTrue(success.message().contains("2"),
+        assertTrue(
+                success.message().contains("2"),
                 "Message must indicate 2 outputs persisted; got: " + success.message());
 
         ArgumentCaptor<ExperimentEntity> captor = ArgumentCaptor.forClass(ExperimentEntity.class);
         verify(experimentRepository).save(captor.capture());
 
         ExperimentEntity saved = captor.getValue();
-        assertEquals(2, saved.getOutputs().size(),
+        assertEquals(
+                2,
+                saved.getOutputs().size(),
                 "Only the 2 prefixed entries must be persisted, not the 3 non-prefixed ones");
 
         for (ExperimentOutputEntity output : saved.getOutputs()) {
-            assertTrue("stdout".equals(output.getName()) || "result".equals(output.getName()),
+            assertTrue(
+                    "stdout".equals(output.getName()) || "result".equals(output.getName()),
                     "Output name must be 'stdout' or 'result', but got: " + output.getName());
         }
     }

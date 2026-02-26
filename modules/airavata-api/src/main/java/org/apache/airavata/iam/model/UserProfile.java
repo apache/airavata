@@ -21,7 +21,6 @@ package org.apache.airavata.iam.model;
 
 import java.util.List;
 import java.util.Objects;
-import org.apache.airavata.iam.model.Status;
 
 /**
  * Domain model: minimal user identity for research context.

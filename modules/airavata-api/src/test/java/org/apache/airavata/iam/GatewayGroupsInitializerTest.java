@@ -26,9 +26,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
+import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.gateway.model.GatewayGroups;
 import org.apache.airavata.gateway.service.GatewayService;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.model.GroupCardinality;
 import org.apache.airavata.iam.service.CredentialStoreService;
@@ -80,26 +80,20 @@ public class GatewayGroupsInitializerTest {
 
     @BeforeEach
     public void setUp() {
-        var superAdmin = org.mockito.Mockito.mock(
-                org.apache.airavata.config.ServerProperties.Security.Iam.Super.class);
+        var superAdmin = org.mockito.Mockito.mock(org.apache.airavata.config.ServerProperties.Security.Iam.Super.class);
         org.mockito.Mockito.when(superAdmin.username()).thenReturn(TEST_ADMIN_USERNAME);
 
-        var iam = org.mockito.Mockito.mock(
-                org.apache.airavata.config.ServerProperties.Security.Iam.class);
+        var iam = org.mockito.Mockito.mock(org.apache.airavata.config.ServerProperties.Security.Iam.class);
         org.mockito.Mockito.when(iam.superAdmin()).thenReturn(superAdmin);
 
-        var security = org.mockito.Mockito.mock(
-                org.apache.airavata.config.ServerProperties.Security.class);
+        var security = org.mockito.Mockito.mock(org.apache.airavata.config.ServerProperties.Security.class);
         org.mockito.Mockito.when(security.iam()).thenReturn(iam);
 
-        var mockProperties = org.mockito.Mockito.mock(
-                org.apache.airavata.config.ServerProperties.class);
+        var mockProperties = org.mockito.Mockito.mock(org.apache.airavata.config.ServerProperties.class);
         org.mockito.Mockito.when(mockProperties.security()).thenReturn(security);
 
-        gatewayGroupsInitializer = new GatewayGroupsInitializer(
-                mockGatewayGroupsService,
-                mockSharingService,
-                mockProperties);
+        gatewayGroupsInitializer =
+                new GatewayGroupsInitializer(mockGatewayGroupsService, mockSharingService, mockProperties);
     }
 
     @Test
@@ -114,8 +108,7 @@ public class GatewayGroupsInitializerTest {
 
     private void runTest(boolean doesAdminUserExist) {
         try {
-            when(mockSharingService.isUserExists(GATEWAY_ID, ADMIN_OWNER_ID))
-                    .thenReturn(doesAdminUserExist);
+            when(mockSharingService.isUserExists(GATEWAY_ID, ADMIN_OWNER_ID)).thenReturn(doesAdminUserExist);
 
             GatewayGroups gatewayGroups = gatewayGroupsInitializer.initialize(GATEWAY_ID);
             assertEquals(GATEWAY_ID, gatewayGroups.getGatewayId());
@@ -141,12 +134,6 @@ public class GatewayGroupsInitializerTest {
     }
 
     @Configuration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.iam",
-                "org.apache.airavata.config",
-                "org.apache.airavata.util",
-                "org.apache.airavata.user"
-            })
+    @ComponentScan(basePackages = {"org.apache.airavata.iam", "org.apache.airavata.config"})
     static class TestConfiguration {}
 }

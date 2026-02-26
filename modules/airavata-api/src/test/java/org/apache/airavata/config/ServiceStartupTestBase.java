@@ -88,10 +88,8 @@ public abstract class ServiceStartupTestBase {
             switch (serviceName) {
                 case "rest-api":
                     return properties.services().rest().enabled();
-                case "dapr-controller":
+                case "workflow-manager":
                     return properties.services().controller().enabled();
-                case "dapr-participant":
-                    return properties.services().participant().enabled();
                 case "realtime-monitor":
                     return properties.services().monitor().realtime().enabled();
                 case "email-monitor":

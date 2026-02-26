@@ -23,20 +23,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.research.application.model.Application;
-import org.apache.airavata.core.exception.TaskFailureException;
-import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.compute.resource.model.ResourceBinding;
 import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.compute.resource.model.JobModel;
-import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.core.model.StatusModel;
+import org.apache.airavata.core.exception.TaskFailureException;
 import org.apache.airavata.core.model.ProcessState;
-import org.apache.airavata.execution.model.TaskModel;
+import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.model.TaskState;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.execution.model.TaskModel;
+import org.apache.airavata.research.application.model.Application;
+import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -336,7 +336,8 @@ public class TaskContext {
     }
 
     public ResourceJobManagerType getJobManagerTypeEnum() {
-        if (computeResource != null && computeResource.getCapabilities() != null
+        if (computeResource != null
+                && computeResource.getCapabilities() != null
                 && computeResource.getCapabilities().getCompute() != null) {
             return computeResource.getCapabilities().getCompute().getJobManagerTypeEnum();
         }

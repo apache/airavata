@@ -118,8 +118,11 @@ public class DefaultAllocationProjectService implements AllocationProjectService
         project.setAllocationProjectId(IdGenerator.ensureId(project.getAllocationProjectId()));
         AllocationProjectEntity entity = mapper.toEntity(project);
         AllocationProjectEntity saved = allocationProjectRepository.save(entity);
-        logger.debug("Created allocation project id={} code={} resource={}",
-                saved.getAllocationProjectId(), saved.getProjectCode(), saved.getResourceId());
+        logger.debug(
+                "Created allocation project id={} code={} resource={}",
+                saved.getAllocationProjectId(),
+                saved.getProjectCode(),
+                saved.getResourceId());
         return saved.getAllocationProjectId();
     }
 
@@ -157,11 +160,7 @@ public class DefaultAllocationProjectService implements AllocationProjectService
      */
     @Override
     public void syncFromBinding(
-            String bindingId,
-            String resourceId,
-            String gatewayId,
-            String credentialId,
-            Map<String, Object> metadata) {
+            String bindingId, String resourceId, String gatewayId, String credentialId, Map<String, Object> metadata) {
 
         if (metadata == null) {
             return;
@@ -185,8 +184,11 @@ public class DefaultAllocationProjectService implements AllocationProjectService
                     newProject.setResourceId(resourceId);
                     newProject.setGatewayId(gatewayId);
                     AllocationProjectEntity saved = allocationProjectRepository.save(newProject);
-                    logger.info("Auto-created allocation project id={} code={} resource={}",
-                            saved.getAllocationProjectId(), projectCode, resourceId);
+                    logger.info(
+                            "Auto-created allocation project id={} code={} resource={}",
+                            saved.getAllocationProjectId(),
+                            projectCode,
+                            resourceId);
                     return saved;
                 });
 
@@ -200,11 +202,16 @@ public class DefaultAllocationProjectService implements AllocationProjectService
             membership.setAllocationProjectId(project.getAllocationProjectId());
             membership.setBindingId(bindingId);
             credentialAllocationProjectRepository.save(membership);
-            logger.debug("Linked credential={} to allocation project={} via binding={}",
-                    credentialId, project.getAllocationProjectId(), bindingId);
+            logger.debug(
+                    "Linked credential={} to allocation project={} via binding={}",
+                    credentialId,
+                    project.getAllocationProjectId(),
+                    bindingId);
         } else {
-            logger.debug("Credential={} already member of allocation project={} — skipping insert",
-                    credentialId, project.getAllocationProjectId());
+            logger.debug(
+                    "Credential={} already member of allocation project={} — skipping insert",
+                    credentialId,
+                    project.getAllocationProjectId());
         }
     }
 
@@ -236,9 +243,7 @@ public class DefaultAllocationProjectService implements AllocationProjectService
     @Transactional(readOnly = true)
     @Override
     public List<String> getProjectCredentials(String allocationProjectId) {
-        return credentialAllocationProjectRepository
-                .findByAllocationProjectId(allocationProjectId)
-                .stream()
+        return credentialAllocationProjectRepository.findByAllocationProjectId(allocationProjectId).stream()
                 .map(CredentialAllocationProjectEntity::getCredentialId)
                 .toList();
     }

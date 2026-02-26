@@ -45,8 +45,7 @@ public interface OrchestratorService {
     boolean validateProcess(String experimentId, List<ProcessModel> processes)
             throws LaunchValidationException, RegistryException, OrchestratorException;
 
-    boolean terminateExperiment(String experimentId, String gatewayId)
-            throws RegistryException, OrchestratorException;
+    boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryException, OrchestratorException;
 
     void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
             throws RegistryException, OrchestratorException;
@@ -59,8 +58,7 @@ public interface OrchestratorService {
 
     void addProcessValidationErrors(String processId, ErrorModel details) throws RegistryException;
 
-    boolean launchSingleAppExperimentInternal(
-            String experimentId, String airavataCredStoreToken, String gatewayId)
+    boolean launchSingleAppExperimentInternal(String experimentId, String airavataCredStoreToken, String gatewayId)
             throws RegistryException, OrchestratorException;
 
     void launchQueuedExperiment(String experimentId)

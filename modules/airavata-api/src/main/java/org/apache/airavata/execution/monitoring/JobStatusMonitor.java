@@ -20,9 +20,9 @@
 package org.apache.airavata.execution.monitoring;
 
 import org.apache.airavata.compute.resource.service.JobService;
-import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.execution.activity.JobStatusHandler;
+import org.apache.airavata.execution.service.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

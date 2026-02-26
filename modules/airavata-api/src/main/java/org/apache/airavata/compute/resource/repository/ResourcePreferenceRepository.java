@@ -20,9 +20,9 @@
 package org.apache.airavata.compute.resource.repository;
 
 import java.util.List;
+import org.apache.airavata.compute.resource.entity.ResourcePreferenceEntity;
 import org.apache.airavata.compute.resource.model.PreferenceLevel;
 import org.apache.airavata.compute.resource.model.PreferenceResourceType;
-import org.apache.airavata.compute.resource.entity.ResourcePreferenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

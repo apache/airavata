@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.KeycloakTestConfig;
+import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.gateway.model.Gateway;
 import org.apache.airavata.iam.exception.IamAdminServicesException;

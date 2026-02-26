@@ -94,10 +94,7 @@ public class ResourceProfileAdapter {
         List<ResourceBindingEntity> bindings =
                 resourceBindingRepository.findByGatewayIdAndResourceId(gatewayId, computeResourceId);
         if (bindings.isEmpty()) {
-            log.debug(
-                    "getUserBinding: no binding found for gatewayId={}, resourceId={}",
-                    gatewayId,
-                    computeResourceId);
+            log.debug("getUserBinding: no binding found for gatewayId={}, resourceId={}", gatewayId, computeResourceId);
             return null;
         }
         return bindings.get(0);
@@ -209,5 +206,4 @@ public class ResourceProfileAdapter {
         Object value = metadata.get(key);
         return value instanceof String ? (String) value : (value != null ? String.valueOf(value) : null);
     }
-
 }

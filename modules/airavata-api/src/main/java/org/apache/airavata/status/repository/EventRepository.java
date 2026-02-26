@@ -21,8 +21,8 @@ package org.apache.airavata.status.repository;
 
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.status.model.EventKind;
 import org.apache.airavata.status.entity.EventEntity;
+import org.apache.airavata.status.model.EventKind;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -36,19 +36,16 @@ import org.springframework.stereotype.Repository;
 public interface EventRepository extends JpaRepository<EventEntity, String> {
 
     @Query(
-            value =
-                    "SELECT COALESCE(MAX(e.sequence_num), 0) + 1 FROM event e WHERE e.parent_id = :parentId FOR UPDATE",
+            value = "SELECT COALESCE(MAX(e.sequence_num), 0) + 1 FROM event e WHERE e.parent_id = :parentId FOR UPDATE",
             nativeQuery = true)
     long getNextSequenceNum(@Param("parentId") String parentId);
 
     @Query(
             "SELECT e FROM EventEntity e WHERE e.parentId = :parentId AND e.eventKind = :eventKind ORDER BY e.sequenceNum DESC")
     List<EventEntity> findByParentIdAndEventKindOrderBySequenceNumDesc(
-            @Param("parentId") String parentId,
-            @Param("eventKind") EventKind eventKind);
+            @Param("parentId") String parentId, @Param("eventKind") EventKind eventKind);
 
-    Optional<EventEntity> findFirstByParentIdAndEventKindOrderBySequenceNumDesc(
-            String parentId, EventKind eventKind);
+    Optional<EventEntity> findFirstByParentIdAndEventKindOrderBySequenceNumDesc(String parentId, EventKind eventKind);
 
     @Modifying
     @Query("DELETE FROM EventEntity e WHERE e.parentId = :parentId")

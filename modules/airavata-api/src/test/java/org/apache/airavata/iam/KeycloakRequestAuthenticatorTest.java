@@ -29,10 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.core.exception.CoreExceptions.ApplicationSettingsException;
-import org.apache.airavata.core.util.Constants;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.exception.CoreExceptions.ApplicationSettingsException;
+import org.apache.airavata.core.util.Constants;
 import org.apache.airavata.gateway.model.GatewayGroups;
 import org.apache.airavata.gateway.service.GatewayService;
 import org.apache.airavata.iam.exception.AiravataSecurityException;
@@ -95,10 +95,7 @@ public class KeycloakRequestAuthenticatorTest {
 
     @Configuration
     @org.springframework.boot.test.context.TestConfiguration
-    @ComponentScan(
-            basePackages = {
-                "org.apache.airavata.iam"
-            })
+    @ComponentScan(basePackages = {"org.apache.airavata.iam"})
     static class TestConfiguration {
         @Bean
         @Primary

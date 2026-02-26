@@ -26,9 +26,9 @@ import org.apache.airavata.cli.commands.ServeCommand;
 import org.apache.airavata.cli.commands.ServiceCommand;
 import org.apache.airavata.cli.commands.TestCommand;
 import org.apache.airavata.cli.util.ApplicationContextHolder;
-import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.FlywayConfiguration;
 import org.apache.airavata.config.JpaConfiguration;
+import org.apache.airavata.config.ServerProperties;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -67,7 +67,7 @@ import picocli.CommandLine.IFactory;
             TestCommand.class
         },
         mixinStandardHelpOptions = true)
-public class AiravataCommandLine implements CommandLineRunner, ApplicationContextAware {
+public final class AiravataCommandLine implements CommandLineRunner, ApplicationContextAware {
 
     private final CommandLine commandLine;
 

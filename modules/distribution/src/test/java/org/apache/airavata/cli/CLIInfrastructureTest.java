@@ -37,7 +37,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -46,7 +45,7 @@ import org.testcontainers.utility.DockerImageName;
  * CLI Infrastructure Tests for Airavata commands requiring external services.
  *
  * These tests use Testcontainers to spin up required infrastructure
- * (MariaDB, RabbitMQ) for testing init and serve commands.
+ * (MariaDB) for testing init and serve commands.
  */
 @Testcontainers
 @DisplayName("Airavata CLI Infrastructure Tests")
@@ -61,23 +60,14 @@ public class CLIInfrastructureTest {
             .withPassword("123456")
             .withCommand("--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci");
 
-    @Container
-    static RabbitMQContainer rabbitMQContainer =
-            new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management"))
-                    .withEnv("RABBITMQ_DEFAULT_VHOST", "develop");
-
     private static String mariaDBUrl;
-    private static String rabbitMQUrl;
 
     @BeforeAll
     static void setupContainers() {
         mariaDBUrl = mariaDBContainer.getJdbcUrl();
-        rabbitMQUrl = String.format(
-                "amqp://guest:guest@%s:%d/develop", rabbitMQContainer.getHost(), rabbitMQContainer.getAmqpPort());
 
         logger.info("Testcontainers started:");
         logger.info("  MariaDB: {}", mariaDBUrl);
-        logger.info("  RabbitMQ: {}", rabbitMQUrl);
     }
 
     @AfterAll
@@ -94,13 +84,6 @@ public class CLIInfrastructureTest {
         void mariaDBShouldBeRunning() {
             assertThat(mariaDBContainer.isRunning()).isTrue();
             assertThat(mariaDBUrl).isNotEmpty();
-        }
-
-        @Test
-        @DisplayName("RabbitMQ container should be running")
-        void rabbitMQShouldBeRunning() {
-            assertThat(rabbitMQContainer.isRunning()).isTrue();
-            assertThat(rabbitMQUrl).contains("amqp://");
         }
     }
 
@@ -123,7 +106,6 @@ public class CLIInfrastructureTest {
             assertThat(propsFile).exists();
             String content = Files.readString(propsFile.toPath());
             assertThat(content).contains("airavata.database");
-            assertThat(content).contains("airavata.rabbitmq");
         }
     }
 
@@ -142,17 +124,6 @@ public class CLIInfrastructureTest {
             sb.append(String.format("airavata.database.%s.password=123456%n", catalog));
             sb.append(String.format("airavata.database.%s.validation-query=SELECT 1%n", catalog));
         }
-
-        // Messaging properties
-        sb.append(String.format("airavata.rabbitmq.broker-url=%s%n", rabbitMQUrl));
-        sb.append("airavata.rabbitmq.enabled=true\n");
-        sb.append("airavata.rabbitmq.status-exchange-name=status_exchange\n");
-        sb.append("airavata.rabbitmq.process-exchange-name=process_exchange\n");
-        sb.append("airavata.rabbitmq.experiment-exchange-name=experiment_exchange\n");
-        sb.append("airavata.rabbitmq.experiment-launch-queue-name=experiment.launch.queue\n");
-        sb.append("airavata.rabbitmq.db-event-exchange-name=dbevent_exchange\n");
-        sb.append("airavata.rabbitmq.durable-queue=false\n");
-        sb.append("airavata.rabbitmq.prefetch-count=200\n");
 
         // Security properties (disabled for tests)
         sb.append("airavata.security.iam.enabled=false\n");

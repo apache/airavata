@@ -154,9 +154,8 @@ public class DefaultResearchSessionService implements ResearchSessionService {
         var userId = UserContext.userId();
         var alreadyCreated = countSessionsByUserIdAndStatus(userId, SessionStatus.CREATED);
         if (alreadyCreated >= maxSessions) {
-            throw new RuntimeException(
-                    "Max number of active sessions (" + maxSessions + ") has been reached. "
-                            + "Please terminate or delete a session to continue.");
+            throw new RuntimeException("Max number of active sessions (" + maxSessions + ") has been reached. "
+                    + "Please terminate or delete a session to continue.");
         }
 
         var project = projectService.findProject(projectId);
@@ -165,7 +164,10 @@ public class DefaultResearchSessionService implements ResearchSessionService {
         var session = createSession(sessionName, project);
 
         var baseSpawnUrl = String.format(
-                SPAWN_URL, hubUrl, userId, session.getId(),
+                SPAWN_URL,
+                hubUrl,
+                userId,
+                session.getId(),
                 project.getRepositoryArtifact().getRepositoryUrl());
 
         var spawnUrlBuilder = new StringBuilder(baseSpawnUrl);

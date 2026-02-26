@@ -21,8 +21,6 @@ package org.apache.airavata.core.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.airavata.core.model.ProcessState;
-import org.apache.airavata.core.model.TaskState;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,7 +39,8 @@ class StatusModelTest {
     @Test
     void of_setsPositiveTimestamp() {
         StatusModel<ProcessState> status = StatusModel.of(ProcessState.CREATED);
-        assertTrue(status.getTimeOfStateChange() > 0,
+        assertTrue(
+                status.getTimeOfStateChange() > 0,
                 "timeOfStateChange should be positive but was " + status.getTimeOfStateChange());
     }
 

@@ -25,18 +25,18 @@ import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
-import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.compute.resource.model.JobState;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
 import org.apache.airavata.protocol.AgentAdapter;
 import org.apache.airavata.protocol.AgentException;
 import org.apache.airavata.protocol.CommandOutput;
 import org.apache.airavata.protocol.JobSubmissionOutput;
-import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
 import org.apache.airavata.status.service.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +52,7 @@ public class JobSubmissionSupport {
     private final ServerProperties serverProperties;
     private final StatusService statusService;
 
-    public JobSubmissionSupport(
-            JobFactory jobFactory,
-            ServerProperties serverProperties,
-            StatusService statusService) {
+    public JobSubmissionSupport(JobFactory jobFactory, ServerProperties serverProperties, StatusService statusService) {
         this.jobFactory = jobFactory;
         this.serverProperties = serverProperties;
         this.statusService = statusService;
@@ -87,8 +84,8 @@ public class JobSubmissionSupport {
 
         Files.writeString(
                 tempJobFile.toPath(), scriptAsString, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        logger.info("Job submission file for process " + processId + " was created at : "
-                + tempJobFile.getAbsolutePath());
+        logger.info(
+                "Job submission file for process " + processId + " was created at : " + tempJobFile.getAbsolutePath());
 
         logger.info("Copying file form " + tempJobFile.getAbsolutePath() + " to remote path " + workingDirectory
                 + " of compute resource " + computeResourceId);
@@ -99,7 +96,8 @@ public class JobSubmissionSupport {
         logger.info("Submit command for process id " + processId + " : " + submitCommand.getRawCommand());
         logger.debug("Working directory for process id " + processId + " : " + workingDirectory);
 
-        var commandOutput = submitCommandWithRecording(submitCommand, agentAdapter, jobSubmissionData, workingDirectory);
+        var commandOutput =
+                submitCommandWithRecording(submitCommand, agentAdapter, jobSubmissionData, workingDirectory);
         logger.info("Job " + jobSubmissionData.getJobName() + " submitted to compute resource");
         logger.info("Submission stdout: " + commandOutput.getStdOut() + ", stderr: " + commandOutput.getStdError());
 
@@ -133,16 +131,15 @@ public class JobSubmissionSupport {
         return jsoutput;
     }
 
-    public boolean cancelJob(AgentAdapter agentAdapter, String jobId, Resource computeResource)
-            throws Exception {
+    public boolean cancelJob(AgentAdapter agentAdapter, String jobId, Resource computeResource) throws Exception {
         var jobManagerConfiguration = jobFactory.getJobManagerConfiguration(computeResource);
         var commandOutput = agentAdapter.executeCommand(
                 jobManagerConfiguration.getCancelCommand(jobId).getRawCommand(), null);
         return commandOutput.getExitCode() == 0;
     }
 
-    public StatusModel<JobState> getJobStatus(AgentAdapter agentAdapter, String jobId,
-            Resource computeResource) throws Exception {
+    public StatusModel<JobState> getJobStatus(AgentAdapter agentAdapter, String jobId, Resource computeResource)
+            throws Exception {
         var jobManagerConfiguration = jobFactory.getJobManagerConfiguration(computeResource);
 
         var monitorCommand = jobManagerConfiguration.getMonitorCommand(jobId);
@@ -156,8 +153,8 @@ public class JobSubmissionSupport {
         return jobManagerConfiguration.getParser().parseJobStatus(jobId, commandOutput.getStdOut());
     }
 
-    public String getJobIdByJobName(AgentAdapter agentAdapter, String jobName, String userName,
-            Resource computeResource) throws Exception {
+    public String getJobIdByJobName(
+            AgentAdapter agentAdapter, String jobName, String userName, Resource computeResource) throws Exception {
         var jobManagerConfiguration = jobFactory.getJobManagerConfiguration(computeResource);
 
         var jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);

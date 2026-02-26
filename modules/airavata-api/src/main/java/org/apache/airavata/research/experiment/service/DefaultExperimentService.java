@@ -62,11 +62,10 @@ import org.apache.airavata.research.experiment.exception.ExperimentExceptions.Ex
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ProjectNotFoundException;
 import org.apache.airavata.research.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.ExperimentState;
-import org.apache.airavata.research.project.model.Project;
-import org.apache.airavata.research.project.service.ProjectService;
 import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
+import org.apache.airavata.research.project.model.Project;
+import org.apache.airavata.research.project.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -271,9 +270,8 @@ public class DefaultExperimentService implements ExperimentService {
     public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
             throws AiravataSystemException {
         try {
-            List<ExperimentEntity> entities =
-                    experimentRepository.findByProjectIdOrderByCreatedAtDesc(
-                            projectId, PaginationUtil.toPageRequest(limit, offset));
+            List<ExperimentEntity> entities = experimentRepository.findByProjectIdOrderByCreatedAtDesc(
+                    projectId, PaginationUtil.toPageRequest(limit, offset));
             return mapper.toModelList(entities);
         } catch (Exception e) {
             String msg = "Error while retrieving the experiments: " + e.getMessage();
@@ -398,8 +396,7 @@ public class DefaultExperimentService implements ExperimentService {
                         "User does not have permission to clone an experiment in this project");
             }
 
-            existingExperiment.setCreationTime(
-                    IdGenerator.getCurrentTimestamp().getTime());
+            existingExperiment.setCreationTime(IdGenerator.getCurrentTimestamp().getTime());
             if (newExperimentName != null && !newExperimentName.isBlank()) {
                 existingExperiment.setExperimentName(newExperimentName);
             }
@@ -627,8 +624,7 @@ public class DefaultExperimentService implements ExperimentService {
 
             sharingService.createEntity(entity);
             return projectId;
-        } catch (SharingRegistryException
-                | org.apache.airavata.core.exception.DuplicateEntryException ex) {
+        } catch (SharingRegistryException | org.apache.airavata.core.exception.DuplicateEntryException ex) {
             logger.error(ex.getMessage(), ex);
             throw airavataSystemException(
                     "Failed to create entry for project in Sharing Registry. More info : " + ex.getMessage(), ex);
@@ -797,7 +793,8 @@ public class DefaultExperimentService implements ExperimentService {
                 try {
                     sharingService.shareEntityWithUsers(
                             gatewayId, groupResourceProfileId, Arrays.asList(userId), gatewayId + ":READ", true);
-                    logger.info("Shared default group resource profile {} with user {}", groupResourceProfileId, userId);
+                    logger.info(
+                            "Shared default group resource profile {} with user {}", groupResourceProfileId, userId);
                 } catch (SharingRegistryException e) {
                     logger.warn(
                             "Failed to share default group resource profile with user {}: {}. Profile was created but may not be accessible.",

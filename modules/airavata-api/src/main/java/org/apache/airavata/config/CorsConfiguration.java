@@ -34,13 +34,13 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfiguration {
 
-    private static final List<String> DEFAULT_ORIGINS =
-            List.of("http://localhost:3000", "http://localhost:5173");
+    private static final List<String> DEFAULT_ORIGINS = List.of("http://localhost:3000", "http://localhost:5173");
 
     @Bean
     public CorsFilter corsFilter(ServerProperties properties) {
-        List<String> origins = (properties.cors() != null && properties.cors().allowedOrigins() != null
-                && !properties.cors().allowedOrigins().isEmpty())
+        List<String> origins = (properties.cors() != null
+                        && properties.cors().allowedOrigins() != null
+                        && !properties.cors().allowedOrigins().isEmpty())
                 ? properties.cors().allowedOrigins()
                 : DEFAULT_ORIGINS;
 

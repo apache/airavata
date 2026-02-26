@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.research.application.entity;
 
-import org.apache.airavata.compute.resource.entity.ResourceEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,6 +28,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
+import org.apache.airavata.compute.resource.entity.ResourceEntity;
 
 /**
  * Entity tracking the installation state of an application on a specific compute resource.

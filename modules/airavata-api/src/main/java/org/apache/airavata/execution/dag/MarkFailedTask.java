@@ -20,8 +20,8 @@
 package org.apache.airavata.execution.dag;
 
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.orchestration.ExperimentStatusManager;
 import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.research.experiment.model.ExperimentState;
@@ -61,7 +61,8 @@ public class MarkFailedTask implements DagTask {
             StatusModel<ProcessState> processStatus = StatusModel.of(ProcessState.FAILED, "DAG execution failed");
             statusService.addProcessStatus(processStatus, processId);
 
-            StatusModel<ExperimentState> experimentStatus = StatusModel.of(ExperimentState.FAILED, "Process execution failed");
+            StatusModel<ExperimentState> experimentStatus =
+                    StatusModel.of(ExperimentState.FAILED, "Process execution failed");
             experimentStatusManager.updateExperimentStatus(experimentId, experimentStatus, context.getGatewayId());
         } catch (Exception e) {
             logger.error("Failed to update status for process {} / experiment {}", processId, experimentId, e);

@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.execution.dag.interceptor;
 
+import org.apache.airavata.core.model.DagTaskResult;
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.ResourceIdentifier;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.core.model.DagTaskResult;
+import org.apache.airavata.core.model.TaskState;
 import org.apache.airavata.execution.dag.TaskInterceptor;
 import org.apache.airavata.execution.dag.TaskNode;
 import org.apache.airavata.execution.event.LocalStatusEvent;
-import org.apache.airavata.core.model.ProcessState;
-import org.apache.airavata.core.model.TaskState;
 import org.apache.airavata.execution.state.StateValidators;
 import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.status.model.ProcessStatusChangedEvent;
@@ -88,8 +88,7 @@ public class StatusPublishingInterceptor implements TaskInterceptor {
         try {
             TaskState currentState = context.getTaskState();
             if (!StateValidators.StateTransitionService.validateAndLog(
-                    StateValidators.TaskStateValidator.INSTANCE,
-                    currentState, state, context.getTaskId(), "task")) {
+                    StateValidators.TaskStateValidator.INSTANCE, currentState, state, context.getTaskId(), "task")) {
                 return;
             }
 
@@ -107,7 +106,10 @@ public class StatusPublishingInterceptor implements TaskInterceptor {
 
             if (!StateValidators.StateTransitionService.validateAndLog(
                     StateValidators.ProcessStateValidator.INSTANCE,
-                    currentState, state, context.getProcessId(), "process")) {
+                    currentState,
+                    state,
+                    context.getProcessId(),
+                    "process")) {
                 return;
             }
 

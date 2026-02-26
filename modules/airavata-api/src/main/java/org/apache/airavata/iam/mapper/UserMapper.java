@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.iam.mapper;
 
-import org.apache.airavata.config.EntityMapperConfiguration;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
+import org.apache.airavata.config.EntityMapperConfiguration;
 import org.apache.airavata.iam.entity.UserEntity;
 import org.apache.airavata.iam.model.UserProfile;
 import org.mapstruct.Mapper;
@@ -32,10 +32,7 @@ import org.mapstruct.Named;
 /**
  * Maps minimal UserEntity to UserProfile. Profile fields are enriched from IAM by the service layer.
  */
-@Mapper(
-        componentModel = "spring",
-        config = EntityMapperConfiguration.class,
-        implementationName = "IamUserMapperImpl")
+@Mapper(componentModel = "spring", config = EntityMapperConfiguration.class, implementationName = "IamUserMapperImpl")
 public interface UserMapper {
 
     @Mapping(target = "userId", source = "sub")

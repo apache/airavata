@@ -72,8 +72,11 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
             try {
                 model.setState(ExperimentState.valueOf(entity.getState()));
             } catch (IllegalArgumentException e) {
-                log.debug("Unknown experiment state '{}' for experiment '{}'; defaulting to CREATED",
-                        entity.getState(), entity.getExperimentId(), e);
+                log.debug(
+                        "Unknown experiment state '{}' for experiment '{}'; defaulting to CREATED",
+                        entity.getState(),
+                        entity.getExperimentId(),
+                        e);
                 model.setState(ExperimentState.CREATED);
             }
         } else {
@@ -89,7 +92,8 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
 
         // Outputs
         if (entity.getOutputs() != null) {
-            model.setOutputs(entity.getOutputs().stream().map(this::toOutputModel).toList());
+            model.setOutputs(
+                    entity.getOutputs().stream().map(this::toOutputModel).toList());
         } else {
             model.setOutputs(new ArrayList<>());
         }

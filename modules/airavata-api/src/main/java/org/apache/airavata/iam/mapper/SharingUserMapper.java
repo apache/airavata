@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.iam.mapper;
 
-import org.apache.airavata.config.EntityMapperConfiguration;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.config.EntityMapperConfiguration;
 import org.apache.airavata.iam.entity.UserEntity;
 import org.apache.airavata.iam.model.User;
 import org.mapstruct.Mapper;

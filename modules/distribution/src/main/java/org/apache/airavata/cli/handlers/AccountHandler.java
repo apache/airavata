@@ -20,12 +20,12 @@
 package org.apache.airavata.cli.handlers;
 
 import java.util.List;
-import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
+import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.model.User;
-import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.iam.model.UserProfile;
+import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.iam.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

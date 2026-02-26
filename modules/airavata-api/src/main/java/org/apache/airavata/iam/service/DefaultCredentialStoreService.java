@@ -137,7 +137,8 @@ public class DefaultCredentialStoreService implements CredentialStoreService {
 
     public java.util.List<CredentialSummary> getCredentialSummariesForUser(String gatewayId, String userId)
             throws CredentialStoreException {
-        java.util.List<String> credentialIds = credentialEntityService.getCredentialIdsByGatewayIdAndUserId(gatewayId, userId);
+        java.util.List<String> credentialIds =
+                credentialEntityService.getCredentialIdsByGatewayIdAndUserId(gatewayId, userId);
         java.util.List<CredentialSummary> out = new java.util.ArrayList<>();
         for (String tokenId : credentialIds) {
             try {

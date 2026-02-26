@@ -21,13 +21,13 @@ package org.apache.airavata.compute.resource.adapter;
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.compute.resource.entity.ResourceEntity;
 import org.apache.airavata.compute.resource.model.ComputeCapability;
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
-import org.apache.airavata.protocol.ResourceLookup;
-import org.apache.airavata.compute.resource.entity.ResourceEntity;
 import org.apache.airavata.compute.resource.repository.ResourceRepository;
+import org.apache.airavata.protocol.ResourceLookup;
 import org.apache.airavata.storage.resource.model.DataMovementProtocol;
 import org.apache.airavata.storage.resource.model.StorageCapability;
 import org.slf4j.Logger;
@@ -77,12 +77,10 @@ public class ComputeResourceAdapter implements ResourceLookup {
 
     @Override
     public Resource getResource(String resourceId) {
-        return resourceRepository.findById(resourceId)
-                .map(this::toModel)
-                .orElseGet(() -> {
-                    log.debug("getResource: no resource found for id={}", resourceId);
-                    return null;
-                });
+        return resourceRepository.findById(resourceId).map(this::toModel).orElseGet(() -> {
+            log.debug("getResource: no resource found for id={}", resourceId);
+            return null;
+        });
     }
 
     // -------------------------------------------------------------------------

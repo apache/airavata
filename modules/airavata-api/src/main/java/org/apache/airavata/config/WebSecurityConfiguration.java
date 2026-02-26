@@ -61,7 +61,8 @@ public class WebSecurityConfiguration {
                             .permitAll()
                             .requestMatchers("/api/v1/artifacts/public/**", "/api/v1/artifacts/search")
                             .permitAll()
-                            .requestMatchers("/api/v1/research/artifacts/public/**", "/api/v1/research/artifacts/search")
+                            .requestMatchers(
+                                    "/api/v1/research/artifacts/public/**", "/api/v1/research/artifacts/search")
                             .permitAll()
                             .requestMatchers("/api/v1/config")
                             .permitAll()

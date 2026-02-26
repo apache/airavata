@@ -26,16 +26,15 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.model.JobState;
-import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.core.model.ProcessState;
-
-import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
-import org.apache.airavata.status.service.StatusService;
+import org.apache.airavata.core.model.ProcessState;
+import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.util.DBConstants;
+import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
+import org.apache.airavata.status.service.StatusService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -117,8 +116,7 @@ public class JobController {
                 if (processes != null) {
                     for (ProcessModel p : processes) {
                         String metaParent = getParentProcessIdFromMetadata(p.getProcessMetadata());
-                        if (parentId.equals(metaParent)
-                                && "JOB_SUBMISSION".equals(p.getProcessType())) {
+                        if (parentId.equals(metaParent) && "JOB_SUBMISSION".equals(p.getProcessType())) {
                             jobs.add(processToJobModel(p));
                         }
                     }

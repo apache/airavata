@@ -39,11 +39,17 @@ public class StorageClientConfig {
     // ---- SFTP ---------------------------------------------------------------
 
     @Bean("sftpInputStagingTask")
-    DagTask sftpStageIn(SftpStorageClient c) { return c::stageIn; }
+    DagTask sftpStageIn(SftpStorageClient c) {
+        return c::stageIn;
+    }
 
     @Bean("sftpOutputStagingTask")
-    DagTask sftpStageOut(SftpStorageClient c) { return c::stageOut; }
+    DagTask sftpStageOut(SftpStorageClient c) {
+        return c::stageOut;
+    }
 
     @Bean("sftpArchiveTask")
-    DagTask sftpArchive(SftpStorageClient c) { return c::archive; }
+    DagTask sftpArchive(SftpStorageClient c) {
+        return c::archive;
+    }
 }

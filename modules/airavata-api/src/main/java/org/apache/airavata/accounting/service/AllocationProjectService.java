@@ -37,8 +37,8 @@ public interface AllocationProjectService {
 
     void deleteAllocationProject(String allocationProjectId);
 
-    void syncFromBinding(String bindingId, String resourceId, String gatewayId,
-            String credentialId, Map<String, Object> metadata);
+    void syncFromBinding(
+            String bindingId, String resourceId, String gatewayId, String credentialId, Map<String, Object> metadata);
 
     void cleanupForBinding(String bindingId);
 

@@ -33,17 +33,24 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
-    name = "sharing_permission",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_sharing_perm",
-            columnNames = {"resource_type", "resource_id", "grantee_type", "grantee_id", "permission", "domain_id"})
-    },
-    indexes = {
-        @Index(name = "idx_sp_resource", columnList = "resource_type, resource_id"),
-        @Index(name = "idx_sp_grantee", columnList = "grantee_type, grantee_id"),
-        @Index(name = "idx_sp_domain", columnList = "domain_id")
-    })
+        name = "sharing_permission",
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "uk_sharing_perm",
+                    columnNames = {
+                        "resource_type",
+                        "resource_id",
+                        "grantee_type",
+                        "grantee_id",
+                        "permission",
+                        "domain_id"
+                    })
+        },
+        indexes = {
+            @Index(name = "idx_sp_resource", columnList = "resource_type, resource_id"),
+            @Index(name = "idx_sp_grantee", columnList = "grantee_type, grantee_id"),
+            @Index(name = "idx_sp_domain", columnList = "domain_id")
+        })
 public class SharingPermissionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -78,22 +85,75 @@ public class SharingPermissionEntity implements Serializable {
 
     public SharingPermissionEntity() {}
 
-    public String getPermissionId() { return permissionId; }
-    public void setPermissionId(String permissionId) { this.permissionId = permissionId; }
-    public String getResourceType() { return resourceType; }
-    public void setResourceType(String resourceType) { this.resourceType = resourceType; }
-    public String getResourceId() { return resourceId; }
-    public void setResourceId(String resourceId) { this.resourceId = resourceId; }
-    public String getGranteeType() { return granteeType; }
-    public void setGranteeType(String granteeType) { this.granteeType = granteeType; }
-    public String getGranteeId() { return granteeId; }
-    public void setGranteeId(String granteeId) { this.granteeId = granteeId; }
-    public String getPermission() { return permission; }
-    public void setPermission(String permission) { this.permission = permission; }
-    public String getDomainId() { return domainId; }
-    public void setDomainId(String domainId) { this.domainId = domainId; }
-    public Map<String, Object> getMetadata() { return metadata; }
-    public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public String getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(String permissionId) {
+        this.permissionId = permissionId;
+    }
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public String getGranteeType() {
+        return granteeType;
+    }
+
+    public void setGranteeType(String granteeType) {
+        this.granteeType = granteeType;
+    }
+
+    public String getGranteeId() {
+        return granteeId;
+    }
+
+    public void setGranteeId(String granteeId) {
+        this.granteeId = granteeId;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
+    public String getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(String domainId) {
+        this.domainId = domainId;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
 }

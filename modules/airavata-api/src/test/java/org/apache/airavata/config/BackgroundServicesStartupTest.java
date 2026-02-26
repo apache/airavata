@@ -21,8 +21,8 @@ package org.apache.airavata.config;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.apache.airavata.execution.monitoring.JobStatusMonitor;
 import org.apache.airavata.execution.activity.ProcessActivityManager;
+import org.apache.airavata.execution.monitoring.JobStatusMonitor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

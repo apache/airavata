@@ -23,6 +23,8 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.airavata.iam.model.UserContext;
+import org.apache.airavata.iam.service.UserService;
 import org.apache.airavata.research.artifact.dto.ArtifactResponse;
 import org.apache.airavata.research.artifact.dto.CreateArtifactRequest;
 import org.apache.airavata.research.artifact.dto.ModifyArtifactRequest;
@@ -37,9 +39,7 @@ import org.apache.airavata.research.artifact.model.Privacy;
 import org.apache.airavata.research.artifact.repository.ArtifactStarRepository;
 import org.apache.airavata.research.artifact.repository.ResearchArtifactRepository;
 import org.apache.airavata.research.artifact.repository.TagRepository;
-import org.apache.airavata.iam.model.UserContext;
 import org.apache.airavata.research.project.repository.ResearchProjectRepository;
-import org.apache.airavata.iam.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -110,7 +110,8 @@ public class DefaultArtifactService implements ArtifactService {
     }
 
     @Override
-    public void transferArtifactRequestFields(ResearchArtifactEntity artifact, CreateArtifactRequest createArtifactRequest) {
+    public void transferArtifactRequestFields(
+            ResearchArtifactEntity artifact, CreateArtifactRequest createArtifactRequest) {
         // check that the logged in author is at least one of the authors making the request
         var currentUserId = UserContext.userId();
         boolean found = false;
@@ -303,7 +304,8 @@ public class DefaultArtifactService implements ArtifactService {
     }
 
     @Override
-    public List<ResearchArtifactEntity> getAllArtifactsByTypeAndName(Class<? extends ResearchArtifactEntity> type, String name) {
+    public List<ResearchArtifactEntity> getAllArtifactsByTypeAndName(
+            Class<? extends ResearchArtifactEntity> type, String name) {
         return artifactRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase(), UserContext.userId());
     }
 

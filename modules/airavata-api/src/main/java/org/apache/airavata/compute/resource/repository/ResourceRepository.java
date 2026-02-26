@@ -41,5 +41,4 @@ public interface ResourceRepository extends JpaRepository<ResourceEntity, String
      * @return list of resources for the gateway, empty list if none found
      */
     List<ResourceEntity> findByGatewayId(String gatewayId);
-
 }

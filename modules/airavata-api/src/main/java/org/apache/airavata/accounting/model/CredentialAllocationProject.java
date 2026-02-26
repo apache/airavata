@@ -81,7 +81,7 @@ public class CredentialAllocationProject {
 
     @Override
     public String toString() {
-        return "CredentialAllocationProject{" + "credentialId=" + credentialId + ", allocationProjectId=" + allocationProjectId
-                + ", bindingId=" + bindingId + "}";
+        return "CredentialAllocationProject{" + "credentialId=" + credentialId + ", allocationProjectId="
+                + allocationProjectId + ", bindingId=" + bindingId + "}";
     }
 }

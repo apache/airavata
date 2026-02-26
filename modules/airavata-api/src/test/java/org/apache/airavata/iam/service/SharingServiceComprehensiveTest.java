@@ -19,26 +19,26 @@
 */
 package org.apache.airavata.iam.service;
 
-import org.apache.airavata.config.ServiceIntegrationTestBase;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.apache.airavata.config.ServiceIntegrationTestBase;
+import org.apache.airavata.core.exception.DuplicateEntryException;
+import org.apache.airavata.core.model.EntitySearchField;
+import org.apache.airavata.core.model.SearchCondition;
+import org.apache.airavata.core.model.SearchCriteria;
 import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.gateway.model.Gateway;
 import org.apache.airavata.gateway.service.GatewayService;
-import org.apache.airavata.core.exception.DuplicateEntryException;
 import org.apache.airavata.iam.model.Domain;
-import org.apache.airavata.iam.model.SharingEntity;
-import org.apache.airavata.core.model.EntitySearchField;
 import org.apache.airavata.iam.model.EntityType;
 import org.apache.airavata.iam.model.GroupCardinality;
 import org.apache.airavata.iam.model.GroupType;
 import org.apache.airavata.iam.model.PermissionType;
-import org.apache.airavata.core.model.SearchCondition;
-import org.apache.airavata.core.model.SearchCriteria;
+import org.apache.airavata.iam.model.SharingEntity;
 import org.apache.airavata.iam.model.User;
 import org.apache.airavata.iam.model.UserGroup;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,9 +73,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
 
     private String testDomainId;
 
-    public SharingServiceComprehensiveTest(
-            SharingService sharingService,
-            GatewayService gatewayService) {
+    public SharingServiceComprehensiveTest(SharingService sharingService, GatewayService gatewayService) {
         this.sharingService = sharingService;
         this.gatewayService = gatewayService;
     }
@@ -252,8 +250,8 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             sharingService.createGroup(group);
 
             // When - Add users
-            boolean added = sharingService.addUsersToGroup(
-                    testDomainId, List.of("member-1", "member-2"), "member-test-group");
+            boolean added =
+                    sharingService.addUsersToGroup(testDomainId, List.of("member-1", "member-2"), "member-test-group");
 
             // Then
             assertTrue(added, "Adding users to group should succeed");
@@ -325,8 +323,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             sharingService.addUsersToGroup(testDomainId, List.of("multi-group-user"), "multi-group-2");
 
             // When
-            List<UserGroup> memberGroups =
-                    sharingService.getAllMemberGroupsForUser(testDomainId, "multi-group-user");
+            List<UserGroup> memberGroups = sharingService.getAllMemberGroupsForUser(testDomainId, "multi-group-user");
 
             // Then
             assertNotNull(memberGroups);
@@ -569,8 +566,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
 
             // Then
             assertTrue(shared);
-            assertTrue(sharingService.userHasAccess(
-                    testDomainId, "group-member", "group-share-entity", "GROUP_READ"));
+            assertTrue(sharingService.userHasAccess(testDomainId, "group-member", "group-share-entity", "GROUP_READ"));
         }
 
         @Test
@@ -606,13 +602,11 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             child.setOwnerId("cascade-owner");
             child.setName("Child Entity");
             child.setParentEntityId("parent-entity");
-            child.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+            child.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
             sharingService.createEntity(child);
 
             // Then - Child should inherit permissions
-            assertTrue(
-                    sharingService.userHasAccess(testDomainId, "cascade-user", "child-entity", "CASCADE_READ"));
+            assertTrue(sharingService.userHasAccess(testDomainId, "cascade-user", "child-entity", "CASCADE_READ"));
         }
 
         @Test
@@ -644,8 +638,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
 
             // Then
             assertTrue(revoked);
-            assertFalse(
-                    sharingService.userHasAccess(testDomainId, "revoke-user", "revoke-entity", "REVOKE_PERM"));
+            assertFalse(sharingService.userHasAccess(testDomainId, "revoke-user", "revoke-entity", "REVOKE_PERM"));
         }
 
         @Test

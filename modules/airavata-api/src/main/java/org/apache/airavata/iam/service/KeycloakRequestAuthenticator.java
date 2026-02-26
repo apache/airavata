@@ -24,9 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.exception.CoreExceptions.ApplicationSettingsException;
 import org.apache.airavata.core.util.Constants;
-import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.gateway.model.GatewayGroups;
 import org.apache.airavata.gateway.service.GatewayService;
 import org.apache.airavata.iam.exception.AiravataSecurityException;
@@ -185,8 +185,7 @@ public class KeycloakRequestAuthenticator implements RequestAuthenticator {
             String username, String token, String gatewayId) throws Exception {
         validateToken(username, token, gatewayId);
         GatewayGroups gatewayGroups = getGatewayGroups(gatewayId);
-        List<UserGroup> userGroups =
-                sharingService.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
+        List<UserGroup> userGroups = sharingService.getAllMemberGroupsForUser(gatewayId, username + "@" + gatewayId);
         List<String> userGroupIds =
                 userGroups.stream().map(UserGroup::getGroupId).toList();
         MethodAuthorizationConfig.GatewayGroupMembership gatewayGroupMembership =

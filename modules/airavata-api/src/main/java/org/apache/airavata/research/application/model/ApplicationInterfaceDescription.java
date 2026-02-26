@@ -109,5 +109,4 @@ public class ApplicationInterfaceDescription {
     public void setCleanAfterStaged(boolean cleanAfterStaged) {
         this.cleanAfterStaged = cleanAfterStaged;
     }
-
 }

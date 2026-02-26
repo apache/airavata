@@ -89,7 +89,9 @@ public class ValidationServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = ExperimentState.class, names = {"EXECUTING", "LAUNCHED"})
+    @EnumSource(
+            value = ExperimentState.class,
+            names = {"EXECUTING", "LAUNCHED"})
     void validateExperiment_throwsLaunchValidationException_whenStateIsNotCreated(ExperimentState state)
             throws Exception {
         when(properties.validationEnabled()).thenReturn(true);
@@ -146,9 +148,10 @@ public class ValidationServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = ExperimentState.class, names = {"EXECUTING", "LAUNCHED"})
-    void validateProcess_throwsLaunchValidationException_whenStateIsNotCreated(ExperimentState state)
-            throws Exception {
+    @EnumSource(
+            value = ExperimentState.class,
+            names = {"EXECUTING", "LAUNCHED"})
+    void validateProcess_throwsLaunchValidationException_whenStateIsNotCreated(ExperimentState state) throws Exception {
         when(properties.validationEnabled()).thenReturn(true);
 
         ExperimentModel experiment = new ExperimentModel();
@@ -177,9 +180,7 @@ public class ValidationServiceTest {
 
         // The call is expected to throw because validation fails; we capture the exception and
         // then verify that errorService.addProcessError was called with the correct process ID.
-        assertThrows(
-                LaunchValidationException.class,
-                () -> validationService.validateProcess(experiment, process));
+        assertThrows(LaunchValidationException.class, () -> validationService.validateProcess(experiment, process));
 
         verify(errorService).addProcessError(any(ErrorModel.class), eq("proc-003"));
     }

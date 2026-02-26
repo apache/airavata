@@ -30,7 +30,9 @@ import org.springframework.data.repository.query.Param;
 public interface SessionRepository extends JpaRepository<SessionEntity, String> {
     List<SessionEntity> findByUserId(String userId);
 
-    @Query(value = "SELECT * FROM research_session WHERE project_id = :projectId AND user_id = :userId", nativeQuery = true)
+    @Query(
+            value = "SELECT * FROM research_session WHERE project_id = :projectId AND user_id = :userId",
+            nativeQuery = true)
     Optional<SessionEntity> findSessionByProjectIdAndUserId(
             @Param("projectId") String projectId, @Param("userId") String userId);
 

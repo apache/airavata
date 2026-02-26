@@ -20,8 +20,8 @@
 package org.apache.airavata.compute.resource.submission;
 
 import java.util.Map;
-import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.compute.resource.model.JobState;
+import org.apache.airavata.core.model.StatusModel;
 
 public interface JobOutputParser {
 
@@ -51,7 +51,8 @@ public interface JobOutputParser {
      * @param statusMap list of status map will return and key will be the job ID
      * @param rawOutput
      */
-    public void parseJobStatuses(String userName, Map<String, StatusModel<JobState>> statusMap, String rawOutput) throws Exception;
+    public void parseJobStatuses(String userName, Map<String, StatusModel<JobState>> statusMap, String rawOutput)
+            throws Exception;
 
     public String parseJobId(String jobName, String rawOutput) throws Exception;
 }

@@ -28,18 +28,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.credential.util.KeyStorePasswordCallback;
-import org.apache.airavata.credential.util.SecurityUtil;
 import org.apache.airavata.config.ConfigResolver;
 import org.apache.airavata.config.ServerProperties;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.credential.entity.CredentialEntity;
 import org.apache.airavata.credential.exception.CredentialStoreException;
 import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.Credential;
-import org.apache.airavata.credential.entity.CredentialEntity;
-import org.apache.airavata.credential.repository.CredentialRepository;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.credential.model.SSHCredential;
+import org.apache.airavata.credential.repository.CredentialRepository;
+import org.apache.airavata.credential.util.KeyStorePasswordCallback;
+import org.apache.airavata.credential.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -182,7 +182,9 @@ public class CredentialEntityService {
      * Check if a credential exists.
      */
     public boolean credentialExists(String gatewayId, String credentialId) {
-        return credentialRepository.findByGatewayIdAndCredentialId(gatewayId, credentialId).isPresent();
+        return credentialRepository
+                .findByGatewayIdAndCredentialId(gatewayId, credentialId)
+                .isPresent();
     }
 
     /**

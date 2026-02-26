@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.cli.communication;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
@@ -46,6 +47,7 @@ public class ServiceSocketClient {
     private static final String HEALTH_REQUEST = "HEALTH\n";
     private static final long CONNECTION_TIMEOUT_MS = 2000;
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {};
 
     /**
      * Resolve socket path using same logic as ServiceSocketManager.
@@ -93,8 +95,7 @@ public class ServiceSocketClient {
             if (!connected) {
                 // Wait for connection with timeout
                 long startTime = IdGenerator.getUniqueTimestamp().getTime();
-                while (!connected
-                        && (IdGenerator.getUniqueTimestamp().getTime() - startTime) < CONNECTION_TIMEOUT_MS) {
+                while (!connected && (IdGenerator.getUniqueTimestamp().getTime() - startTime) < CONNECTION_TIMEOUT_MS) {
                     connected = channel.finishConnect();
                     if (!connected) {
                         try {
@@ -127,7 +128,7 @@ public class ServiceSocketClient {
                         StandardCharsets.UTF_8.decode(response).toString().trim();
                 // Parse JSON response
                 try {
-                    Map<String, Object> jsonResponse = objectMapper.readValue(responseStr, Map.class);
+                    Map<String, Object> jsonResponse = objectMapper.readValue(responseStr, MAP_TYPE);
                     Object data = jsonResponse.get("data");
                     if (data instanceof Map) {
                         @SuppressWarnings("unchecked")
@@ -197,7 +198,7 @@ public class ServiceSocketClient {
                 response.flip();
                 String responseStr =
                         StandardCharsets.UTF_8.decode(response).toString().trim();
-                return objectMapper.readValue(responseStr, Map.class);
+                return objectMapper.readValue(responseStr, MAP_TYPE);
             }
 
             throw new IOException("No response from service");

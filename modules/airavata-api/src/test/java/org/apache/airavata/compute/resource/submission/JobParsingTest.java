@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.compute.resource.submission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.provider.local.LocalOutputParser;
 import org.apache.airavata.compute.provider.slurm.SlurmOutputParser;
+import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.core.model.StatusModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
@@ -67,7 +66,9 @@ class JobParsingTest {
         @CsvSource({"C", "CD", "E", "CG", "DONE"})
         @DisplayName("Completed status codes")
         void completedCodes(String status) {
-            assertEquals(JobState.COMPLETED, JobStateParser.getJobState(status),
+            assertEquals(
+                    JobState.COMPLETED,
+                    JobStateParser.getJobState(status),
                     "Expected COMPLETED for status code: " + status);
         }
 
@@ -77,8 +78,8 @@ class JobParsingTest {
         @CsvSource({"Q", "qw", "PEND", "W", "PD", "I"})
         @DisplayName("Queued status codes")
         void queuedCodes(String status) {
-            assertEquals(JobState.QUEUED, JobStateParser.getJobState(status),
-                    "Expected QUEUED for status code: " + status);
+            assertEquals(
+                    JobState.QUEUED, JobStateParser.getJobState(status), "Expected QUEUED for status code: " + status);
         }
 
         // -- ACTIVE -----------------------------------------------------------
@@ -87,8 +88,8 @@ class JobParsingTest {
         @CsvSource({"R", "CF", "r", "RUN"})
         @DisplayName("Active (running) status codes")
         void activeCodes(String status) {
-            assertEquals(JobState.ACTIVE, JobStateParser.getJobState(status),
-                    "Expected ACTIVE for status code: " + status);
+            assertEquals(
+                    JobState.ACTIVE, JobStateParser.getJobState(status), "Expected ACTIVE for status code: " + status);
         }
 
         // -- SUSPENDED --------------------------------------------------------
@@ -97,7 +98,9 @@ class JobParsingTest {
         @CsvSource({"S", "PSUSP", "USUSP", "SSUSP"})
         @DisplayName("Suspended status codes")
         void suspendedCodes(String status) {
-            assertEquals(JobState.SUSPENDED, JobStateParser.getJobState(status),
+            assertEquals(
+                    JobState.SUSPENDED,
+                    JobStateParser.getJobState(status),
                     "Expected SUSPENDED for status code: " + status);
         }
 
@@ -107,7 +110,9 @@ class JobParsingTest {
         @CsvSource({"CA", "X"})
         @DisplayName("Canceled status codes")
         void canceledCodes(String status) {
-            assertEquals(JobState.CANCELED, JobStateParser.getJobState(status),
+            assertEquals(
+                    JobState.CANCELED,
+                    JobStateParser.getJobState(status),
                     "Expected CANCELED for status code: " + status);
         }
 
@@ -117,8 +122,8 @@ class JobParsingTest {
         @CsvSource({"F", "NF", "TO", "EXIT", "PR", "Er"})
         @DisplayName("Failed status codes")
         void failedCodes(String status) {
-            assertEquals(JobState.FAILED, JobStateParser.getJobState(status),
-                    "Expected FAILED for status code: " + status);
+            assertEquals(
+                    JobState.FAILED, JobStateParser.getJobState(status), "Expected FAILED for status code: " + status);
         }
 
         // -- UNKNOWN (explicit codes) -----------------------------------------
@@ -127,7 +132,9 @@ class JobParsingTest {
         @CsvSource({"U", "UNKWN"})
         @DisplayName("Explicit unknown status codes")
         void unknownCodes(String status) {
-            assertEquals(JobState.UNKNOWN, JobStateParser.getJobState(status),
+            assertEquals(
+                    JobState.UNKNOWN,
+                    JobStateParser.getJobState(status),
                     "Expected UNKNOWN for status code: " + status);
         }
 
@@ -143,7 +150,9 @@ class JobParsingTest {
         @ValueSource(strings = {"GARBAGE", "XYZ", "running", "complete", "  ", "cd", "done", "ca"})
         @DisplayName("Unrecognized or wrong-case status codes return UNKNOWN")
         void unrecognizedStatusReturnsUnknown(String status) {
-            assertEquals(JobState.UNKNOWN, JobStateParser.getJobState(status),
+            assertEquals(
+                    JobState.UNKNOWN,
+                    JobStateParser.getJobState(status),
                     "Expected UNKNOWN for unrecognized status: " + status);
         }
 
@@ -260,8 +269,7 @@ class JobParsingTest {
         @DisplayName("parseJobStatus returns ACTIVE for status R in squeue output")
         void parseJobStatus_runningJob_returnsActive() throws Exception {
             String jobId = "12345";
-            String rawOutput = "JOBID PARTITION NAME USER ST TIME NODES\n"
-                    + "12345 general myjob usr R 0:05 1\n";
+            String rawOutput = "JOBID PARTITION NAME USER ST TIME NODES\n" + "12345 general myjob usr R 0:05 1\n";
             StatusModel<JobState> result = parser.parseJobStatus(jobId, rawOutput);
             assertNotNull(result, "Result must not be null when the job ID is found");
             assertEquals(JobState.ACTIVE, result.getState());
@@ -341,8 +349,7 @@ class JobParsingTest {
         @Test
         @DisplayName("parseJobId finds job ID by exact job name in squeue listing")
         void parseJobId_exactJobName_returnsJobId() throws Exception {
-            String rawOutput = "JOBID PARTITION NAME     USER\n"
-                    + "54321 general   testjob  user\n";
+            String rawOutput = "JOBID PARTITION NAME     USER\n" + "54321 general   testjob  user\n";
             String result = parser.parseJobId("testjob", rawOutput);
             assertEquals("54321", result);
         }
@@ -351,8 +358,7 @@ class JobParsingTest {
         @DisplayName("parseJobId truncates jobName to 8 chars when name is longer")
         void parseJobId_longJobName_truncatesAndMatchesFirst8Chars() throws Exception {
             // SLURM only shows the first 8 chars in the NAME column
-            String rawOutput = "JOBID PARTITION NAME     USER\n"
-                    + "67890 compute   abcdefgh user\n";
+            String rawOutput = "JOBID PARTITION NAME     USER\n" + "67890 compute   abcdefgh user\n";
             // A 12-character job name that starts with "abcdefgh"
             String result = parser.parseJobId("abcdefghijkl", rawOutput);
             assertEquals("67890", result);
@@ -361,8 +367,7 @@ class JobParsingTest {
         @Test
         @DisplayName("parseJobId returns null when jobName is null")
         void parseJobId_nullJobName_returnsNull() throws Exception {
-            String rawOutput = "JOBID PARTITION NAME     USER\n"
-                    + "54321 general   testjob  user\n";
+            String rawOutput = "JOBID PARTITION NAME     USER\n" + "54321 general   testjob  user\n";
             assertNull(parser.parseJobId(null, rawOutput));
         }
 
@@ -375,8 +380,7 @@ class JobParsingTest {
         @Test
         @DisplayName("parseJobId returns null when job name is not present in output")
         void parseJobId_jobNameNotFound_returnsNull() throws Exception {
-            String rawOutput = "JOBID PARTITION NAME     USER\n"
-                    + "54321 general   otherjob user\n";
+            String rawOutput = "JOBID PARTITION NAME     USER\n" + "54321 general   otherjob user\n";
             assertNull(parser.parseJobId("testjob", rawOutput));
         }
 
@@ -389,16 +393,14 @@ class JobParsingTest {
         @Test
         @DisplayName("parseJobId with exactly 8-char name does not truncate")
         void parseJobId_exactly8CharName_matchesWithoutTruncation() throws Exception {
-            String rawOutput = "JOBID PARTITION NAME     USER\n"
-                    + "13579 compute   exactly8 user\n";
+            String rawOutput = "JOBID PARTITION NAME     USER\n" + "13579 compute   exactly8 user\n";
             assertEquals("13579", parser.parseJobId("exactly8", rawOutput));
         }
 
         @Test
         @DisplayName("parseJobId with 9-char name truncates to 8 and still matches")
         void parseJobId_9CharName_truncatesTo8() throws Exception {
-            String rawOutput = "JOBID PARTITION NAME     USER\n"
-                    + "24680 compute   ninechrx user\n";
+            String rawOutput = "JOBID PARTITION NAME     USER\n" + "24680 compute   ninechrx user\n";
             // "ninechars" is 9 chars; parser truncates to "ninechrx" length 8 = "ninechrx"
             // Let us use a name whose first 8 chars match the column
             String jobName = "ninechrx9"; // 9 chars, first 8 = "ninechrx"
@@ -441,8 +443,7 @@ class JobParsingTest {
         @DisplayName("parseJobSubmission returns a string starting with 'JOB_ID_'")
         void parseJobSubmission_returnsPrefixedId() throws Exception {
             String id = parser.parseJobSubmission("irrelevant");
-            assertTrue(id.startsWith("JOB_ID_"),
-                    "Expected ID to start with 'JOB_ID_' but was: " + id);
+            assertTrue(id.startsWith("JOB_ID_"), "Expected ID to start with 'JOB_ID_' but was: " + id);
         }
 
         @Test
@@ -450,8 +451,7 @@ class JobParsingTest {
         void parseJobSubmission_uniqueIdsOnEachCall() throws Exception {
             String id1 = parser.parseJobSubmission("output");
             String id2 = parser.parseJobSubmission("output");
-            assertFalse(id1.equals(id2),
-                    "Expected unique IDs on successive calls, but both were: " + id1);
+            assertFalse(id1.equals(id2), "Expected unique IDs on successive calls, but both were: " + id1);
         }
 
         @Test
@@ -497,8 +497,7 @@ class JobParsingTest {
         void parseJobId_containsJobNamePrefix() throws Exception {
             // IdGenerator.getId(name) trims and replaces spaces/dots/slashes then appends UUID
             String id = parser.parseJobId("myjob", "irrelevant");
-            assertTrue(id.startsWith("myjob_"),
-                    "Expected ID to start with 'myjob_' but was: " + id);
+            assertTrue(id.startsWith("myjob_"), "Expected ID to start with 'myjob_' but was: " + id);
         }
 
         @Test
@@ -506,8 +505,7 @@ class JobParsingTest {
         void parseJobId_uniqueIdsOnEachCall() throws Exception {
             String id1 = parser.parseJobId("job", "output");
             String id2 = parser.parseJobId("job", "output");
-            assertFalse(id1.equals(id2),
-                    "Expected unique IDs on successive calls, but both were: " + id1);
+            assertFalse(id1.equals(id2), "Expected unique IDs on successive calls, but both were: " + id1);
         }
 
         @Test
@@ -515,8 +513,7 @@ class JobParsingTest {
         void parseJobId_normalisesJobName() throws Exception {
             String id = parser.parseJobId("my job.name", "output");
             // IdGenerator replaces spaces, dots, slashes with underscores
-            assertTrue(id.startsWith("my_job_name_"),
-                    "Expected normalised prefix 'my_job_name_' but got: " + id);
+            assertTrue(id.startsWith("my_job_name_"), "Expected normalised prefix 'my_job_name_' but got: " + id);
         }
 
         @Test

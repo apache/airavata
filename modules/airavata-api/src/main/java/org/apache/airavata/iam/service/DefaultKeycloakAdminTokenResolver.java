@@ -59,8 +59,7 @@ public class DefaultKeycloakAdminTokenResolver implements KeycloakAdminTokenReso
     private final CredentialStoreService credentialStoreService;
 
     public DefaultKeycloakAdminTokenResolver(
-            ServerProperties properties,
-            CredentialStoreService credentialStoreService) {
+            ServerProperties properties, CredentialStoreService credentialStoreService) {
         this.properties = properties;
         this.credentialStoreService = credentialStoreService;
     }

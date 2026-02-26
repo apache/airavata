@@ -43,7 +43,8 @@ public class StatusMapper {
         status.setStatusId(entity.getEventId());
         status.setState(mapToState(entity.getState(), stateClass));
         status.setReason(entity.getReason());
-        status.setTimeOfStateChange(entity.getEventTime() != null ? entity.getEventTime().getTime() : 0L);
+        status.setTimeOfStateChange(
+                entity.getEventTime() != null ? entity.getEventTime().getTime() : 0L);
         return status;
     }
 

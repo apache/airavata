@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.execution.orchestration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -35,11 +33,10 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.ResourceIdentifier;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.execution.model.TaskModel;
 import org.apache.airavata.execution.model.TaskTypes;
 import org.apache.airavata.execution.service.ProcessService;
@@ -51,7 +48,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -77,9 +73,9 @@ public class ExperimentStatusManagerTest {
     // Shared fixture constants
     // -------------------------------------------------------------------------
 
-    private static final String PROCESS_ID    = "proc-unit-001";
+    private static final String PROCESS_ID = "proc-unit-001";
     private static final String EXPERIMENT_ID = "exp-unit-001";
-    private static final String GATEWAY_ID    = "gw-unit-001";
+    private static final String GATEWAY_ID = "gw-unit-001";
 
     // -------------------------------------------------------------------------
     // Mocks
@@ -187,7 +183,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.LAUNCHED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.EXECUTING.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.EXECUTING.name(),
+                    entity.getState(),
                     "Experiment must transition to EXECUTING when process LAUNCHED");
         }
 
@@ -203,7 +201,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.COMPLETED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.COMPLETED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.COMPLETED.name(),
+                    entity.getState(),
                     "Experiment must transition to COMPLETED when process COMPLETED from EXECUTING");
         }
 
@@ -219,7 +219,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.COMPLETED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.CANCELED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.CANCELED.name(),
+                    entity.getState(),
                     "CANCELING takes precedence: experiment must become CANCELED even when process COMPLETED");
         }
 
@@ -235,7 +237,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.FAILED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.FAILED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.FAILED.name(),
+                    entity.getState(),
                     "Experiment must transition to FAILED when process FAILED");
         }
 
@@ -251,7 +255,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.FAILED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.CANCELED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.CANCELED.name(),
+                    entity.getState(),
                     "CANCELING takes precedence: experiment must become CANCELED even when process FAILED");
         }
 
@@ -267,7 +273,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.CANCELED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.CANCELED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.CANCELED.name(),
+                    entity.getState(),
                     "Experiment must transition to CANCELED when process CANCELED");
         }
 
@@ -288,7 +296,9 @@ public class ExperimentStatusManagerTest {
             manager.handleProcessStatusChange(eventFor(ProcessState.QUEUED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
-            assertEquals(ExperimentState.SCHEDULED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.SCHEDULED.name(),
+                    entity.getState(),
                     "Experiment must transition to SCHEDULED when process QUEUED");
         }
 
@@ -335,7 +345,9 @@ public class ExperimentStatusManagerTest {
             verify(experimentRepository, times(2)).save(entity);
 
             // After both mutations the entity must reflect the final COMPLETED state.
-            assertEquals(ExperimentState.COMPLETED.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.COMPLETED.name(),
+                    entity.getState(),
                     "Final persisted state must be COMPLETED after the inferred EXECUTING step");
         }
     }
@@ -359,7 +371,9 @@ public class ExperimentStatusManagerTest {
             manager.updateExperimentStatus(EXPERIMENT_ID, status, GATEWAY_ID);
 
             verify(experimentRepository, times(1)).save(entity);
-            assertEquals(ExperimentState.EXECUTING.name(), entity.getState(),
+            assertEquals(
+                    ExperimentState.EXECUTING.name(),
+                    entity.getState(),
                     "Entity state must reflect the requested transition target");
         }
 
@@ -411,13 +425,11 @@ public class ExperimentStatusManagerTest {
             ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED.name());
             Exception cause = new RuntimeException("disk full");
 
-            OrchestratorException result =
-                    manager.failExperiment(EXPERIMENT_ID, GATEWAY_ID, "disk error", cause);
+            OrchestratorException result = manager.failExperiment(EXPERIMENT_ID, GATEWAY_ID, "disk error", cause);
 
             // Entity must be persisted as FAILED
             verify(experimentRepository, times(1)).save(entity);
-            assertEquals(ExperimentState.FAILED.name(), entity.getState(),
-                    "Entity must be saved with state FAILED");
+            assertEquals(ExperimentState.FAILED.name(), entity.getState(), "Entity must be saved with state FAILED");
 
             // Returned exception must wrap the cause and reference the experiment ID
             assertNotNull(result, "failExperiment must return a non-null OrchestratorException");
@@ -426,8 +438,7 @@ public class ExperimentStatusManagerTest {
             org.junit.jupiter.api.Assertions.assertTrue(
                     result.getMessage().contains(EXPERIMENT_ID),
                     "OrchestratorException message must contain the experiment ID");
-            assertEquals(cause, result.getCause(),
-                    "OrchestratorException must wrap the original cause");
+            assertEquals(cause, result.getCause(), "OrchestratorException must wrap the original cause");
         }
     }
 
@@ -449,8 +460,8 @@ public class ExperimentStatusManagerTest {
             StatusModel<ExperimentState> result = manager.getExperimentStatus(EXPERIMENT_ID);
 
             assertNotNull(result, "Status model must not be null when entity exists");
-            assertEquals(ExperimentState.EXECUTING, result.getState(),
-                    "Returned state must match the stored entity state");
+            assertEquals(
+                    ExperimentState.EXECUTING, result.getState(), "Returned state must match the stored entity state");
         }
 
         // ------------------------------------------------------------------

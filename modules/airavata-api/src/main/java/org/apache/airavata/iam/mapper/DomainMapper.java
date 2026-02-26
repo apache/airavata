@@ -21,9 +21,9 @@ package org.apache.airavata.iam.mapper;
 
 import java.time.Instant;
 import java.util.List;
+import org.apache.airavata.config.EntityMapperConfiguration;
 import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.apache.airavata.iam.model.Domain;
-import org.apache.airavata.config.EntityMapperConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

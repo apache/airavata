@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.research.experiment.mapper;
 
-import org.apache.airavata.config.EntityMapperConfiguration;
 import java.util.List;
-import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
+import org.apache.airavata.config.EntityMapperConfiguration;
 import org.apache.airavata.research.experiment.entity.ExperimentSummaryEntity;
+import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -37,17 +37,20 @@ public interface ExperimentSummaryMapper {
             expression = "java(entity.getCreatedAt() != null ? entity.getCreatedAt().toEpochMilli() : 0L)")
     @Mapping(
             target = "statusUpdateTime",
-            expression = "java(entity.getStatusUpdateTime() != null ? entity.getStatusUpdateTime().toEpochMilli() : 0L)")
+            expression =
+                    "java(entity.getStatusUpdateTime() != null ? entity.getStatusUpdateTime().toEpochMilli() : 0L)")
     @Mapping(target = "executionId", ignore = true)
     @Mapping(target = "resourceHostId", ignore = true)
     ExperimentSummaryModel toModel(ExperimentSummaryEntity entity);
 
     @Mapping(
             target = "createdAt",
-            expression = "java(model.getCreationTime() > 0 ? java.time.Instant.ofEpochMilli(model.getCreationTime()) : null)")
+            expression =
+                    "java(model.getCreationTime() > 0 ? java.time.Instant.ofEpochMilli(model.getCreationTime()) : null)")
     @Mapping(
             target = "statusUpdateTime",
-            expression = "java(model.getStatusUpdateTime() > 0 ? java.time.Instant.ofEpochMilli(model.getStatusUpdateTime()) : null)")
+            expression =
+                    "java(model.getStatusUpdateTime() > 0 ? java.time.Instant.ofEpochMilli(model.getStatusUpdateTime()) : null)")
     ExperimentSummaryEntity toEntity(ExperimentSummaryModel model);
 
     List<ExperimentSummaryModel> toModelList(List<ExperimentSummaryEntity> entities);

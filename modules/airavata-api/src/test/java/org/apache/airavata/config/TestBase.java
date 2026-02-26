@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.config;
 
-import org.apache.airavata.config.IntegrationTestConfiguration;
 import org.apache.airavata.credential.entity.CredentialEntity;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

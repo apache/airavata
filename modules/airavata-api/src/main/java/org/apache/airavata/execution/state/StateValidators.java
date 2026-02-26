@@ -21,10 +21,10 @@ package org.apache.airavata.execution.state;
 
 import java.util.Objects;
 import java.util.Set;
-import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.TaskState;
+import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;

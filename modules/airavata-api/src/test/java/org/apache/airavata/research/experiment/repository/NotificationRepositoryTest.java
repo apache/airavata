@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import org.apache.airavata.config.TestBase;
 import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.research.experiment.model.Notification;
 import org.apache.airavata.research.experiment.model.NotificationPriority;
 import org.apache.airavata.research.experiment.service.NotificationService;
-import org.apache.airavata.config.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestConstructor;

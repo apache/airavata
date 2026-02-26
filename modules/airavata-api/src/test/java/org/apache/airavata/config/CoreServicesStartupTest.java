@@ -94,7 +94,8 @@ public class CoreServicesStartupTest {
 
         assertTrue(
                 applicationContext
-                                .getBeansOfType(org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter.class)
+                                .getBeansOfType(
+                                        org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter.class)
                                 .size()
                         > 0,
                 "ComputeResourceAdapter should be available");

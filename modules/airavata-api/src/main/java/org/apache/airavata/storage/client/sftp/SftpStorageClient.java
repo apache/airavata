@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
+import org.apache.airavata.core.exception.TaskFailureException;
 import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.task.TaskContext;
-import org.apache.airavata.core.exception.TaskFailureException;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentException;
 import org.apache.airavata.protocol.CommandOutput;
@@ -99,9 +99,11 @@ public class SftpStorageClient implements StorageClient {
 
             var storageResourceAdapter = sftpClient.resolveStorageAdapter(
                     context.getProcessModel().getInputStorageResourceId(),
-                    "input", adapterSupport, context, context.getTaskId());
-            var adapter = sftpClient.getComputeResourceAdapter(
-                    adapterSupport, context, context.getTaskId());
+                    "input",
+                    adapterSupport,
+                    context,
+                    context.getTaskId());
+            var adapter = sftpClient.getComputeResourceAdapter(adapterSupport, context, context.getTaskId());
 
             String workingDir = context.getWorkingDir();
 
@@ -113,8 +115,10 @@ public class SftpStorageClient implements StorageClient {
 
                 // Skip optional inputs with no value
                 if ((input.getValue() == null || input.getValue().isEmpty()) && !input.getIsRequired()) {
-                    logger.debug("Skipping optional input '{}' with null/empty value for process {}",
-                            input.getName(), context.getProcessId());
+                    logger.debug(
+                            "Skipping optional input '{}' with null/empty value for process {}",
+                            input.getName(),
+                            context.getProcessId());
                     continue;
                 }
 
@@ -131,18 +135,21 @@ public class SftpStorageClient implements StorageClient {
 
                 // Build the destination path — working dir + optional override filename
                 String destPath = workingDir.endsWith("/") ? workingDir : workingDir + "/";
-                if (input.getOverrideFilename() != null && !input.getOverrideFilename().isBlank()) {
+                if (input.getOverrideFilename() != null
+                        && !input.getOverrideFilename().isBlank()) {
                     destPath += input.getOverrideFilename();
                 }
 
                 // Split URI_COLLECTION by comma; treat URI as a single-element array
                 String[] sourceUrls;
                 if (input.getType() == DataType.URI_COLLECTION) {
-                    logger.info("Found a URI collection so splitting by comma for input '{}' in process {}",
-                            input.getName(), context.getProcessId());
+                    logger.info(
+                            "Found a URI collection so splitting by comma for input '{}' in process {}",
+                            input.getName(),
+                            context.getProcessId());
                     sourceUrls = input.getValue().split(",");
                 } else {
-                    sourceUrls = new String[]{input.getValue()};
+                    sourceUrls = new String[] {input.getValue()};
                 }
 
                 for (String url : sourceUrls) {
@@ -152,24 +159,28 @@ public class SftpStorageClient implements StorageClient {
 
                         // If no override filename was specified, append the source filename to the dest dir
                         String resolvedDestPath = destPath;
-                        if (input.getOverrideFilename() == null || input.getOverrideFilename().isBlank()) {
-                            String sourceFileName = sourcePath.substring(
-                                    sourcePath.lastIndexOf('/') + 1);
-                            resolvedDestPath = (workingDir.endsWith("/") ? workingDir : workingDir + "/")
-                                    + sourceFileName;
+                        if (input.getOverrideFilename() == null
+                                || input.getOverrideFilename().isBlank()) {
+                            String sourceFileName = sourcePath.substring(sourcePath.lastIndexOf('/') + 1);
+                            resolvedDestPath =
+                                    (workingDir.endsWith("/") ? workingDir : workingDir + "/") + sourceFileName;
                         }
 
-                        logger.info("Staging input '{}': {} -> {} for process {}",
-                                input.getName(), sourcePath, resolvedDestPath, context.getProcessId());
-                        dataStagingSupport.transferFileToComputeResource(
-                                sourcePath, resolvedDestPath, adapter, storageResourceAdapter,
+                        logger.info(
+                                "Staging input '{}': {} -> {} for process {}",
+                                input.getName(),
+                                sourcePath,
+                                resolvedDestPath,
                                 context.getProcessId());
+                        dataStagingSupport.transferFileToComputeResource(
+                                sourcePath, resolvedDestPath, adapter, storageResourceAdapter, context.getProcessId());
 
                     } catch (URISyntaxException e) {
                         return new DagTaskResult.Failure(
-                                "Failed to parse source URI '" + url + "' for input '" + input.getName()
-                                        + "' in task " + context.getTaskId(),
-                                true, e);
+                                "Failed to parse source URI '" + url + "' for input '" + input.getName() + "' in task "
+                                        + context.getTaskId(),
+                                true,
+                                e);
                     }
                 }
             }
@@ -187,8 +198,7 @@ public class SftpStorageClient implements StorageClient {
         } catch (Exception e) {
             logger.error("Unknown error while executing input data staging for process " + context.getProcessId(), e);
             return new DagTaskResult.Failure(
-                    "Unknown error while executing input data staging for process " + context.getProcessId(),
-                    false, e);
+                    "Unknown error while executing input data staging for process " + context.getProcessId(), false, e);
         }
     }
 
@@ -203,8 +213,10 @@ public class SftpStorageClient implements StorageClient {
      */
     @Override
     public DagTaskResult stageOut(TaskContext context) {
-        logger.info("Starting output data staging for process {} in experiment {}",
-                context.getProcessId(), context.getExperimentId());
+        logger.info(
+                "Starting output data staging for process {} in experiment {}",
+                context.getProcessId(),
+                context.getExperimentId());
 
         try {
             var processOutputs = context.getProcessModel().getProcessOutputs();
@@ -215,22 +227,28 @@ public class SftpStorageClient implements StorageClient {
 
             var storageResourceAdapter = sftpClient.resolveStorageAdapter(
                     context.getProcessModel().getOutputStorageResourceId(),
-                    "output", adapterSupport, context, context.getTaskId());
-            var adapter = sftpClient.getComputeResourceAdapter(
-                    adapterSupport, context, context.getTaskId());
+                    "output",
+                    adapterSupport,
+                    context,
+                    context.getTaskId());
+            var adapter = sftpClient.getComputeResourceAdapter(adapterSupport, context, context.getTaskId());
 
             String workingDir = context.getWorkingDir();
 
             for (ApplicationOutput output : processOutputs) {
                 if (output.getValue() == null) {
-                    logger.debug("Skipping output '{}' with null value for process {}",
-                            output.getName(), context.getProcessId());
+                    logger.debug(
+                            "Skipping output '{}' with null value for process {}",
+                            output.getName(),
+                            context.getProcessId());
                     continue;
                 }
 
                 DataType type = output.getType();
-                if (type != DataType.URI && type != DataType.URI_COLLECTION
-                        && type != DataType.STDOUT && type != DataType.STDERR) {
+                if (type != DataType.URI
+                        && type != DataType.URI_COLLECTION
+                        && type != DataType.STDOUT
+                        && type != DataType.STDERR) {
                     continue;
                 }
 
@@ -241,12 +259,16 @@ public class SftpStorageClient implements StorageClient {
 
                 // Compute destination path in storage using the experiment data dir
                 String outputStorageRoot = workingDir;
-                String destFilePath = dataStagingSupport.buildDestinationFilePath(
-                        outputStorageRoot, sourceFile, context);
+                String destFilePath =
+                        dataStagingSupport.buildDestinationFilePath(outputStorageRoot, sourceFile, context);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Output '{}': source={}, destination={} for process {}",
-                            output.getName(), sourcePath, destFilePath, context.getProcessId());
+                    logger.debug(
+                            "Output '{}': source={}, destination={} for process {}",
+                            output.getName(),
+                            sourcePath,
+                            destFilePath,
+                            context.getProcessId());
                 }
 
                 if (sourceFile.contains("*")) {
@@ -259,7 +281,11 @@ public class SftpStorageClient implements StorageClient {
                     }
                 } else {
                     boolean transferred = dataStagingSupport.transferFileToStorage(
-                            sourcePath, destFilePath, sourceFile, adapter, storageResourceAdapter,
+                            sourcePath,
+                            destFilePath,
+                            sourceFile,
+                            adapter,
+                            storageResourceAdapter,
                             context.getProcessId());
                     if (transferred) {
                         saveExperimentOutput(
@@ -267,14 +293,13 @@ public class SftpStorageClient implements StorageClient {
                                 output.getName(),
                                 dataStagingSupport.escapeSpecialCharacters("file://" + destFilePath));
                     } else {
-                        logger.warn("Output file '{}' did not transfer for process {}",
-                                sourceFile, context.getProcessId());
+                        logger.warn(
+                                "Output file '{}' did not transfer for process {}", sourceFile, context.getProcessId());
                     }
                 }
             }
 
-            return new DagTaskResult.Success(
-                    "Output data staging completed for process " + context.getProcessId());
+            return new DagTaskResult.Success("Output data staging completed for process " + context.getProcessId());
 
         } catch (TaskFailureException e) {
             if (e.getError() != null) {
@@ -288,7 +313,8 @@ public class SftpStorageClient implements StorageClient {
             logger.error("Unknown error while executing output data staging for process " + context.getProcessId(), e);
             return new DagTaskResult.Failure(
                     "Unknown error while executing output data staging for process " + context.getProcessId(),
-                    false, e);
+                    false,
+                    e);
         }
     }
 
@@ -305,8 +331,11 @@ public class SftpStorageClient implements StorageClient {
             org.apache.airavata.protocol.AgentAdapter adapter,
             org.apache.airavata.protocol.StorageResourceAdapter storageResourceAdapter) {
 
-        logger.info("Handling wildcard output '{}' with pattern {} for process {}",
-                output.getName(), sourceGlobPath, context.getProcessId());
+        logger.info(
+                "Handling wildcard output '{}' with pattern {} for process {}",
+                output.getName(),
+                sourceGlobPath,
+                context.getProcessId());
 
         String sourceFileName = new File(sourceGlobPath).getName();
         String sourceParentPath = new File(sourceGlobPath).getParent();
@@ -320,9 +349,10 @@ public class SftpStorageClient implements StorageClient {
             }
         } catch (AgentException e) {
             return new DagTaskResult.Failure(
-                    "Failed to fetch the file list for wildcard pattern '" + sourceFileName
-                            + "' from directory " + sourceParentPath,
-                    false, e);
+                    "Failed to fetch the file list for wildcard pattern '" + sourceFileName + "' from directory "
+                            + sourceParentPath,
+                    false,
+                    e);
         }
 
         List<URI> destinationURIs = new ArrayList<>();
@@ -333,18 +363,24 @@ public class SftpStorageClient implements StorageClient {
                 continue;
             }
 
-            String currentSourcePath = (sourceParentPath.endsWith(File.separator)
-                    ? sourceParentPath : sourceParentPath + File.separator) + subFilePath;
+            String currentSourcePath =
+                    (sourceParentPath.endsWith(File.separator) ? sourceParentPath : sourceParentPath + File.separator)
+                            + subFilePath;
 
-            String currentDestPath = (destParentPath.endsWith(File.separator)
-                    ? destParentPath : destParentPath + File.separator) + subFilePath;
+            String currentDestPath =
+                    (destParentPath.endsWith(File.separator) ? destParentPath : destParentPath + File.separator)
+                            + subFilePath;
 
             logger.info("Transferring wildcard output file '{}'", subFilePath);
             boolean transferred;
             try {
                 transferred = dataStagingSupport.transferFileToStorage(
-                        currentSourcePath, currentDestPath, subFilePath,
-                        adapter, storageResourceAdapter, context.getProcessId());
+                        currentSourcePath,
+                        currentDestPath,
+                        subFilePath,
+                        adapter,
+                        storageResourceAdapter,
+                        context.getProcessId());
             } catch (TaskFailureException e) {
                 return new DagTaskResult.Failure(
                         "Failed to transfer wildcard output file '" + subFilePath + "'", false, e.getError());
@@ -377,7 +413,8 @@ public class SftpStorageClient implements StorageClient {
                 saveExperimentOutput(
                         context.getExperimentId(),
                         output.getName(),
-                        dataStagingSupport.escapeSpecialCharacters(destinationURIs.get(0).toString()));
+                        dataStagingSupport.escapeSpecialCharacters(
+                                destinationURIs.get(0).toString()));
             } else if (output.getType() == DataType.URI_COLLECTION) {
                 saveExperimentOutputCollection(
                         context.getExperimentId(),
@@ -389,8 +426,7 @@ public class SftpStorageClient implements StorageClient {
             }
         }
 
-        return new DagTaskResult.Success(
-                "Wildcard output staging completed for output '" + output.getName() + "'");
+        return new DagTaskResult.Success("Wildcard output staging completed for output '" + output.getName() + "'");
     }
 
     // -------------------------------------------------------------------------
@@ -418,14 +454,16 @@ public class SftpStorageClient implements StorageClient {
             String tarCreationAbsPath = tarDirPath + File.separator + archiveFileName;
 
             String outputStorageRoot = context.getWorkingDir();
-            String destFilePath = dataStagingSupport.buildDestinationFilePath(
-                    outputStorageRoot, archiveFileName, context);
+            String destFilePath =
+                    dataStagingSupport.buildDestinationFilePath(outputStorageRoot, archiveFileName, context);
 
             var storageResourceAdapter = sftpClient.resolveStorageAdapter(
                     context.getProcessModel().getOutputStorageResourceId(),
-                    "output", adapterSupport, context, context.getTaskId());
-            var adapter = sftpClient.getComputeResourceAdapter(
-                    adapterSupport, context, context.getTaskId());
+                    "output",
+                    adapterSupport,
+                    context,
+                    context.getTaskId());
+            var adapter = sftpClient.getComputeResourceAdapter(adapterSupport, context, context.getTaskId());
 
             String tarringCommand = "cd " + tarDirPath
                     + " && find ./ -not -type l -not -type d -print0 | tar --null --files-from - -cvf "
@@ -442,8 +480,7 @@ public class SftpStorageClient implements StorageClient {
                             false);
                 }
             } catch (AgentException e) {
-                return new DagTaskResult.Failure(
-                        "Failed while running the tar command " + tarringCommand, true, null);
+                return new DagTaskResult.Failure("Failed while running the tar command " + tarringCommand, true, null);
             }
 
             try {
@@ -452,7 +489,11 @@ public class SftpStorageClient implements StorageClient {
 
                 if (fileMetadata.getSize() < maxArchiveSize) {
                     boolean fileTransferred = dataStagingSupport.transferFileToStorage(
-                            tarCreationAbsPath, destFilePath, archiveFileName, adapter, storageResourceAdapter,
+                            tarCreationAbsPath,
+                            destFilePath,
+                            archiveFileName,
+                            adapter,
+                            storageResourceAdapter,
                             context.getProcessId());
                     if (!fileTransferred) {
                         logger.error("Failed to transfer created archive file {}", tarCreationAbsPath);
@@ -505,8 +546,11 @@ public class SftpStorageClient implements StorageClient {
                 try {
                     CommandOutput rmCommandOutput = adapter.executeCommand(deleteTarCommand, null);
                     if (rmCommandOutput.getExitCode() != 0) {
-                        logger.error("Failed while running the rm command {}. Sout : {} Serr {}",
-                                deleteTarCommand, rmCommandOutput.getStdOut(), rmCommandOutput.getStdError());
+                        logger.error(
+                                "Failed while running the rm command {}. Sout : {} Serr {}",
+                                deleteTarCommand,
+                                rmCommandOutput.getStdOut(),
+                                rmCommandOutput.getStdError());
                     }
                 } catch (AgentException e) {
                     logger.error("Failed while running the rm command {}", tarCreationAbsPath, e);

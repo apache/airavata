@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 import org.apache.airavata.core.util.Constants;
 import org.apache.airavata.iam.exception.IamAdminServicesException;
 import org.apache.airavata.iam.exception.UserProfileServiceException;
+import org.apache.airavata.iam.model.UserProfile;
+import org.apache.airavata.iam.service.IamAdminService;
+import org.apache.airavata.iam.service.UserService;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
 import org.apache.airavata.restapi.security.AuthorizationService;
 import org.apache.airavata.restapi.util.AuthzTokenUtil;
-import org.apache.airavata.iam.service.IamAdminService;
-import org.apache.airavata.iam.model.UserProfile;
-import org.apache.airavata.iam.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

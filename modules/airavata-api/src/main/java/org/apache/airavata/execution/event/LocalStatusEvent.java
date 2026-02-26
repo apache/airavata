@@ -54,7 +54,6 @@ public class LocalStatusEvent<T> extends ApplicationEvent implements ResolvableT
 
     @Override
     public ResolvableType getResolvableType() {
-        return ResolvableType.forClassWithGenerics(
-                getClass(), ResolvableType.forInstance(this.statusEvent));
+        return ResolvableType.forClassWithGenerics(getClass(), ResolvableType.forInstance(this.statusEvent));
     }
 }

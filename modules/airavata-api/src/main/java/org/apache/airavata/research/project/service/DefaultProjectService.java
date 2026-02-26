@@ -39,8 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  * extra parameters or return types that differ from the generic contract.
  */
 @Service("projectServiceFacade")
-public class DefaultProjectService extends AbstractCrudService<ProjectEntity, Project>
-        implements ProjectService {
+public class DefaultProjectService extends AbstractCrudService<ProjectEntity, Project> implements ProjectService {
 
     private final ProjectRepository projectRepository;
 
@@ -100,8 +99,7 @@ public class DefaultProjectService extends AbstractCrudService<ProjectEntity, Pr
 
     @Override
     @Transactional(readOnly = true)
-    public List<Project> searchProjects(
-            String gatewayId, String userName, Object searchFields, int limit, int offset) {
+    public List<Project> searchProjects(String gatewayId, String userName, Object searchFields, int limit, int offset) {
         var pageable = PaginationUtil.toPageRequest(limit, offset);
         return mapper.toModelList(projectRepository.findByGatewayIdOrderByCreatedAtDesc(gatewayId, pageable));
     }

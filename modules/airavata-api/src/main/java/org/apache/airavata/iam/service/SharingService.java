@@ -19,21 +19,16 @@
 */
 package org.apache.airavata.iam.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.core.exception.DuplicateEntryException;
 import org.apache.airavata.core.model.SearchCriteria;
-import org.apache.airavata.iam.entity.EntityTypePK;
 import org.apache.airavata.iam.entity.GroupMemberPK;
-import org.apache.airavata.iam.entity.PermissionTypePK;
 import org.apache.airavata.iam.entity.SharingPK;
-import org.apache.airavata.iam.entity.UserGroupPK;
 import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.model.Domain;
 import org.apache.airavata.iam.model.EntityType;
 import org.apache.airavata.iam.model.GroupMember;
-import org.apache.airavata.iam.model.GroupMemberRole;
 import org.apache.airavata.iam.model.PermissionType;
 import org.apache.airavata.iam.model.Sharing;
 import org.apache.airavata.iam.model.SharingEntity;
@@ -82,8 +77,7 @@ public interface SharingService {
     // PermissionType Operations (formerly PermissionTypeService + SharingRegistryService)
     // =========================================================================
 
-    String createPermissionType(PermissionType permissionType)
-            throws SharingRegistryException, DuplicateEntryException;
+    String createPermissionType(PermissionType permissionType) throws SharingRegistryException, DuplicateEntryException;
 
     boolean updatePermissionType(PermissionType permissionType) throws SharingRegistryException;
 
@@ -191,8 +185,7 @@ public interface SharingService {
 
     boolean addUsersToGroup(String domainId, List<String> userIds, String groupId) throws SharingRegistryException;
 
-    boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId)
-            throws SharingRegistryException;
+    boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId) throws SharingRegistryException;
 
     boolean transferGroupOwnership(String domainId, String groupId, String newOwnerId)
             throws SharingRegistryException, DuplicateEntryException;
@@ -234,8 +227,7 @@ public interface SharingService {
 
     List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException;
 
-    List<GroupMember> getAllParentMembershipsForChild(String domainId, String childId)
-            throws SharingRegistryException;
+    List<GroupMember> getAllParentMembershipsForChild(String domainId, String childId) throws SharingRegistryException;
 
     boolean isShared(String domainId, String entityId) throws SharingRegistryException;
 
@@ -253,8 +245,7 @@ public interface SharingService {
 
     boolean permissionExists(SharingPK pk) throws SharingRegistryException;
 
-    List<Sharing> selectPermissions(Map<String, String> filters, int offset, int limit)
-            throws SharingRegistryException;
+    List<Sharing> selectPermissions(Map<String, String> filters, int offset, int limit) throws SharingRegistryException;
 
     boolean hasAccess(String domainId, String entityId, List<String> groupIds, List<String> permissionTypeIds)
             throws SharingRegistryException;

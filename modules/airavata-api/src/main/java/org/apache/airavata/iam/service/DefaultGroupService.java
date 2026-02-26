@@ -22,10 +22,10 @@ package org.apache.airavata.iam.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.iam.exception.AuthExceptions.AuthorizationException;
-import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.core.util.Constants;
 import org.apache.airavata.core.exception.DuplicateEntryException;
+import org.apache.airavata.core.util.Constants;
+import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.iam.exception.AuthExceptions.AuthorizationException;
 import org.apache.airavata.iam.exception.GroupManagerServiceException;
 import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.model.AuthzToken;
@@ -76,8 +76,7 @@ public class DefaultGroupService implements GroupService {
         group.setOwnerId(userId);
 
         var groupId = getSharingService().createGroup(group);
-        var members =
-                group.getMembers() != null ? group.getMembers() : java.util.Collections.<String>emptyList();
+        var members = group.getMembers() != null ? group.getMembers() : java.util.Collections.<String>emptyList();
         internalAddUsersToGroup(getSharingService(), domainId, members, groupId);
         if (group.getAdmins() != null && !group.getAdmins().isEmpty()) {
             try {
@@ -242,12 +241,13 @@ public class DefaultGroupService implements GroupService {
             throw new SharingRegistryException("UserGroup cannot be null");
         }
 
-        userGroup.setAdmins((userGroup.getGroupAdmins() != null)
-                ? userGroup.getGroupAdmins().stream()
-                        .map(GroupMember::getChildId)
-                        .filter(java.util.Objects::nonNull)
-                        .collect(java.util.stream.Collectors.toList())
-                : new ArrayList<>());
+        userGroup.setAdmins(
+                (userGroup.getGroupAdmins() != null)
+                        ? userGroup.getGroupAdmins().stream()
+                                .map(GroupMember::getChildId)
+                                .filter(java.util.Objects::nonNull)
+                                .collect(java.util.stream.Collectors.toList())
+                        : new ArrayList<>());
 
         List<String> memberIds = new ArrayList<>();
         List<User> groupMembers =

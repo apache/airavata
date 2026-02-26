@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.gateway.repository;
 
+import org.apache.airavata.config.TestBase;
 import org.apache.airavata.gateway.model.Gateway;
 import org.apache.airavata.gateway.model.GatewayGroups;
 import org.apache.airavata.gateway.service.GatewayService;
-import org.apache.airavata.config.TestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

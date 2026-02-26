@@ -48,8 +48,7 @@ public class DAGTemplatesTest {
     public void preDag_entryNodeIs_provision(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals("provision", dag.entryNodeId(),
-                "preDag must always start at the 'provision' node");
+        assertEquals("provision", dag.entryNodeId(), "preDag must always start at the 'provision' node");
     }
 
     // ===========================================================================
@@ -61,12 +60,12 @@ public class DAGTemplatesTest {
     public void preDag_containsAllRequiredNodes(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertNotNull(dag.getNode("provision"),        "'provision' node must be present");
-        assertNotNull(dag.getNode("stageIn"),          "'stageIn' node must be present");
-        assertNotNull(dag.getNode("submit"),           "'submit' node must be present");
-        assertNotNull(dag.getNode("checkIntermediate"),"'checkIntermediate' node must be present");
-        assertNotNull(dag.getNode("preDeprovision"),   "'preDeprovision' node must be present");
-        assertNotNull(dag.getNode("fail"),             "'fail' node must be present");
+        assertNotNull(dag.getNode("provision"), "'provision' node must be present");
+        assertNotNull(dag.getNode("stageIn"), "'stageIn' node must be present");
+        assertNotNull(dag.getNode("submit"), "'submit' node must be present");
+        assertNotNull(dag.getNode("checkIntermediate"), "'checkIntermediate' node must be present");
+        assertNotNull(dag.getNode("preDeprovision"), "'preDeprovision' node must be present");
+        assertNotNull(dag.getNode("fail"), "'fail' node must be present");
     }
 
     @ParameterizedTest(name = "preDag({0}) has exactly 6 nodes")
@@ -74,8 +73,7 @@ public class DAGTemplatesTest {
     public void preDag_hasExactlySixNodes(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals(6, dag.nodes().size(),
-                "preDag must contain exactly 6 nodes");
+        assertEquals(6, dag.nodes().size(), "preDag must contain exactly 6 nodes");
     }
 
     // ===========================================================================
@@ -86,7 +84,9 @@ public class DAGTemplatesTest {
     public void preDag_slurm_provisionNode_usesSlurmProvisioningTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.SLURM);
 
-        assertEquals("slurmProvisioningTask", dag.getNode("provision").taskBeanName(),
+        assertEquals(
+                "slurmProvisioningTask",
+                dag.getNode("provision").taskBeanName(),
                 "SLURM preDag 'provision' must use 'slurmProvisioningTask'");
     }
 
@@ -94,7 +94,9 @@ public class DAGTemplatesTest {
     public void preDag_slurm_submitNode_usesSlurmSubmitTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.SLURM);
 
-        assertEquals("slurmSubmitTask", dag.getNode("submit").taskBeanName(),
+        assertEquals(
+                "slurmSubmitTask",
+                dag.getNode("submit").taskBeanName(),
                 "SLURM preDag 'submit' must use 'slurmSubmitTask'");
     }
 
@@ -102,7 +104,9 @@ public class DAGTemplatesTest {
     public void preDag_slurm_stageInNode_usesSftpInputStagingTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.SLURM);
 
-        assertEquals("sftpInputStagingTask", dag.getNode("stageIn").taskBeanName(),
+        assertEquals(
+                "sftpInputStagingTask",
+                dag.getNode("stageIn").taskBeanName(),
                 "preDag 'stageIn' must use 'sftpInputStagingTask' for SLURM");
     }
 
@@ -110,7 +114,9 @@ public class DAGTemplatesTest {
     public void preDag_slurm_preDeprovisionNode_usesSlurmDeprovisioningTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.SLURM);
 
-        assertEquals("slurmDeprovisioningTask", dag.getNode("preDeprovision").taskBeanName(),
+        assertEquals(
+                "slurmDeprovisioningTask",
+                dag.getNode("preDeprovision").taskBeanName(),
                 "SLURM preDag 'preDeprovision' must use 'slurmDeprovisioningTask'");
     }
 
@@ -122,7 +128,9 @@ public class DAGTemplatesTest {
     public void preDag_aws_provisionNode_usesAwsProvisioningTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.AWS);
 
-        assertEquals("awsProvisioningTask", dag.getNode("provision").taskBeanName(),
+        assertEquals(
+                "awsProvisioningTask",
+                dag.getNode("provision").taskBeanName(),
                 "AWS preDag 'provision' must use 'awsProvisioningTask'");
     }
 
@@ -130,15 +138,17 @@ public class DAGTemplatesTest {
     public void preDag_aws_submitNode_usesAwsSubmitTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.AWS);
 
-        assertEquals("awsSubmitTask", dag.getNode("submit").taskBeanName(),
-                "AWS preDag 'submit' must use 'awsSubmitTask'");
+        assertEquals(
+                "awsSubmitTask", dag.getNode("submit").taskBeanName(), "AWS preDag 'submit' must use 'awsSubmitTask'");
     }
 
     @Test
     public void preDag_aws_stageInNode_usesSftpInputStagingTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.AWS);
 
-        assertEquals("sftpInputStagingTask", dag.getNode("stageIn").taskBeanName(),
+        assertEquals(
+                "sftpInputStagingTask",
+                dag.getNode("stageIn").taskBeanName(),
                 "AWS preDag 'stageIn' must use 'sftpInputStagingTask'");
     }
 
@@ -146,7 +156,9 @@ public class DAGTemplatesTest {
     public void preDag_aws_preDeprovisionNode_usesAwsDeprovisioningTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.AWS);
 
-        assertEquals("awsDeprovisioningTask", dag.getNode("preDeprovision").taskBeanName(),
+        assertEquals(
+                "awsDeprovisioningTask",
+                dag.getNode("preDeprovision").taskBeanName(),
                 "AWS preDag 'preDeprovision' must use 'awsDeprovisioningTask'");
     }
 
@@ -158,7 +170,9 @@ public class DAGTemplatesTest {
     public void preDag_plain_submitNode_usesLocalSubmitTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.PLAIN);
 
-        assertEquals("localSubmitTask", dag.getNode("submit").taskBeanName(),
+        assertEquals(
+                "localSubmitTask",
+                dag.getNode("submit").taskBeanName(),
                 "PLAIN preDag 'submit' must use 'localSubmitTask'");
     }
 
@@ -166,7 +180,9 @@ public class DAGTemplatesTest {
     public void preDag_plain_provisionNode_usesLocalProvisioningTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.PLAIN);
 
-        assertEquals("localProvisioningTask", dag.getNode("provision").taskBeanName(),
+        assertEquals(
+                "localProvisioningTask",
+                dag.getNode("provision").taskBeanName(),
                 "PLAIN preDag 'provision' must use 'localProvisioningTask'");
     }
 
@@ -174,7 +190,9 @@ public class DAGTemplatesTest {
     public void preDag_plain_preDeprovisionNode_usesLocalDeprovisioningTask() {
         ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.PLAIN);
 
-        assertEquals("localDeprovisioningTask", dag.getNode("preDeprovision").taskBeanName(),
+        assertEquals(
+                "localDeprovisioningTask",
+                dag.getNode("preDeprovision").taskBeanName(),
                 "PLAIN preDag 'preDeprovision' must use 'localDeprovisioningTask'");
     }
 
@@ -187,7 +205,8 @@ public class DAGTemplatesTest {
     public void preDag_checkIntermediateNode_usesCheckIntermediateTransferTask(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals("checkIntermediateTransferTask",
+        assertEquals(
+                "checkIntermediateTransferTask",
                 dag.getNode("checkIntermediate").taskBeanName(),
                 "checkIntermediate must always use 'checkIntermediateTransferTask'");
     }
@@ -197,8 +216,8 @@ public class DAGTemplatesTest {
     public void preDag_failNode_usesMarkFailedTask(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals("markFailedTask", dag.getNode("fail").taskBeanName(),
-                "fail node must always use 'markFailedTask'");
+        assertEquals(
+                "markFailedTask", dag.getNode("fail").taskBeanName(), "fail node must always use 'markFailedTask'");
     }
 
     // ===========================================================================
@@ -211,10 +230,8 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.preDag(type);
         TaskNode provision = dag.getNode("provision");
 
-        assertEquals("stageIn", provision.onSuccess(),
-                "provision.onSuccess must be 'stageIn'");
-        assertEquals("fail", provision.onFailure(),
-                "provision.onFailure must be 'fail'");
+        assertEquals("stageIn", provision.onSuccess(), "provision.onSuccess must be 'stageIn'");
+        assertEquals("fail", provision.onFailure(), "provision.onFailure must be 'fail'");
     }
 
     @ParameterizedTest(name = "preDag({0}) stageIn → submit on success, fail on failure")
@@ -223,10 +240,8 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.preDag(type);
         TaskNode stageIn = dag.getNode("stageIn");
 
-        assertEquals("submit", stageIn.onSuccess(),
-                "stageIn.onSuccess must be 'submit'");
-        assertEquals("fail", stageIn.onFailure(),
-                "stageIn.onFailure must be 'fail'");
+        assertEquals("submit", stageIn.onSuccess(), "stageIn.onSuccess must be 'submit'");
+        assertEquals("fail", stageIn.onFailure(), "stageIn.onFailure must be 'fail'");
     }
 
     @ParameterizedTest(name = "preDag({0}) submit → checkIntermediate on success, fail on failure")
@@ -235,10 +250,8 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.preDag(type);
         TaskNode submit = dag.getNode("submit");
 
-        assertEquals("checkIntermediate", submit.onSuccess(),
-                "submit.onSuccess must be 'checkIntermediate'");
-        assertEquals("fail", submit.onFailure(),
-                "submit.onFailure must be 'fail'");
+        assertEquals("checkIntermediate", submit.onSuccess(), "submit.onSuccess must be 'checkIntermediate'");
+        assertEquals("fail", submit.onFailure(), "submit.onFailure must be 'fail'");
     }
 
     @ParameterizedTest(name = "preDag({0}) checkIntermediate → preDeprovision on success, null on failure")
@@ -247,9 +260,12 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.preDag(type);
         TaskNode checkIntermediate = dag.getNode("checkIntermediate");
 
-        assertEquals("preDeprovision", checkIntermediate.onSuccess(),
+        assertEquals(
+                "preDeprovision",
+                checkIntermediate.onSuccess(),
                 "checkIntermediate.onSuccess must be 'preDeprovision'");
-        assertNull(checkIntermediate.onFailure(),
+        assertNull(
+                checkIntermediate.onFailure(),
                 "checkIntermediate.onFailure must be null (no intermediate transfer path)");
     }
 
@@ -282,7 +298,8 @@ public class DAGTemplatesTest {
     public void preDag_provisionNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals("CONFIGURING_WORKSPACE",
+        assertEquals(
+                "CONFIGURING_WORKSPACE",
                 dag.getNode("provision").metadata().get("processState"),
                 "provision node must publish processState=CONFIGURING_WORKSPACE");
     }
@@ -292,7 +309,8 @@ public class DAGTemplatesTest {
     public void preDag_stageInNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals("INPUT_DATA_STAGING",
+        assertEquals(
+                "INPUT_DATA_STAGING",
                 dag.getNode("stageIn").metadata().get("processState"),
                 "stageIn node must publish processState=INPUT_DATA_STAGING");
     }
@@ -302,7 +320,8 @@ public class DAGTemplatesTest {
     public void preDag_submitNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals("EXECUTING",
+        assertEquals(
+                "EXECUTING",
                 dag.getNode("submit").metadata().get("processState"),
                 "submit node must publish processState=EXECUTING");
     }
@@ -316,8 +335,7 @@ public class DAGTemplatesTest {
     public void postDag_entryNodeIs_monitor(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertEquals("monitor", dag.entryNodeId(),
-                "postDag must always start at the 'monitor' node");
+        assertEquals("monitor", dag.entryNodeId(), "postDag must always start at the 'monitor' node");
     }
 
     // ===========================================================================
@@ -329,12 +347,12 @@ public class DAGTemplatesTest {
     public void postDag_containsAllRequiredNodes(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertNotNull(dag.getNode("monitor"),           "'monitor' node must be present");
-        assertNotNull(dag.getNode("checkOutputs"),      "'checkOutputs' node must be present");
+        assertNotNull(dag.getNode("monitor"), "'monitor' node must be present");
+        assertNotNull(dag.getNode("checkOutputs"), "'checkOutputs' node must be present");
         assertNotNull(dag.getNode("checkDataMovement"), "'checkDataMovement' node must be present");
-        assertNotNull(dag.getNode("outputStaging"),     "'outputStaging' node must be present");
-        assertNotNull(dag.getNode("archive"),           "'archive' node must be present");
-        assertNotNull(dag.getNode("deprovision"),       "'deprovision' node must be present");
+        assertNotNull(dag.getNode("outputStaging"), "'outputStaging' node must be present");
+        assertNotNull(dag.getNode("archive"), "'archive' node must be present");
+        assertNotNull(dag.getNode("deprovision"), "'deprovision' node must be present");
     }
 
     @ParameterizedTest(name = "postDag({0}) has exactly 6 nodes")
@@ -342,8 +360,7 @@ public class DAGTemplatesTest {
     public void postDag_hasExactlySixNodes(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertEquals(6, dag.nodes().size(),
-                "postDag must contain exactly 6 nodes");
+        assertEquals(6, dag.nodes().size(), "postDag must contain exactly 6 nodes");
     }
 
     // ===========================================================================
@@ -354,7 +371,9 @@ public class DAGTemplatesTest {
     public void postDag_slurm_monitorNode_usesSlurmMonitoringTask() {
         ProcessDAG dag = DAGTemplates.postDag(ComputeResourceType.SLURM);
 
-        assertEquals("slurmMonitoringTask", dag.getNode("monitor").taskBeanName(),
+        assertEquals(
+                "slurmMonitoringTask",
+                dag.getNode("monitor").taskBeanName(),
                 "SLURM postDag 'monitor' must use 'slurmMonitoringTask'");
     }
 
@@ -362,7 +381,9 @@ public class DAGTemplatesTest {
     public void postDag_aws_monitorNode_usesAwsMonitoringTask() {
         ProcessDAG dag = DAGTemplates.postDag(ComputeResourceType.AWS);
 
-        assertEquals("awsMonitoringTask", dag.getNode("monitor").taskBeanName(),
+        assertEquals(
+                "awsMonitoringTask",
+                dag.getNode("monitor").taskBeanName(),
                 "AWS postDag 'monitor' must use 'awsMonitoringTask'");
     }
 
@@ -370,7 +391,9 @@ public class DAGTemplatesTest {
     public void postDag_plain_monitorNode_usesLocalMonitoringTask() {
         ProcessDAG dag = DAGTemplates.postDag(ComputeResourceType.PLAIN);
 
-        assertEquals("localMonitoringTask", dag.getNode("monitor").taskBeanName(),
+        assertEquals(
+                "localMonitoringTask",
+                dag.getNode("monitor").taskBeanName(),
                 "PLAIN postDag 'monitor' must use 'localMonitoringTask'");
     }
 
@@ -410,7 +433,9 @@ public class DAGTemplatesTest {
     public void postDag_slurm_deprovisionNode_usesSlurmDeprovisioningTask() {
         ProcessDAG dag = DAGTemplates.postDag(ComputeResourceType.SLURM);
 
-        assertEquals("slurmDeprovisioningTask", dag.getNode("deprovision").taskBeanName(),
+        assertEquals(
+                "slurmDeprovisioningTask",
+                dag.getNode("deprovision").taskBeanName(),
                 "SLURM postDag 'deprovision' must use 'slurmDeprovisioningTask'");
     }
 
@@ -418,7 +443,9 @@ public class DAGTemplatesTest {
     public void postDag_aws_deprovisionNode_usesAwsDeprovisioningTask() {
         ProcessDAG dag = DAGTemplates.postDag(ComputeResourceType.AWS);
 
-        assertEquals("awsDeprovisioningTask", dag.getNode("deprovision").taskBeanName(),
+        assertEquals(
+                "awsDeprovisioningTask",
+                dag.getNode("deprovision").taskBeanName(),
                 "AWS postDag 'deprovision' must use 'awsDeprovisioningTask'");
     }
 
@@ -426,7 +453,9 @@ public class DAGTemplatesTest {
     public void postDag_plain_deprovisionNode_usesLocalDeprovisioningTask() {
         ProcessDAG dag = DAGTemplates.postDag(ComputeResourceType.PLAIN);
 
-        assertEquals("localDeprovisioningTask", dag.getNode("deprovision").taskBeanName(),
+        assertEquals(
+                "localDeprovisioningTask",
+                dag.getNode("deprovision").taskBeanName(),
                 "PLAIN postDag 'deprovision' must use 'localDeprovisioningTask'");
     }
 
@@ -440,9 +469,10 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.postDag(type);
         TaskNode monitor = dag.getNode("monitor");
 
-        assertEquals("checkOutputs", monitor.onSuccess(),
-                "monitor.onSuccess must be 'checkOutputs'");
-        assertEquals("checkOutputs", monitor.onFailure(),
+        assertEquals("checkOutputs", monitor.onSuccess(), "monitor.onSuccess must be 'checkOutputs'");
+        assertEquals(
+                "checkOutputs",
+                monitor.onFailure(),
                 "monitor.onFailure must also be 'checkOutputs' (monitoring failure is non-fatal)");
     }
 
@@ -452,9 +482,11 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.postDag(type);
         TaskNode checkOutputs = dag.getNode("checkOutputs");
 
-        assertEquals("checkDataMovement", checkOutputs.onSuccess(),
-                "checkOutputs.onSuccess must be 'checkDataMovement'");
-        assertEquals("deprovision", checkOutputs.onFailure(),
+        assertEquals(
+                "checkDataMovement", checkOutputs.onSuccess(), "checkOutputs.onSuccess must be 'checkDataMovement'");
+        assertEquals(
+                "deprovision",
+                checkOutputs.onFailure(),
                 "checkOutputs.onFailure must be 'deprovision' (skip staging when no outputs)");
     }
 
@@ -464,9 +496,11 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.postDag(type);
         TaskNode checkDataMovement = dag.getNode("checkDataMovement");
 
-        assertEquals("outputStaging", checkDataMovement.onSuccess(),
-                "checkDataMovement.onSuccess must be 'outputStaging'");
-        assertEquals("archive", checkDataMovement.onFailure(),
+        assertEquals(
+                "outputStaging", checkDataMovement.onSuccess(), "checkDataMovement.onSuccess must be 'outputStaging'");
+        assertEquals(
+                "archive",
+                checkDataMovement.onFailure(),
                 "checkDataMovement.onFailure must be 'archive' (skip staging when no data movement)");
     }
 
@@ -476,9 +510,10 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.postDag(type);
         TaskNode outputStaging = dag.getNode("outputStaging");
 
-        assertEquals("archive", outputStaging.onSuccess(),
-                "outputStaging.onSuccess must be 'archive'");
-        assertEquals("archive", outputStaging.onFailure(),
+        assertEquals("archive", outputStaging.onSuccess(), "outputStaging.onSuccess must be 'archive'");
+        assertEquals(
+                "archive",
+                outputStaging.onFailure(),
                 "outputStaging.onFailure must also be 'archive' (archive regardless)");
     }
 
@@ -488,9 +523,10 @@ public class DAGTemplatesTest {
         ProcessDAG dag = DAGTemplates.postDag(type);
         TaskNode archive = dag.getNode("archive");
 
-        assertEquals("deprovision", archive.onSuccess(),
-                "archive.onSuccess must be 'deprovision'");
-        assertEquals("deprovision", archive.onFailure(),
+        assertEquals("deprovision", archive.onSuccess(), "archive.onSuccess must be 'deprovision'");
+        assertEquals(
+                "deprovision",
+                archive.onFailure(),
                 "archive.onFailure must also be 'deprovision' (always deprovision)");
     }
 
@@ -513,7 +549,8 @@ public class DAGTemplatesTest {
     public void postDag_monitorNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertEquals("MONITORING",
+        assertEquals(
+                "MONITORING",
                 dag.getNode("monitor").metadata().get("processState"),
                 "monitor node must publish processState=MONITORING");
     }
@@ -523,7 +560,8 @@ public class DAGTemplatesTest {
     public void postDag_outputStagingNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertEquals("OUTPUT_DATA_STAGING",
+        assertEquals(
+                "OUTPUT_DATA_STAGING",
                 dag.getNode("outputStaging").metadata().get("processState"),
                 "outputStaging node must publish processState=OUTPUT_DATA_STAGING");
     }
@@ -533,7 +571,8 @@ public class DAGTemplatesTest {
     public void postDag_deprovisionNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertEquals("COMPLETED",
+        assertEquals(
+                "COMPLETED",
                 dag.getNode("deprovision").metadata().get("processState"),
                 "deprovision node must publish processState=COMPLETED");
     }
@@ -547,8 +586,7 @@ public class DAGTemplatesTest {
     public void cancelDag_entryNodeIs_cancel(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.cancelDag(type);
 
-        assertEquals("cancel", dag.entryNodeId(),
-                "cancelDag must always start at the 'cancel' node");
+        assertEquals("cancel", dag.entryNodeId(), "cancelDag must always start at the 'cancel' node");
     }
 
     // ===========================================================================
@@ -560,8 +598,7 @@ public class DAGTemplatesTest {
     public void cancelDag_hasExactlyOneNode(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.cancelDag(type);
 
-        assertEquals(1, dag.nodes().size(),
-                "cancelDag must contain exactly 1 node");
+        assertEquals(1, dag.nodes().size(), "cancelDag must contain exactly 1 node");
     }
 
     // ===========================================================================
@@ -572,7 +609,9 @@ public class DAGTemplatesTest {
     public void cancelDag_slurm_cancelNode_usesSlurmCancelTask() {
         ProcessDAG dag = DAGTemplates.cancelDag(ComputeResourceType.SLURM);
 
-        assertEquals("slurmCancelTask", dag.getNode("cancel").taskBeanName(),
+        assertEquals(
+                "slurmCancelTask",
+                dag.getNode("cancel").taskBeanName(),
                 "SLURM cancelDag 'cancel' must use 'slurmCancelTask'");
     }
 
@@ -580,7 +619,9 @@ public class DAGTemplatesTest {
     public void cancelDag_aws_cancelNode_usesAwsCancelTask() {
         ProcessDAG dag = DAGTemplates.cancelDag(ComputeResourceType.AWS);
 
-        assertEquals("awsCancelTask", dag.getNode("cancel").taskBeanName(),
+        assertEquals(
+                "awsCancelTask",
+                dag.getNode("cancel").taskBeanName(),
                 "AWS cancelDag 'cancel' must use 'awsCancelTask'");
     }
 
@@ -588,7 +629,9 @@ public class DAGTemplatesTest {
     public void cancelDag_plain_cancelNode_usesLocalCancelTask() {
         ProcessDAG dag = DAGTemplates.cancelDag(ComputeResourceType.PLAIN);
 
-        assertEquals("localCancelTask", dag.getNode("cancel").taskBeanName(),
+        assertEquals(
+                "localCancelTask",
+                dag.getNode("cancel").taskBeanName(),
                 "PLAIN cancelDag 'cancel' must use 'localCancelTask'");
     }
 
@@ -615,7 +658,8 @@ public class DAGTemplatesTest {
     public void cancelDag_cancelNode_metadataProcessState(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.cancelDag(type);
 
-        assertEquals("CANCELED",
+        assertEquals(
+                "CANCELED",
                 dag.getNode("cancel").metadata().get("processState"),
                 "cancel node must publish processState=CANCELED");
     }
@@ -629,8 +673,7 @@ public class DAGTemplatesTest {
     public void preDag_entryNode_isNotNull(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertNotNull(dag.getNode(dag.entryNodeId()),
-                "preDag entry node id must resolve to a real node in the graph");
+        assertNotNull(dag.getNode(dag.entryNodeId()), "preDag entry node id must resolve to a real node in the graph");
     }
 
     @ParameterizedTest(name = "postDag({0}) entry node is not null")
@@ -638,8 +681,7 @@ public class DAGTemplatesTest {
     public void postDag_entryNode_isNotNull(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
 
-        assertNotNull(dag.getNode(dag.entryNodeId()),
-                "postDag entry node id must resolve to a real node in the graph");
+        assertNotNull(dag.getNode(dag.entryNodeId()), "postDag entry node id must resolve to a real node in the graph");
     }
 
     @ParameterizedTest(name = "cancelDag({0}) entry node is not null")
@@ -647,8 +689,8 @@ public class DAGTemplatesTest {
     public void cancelDag_entryNode_isNotNull(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.cancelDag(type);
 
-        assertNotNull(dag.getNode(dag.entryNodeId()),
-                "cancelDag entry node id must resolve to a real node in the graph");
+        assertNotNull(
+                dag.getNode(dag.entryNodeId()), "cancelDag entry node id must resolve to a real node in the graph");
     }
 
     // ===========================================================================
@@ -662,11 +704,13 @@ public class DAGTemplatesTest {
 
         dag.nodes().values().forEach(node -> {
             if (node.onSuccess() != null) {
-                assertNotNull(dag.getNode(node.onSuccess()),
+                assertNotNull(
+                        dag.getNode(node.onSuccess()),
                         "onSuccess ref '" + node.onSuccess() + "' from node '" + node.id() + "' must exist");
             }
             if (node.onFailure() != null) {
-                assertNotNull(dag.getNode(node.onFailure()),
+                assertNotNull(
+                        dag.getNode(node.onFailure()),
                         "onFailure ref '" + node.onFailure() + "' from node '" + node.id() + "' must exist");
             }
         });
@@ -679,11 +723,13 @@ public class DAGTemplatesTest {
 
         dag.nodes().values().forEach(node -> {
             if (node.onSuccess() != null) {
-                assertNotNull(dag.getNode(node.onSuccess()),
+                assertNotNull(
+                        dag.getNode(node.onSuccess()),
                         "onSuccess ref '" + node.onSuccess() + "' from node '" + node.id() + "' must exist");
             }
             if (node.onFailure() != null) {
-                assertNotNull(dag.getNode(node.onFailure()),
+                assertNotNull(
+                        dag.getNode(node.onFailure()),
                         "onFailure ref '" + node.onFailure() + "' from node '" + node.id() + "' must exist");
             }
         });
@@ -696,11 +742,13 @@ public class DAGTemplatesTest {
 
         dag.nodes().values().forEach(node -> {
             if (node.onSuccess() != null) {
-                assertNotNull(dag.getNode(node.onSuccess()),
+                assertNotNull(
+                        dag.getNode(node.onSuccess()),
                         "onSuccess ref '" + node.onSuccess() + "' from node '" + node.id() + "' must exist");
             }
             if (node.onFailure() != null) {
-                assertNotNull(dag.getNode(node.onFailure()),
+                assertNotNull(
+                        dag.getNode(node.onFailure()),
                         "onFailure ref '" + node.onFailure() + "' from node '" + node.id() + "' must exist");
             }
         });
@@ -713,8 +761,7 @@ public class DAGTemplatesTest {
     @Test
     public void dagTemplates_hasPrivateConstructor() throws NoSuchMethodException {
         var constructor = DAGTemplates.class.getDeclaredConstructor();
-        assertFalse(constructor.canAccess(null),
-                "DAGTemplates must not have a public constructor (utility class)");
+        assertFalse(constructor.canAccess(null), "DAGTemplates must not have a public constructor (utility class)");
     }
 
     // ===========================================================================
@@ -725,36 +772,41 @@ public class DAGTemplatesTest {
     @EnumSource(ComputeResourceType.class)
     public void preDag_allNodes_haveRetryTierMetadata(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
-        dag.nodes().values().forEach(node ->
-            assertNotNull(node.metadata().get("retryTier"),
-                    "Node '" + node.id() + "' must have retryTier metadata"));
+        dag.nodes()
+                .values()
+                .forEach(node -> assertNotNull(
+                        node.metadata().get("retryTier"), "Node '" + node.id() + "' must have retryTier metadata"));
     }
 
     @ParameterizedTest(name = "postDag({0}) all nodes have retryTier metadata")
     @EnumSource(ComputeResourceType.class)
     public void postDag_allNodes_haveRetryTierMetadata(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.postDag(type);
-        dag.nodes().values().forEach(node ->
-            assertNotNull(node.metadata().get("retryTier"),
-                    "Node '" + node.id() + "' must have retryTier metadata"));
+        dag.nodes()
+                .values()
+                .forEach(node -> assertNotNull(
+                        node.metadata().get("retryTier"), "Node '" + node.id() + "' must have retryTier metadata"));
     }
 
     @ParameterizedTest(name = "cancelDag({0}) all nodes have retryTier metadata")
     @EnumSource(ComputeResourceType.class)
     public void cancelDag_allNodes_haveRetryTierMetadata(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.cancelDag(type);
-        dag.nodes().values().forEach(node ->
-            assertNotNull(node.metadata().get("retryTier"),
-                    "Node '" + node.id() + "' must have retryTier metadata"));
+        dag.nodes()
+                .values()
+                .forEach(node -> assertNotNull(
+                        node.metadata().get("retryTier"), "Node '" + node.id() + "' must have retryTier metadata"));
     }
 
     @Test
     public void retryTier_allValues_areValidEnumConstants() {
         for (ComputeResourceType type : ComputeResourceType.values()) {
-            for (ProcessDAG dag : List.of(DAGTemplates.preDag(type), DAGTemplates.postDag(type), DAGTemplates.cancelDag(type))) {
+            for (ProcessDAG dag :
+                    List.of(DAGTemplates.preDag(type), DAGTemplates.postDag(type), DAGTemplates.cancelDag(type))) {
                 dag.nodes().values().forEach(node -> {
                     String tier = node.metadata().get("retryTier");
-                    assertNotNull(RetryTier.valueOf(tier),
+                    assertNotNull(
+                            RetryTier.valueOf(tier),
                             "retryTier '" + tier + "' on node '" + node.id() + "' must be a valid RetryTier enum");
                 });
             }

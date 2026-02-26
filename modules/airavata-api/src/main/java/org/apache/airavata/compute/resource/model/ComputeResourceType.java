@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.compute.resource.model;
 
-import org.apache.airavata.compute.resource.model.ResourceJobManagerType;
-
 public enum ComputeResourceType {
     SLURM,
     AWS,

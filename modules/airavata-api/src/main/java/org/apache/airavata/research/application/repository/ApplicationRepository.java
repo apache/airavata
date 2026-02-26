@@ -41,5 +41,4 @@ public interface ApplicationRepository extends JpaRepository<ApplicationEntity, 
      * @return list of applications for the gateway, empty list if none found
      */
     List<ApplicationEntity> findByGatewayId(String gatewayId);
-
 }

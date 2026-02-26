@@ -92,8 +92,8 @@ class IdGeneratorTest {
         for (int i = 1; i < timestamps.length; i++) {
             long prev = timestamps[i - 1].getTime() * 1000 + timestamps[i - 1].getNanos() / 1000;
             long curr = timestamps[i].getTime() * 1000 + timestamps[i].getNanos() / 1000;
-            assertTrue(curr >= prev,
-                    "Timestamp at index " + i + " (" + curr + ") should be >= previous (" + prev + ")");
+            assertTrue(
+                    curr >= prev, "Timestamp at index " + i + " (" + curr + ") should be >= previous (" + prev + ")");
         }
     }
 

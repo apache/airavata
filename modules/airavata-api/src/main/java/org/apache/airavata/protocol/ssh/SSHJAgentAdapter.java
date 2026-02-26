@@ -47,15 +47,15 @@ import net.schmizz.sshj.xfer.FilePermission;
 import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalFileFilter;
 import net.schmizz.sshj.xfer.LocalSourceFile;
-import org.apache.airavata.protocol.ResourceLookup;
+import org.apache.airavata.iam.service.CredentialStoreService;
 import org.apache.airavata.protocol.AgentAdapter;
 import org.apache.airavata.protocol.AgentException;
 import org.apache.airavata.protocol.CommandOutput;
 import org.apache.airavata.protocol.FileMetadata;
+import org.apache.airavata.protocol.ResourceLookup;
 import org.apache.airavata.protocol.ssh.PoolingSSHJClient.SCPFileTransferResource;
 import org.apache.airavata.protocol.ssh.PoolingSSHJClient.SFTPClientResource;
 import org.apache.airavata.protocol.ssh.PoolingSSHJClient.SessionResource;
-import org.apache.airavata.iam.service.CredentialStoreService;
 import org.apache.airavata.storage.resource.model.StorageDirectoryInfo;
 import org.apache.airavata.storage.resource.model.StorageVolumeInfo;
 import org.slf4j.Logger;
@@ -285,7 +285,6 @@ public class SSHJAgentAdapter implements AgentAdapter {
             });
         }
     }
-
 
     @Override
     public void deleteDirectory(String path) throws AgentException {
