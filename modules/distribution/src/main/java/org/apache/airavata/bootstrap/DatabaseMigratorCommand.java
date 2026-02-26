@@ -252,9 +252,8 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
     }
 
     private String executeSelectQuery(Connection conn, String query) {
-        try {
-            var statement = conn.createStatement();
-            var rs = statement.executeQuery(query);
+        try (var statement = conn.createStatement();
+             var rs = statement.executeQuery(query)) {
             if (rs != null && rs.next()) {
                 return rs.getString(1);
             }
@@ -265,8 +264,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
     }
 
     private void executeQuery(Connection conn, String query) {
-        try {
-            var statement = conn.createStatement();
+        try (var statement = conn.createStatement()) {
             statement.execute(query);
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);

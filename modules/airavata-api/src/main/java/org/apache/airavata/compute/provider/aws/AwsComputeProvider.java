@@ -519,11 +519,13 @@ public class AwsComputeProvider implements ComputeProvider {
     }
 
     private String createSecurityGroup(Ec2Client ec2, TaskContext context) throws Exception {
-        String vpcId = ec2.describeVpcs(
+        var vpcs = ec2.describeVpcs(
                         req -> req.filters(f -> f.name("is-default").values("true")))
-                .vpcs()
-                .get(0)
-                .vpcId();
+                .vpcs();
+        if (vpcs.isEmpty()) {
+            throw new Exception("No default VPC found in the AWS account");
+        }
+        String vpcId = vpcs.get(0).vpcId();
         CreateSecurityGroupResponse sgRes =
                 ec2.createSecurityGroup(req -> req.groupName("airavata-sg-" + context.getProcessId())
                         .description("Airavata temporary security group for " + context.getProcessId())

@@ -124,14 +124,15 @@ public class AiravataFileService {
         var metadata = new FileMetadata();
         metadata.setName(file.getName());
         metadata.setSize(file.getSize());
-        Files.copy(file.getInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+        try (var fileInput = file.getInputStream()) {
+            Files.copy(fileInput, tempPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
         var dataManager = createDataManager(processId);
         var agentAdapter = getAgentAdapter(dataManager, processId);
         String absPath = dataManager.getBaseDir() + subPath;
 
-        try {
-            var content = Files.newInputStream(tempPath);
+        try (var content = Files.newInputStream(tempPath)) {
             agentAdapter.createDirectory(new File(absPath).getParent(), true);
             logger.info("Uploading file {}:{} to {}:{}", "temp", metadata.getName(), processId, subPath);
             agentAdapter.uploadFile(content, metadata, absPath);
@@ -140,7 +141,7 @@ public class AiravataFileService {
             logger.error("Failed to upload file {}:{} to {}:{}", "temp", metadata.getName(), processId, subPath);
             throw e;
         } finally {
-            tempPath.toFile().deleteOnExit();
+            Files.deleteIfExists(tempPath);
         }
     }
 
@@ -163,9 +164,8 @@ public class AiravataFileService {
                 }
             } catch (Exception e) {
                 logger.error("Failed to download file {}:{} to {}:{}", processId, subPath, "temp", tempPath.toString());
+                Files.deleteIfExists(tempPath);
                 throw e;
-            } finally {
-                tempPath.toFile().deleteOnExit();
             }
         } else {
             throw new Exception("File " + absPath + " does not exist in process " + processId);
