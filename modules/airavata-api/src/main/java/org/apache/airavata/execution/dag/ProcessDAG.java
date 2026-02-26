@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * <p>Each node maps to a Spring bean implementing {@link DagTask}.
  * Edges are defined per-node as success/failure transitions.
- * The DAG is walked linearly by the {@link ProcessDAGEngine};
+ * The DAG is walked linearly by the Temporal workflow;
  * parallelism is not supported (each node has at most one successor).
  *
  * <p>Build DAGs via the fluent {@link Builder} API:

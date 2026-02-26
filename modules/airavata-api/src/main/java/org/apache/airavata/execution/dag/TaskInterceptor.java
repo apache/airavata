@@ -24,7 +24,7 @@ import org.apache.airavata.execution.task.TaskContext;
 
 /**
  * Cross-cutting concern applied around each {@link DagTask} execution
- * within the {@link ProcessDAGEngine}.
+ * within the activity implementation.
  *
  * <p>Interceptors are ordered by Spring's {@code @Order} annotation.
  * All interceptors see the same {@link TaskContext} and {@link TaskNode},

@@ -28,7 +28,7 @@ import org.apache.airavata.execution.task.TaskContext;
  * <p>Implementations are Spring beans with only task-specific dependencies
  * injected via constructor. Cross-cutting concerns (status publishing, error
  * recording, metrics, logging) are handled by {@link TaskInterceptor}s
- * applied by the {@link ProcessDAGEngine}.
+ * applied by the activity implementation.
  *
  * <p>Tasks must be stateless between executions; all mutable state lives
  * in the {@link TaskContext} and DAG state map.
