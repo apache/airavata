@@ -63,7 +63,8 @@ public class CLIInfrastructureTest {
 
     @Container
     static RabbitMQContainer rabbitMQContainer =
-            new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management")).withVhost("develop");
+            new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13-management"))
+                    .withEnv("RABBITMQ_DEFAULT_VHOST", "develop");
 
     private static String mariaDBUrl;
     private static String rabbitMQUrl;
