@@ -242,22 +242,14 @@ public class SlurmComputeProvider implements ComputeProvider {
 
             } else {
 
-                int verificationTryCount = 0;
-                while (verificationTryCount++ < 3) {
-                    String verifyJobId = verifyJobSubmission(
-                            adapter, jobModel.getJobName(), context.getComputeResourceLoginUserName(), context);
-                    if (verifyJobId != null && !verifyJobId.isEmpty()) {
-                        jobId = verifyJobId;
-                        jobModel.setJobId(jobId);
-                        jobService.saveJob(jobModel);
-                        jobSubmissionSupport.publishJobStatus(jobModel, JobState.QUEUED, "Verification step succeeded");
-                        logger.info("Job id {} verification succeeded", verifyJobId);
-                        break;
-                    }
-                    logger.info(
-                            "Verify step return invalid jobId, retry verification step in {} secs",
-                            verificationTryCount * 10);
-                    Thread.sleep(verificationTryCount * 10000L);
+                String verifyJobId = verifyJobSubmission(
+                        adapter, jobModel.getJobName(), context.getComputeResourceLoginUserName(), context);
+                if (verifyJobId != null && !verifyJobId.isEmpty()) {
+                    jobId = verifyJobId;
+                    jobModel.setJobId(jobId);
+                    jobService.saveJob(jobModel);
+                    jobSubmissionSupport.publishJobStatus(jobModel, JobState.QUEUED, "Verification step succeeded");
+                    logger.info("Job id {} verification succeeded", verifyJobId);
                 }
             }
 
@@ -380,34 +372,17 @@ public class SlurmComputeProvider implements ComputeProvider {
                 return;
             }
 
-            int retryDelaySeconds = 30;
-            for (int i = 1; i <= 4; i++) {
-                CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
-                if (output.getExitCode() != 0) {
-                    logger.warn("Monitor command failed for job {}: stdout={}, stderr={}",
-                            job.getJobId(), output.getStdOut(), output.getStdError());
-                    break;
-                }
+            CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
+            if (output.getExitCode() != 0) {
+                logger.warn("Monitor command failed for job {}: stdout={}, stderr={}",
+                        job.getJobId(), output.getStdOut(), output.getStdError());
+                return;
+            }
 
-                StatusModel<JobState> jobStatus = config.getParser()
-                        .parseJobStatus(job.getJobId(), output.getStdOut());
-                if (jobStatus == null) {
-                    logger.info("Status unavailable for job {} — skipping", job.getJobId());
-                    break;
-                }
-
+            StatusModel<JobState> jobStatus = config.getParser()
+                    .parseJobStatus(job.getJobId(), output.getStdOut());
+            if (jobStatus != null) {
                 logger.info("Job {} status: {}", job.getJobId(), jobStatus.getState());
-
-                if (jobStatus.getState() != JobState.ACTIVE
-                        && jobStatus.getState() != JobState.QUEUED
-                        && jobStatus.getState() != JobState.SUBMITTED) {
-                    logger.info("Job {} reached saturated state", job.getJobId());
-                    break;
-                }
-
-                int waitTime = retryDelaySeconds * i;
-                logger.info("Waiting {} seconds before next poll for job {}", waitTime, job.getJobId());
-                Thread.sleep(waitTime * 1000L);
             }
         } catch (Exception e) {
             logger.warn("Error polling job {} — continuing", job.getJobId(), e);
