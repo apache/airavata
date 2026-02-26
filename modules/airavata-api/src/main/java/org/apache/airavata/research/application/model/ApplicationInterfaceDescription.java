@@ -22,8 +22,7 @@ package org.apache.airavata.research.application.model;
 import java.util.List;
 
 /**
- * Minimal stub for ApplicationInterfaceDescription.
- * Temporary placeholder pending pipeline rewrite.
+ * Domain model for application interface description including inputs, outputs, and module references.
  */
 public class ApplicationInterfaceDescription {
 
@@ -111,14 +110,4 @@ public class ApplicationInterfaceDescription {
         this.cleanAfterStaged = cleanAfterStaged;
     }
 
-    // Legacy field used by RepositoryStagingActivity
-    private String repositoryId;
-
-    public String getRepositoryId() {
-        return repositoryId;
-    }
-
-    public void setRepositoryId(String repositoryId) {
-        this.repositoryId = repositoryId;
-    }
 }

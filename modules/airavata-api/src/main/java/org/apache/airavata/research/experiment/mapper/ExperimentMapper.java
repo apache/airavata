@@ -30,6 +30,8 @@ import org.apache.airavata.research.experiment.model.ExperimentInput;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.experiment.model.ExperimentOutput;
 import org.apache.airavata.research.experiment.model.ExperimentState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,6 +48,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ExperimentMapper implements EntityMapper<ExperimentEntity, ExperimentModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(ExperimentMapper.class);
 
     @Override
     public ExperimentModel toModel(ExperimentEntity entity) {
@@ -67,7 +71,9 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
         if (entity.getState() != null) {
             try {
                 model.setState(ExperimentState.valueOf(entity.getState()));
-            } catch (IllegalArgumentException ignored) {
+            } catch (IllegalArgumentException e) {
+                log.debug("Unknown experiment state '{}' for experiment '{}'; defaulting to CREATED",
+                        entity.getState(), entity.getExperimentId(), e);
                 model.setState(ExperimentState.CREATED);
             }
         } else {

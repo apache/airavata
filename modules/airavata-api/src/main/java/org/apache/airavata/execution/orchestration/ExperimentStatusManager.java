@@ -83,8 +83,10 @@ public class ExperimentStatusManager {
             if (experimentEntity != null && experimentEntity.getState() != null) {
                 try {
                     currentState = ExperimentState.valueOf(experimentEntity.getState());
-                } catch (IllegalArgumentException ignored) {
-                    // unknown stored state — treat as null (allow any transition)
+                } catch (IllegalArgumentException e) {
+                    // Unknown stored state — treat as null so any transition is allowed.
+                    logger.debug("Unknown stored experiment state '{}' for experimentId={}; treating as null",
+                            experimentEntity.getState(), experimentId, e);
                 }
             }
 
@@ -169,7 +171,10 @@ public class ExperimentStatusManager {
                 .map(e -> {
                     try {
                         return ExperimentState.valueOf(e.getState());
-                    } catch (IllegalArgumentException | NullPointerException ignored) {
+                    } catch (IllegalArgumentException | NullPointerException ex) {
+                        // Unknown or null stored state for experiment; default to CREATED.
+                        logger.debug("Unknown stored experiment state '{}' for experimentId={}; defaulting to CREATED",
+                                e.getState(), processIdentity.getExperimentId(), ex);
                         return ExperimentState.CREATED;
                     }
                 })

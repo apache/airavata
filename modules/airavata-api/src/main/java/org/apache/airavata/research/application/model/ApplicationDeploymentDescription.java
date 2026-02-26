@@ -22,8 +22,7 @@ package org.apache.airavata.research.application.model;
 import java.util.List;
 
 /**
- * Minimal stub for ApplicationDeploymentDescription.
- * Temporary placeholder pending pipeline rewrite.
+ * Domain model for application deployment configuration on a compute resource.
  */
 public class ApplicationDeploymentDescription {
 

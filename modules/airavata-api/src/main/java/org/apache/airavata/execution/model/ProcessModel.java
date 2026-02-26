@@ -165,9 +165,6 @@ public class ProcessModel {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    // Legacy fields that older code still references. These should be removed once
-    // all callers are updated to use the new unified resourceId / resourceSchedule fields.
-
     private String groupResourceProfileId;
     private String applicationInterfaceId;
     private String computeResourceCredentialToken;

@@ -267,7 +267,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
             throw new RegistryException("GatewayId is required");
         }
 
-        // Build predicates from filters (JOB_ID filter removed: job table dropped)
+        // Build predicates from filters
         if (filters.get(DBConstants.Experiment.USER_NAME) != null) {
             predicates.add(cb.like(root.get("userName"), "%" + filters.get(DBConstants.Experiment.USER_NAME) + "%"));
         }

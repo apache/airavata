@@ -22,8 +22,7 @@ package org.apache.airavata.research.application.model;
 import org.apache.airavata.storage.resource.model.DataType;
 
 /**
- * Minimal stub for ApplicationOutput.
- * Temporary placeholder pending pipeline rewrite.
+ * Domain model for application output metadata.
  */
 public class ApplicationOutput {
 

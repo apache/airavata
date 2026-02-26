@@ -45,7 +45,7 @@ public record ServerProperties(
         StreamingTransfer streamingTransfer,
         Hibernate hibernate,
         Cors cors,
-        // Subsystem configuration (legacy RabbitMQ, Kafka, Zookeeper, Helix removed; uses Temporal)
+        // Subsystem configuration
         Security security,
         Flyway flyway,
         Services services) {
