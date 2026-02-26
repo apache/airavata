@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -714,6 +715,50 @@ public class DAGTemplatesTest {
         var constructor = DAGTemplates.class.getDeclaredConstructor();
         assertFalse(constructor.canAccess(null),
                 "DAGTemplates must not have a public constructor (utility class)");
+    }
+
+    // ===========================================================================
+    // RetryTier metadata — all nodes in every DAG must declare a retryTier
+    // ===========================================================================
+
+    @ParameterizedTest(name = "preDag({0}) all nodes have retryTier metadata")
+    @EnumSource(ComputeResourceType.class)
+    public void preDag_allNodes_haveRetryTierMetadata(ComputeResourceType type) {
+        ProcessDAG dag = DAGTemplates.preDag(type);
+        dag.nodes().values().forEach(node ->
+            assertNotNull(node.metadata().get("retryTier"),
+                    "Node '" + node.id() + "' must have retryTier metadata"));
+    }
+
+    @ParameterizedTest(name = "postDag({0}) all nodes have retryTier metadata")
+    @EnumSource(ComputeResourceType.class)
+    public void postDag_allNodes_haveRetryTierMetadata(ComputeResourceType type) {
+        ProcessDAG dag = DAGTemplates.postDag(type);
+        dag.nodes().values().forEach(node ->
+            assertNotNull(node.metadata().get("retryTier"),
+                    "Node '" + node.id() + "' must have retryTier metadata"));
+    }
+
+    @ParameterizedTest(name = "cancelDag({0}) all nodes have retryTier metadata")
+    @EnumSource(ComputeResourceType.class)
+    public void cancelDag_allNodes_haveRetryTierMetadata(ComputeResourceType type) {
+        ProcessDAG dag = DAGTemplates.cancelDag(type);
+        dag.nodes().values().forEach(node ->
+            assertNotNull(node.metadata().get("retryTier"),
+                    "Node '" + node.id() + "' must have retryTier metadata"));
+    }
+
+    @Test
+    public void retryTier_allValues_areValidEnumConstants() {
+        for (ComputeResourceType type : ComputeResourceType.values()) {
+            for (ProcessDAG dag : List.of(DAGTemplates.preDag(type), DAGTemplates.postDag(type), DAGTemplates.cancelDag(type))) {
+                dag.nodes().values().forEach(node -> {
+                    String tier = node.metadata().get("retryTier");
+                    assertNotNull(RetryTier.valueOf(tier),
+                            "retryTier '" + tier + "' on node '" + node.id() + "' must be a valid RetryTier enum");
+                });
+            }
+        }
     }
 
     // Workaround: assertFalse is not imported by default — define local helper.
