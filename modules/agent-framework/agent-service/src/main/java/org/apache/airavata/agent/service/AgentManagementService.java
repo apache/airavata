@@ -36,7 +36,7 @@ import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.apache.airavata.compute.resource.model.GroupComputeResourcePreference;
 import org.apache.airavata.compute.resource.model.GroupResourceProfile;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.Project;
+import org.apache.airavata.research.project.model.Project;
 import org.apache.airavata.research.experiment.service.ExperimentSearchService;
 import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.execution.model.ProcessModel;

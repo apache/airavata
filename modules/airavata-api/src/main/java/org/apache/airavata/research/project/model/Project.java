@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.research.experiment.model;
+package org.apache.airavata.research.project.model;
 
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;

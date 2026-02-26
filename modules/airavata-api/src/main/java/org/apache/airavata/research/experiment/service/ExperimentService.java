@@ -28,7 +28,7 @@ import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ProjectNotFoundException;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.Project;
+import org.apache.airavata.research.project.model.Project;
 import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 
 public interface ExperimentService {

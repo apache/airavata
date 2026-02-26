@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.research.experiment.repository;
+package org.apache.airavata.research.project.repository;
 
 import java.util.List;
 import org.apache.airavata.research.project.entity.ProjectEntity;

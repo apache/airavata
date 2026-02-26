@@ -17,11 +17,11 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.research.experiment.service;
+package org.apache.airavata.research.project.service;
 
 import java.util.List;
 import org.apache.airavata.core.service.CrudService;
-import org.apache.airavata.research.experiment.model.Project;
+import org.apache.airavata.research.project.model.Project;
 
 /**
  * Domain service for managing experiment projects within a gateway.

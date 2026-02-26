@@ -17,12 +17,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.research.experiment.mapper;
+package org.apache.airavata.research.project.mapper;
 
 import org.apache.airavata.config.EntityMapperConfiguration;
 import org.apache.airavata.core.mapper.EntityMapper;
 import org.apache.airavata.research.project.entity.ProjectEntity;
-import org.apache.airavata.research.experiment.model.Project;
+import org.apache.airavata.research.project.model.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -64,7 +64,8 @@ import org.apache.airavata.research.experiment.exception.ExperimentExceptions.Pr
 import org.apache.airavata.research.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.experiment.model.ExperimentState;
-import org.apache.airavata.research.experiment.model.Project;
+import org.apache.airavata.research.project.model.Project;
+import org.apache.airavata.research.project.service.ProjectService;
 import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
 import org.slf4j.Logger;

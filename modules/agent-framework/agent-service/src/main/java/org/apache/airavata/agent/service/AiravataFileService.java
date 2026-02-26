@@ -38,7 +38,7 @@ import org.apache.airavata.agent.model.ExperimentStorageResponse;
 import org.apache.airavata.agent.model.FileInfo;
 import org.apache.airavata.research.experiment.model.ExperimentSearchFields;
 import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
-import org.apache.airavata.research.experiment.model.Project;
+import org.apache.airavata.research.project.model.Project;
 import org.apache.airavata.research.experiment.service.ExperimentSearchService;
 import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.fuse.DirEntry;

@@ -17,16 +17,16 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.research.experiment.service;
+package org.apache.airavata.research.project.service;
 
 import java.util.List;
 import org.apache.airavata.core.service.AbstractCrudService;
 import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.core.util.PaginationUtil;
 import org.apache.airavata.research.project.entity.ProjectEntity;
-import org.apache.airavata.research.experiment.mapper.ProjectMapper;
-import org.apache.airavata.research.experiment.model.Project;
-import org.apache.airavata.research.experiment.repository.ProjectRepository;
+import org.apache.airavata.research.project.mapper.ProjectMapper;
+import org.apache.airavata.research.project.model.Project;
+import org.apache.airavata.research.project.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

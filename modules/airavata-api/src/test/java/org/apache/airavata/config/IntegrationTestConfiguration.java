@@ -68,6 +68,8 @@ import org.springframework.context.annotation.Import;
             "org.apache.airavata.status.mapper",
             "org.apache.airavata.research.experiment.mapper",
             "org.apache.airavata.research.experiment.service",
+            "org.apache.airavata.research.project.mapper",
+            "org.apache.airavata.research.project.service",
             "org.apache.airavata.research.application.mapper",
             "org.apache.airavata.research.application.service",
             "org.apache.airavata.research.artifact",
