@@ -19,13 +19,9 @@
 */
 package org.apache.airavata.compute.resource.adapter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.airavata.compute.resource.model.ComputeResourceType;
-import org.apache.airavata.compute.resource.model.GroupComputeResourcePreference;
-import org.apache.airavata.compute.resource.model.GroupResourceProfile;
 import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.entity.ResourceEntity;
 import org.apache.airavata.compute.resource.repository.ResourceBindingRepository;
@@ -39,10 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Adapter service that maps resource binding entities to profile/preference views
  * used by the workflow engine and IAM layer.
  *
- * <p>Provides both clean entity-based methods ({@link #getBinding}, {@link #getUserBinding},
- * {@link #getStorageBinding}, {@link #getGatewayDefaultCredentialToken}) and legacy
- * stub-based methods ({@link #getGroupComputeResourcePreference}, {@link #getGroupResourceProfile})
- * that will be removed once all consumers are migrated.
+ * <p>Provides entity-based methods ({@link #getBinding}, {@link #getUserBinding},
+ * {@link #getStorageBinding}, {@link #getGatewayDefaultCredentialToken}) for resolving
+ * compute and storage bindings.
  *
  * <p>Read methods return {@code null} or empty collections when bindings are not found.
  */
@@ -171,114 +166,6 @@ public class ResourceProfileAdapter {
     }
 
     // -------------------------------------------------------------------------
-    // Group compute resource preference
-    // -------------------------------------------------------------------------
-
-    /**
-     * Resolve a {@link GroupComputeResourcePreference} for the given compute resource within
-     * the specified group resource profile.
-     *
-     * <p>The group resource profile ID is treated as a gateway ID. The first binding found for
-     * the resource within that gateway is used. When no binding is found a minimal preference
-     * object carrying only the {@code computeResourceId} is returned.
-     *
-     * @param computeResourceId       the compute resource identifier
-     * @param groupResourceProfileId  the group resource profile (gateway) identifier
-     * @return preference object; never {@code null}
-     */
-    public GroupComputeResourcePreference getGroupComputeResourcePreference(
-            String computeResourceId, String groupResourceProfileId) {
-        List<ResourceBindingEntity> bindings =
-                resourceBindingRepository.findByGatewayIdAndResourceId(groupResourceProfileId, computeResourceId);
-        if (bindings.isEmpty()) {
-            bindings = resourceBindingRepository.findByResourceId(computeResourceId);
-        }
-
-        GroupComputeResourcePreference preference = new GroupComputeResourcePreference();
-        preference.setComputeResourceId(computeResourceId);
-        preference.setGroupResourceProfileId(groupResourceProfileId);
-
-        if (bindings.isEmpty()) {
-            log.debug(
-                    "getGroupComputeResourcePreference: no binding found for resourceId={}, profileId={}",
-                    computeResourceId,
-                    groupResourceProfileId);
-            preference.setResourceType(ComputeResourceType.PLAIN);
-            return preference;
-        }
-
-        ResourceBindingEntity binding = bindings.get(0);
-        Map<String, Object> metadata = binding.getMetadata();
-
-        preference.setLoginUserName(binding.getLoginUsername());
-        preference.setScratchLocation(getMetadataString(metadata, "scratchLocation"));
-        preference.setPreferredBatchQueue(getMetadataString(metadata, "preferredBatchQueue"));
-        preference.setAllocationProjectNumber(getMetadataString(metadata, "allocationProjectNumber"));
-        preference.setResourceSpecificCredentialStoreToken(binding.getCredentialId());
-
-        Optional<ResourceEntity> resourceOpt = resourceRepository.findById(computeResourceId);
-        if (resourceOpt.isPresent()) {
-            ResourceEntity resource = resourceOpt.get();
-            if (resource.getCapabilities() != null && resource.getCapabilities().getCompute() != null) {
-                preference.setResourceType(mapComputeResourceType(
-                        resource.getCapabilities().getCompute().getJobManagerType()));
-            } else {
-                preference.setResourceType(ComputeResourceType.PLAIN);
-            }
-        } else {
-            preference.setResourceType(ComputeResourceType.PLAIN);
-        }
-
-        return preference;
-    }
-
-    // -------------------------------------------------------------------------
-    // Group resource profile
-    // -------------------------------------------------------------------------
-
-    /**
-     * Build a {@link GroupResourceProfile} for the given profile ID.
-     *
-     * @param groupResourceProfileId the group resource profile (gateway) identifier
-     * @return profile object; never {@code null}
-     */
-    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) {
-        List<ResourceBindingEntity> bindings = resourceBindingRepository.findByGatewayId(groupResourceProfileId);
-
-        GroupResourceProfile profile = new GroupResourceProfile();
-        profile.setGroupResourceProfileId(groupResourceProfileId);
-        profile.setGatewayId(groupResourceProfileId);
-
-        if (!bindings.isEmpty()) {
-            profile.setDefaultCredentialStoreToken(bindings.get(0).getCredentialId());
-        }
-
-        List<GroupComputeResourcePreference> preferences = bindings.stream()
-                .map(binding -> getGroupComputeResourcePreference(binding.getResourceId(), groupResourceProfileId))
-                .toList();
-        profile.setComputePreferences(preferences);
-
-        return profile;
-    }
-
-    /**
-     * Build a list of {@link GroupResourceProfile} objects for each accessible profile ID.
-     *
-     * @param gatewayId                    the gateway identifier
-     * @param accessibleGroupResProfileIds list of profile IDs to include
-     * @return list of group resource profiles; never {@code null}
-     */
-    public List<GroupResourceProfile> getGroupResourceList(
-            String gatewayId, List<String> accessibleGroupResProfileIds) {
-        if (accessibleGroupResProfileIds == null) {
-            return new ArrayList<>();
-        }
-        return accessibleGroupResProfileIds.stream()
-                .map(this::getGroupResourceProfile)
-                .toList();
-    }
-
-    // -------------------------------------------------------------------------
     // Existence checks
     // -------------------------------------------------------------------------
 
@@ -323,7 +210,4 @@ public class ResourceProfileAdapter {
         return value instanceof String ? (String) value : (value != null ? String.valueOf(value) : null);
     }
 
-    private ComputeResourceType mapComputeResourceType(String jobManagerType) {
-        return ComputeResourceType.fromJobManagerType(jobManagerType);
-    }
 }

@@ -82,9 +82,8 @@ public class ProcessResourceResolver {
      *
      * <p>Resolution order:
      * <ol>
-     *   <li>Resource-specific credential token from the matching
-     *       {@link GroupComputeResourcePreference}.
-     *   <li>Default credential token from the {@link GroupResourceProfile}.
+     *   <li>Resource-specific credential token from the matching compute resource binding.
+     *   <li>Default credential token from the gateway-level binding.
      * </ol>
      *
      * @throws OrchestratorException if no group resource profile is configured or no token is found

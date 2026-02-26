@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.compute.resource.model.ComputationalResourceSchedulingModel;
-import org.apache.airavata.compute.resource.model.GroupResourceProfile;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
@@ -312,10 +311,9 @@ public class DefaultExperimentService implements ExperimentService {
             String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
             if (experiment.getUserConfigurationData().getGroupResourceProfileId() == null) {
-                List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
-                if (groupResourceProfiles != null && !groupResourceProfiles.isEmpty()) {
-                    final String groupResourceProfileId =
-                            groupResourceProfiles.get(0).getGroupResourceProfileId();
+                List<String> accessibleProfileIds = getAccessibleGroupResourceProfileIds(authzToken, gatewayId);
+                if (accessibleProfileIds != null && !accessibleProfileIds.isEmpty()) {
+                    final String groupResourceProfileId = accessibleProfileIds.get(0);
                     logger.warn(
                             "Experiment {} doesn't have groupResourceProfileId, picking first one user has access to: {}",
                             airavataExperimentId,
@@ -739,12 +737,16 @@ public class DefaultExperimentService implements ExperimentService {
     // Private helpers — group resource profile operations
     // -------------------------------------------------------------------------
 
-    private List<GroupResourceProfile> getGroupResourceList(AuthzToken authzToken, String gatewayId)
+    /**
+     * Returns the list of group resource profile IDs accessible to the authenticated user in the given gateway.
+     * When sharing is disabled, an empty list is returned.
+     */
+    private List<String> getAccessibleGroupResourceProfileIds(AuthzToken authzToken, String gatewayId)
             throws AiravataSystemException {
         try {
-            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
             var accessibleGroupResProfileIds = new ArrayList<String>();
             if (properties.isSharingEnabled()) {
+                String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
                 var filters = new ArrayList<SearchCriteria>();
                 var searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -760,7 +762,7 @@ public class DefaultExperimentService implements ExperimentService {
                                 -1)
                         .forEach(p -> accessibleGroupResProfileIds.add(p.getEntityId()));
             }
-            return resourceProfileAdapter.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+            return accessibleGroupResProfileIds;
         } catch (SharingRegistryException e) {
             String msg = "Error occurred while getting group resource list: " + e.getMessage();
             logger.error(msg, e);
@@ -772,25 +774,24 @@ public class DefaultExperimentService implements ExperimentService {
         }
     }
 
+    /**
+     * Creates a default group resource profile entry for the user by registering a sharing entity
+     * with a generated ID. Returns the generated profile ID, or {@code null} when sharing is disabled.
+     */
     private String createDefaultGroupResourceProfileForUser(AuthzToken authzToken, String gatewayId, String username)
             throws AiravataSystemException {
         String userId = username + "@" + gatewayId;
+        String profileName = "Default Resource Profile for " + username;
+        String groupResourceProfileId = IdGenerator.ensureId(null);
 
-        var defaultProfile = new GroupResourceProfile();
-        defaultProfile.setGatewayId(gatewayId);
-        defaultProfile.setGroupResourceProfileName("Default Resource Profile for " + username);
-        defaultProfile.setComputePreferences(new ArrayList<>());
-
-        // Create a sharing entity for the new profile
-        String groupResourceProfileId = defaultProfile.getGroupResourceProfileId();
-        if (properties.isSharingEnabled() && groupResourceProfileId != null) {
+        if (properties.isSharingEnabled()) {
             try {
                 var entity = new SharingEntity();
                 entity.setEntityId(groupResourceProfileId);
                 entity.setDomainId(gatewayId);
                 entity.setEntityTypeId(gatewayId + ":GROUP_RESOURCE_PROFILE");
                 entity.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + gatewayId);
-                entity.setName(defaultProfile.getGroupResourceProfileName());
+                entity.setName(profileName);
                 sharingService.createEntity(entity);
 
                 try {
