@@ -31,11 +31,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.apache.airavata.execution.activity.ProcessActivity.Activities;
 import org.apache.airavata.execution.activity.ProcessActivity.CancelInput;
+import org.apache.airavata.execution.activity.ProcessActivity.NodeResult;
 import org.apache.airavata.execution.activity.ProcessActivity.PostInput;
 import org.apache.airavata.execution.activity.ProcessActivity.PreInput;
 import org.junit.jupiter.api.Test;
@@ -48,9 +52,8 @@ import org.junit.jupiter.api.Test;
  * All assertions operate directly on Java reflection and the {@link java.io.Serializable}
  * contract provided by the record declarations.
  *
- * <p>The {@link Activities} interface exposes exactly three DAG-phase methods:
- * {@code executePreDag}, {@code executePostDag}, and {@code executeCancelDag}.
- * Each accepts {@code (String processId, String gatewayId)} and returns {@code String}.
+ * <p>The {@link Activities} interface exposes exactly two methods:
+ * {@code resolveResourceType} and {@code executeDagNode}.
  */
 public class ProcessActivityTest {
 
@@ -288,45 +291,38 @@ public class ProcessActivityTest {
     }
 
     // -------------------------------------------------------------------------
-    // 11. Activities interface — exactly 3 methods present
+    // 11. Activities interface — exactly 2 methods present
     // -------------------------------------------------------------------------
 
     @Test
-    public void activitiesInterface_hasExactlyThreeMethods() {
+    public void activitiesInterface_hasExactlyTwoMethods() {
         Method[] methods = Activities.class.getMethods();
         // Filter to only the methods declared on Activities itself (exclude Object methods)
         long count = Arrays.stream(methods)
                 .filter(m -> m.getDeclaringClass().equals(Activities.class))
                 .count();
 
-        assertEquals(3, count,
-                "Activities interface must declare exactly 3 methods but found: " + count);
+        assertEquals(2, count,
+                "Activities interface must declare exactly 2 methods but found: " + count);
     }
 
     @Test
-    public void activitiesInterface_hasExecutePreDagMethod() {
+    public void activitiesInterface_hasResolveResourceTypeMethod() {
         Set<String> methodNames = getActivitiesMethodNames();
-        assertTrue(methodNames.contains("executePreDag"),
-                "Activities interface must declare 'executePreDag' method");
+        assertTrue(methodNames.contains("resolveResourceType"),
+                "Activities interface must declare 'resolveResourceType' method");
     }
 
     @Test
-    public void activitiesInterface_hasExecutePostDagMethod() {
+    public void activitiesInterface_hasExecuteDagNodeMethod() {
         Set<String> methodNames = getActivitiesMethodNames();
-        assertTrue(methodNames.contains("executePostDag"),
-                "Activities interface must declare 'executePostDag' method");
+        assertTrue(methodNames.contains("executeDagNode"),
+                "Activities interface must declare 'executeDagNode' method");
     }
 
     @Test
-    public void activitiesInterface_hasExecuteCancelDagMethod() {
-        Set<String> methodNames = getActivitiesMethodNames();
-        assertTrue(methodNames.contains("executeCancelDag"),
-                "Activities interface must declare 'executeCancelDag' method");
-    }
-
-    @Test
-    public void activitiesInterface_allThreeExpectedMethodsPresent() {
-        Set<String> expected = Set.of("executePreDag", "executePostDag", "executeCancelDag");
+    public void activitiesInterface_allTwoExpectedMethodsPresent() {
+        Set<String> expected = Set.of("resolveResourceType", "executeDagNode");
         Set<String> actual   = getActivitiesMethodNames();
 
         Set<String> missing = expected.stream()
@@ -357,6 +353,12 @@ public class ProcessActivityTest {
                 "Activities interface must not declare legacy 'archive' method");
         assertFalse(methodNames.contains("markFailed"),
                 "Activities interface must not declare legacy 'markFailed' method");
+        assertFalse(methodNames.contains("executePreDag"),
+                "Activities interface must not declare replaced 'executePreDag' method");
+        assertFalse(methodNames.contains("executePostDag"),
+                "Activities interface must not declare replaced 'executePostDag' method");
+        assertFalse(methodNames.contains("executeCancelDag"),
+                "Activities interface must not declare replaced 'executeCancelDag' method");
     }
 
     // -------------------------------------------------------------------------
@@ -364,80 +366,69 @@ public class ProcessActivityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void activitiesInterface_executePreDag_returnTypeIsString() throws Exception {
-        Method method = Activities.class.getMethod("executePreDag", String.class, String.class);
+    public void activitiesInterface_resolveResourceType_returnTypeIsComputeResourceType() throws Exception {
+        Method method = Activities.class.getMethod("resolveResourceType", String.class);
 
-        assertEquals(String.class, method.getReturnType(),
-                "'executePreDag' must return String");
+        assertEquals(ComputeResourceType.class, method.getReturnType(),
+                "'resolveResourceType' must return ComputeResourceType");
     }
 
     @Test
-    public void activitiesInterface_executePreDag_takesTwoStringParameters() throws Exception {
-        Method method = Activities.class.getMethod("executePreDag", String.class, String.class);
+    public void activitiesInterface_resolveResourceType_takesOneStringParameter() throws Exception {
+        Method method = Activities.class.getMethod("resolveResourceType", String.class);
 
-        assertEquals(2, method.getParameterCount(),
-                "'executePreDag' must accept exactly 2 parameters");
+        assertEquals(1, method.getParameterCount(),
+                "'resolveResourceType' must accept exactly 1 parameter");
         assertEquals(String.class, method.getParameterTypes()[0],
-                "'executePreDag' first parameter must be String (processId)");
-        assertEquals(String.class, method.getParameterTypes()[1],
-                "'executePreDag' second parameter must be String (gatewayId)");
+                "'resolveResourceType' first parameter must be String (processId)");
     }
 
     @Test
-    public void activitiesInterface_executePostDag_returnTypeIsString() throws Exception {
-        Method method = Activities.class.getMethod("executePostDag", String.class, String.class);
+    public void activitiesInterface_executeDagNode_returnTypeIsNodeResult() throws Exception {
+        Method method = Activities.class.getMethod("executeDagNode",
+                String.class, String.class, String.class, String.class, Map.class, Map.class);
 
-        assertEquals(String.class, method.getReturnType(),
-                "'executePostDag' must return String");
+        assertEquals(NodeResult.class, method.getReturnType(),
+                "'executeDagNode' must return NodeResult");
     }
 
     @Test
-    public void activitiesInterface_executePostDag_takesTwoStringParameters() throws Exception {
-        Method method = Activities.class.getMethod("executePostDag", String.class, String.class);
+    public void activitiesInterface_executeDagNode_takesSixParameters() throws Exception {
+        Method method = Activities.class.getMethod("executeDagNode",
+                String.class, String.class, String.class, String.class, Map.class, Map.class);
 
-        assertEquals(2, method.getParameterCount(),
-                "'executePostDag' must accept exactly 2 parameters");
+        assertEquals(6, method.getParameterCount(),
+                "'executeDagNode' must accept exactly 6 parameters");
         assertEquals(String.class, method.getParameterTypes()[0],
-                "'executePostDag' first parameter must be String (processId)");
+                "'executeDagNode' parameter 0 must be String (processId)");
         assertEquals(String.class, method.getParameterTypes()[1],
-                "'executePostDag' second parameter must be String (gatewayId)");
+                "'executeDagNode' parameter 1 must be String (gatewayId)");
+        assertEquals(String.class, method.getParameterTypes()[2],
+                "'executeDagNode' parameter 2 must be String (nodeId)");
+        assertEquals(String.class, method.getParameterTypes()[3],
+                "'executeDagNode' parameter 3 must be String (taskBeanName)");
+        assertEquals(Map.class, method.getParameterTypes()[4],
+                "'executeDagNode' parameter 4 must be Map (dagState)");
+        assertEquals(Map.class, method.getParameterTypes()[5],
+                "'executeDagNode' parameter 5 must be Map (nodeMetadata)");
     }
 
     @Test
-    public void activitiesInterface_executeCancelDag_returnTypeIsString() throws Exception {
-        Method method = Activities.class.getMethod("executeCancelDag", String.class, String.class);
+    public void activitiesInterface_bothMethods_existWithCorrectSignatures() throws Exception {
+        // resolveResourceType: ComputeResourceType f(String)
+        Method resolveMethod = Activities.class.getMethod("resolveResourceType", String.class);
+        assertEquals(ComputeResourceType.class, resolveMethod.getReturnType(),
+                "resolveResourceType must return ComputeResourceType");
+        assertEquals(1, resolveMethod.getParameterCount(),
+                "resolveResourceType must accept exactly 1 parameter");
 
-        assertEquals(String.class, method.getReturnType(),
-                "'executeCancelDag' must return String");
-    }
-
-    @Test
-    public void activitiesInterface_executeCancelDag_takesTwoStringParameters() throws Exception {
-        Method method = Activities.class.getMethod("executeCancelDag", String.class, String.class);
-
-        assertEquals(2, method.getParameterCount(),
-                "'executeCancelDag' must accept exactly 2 parameters");
-        assertEquals(String.class, method.getParameterTypes()[0],
-                "'executeCancelDag' first parameter must be String (processId)");
-        assertEquals(String.class, method.getParameterTypes()[1],
-                "'executeCancelDag' second parameter must be String (gatewayId)");
-    }
-
-    @Test
-    public void activitiesInterface_allThreeMethods_haveUniformSignature() throws Exception {
-        // All three methods must share the same signature: String f(String, String)
-        for (String name : new String[]{"executePreDag", "executePostDag", "executeCancelDag"}) {
-            Method method = Activities.class.getMethod(name, String.class, String.class);
-
-            assertEquals(String.class, method.getReturnType(),
-                    name + " must return String");
-            assertEquals(2, method.getParameterCount(),
-                    name + " must accept exactly 2 parameters");
-            assertEquals(String.class, method.getParameterTypes()[0],
-                    name + " first parameter must be String");
-            assertEquals(String.class, method.getParameterTypes()[1],
-                    name + " second parameter must be String");
-        }
+        // executeDagNode: NodeResult f(String, String, String, String, Map, Map)
+        Method executeMethod = Activities.class.getMethod("executeDagNode",
+                String.class, String.class, String.class, String.class, Map.class, Map.class);
+        assertEquals(NodeResult.class, executeMethod.getReturnType(),
+                "executeDagNode must return NodeResult");
+        assertEquals(6, executeMethod.getParameterCount(),
+                "executeDagNode must accept exactly 6 parameters");
     }
 
     // -------------------------------------------------------------------------
@@ -484,6 +475,53 @@ public class ProcessActivityTest {
         assertTrue(str.contains(PROCESS_ID),    "toString must contain processId");
         assertTrue(str.contains(EXPERIMENT_ID), "toString must contain experimentId");
         assertTrue(str.contains(GATEWAY_ID),    "toString must contain gatewayId");
+    }
+
+    // -------------------------------------------------------------------------
+    // 14. NodeResult record tests
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void nodeResult_recordAccessors_returnCorrectValues() {
+        Map<String, String> output = Map.of("key", "value");
+        NodeResult result = new NodeResult("success message", output);
+        assertEquals("success message", result.message());
+        assertEquals(output, result.output());
+    }
+
+    @Test
+    public void nodeResult_emptyOutput() {
+        NodeResult result = new NodeResult("done", Map.of());
+        assertEquals("done", result.message());
+        assertTrue(result.output().isEmpty());
+    }
+
+    @Test
+    public void nodeResult_serialization_roundTrip() throws Exception {
+        Map<String, String> output = new HashMap<>();
+        output.put("jobId", "123");
+        output.put("instanceId", "i-abc");
+        NodeResult original = new NodeResult("completed", output);
+        NodeResult deserialized = serializeDeserialize(original, NodeResult.class);
+        assertEquals(original.message(), deserialized.message());
+        assertEquals(original.output(), deserialized.output());
+        assertEquals(original, deserialized);
+    }
+
+    @Test
+    public void nodeResult_equality() {
+        NodeResult a = new NodeResult("msg", Map.of("k", "v"));
+        NodeResult b = new NodeResult("msg", Map.of("k", "v"));
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    public void nodeResult_toString_containsFields() {
+        NodeResult result = new NodeResult("test message", Map.of("key", "val"));
+        String str = result.toString();
+        assertTrue(str.contains("test message"));
+        assertTrue(str.contains("key"));
     }
 
     // -------------------------------------------------------------------------
