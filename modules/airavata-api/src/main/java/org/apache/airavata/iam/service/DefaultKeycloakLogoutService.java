@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.iam.service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import org.apache.airavata.config.ServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Service responsible for all Keycloak logout-related HTTP interactions.
@@ -102,20 +103,22 @@ public class DefaultKeycloakLogoutService implements KeycloakLogoutService {
         String clientId = getClientId();
         String clientSecret = getClientSecret();
 
-        String revokeUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect/revoke";
+        String revokeUrl = UriComponentsBuilder.fromHttpUrl(keycloakUrl)
+                .pathSegment("realms", realm, "protocol", "openid-connect", "revoke")
+                .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        StringBuilder formData = new StringBuilder();
-        formData.append("client_id=").append(encode(clientId));
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", clientId);
         if (clientSecret != null && !clientSecret.isEmpty()) {
-            formData.append("&client_secret=").append(encode(clientSecret));
+            formData.add("client_secret", clientSecret);
         }
-        formData.append("&token=").append(encode(refreshToken));
-        formData.append("&token_type_hint=refresh_token");
+        formData.add("token", refreshToken);
+        formData.add("token_type_hint", "refresh_token");
 
-        HttpEntity<String> request = new HttpEntity<>(formData.toString(), headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
 
         try {
             ResponseEntity<Void> response = restTemplate.exchange(revokeUrl, HttpMethod.POST, request, Void.class);
@@ -148,27 +151,25 @@ public class DefaultKeycloakLogoutService implements KeycloakLogoutService {
         String keycloakUrl = getKeycloakServerUrl();
         String realm = getKeycloakRealm();
 
-        StringBuilder url = new StringBuilder();
-        url.append(keycloakUrl);
-        url.append("/realms/").append(realm);
-        url.append("/protocol/openid-connect/logout");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(keycloakUrl)
+                .pathSegment("realms", realm, "protocol", "openid-connect", "logout");
 
         boolean hasIdToken = idToken != null && !idToken.isEmpty();
 
         // Add id_token_hint if available (required to identify the session)
         if (hasIdToken) {
-            url.append("?id_token_hint=").append(encode(idToken));
+            builder.queryParam("id_token_hint", idToken);
 
             // Only add post_logout_redirect_uri if id_token_hint is present
             // (OIDC spec requires id_token_hint to validate the redirect URI)
             if (postLogoutRedirectUri != null && !postLogoutRedirectUri.isEmpty()) {
-                url.append("&post_logout_redirect_uri=").append(encode(postLogoutRedirectUri));
+                builder.queryParam("post_logout_redirect_uri", postLogoutRedirectUri);
             }
         }
         // If no id_token_hint, omit post_logout_redirect_uri — Keycloak will show
         // a confirmation page to the user instead
 
-        return url.toString();
+        return builder.toUriString();
     }
 
     /**
@@ -200,11 +201,4 @@ public class DefaultKeycloakLogoutService implements KeycloakLogoutService {
         return null;
     }
 
-    private String encode(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            return value;
-        }
-    }
 }
