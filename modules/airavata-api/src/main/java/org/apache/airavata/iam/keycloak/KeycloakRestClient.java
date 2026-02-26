@@ -41,7 +41,7 @@ import org.apache.airavata.iam.model.ClientRepresentation;
 import org.apache.airavata.iam.model.CredentialRepresentation;
 import org.apache.airavata.iam.model.RealmRepresentation;
 import org.apache.airavata.iam.model.RoleRepresentation;
-import org.apache.airavata.iam.model.TokenResponse;
+import org.apache.airavata.iam.dto.TokenResponse;
 import org.apache.airavata.iam.model.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
