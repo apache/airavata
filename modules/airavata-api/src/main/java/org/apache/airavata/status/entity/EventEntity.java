@@ -123,18 +123,6 @@ public class EventEntity implements Serializable {
         this.parentType = parentType;
     }
 
-    /** @deprecated Use getParentId() instead. Kept for backward compatibility. */
-    @Deprecated
-    public String getProcessId() {
-        return parentId;
-    }
-
-    /** @deprecated Use setParentId() instead. Kept for backward compatibility. */
-    @Deprecated
-    public void setProcessId(String processId) {
-        this.parentId = processId;
-    }
-
     public EventKind getEventKind() {
         return eventKind;
     }

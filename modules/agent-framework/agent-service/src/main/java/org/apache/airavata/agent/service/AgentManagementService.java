@@ -98,9 +98,6 @@ public class AgentManagementService {
     public ExperimentModel getExperiment(String experimentId) {
         try {
             var experiment = experimentService.getExperiment(UserContext.authzToken(), experimentId);
-            // GroupResourceProfile / named group profile concept has been removed.
-            // The groupResourceProfileId field now holds a resource binding ID.
-            // No "Default profile" lookup or profile-name check is performed.
             return experiment;
         } catch (Exception e) {
             LOGGER.error("Error while extracting the experiment with the id: {}", experimentId);
@@ -208,7 +205,7 @@ public class AgentManagementService {
         experimentModel.setProjectId(projectId);
         experimentModel.setUserName(userName);
         experimentModel.setGatewayId(gatewayId);
-        experimentModel.setExecutionId(appInterfaceId);
+        experimentModel.setApplicationId(appInterfaceId);
 
         var computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
         var binding = resolveBindingForCluster(req.getGroup(), req.getRemoteCluster(), gatewayId);

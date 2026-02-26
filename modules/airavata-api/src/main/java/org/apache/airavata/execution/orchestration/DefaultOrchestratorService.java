@@ -230,7 +230,7 @@ public class DefaultOrchestratorService implements OrchestratorService {
         processModel.setExperimentDataDir(processModel.getExperimentDataDir() + "/intermediates");
 
         List<ApplicationOutput> applicationOutputs =
-                applicationAdapter.getApplicationOutputs(experimentModel.getExecutionId());
+                applicationAdapter.getApplicationOutputs(experimentModel.getApplicationId());
         List<ApplicationOutput> requestedOutputs = new ArrayList<>();
 
         for (ApplicationOutput output : applicationOutputs) {

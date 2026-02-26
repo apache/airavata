@@ -735,13 +735,13 @@ class TaskContextTest {
         }
 
         @Test
-        @DisplayName("lazy JobModel has positive creationTime")
+        @DisplayName("lazy JobModel has a non-null createdAt instant")
         void lazyJobModelHasPositiveCreationTime() throws Exception {
             ProcessModel pm = processModelWithSchedule("staticWorkingDir", "/jobs/wdir4");
             TaskContext ctx = new TaskContext(PROCESS_ID, GATEWAY_ID, TASK_ID, pm);
 
-            assertTrue(ctx.getJobModel().getCreationTime() > 0,
-                    "JobModel creationTime should be a positive epoch millis value");
+            assertNotNull(ctx.getJobModel().getCreatedAt(),
+                    "JobModel createdAt should be set to a non-null Instant");
         }
 
         @Test

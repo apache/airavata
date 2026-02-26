@@ -90,11 +90,14 @@ public class PreferenceResolutionService {
             }
         }
 
-        // USER level (highest precedence)
+        // GROUP level for user's personal group (highest precedence among regular principals).
+        // New writes use GROUP with ownerId = user's personal group ID.
+        // Legacy USER-level records in the DB are no longer written but may still exist
+        // until a migration updates preference_level = 'USER' rows to 'GROUP'.
         if (userId != null) {
             List<ResourcePreferenceEntity> userPrefs =
                     preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
-                            resourceType, resourceId, userId, PreferenceLevel.USER);
+                            resourceType, resourceId, userId, PreferenceLevel.GROUP);
             for (ResourcePreferenceEntity pref : userPrefs) {
                 result.put(pref.getKey(), pref.getValue());
             }

@@ -843,7 +843,7 @@ public class DefaultExperimentService implements ExperimentService {
         }
 
         // Verify user has READ access to Application Deployment
-        final String appInterfaceId = experiment.getSourceApplicationInterfaceId();
+        final String appInterfaceId = experiment.getApplicationId();
         List<ApplicationDeploymentDescription> applicationDeploymentDescriptions;
         try {
             // Look up deployments by interface ID (APPLICATION_DEPLOYMENT.APPLICATION_ID

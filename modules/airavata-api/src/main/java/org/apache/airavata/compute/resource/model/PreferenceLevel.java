@@ -53,12 +53,13 @@ public enum PreferenceLevel {
     GROUP(2),
 
     /**
-     * User-level preferences. Deprecated: use GROUP level with ownerId = user's personal group ID.
-     * Kept for backward compatibility when reading pre-migration data.
+     * User-level preferences (DB compat only). Do not use for new writes.
      *
-     * @deprecated Map to personal group and use GROUP level instead.
+     * <p>Existing database rows with {@code preference_level = 'USER'} are still deserialized
+     * to this enum constant by JPA. New code must use {@link #GROUP} with ownerId set to the
+     * user's personal group ID. A pending migration will update existing rows from USER to GROUP,
+     * after which this constant can be removed.
      */
-    @Deprecated
     USER(2),
 
     /**

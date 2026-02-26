@@ -20,6 +20,7 @@
 package org.apache.airavata.restapi.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,8 @@ public class JobController {
         JobModel job = new JobModel();
         job.setJobId(process.getProcessId());
         job.setProcessId(getParentProcessIdFromMetadata(process.getProcessMetadata()));
-        job.setCreationTime(process.getCreationTime());
+        long creationTimeMillis = process.getCreationTime();
+        job.setCreatedAt(creationTimeMillis > 0 ? Instant.ofEpochMilli(creationTimeMillis) : null);
         if (process.getProcessStatuses() != null) {
             List<StatusModel<JobState>> list = new ArrayList<>();
             for (StatusModel<ProcessState> ps : process.getProcessStatuses()) {

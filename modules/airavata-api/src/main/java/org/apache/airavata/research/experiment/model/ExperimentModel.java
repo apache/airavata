@@ -81,9 +81,6 @@ public class ExperimentModel {
 
     private List<ProcessModel> processes;
 
-    // Legacy fields that older orchestrator and service code still references.
-    // These should be removed once all callers are updated to the new model.
-
     private UserConfigurationDataModel userConfigurationData;
     private boolean enableEmailNotification;
     private List<String> emailAddresses;
@@ -232,22 +229,6 @@ public class ExperimentModel {
 
     public void setProcesses(List<ProcessModel> processes) {
         this.processes = processes;
-    }
-
-    // ---- Legacy accessors ----
-
-    /** @return alias for {@link #getApplicationId()}, used by older orchestrator code. */
-    public String getExecutionId() {
-        return applicationId;
-    }
-
-    public void setExecutionId(String executionId) {
-        this.applicationId = executionId;
-    }
-
-    /** @return alias for {@link #getApplicationId()}, used by ApplicationAdapter lookups. */
-    public String getSourceApplicationInterfaceId() {
-        return applicationId;
     }
 
     public UserConfigurationDataModel getUserConfigurationData() {

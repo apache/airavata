@@ -74,18 +74,6 @@ public class JobModel {
         this.createdAt = createdAt;
     }
 
-    /** @deprecated Use getCreatedAt() instead */
-    @Deprecated
-    public long getCreationTime() {
-        return createdAt != null ? createdAt.toEpochMilli() : 0L;
-    }
-
-    /** @deprecated Use setCreatedAt() instead */
-    @Deprecated
-    public void setCreationTime(long creationTime) {
-        this.createdAt = creationTime > 0 ? Instant.ofEpochMilli(creationTime) : null;
-    }
-
     public List<StatusModel<JobState>> getJobStatuses() {
         return jobStatuses;
     }

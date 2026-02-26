@@ -35,7 +35,7 @@ public class ExperimentModelUtil {
         var processModel = new ProcessModel();
         processModel.setCreationTime(experiment.getCreationTime());
         processModel.setExperimentId(experiment.getExperimentId());
-        processModel.setApplicationInterfaceId(experiment.getSourceApplicationInterfaceId());
+        processModel.setApplicationInterfaceId(experiment.getApplicationId());
         processModel.setEnableEmailNotification(experiment.getEnableEmailNotification());
         var emailAddresses = experiment.getEmailAddresses();
         if (emailAddresses != null && !emailAddresses.isEmpty()) {
