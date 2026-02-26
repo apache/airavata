@@ -126,7 +126,6 @@ public class AiravataFileService {
                     .asRuntimeException());
         }
 
-        // responseObserver.onNext(ServerMessage.newBuilder().setReadDirRes(readDirResBuilder.build()).build());
         responseObserver.onCompleted();
     }
 

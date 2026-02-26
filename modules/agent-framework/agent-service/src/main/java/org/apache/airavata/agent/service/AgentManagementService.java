@@ -53,6 +53,7 @@ import org.springframework.stereotype.Service;
 public class AgentManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagementService.class);
+    private static final long ONE_HOUR_MS = 60 * 60 * 1000;
     private final ExperimentService experimentService;
     private final ExperimentSearchService experimentSearchService;
     private final ClusterApplicationConfiguration clusterApplicationConfig;
@@ -116,7 +117,7 @@ public class AgentManagementService {
             var appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
             var experimentStatistics = experimentSearchService.getExperimentStatistics(
                     UserContext.gatewayId(),
-                    IdGenerator.getUniqueTimestamp().getTime() - 60 * 60 * 1000,
+                    IdGenerator.getUniqueTimestamp().getTime() - ONE_HOUR_MS,
                     IdGenerator.getUniqueTimestamp().getTime(),
                     null,
                     appInterfaceId,
