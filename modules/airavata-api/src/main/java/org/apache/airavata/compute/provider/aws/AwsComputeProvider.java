@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import org.apache.airavata.compute.provider.ComputeProvider;
 import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.model.JobState;
@@ -44,6 +43,7 @@ import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
 import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.iam.service.CredentialStoreService;
+import org.apache.airavata.protocol.AgentAdapter;
 import org.apache.airavata.protocol.CommandOutput;
 import org.apache.airavata.protocol.ssh.SSHJAgentAdapter;
 import org.apache.airavata.protocol.ssh.SSHUtil;
@@ -84,10 +84,6 @@ import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 public class AwsComputeProvider implements ComputeProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(AwsComputeProvider.class);
-
-    private static final int WAIT_MAX_RETRIES = 10;
-    private static final long INITIAL_DELAY_SECONDS = 5;
-    private static final long MAX_DELAY_SECONDS = 20;
 
     private final AwsTaskUtil awsTaskUtil;
     private final ProcessService processService;
@@ -254,18 +250,8 @@ public class AwsComputeProvider implements ComputeProvider {
             jobService.saveJob(jobModel);
 
             String remoteWorkingDir = context.getWorkingDir();
-            ExponentialBackoffWaiter sshWaiter = new ExponentialBackoffWaiter(
-                    "SSH daemon readiness on EC2 instance " + instanceId,
-                    WAIT_MAX_RETRIES,
-                    INITIAL_DELAY_SECONDS,
-                    MAX_DELAY_SECONDS,
-                    TimeUnit.SECONDS);
-
             try {
-                sshWaiter.waitUntil(() -> {
-                    adapter.createDirectory(remoteWorkingDir, true);
-                    return true;
-                });
+                adapter.createDirectory(remoteWorkingDir, true);
             } catch (Exception e) {
                 String reason = "Failed to connect to SSH daemon or create remote directory " + remoteWorkingDir + ". "
                         + e.getMessage();
@@ -383,7 +369,7 @@ public class AwsComputeProvider implements ComputeProvider {
     // Monitor helpers
     // -------------------------------------------------------------------------
 
-    private void pollJobUntilSaturated(SSHJAgentAdapter adapter, JobManagerSpec config, JobModel job) {
+    private void pollJobUntilSaturated(AgentAdapter adapter, JobManagerSpec config, JobModel job) {
         try {
             var monitorCommand = config.getMonitorCommand(job.getJobId());
             if (monitorCommand.isEmpty()) {
@@ -391,33 +377,16 @@ public class AwsComputeProvider implements ComputeProvider {
                 return;
             }
 
-            int retryDelaySeconds = 30;
-            for (int i = 1; i <= 4; i++) {
-                CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
-                if (output.getExitCode() != 0) {
-                    logger.warn("Monitor command failed for job {}: stdout={}, stderr={}",
-                            job.getJobId(), output.getStdOut(), output.getStdError());
-                    break;
-                }
+            CommandOutput output = adapter.executeCommand(monitorCommand.get().getRawCommand(), null);
+            if (output.getExitCode() != 0) {
+                logger.warn("Monitor command failed for job {}: stdout={}, stderr={}",
+                        job.getJobId(), output.getStdOut(), output.getStdError());
+                return;
+            }
 
-                var jobStatus = config.getParser().parseJobStatus(job.getJobId(), output.getStdOut());
-                if (jobStatus == null) {
-                    logger.info("Status unavailable for job {} — skipping", job.getJobId());
-                    break;
-                }
-
+            var jobStatus = config.getParser().parseJobStatus(job.getJobId(), output.getStdOut());
+            if (jobStatus != null) {
                 logger.info("Job {} status: {}", job.getJobId(), jobStatus.getState());
-
-                if (jobStatus.getState() != org.apache.airavata.compute.resource.model.JobState.ACTIVE
-                        && jobStatus.getState() != org.apache.airavata.compute.resource.model.JobState.QUEUED
-                        && jobStatus.getState() != org.apache.airavata.compute.resource.model.JobState.SUBMITTED) {
-                    logger.info("Job {} reached saturated state", job.getJobId());
-                    break;
-                }
-
-                int waitTime = retryDelaySeconds * i;
-                logger.info("Waiting {} seconds before next poll for job {}", waitTime, job.getJobId());
-                Thread.sleep(waitTime * 1000L);
             }
         } catch (Exception e) {
             logger.warn("Error polling job {} — continuing", job.getJobId(), e);
@@ -463,54 +432,39 @@ public class AwsComputeProvider implements ComputeProvider {
 
     private String verifyInstanceIsRunning(String token, String instanceId, String region, TaskContext context)
             throws Exception {
-        ExponentialBackoffWaiter waiter = new ExponentialBackoffWaiter(
-                "EC2 instance " + instanceId + " to enter 'running' state",
-                WAIT_MAX_RETRIES,
-                INITIAL_DELAY_SECONDS,
-                MAX_DELAY_SECONDS,
-                TimeUnit.SECONDS);
-
         try (Ec2Client ec2Client = awsTaskUtil.buildEc2Client(token, context.getGatewayId(), region)) {
-            return waiter.waitUntil(() -> {
-                DescribeInstancesRequest request = DescribeInstancesRequest.builder()
-                        .instanceIds(instanceId)
-                        .build();
-                DescribeInstancesResponse response = ec2Client.describeInstances(request);
+            DescribeInstancesRequest request = DescribeInstancesRequest.builder()
+                    .instanceIds(instanceId)
+                    .build();
+            DescribeInstancesResponse response = ec2Client.describeInstances(request);
 
-                if (response.reservations().isEmpty()
-                        || response.reservations().get(0).instances().isEmpty()) {
-                    logger.error(
-                            "No instance found with ID during verification: {} for the process: {}",
-                            instanceId, context.getProcessId());
-                    throw new Exception("No instance found with ID during verification: " + instanceId
-                            + " for the process: " + context.getProcessId());
+            if (response.reservations().isEmpty()
+                    || response.reservations().get(0).instances().isEmpty()) {
+                throw new Exception("No instance found with ID: " + instanceId
+                        + " for process: " + context.getProcessId());
+            }
+
+            Instance instance = response.reservations().get(0).instances().get(0);
+            InstanceStateName state = instance.state().name();
+            logger.info("Instance {} state: {} for process {}", instanceId, state, context.getProcessId());
+
+            if (state == InstanceStateName.RUNNING) {
+                String publicIp = instance.publicIpAddress();
+                if (publicIp == null || publicIp.isEmpty()) {
+                    throw new Exception("Instance " + instanceId + " is running but has no public IP yet");
                 }
+                return publicIp;
+            }
 
-                Instance instance = response.reservations().get(0).instances().get(0);
-                InstanceStateName state = instance.state().name();
-                logger.info("Current state of instance {}: {} for the process: {}", instanceId, state,
-                        context.getProcessId());
+            if (state == InstanceStateName.SHUTTING_DOWN
+                    || state == InstanceStateName.TERMINATED
+                    || state == InstanceStateName.STOPPED) {
+                throw new Exception("Instance entered failure state: " + state
+                        + " for process: " + context.getProcessId());
+            }
 
-                if (state == InstanceStateName.RUNNING) {
-                    if (instance.publicIpAddress() == null
-                            || instance.publicIpAddress().isEmpty()) {
-                        return null;
-                    }
-                    return instance.publicIpAddress();
-                }
-
-                if (state == InstanceStateName.SHUTTING_DOWN
-                        || state == InstanceStateName.TERMINATED
-                        || state == InstanceStateName.STOPPED) {
-                    logger.error(
-                            "Instance entered a failure state during verification: {} for the process: {}",
-                            state, context.getProcessId());
-                    throw new Exception("Instance entered a failure state during verification: " + state
-                            + " for the process: " + context.getProcessId());
-                }
-
-                return null;
-            });
+            // Still pending — throw so Temporal retries
+            throw new Exception("Instance " + instanceId + " not yet running (state: " + state + ")");
         }
     }
 

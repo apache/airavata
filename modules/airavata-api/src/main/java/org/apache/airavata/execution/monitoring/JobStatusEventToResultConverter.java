@@ -37,9 +37,6 @@ public class JobStatusEventToResultConverter {
 
     private static final Logger log = LoggerFactory.getLogger(JobStatusEventToResultConverter.class);
 
-    private static final int RETRIES = 5;
-    private static final long RETRY_DELAY_MS = 2000;
-
     public JobStatusResult convert(JobStatusUpdateEvent event, JobService jobService) {
         String jobName = event.getJobName();
         String status = event.getStatus();
@@ -50,7 +47,7 @@ public class JobStatusEventToResultConverter {
             return null;
         }
         try {
-            String jobId = getJobIdByJobNameWithRetry(jobName, taskId, jobService);
+            String jobId = getJobIdByJobName(jobName, taskId, jobService);
             if (jobId == null) {
                 log.error("No job id for job name {} task {}", jobName, taskId);
                 return null;
@@ -72,25 +69,18 @@ public class JobStatusEventToResultConverter {
         }
     }
 
-    private static String getJobIdByJobNameWithRetry(String jobName, String taskId, JobService jobService)
-            throws RegistryException, InterruptedException {
-        for (int i = 0; i < RETRIES; i++) {
-            var jobsOfTask = jobService.getJobs("taskId", taskId);
-            if (jobsOfTask == null || jobsOfTask.isEmpty()) {
-                log.warn("No jobs for task {}. Retrying in {} ms", taskId, RETRY_DELAY_MS);
-                Thread.sleep(RETRY_DELAY_MS);
-                continue;
-            }
-            var match = jobsOfTask.stream()
-                    .filter(job -> jobName.equals(job.getJobName()))
-                    .findFirst();
-            if (match.isPresent()) {
-                return match.get().getJobId();
-            }
-            log.warn("No job for job name {} and task {}. Retrying in {} ms", jobName, taskId, RETRY_DELAY_MS);
-            Thread.sleep(RETRY_DELAY_MS);
+    private static String getJobIdByJobName(String jobName, String taskId, JobService jobService)
+            throws RegistryException {
+        var jobsOfTask = jobService.getJobs("taskId", taskId);
+        if (jobsOfTask == null || jobsOfTask.isEmpty()) {
+            log.warn("No jobs found for task {}. Job record should have been saved before submission.", taskId);
+            return null;
         }
-        return null;
+        return jobsOfTask.stream()
+                .filter(job -> jobName.equals(job.getJobName()))
+                .findFirst()
+                .map(job -> job.getJobId())
+                .orElse(null);
     }
 
     private static JobState mapStatus(String status) {

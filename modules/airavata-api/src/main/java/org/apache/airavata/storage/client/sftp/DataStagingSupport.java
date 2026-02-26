@@ -309,23 +309,10 @@ public class DataStagingSupport {
             boolean fileExists = adapter.doesFileExist(sourcePath);
 
             if (!fileExists) {
-                for (int i = 1; i <= 3; i++) {
-                    logger.warn("File " + sourcePath + " was not found in path. Retrying in 10 seconds. Try " + i);
-                    try {
-                        Thread.sleep(10 * 1000);
-                    } catch (InterruptedException e) {
-                        logger.error("Unexpected error in waiting", e);
-                    }
-                    fileExists = adapter.doesFileExist(sourcePath);
-                    if (fileExists) {
-                        break;
-                    }
-                }
-            }
-
-            if (!fileExists) {
-                logger.warn("Ignoring the file {} transfer as it is not available", sourcePath);
-                return false;
+                logger.warn("File {} not found at source path. Will be retried by Temporal.", sourcePath);
+                throw new TaskFailureException(
+                        "Source file not found: " + sourcePath, false,
+                        new java.io.FileNotFoundException(sourcePath));
             }
         } catch (AgentException e) {
             logger.error("Error while checking the file {} existence", sourcePath, e);
