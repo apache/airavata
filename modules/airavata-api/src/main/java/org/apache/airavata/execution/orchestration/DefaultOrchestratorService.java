@@ -479,7 +479,7 @@ public class DefaultOrchestratorService implements OrchestratorService {
                     experimentId, gatewayId, "Validation failed: " + e.getErrorMessage(), e);
         } catch (RegistryException e) {
             throw experimentStatusManager.failExperiment(
-                    experimentId, gatewayId, "Registry error: " + e.getMessage(), e);
+                    experimentId, gatewayId, "Database error: " + e.getMessage(), e);
         } catch (ExperimentNotFoundException e) {
             throw experimentStatusManager.failExperiment(
                     experimentId, gatewayId, "Unexpected error occurred: " + e.getMessage(), e);

@@ -49,10 +49,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Service for managing users in the registry.
- * Uses the unified OIDC-based UserEntity from registry.entities.
+ * Service for managing users in the IAM layer.
  */
-@Service("registryUserService")
+@Service("iamUserService")
 @Transactional
 public class DefaultUserService implements UserService {
 

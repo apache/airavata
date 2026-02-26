@@ -559,7 +559,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
             return experimentStatistics;
         } catch (RegistryException e) {
             String message =
-                    String.format("Error while retrieving experiment statistics from registry: %s", e.getMessage());
+                    String.format("Error while retrieving experiment statistics from database: %s", e.getMessage());
             logger.error(message, e);
             throw new RegistryException(message, e);
         }

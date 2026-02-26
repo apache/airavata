@@ -35,7 +35,7 @@ import org.mapstruct.Named;
 @Mapper(
         componentModel = "spring",
         config = EntityMapperConfiguration.class,
-        implementationName = "RegistryUserMapperImpl")
+        implementationName = "IamUserMapperImpl")
 public interface UserMapper {
 
     @Mapping(target = "userId", source = "sub")

@@ -92,8 +92,8 @@ public class ProcessActivityManager implements JobStatusHandler {
             processModel = processService.getProcess(processId);
             experimentModel = experimentService.getExperiment(processModel.getExperimentId());
         } catch (Exception e) {
-            logger.error("Failed to fetch experiment or process from registry for process id {}", processId, e);
-            throw new Exception("Failed to fetch experiment or process from registry for process id " + processId, e);
+            logger.error("Failed to fetch experiment or process from database for process id {}", processId, e);
+            throw new Exception("Failed to fetch experiment or process from database for process id " + processId, e);
         }
 
         statusService.addProcessStatus(StatusModel.of(ProcessState.LAUNCHED), processId);
@@ -122,8 +122,8 @@ public class ProcessActivityManager implements JobStatusHandler {
         try {
             processModel = processService.getProcess(processId);
         } catch (Exception e) {
-            logger.error("Failed to fetch process from registry for process id {}", processId, e);
-            throw new Exception("Failed to fetch process from registry for process id " + processId, e);
+            logger.error("Failed to fetch process from database for process id {}", processId, e);
+            throw new Exception("Failed to fetch process from database for process id " + processId, e);
         }
 
         String experimentId = processModel.getExperimentId();
@@ -247,7 +247,7 @@ public class ProcessActivityManager implements JobStatusHandler {
             jobs = jobs.stream().filter(jm -> jm.getJobName().equals(jobName)).toList();
         }
         if (jobs.size() != 1) {
-            logger.error("Found {} job(s) in registry with id={} and name={}", jobs.size(), jobId, jobName);
+            logger.error("Found {} job(s) in database with id={} and name={}", jobs.size(), jobId, jobName);
             return null;
         }
         return jobs.get(0);
@@ -285,8 +285,8 @@ public class ProcessActivityManager implements JobStatusHandler {
             processModel = processService.getProcess(processId);
             experimentModel = experimentService.getExperiment(processModel.getExperimentId());
         } catch (Exception e) {
-            logger.error("Failed to fetch experiment/process from registry for pid={}", processId, e);
-            throw new Exception("Failed to fetch experiment/process from registry for pid=" + processId, e);
+            logger.error("Failed to fetch experiment/process from database for pid={}", processId, e);
+            throw new Exception("Failed to fetch experiment/process from database for pid=" + processId, e);
         }
 
         String workflowId = String.format("%s-POST-%s", processId, UUID.randomUUID());

@@ -173,7 +173,7 @@ public class ProcessResourceResolver {
         } catch (OrchestratorException e) {
             throw e;
         } catch (Exception e) {
-            throw new OrchestratorException("Error occurred while retrieving data from app registry", e);
+            throw new OrchestratorException("Error occurred while retrieving data from application service", e);
         }
     }
 
@@ -196,7 +196,7 @@ public class ProcessResourceResolver {
         } catch (OrchestratorException e) {
             throw e;
         } catch (Exception e) {
-            throw new OrchestratorException("Error occurred while retrieving data from app registry", e);
+            throw new OrchestratorException("Error occurred while retrieving data from application service", e);
         }
     }
 

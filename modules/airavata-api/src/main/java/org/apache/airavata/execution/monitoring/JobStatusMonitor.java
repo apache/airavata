@@ -54,7 +54,7 @@ public class JobStatusMonitor {
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
         boolean validated = true;
         try {
-            log.info("Fetching matching jobs for job id {} from registry", jobStatusResult.getJobId());
+            log.info("Fetching matching jobs for job id {} from database", jobStatusResult.getJobId());
             var jobs = jobService.getJobs("jobId", jobStatusResult.getJobId());
 
             if (!jobs.isEmpty()) {
@@ -66,7 +66,7 @@ public class JobStatusMonitor {
 
             if (jobs.size() != 1) {
                 log.error(
-                        "Couldn't find exactly one job with id {} and name {} in the registry. Count {}",
+                        "Couldn't find exactly one job with id {} and name {} in the database. Count {}",
                         jobStatusResult.getJobId(),
                         jobStatusResult.getJobName(),
                         jobs.size());

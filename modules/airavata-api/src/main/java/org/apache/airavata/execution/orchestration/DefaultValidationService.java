@@ -86,8 +86,8 @@ public class DefaultValidationService implements ValidationService {
                 try {
                     errorService.addProcessError(details, entityId);
                 } catch (RegistryException e) {
-                    logger.error("Error while saving error details to registry", e);
-                    throw new OrchestratorException("Error while saving error details to registry", e);
+                    logger.error("Error while saving error details to database", e);
+                    throw new OrchestratorException("Error while saving error details to database", e);
                 }
             }
         } catch (OrchestratorException e) {

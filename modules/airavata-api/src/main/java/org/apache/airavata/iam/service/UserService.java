@@ -27,8 +27,7 @@ import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.iam.model.UserProfile;
 
 /**
- * Service for managing users in the registry.
- * Uses the unified OIDC-based UserEntity from registry.entities.
+ * Service for managing users in the IAM layer.
  */
 public interface UserService {
 
