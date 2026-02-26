@@ -344,8 +344,9 @@ public class TaskContext {
     }
 
     /**
-     * @deprecated Storage is now part of Resource capabilities.
+     * @deprecated Storage is now part of Resource capabilities. Use {@link #getComputeResourceId()}.
      */
+    @Deprecated
     public String getStorageResourceId() {
         return getComputeResourceId();
     }

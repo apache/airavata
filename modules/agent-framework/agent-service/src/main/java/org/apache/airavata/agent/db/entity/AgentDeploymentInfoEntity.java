@@ -21,10 +21,9 @@ package org.apache.airavata.agent.db.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "agent_deployment_info")
@@ -32,8 +31,7 @@ public class AgentDeploymentInfoEntity {
 
     @Id
     @Column(name = "agent_deployment_info_id")
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @UuidGenerator
     private String id;
 
     @Column(unique = true, name = "user_friendly_name")

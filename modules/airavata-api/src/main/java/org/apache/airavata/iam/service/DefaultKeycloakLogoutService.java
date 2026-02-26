@@ -103,7 +103,7 @@ public class DefaultKeycloakLogoutService implements KeycloakLogoutService {
         String clientId = getClientId();
         String clientSecret = getClientSecret();
 
-        String revokeUrl = UriComponentsBuilder.fromHttpUrl(keycloakUrl)
+        String revokeUrl = UriComponentsBuilder.fromUriString(keycloakUrl)
                 .pathSegment("realms", realm, "protocol", "openid-connect", "revoke")
                 .toUriString();
 
@@ -151,7 +151,7 @@ public class DefaultKeycloakLogoutService implements KeycloakLogoutService {
         String keycloakUrl = getKeycloakServerUrl();
         String realm = getKeycloakRealm();
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(keycloakUrl)
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(keycloakUrl)
                 .pathSegment("realms", realm, "protocol", "openid-connect", "logout");
 
         boolean hasIdToken = idToken != null && !idToken.isEmpty();

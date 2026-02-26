@@ -55,7 +55,7 @@ public class SftpClient {
             storageId = overrideStorageId;
             logger.info("Fetching {} storage adapter for storage resource {}", label, storageId);
         } else {
-            storageId = taskContext.getStorageResourceId();
+            storageId = taskContext.getComputeResourceId();
             label = "default";
         }
         try {
