@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.compute.provider.ComputeProvider;
+import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
+import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.model.JobModel;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.service.JobService;
@@ -106,6 +108,7 @@ public class AwsComputeProvider implements ComputeProvider {
     private final ComputeSubmissionTracker computeSubmissionTracker;
     private final JobService jobService;
     private final ComputeResourceAdapter computeResourceAdapter;
+    private final ResourceProfileAdapter resourceProfileAdapter;
 
     public AwsComputeProvider(
             AwsTaskUtil awsTaskUtil,
@@ -115,7 +118,8 @@ public class AwsComputeProvider implements ComputeProvider {
             JobSubmissionDataBuilder jobSubmissionDataBuilder,
             ComputeSubmissionTracker computeSubmissionTracker,
             JobService jobService,
-            ComputeResourceAdapter computeResourceAdapter) {
+            ComputeResourceAdapter computeResourceAdapter,
+            ResourceProfileAdapter resourceProfileAdapter) {
         this.awsTaskUtil = awsTaskUtil;
         this.processService = processService;
         this.credentialStoreService = credentialStoreService;
@@ -124,6 +128,7 @@ public class AwsComputeProvider implements ComputeProvider {
         this.computeSubmissionTracker = computeSubmissionTracker;
         this.jobService = jobService;
         this.computeResourceAdapter = computeResourceAdapter;
+        this.resourceProfileAdapter = resourceProfileAdapter;
     }
 
     // =========================================================================
@@ -139,8 +144,13 @@ public class AwsComputeProvider implements ComputeProvider {
         try {
             String credentialToken = null;
 
-            // TODO: source region from ResourceProfileAdapter.getBinding()
-            String region = getResourceScheduleValue(context, "awsRegion", "us-east-1");
+            // Resolve AWS configuration: binding metadata takes priority over resourceSchedule.
+            // Operators configure awsRegion/awsAmiId/awsInstanceType in the ResourceBinding
+            // metadata for this compute resource; resourceSchedule values serve as per-experiment
+            // overrides when the binding does not carry a value.
+            ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
+                    context.getComputeResourceId(), context.getGatewayId());
+            String region = resolveAwsConfig(binding, context, "awsRegion", "us-east-1");
 
             ec2Client = awsTaskUtil.buildEc2Client(credentialToken, context.getGatewayId(), region);
 
@@ -159,10 +169,8 @@ public class AwsComputeProvider implements ComputeProvider {
             saveProviderState(context, AWS_SSH_CREDENTIAL_TOKEN, sshCredentialToken);
             logger.info("Created key pair {} with credential token {}", keyPairName, sshCredentialToken);
 
-            // TODO: source preferredAmiId from ResourceProfileAdapter.getBinding()
-            String amiId = getResourceScheduleValue(context, "awsAmiId", null);
-            // TODO: source preferredInstanceType from ResourceProfileAdapter.getBinding()
-            String instanceType = getResourceScheduleValue(context, "awsInstanceType", "t2.micro");
+            String amiId = resolveAwsConfig(binding, context, "awsAmiId", null);
+            String instanceType = resolveAwsConfig(binding, context, "awsInstanceType", "t2.micro");
 
             RunInstancesRequest runRequest = RunInstancesRequest.builder()
                     .imageId(amiId)
@@ -234,8 +242,9 @@ public class AwsComputeProvider implements ComputeProvider {
                         true);
             }
 
-            // TODO: source region from ResourceProfileAdapter.getBinding()
-            String region = getResourceScheduleValue(context, "awsRegion", "us-east-1");
+            ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
+                    context.getComputeResourceId(), context.getGatewayId());
+            String region = resolveAwsConfig(binding, context, "awsRegion", "us-east-1");
 
             String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, region, context);
             logger.info("Instance {} is verified and running at IP: {}", instanceId, publicIpAddress);
@@ -430,15 +439,40 @@ public class AwsComputeProvider implements ComputeProvider {
         }
     }
 
-    private String getResourceScheduleValue(TaskContext context, String scheduleKey, String defaultValue) {
+    /**
+     * Resolves an AWS configuration value for the given key using a two-tier lookup:
+     * <ol>
+     *   <li>ResourceBinding metadata — operator-level config stored on the binding for this
+     *       compute resource and gateway. Takes priority so that gateway admins can configure
+     *       defaults without requiring per-experiment scheduling overrides.</li>
+     *   <li>Experiment resourceSchedule — per-experiment override supplied at launch time.
+     *       Falls through to {@code defaultValue} when neither source carries the key.</li>
+     * </ol>
+     *
+     * @param binding      the binding for this compute resource/gateway pair (may be {@code null})
+     * @param context      the current task context
+     * @param key          the configuration key (e.g. {@code "awsRegion"})
+     * @param defaultValue fallback value when neither binding metadata nor schedule carries the key
+     * @return the resolved configuration value, or {@code defaultValue} if not found
+     */
+    private String resolveAwsConfig(ResourceBindingEntity binding, TaskContext context,
+            String key, String defaultValue) {
+        // 1. Try binding metadata
+        if (binding != null) {
+            String fromBinding = ResourceProfileAdapter.getMetadataString(binding.getMetadata(), key);
+            if (fromBinding != null && !fromBinding.isBlank()) {
+                return fromBinding;
+            }
+        }
+        // 2. Try per-experiment resourceSchedule
         try {
             var schedule = context.getProcessModel().getResourceSchedule();
-            if (schedule != null && schedule.get(scheduleKey) != null) {
-                return schedule.get(scheduleKey).toString();
+            if (schedule != null && schedule.get(key) != null) {
+                return schedule.get(key).toString();
             }
         } catch (Exception e) {
             logger.warn("Could not read resource schedule key '{}' for process {}; using default '{}'",
-                    scheduleKey, context.getProcessId(), defaultValue, e);
+                    key, context.getProcessId(), defaultValue, e);
         }
         return defaultValue;
     }
