@@ -31,25 +31,17 @@ import org.apache.airavata.agent.model.AgentTerminateResponse;
 import org.apache.airavata.research.application.adapter.ApplicationAdapter;
 import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
 import org.apache.airavata.core.util.IdGenerator;
+import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.model.ComputationalResourceSchedulingModel;
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
-import org.apache.airavata.compute.resource.model.GroupComputeResourcePreference;
-import org.apache.airavata.compute.resource.model.GroupResourceProfile;
+import org.apache.airavata.compute.resource.model.Resource;
+import org.apache.airavata.compute.resource.service.ResourceService;
 import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.project.model.Project;
 import org.apache.airavata.research.experiment.service.ExperimentSearchService;
 import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
-import org.apache.airavata.core.exception.ValidationExceptions.ExceptionHandlerUtil;
-import org.apache.airavata.core.model.EntitySearchField;
-import org.apache.airavata.core.model.SearchCondition;
-import org.apache.airavata.core.model.SearchCriteria;
-import org.apache.airavata.core.util.Constants;
-import org.apache.airavata.iam.exception.SharingRegistryException;
-import org.apache.airavata.iam.model.AuthzToken;
-import org.apache.airavata.iam.model.SharingResourceType;
-import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,7 +57,7 @@ public class AgentManagementService {
     private final ExperimentSearchService experimentSearchService;
     private final ClusterApplicationConfiguration clusterApplicationConfig;
     private final ResourceProfileAdapter resourceProfileAdapter;
-    private final SharingService sharingService;
+    private final ResourceService resourceService;
     private final ApplicationAdapter applicationAdapter;
 
     @Value("${airavata.services.agent.storage.id}")
@@ -82,13 +74,13 @@ public class AgentManagementService {
             ExperimentSearchService experimentSearchService,
             ClusterApplicationConfiguration clusterApplicationConfig,
             ResourceProfileAdapter resourceProfileAdapter,
-            SharingService sharingService,
+            ResourceService resourceService,
             ApplicationAdapter applicationAdapter) {
         this.experimentService = experimentService;
         this.experimentSearchService = experimentSearchService;
         this.clusterApplicationConfig = clusterApplicationConfig;
         this.resourceProfileAdapter = resourceProfileAdapter;
-        this.sharingService = sharingService;
+        this.resourceService = resourceService;
         this.applicationAdapter = applicationAdapter;
     }
 
@@ -106,23 +98,10 @@ public class AgentManagementService {
     public ExperimentModel getExperiment(String experimentId) {
         try {
             var experiment = experimentService.getExperiment(UserContext.authzToken(), experimentId);
-            var groupResourceProfile = resourceProfileAdapter.getGroupResourceProfile(
-                    experiment.getUserConfigurationData().getGroupResourceProfileId());
-
-            // Always get the Default allocation
-            if (!"Default".equalsIgnoreCase(groupResourceProfile.getGroupResourceProfileName())) {
-                var groupResourceList = getGroupResourceList(UserContext.authzToken(), experiment.getGatewayId());
-
-                groupResourceList.stream()
-                        .filter(profile -> "Default".equalsIgnoreCase(profile.getGroupResourceProfileName()))
-                        .findFirst()
-                        .ifPresent(profile -> experiment
-                                .getUserConfigurationData()
-                                .setGroupResourceProfileId(profile.getGroupResourceProfileId()));
-            }
-
+            // GroupResourceProfile / named group profile concept has been removed.
+            // The groupResourceProfileId field now holds a resource binding ID.
+            // No "Default profile" lookup or profile-name check is performed.
             return experiment;
-
         } catch (Exception e) {
             LOGGER.error("Error while extracting the experiment with the id: {}", experimentId);
             throw new RuntimeException("Error while extracting the experiment with the id: " + experimentId, e);
@@ -232,17 +211,18 @@ public class AgentManagementService {
         experimentModel.setExecutionId(appInterfaceId);
 
         var computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
-        var groupCompResourcePref = extractGroupComputeResourcePreference(req.getGroup(), req.getRemoteCluster());
+        var binding = resolveBindingForCluster(req.getGroup(), req.getRemoteCluster(), gatewayId);
         computationalResourceSchedulingModel.setQueueName(req.getQueue());
         computationalResourceSchedulingModel.setNodeCount(req.getNodeCount());
         computationalResourceSchedulingModel.setTotalCPUCount(req.getCpuCount());
         computationalResourceSchedulingModel.setWallTimeLimit(req.getWallTime());
         computationalResourceSchedulingModel.setTotalPhysicalMemory(req.getMemory());
-        computationalResourceSchedulingModel.setResourceHostId(groupCompResourcePref.getComputeResourceId());
-        computationalResourceSchedulingModel.setOverrideScratchLocation(groupCompResourcePref.getScratchLocation());
+        computationalResourceSchedulingModel.setResourceHostId(binding.getResourceId());
+        computationalResourceSchedulingModel.setOverrideScratchLocation(
+                ResourceProfileAdapter.getMetadataString(binding.getMetadata(), "scratchLocation"));
         computationalResourceSchedulingModel.setOverrideAllocationProjectNumber(
-                extractSlurmAllocationProject(groupCompResourcePref));
-        computationalResourceSchedulingModel.setOverrideLoginUserName(groupCompResourcePref.getLoginUserName());
+                extractSlurmAllocationProject(binding));
+        computationalResourceSchedulingModel.setOverrideLoginUserName(binding.getLoginUsername());
 
         var userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setComputationalResourceScheduling(computationalResourceSchedulingModel);
@@ -255,7 +235,8 @@ public class AgentManagementService {
         var experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
                 .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
-        userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());
+        // groupResourceProfileId now stores the resource binding ID
+        userConfigurationDataModel.setGroupResourceProfileId(binding.getBindingId());
 
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
@@ -305,9 +286,26 @@ public class AgentManagementService {
         return experimentModel;
     }
 
-    private String extractSlurmAllocationProject(GroupComputeResourcePreference pref) {
-        if (pref.getResourceType() == ComputeResourceType.SLURM) {
-            return pref.getAllocationProjectNumber();
+    /**
+     * Resolve the SLURM allocation project number from the binding metadata.
+     *
+     * <p>Returns the {@code allocationProjectNumber} metadata value only when the
+     * resource's compute capability is SLURM. Returns {@code null} for all other
+     * resource types or when the metadata key is absent.
+     *
+     * @param binding the resource binding whose metadata and resource capabilities to inspect
+     * @return the allocation project number string, or {@code null}
+     */
+    private String extractSlurmAllocationProject(ResourceBindingEntity binding) {
+        Resource resource = resourceService.getResource(binding.getResourceId());
+        if (resource != null
+                && resource.getCapabilities() != null
+                && resource.getCapabilities().getCompute() != null) {
+            ComputeResourceType resourceType =
+                    resource.getCapabilities().getCompute().getComputeResourceType();
+            if (resourceType == ComputeResourceType.SLURM) {
+                return ResourceProfileAdapter.getMetadataString(binding.getMetadata(), "allocationProjectNumber");
+            }
         }
         return null;
     }
@@ -346,57 +344,70 @@ public class AgentManagementService {
                 "Could not find project: " + projectName + " for the user: " + UserContext.username());
     }
 
-    private List<GroupResourceProfile> getGroupResourceList(AuthzToken authzToken, String gatewayId)
-            throws AiravataSystemException {
-        try {
-            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            var accessibleGroupResProfileIds = new java.util.ArrayList<String>();
-            var filters = new java.util.ArrayList<SearchCriteria>();
-            var searchCriteria = new SearchCriteria();
-            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-            searchCriteria.setValue(gatewayId + ":" + SharingResourceType.GROUP_RESOURCE_PROFILE.name());
-            filters.add(searchCriteria);
-            sharingService
-                    .searchEntities(
-                            authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                            userName + "@" + gatewayId,
-                            filters,
-                            0,
-                            -1)
-                    .forEach(p -> accessibleGroupResProfileIds.add(p.getEntityId()));
-            return resourceProfileAdapter.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
-        } catch (SharingRegistryException e) {
-            String msg = "Error occurred while getting group resource list: " + e.getMessage();
-            LOGGER.error(msg, e);
-            throw ExceptionHandlerUtil.wrapAsAiravataException(msg, e);
-        } catch (Exception e) {
-            String msg = "Error while retrieving group resource list: " + e.getMessage();
-            LOGGER.error(msg, e);
-            throw ExceptionHandlerUtil.wrapAsAiravataException(msg, e);
-        }
-    }
+    /**
+     * Resolve the resource binding for the given cluster identifier within the current gateway.
+     *
+     * <p>GroupResourceProfile and GroupComputeResourcePreference have been removed from the model.
+     * Resources and their bindings are now looked up directly from the resource and binding
+     * repositories. The {@code group} parameter previously referred to a named group resource
+     * profile; it is now used as an optional secondary filter on the resource name. The
+     * {@code remoteCluster} is matched against the start of both the resource name and the
+     * resource hostname to identify the target compute resource.
+     *
+     * <p>Lookup order:
+     * <ol>
+     *   <li>List all resources for the gateway.</li>
+     *   <li>Filter resources whose name or hostname starts with {@code remoteCluster} (case-insensitive).
+     *       If {@code group} is also provided, further narrow to resources whose name contains {@code group}.</li>
+     *   <li>For each candidate resource, attempt to find a binding via
+     *       {@link ResourceProfileAdapter#getBinding(String, String)}.</li>
+     *   <li>Return the first binding found, or throw if none match.</li>
+     * </ol>
+     *
+     * @param group         optional group/profile name hint used as a secondary resource name filter
+     * @param remoteCluster prefix matched against resource name or hostname
+     * @param gatewayId     the gateway to scope the lookup to
+     * @return the resolved binding entity
+     * @throws RuntimeException if no matching binding can be found
+     */
+    private ResourceBindingEntity resolveBindingForCluster(String group, String remoteCluster, String gatewayId) {
+        List<Resource> gatewayResources = resourceService.getResources(gatewayId);
 
-    private GroupComputeResourcePreference extractGroupComputeResourcePreference(String group, String remoteCluster) {
-        List<GroupResourceProfile> groupResourceList;
-        try {
-            groupResourceList = getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
-        } catch (Exception e) {
-            String msg = String.format(
-                    "Error getting group resource list: group=%s, remoteCluster=%s, gatewayId=%s, username=%s. Reason: %s",
-                    group, remoteCluster, UserContext.gatewayId(), UserContext.username(), e.getMessage());
-            LOGGER.error(msg, e);
-            throw new RuntimeException(msg, e);
+        if (gatewayResources == null || gatewayResources.isEmpty()) {
+            throw new RuntimeException(
+                    "No compute resources registered for gateway: " + gatewayId
+                            + ". Cannot resolve binding for cluster: " + remoteCluster);
         }
 
-        var groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
+        String clusterLower = remoteCluster != null ? remoteCluster.toLowerCase() : "";
+        String groupLower = StringUtils.isNotBlank(group) ? group.toLowerCase() : null;
 
-        return groupResourceList.stream()
-                .filter(profile -> groupProfileName.equalsIgnoreCase(profile.getGroupResourceProfileName()))
-                .flatMap(profile -> profile.getComputePreferences().stream()
-                        .filter(preference -> preference.getComputeResourceId().startsWith(remoteCluster)))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find a matching Compute Resource Preference in the "
-                        + groupProfileName + " group resource profile for the user: " + UserContext.username()));
+        for (Resource resource : gatewayResources) {
+            String nameLower = resource.getName() != null ? resource.getName().toLowerCase() : "";
+            String hostLower = resource.getHostName() != null ? resource.getHostName().toLowerCase() : "";
+
+            boolean matchesCluster = nameLower.startsWith(clusterLower) || hostLower.startsWith(clusterLower);
+            if (!matchesCluster) {
+                continue;
+            }
+
+            // When a group hint is given, apply it as an additional filter on resource name.
+            if (groupLower != null && !nameLower.contains(groupLower)) {
+                continue;
+            }
+
+            ResourceBindingEntity binding = resourceProfileAdapter.getBinding(resource.getResourceId(), gatewayId);
+            if (binding != null) {
+                LOGGER.debug(
+                        "Resolved binding id={} for cluster={}, group={}, gatewayId={}",
+                        binding.getBindingId(), remoteCluster, group, gatewayId);
+                return binding;
+            }
+        }
+
+        throw new RuntimeException(
+                "Could not find a resource binding for cluster='" + remoteCluster
+                        + "', group='" + group + "', gatewayId='" + gatewayId
+                        + "' for user: " + UserContext.username());
     }
 }
