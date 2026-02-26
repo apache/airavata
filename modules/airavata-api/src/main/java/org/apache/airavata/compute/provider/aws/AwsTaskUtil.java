@@ -19,6 +19,9 @@
 */
 package org.apache.airavata.compute.provider.aws;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.iam.service.CredentialStoreService;
@@ -41,6 +44,8 @@ import software.amazon.awssdk.services.ec2.model.TerminateInstancesRequest;
 public class AwsTaskUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(AwsTaskUtil.class);
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final CredentialStoreService credentialStoreService;
 
@@ -79,7 +84,7 @@ public class AwsTaskUtil {
 
     /**
      * Terminate the EC2 instance associated with the given task context.
-     * Reads instance ID and AWS credential token from the process context manager.
+     * Reads instance ID and AWS credential token from the process context JSON.
      *
      * @param taskContext the task context providing process and gateway information
      * @param gatewayId   the gateway identifier
@@ -87,8 +92,7 @@ public class AwsTaskUtil {
     public void terminateEC2Instance(TaskContext taskContext, String gatewayId) {
         logger.info("Terminating EC2 instance for process {}", taskContext.getProcessId());
         try {
-            AwsProcessContext awsContext = new AwsProcessContext(null, taskContext);
-            String instanceId = awsContext.getInstanceId();
+            String instanceId = readProviderContextKey(taskContext, "AWS_INSTANCE_ID");
             if (instanceId == null || instanceId.isBlank()) {
                 logger.warn(
                         "No instance ID found in process context for process {}; skipping termination",
@@ -108,7 +112,7 @@ public class AwsTaskUtil {
             }
 
             // Use the AWS credential token from the context (stored as the SSH token placeholder)
-            String credentialToken = awsContext.getSSHCredentialToken();
+            String credentialToken = readProviderContextKey(taskContext, "AWS_SSH_CREDENTIAL_TOKEN");
             if (credentialToken == null) {
                 logger.warn(
                         "No credential token found for process {}; cannot terminate instance {}",
@@ -129,6 +133,18 @@ public class AwsTaskUtil {
             }
         } catch (Exception e) {
             logger.error("Failed to terminate EC2 instance for process {}", taskContext.getProcessId(), e);
+        }
+    }
+
+    private String readProviderContextKey(TaskContext taskContext, String key) {
+        try {
+            String json = taskContext.getProcessModel().getProviderContext();
+            if (json == null || json.isEmpty()) return null;
+            Map<String, String> contextMap = MAPPER.readValue(json, new TypeReference<>() {});
+            return contextMap.get(key);
+        } catch (Exception e) {
+            logger.warn("Failed to read provider context key '{}' for process {}", key, taskContext.getProcessId(), e);
+            return null;
         }
     }
 }

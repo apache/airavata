@@ -19,11 +19,15 @@
 */
 package org.apache.airavata.compute.provider.aws;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.compute.provider.ComputeProvider;
 import org.apache.airavata.compute.resource.model.JobModel;
@@ -35,7 +39,6 @@ import org.apache.airavata.compute.resource.submission.JobSubmissionDataBuilder;
 import org.apache.airavata.compute.resource.submission.JobSubmissionSupport;
 import org.apache.airavata.compute.resource.submission.RawCommandInfo;
 import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
-import org.apache.airavata.compute.resource.model.AwsComputeResourcePreference;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.core.model.DagTaskResult;
@@ -85,6 +88,16 @@ public class AwsComputeProvider implements ComputeProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(AwsComputeProvider.class);
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    // AWS provider context keys
+    private static final String AWS_INSTANCE_ID = "AWS_INSTANCE_ID";
+    private static final String AWS_SECURITY_GROUP_ID = "AWS_SECURITY_GROUP_ID";
+    private static final String AWS_KEY_PAIR_NAME = "AWS_KEY_PAIR_NAME";
+    private static final String AWS_SSH_CREDENTIAL_TOKEN = "AWS_SSH_CREDENTIAL_TOKEN";
+    private static final String AWS_PUBLIC_IP = "AWS_PUBLIC_IP";
+    private static final String AWS_JOB_ID = "AWS_JOB_ID";
+
     private final AwsTaskUtil awsTaskUtil;
     private final ProcessService processService;
     private final CredentialStoreService credentialStoreService;
@@ -121,33 +134,39 @@ public class AwsComputeProvider implements ComputeProvider {
     public DagTaskResult provision(TaskContext context) {
         logger.info("Starting AWS provisioning for process {}", context.getProcessId());
 
-        AwsProcessContext awsContext = new AwsProcessContext(processService, context);
         Ec2Client ec2Client = null;
 
         try {
-            AwsComputeResourcePreference awsPrefs = awsContext.getAwsComputeResourcePreference();
             String credentialToken = null;
 
-            ec2Client = awsTaskUtil.buildEc2Client(credentialToken, context.getGatewayId(), awsPrefs.getRegion());
+            // TODO: source region from ResourceProfileAdapter.getBinding()
+            String region = getResourceScheduleValue(context, "awsRegion", "us-east-1");
+
+            ec2Client = awsTaskUtil.buildEc2Client(credentialToken, context.getGatewayId(), region);
 
             String securityGroupId = createSecurityGroup(ec2Client, context);
-            awsContext.saveSecurityGroupId(securityGroupId);
+            saveProviderState(context, AWS_SECURITY_GROUP_ID, securityGroupId);
             logger.info("Created security group: {}", securityGroupId);
 
             String keyPairName = "airavata-key-" + context.getProcessId();
             CreateKeyPairResponse kpRes = ec2Client.createKeyPair(req -> req.keyName(keyPairName));
-            awsContext.saveKeyPairName(keyPairName);
+            saveProviderState(context, AWS_KEY_PAIR_NAME, keyPairName);
 
             String privateKeyPEM = kpRes.keyMaterial();
             String publicKey = SSHUtil.generatePublicKey(privateKeyPEM);
 
             String sshCredentialToken = saveSSHCredential(privateKeyPEM, publicKey, context.getGatewayId());
-            awsContext.saveSSHCredentialToken(sshCredentialToken);
+            saveProviderState(context, AWS_SSH_CREDENTIAL_TOKEN, sshCredentialToken);
             logger.info("Created key pair {} with credential token {}", keyPairName, sshCredentialToken);
 
+            // TODO: source preferredAmiId from ResourceProfileAdapter.getBinding()
+            String amiId = getResourceScheduleValue(context, "awsAmiId", null);
+            // TODO: source preferredInstanceType from ResourceProfileAdapter.getBinding()
+            String instanceType = getResourceScheduleValue(context, "awsInstanceType", "t2.micro");
+
             RunInstancesRequest runRequest = RunInstancesRequest.builder()
-                    .imageId(awsPrefs.getPreferredAmiId())
-                    .instanceType(InstanceType.fromValue(awsPrefs.getPreferredInstanceType()))
+                    .imageId(amiId)
+                    .instanceType(InstanceType.fromValue(instanceType))
                     .keyName(keyPairName)
                     .securityGroupIds(securityGroupId)
                     .minCount(1)
@@ -161,7 +180,7 @@ public class AwsComputeProvider implements ComputeProvider {
             }
 
             String instanceId = runResponse.instances().get(0).instanceId();
-            awsContext.saveInstanceId(instanceId);
+            saveProviderState(context, AWS_INSTANCE_ID, instanceId);
             logger.info("Launched EC2 instance {}", instanceId);
 
             return new DagTaskResult.Success("AWS provisioning completed for " + context.getTaskId());
@@ -201,10 +220,8 @@ public class AwsComputeProvider implements ComputeProvider {
         logger.info("Starting AWS job submission for process {}", context.getProcessId());
 
         try {
-            AwsProcessContext awsContext = new AwsProcessContext(processService, context);
-            AwsComputeResourcePreference awsPrefs = awsContext.getAwsComputeResourcePreference();
-            String instanceId = awsContext.getInstanceId();
-            String sshCredentialToken = awsContext.getSSHCredentialToken();
+            String instanceId = getProviderState(context, AWS_INSTANCE_ID);
+            String sshCredentialToken = getProviderState(context, AWS_SSH_CREDENTIAL_TOKEN);
             String awsCredentialToken = null;
 
             if (instanceId == null || sshCredentialToken == null) {
@@ -217,9 +234,12 @@ public class AwsComputeProvider implements ComputeProvider {
                         true);
             }
 
-            String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, awsPrefs.getRegion(), context);
+            // TODO: source region from ResourceProfileAdapter.getBinding()
+            String region = getResourceScheduleValue(context, "awsRegion", "us-east-1");
+
+            String publicIpAddress = verifyInstanceIsRunning(awsCredentialToken, instanceId, region, context);
             logger.info("Instance {} is verified and running at IP: {}", instanceId, publicIpAddress);
-            awsContext.savePublicIp(publicIpAddress);
+            saveProviderState(context, AWS_PUBLIC_IP, publicIpAddress);
 
             SSHJAgentAdapter adapter = initSSHJAgentAdapter(sshCredentialToken, publicIpAddress, context);
 
@@ -286,7 +306,7 @@ public class AwsComputeProvider implements ComputeProvider {
                 return handleJobSubmissionFailure(mapData, reason, context);
             }
 
-            awsContext.saveJobId(jobId);
+            saveProviderState(context, AWS_JOB_ID, jobId);
             jobModel.setJobId(jobId);
             jobService.saveJob(jobModel);
             jobSubmissionSupport.saveAndPublishJobStatus(jobModel);
@@ -309,8 +329,7 @@ public class AwsComputeProvider implements ComputeProvider {
         logger.info("Deprovisioning AWS resources for process {}", context.getProcessId());
 
         try {
-            AwsProcessContext awsContext = new AwsProcessContext(processService, context);
-            awsContext.cleanup();
+            clearProviderState(context, AWS_INSTANCE_ID, AWS_SECURITY_GROUP_ID, AWS_KEY_PAIR_NAME);
             awsTaskUtil.terminateEC2Instance(context, context.getGatewayId());
             return new DagTaskResult.Success("AWS resources deprovisioned for process " + context.getProcessId());
         } catch (Exception e) {
@@ -332,9 +351,8 @@ public class AwsComputeProvider implements ComputeProvider {
                 return new DagTaskResult.Success("No running jobs found for process " + context.getProcessId());
             }
 
-            AwsProcessContext awsContext = new AwsProcessContext(processService, context);
-            String publicIp = awsContext.getPublicIp();
-            String sshCredentialToken = awsContext.getSSHCredentialToken();
+            String publicIp = getProviderState(context, AWS_PUBLIC_IP);
+            String sshCredentialToken = getProviderState(context, AWS_SSH_CREDENTIAL_TOKEN);
 
             if (publicIp == null || sshCredentialToken == null) {
                 return new DagTaskResult.Success("No AWS instance info for monitoring process " + context.getProcessId());
@@ -363,6 +381,66 @@ public class AwsComputeProvider implements ComputeProvider {
     @Override
     public DagTaskResult cancel(TaskContext context) {
         return deprovision(context);
+    }
+
+    // -------------------------------------------------------------------------
+    // Provider state helpers — read/write AWS context from providerContext JSON
+    // -------------------------------------------------------------------------
+
+    private void saveProviderState(TaskContext context, String key, String value) {
+        try {
+            context.getDagState().put(key, value);
+            Map<String, String> contextMap = loadProviderContext(context);
+            contextMap.put(key, value);
+            context.getProcessModel().setProviderContext(MAPPER.writeValueAsString(contextMap));
+            processService.updateProcess(context.getProcessModel(), context.getProcessId());
+        } catch (Exception e) {
+            logger.warn("Failed to persist provider state key '{}' for process {}", key, context.getProcessId(), e);
+        }
+    }
+
+    private String getProviderState(TaskContext context, String key) {
+        String value = context.getDagState().get(key);
+        if (value != null) return value;
+        try {
+            return loadProviderContext(context).get(key);
+        } catch (Exception e) {
+            logger.warn("Failed to load provider context for process {}", context.getProcessId(), e);
+            return null;
+        }
+    }
+
+    private Map<String, String> loadProviderContext(TaskContext context) throws Exception {
+        String json = context.getProcessModel().getProviderContext();
+        if (json == null || json.isEmpty()) return new HashMap<>();
+        return MAPPER.readValue(json, new TypeReference<>() {});
+    }
+
+    private void clearProviderState(TaskContext context, String... keys) {
+        try {
+            Map<String, String> contextMap = loadProviderContext(context);
+            for (String key : keys) {
+                contextMap.put(key, null);
+                context.getDagState().remove(key);
+            }
+            context.getProcessModel().setProviderContext(MAPPER.writeValueAsString(contextMap));
+            processService.updateProcess(context.getProcessModel(), context.getProcessId());
+        } catch (Exception e) {
+            logger.warn("Failed to clear provider state for process {}", context.getProcessId(), e);
+        }
+    }
+
+    private String getResourceScheduleValue(TaskContext context, String scheduleKey, String defaultValue) {
+        try {
+            var schedule = context.getProcessModel().getResourceSchedule();
+            if (schedule != null && schedule.get(scheduleKey) != null) {
+                return schedule.get(scheduleKey).toString();
+            }
+        } catch (Exception e) {
+            logger.warn("Could not read resource schedule key '{}' for process {}; using default '{}'",
+                    scheduleKey, context.getProcessId(), defaultValue, e);
+        }
+        return defaultValue;
     }
 
     // -------------------------------------------------------------------------
