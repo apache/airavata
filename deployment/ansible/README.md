@@ -211,7 +211,7 @@ Update `group_vars/all/vars.yml` to use `localhost` for host references.
 
 ### Airavata Configuration
 
-Main configuration file: `/opt/apache-airavata/conf/airavata.properties` (or `conf/application.properties` in distribution)
+Main configuration file: `/opt/apache-airavata/conf/application.properties`
 
 **Standard Paths:**
 - Installation directory: `/opt/apache-airavata` (AIRAVATA_HOME)
@@ -371,6 +371,8 @@ Essential roles (consolidated structure):
 - **database**: MariaDB installation and database creation (OS-specific)
 - **apiserver**: Airavata API server deployment including source checkout, Maven build, keystore setup, HAProxy, and SSL (OS-specific)
 - **keycloak**: Keycloak 26.5 (Quarkus-based) IAM server deployment
+- **temporal**: Temporal CLI dev server installation and systemd service setup
+- **portal**: Next.js portal deployment including Node.js installation, source checkout, build, and systemd service
 
 Each role is organized into logical task files for easier maintenance and debugging.
 

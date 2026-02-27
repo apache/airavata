@@ -53,16 +53,16 @@ ansible-playbook -i inventories/my-env --list-hosts -m ping --ask-vault-pass
 
 ### 6. Deploy
 
-**For initial setup (full environment from scratch):**
+**Deploy everything:**
 ```bash
 cd ../..
-ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
+ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass
 ```
 
-**For service updates (infrastructure already exists):**
+**Deploy specific components:**
 ```bash
-cd ../..
-ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
+ansible-playbook -i inventories/my-env deploy.yml --tags apiserver --ask-vault-pass
+ansible-playbook -i inventories/my-env deploy.yml --tags portal --ask-vault-pass
 ```
 
 ## File Structure

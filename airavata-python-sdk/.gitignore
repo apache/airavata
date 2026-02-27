@@ -1,15 +1,37 @@
-venv
-airavata_python_sdk.egg-info
-*.pyc
-.tox
+# Virtual environments
+venv/
+.venv/
+ENV/
+
+# Build artifacts
 dist/
 build/
 site/
-__pycache__/
-.DS_Store
-.ipynb_checkpoints
 *.egg-info/
+*.whl
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Testing
+.tox/
+.nox/
+.pytest_cache/
+.coverage
+htmlcov/
 results*/
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+.pytype/
+
+# IDE / OS
+.DS_Store
+.ipynb_checkpoints/
+
+# Config / secrets
 plan.json
 settings*.ini
 auth.state

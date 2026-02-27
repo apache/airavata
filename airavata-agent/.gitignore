@@ -1,5 +1,21 @@
+# Built binary
 /airavata-agent*
+
+# Go
+vendor/
+*.test
+*.out
+*.prof
+
+# Jupyter / Python
 /jupyter/
 *.egg-info
 *.ipynb_checkpoints
+*.pyc
+__pycache__/
+
+# Singularity
 *.sif
+
+# Docker
+.dockerignore.bak

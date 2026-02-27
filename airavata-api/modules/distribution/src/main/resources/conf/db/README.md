@@ -1,12 +1,18 @@
 # Database Setup
 
-## Quick Start
+## Automated Deployments
 
-1. **Create database and user** (run as MySQL/MariaDB admin):
+For docker-compose, Ansible, and Kubernetes, the canonical init script is
+`conf/init-db/01-create-databases.sql` at the repo root. It creates both the
+`airavata` and `keycloak` databases with dev credentials.
+
+## Manual Setup
+
+1. **Create databases and users** (run as MySQL/MariaDB admin):
    ```bash
    mysql -u root -p < create-database.sql
    ```
-   Edit `create-database.sql` to set the desired password before running.
+   Edit `create-database.sql` to set passwords before running.
 
 2. **Configure connection** in `application.properties`:
    ```properties
@@ -24,8 +30,9 @@
 
 | File | Purpose |
 |------|---------|
-| `create-database.sql` | Manual setup: creates database and user (run once as admin) |
-| `migration/airavata/V1__Baseline_schema.sql` | Flyway migration: creates all tables (run by Flyway) |
+| `create-database.sql` | Manual/reference setup (creates airavata + keycloak DBs) |
+| `migration/airavata/V1__Baseline_schema.sql` | Flyway baseline migration (all tables) |
+| `conf/init-db/01-create-databases.sql` (repo root) | Canonical init for automated deployments |
 
 ## Requirements
 

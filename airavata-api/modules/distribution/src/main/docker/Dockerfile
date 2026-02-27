@@ -30,6 +30,12 @@ RUN tar -xzf /opt/${DIST_NAME}.tar.gz && \
     mv /opt/${DIST_NAME} /opt/apache-airavata && \
     chmod +x /opt/apache-airavata/bin/*.sh
 
+# airavata-agent is a pre-built Go binary used to proxy SCP/SFTP operations
+# to remote compute servers on behalf of the API server. It must be present
+# in the Docker build context (distribution/target/) before running docker build.
+COPY airavata-agent /opt/apache-airavata/bin/airavata-agent
+RUN chmod +x /opt/apache-airavata/bin/airavata-agent
+
 ENV AIRAVATA_HOME=/opt/apache-airavata
 
 # Unified HTTP server

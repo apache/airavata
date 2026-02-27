@@ -60,7 +60,7 @@ keystores_location: "{{ apiserver_dir }}/{{ airavata_dist }}/conf/keystores"
 iam_server_url: "https://{{ groups['keycloak'][0] }}:8443"
 iam_server_super_admin_username: "CHANGEME"
 iam_server_super_admin_password: "CHANGEME"
-iam_oauth_client_id: ""
+iam_oauth_client_id: "pga"
 iam_oauth_client_secret: ""
 
 keycloak_db_host: "{{ groups['database'][0] }}"
@@ -88,3 +88,22 @@ haproxy_service_name:
 
 monitor_email_address: ""
 monitor_email_password: ""
+
+# Temporal settings
+temporal_version: "1.1.1"
+temporal_port: 7233
+temporal_ui_port: 8233
+spring_temporal_target: "{{ groups['temporal'][0] }}:{{ temporal_port }}"
+
+# Portal settings
+portal_repo: "https://github.com/apache/airavata.git"
+portal_repo_subdir: "airavata-portal"
+portal_port: 3000
+portal_hostname: "CHANGEME"
+portal_nextauth_url: "https://{{ portal_hostname }}"
+portal_keycloak_client_id_value: "pga"
+portal_keycloak_client_secret_value: "CHANGEME"
+portal_nextauth_secret_value: "CHANGEME"
+
+# Agent binary path (populated by apiserver role during deploy)
+agent_binary_path: "{{ apiserver_dir }}/{{ airavata_dist }}/bin/airavata-agent"

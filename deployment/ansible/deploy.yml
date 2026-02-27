@@ -43,3 +43,21 @@
   roles:
     - base
     - keycloak
+
+- name: Temporal
+  hosts: temporal
+  tags: [temporal]
+  roles:
+    - base
+    - role: temporal
+      become: true
+      become_user: "{{ user }}"
+
+- name: Portal
+  hosts: portal
+  tags: [portal]
+  roles:
+    - base
+    - role: portal
+      become: true
+      become_user: "{{ user }}"

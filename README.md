@@ -7,18 +7,42 @@
 
 Airavata runs and manages computational jobs and workflows on clusters, supercomputers, grids, and clouds. Submit jobs, monitor processes, automate workflows, transfer data, schedule tasks, and retrieve outputs. Use the Airavata Portal, the Python SDK, or REST and gRPC APIs.
 
+## Components
+
+| Component | Description | Details |
+|-----------|-------------|---------|
+| [**airavata-api**](airavata-api/) | Java/Spring Boot API server — REST, gRPC, orchestration, Temporal workflows, credential store, IAM. All services in a single JVM. | [README](airavata-api/README.md) |
+| [**airavata-portal**](airavata-portal/) | Next.js 14 web portal — dashboard, experiments, applications, storage, credentials, administration. | [README](airavata-portal/README.md) |
+| [**airavata-agent**](airavata-agent/) | Go binary deployed to remote compute resources. Executes workloads, manages Jupyter sessions, sets up TCP tunnels. The API server SCPs this binary to remote servers on demand. | [README](airavata-agent/README.md) |
+| [**airavata-python-sdk**](airavata-python-sdk/) | Python SDK for programmatic experiment submission, data management, and Jupyter magic annotations. | [README](airavata-python-sdk/README.md) |
+
 ## Key Features
 
-- Services over distributed messaging
 - Task lifecycle: setup env, stage data, run, retrieve output
-- Multi-cloud and hybrid cloud
+- Multi-cloud and hybrid cloud (SLURM, AWS EC2, local)
 - REST and gRPC APIs; Python SDK
-- [Airavata Portal](https://github.com/apache/airavata-portals) (Next.js)
+- Web portal for experiment management
+- Remote agent for workload execution on HPC clusters
 
-## Using Airavata
+## Repository Structure
 
-- **Airavata Portal** — Submit and manage batch jobs, launch experiments, explore published runs (one Next.js app).
-- **Airavata Python SDK** — Run experiments from your IDE; [PyPI](https://pypi.org/project/airavata-python-sdk/).
+```
+airavata/
+├── airavata-api/          # Java/Spring Boot API server (4 Maven modules)
+├── airavata-agent/        # Go binary for remote workload execution
+├── airavata-portal/       # Next.js web portal
+├── airavata-python-sdk/   # Python SDK
+├── proto/                 # Protocol buffer definitions (gRPC)
+├── conf/                  # Shared configuration (DB init, Keycloak setup)
+├── deployment/
+│   ├── ansible/           # Ansible playbooks and roles
+│   ├── k8s/               # Kubernetes manifests (Kustomize)
+│   └── scripts/           # Deployment scripts
+├── .devcontainer/         # Docker Compose for local development
+├── LICENSE
+├── NOTICE
+└── RELEASE_NOTES
+```
 
 ---
 
@@ -55,8 +79,7 @@ mvn clean install
 # Credentials: default-admin / admin123
 
 # --- Airavata Portal (optional) ---
-git clone https://github.com/apache/airavata-portals.git
-cd airavata-portals
+cd ../airavata-portal
 npm install
 cp .env.example .env.local
 # Edit .env.local: KEYCLOAK_CLIENT_SECRET (from ../.devcontainer/dev.env.defaults), API_URL, KEYCLOAK_ISSUER, NEXTAUTH_*
@@ -135,8 +158,8 @@ When using the distribution bundle (tarball or fat JAR):
 
 | Server | Port | Config property |
 |--------|------|-----------------|
-| HTTP (REST, File, Agent, Research API) | 8090 | `server.port` / `airavata.services.http.server.port` |
-| gRPC (agent/research streams) | 9090 | `airavata.services.grpc.server.port` |
+| HTTP (REST, File, Agent, Research API) | 8090 | `server.port` |
+| gRPC (agent/research streams) | 9090 | `spring.grpc.server.port` |
 | Temporal (workflow engine) | 7233 | `spring.temporal.connection.target` |
 
 ---
@@ -224,7 +247,7 @@ flowchart LR
 - **HTTP (8090):** REST at `/api/v1/`, File API at `/api/v1/files/`, Agent at `/api/v1/agents/`, Research at `/api/v1/research/`.
 - **gRPC (9090):** Bidirectional streaming for agents and research.
 - **Temporal workflows:** ProcessActivity with PreWf, PostWf, CancelWf, ParsingWf (orchestration and activities via ProcessDAGEngine). In-process event delivery for status changes.
-- **Internal:** Orchestrator, Execution Engine, Research Services, Credential Store, IAM/Sharing, Workflow Managers. Schema and entities: [docs/ERD.md](airavata-api/docs/ERD.md).
+- **Internal:** Orchestrator, Execution Engine, Research Services, Credential Store, IAM/Sharing, Workflow Managers. Schema and entities: see [airavata-api/README.md](airavata-api/README.md#database-erd).
 
 ---
 
@@ -329,14 +352,14 @@ flowchart LR
     Service --> Mapper --> Repo --> Entity --> DB
 ```
 
-**Schema and services:** Each domain package owns its entities, repositories, mappers, and services (e.g. `research/experiment/entity/`, `execution/entity/`, `status/entity/`). Generic DRY infrastructure in `core/` (`EntityMapper`, `CrudService`, `AbstractCrudService`) eliminates boilerplate. MapStruct maps entities to domain models. Schema: [docs/ERD.md](airavata-api/docs/ERD.md).
+**Schema and services:** Each domain package owns its entities, repositories, mappers, and services (e.g. `research/experiment/entity/`, `execution/entity/`, `status/entity/`). Generic DRY infrastructure in `core/` (`EntityMapper`, `CrudService`, `AbstractCrudService`) eliminates boilerplate. MapStruct maps entities to domain models. Schema: see [airavata-api/README.md](airavata-api/README.md#database-erd).
 
 ---
 
 ## Configuration
 
 - **Paths:** Home via `--home` or `AIRAVATA_HOME`; config via `--config-dir` or `AIRAVATA_CONFIG_DIR` (default `{home}/conf`); logs under home.
-- **Files:** `application.properties` (or `airavata.properties`), `keystores/airavata.sym.p12`, `logback.xml` in config dir.
+- **Files:** `application.properties`, `keystores/airavata.sym.p12`, `logback.xml` in config dir.
 - **Agent tunnel (optional):** `airavata.services.agent.tunnelserver.host`, `.port`, `.url`, `.token` — remote tunnel server; Airavata does not start it.
 
 ---
@@ -364,7 +387,7 @@ tar -xzf airavata-0.21-SNAPSHOT.tar.gz
 cd airavata-0.21-SNAPSHOT
 
 # Copy configuration files into conf/
-cp ../../conf/airavata.properties conf/
+cp ../../conf/application.properties conf/
 cp ../../conf/airavata.sym.p12 conf/keystores/
 cp ../../conf/*.yml conf/
 cp ../../conf/logback.xml conf/
@@ -392,36 +415,79 @@ java -Dairavata.home=/path/to/install -Dairavata.config.dir=/path/to/conf -jar a
 
 **Paths:** Home = install root (`--home` or `AIRAVATA_HOME`). Config dir = `application.properties`, `logback.xml`, etc. (`--config-dir` or `AIRAVATA_CONFIG_DIR`; default `{home}/conf`). Logs under home.
 
-### Docker (experimental)
+### Shared Configuration
+
+Shared config lives in `conf/` at the repo root — used by Docker, Ansible, and K8s:
+
+```
+conf/
+├── init-db/01-create-databases.sql   # DB init (airavata + keycloak schemas)
+└── keycloak/
+    ├── keycloak.conf                 # Keycloak server config
+    └── setup-keycloak.sh             # Realm/client provisioning script
+```
+
+### Service Hostnames (local deployment)
+
+| Service | Hostname | Port |
+|---------|----------|------|
+| Portal | `airavata.localhost` | 3000 |
+| API Server | `api.airavata.localhost` | 8090 |
+| Keycloak | `auth.airavata.localhost` | 8080 |
+| Temporal UI | `temporal.airavata.localhost` | 8233 |
+| MariaDB | `db.airavata.localhost` | 3306 |
+| gRPC | `grpc.airavata.localhost` | 9090 |
+
+### Docker
 
 ```bash
-# Build the distribution first (from airavata-api/)
+# Build API server distribution + Docker image (includes agent binary)
 cd airavata-api && mvn clean install -DskipTests && cd ..
-
-# Build Docker image from the distribution Dockerfile (from repo root)
+cd airavata-agent && GOOS=linux GOARCH=amd64 go build -o ../airavata-api/modules/distribution/target/airavata-agent && cd ..
 docker build -t airavata:latest -f airavata-api/modules/distribution/src/main/docker/Dockerfile airavata-api/modules/distribution/target
 
-# Run the container (configure environment variables for DB, Keycloak, Temporal)
 docker run -p 8090:8090 -p 9090:9090 airavata:latest
 ```
+
+### Kubernetes
+
+```bash
+cd deployment/k8s
+
+# Apply all manifests
+kubectl apply -k .
+
+# Or apply individually
+kubectl apply -f namespace.yaml
+kubectl apply -f configmap.yaml -f secrets.yaml
+kubectl apply -f mariadb.yaml -f temporal.yaml -f keycloak.yaml
+kubectl apply -f apiserver.yaml -f portal.yaml
+kubectl apply -f ingress.yaml
+
+# Access at: http://airavata.localhost (portal), http://api.airavata.localhost (API)
+```
+
+Requires nginx ingress controller and `/etc/hosts` entries. See [deployment/k8s/](deployment/k8s/).
 
 ### Ansible (production)
 
 ```bash
 cd deployment/ansible
 
-# Copy and customize inventory
-cp -r inventories/template inventories/my-deployment
-# Edit inventories/my-deployment/hosts and group_vars/all/vars.yml
+# Local deployment (all services on one machine)
+ansible-playbook -i inventories/local deploy.yml
 
-# Deploy everything
+# Production: copy and customize inventory
+cp -r inventories/template inventories/my-deployment
+# Edit hosts and group_vars/all/vars.yml
 ansible-playbook -i inventories/my-deployment deploy.yml
 
-# Or deploy components individually using tags
+# Deploy specific services
 ansible-playbook -i inventories/my-deployment deploy.yml --tags database
 ansible-playbook -i inventories/my-deployment deploy.yml --tags temporal
 ansible-playbook -i inventories/my-deployment deploy.yml --tags apiserver
 ansible-playbook -i inventories/my-deployment deploy.yml --tags keycloak
+ansible-playbook -i inventories/my-deployment deploy.yml --tags portal
 ```
 
 See [deployment/ansible/README.md](deployment/ansible/README.md).
@@ -466,7 +532,7 @@ mvn test -Dtest=SomeTestClass               # Specific test
 
 Schema: single Flyway baseline at `src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql`. JPA via package scanning (no `persistence.xml`). To change schema: (1) Add or update the entity. (2) Add a versioned migration (e.g. `V2__Description.sql`) so DB matches entity; use `IF NOT EXISTS`/`IF EXISTS`. Drop column/table must be done manually. Tarball uses these Flyway scripts only.
 
-**Simplifications:** Child tables merged into JSON (e.g. batch queues → `RESOURCE.capabilities`). TASK table removed (tasks are transient DAG nodes, not persisted). JOB table remains for HPC job tracking with FK to PROCESS. [docs/ERD.md](airavata-api/docs/ERD.md).
+**Simplifications:** Child tables merged into JSON (e.g. batch queues → `RESOURCE.capabilities`). TASK table removed (tasks are transient DAG nodes, not persisted). JOB table remains for HPC job tracking with FK to PROCESS. See [airavata-api/README.md](airavata-api/README.md#database-erd).
 
 ---
 

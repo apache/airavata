@@ -1,0 +1,208 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# -----------------------------------------------------------------------
+# Node.js installation via NodeSource repository
+# -----------------------------------------------------------------------
+- name: Install curl and gnupg (prerequisites for NodeSource setup)
+  ansible.builtin.package:
+    name:
+      - curl
+      - gnupg
+    state: present
+  become: true
+
+- name: Check if Node.js {{ node_version }} is already installed
+  ansible.builtin.command: node --version
+  register: node_installed_version
+  failed_when: false
+  changed_when: false
+
+- name: Download NodeSource setup script for Node.js {{ node_major_version }}.x
+  ansible.builtin.get_url:
+    url: "https://deb.nodesource.com/setup_{{ node_major_version }}.x"
+    dest: /tmp/nodesource_setup.sh
+    mode: "0755"
+  become: true
+  when: >
+    node_installed_version.rc != 0 or
+    ('v' + node_major_version) not in node_installed_version.stdout
+
+- name: Run NodeSource setup script (Debian/Ubuntu)
+  ansible.builtin.command: bash /tmp/nodesource_setup.sh
+  become: true
+  when: >
+    ansible_os_family == "Debian" and
+    (node_installed_version.rc != 0 or ('v' + node_major_version) not in node_installed_version.stdout)
+
+- name: Install Node.js (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+  become: true
+  when: >
+    ansible_os_family == "Debian" and
+    (node_installed_version.rc != 0 or ('v' + node_major_version) not in node_installed_version.stdout)
+
+- name: Add NodeSource RPM repository (RedHat/Rocky)
+  ansible.builtin.shell: |
+    curl -fsSL https://rpm.nodesource.com/setup_{{ node_major_version }}.x | bash -
+  become: true
+  when: >
+    ansible_os_family == "RedHat" and
+    (node_installed_version.rc != 0 or ('v' + node_major_version) not in node_installed_version.stdout)
+
+- name: Install Node.js (RedHat/Rocky)
+  ansible.builtin.dnf:
+    name: nodejs
+    state: present
+  become: true
+  when: >
+    ansible_os_family == "RedHat" and
+    (node_installed_version.rc != 0 or ('v' + node_major_version) not in node_installed_version.stdout)
+
+# -----------------------------------------------------------------------
+# Source checkout
+# -----------------------------------------------------------------------
+- name: Install git
+  ansible.builtin.package:
+    name: git
+    state: present
+  become: true
+
+- name: Create portal source directory
+  ansible.builtin.file:
+    path: "{{ portal_source_dir }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+
+- name: Create deployment directory
+  ansible.builtin.file:
+    path: "{{ deployment_dir }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+
+- name: Checkout portal source from {{ portal_repo }} branch {{ portal_git_branch }}
+  ansible.builtin.git:
+    repo: "{{ portal_repo }}"
+    dest: "{{ portal_source_dir }}"
+    version: "{{ portal_git_branch }}"
+    force: yes
+  register: portal_checkout
+  tags: update
+
+# -----------------------------------------------------------------------
+# Build
+# -----------------------------------------------------------------------
+- name: Stop portal service before rebuild
+  ansible.builtin.systemd:
+    name: portal
+    state: stopped
+  become: true
+  failed_when: false
+
+- name: Remove previous portal deployment directory
+  ansible.builtin.file:
+    path: "{{ portal_dir }}"
+    state: absent
+
+- name: Copy portal source to deployment directory
+  ansible.builtin.copy:
+    src: "{{ portal_source_dir }}/{{ portal_repo_subdir }}/"
+    dest: "{{ portal_dir }}/"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: true
+
+- name: Write portal .env.local configuration
+  ansible.builtin.template:
+    src: portal.env.j2
+    dest: "{{ portal_dir }}/.env.local"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0600"
+
+- name: Install npm dependencies (including devDependencies needed for build)
+  ansible.builtin.command: npm ci
+  args:
+    chdir: "{{ portal_dir }}"
+  tags: update
+
+- name: Build Next.js portal
+  ansible.builtin.command: npm run build
+  args:
+    chdir: "{{ portal_dir }}"
+  environment:
+    NODE_ENV: production
+  tags: update
+
+- name: Prune devDependencies after build
+  ansible.builtin.command: npm prune --omit=dev
+  args:
+    chdir: "{{ portal_dir }}"
+  tags: update
+
+# -----------------------------------------------------------------------
+# Systemd service
+# -----------------------------------------------------------------------
+- name: Install portal systemd service unit
+  ansible.builtin.template:
+    src: portal.service.j2
+    dest: "{{ portal_systemd_unit_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart portal
+
+- name: Start and enable portal service
+  ansible.builtin.systemd:
+    name: portal
+    state: started
+    enabled: true
+    daemon_reload: yes
+  become: true
+
+# -----------------------------------------------------------------------
+# Firewall
+# -----------------------------------------------------------------------
+- name: Allow portal port through firewall (RedHat)
+  ansible.posix.firewalld:
+    port: "{{ portal_port }}/tcp"
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Allow portal port through firewall (Debian)
+  community.general.ufw:
+    rule: allow
+    port: "{{ portal_port }}"
+    proto: tcp
+  become: true
+  when: ansible_os_family == "Debian"

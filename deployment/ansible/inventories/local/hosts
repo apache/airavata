@@ -1,0 +1,18 @@
+---
+# Local inventory — all services run on localhost
+# Use with: ansible-playbook -i inventories/local deploy.yml
+
+[database]
+localhost ansible_connection=local
+
+[apiserver]
+localhost ansible_connection=local
+
+[keycloak]
+localhost ansible_connection=local
+
+[temporal]
+localhost ansible_connection=local
+
+[portal]
+localhost ansible_connection=local

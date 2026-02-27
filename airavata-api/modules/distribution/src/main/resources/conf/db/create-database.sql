@@ -16,30 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * Apache Airavata - Database Setup Script
+ * Apache Airavata - Database Setup Script (manual / reference)
  *
- * Run this script as a MySQL/MariaDB administrator (e.g. root) before first
- * deployment. It creates the database and application user. Replace the
- * credentials with values appropriate for your environment.
+ * For automated deployments (docker-compose, Ansible, K8s), use the canonical
+ * init script at: conf/init-db/01-create-databases.sql
+ *
+ * This file is for manual one-off setup. Run as a MySQL/MariaDB admin before
+ * first deployment. Replace credentials with values for your environment.
  *
  * Prerequisites: MySQL 5.7+ or MariaDB 10.2+
  *
  * Usage: mysql -u root -p < create-database.sql
- * Or:    mysql -u root -p -e "source /path/to/create-database.sql"
  */
 
--- Create the Airavata database
+-- Airavata database
 CREATE DATABASE IF NOT EXISTS airavata
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
--- Create application user (adjust username, host, and password for your environment)
--- For local development: 'airavata'@'localhost' or 'airavata'@'%'
--- For production: use a restricted host and strong password
 CREATE USER IF NOT EXISTS 'airavata'@'%' IDENTIFIED BY 'CHANGE_ME_IN_PRODUCTION';
-
--- Grant privileges on the airavata database
 GRANT ALL PRIVILEGES ON airavata.* TO 'airavata'@'%';
 
--- Apply privilege changes
+-- Keycloak database (same MariaDB instance)
+CREATE DATABASE IF NOT EXISTS keycloak
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'keycloak'@'%' IDENTIFIED BY 'CHANGE_ME_IN_PRODUCTION';
+GRANT ALL PRIVILEGES ON keycloak.* TO 'keycloak'@'%';
+
 FLUSH PRIVILEGES;

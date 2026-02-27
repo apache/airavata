@@ -1,0 +1,48 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# ── Metadata ────────────────────────────────────────────────────────────────
+namespace: airavata
+
+commonLabels:
+  app.kubernetes.io/part-of: airavata
+  app.kubernetes.io/managed-by: kustomize
+
+# ── Resources ────────────────────────────────────────────────────────────────
+# Order matters for readability; Kustomize resolves actual dependency order.
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - mariadb.yaml
+  - temporal.yaml
+  - keycloak.yaml
+  - apiserver.yaml
+  - portal.yaml
+  - ingress.yaml
+
+# ── Images ──────────────────────────────────────────────────────────────────
+# Override image tags here rather than editing individual manifests.
+# Example: set a specific image digest for a production release.
+images:
+  - name: apache/airavata
+    newTag: latest
+    # newTag: "1.0.0"
+    # digest: sha256:abc123...
+  - name: apache/airavata-portal
+    newTag: latest
+    # newTag: "1.0.0"
+  - name: mariadb
+    newTag: "11.7"
+  - name: keycloak/keycloak
+    newTag: "26.5"
+  - name: temporalio/admin-tools
+    newTag: latest
+
+# ── Config patches (overlays) ────────────────────────────────────────────────
+# Uncomment and extend for environment-specific overlays (dev / staging / prod).
+# patches:
+#   - path: overlays/prod/apiserver-resources-patch.yaml
+#     target:
+#       kind: Deployment
+#       name: apiserver

@@ -80,7 +80,7 @@ All Airavata services run in a single Spring Boot application (one JVM). See the
 
 Configuration files should be in the `conf/` directory (mounted at `/opt/apache-airavata/conf/`):
 
-- `airavata.properties`: Main configuration (located at `/opt/apache-airavata/conf/airavata.properties`)
+- `application.properties`: Main configuration (located at `/opt/apache-airavata/conf/application.properties`)
 - `airavata.sym.p12`: Keystore file (located at `/opt/apache-airavata/conf/airavata.sym.p12`)
 - `logback.xml`: Logging configuration (located at `/opt/apache-airavata/conf/logback.xml`)
 

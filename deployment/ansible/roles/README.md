@@ -87,6 +87,27 @@ Keycloak 26.5 (Quarkus-based) IAM server deployment:
 - `ssl.yml`: SSL certificate generation
 - `install.yml`: Keycloak download, configuration, and service setup
 
+### temporal
+
+Temporal CLI dev server installation and systemd service:
+- Downloads and installs Temporal CLI binary
+- Configures systemd service with `start-dev` mode
+- File-based persistence (SQLite)
+
+**Task files:**
+- `install.yml`: Download CLI binary, create directories, systemd unit
+
+### portal
+
+Next.js portal deployment:
+- Node.js installation (v18)
+- Source checkout and npm build
+- Environment configuration (API URL, Keycloak, NextAuth)
+- Systemd service setup
+
+**Task files:**
+- `install.yml`: Node.js setup, source checkout, npm build, systemd unit
+
 ## Role Usage
 
 Roles are used in the main deployment playbook (`deploy.yml`):

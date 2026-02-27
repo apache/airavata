@@ -4,16 +4,20 @@ This document explains the setup flow and how to configure Airavata components a
 
 ## `deploy.yml` Execution Flow (Recommended)
 
-The consolidated `deploy.yml` playbook deploys all components using the four essential roles:
+The consolidated `deploy.yml` playbook deploys all components using six roles:
 
 ```
 1. base (on all hosts)
    ↓
 2. database (on [database] hosts)
    ↓
-3. keycloak (on [keycloak] hosts)
+3. temporal (on [temporal] hosts)
    ↓
-4. apiserver (on [apiserver] hosts)
+4. keycloak (on [keycloak] hosts)
+   ↓
+5. apiserver (on [apiserver] hosts)
+   ↓
+6. portal (on [portal] hosts)
 ```
 
 ### Role Details
@@ -49,10 +53,18 @@ The consolidated `deploy.yml` playbook deploys all components using the four ess
 - **Runs on**: `[keycloak]` group
 - **Requires**: database role, Java, SSL certificates
 
-#### 4. `apiserver`
+#### 4. `temporal`
+**Purpose**: Temporal CLI dev server
+- Downloads and installs Temporal CLI binary
+- Configures systemd service with `start-dev` mode (SQLite persistence)
+- Opens firewall ports (7233 gRPC, 8233 UI)
+- **Runs on**: `[temporal]` group
+
+#### 5. `apiserver`
 **Purpose**: Unified Airavata API server deployment
 - Checks out Airavata source from Git
 - Builds with Maven (`mvn clean install -DskipTests`)
+- Builds airavata-agent Go binary and places it in distribution `bin/`
 - Sets up keystore file
 - Deploys distribution to target directory
 - Configures HAProxy for SSL termination (port 443 → 8090)
@@ -60,18 +72,13 @@ The consolidated `deploy.yml` playbook deploys all components using the four ess
 - Creates systemd service
 - **Runs on**: `[apiserver]` group
 
-## Legacy `airavata_setup.yml` Flow
-
-The legacy setup playbook runs additional roles that may not be needed for new deployments:
-
-```
-1. env_setup → 2. java → 3. common → 4. database → 5. letsencrypt
-   → 6. keycloak → 7. reverse_proxy → 8. api-orch → 9. airavata_services
-```
-
-**Note:** The legacy setup references Zookeeper, Kafka, and RabbitMQ roles that are **no longer required**. The current architecture uses:
-- **Temporal** for workflow orchestration (provided externally or via Docker)
-- **In-process event delivery** for status changes (no messaging broker needed)
+#### 6. `portal`
+**Purpose**: Next.js portal deployment
+- Installs Node.js 18 via NodeSource
+- Clones and builds Next.js portal
+- Configures environment (API URL, Keycloak, NextAuth)
+- Creates systemd service
+- **Runs on**: `[portal]` group
 
 ## Multi-Host Configuration
 
@@ -241,7 +248,9 @@ ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass
 
 ### Updating Existing Deployment
 ```bash
-ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
+# Redeploy specific components
+ansible-playbook -i inventories/my-env deploy.yml --tags apiserver --ask-vault-pass
+ansible-playbook -i inventories/my-env deploy.yml --tags portal --ask-vault-pass
 ```
 
 ### Multi-Host Setup (Separate Hosts)
@@ -281,7 +290,7 @@ ansible-playbook -i inventories/my-env deploy.yml \
    - Verify `iam_server_url` points to Keycloak server
    - Verify Temporal is accessible on port 7233
    - Verify Java 25: `java --version`
-   - Use `start_services.yml` / `stop_services.yml` to manage
+   - Use `systemctl start/stop apiserver` to manage
 
 4. **SSL certificate generation fails**
    - Verify DNS points to server: `dig <hostname>`
@@ -318,13 +327,14 @@ ansible-playbook -i inventories/my-env deploy.yml \
 
 3. **Update services**:
    ```bash
-   ansible-playbook -i inventories/my-env airavata_update.yml \
-     --limit apiserver \
+   ansible-playbook -i inventories/my-env deploy.yml \
+     --tags apiserver \
      --ask-vault-pass
    ```
 
 4. **Start/Stop server**:
    ```bash
-   ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
-   ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
+   # On the target server:
+   systemctl start apiserver
+   systemctl stop apiserver
    ```

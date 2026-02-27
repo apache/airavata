@@ -57,7 +57,7 @@
     group: "{{ group }}"
     mode: "u=rw,g=r,o=r"
   loop:
-    - { src: "airavata.properties.j2", dest: "application.properties" }
+    - { src: "application.properties.j2", dest: "application.properties" }
     - { src: "logback.xml.j2", dest: "logback.xml" }
 
 - name: Create logs directory
@@ -92,6 +92,29 @@
   ansible.builtin.command: "restorecon -v {{ apiserver_dir }}/{{ airavata_dist }}/bin/airavata.sh"
   become: true
   when: ansible_distribution == "Rocky"
+
+- name: Build airavata-agent Go binary
+  ansible.builtin.command: >
+    go build -o airavata-agent
+    -ldflags "-s -w"
+    .
+  args:
+    chdir: "{{ airavata_source_dir }}/airavata-agent"
+  environment:
+    GOOS: linux
+    GOARCH: amd64
+    CGO_ENABLED: "0"
+  register: agent_build
+  tags: update
+
+- name: Copy airavata-agent binary to distribution bin/
+  ansible.builtin.copy:
+    src: "{{ airavata_source_dir }}/airavata-agent/airavata-agent"
+    dest: "{{ apiserver_dir }}/{{ airavata_dist }}/bin/airavata-agent"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+    remote_src: true
 
 - name: Start and enable apiserver
   ansible.builtin.systemd:

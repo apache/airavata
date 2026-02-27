@@ -67,8 +67,8 @@ mkdir -p ./${DIST_NAME}/conf/keystores/
 
 # Copy configuration files from conf (if exists)
 if [ -d "./conf" ]; then
-    if [ -f "./conf/airavata.properties" ]; then
-        cp ./conf/airavata.properties ./${DIST_NAME}/conf/airavata.properties
+    if [ -f "./conf/application.properties" ]; then
+        cp ./conf/application.properties ./${DIST_NAME}/conf/application.properties
         log "Configuration file updated."
     fi
     

@@ -6,7 +6,7 @@ The Airavata API module provides HTTP endpoints for all core API functionalities
 
 - **Server**: HTTP Server (unified)
 - **Port**: 8090 (default)
-- **Configuration**: `server.port` / `airavata.services.http.server.port`
+- **Configuration**: `server.port`
 
 ## Overview
 
@@ -48,6 +48,10 @@ The Airavata API provides HTTP endpoints for all core functionalities:
 | Research Artifacts | `ResearchArtifactController` | `/api/v1/research/artifacts` | Research artifact CRUD |
 | Research Projects | `ResearchProjectController` | `/api/v1/research/artifacts/projects` | Research project management |
 | Research Sessions | `ResearchSessionController` | `/api/v1/research-hub/sessions` | Research session management |
+| Agents | `AgentController` | `/api/v1/agents` | Agent registration and management |
+| Agent Experiments | `AgentExperimentController` | `/api/v1/agent/experiments` | Agent-side experiment operations |
+| Files | `FileController` | `/api/v1/files` | File upload/download |
+| Plans | `PlanController` | `/api/v1/plans` | Execution plan management |
 
 All endpoints are prefixed with `/api/v1/` and follow RESTful conventions.
 
@@ -55,8 +59,8 @@ All endpoints are prefixed with `/api/v1/` and follow RESTful conventions.
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `airavata.services.rest.server.port` | - | Maps to Spring Boot `server.port` (uses unified HTTP server port 8090) |
-| `airavata.services.http.server.port` | `8090` | Unified HTTP server port |
+| `server.port` | `8090` | Unified HTTP server port |
+| `spring.grpc.server.port` | `9090` | gRPC server port |
 
 The Airavata API runs on the unified HTTP server port (8090 by default).
 

@@ -1,0 +1,29 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Temporal Development Server
+Documentation=https://docs.temporal.io
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ user }}
+Group={{ group }}
+ExecStart={{ temporal_binary_path }} server start-dev \
+    --ip 0.0.0.0 \
+    --port {{ temporal_port }} \
+    --ui-port {{ temporal_ui_port }} \
+    --metrics-port {{ temporal_metrics_port }} \
+    --db-filename {{ temporal_db_filename }} \
+    --namespace {{ temporal_namespace }} \
+    --log-level {{ temporal_log_level }}
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=temporal
+
+[Install]
+WantedBy=multi-user.target

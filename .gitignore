@@ -104,6 +104,12 @@ node_modules/
 .yarn/build-state.yml
 .yarn/install-state.gz
 
+# Go
+vendor/
+*.test
+*.out
+*.prof
+
 # Logs and temporary files
 logs/
 *.log
@@ -117,9 +123,21 @@ PRODUCTION_READINESS.md
 *.retry
 
 # Generated keystores and credentials
-**/keystores/airavata.p12
-**/keystores/airavata.p12.tmp
-**/keystores/airavata.sym.p12
-**/keystores/aes.p12
-**/keystores/server.key
-**/keystores/server.crt
+**/keystores/*.p12
+**/keystores/*.p12.tmp
+**/keystores/*.key
+**/keystores/*.crt
+**/keystores/*.jks
+**/keystores/*.pem
+
+# Editor swap / backup files
+*.swp
+*.swo
+*~
+\#*\#
+.#*
+
+# Terraform (if used for infra)
+*.tfstate
+*.tfstate.backup
+.terraform/

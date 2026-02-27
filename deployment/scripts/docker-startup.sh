@@ -20,7 +20,7 @@ echo "   - Sharing Registry"
 echo "   - Credential Store"
 echo "   - All Workflow Managers"
 echo "   - All Background Services"
-echo "Properties file location: ${AIRAVATA_CONFIG_DIR}/airavata.properties"
+echo "Properties file location: ${AIRAVATA_CONFIG_DIR}/application.properties"
 echo "Configuration directory: $AIRAVATA_CONFIG_DIR"
 
 # Wait for dependencies if environment variables are set

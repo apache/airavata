@@ -1,0 +1,41 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+node_version: "18"
+node_major_version: "18"
+
+portal_repo: "https://github.com/apache/airavata.git"
+portal_repo_subdir: "airavata-portal"
+portal_git_branch: "{{ git_branch | default('master') }}"
+
+portal_source_dir: "{{ deployment_dir }}/portal-src"
+portal_dir: "{{ deployment_dir }}/portal"
+portal_port: 3000
+portal_hostname: "{{ api_server_public_hostname | default('localhost') }}"
+
+portal_api_url: "http://{{ groups['apiserver'][0] }}:{{ api_server_port | default('8090') }}"
+portal_keycloak_issuer: "{{ iam_server_url | default('http://localhost:18080') }}/realms/{{ keycloak_realm | default('default') }}"
+portal_keycloak_client_id: "{{ portal_keycloak_client_id_value | default('pga') }}"
+portal_keycloak_client_secret: "{{ portal_keycloak_client_secret_value | default('') }}"
+portal_nextauth_url: "http://{{ portal_hostname }}:{{ portal_port }}"
+portal_nextauth_secret: "{{ portal_nextauth_secret_value | default('changeme-nextauth-secret') }}"
+
+portal_systemd_unit_file: "/etc/systemd/system/portal.service"

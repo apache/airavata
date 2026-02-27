@@ -21,7 +21,9 @@
 ---
 - name: Install Airavata prerequisites
   ansible.builtin.package:
-    name: git
+    name:
+      - git
+      - golang
     state: present
   become: true
 

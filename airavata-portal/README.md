@@ -158,23 +158,21 @@ The portal connects to the Airavata REST API with endpoints at `/api/v1/`:
 
 | Endpoint | Description |
 |----------|-------------|
-| `/experiments` | Experiment management |
-| `/projects` | Project management |
-| `/processes` | Process tracking |
-| `/jobs` | Job monitoring |
-| `/application-interfaces` | Application configuration |
-| `/application-modules` | Application modules |
-| `/compute-resources` | Compute resource management |
-| `/storage-resources` | Storage resource management |
-| `/data-products` | Data product management |
+| `/experiments` | Experiment lifecycle management |
+| `/projects` | Project management and resource accounts |
+| `/processes` | Process execution and monitoring |
+| `/jobs` | Job status and management |
+| `/applications` | Application CRUD |
+| `/installations` | Application installation on resources |
+| `/resources` | Unified compute/storage resource management |
+| `/bindings` | Credential-resource binding management |
 | `/gateways` | Gateway configuration |
-| `/workflows` | Workflow management |
-| `/user-resource-profiles` | User preferences |
-| `/group-resource-profiles` | Group preferences |
-| `/credential-summaries` | Credential listing and summaries |
-| `/credentials/ssh`, `/credentials/password` | Create and retrieve credentials |
-| `/resource-access` | Access grants (credential + resource + login username) |
-| `/connectivity-test/ssh/validate` | Test SSH connectivity with credential and login username |
+| `/workflows` | Workflow definitions |
+| `/workflow-runs` | Workflow run execution and status |
+| `/credentials/ssh`, `/credentials/password` | Credential CRUD |
+| `/connectivity-test` | SSH/SFTP/SLURM connectivity validation |
+| `/users` | User management |
+| `/groups` | Group management and membership |
 
 ## Development
 
@@ -258,10 +256,9 @@ CMD ["node", "server.js"]
 For production, ensure all environment variables are properly set:
 
 - `API_URL` - Airavata API base URL (server-side only; the portal proxies `/api/v1/*` to this URL; default gateway and portal options are fetched from the API via `GET /api/v1/config`).
-- `KEYCLOAK_CLIENT_ID` - Keycloak client ID
-- `KEYCLOAK_CLIENT_SECRET` - Keycloak client secret
 - `KEYCLOAK_ISSUER` - Keycloak realm URL (e.g. `http://localhost:18080/realms/default`). There is no login form in the app; unauthenticated users are redirected to Keycloak.
-- `KEYCLOAK_CLIENT_ID` / `KEYCLOAK_CLIENT_SECRET` - Keycloak OAuth client (default client id: `pga`).
+- `KEYCLOAK_CLIENT_ID` - Keycloak OAuth client ID (default: `pga`, must match setup-keycloak.sh)
+- `KEYCLOAK_CLIENT_SECRET` - Keycloak OAuth client secret
 - `NEXTAUTH_URL` - Application URL (for NextAuth callbacks)
 - `NEXTAUTH_SECRET` - Secret for session encryption
 

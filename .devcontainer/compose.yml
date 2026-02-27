@@ -1,8 +1,19 @@
 # Airavata development: core services + devcontainer
 # Credentials: .devcontainer/dev.env.defaults (single source of truth)
+# Shared config: conf/ at repo root (init-db, keycloak)
 #
 # ./scripts/run  or  init.sh [--clean] [--run] then dev.sh serve
 # Profiles: (none) = core | test = + slurm, sftp
+#
+# Local hostnames (add to /etc/hosts if desired):
+#   127.0.0.1  airavata.localhost api.airavata.localhost auth.airavata.localhost db.airavata.localhost temporal.airavata.localhost
+#
+# Service ports on host:
+#   auth.airavata.localhost:18080  — Keycloak
+#   api.airavata.localhost:8090    — API Server (run via mvn spring-boot:run)
+#   db.airavata.localhost:13306    — MariaDB
+#   temporal.airavata.localhost:7233/8233 — Temporal gRPC/UI
+#   airavata.localhost:3000        — Portal (run via npm run dev)
 
 networks:
   airavata-network:
@@ -29,7 +40,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
-      - ./keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ../conf/keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf
     command: ["start"]
     networks:
       - airavata-network
@@ -60,7 +71,7 @@ services:
       # INCLUDE_JUPYTERLAB: "true"
       # JUPYTERLAB_CLIENT_SECRET: "..."
     volumes:
-      - ./keycloak/setup-keycloak.sh:/setup-keycloak.sh:ro
+      - ../conf/keycloak/setup-keycloak.sh:/setup-keycloak.sh:ro
     entrypoint: ["/bin/sh", "-c"]
     command: ["apk add --no-cache bash curl jq >/dev/null 2>&1 && bash /setup-keycloak.sh"]
     networks:
@@ -78,7 +89,7 @@ services:
       MYSQL_PASSWORD: 123456
     volumes:
       - db_data:/var/lib/mysql
-      - ./init-db:/docker-entrypoint-initdb.d:ro
+      - ../conf/init-db:/docker-entrypoint-initdb.d:ro
     command:
       - mariadbd
       - --character-set-server=utf8mb4

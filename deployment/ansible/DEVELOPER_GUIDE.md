@@ -16,19 +16,10 @@ cp -r inventories/template inventories/my-env
 cd inventories/my-env
 ```
 
-### Step 2: Rename Example Files
-
-```bash
-mv hosts.example hosts
-mv group_vars/all/vars.yml.example group_vars/all/vars.yml
-mv group_vars/all/vault.yml.example group_vars/all/vault.yml
-mv host_vars/airavata-server/vault.yml.example host_vars/airavata-server/vault.yml
-```
-
-### Step 3: Edit Configuration Files
+### Step 2: Edit Configuration Files
 
 **Edit `hosts`**
-- Replace `airavata-server` with your host alias if needed
+- Replace `CHANGEME` with actual hostnames/IPs for each group (database, apiserver, keycloak, temporal, portal)
 
 **Edit `group_vars/all/vars.yml` (Non-sensitive):**
 - Set deployment user, ports, paths
@@ -94,26 +85,22 @@ ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass
 **What this does:**
 - Creates `airavata` user/group
 - Installs Java 25
-- Sets up MariaDB
+- Sets up MariaDB (airavata + keycloak databases)
+- Installs Temporal dev server
 - Installs Keycloak 26.5 (IAM)
-- Builds and deploys the unified Airavata API server
+- Builds and deploys the unified Airavata API server (+ agent binary)
+- Deploys the Next.js portal
 - Configures HAProxy for SSL termination
-- Starts the server
+- Starts all services
 
-### 2. Legacy Setup (Full Environment from Scratch)
-
-```bash
-ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
-```
-
-### 3. Update Existing Deployment
+### 2. Update Existing Deployment
 
 ```bash
 cd deployment/ansible
 source ENV/bin/activate
 
-# Update services (stops, builds, deploys, starts)
-ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
+# Redeploy API server only (stops, builds, deploys, starts)
+ansible-playbook -i inventories/my-env deploy.yml --tags apiserver --ask-vault-pass
 ```
 
 ## Vault File Management
@@ -162,18 +149,17 @@ ansible-vault rekey inventories/my-env/group_vars/all/vault.yml
 
 ## Service Management
 
-### Stop Airavata Server
+Services are managed via systemd on the target servers:
 
 ```bash
-cd deployment/ansible
-ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
-```
+# On the target server (via SSH or ansible ad-hoc)
+systemctl start apiserver
+systemctl stop apiserver
+systemctl restart apiserver
+systemctl status apiserver
 
-### Start Airavata Server
-
-```bash
-cd deployment/ansible
-ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
+# Keycloak / Temporal / Portal similarly:
+systemctl status keycloak temporal portal
 ```
 
 ## Configuration Files
@@ -243,10 +229,11 @@ ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass
 ### Update Code and Redeploy
 
 ```bash
-# 1. Update code (if needed, change git_branch in vars.yml)
+# Redeploy API server (stops, builds, deploys, starts)
+ansible-playbook -i inventories/my-env deploy.yml --tags apiserver --ask-vault-pass
 
-# 2. Run update (stops, builds, deploys, starts)
-ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
+# Redeploy portal only
+ansible-playbook -i inventories/my-env deploy.yml --tags portal --ask-vault-pass
 ```
 
 ### Change Configuration
@@ -255,21 +242,8 @@ ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
 # 1. Edit encrypted vault
 ansible-vault edit inventories/my-env/group_vars/all/vault.yml
 
-# 2. Stop server
-ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
-
-# 3. Update deployment (will regenerate configs)
-ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass --skip-tags build
-```
-
-### Restart Server Only
-
-```bash
-# Stop
-ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
-
-# Start
-ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
+# 2. Redeploy (will regenerate configs and restart)
+ansible-playbook -i inventories/my-env deploy.yml --tags apiserver --ask-vault-pass
 ```
 
 ## Verification
@@ -309,7 +283,7 @@ ansible airavata-server -i inventories/my-env -m shell \
 
 1. **Check ports are free:**
    ```bash
-   ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
+   systemctl stop apiserver
    ```
 
 2. **Check database connection:**
@@ -331,16 +305,17 @@ ansible airavata-server -i inventories/my-env -m shell \
 | Task | Command |
 |------|---------|
 | Deploy all | `ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass` |
-| Full setup (legacy) | `ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass` |
-| Update services | `ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass` |
-| Stop server | `ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass` |
-| Start server | `ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass` |
+| Deploy API server | `ansible-playbook -i inventories/my-env deploy.yml --tags apiserver --ask-vault-pass` |
+| Deploy portal | `ansible-playbook -i inventories/my-env deploy.yml --tags portal --ask-vault-pass` |
+| Deploy database | `ansible-playbook -i inventories/my-env deploy.yml --tags database --ask-vault-pass` |
+| Deploy keycloak | `ansible-playbook -i inventories/my-env deploy.yml --tags keycloak --ask-vault-pass` |
+| Deploy temporal | `ansible-playbook -i inventories/my-env deploy.yml --tags temporal --ask-vault-pass` |
 | Encrypt vault | `ansible-vault encrypt inventories/my-env/group_vars/all/vault.yml` |
 | Edit vault | `ansible-vault edit inventories/my-env/group_vars/all/vault.yml` |
 | Decrypt vault | `ansible-vault decrypt inventories/my-env/group_vars/all/vault.yml` |
 
 ## Additional Resources
 
-- **`inventories/template/README.md`** - Detailed template setup guide
 - **`SETUP_FLOW.md`** - Detailed role descriptions and multi-host configuration
-- **`inventories/template/group_vars/all/vault.yml.example`** - Template with all `CHANGEME` placeholders
+- **`roles/README.md`** - Individual role documentation
+- **`inventories/template/`** - Template inventory with `CHANGEME` placeholders

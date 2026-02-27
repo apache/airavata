@@ -1,3 +1,5 @@
+# Docker build context: typically modules/distribution/target/
+# This file applies when building from the airavata-api/ directory.
 .git
 .github
 .gitignore
@@ -9,11 +11,17 @@
 .DS_Store
 .env
 .env.*
-docs
-scripts
-examples
+
+# Source and docs (not needed in image)
+docs/
+scripts/
+examples/
 *.iml
+*.md
+
+# Build output (selectively include via Dockerfile COPY)
 **/target
 **/node_modules
+
+# Logs
 *.log
-*.md
