@@ -24,9 +24,11 @@ jobs:
           cache: "maven"
       - name: Run Spotless Check
         run: ./mvnw spotless:check
+        working-directory: airavata-api
       - name: Run Spotless Apply if Check Fails
         if: failure()
         run: ./mvnw spotless:apply
+        working-directory: airavata-api
       - name: Generate Spotless Patch
         if: failure()
         run: |

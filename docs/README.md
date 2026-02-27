@@ -1,6 +1,0 @@
-# Airavata documentation
-
-- **[ERD.md](ERD.md)** – Entity-relationship description of the unified database schema (38 tables in V1 baseline). All tables are in a single Flyway V1 migration with UPPER_CASE names. Covers tenant/IAM (GATEWAY, USER, GROUP_MEMBERSHIP, SHARING_PERMISSION), compute/credentials (RESOURCE, CREDENTIAL, RESOURCE_BINDING), application/experiment pipeline (APPLICATION, EXPERIMENT, PROCESS, EVENT, JOB), research platform (RESEARCH_ARTIFACT subtypes, RESEARCH_PROJECT, RESEARCH_SESSION), and workflow (WORKFLOW, WORKFLOW_RUN). Includes JSON column schemas, FK relationships, and JPA entity mappings.
-- **Schema migrations** – [dev-tools/migrations/README.md](../dev-tools/migrations/README.md) and [schema_simplification/README.md](../dev-tools/migrations/schema_simplification/README.md) for migration scripts.
-- **Quick start and architecture** – See the main [README](../README.md) in the project root.
-- **Key packages** – `execution/` (orchestration, DAG execution, Temporal activities), `research/` (experiment, application, artifact, project, session), `status/` (event and status management), `compute/`, `storage/`, `core/` (DRY infrastructure). See the main README for the full package tree.

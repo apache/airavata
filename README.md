@@ -43,7 +43,7 @@ Minimum 8GB RAM, 10GB disk. Unix (Linux/macOS) or Windows with WSL2.
 ```bash
 # Clone and enter repo
 git clone https://github.com/apache/airavata.git
-cd airavata
+cd airavata/airavata-api
 
 # Build (runs tests)
 mvn clean install
@@ -59,7 +59,7 @@ git clone https://github.com/apache/airavata-portals.git
 cd airavata-portals
 npm install
 cp .env.example .env.local
-# Edit .env.local: KEYCLOAK_CLIENT_SECRET (from airavata/.devcontainer/dev.env.defaults), API_URL, KEYCLOAK_ISSUER, NEXTAUTH_*
+# Edit .env.local: KEYCLOAK_CLIENT_SECRET (from ../.devcontainer/dev.env.defaults), API_URL, KEYCLOAK_ISSUER, NEXTAUTH_*
 npm run dev
 
 # --- Alternatives ---
@@ -69,7 +69,7 @@ npm run dev
 # Cold start / full reset (tear down, bring up stack, start):
 ./scripts/init.sh --clean --run
 # Tear down only:
-docker compose -f .devcontainer/compose.yml down -v
+docker compose -f ../.devcontainer/compose.yml down -v
 ```
 
 ### Dev Container
@@ -88,7 +88,7 @@ VS Code/Cursor: "Reopen in Container." Run `./scripts/run.sh` inside.
 
 ### CLI commands
 
-From the **project root**:
+From `airavata-api/`:
 
 ```bash
 ./scripts/dev.sh <command> [options]   # dev mode (hot reload, optional --debug)
@@ -97,7 +97,7 @@ From the **project root**:
 
 Examples: `./scripts/dev.sh serve`, `./scripts/dev.sh --debug serve`, `./scripts/jar.sh serve`, `./scripts/dev.sh --help`.
 
-Or from `modules/distribution`: `mvn exec:java -Dexec.args="<command> [options]"`, or `./scripts/dev.sh serve`.
+Or from `airavata-api/modules/distribution`: `mvn exec:java -Dexec.args="<command> [options]"`, or `./scripts/dev.sh serve`.
 
 When using the distribution bundle (tarball or fat JAR):
 
@@ -224,13 +224,13 @@ flowchart LR
 - **HTTP (8090):** REST at `/api/v1/`, File API at `/api/v1/files/`, Agent at `/api/v1/agents/`, Research at `/api/v1/research/`.
 - **gRPC (9090):** Bidirectional streaming for agents and research.
 - **Temporal workflows:** ProcessActivity with PreWf, PostWf, CancelWf, ParsingWf (orchestration and activities via ProcessDAGEngine). In-process event delivery for status changes.
-- **Internal:** Orchestrator, Execution Engine, Research Services, Credential Store, IAM/Sharing, Workflow Managers. Schema and entities: [docs/ERD.md](docs/ERD.md).
+- **Internal:** Orchestrator, Execution Engine, Research Services, Credential Store, IAM/Sharing, Workflow Managers. Schema and entities: [docs/ERD.md](airavata-api/docs/ERD.md).
 
 ---
 
 ## Internal Code Architecture
 
-The core API (`modules/airavata-api`) is layered.
+The core API (`airavata-api/modules/airavata-api`) is layered.
 
 ### Package structure
 
@@ -329,7 +329,7 @@ flowchart LR
     Service --> Mapper --> Repo --> Entity --> DB
 ```
 
-**Schema and services:** Each domain package owns its entities, repositories, mappers, and services (e.g. `research/experiment/entity/`, `execution/entity/`, `status/entity/`). Generic DRY infrastructure in `core/` (`EntityMapper`, `CrudService`, `AbstractCrudService`) eliminates boilerplate. MapStruct maps entities to domain models. Schema: [docs/ERD.md](docs/ERD.md).
+**Schema and services:** Each domain package owns its entities, repositories, mappers, and services (e.g. `research/experiment/entity/`, `execution/entity/`, `status/entity/`). Generic DRY infrastructure in `core/` (`EntityMapper`, `CrudService`, `AbstractCrudService`) eliminates boilerplate. MapStruct maps entities to domain models. Schema: [docs/ERD.md](airavata-api/docs/ERD.md).
 
 ---
 
@@ -395,11 +395,11 @@ java -Dairavata.home=/path/to/install -Dairavata.config.dir=/path/to/conf -jar a
 ### Docker (experimental)
 
 ```bash
-# Build the distribution first
-mvn clean install -DskipTests
+# Build the distribution first (from airavata-api/)
+cd airavata-api && mvn clean install -DskipTests && cd ..
 
-# Build Docker image from the distribution Dockerfile
-docker build -t airavata:latest -f modules/distribution/src/main/docker/Dockerfile modules/distribution/target
+# Build Docker image from the distribution Dockerfile (from repo root)
+docker build -t airavata:latest -f airavata-api/modules/distribution/src/main/docker/Dockerfile airavata-api/modules/distribution/target
 
 # Run the container (configure environment variables for DB, Keycloak, Temporal)
 docker run -p 8090:8090 -p 9090:9090 airavata:latest
@@ -408,7 +408,7 @@ docker run -p 8090:8090 -p 9090:9090 airavata:latest
 ### Ansible (production)
 
 ```bash
-cd dev-tools/ansible
+cd deployment/ansible
 
 # Copy and customize inventory
 cp -r inventories/template inventories/my-deployment
@@ -424,7 +424,7 @@ ansible-playbook -i inventories/my-deployment deploy.yml --tags apiserver
 ansible-playbook -i inventories/my-deployment deploy.yml --tags keycloak
 ```
 
-See [dev-tools/ansible/README.md](dev-tools/ansible/README.md).
+See [deployment/ansible/README.md](deployment/ansible/README.md).
 
 ---
 
@@ -434,9 +434,9 @@ See [dev-tools/ansible/README.md](dev-tools/ansible/README.md).
 
 Import as Maven project. Java 25+, annotation processing on.
 
-**VS Code:** [launch.json](.vscode/launch.json) (Serve, Serve Debug) and [tasks.json](.vscode/tasks.json) (Init, Build, Test). Run `./scripts/init.sh --clean` before first Serve.
+**VS Code:** [launch.json](airavata-api/.vscode/launch.json) (Serve, Serve Debug) and [tasks.json](airavata-api/.vscode/tasks.json) (Init, Build, Test). Run `./scripts/init.sh --clean` from `airavata-api/` before first Serve.
 
-**IntelliJ:** [.idea/runConfigurations/](.idea/runConfigurations/) (Serve, Serve Debug).
+**IntelliJ:** Import as Maven project from `airavata-api/`. Create Run Configurations for Serve and Serve Debug.
 
 ### Running Tests
 
@@ -451,7 +451,7 @@ Without pre-starting services (many tests use Testcontainers):
 
 ```bash
 mvn test                                    # All tests
-mvn test -pl modules/airavata-api           # Specific module
+mvn test -pl modules/airavata-api            # Specific module (from airavata-api/)
 mvn test -Dtest=SomeTestClass               # Specific test
 ```
 
@@ -466,7 +466,7 @@ mvn test -Dtest=SomeTestClass               # Specific test
 
 Schema: single Flyway baseline at `src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql`. JPA via package scanning (no `persistence.xml`). To change schema: (1) Add or update the entity. (2) Add a versioned migration (e.g. `V2__Description.sql`) so DB matches entity; use `IF NOT EXISTS`/`IF EXISTS`. Drop column/table must be done manually. Tarball uses these Flyway scripts only.
 
-**Simplifications:** Child tables merged into JSON (e.g. batch queues → `RESOURCE.capabilities`). TASK table removed (tasks are transient DAG nodes, not persisted). JOB table remains for HPC job tracking with FK to PROCESS. [docs/ERD.md](docs/ERD.md), [dev-tools/migrations/schema_simplification/README.md](dev-tools/migrations/schema_simplification/README.md).
+**Simplifications:** Child tables merged into JSON (e.g. batch queues → `RESOURCE.capabilities`). TASK table removed (tasks are transient DAG nodes, not persisted). JOB table remains for HPC job tracking with FK to PROCESS. [docs/ERD.md](airavata-api/docs/ERD.md).
 
 ---
 
@@ -480,6 +480,8 @@ kill -9 <PID>
 ```
 
 ### Database connection refused
+
+From the repo root:
 
 ```bash
 docker compose -f .devcontainer/compose.yml ps db

@@ -24,3 +24,4 @@ jobs:
           cache: "maven"
       - name: Build and test with Maven
         run: ./mvnw clean install
+        working-directory: airavata-api

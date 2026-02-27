@@ -1,0 +1,218 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+################################################################################
+# api-orch deployment
+- name: Create api-orchestrator deployment directory
+  file: path="{{ api_orch_dir }}" state=directory owner="{{ user }}" group="{{ group }}"
+
+- name: Check previous deployments
+  stat: path="{{ api_orch_dir }}/{{ airavata_dist }}" get_md5=no get_checksum=no
+  register: check
+
+- name: check if api-orch systemd unit file is installed
+  stat:
+    path: "{{ api_orch_systemd_unit_file }}"
+  register: systemd_unit_file
+
+- name: stop api-orch
+  service: name=apiorch state=stopped
+  when: systemd_unit_file.stat.exists
+  become: yes
+  become_user: root
+
+- name: Delete previous deployments
+  file: path="{{ api_orch_dir }}/{{ airavata_dist }}" state=absent
+
+
+- name: Copy distribution to api-orcheatrator deployment directory
+  unarchive: src="{{ airavata_source_dir }}/airavata-api/modules/distribution/target/{{ airavata_dist_name }}"
+             dest="{{ api_orch_dir }}/"
+             copy=no
+
+- name: set api-orch private ip
+  set_fact:
+    api_server_host: "{{ api_server_bind_host }}"
+    orchestrator_host: "{{ orchestrator_bind_host }}"
+    cred_store_server_host: "{{ cred_store_server_bind_host }}"
+    registry_host: "{{ registry_bind_host }}"
+    sharing_registry_host: "{{ sharing_registry_bind_host }}"
+    profile_service_host: "{{ profile_service_bind_host }}"
+
+
+- name: Copy Airavata server properties file
+  template: src=airavata.properties.j2
+            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata.properties"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: Copy logback configuration file
+  template: src=logback.xml.j2
+            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/logback.xml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: create logs directory
+  file: path="{{ api_orch_log_dir }}" state=directory owner={{ user }} group={{ group }}
+
+- name: Copy MariaDB connector jar to lib
+  get_url: url="{{ mariadb_connector_jar_url }}"
+          dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/"
+          owner={{ user }}
+          group={{ group }}
+
+# Create a SSL certificate for the api server
+
+- name: allow http for Let's Encrypt certificate renewal
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    service: http
+  become_user: root
+
+- name: copy prepareLetsEncryptCertificates.sh script
+  copy:
+    src: prepareLetsEncryptCertificates.sh
+    dest: "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}"
+    mode: 755
+  become_user: root
+
+- name: check if SSL certificate exists
+  stat:
+    path: "{{ api_server_letsencrypt_ssl_cert }}"
+  register: stat_api_server_ssl_cert_result
+  become_user: root
+
+- name: generate certificate if it doesn't exist
+  command: certbot --apache --non-interactive --agree-tos --email "{{ letsencrypt_email }}" -d {{ api_server_public_hostname }} certonly
+  become_user: root
+  when: not stat_api_server_ssl_cert_result.stat.exists
+  register: certbot_result
+
+- name: run prepareLetsEncryptCertificates.sh script to combine certificates
+  shell: "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh"
+  become_user: root
+  when: stat_api_server_ssl_cert_result.stat.exists or (certbot_result is defined and certbot_result is succeeded)
+
+- name: set certificate renewal post-hook
+  command: certbot renew --force-renewal --installer null --webroot --post-hook "{{ haproxy_config_dir[ansible_distribution + '_' + ansible_distribution_major_version]}}/prepareLetsEncryptCertificates.sh && systemctl reload {{ haproxy_service_name[ansible_distribution + '_' + ansible_distribution_major_version]}}.service" --quiet
+  become_user: root
+  # Renewal might fail due to rate limiting, which is fine since we only need to set the post-hook
+  ignore_errors: true
+
+# Use HAProxy to proxy SSL port to non-SSL port
+- name: allow haproxy to bind to TCP ports
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+  become_user: root
+  when: ansible_os_family == "RedHat"
+
+- name: Install HAProxy
+  include_tasks: haproxy/install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Install HAProxy (Ubuntu)
+  apt:
+    name: haproxy
+    state: present
+    update_cache: yes
+  become: true
+  become_user: root
+  when: ansible_os_family == "Debian"
+
+- name: Copy HAProxy config file
+  template: src=haproxy.cfg.j2
+            dest={{ haproxy_config_dir[ansible_distribution + "_" + ansible_distribution_major_version]}}/haproxy.cfg
+            backup=true
+  become_user: root
+  notify:
+    - restart haproxy
+
+- name: start haproxy
+  service: name={{ haproxy_service_name[ansible_distribution + "_" + ansible_distribution_major_version]}} state=started enabled=yes daemon_reload=yes
+  become: true
+  become_user: root
+
+- name: allow only selected networks to access Airavata Sharing Registry
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ sharing_registry_port }}" protocol=tcp accept
+  with_items: "{{ sharing_subnets | default(['0.0.0.0/0']) }}"
+  become_user: root
+
+- name: allow only selected networks to access Airavata Registry
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ registry_port }}" protocol=tcp accept
+  with_items: "{{ registry_subnets | default(['0.0.0.0/0']) }}"
+  become_user: root
+
+- name: allow only selected networks to access Airavata Credential Store
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ cred_store_port }}" protocol=tcp accept
+  with_items: "{{ credential_store_subnets | default(['0.0.0.0/0']) }}"
+  become_user: root
+
+- name: allow all networks to access Airavata API Server over TLS
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    port: "{{ api_server_tls_port }}/tcp"
+  become_user: root
+
+- name: allow all networks to access Airavata Profile service
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    port: "{{ profile_service_port }}/tcp"
+  become_user: root
+
+- name: Openning API Server Monitoring Port
+  firewalld:
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    rich_rule: rule family=ipv4 source address="{{ item }}" port port="{{ api_server_monitoring_port }}" protocol=tcp accept
+  with_items: "{{ monitoring_subnets | default(['0.0.0.0/0']) }}"
+  become_user: root
+
+...

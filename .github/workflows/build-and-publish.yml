@@ -31,6 +31,7 @@ jobs:
 
       - name: Build with Maven (skip tests)
         run: ./mvnw -B -DskipTests clean install
+        working-directory: airavata-api
 
       - name: Set up QEMU (multi-arch)
         uses: docker/setup-qemu-action@v3
@@ -61,8 +62,8 @@ jobs:
         id: buildpush
         uses: docker/build-push-action@v5
         with:
-          context: modules/distribution/target/
-          file: modules/distribution/src/main/docker/Dockerfile
+          context: airavata-api/modules/distribution/target/
+          file: airavata-api/modules/distribution/src/main/docker/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

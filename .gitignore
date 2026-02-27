@@ -1,4 +1,5 @@
 .devcontainer/.env
+.claude/
 
 # IDE and Editor files
 .idea/
@@ -89,6 +90,7 @@ cython_debug/
 out/
 *.class
 .mvn/build-cache/
+airavata-api/distribution/
 
 # Node.js
 node_modules/
@@ -102,10 +104,6 @@ node_modules/
 .yarn/build-state.yml
 .yarn/install-state.gz
 
-# Build and distribution
-/distribution
-/vault*
-
 # Logs and temporary files
 logs/
 *.log
@@ -118,18 +116,10 @@ TEST_*.md
 PRODUCTION_READINESS.md
 *.retry
 
-# Project-specific
-airavata-local-agent/node_modules
-airavata-local-agent/app
-airavata-local-agent/proxy/config.txt
-airavata-local-agent/proxy/websockify
-airavata-local-agent/renderer/.next
-airavata-local-agent/dist
-airavata-local-agent/build.sh
-modules/research-framework/compose
-airavata_custos.egg-info
-
-# Generated keystores
+# Generated keystores and credentials
 **/keystores/airavata.p12
 **/keystores/airavata.p12.tmp
+**/keystores/airavata.sym.p12
 **/keystores/aes.p12
+**/keystores/server.key
+**/keystores/server.crt

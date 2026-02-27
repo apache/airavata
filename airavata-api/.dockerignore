@@ -1,0 +1,7 @@
+.github
+.idea
+.run
+.vscode
+docs
+scripts
+**/target
