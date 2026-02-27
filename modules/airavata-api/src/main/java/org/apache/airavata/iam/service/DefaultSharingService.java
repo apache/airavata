@@ -44,10 +44,8 @@ import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.apache.airavata.gateway.repository.GatewayRepository;
 import org.apache.airavata.gateway.service.GatewayService;
 import org.apache.airavata.iam.entity.EntityTypePK;
-import org.apache.airavata.iam.entity.GroupMemberPK;
 import org.apache.airavata.iam.entity.GroupMembershipEntity;
 import org.apache.airavata.iam.entity.PermissionTypePK;
-import org.apache.airavata.iam.entity.SharingPK;
 import org.apache.airavata.iam.entity.SharingPermissionEntity;
 import org.apache.airavata.iam.entity.UserEntity;
 import org.apache.airavata.iam.entity.UserGroupEntity;
@@ -57,6 +55,7 @@ import org.apache.airavata.iam.mapper.DomainMapper;
 import org.apache.airavata.iam.mapper.SharingUserMapper;
 import org.apache.airavata.iam.model.Domain;
 import org.apache.airavata.iam.model.EntityType;
+import org.apache.airavata.iam.model.GranteeType;
 import org.apache.airavata.iam.model.GroupCardinality;
 import org.apache.airavata.iam.model.GroupChildType;
 import org.apache.airavata.iam.model.GroupMember;
@@ -105,7 +104,6 @@ public class DefaultSharingService implements SharingService {
     public static final String OWNER_PERMISSION_NAME = "OWNER";
 
     private static final String RESOURCE_TYPE_ENTITY = "ENTITY";
-    private static final String GRANTEE_TYPE_GROUP = "GROUP";
 
     // =========================================================================
     // Dependencies
@@ -185,8 +183,8 @@ public class DefaultSharingService implements SharingService {
                 throw new SharingRegistryException(message);
             }
 
-            domain.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            domain.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            domain.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            domain.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             updateDomainInternal(domain);
 
             PermissionType permissionType = new PermissionType();
@@ -194,8 +192,8 @@ public class DefaultSharingService implements SharingService {
             permissionType.setDomainId(domain.getDomainId());
             permissionType.setName(OWNER_PERMISSION_NAME);
             permissionType.setDescription("GLOBAL permission to " + domain.getDomainId());
-            permissionType.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            permissionType.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             storePermissionType(permissionType);
 
             return domain.getDomainId();
@@ -254,8 +252,8 @@ public class DefaultSharingService implements SharingService {
         if (getEntityTypeInternal(pk) != null) {
             throw new DuplicateEntryException("There exist EntityType with given EntityType id");
         }
-        entityType.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-        entityType.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+        entityType.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+        entityType.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         storeEntityType(entityType);
         return entityType.getEntityTypeId();
     }
@@ -296,15 +294,15 @@ public class DefaultSharingService implements SharingService {
         if (getPermissionTypeInternal(pk) != null) {
             throw new DuplicateEntryException("There exist PermissionType with given PermissionType id");
         }
-        permissionType.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-        permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+        permissionType.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+        permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         storePermissionType(permissionType);
         return permissionType.getPermissionTypeId();
     }
 
     @Override
     public boolean updatePermissionType(PermissionType permissionType) throws SharingRegistryException {
-        permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+        permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         PermissionTypePK pk = new PermissionTypePK();
         pk.setDomainId(permissionType.getDomainId());
         pk.setPermissionTypeId(permissionType.getPermissionTypeId());
@@ -377,8 +375,8 @@ public class DefaultSharingService implements SharingService {
                 user.setUserName(ownerSub != null ? ownerSub.split("@")[0] : null);
                 createUser(user);
             }
-            entity.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            entity.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            entity.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            entity.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
 
             Long originalTime = entity.getOriginalEntityCreationTime();
             if (originalTime == null || originalTime == 0) {
@@ -394,8 +392,8 @@ public class DefaultSharingService implements SharingService {
             newSharing.setSharingType(SharingType.DIRECT_CASCADING);
             newSharing.setInheritedParentId(entity.getEntityId());
             newSharing.setDomainId(entity.getDomainId());
-            newSharing.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            newSharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            newSharing.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            newSharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             createPermission(newSharing);
 
             // Create records for inherited permissions
@@ -419,7 +417,7 @@ public class DefaultSharingService implements SharingService {
     @Override
     public boolean updateEntity(SharingEntity entity) throws SharingRegistryException {
         try {
-            entity.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            entity.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             String key = entityKey(entity.getDomainId(), entity.getEntityId());
             SharingEntity old = entityCache.get(key);
             if (old != null) {
@@ -500,7 +498,7 @@ public class DefaultSharingService implements SharingService {
             List<SharingPermissionEntity> rels = sharingPermissionRepository.findAll().stream()
                     .filter(e -> domainId.equals(e.getDomainId())
                             && RESOURCE_TYPE_ENTITY.equals(e.getResourceType())
-                            && GRANTEE_TYPE_GROUP.equals(e.getGranteeType()))
+                            && GranteeType.GROUP.equals(e.getGranteeType()))
                     .toList();
             List<String> accessibleEntityIds = rels.stream()
                     .filter(r -> groupIds.contains(r.getGranteeId()))
@@ -681,8 +679,8 @@ public class DefaultSharingService implements SharingService {
                 throw new SharingRegistryException("There exist user with given user id");
             }
 
-            user.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            user.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            user.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            user.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             createUserInternal(user);
 
             // Auto-create personal group
@@ -697,8 +695,8 @@ public class DefaultSharingService implements SharingService {
             personalGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             personalGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
             personalGroup.setIsPersonalGroup(true);
-            personalGroup.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            personalGroup.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            personalGroup.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            personalGroup.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             createGroup(personalGroup);
 
             Domain domain = getDomainInternal(user.getDomainId());
@@ -733,7 +731,7 @@ public class DefaultSharingService implements SharingService {
             String personalGroupId = userId + "_personal";
             UserGroupPK userGroupPK = new UserGroupPK();
             userGroupPK.setGroupId(personalGroupId);
-            userGroupPK.setDomainId(domainId);
+            userGroupPK.setGatewayId(domainId);
             if (getGroupEntityByPK(userGroupPK) != null) {
                 deleteGroupByPK(userGroupPK);
             }
@@ -804,7 +802,7 @@ public class DefaultSharingService implements SharingService {
         try {
             UserGroupPK pk = new UserGroupPK();
             pk.setGroupId(group.getGroupId());
-            pk.setDomainId(group.getDomainId());
+            pk.setGatewayId(group.getDomainId());
             if (getGroupEntityByPK(pk) != null) {
                 throw new SharingRegistryException("There exist group with given group id");
             }
@@ -820,8 +818,8 @@ public class DefaultSharingService implements SharingService {
             if (group.getIsPersonalGroup() == null) {
                 group.setIsPersonalGroup(false);
             }
-            group.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            group.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            group.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            group.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             if (group.getGroupAdmins() == null) {
                 group.setGroupAdmins(new ArrayList<>());
             } else {
@@ -841,10 +839,10 @@ public class DefaultSharingService implements SharingService {
     @Override
     public boolean updateGroup(UserGroup group) throws SharingRegistryException {
         try {
-            group.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            group.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             UserGroupPK pk = new UserGroupPK();
             pk.setGroupId(group.getGroupId());
-            pk.setDomainId(group.getDomainId());
+            pk.setGatewayId(group.getDomainId());
             UserGroup old = groupEntityToModel(getGroupEntityByPK(pk));
             group.setGroupCardinality(old.getGroupCardinality());
             group.setCreatedTime(old.getCreatedTime());
@@ -868,7 +866,7 @@ public class DefaultSharingService implements SharingService {
         return ServiceOperationHelper.executeBool(
                 () -> {
                     UserGroupPK pk = new UserGroupPK();
-                    pk.setDomainId(domainId);
+                    pk.setGatewayId(domainId);
                     pk.setGroupId(groupId);
                     return userGroupRepository.existsById(pk);
                 },
@@ -888,7 +886,7 @@ public class DefaultSharingService implements SharingService {
                 () -> {
                     UserGroupPK pk = new UserGroupPK();
                     pk.setGroupId(groupId);
-                    pk.setDomainId(domainId);
+                    pk.setGatewayId(domainId);
                     deleteGroupByPK(pk);
                 },
                 SharingRegistryException.class,
@@ -904,13 +902,13 @@ public class DefaultSharingService implements SharingService {
                 () -> {
                     UserGroupPK pk = new UserGroupPK();
                     pk.setGroupId(groupId);
-                    pk.setDomainId(domainId);
+                    pk.setGatewayId(domainId);
                     UserGroupEntity entity = getGroupEntityByPK(pk);
                     UserGroup group = entity != null ? groupEntityToModel(entity) : null;
                     if (group == null && isUserExists(domainId, groupId)) {
                         UserGroupPK personalPK = new UserGroupPK();
                         personalPK.setGroupId(groupId + "_personal");
-                        personalPK.setDomainId(domainId);
+                        personalPK.setGatewayId(domainId);
                         UserGroupEntity personalEntity = getGroupEntityByPK(personalPK);
                         group = personalEntity != null ? groupEntityToModel(personalEntity) : null;
                     }
@@ -930,10 +928,9 @@ public class DefaultSharingService implements SharingService {
     public List<UserGroup> getGroups(String domain, int offset, int limit) throws SharingRegistryException {
         return ServiceOperationHelper.execute(
                 () -> {
-                    HashMap<String, String> filters = new HashMap<>();
+                    HashMap<String, Object> filters = new HashMap<>();
                     filters.put(SharingDBConstants.UserGroupTable.DOMAIN_ID, domain);
-                    filters.put(
-                            SharingDBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
+                    filters.put(SharingDBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER);
                     return selectGroupsInternal(null, filters, offset, limit);
                 },
                 SharingRegistryException.class,
@@ -957,8 +954,7 @@ public class DefaultSharingService implements SharingService {
                 userIds = Collections.emptyList();
             }
             for (int i = 0; i < userIds.size(); i++) {
-                GroupMemberPK memberPK = new GroupMemberPK(groupId, userIds.get(i), domainId);
-                GroupMember existing = getMember(memberPK);
+                GroupMember existing = getMember(domainId, groupId, userIds.get(i));
                 if (existing == null) {
                     GroupMember groupMember = new GroupMember();
                     groupMember.setParentId(groupId);
@@ -966,8 +962,8 @@ public class DefaultSharingService implements SharingService {
                     groupMember.setChildType(GroupChildType.USER);
                     groupMember.setDomainId(domainId);
                     groupMember.setRole(GroupMemberRole.MEMBER);
-                    groupMember.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-                    groupMember.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                    groupMember.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+                    groupMember.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                     createMember(groupMember);
                 }
             }
@@ -998,8 +994,7 @@ public class DefaultSharingService implements SharingService {
                 }
             }
             for (int i = 0; i < userIds.size(); i++) {
-                GroupMemberPK memberPK = new GroupMemberPK(groupId, userIds.get(i), domainId);
-                deleteMember(memberPK);
+                deleteMember(domainId, groupId, userIds.get(i));
             }
             return true;
         } catch (SharingRegistryException e) {
@@ -1027,10 +1022,10 @@ public class DefaultSharingService implements SharingService {
 
             UserGroupPK pk = new UserGroupPK();
             pk.setGroupId(groupId);
-            pk.setDomainId(domainId);
+            pk.setGatewayId(domainId);
             UserGroup userGroup = groupEntityToModel(getGroupEntityByPK(pk));
             UserGroup newUserGroup = new UserGroup();
-            newUserGroup.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            newUserGroup.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             newUserGroup.setOwnerId(newOwnerId);
             newUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
             newUserGroup.setCreatedTime(userGroup.getCreatedTime());
@@ -1056,14 +1051,13 @@ public class DefaultSharingService implements SharingService {
                     throw new SharingRegistryException(
                             "Admin not the user of the group. GroupId : " + groupId + ", AdminId : " + adminId);
                 }
-                GroupMemberPK memberPK = new GroupMemberPK(groupId, adminId, domainId);
-                GroupMember existing = getMember(memberPK);
+                GroupMember existing = getMember(domainId, groupId, adminId);
                 if (existing != null && existing.getRole() == GroupMemberRole.ADMIN) {
                     throw new DuplicateEntryException("User already an admin for the group");
                 }
                 if (existing != null) {
                     existing.setRole(GroupMemberRole.ADMIN);
-                    existing.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                    existing.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                     updateMember(existing);
                 } else {
                     GroupMember member = new GroupMember();
@@ -1072,8 +1066,8 @@ public class DefaultSharingService implements SharingService {
                     member.setDomainId(domainId);
                     member.setChildType(GroupChildType.USER);
                     member.setRole(GroupMemberRole.ADMIN);
-                    member.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-                    member.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                    member.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+                    member.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                     createMember(member);
                 }
             }
@@ -1091,11 +1085,10 @@ public class DefaultSharingService implements SharingService {
             throws SharingRegistryException {
         try {
             for (String adminId : adminIds) {
-                GroupMemberPK memberPK = new GroupMemberPK(groupId, adminId, domainId);
-                GroupMember existing = getMember(memberPK);
+                GroupMember existing = getMember(domainId, groupId, adminId);
                 if (existing != null && existing.getRole() == GroupMemberRole.ADMIN) {
                     existing.setRole(GroupMemberRole.MEMBER);
-                    existing.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                    existing.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                     updateMember(existing);
                 }
             }
@@ -1125,7 +1118,7 @@ public class DefaultSharingService implements SharingService {
                 () -> {
                     UserGroupPK pk = new UserGroupPK();
                     pk.setGroupId(groupId);
-                    pk.setDomainId(domainId);
+                    pk.setGatewayId(domainId);
                     UserGroupEntity entity = getGroupEntityByPK(pk);
                     if (entity == null) return false;
                     return ownerId.equals(entity.getOwnerId());
@@ -1153,8 +1146,7 @@ public class DefaultSharingService implements SharingService {
             throws SharingRegistryException {
         ServiceOperationHelper.executeVoid(
                 () -> {
-                    GroupMemberPK pk = new GroupMemberPK(groupId, childId, domainId);
-                    deleteMember(pk);
+                    deleteMember(domainId, groupId, childId);
                 },
                 SharingRegistryException.class,
                 "Error removing child group from parent: domainId=%s, childId=%s, groupId=%s",
@@ -1191,9 +1183,8 @@ public class DefaultSharingService implements SharingService {
     // =========================================================================
 
     @Override
-    public GroupMember getMember(GroupMemberPK pk) throws SharingRegistryException {
-        var opt = groupMembershipRepository.findByDomainIdAndGroupIdAndUserId(
-                pk.getDomainId(), pk.getParentId(), pk.getChildId());
+    public GroupMember getMember(String domainId, String parentId, String childId) throws SharingRegistryException {
+        var opt = groupMembershipRepository.findByDomainIdAndGroupIdAndUserId(domainId, parentId, childId);
         return opt.map(this::membershipToGroupMember).orElse(null);
     }
 
@@ -1212,37 +1203,36 @@ public class DefaultSharingService implements SharingService {
             entity.setCreatedAt(existing.get().getCreatedAt());
         } else {
             entity.setMembershipId("gm_" + IdGenerator.getId("rel"));
-            entity.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+            entity.setCreatedAt(Instant.now());
         }
         var saved = groupMembershipRepository.save(entity);
         return membershipToGroupMember(saved);
     }
 
     @Override
-    public boolean deleteMember(GroupMemberPK pk) throws SharingRegistryException {
-        var opt = groupMembershipRepository.findByDomainIdAndGroupIdAndUserId(
-                pk.getDomainId(), pk.getParentId(), pk.getChildId());
+    public boolean deleteMember(String domainId, String parentId, String childId) throws SharingRegistryException {
+        var opt = groupMembershipRepository.findByDomainIdAndGroupIdAndUserId(domainId, parentId, childId);
         opt.ifPresent(groupMembershipRepository::delete);
         return true;
     }
 
     @Override
-    public boolean isMemberExists(GroupMemberPK pk) throws SharingRegistryException {
+    public boolean isMemberExists(String domainId, String parentId, String childId) throws SharingRegistryException {
         return groupMembershipRepository
-                .findByDomainIdAndGroupIdAndUserId(pk.getDomainId(), pk.getParentId(), pk.getChildId())
+                .findByDomainIdAndGroupIdAndUserId(domainId, parentId, childId)
                 .isPresent();
     }
 
     @Override
     public boolean isAdmin(String domainId, String groupId, String memberId) throws SharingRegistryException {
         var opt = groupMembershipRepository.findByDomainIdAndGroupIdAndUserId(domainId, groupId, memberId);
-        return opt.isPresent() && GroupMemberRole.ADMIN.name().equals(opt.get().getRole());
+        return opt.isPresent() && GroupMemberRole.ADMIN == opt.get().getRole();
     }
 
     @Override
     public List<GroupMember> getGroupAdmins(String domainId, String groupId) throws SharingRegistryException {
         return groupMembershipRepository
-                .findByDomainIdAndGroupIdAndRole(domainId, groupId, GroupMemberRole.ADMIN.name())
+                .findByDomainIdAndGroupIdAndRole(domainId, groupId, GroupMemberRole.ADMIN)
                 .stream()
                 .map(this::membershipToGroupMember)
                 .toList();
@@ -1289,11 +1279,11 @@ public class DefaultSharingService implements SharingService {
 
         var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(groupRoot.get("groupId"), permRoot.get("granteeId")));
-        predicates.add(cb.equal(groupRoot.get("domainId"), permRoot.get("domainId")));
-        predicates.add(cb.equal(groupRoot.get("domainId"), domainId));
+        predicates.add(cb.equal(groupRoot.get("gatewayId"), permRoot.get("domainId")));
+        predicates.add(cb.equal(groupRoot.get("gatewayId"), domainId));
         predicates.add(cb.equal(permRoot.get("resourceType"), "ENTITY"));
         predicates.add(cb.equal(permRoot.get("resourceId"), entityId));
-        predicates.add(cb.equal(permRoot.get("granteeType"), "GROUP"));
+        predicates.add(cb.equal(permRoot.get("granteeType"), GranteeType.GROUP));
         predicates.add(cb.notEqual(permRoot.get("permission"), ownerPermissionTypeId));
 
         query.select(cb.count(groupRoot));
@@ -1308,16 +1298,13 @@ public class DefaultSharingService implements SharingService {
     // =========================================================================
 
     @Override
-    public Sharing getPermission(SharingPK pk) throws SharingRegistryException {
+    public Sharing getPermission(
+            String domainId, String entityId, String groupId, String permissionTypeId, String inheritedParentId)
+            throws SharingRegistryException {
         var opt =
                 sharingPermissionRepository
                         .findByDomainIdAndResourceTypeAndResourceIdAndGranteeTypeAndGranteeIdAndPermission(
-                                pk.getDomainId(),
-                                RESOURCE_TYPE_ENTITY,
-                                pk.getEntityId(),
-                                GRANTEE_TYPE_GROUP,
-                                pk.getGroupId(),
-                                pk.getPermissionTypeId());
+                                domainId, RESOURCE_TYPE_ENTITY, entityId, GranteeType.GROUP, groupId, permissionTypeId);
         return opt.map(this::sharingPermissionToSharing).orElse(null);
     }
 
@@ -1334,7 +1321,7 @@ public class DefaultSharingService implements SharingService {
                                 sharing.getDomainId(),
                                 RESOURCE_TYPE_ENTITY,
                                 sharing.getEntityId(),
-                                GRANTEE_TYPE_GROUP,
+                                GranteeType.GROUP,
                                 sharing.getGroupId(),
                                 sharing.getPermissionTypeId() != null ? sharing.getPermissionTypeId() : "");
         var entity = sharingToSharingPermission(sharing);
@@ -1344,37 +1331,31 @@ public class DefaultSharingService implements SharingService {
             entity.setCreatedAt(e.getCreatedAt());
         } else {
             entity.setPermissionId("sharing_" + IdGenerator.getId("rel"));
-            entity.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+            entity.setCreatedAt(Instant.now());
         }
         var saved = sharingPermissionRepository.save(entity);
         return sharingPermissionToSharing(saved);
     }
 
     @Override
-    public boolean deletePermission(SharingPK pk) throws SharingRegistryException {
+    public boolean deletePermission(
+            String domainId, String entityId, String groupId, String permissionTypeId, String inheritedParentId)
+            throws SharingRegistryException {
         var opt =
                 sharingPermissionRepository
                         .findByDomainIdAndResourceTypeAndResourceIdAndGranteeTypeAndGranteeIdAndPermission(
-                                pk.getDomainId(),
-                                RESOURCE_TYPE_ENTITY,
-                                pk.getEntityId(),
-                                GRANTEE_TYPE_GROUP,
-                                pk.getGroupId(),
-                                pk.getPermissionTypeId());
+                                domainId, RESOURCE_TYPE_ENTITY, entityId, GranteeType.GROUP, groupId, permissionTypeId);
         opt.ifPresent(sharingPermissionRepository::delete);
         return true;
     }
 
     @Override
-    public boolean permissionExists(SharingPK pk) throws SharingRegistryException {
+    public boolean permissionExists(
+            String domainId, String entityId, String groupId, String permissionTypeId, String inheritedParentId)
+            throws SharingRegistryException {
         return sharingPermissionRepository
                 .findByDomainIdAndResourceTypeAndResourceIdAndGranteeTypeAndGranteeIdAndPermission(
-                        pk.getDomainId(),
-                        RESOURCE_TYPE_ENTITY,
-                        pk.getEntityId(),
-                        GRANTEE_TYPE_GROUP,
-                        pk.getGroupId(),
-                        pk.getPermissionTypeId())
+                        domainId, RESOURCE_TYPE_ENTITY, entityId, GranteeType.GROUP, groupId, permissionTypeId)
                 .isPresent();
     }
 
@@ -1384,7 +1365,7 @@ public class DefaultSharingService implements SharingService {
         String domainId = filters != null ? filters.get("domainId") : null;
         return sharingPermissionRepository.findAll().stream()
                 .filter(e -> RESOURCE_TYPE_ENTITY.equals(e.getResourceType())
-                        && GRANTEE_TYPE_GROUP.equals(e.getGranteeType())
+                        && GranteeType.GROUP.equals(e.getGranteeType())
                         && (domainId == null || domainId.isEmpty() || domainId.equals(e.getDomainId())))
                 .map(this::sharingPermissionToSharing)
                 .toList();
@@ -1424,7 +1405,7 @@ public class DefaultSharingService implements SharingService {
                     try {
                         f = oldEntityClass.getDeclaredField(field.getName());
                         f.setAccessible(true);
-                        logger.debug("setting " + f.getName());
+                        logger.debug("setting {}", f.getName());
                         f.set(oldEntity, o);
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         throw new SharingRegistryException(e.getMessage());
@@ -1541,8 +1522,8 @@ public class DefaultSharingService implements SharingService {
             newSharing.setInheritedParentId(sharing.getInheritedParentId());
             newSharing.setSharingType(SharingType.INDIRECT_CASCADING);
             newSharing.setDomainId(entity.getDomainId());
-            newSharing.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            newSharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            newSharing.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            newSharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             createPermission(newSharing);
         }
     }
@@ -1553,7 +1534,7 @@ public class DefaultSharingService implements SharingService {
         var entities = sharingPermissionRepository.findByDomainIdAndResourceTypeAndResourceId(
                 domainId, RESOURCE_TYPE_ENTITY, entityId);
         return entities.stream()
-                .filter(e -> GRANTEE_TYPE_GROUP.equals(e.getGranteeType())
+                .filter(e -> GranteeType.GROUP.equals(e.getGranteeType())
                         && sharingTypes.contains(metadataString(e, "sharingType")))
                 .map(this::sharingPermissionToSharing)
                 .toList();
@@ -1563,7 +1544,7 @@ public class DefaultSharingService implements SharingService {
         var entities = sharingPermissionRepository.findAll().stream()
                 .filter(e -> domainId.equals(e.getDomainId())
                         && RESOURCE_TYPE_ENTITY.equals(e.getResourceType())
-                        && GRANTEE_TYPE_GROUP.equals(e.getGranteeType()))
+                        && GranteeType.GROUP.equals(e.getGranteeType()))
                 .toList();
         return entities.stream()
                 .filter(e -> permissionTypeId.equals(e.getPermission())
@@ -1577,7 +1558,7 @@ public class DefaultSharingService implements SharingService {
         var entities = sharingPermissionRepository.findByDomainIdAndResourceTypeAndResourceId(
                 domainId, RESOURCE_TYPE_ENTITY, entityId);
         for (var e : entities) {
-            if (GRANTEE_TYPE_GROUP.equals(e.getGranteeType())
+            if (GranteeType.GROUP.equals(e.getGranteeType())
                     && SharingType.INDIRECT_CASCADING.toString().equals(metadataString(e, "sharingType"))) {
                 sharingPermissionRepository.delete(e);
             }
@@ -1609,8 +1590,8 @@ public class DefaultSharingService implements SharingService {
             } else {
                 sharing.setSharingType(SharingType.DIRECT_NON_CASCADING);
             }
-            sharing.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            sharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            sharing.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            sharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharings.add(sharing);
         }
 
@@ -1627,8 +1608,8 @@ public class DefaultSharingService implements SharingService {
                     sharing.setInheritedParentId(entityId);
                     sharing.setSharingType(SharingType.INDIRECT_CASCADING);
                     sharing.setDomainId(domainId);
-                    sharing.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-                    sharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                    sharing.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+                    sharing.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                     sharings.add(sharing);
                     getChildEntitiesFromCache(domainId, childEntityId).forEach(temp::addLast);
                 }
@@ -1656,26 +1637,14 @@ public class DefaultSharingService implements SharingService {
         }
 
         for (String groupId : groupOrUserList) {
-            SharingPK sharingPK = new SharingPK();
-            sharingPK.setEntityId(entityId);
-            sharingPK.setGroupId(groupId);
-            sharingPK.setPermissionTypeId(permissionTypeId);
-            sharingPK.setInheritedParentId(entityId);
-            sharingPK.setDomainId(domainId);
-            deletePermission(sharingPK);
+            deletePermission(domainId, entityId, groupId, permissionTypeId, entityId);
         }
 
         List<Sharing> temp = new ArrayList<>(getIndirectSharedChildren(domainId, entityId, permissionTypeId));
         for (Sharing sharing : temp) {
             String childEntityId = sharing.getEntityId();
             for (String groupId : groupOrUserList) {
-                SharingPK sharingPK = new SharingPK();
-                sharingPK.setEntityId(childEntityId);
-                sharingPK.setGroupId(groupId);
-                sharingPK.setPermissionTypeId(permissionTypeId);
-                sharingPK.setInheritedParentId(entityId);
-                sharingPK.setDomainId(domainId);
-                deletePermission(sharingPK);
+                deletePermission(domainId, childEntityId, groupId, permissionTypeId, entityId);
             }
         }
 
@@ -1705,7 +1674,7 @@ public class DefaultSharingService implements SharingService {
         s.setEntityId(e.getResourceId());
         s.setGroupId(e.getGranteeId());
         s.setDomainId(e.getDomainId());
-        s.setCreatedTime(e.getCreatedAt() != null ? e.getCreatedAt().getTime() : null);
+        s.setCreatedTime(e.getCreatedAt() != null ? e.getCreatedAt().toEpochMilli() : null);
         s.setInheritedParentId(metadataString(e, "inheritedParentId"));
         String sharingType = metadataString(e, "sharingType");
         s.setSharingType(sharingType != null ? SharingType.valueOf(sharingType) : null);
@@ -1717,7 +1686,7 @@ public class DefaultSharingService implements SharingService {
         e.setDomainId(s.getDomainId());
         e.setResourceType(RESOURCE_TYPE_ENTITY);
         e.setResourceId(s.getEntityId());
-        e.setGranteeType(GRANTEE_TYPE_GROUP);
+        e.setGranteeType(GranteeType.GROUP);
         e.setGranteeId(s.getGroupId());
         e.setPermission(s.getPermissionTypeId() != null ? s.getPermissionTypeId() : "");
         if (s.getInheritedParentId() != null || s.getSharingType() != null) {
@@ -1813,7 +1782,7 @@ public class DefaultSharingService implements SharingService {
         predicates.add(cb.equal(permRoot.get("domainId"), domainId));
         predicates.add(cb.equal(permRoot.get("resourceType"), "ENTITY"));
         predicates.add(cb.equal(permRoot.get("resourceId"), entityId));
-        predicates.add(cb.equal(permRoot.get("granteeType"), "GROUP"));
+        predicates.add(cb.equal(permRoot.get("granteeType"), GranteeType.GROUP));
         predicates.add(cb.equal(permRoot.get("permission"), permissionTypeId));
         predicates.add(cb.equal(memRoot.get("domainId"), domainId));
         predicates.add(cb.equal(memRoot.get("groupId"), permRoot.get("granteeId")));
@@ -1844,7 +1813,7 @@ public class DefaultSharingService implements SharingService {
     }
 
     private List<UserGroup> selectGroupsInternal(
-            String queryString, Map<String, String> filters, int offset, int limit) {
+            String queryString, Map<String, Object> filters, int offset, int limit) {
         var cb = entityManager.getCriteriaBuilder();
         var query = cb.createQuery(UserGroupEntity.class);
         var root = query.from(UserGroupEntity.class);
@@ -1875,13 +1844,13 @@ public class DefaultSharingService implements SharingService {
 
         var predicates = new ArrayList<Predicate>();
         predicates.add(cb.equal(groupRoot.get("groupId"), permRoot.get("granteeId")));
-        predicates.add(cb.equal(groupRoot.get("domainId"), permRoot.get("domainId")));
-        predicates.add(cb.equal(groupRoot.get("domainId"), domainId));
+        predicates.add(cb.equal(groupRoot.get("gatewayId"), permRoot.get("domainId")));
+        predicates.add(cb.equal(groupRoot.get("gatewayId"), domainId));
         predicates.add(cb.equal(permRoot.get("resourceType"), "ENTITY"));
         predicates.add(cb.equal(permRoot.get("resourceId"), entityId));
-        predicates.add(cb.equal(permRoot.get("granteeType"), "GROUP"));
+        predicates.add(cb.equal(permRoot.get("granteeType"), GranteeType.GROUP));
         predicates.add(cb.equal(permRoot.get("permission"), permissionTypeId));
-        predicates.add(cb.equal(groupRoot.get("groupCardinality"), GroupCardinality.MULTI_USER.toString()));
+        predicates.add(cb.equal(groupRoot.get("groupCardinality"), GroupCardinality.MULTI_USER));
 
         query.where(cb.and(predicates.toArray(new Predicate[0])));
         query.distinct(true);
@@ -1928,13 +1897,12 @@ public class DefaultSharingService implements SharingService {
         if (entity == null) return null;
         var model = new UserGroup();
         model.setGroupId(entity.getGroupId());
-        model.setDomainId(entity.getDomainId());
+        model.setDomainId(entity.getGatewayId());
         model.setName(entity.getName());
         model.setDescription(entity.getDescription());
         model.setOwnerId(entity.getOwnerId());
-        model.setGroupType(entity.getGroupType() != null ? GroupType.valueOf(entity.getGroupType()) : null);
-        model.setGroupCardinality(
-                entity.getGroupCardinality() != null ? GroupCardinality.valueOf(entity.getGroupCardinality()) : null);
+        model.setGroupType(entity.getGroupType());
+        model.setGroupCardinality(entity.getGroupCardinality());
         model.setCreatedTime(
                 entity.getCreatedTime() != null ? entity.getCreatedTime().toEpochMilli() : null);
         model.setUpdatedTime(
@@ -1947,15 +1915,12 @@ public class DefaultSharingService implements SharingService {
     private UserGroupEntity groupModelToEntity(UserGroup model) {
         var entity = new UserGroupEntity();
         entity.setGroupId(model.getGroupId());
-        entity.setDomainId(model.getDomainId());
+        entity.setGatewayId(model.getDomainId());
         entity.setName(model.getName());
         entity.setDescription(model.getDescription());
         entity.setOwnerId(model.getOwnerId());
-        entity.setGroupType(model.getGroupType() != null ? model.getGroupType().name() : null);
-        entity.setGroupCardinality(
-                model.getGroupCardinality() != null
-                        ? model.getGroupCardinality().name()
-                        : null);
+        entity.setGroupType(model.getGroupType());
+        entity.setGroupCardinality(model.getGroupCardinality());
         entity.setCreatedTime(model.getCreatedTime() != null ? Instant.ofEpochMilli(model.getCreatedTime()) : null);
         entity.setUpdatedTime(model.getUpdatedTime() != null ? Instant.ofEpochMilli(model.getUpdatedTime()) : null);
         entity.setGroupAdmins(model.getGroupAdmins());
@@ -1973,8 +1938,8 @@ public class DefaultSharingService implements SharingService {
         m.setChildId(e.getUserId());
         m.setDomainId(e.getDomainId());
         m.setChildType(GroupChildType.USER);
-        m.setRole(e.getRole() != null ? GroupMemberRole.valueOf(e.getRole()) : GroupMemberRole.MEMBER);
-        m.setCreatedTime(e.getCreatedAt() != null ? e.getCreatedAt().getTime() : null);
+        m.setRole(e.getRole() != null ? e.getRole() : GroupMemberRole.MEMBER);
+        m.setCreatedTime(e.getCreatedAt() != null ? e.getCreatedAt().toEpochMilli() : null);
         return m;
     }
 
@@ -1983,7 +1948,7 @@ public class DefaultSharingService implements SharingService {
         e.setDomainId(m.getDomainId());
         e.setGroupId(m.getParentId());
         e.setUserId(m.getChildId());
-        e.setRole(m.getRole() != null ? m.getRole().name() : GroupMemberRole.MEMBER.name());
+        e.setRole(m.getRole() != null ? m.getRole() : GroupMemberRole.MEMBER);
         return e;
     }
 

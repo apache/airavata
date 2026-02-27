@@ -44,7 +44,7 @@ public class UserProfile {
     private List<String> nationality;
     private String homeOrganization;
     private String orginationAffiliation;
-    private long creationTime;
+    private long createdAt;
     private long lastAccessTime;
     private long validUntil;
     private Status State;
@@ -183,12 +183,12 @@ public class UserProfile {
         this.orginationAffiliation = orginationAffiliation;
     }
 
-    public long getCreationTime() {
-        return creationTime;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(long creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     public long getLastAccessTime() {
@@ -268,7 +268,7 @@ public class UserProfile {
                 && Objects.equals(nationality, that.nationality)
                 && Objects.equals(homeOrganization, that.homeOrganization)
                 && Objects.equals(orginationAffiliation, that.orginationAffiliation)
-                && Objects.equals(creationTime, that.creationTime)
+                && Objects.equals(createdAt, that.createdAt)
                 && Objects.equals(lastAccessTime, that.lastAccessTime)
                 && Objects.equals(validUntil, that.validUntil)
                 && Objects.equals(State, that.State)
@@ -297,7 +297,7 @@ public class UserProfile {
                 nationality,
                 homeOrganization,
                 orginationAffiliation,
-                creationTime,
+                createdAt,
                 lastAccessTime,
                 validUntil,
                 State,
@@ -314,7 +314,7 @@ public class UserProfile {
                 + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", namePrefix="
                 + namePrefix + ", nameSuffix=" + nameSuffix + ", orcidId=" + orcidId + ", phones=" + phones
                 + ", country=" + country + ", nationality=" + nationality + ", homeOrganization=" + homeOrganization
-                + ", orginationAffiliation=" + orginationAffiliation + ", creationTime=" + creationTime
+                + ", orginationAffiliation=" + orginationAffiliation + ", createdAt=" + createdAt
                 + ", lastAccessTime=" + lastAccessTime + ", validUntil=" + validUntil + ", State=" + State
                 + ", comments=" + comments + ", labeledURI=" + labeledURI + ", gpgKey=" + gpgKey + ", timeZone="
                 + timeZone + "}";

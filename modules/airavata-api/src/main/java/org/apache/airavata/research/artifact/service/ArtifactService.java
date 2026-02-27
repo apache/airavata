@@ -20,51 +20,39 @@
 package org.apache.airavata.research.artifact.service;
 
 import java.util.List;
-import org.apache.airavata.research.artifact.dto.ArtifactResponse;
-import org.apache.airavata.research.artifact.dto.CreateArtifactRequest;
-import org.apache.airavata.research.artifact.dto.ModifyArtifactRequest;
-import org.apache.airavata.research.artifact.entity.ResearchArtifactEntity;
-import org.apache.airavata.research.artifact.entity.TagEntity;
 import org.apache.airavata.research.artifact.model.ArtifactType;
+import org.apache.airavata.research.artifact.model.CreateArtifactRequest;
+import org.apache.airavata.research.artifact.model.ModifyArtifactRequest;
+import org.apache.airavata.research.artifact.model.ResearchArtifact;
+import org.apache.airavata.research.artifact.model.Tag;
 import org.springframework.data.domain.Page;
 
 public interface ArtifactService {
 
-    void initializeArtifact(ResearchArtifactEntity artifact);
+    ResearchArtifact createArtifact(CreateArtifactRequest request, ArtifactType type);
 
-    ArtifactResponse createArtifact(ResearchArtifactEntity artifact, ArtifactType type);
-
-    void transferArtifactRequestFields(ResearchArtifactEntity artifact, CreateArtifactRequest createArtifactRequest);
-
-    ArtifactResponse createRepositoryArtifact(CreateArtifactRequest artifactRequest, String repoUrl);
-
-    ResearchArtifactEntity modifyArtifact(ModifyArtifactRequest artifactRequest);
+    ResearchArtifact modifyArtifact(ModifyArtifactRequest request);
 
     boolean starOrUnstarArtifact(String artifactId);
 
     boolean checkWhetherUserStarredArtifact(String artifactId);
 
-    List<ResearchArtifactEntity> getAllStarredArtifacts(String userId);
+    List<ResearchArtifact> getAllStarredArtifacts(String userId);
 
     long getArtifactStarCount(String artifactId);
 
-    ResearchArtifactEntity getArtifactById(String id);
+    ResearchArtifact getArtifactById(String id);
 
     boolean deleteArtifactById(String id);
 
-    Page<ResearchArtifactEntity> getAllArtifacts(
-            int pageNumber,
-            int pageSize,
-            List<Class<? extends ResearchArtifactEntity>> typeList,
-            String[] tag,
-            String nameSearch);
+    Page<ResearchArtifact> getAllArtifacts(
+            int pageNumber, int pageSize, List<ArtifactType> types, String[] tag, String nameSearch);
 
-    List<TagEntity> getAllTags();
+    List<Tag> getAllTags();
 
-    List<TagEntity> getAllTagsByPopularity();
+    List<Tag> getAllTagsByPopularity();
 
-    List<TagEntity> getAllTagsByAlphabeticalOrder();
+    List<Tag> getAllTagsByAlphabeticalOrder();
 
-    List<ResearchArtifactEntity> getAllArtifactsByTypeAndName(
-            Class<? extends ResearchArtifactEntity> type, String name);
+    List<ResearchArtifact> getAllArtifactsByTypeAndName(ArtifactType type, String name);
 }

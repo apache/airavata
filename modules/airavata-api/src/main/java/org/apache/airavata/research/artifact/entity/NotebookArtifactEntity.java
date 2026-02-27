@@ -28,7 +28,7 @@ import org.apache.airavata.research.artifact.model.ArtifactType;
 @Table(name = "research_notebook_artifact")
 public class NotebookArtifactEntity extends ResearchArtifactEntity {
 
-    @Column(nullable = false)
+    @Column(name = "notebook_path", nullable = false)
     private String notebookPath;
 
     @Override

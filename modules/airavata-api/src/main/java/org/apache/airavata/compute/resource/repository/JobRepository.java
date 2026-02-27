@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
  * A process may spawn one or more jobs; each job tracks its own lifecycle state,
  * standard output/error, and exit code.
  */
-@Repository("jobRepository")
+@Repository
 public interface JobRepository extends JpaRepository<JobEntity, String> {
 
     /**

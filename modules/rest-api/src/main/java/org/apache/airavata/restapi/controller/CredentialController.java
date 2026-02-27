@@ -39,15 +39,24 @@ import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
 import org.apache.airavata.restapi.security.AuthorizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "Credentials")
 public class CredentialController {
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CredentialController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CredentialController.class);
 
     private final CredentialStoreService credentialStoreService;
     private final AuthorizationService authorizationService;
@@ -278,7 +287,7 @@ public class CredentialController {
                         + ex.getMessage() + ". rolling back ssh key creation";
                 logger.error(msg, ex);
                 credentialStoreService.deleteSSHCredential(key, gatewayId);
-                throw new RuntimeException(msg, ex);
+                throw new IllegalStateException(msg, ex);
             }
             logger.debug("Generated SSH keys for gateway : {} and for user : {}", gatewayId, userName);
             return key;

@@ -23,18 +23,15 @@ import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.compute.resource.model.ResourceBinding;
 import org.apache.airavata.compute.resource.service.ResourceService;
-import org.apache.airavata.execution.entity.ProcessEntity;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.repository.ProcessRepository;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.process.ProcessEntity;
+import org.apache.airavata.execution.process.ProcessMapper;
+import org.apache.airavata.execution.process.ProcessModel;
+import org.apache.airavata.execution.process.ProcessRepository;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
-import org.apache.airavata.research.experiment.entity.ExperimentInputEntity;
-import org.apache.airavata.research.experiment.entity.ExperimentOutputEntity;
-import org.apache.airavata.research.experiment.model.ExperimentInput;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.ExperimentOutput;
+import org.apache.airavata.research.experiment.mapper.ExperimentMapper;
+import org.apache.airavata.research.experiment.model.Experiment;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
-import org.apache.airavata.research.experiment.util.ExperimentModelUtil;
+import org.apache.airavata.research.experiment.util.ExperimentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -65,14 +62,20 @@ public class TaskContextFactory {
     private final ProcessRepository processRepository;
     private final ExperimentRepository experimentRepository;
     private final ResourceService resourceService;
+    private final ProcessMapper processMapper;
+    private final ExperimentMapper experimentMapper;
 
     public TaskContextFactory(
             ProcessRepository processRepository,
             ExperimentRepository experimentRepository,
-            ResourceService resourceService) {
+            ResourceService resourceService,
+            ProcessMapper processMapper,
+            ExperimentMapper experimentMapper) {
         this.processRepository = processRepository;
         this.experimentRepository = experimentRepository;
         this.resourceService = resourceService;
+        this.processMapper = processMapper;
+        this.experimentMapper = experimentMapper;
     }
 
     /**
@@ -94,28 +97,14 @@ public class TaskContextFactory {
         ProcessEntity processEntity = processRepository
                 .findById(processId)
                 .orElseThrow(() -> new IllegalStateException("Process not found: " + processId));
-        ProcessModel processModel = toProcessModel(processEntity);
+        ProcessModel processModel = processMapper.toModel(processEntity);
 
         // Load experiment entity
         ExperimentEntity experimentEntity = experimentRepository
                 .findById(processEntity.getExperimentId())
                 .orElseThrow(
                         () -> new IllegalStateException("Experiment not found: " + processEntity.getExperimentId()));
-        ExperimentModel experimentModel = toExperimentModel(experimentEntity);
-
-        // Enrich processModel with experiment inputs converted to ApplicationInput
-        if (experimentEntity.getInputs() != null) {
-            processModel.setProcessInputs(experimentEntity.getInputs().stream()
-                    .map(e -> ExperimentModelUtil.toApplicationInput(toExperimentInput(e)))
-                    .toList());
-        }
-
-        // Enrich processModel with experiment outputs converted to ApplicationOutput
-        if (experimentEntity.getOutputs() != null) {
-            processModel.setProcessOutputs(experimentEntity.getOutputs().stream()
-                    .map(e -> ExperimentModelUtil.toApplicationOutput(toExperimentOutput(e)))
-                    .toList());
-        }
+        Experiment experimentModel = experimentMapper.toModel(experimentEntity);
 
         // Set experiment data dir from process resource schedule if available
         if (processModel.getResourceSchedule() != null) {
@@ -127,7 +116,19 @@ public class TaskContextFactory {
 
         // Build the base TaskContext
         TaskContext context = new TaskContext(processId, gatewayId, taskId, processModel);
-        context.setExperimentModel(experimentModel);
+        context.setExperiment(experimentModel);
+
+        // Set experiment inputs/outputs on context (converted to ApplicationInput/ApplicationOutput)
+        if (experimentEntity.getInputs() != null) {
+            context.setProcessInputs(experimentEntity.getInputs().stream()
+                    .map(e -> ExperimentUtil.toApplicationInput(ExperimentMapper.toInputModel(e)))
+                    .toList());
+        }
+        if (experimentEntity.getOutputs() != null) {
+            context.setProcessOutputs(experimentEntity.getOutputs().stream()
+                    .map(e -> ExperimentUtil.toApplicationOutput(ExperimentMapper.toOutputModel(e)))
+                    .toList());
+        }
 
         // Load and set compute resource
         if (processModel.getResourceId() != null) {
@@ -168,75 +169,5 @@ public class TaskContextFactory {
 
         logger.info("Built TaskContext for process {} (experiment {})", processId, experimentModel.getExperimentId());
         return context;
-    }
-
-    // -------------------------------------------------------------------------
-    // Entity-to-model converters
-    // -------------------------------------------------------------------------
-
-    private ProcessModel toProcessModel(ProcessEntity entity) {
-        ProcessModel model = new ProcessModel();
-        model.setProcessId(entity.getProcessId());
-        model.setExperimentId(entity.getExperimentId());
-        model.setApplicationId(entity.getApplicationId());
-        model.setResourceId(entity.getResourceId());
-        model.setBindingId(entity.getBindingId());
-        model.setResourceSchedule(entity.getResourceSchedule());
-        model.setProviderContext(entity.getProviderContext());
-        return model;
-    }
-
-    private ExperimentModel toExperimentModel(ExperimentEntity entity) {
-        ExperimentModel model = new ExperimentModel();
-        model.setExperimentId(entity.getExperimentId());
-        model.setExperimentName(entity.getExperimentName());
-        model.setProjectId(entity.getProjectId());
-        model.setGatewayId(entity.getGatewayId());
-        model.setUserName(entity.getUserName());
-        model.setDescription(entity.getDescription());
-        model.setApplicationId(entity.getApplicationId());
-        model.setBindingId(entity.getBindingId());
-        return model;
-    }
-
-    /**
-     * Converts an {@link ExperimentInputEntity} to its domain model {@link ExperimentInput}.
-     * The domain model is then passed to {@link ExperimentModelUtil#toApplicationInput(ExperimentInput)}
-     * to produce the {@code ApplicationInput} used by the execution pipeline.
-     */
-    private ExperimentInput toExperimentInput(ExperimentInputEntity entity) {
-        ExperimentInput input = new ExperimentInput();
-        input.setInputId(entity.getInputId());
-        input.setName(entity.getName());
-        input.setType(entity.getType());
-        input.setArtifactId(entity.getArtifactId());
-        input.setValue(entity.getValue());
-        input.setCommandLineArg(entity.getCommandLineArg());
-        input.setRequired(entity.isRequired());
-        input.setAddToCommandLine(entity.isAddToCommandLine());
-        input.setOrderIndex(entity.getOrderIndex());
-        input.setDescription(entity.getDescription());
-        return input;
-    }
-
-    /**
-     * Converts an {@link ExperimentOutputEntity} to its domain model {@link ExperimentOutput}.
-     * The domain model is then passed to {@link ExperimentModelUtil#toApplicationOutput(ExperimentOutput)}
-     * to produce the {@code ApplicationOutput} used by the execution pipeline.
-     */
-    private ExperimentOutput toExperimentOutput(ExperimentOutputEntity entity) {
-        ExperimentOutput output = new ExperimentOutput();
-        output.setOutputId(entity.getOutputId());
-        output.setName(entity.getName());
-        output.setType(entity.getType());
-        output.setArtifactId(entity.getArtifactId());
-        output.setValue(entity.getValue());
-        output.setCommandLineArg(entity.getCommandLineArg());
-        output.setRequired(entity.isRequired());
-        output.setDataMovement(entity.isDataMovement());
-        output.setOrderIndex(entity.getOrderIndex());
-        output.setDescription(entity.getDescription());
-        output.setLocation(entity.getLocation());
-        return output;
     }
 }

@@ -33,7 +33,7 @@ import org.apache.airavata.compute.provider.ComputeProvider;
 import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
-import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.Job;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.service.JobService;
 import org.apache.airavata.compute.resource.submission.JobManagerSpec;
@@ -44,12 +44,12 @@ import org.apache.airavata.compute.resource.submission.RawCommandInfo;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
-import org.apache.airavata.execution.service.ProcessService;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
+import org.apache.airavata.execution.orchestration.ComputeSubmissionTracker;
+import org.apache.airavata.execution.process.ProcessService;
 import org.apache.airavata.iam.service.CredentialStoreService;
 import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.CommandOutput;
+import org.apache.airavata.protocol.AgentAdapter.CommandOutput;
 import org.apache.airavata.protocol.ssh.SSHJAgentAdapter;
 import org.apache.airavata.protocol.ssh.SSHUtil;
 import org.slf4j.Logger;
@@ -261,8 +261,7 @@ public class AwsComputeProvider implements ComputeProvider {
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
             logger.info("Generated job submission script for AWS:\n{}", scriptContent);
 
-            JobModel jobModel =
-                    jobSubmissionSupport.createJobModel(context.getProcessId(), context.getTaskId(), mapData);
+            Job jobModel = jobSubmissionSupport.createJob(context.getProcessId(), context.getTaskId(), mapData);
             jobModel.setJobId("DEFAULT_JOB_ID");
             jobModel.setJobDescription(scriptContent);
             jobSubmissionSupport.publishJobStatus(
@@ -358,7 +357,7 @@ public class AwsComputeProvider implements ComputeProvider {
     @Override
     public DagTaskResult monitor(TaskContext context) {
         try {
-            java.util.List<JobModel> jobs = jobService.getJobs("processId", context.getProcessId());
+            java.util.List<Job> jobs = jobService.getJobs("processId", context.getProcessId());
             if (jobs == null || jobs.isEmpty()) {
                 return new DagTaskResult.Success("No running jobs found for process " + context.getProcessId());
             }
@@ -374,7 +373,7 @@ public class AwsComputeProvider implements ComputeProvider {
             SSHJAgentAdapter adapter = initSSHJAgentAdapter(sshCredentialToken, publicIp, context);
             JobManagerSpec config = jobSubmissionSupport.getJobManagerConfiguration(context.getComputeResource());
 
-            for (JobModel job : jobs) {
+            for (Job job : jobs) {
                 pollJobUntilSaturated(adapter, config, job);
             }
 
@@ -491,7 +490,7 @@ public class AwsComputeProvider implements ComputeProvider {
     // Monitor helpers
     // -------------------------------------------------------------------------
 
-    private void pollJobUntilSaturated(AgentAdapter adapter, JobManagerSpec config, JobModel job) {
+    private void pollJobUntilSaturated(AgentAdapter adapter, JobManagerSpec config, Job job) {
         try {
             var monitorCommand = config.getMonitorCommand(job.getJobId());
             if (monitorCommand.isEmpty()) {
@@ -596,7 +595,7 @@ public class AwsComputeProvider implements ComputeProvider {
     private DagTaskResult handleJobSubmissionFailure(JobSubmissionData mapData, String reason, TaskContext context)
             throws Exception {
         logger.error(reason);
-        JobModel jobModel = jobSubmissionSupport.createJobModel(context.getProcessId(), context.getTaskId(), mapData);
+        Job jobModel = jobSubmissionSupport.createJob(context.getProcessId(), context.getTaskId(), mapData);
         jobSubmissionSupport.publishJobStatus(jobModel, JobState.FAILED, reason);
         jobService.saveJob(jobModel);
         return new DagTaskResult.Failure(reason, false);

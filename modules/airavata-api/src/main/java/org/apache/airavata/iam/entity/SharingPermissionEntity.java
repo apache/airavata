@@ -21,13 +21,16 @@ package org.apache.airavata.iam.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Map;
+import org.apache.airavata.iam.model.GranteeType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -64,8 +67,9 @@ public class SharingPermissionEntity implements Serializable {
     @Column(name = "resource_id", nullable = false)
     private String resourceId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "grantee_type", nullable = false, length = 20)
-    private String granteeType;
+    private GranteeType granteeType;
 
     @Column(name = "grantee_id", nullable = false)
     private String granteeId;
@@ -81,7 +85,7 @@ public class SharingPermissionEntity implements Serializable {
     private Map<String, Object> metadata;
 
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     public SharingPermissionEntity() {}
 
@@ -109,11 +113,11 @@ public class SharingPermissionEntity implements Serializable {
         this.resourceId = resourceId;
     }
 
-    public String getGranteeType() {
+    public GranteeType getGranteeType() {
         return granteeType;
     }
 
-    public void setGranteeType(String granteeType) {
+    public void setGranteeType(GranteeType granteeType) {
         this.granteeType = granteeType;
     }
 
@@ -149,11 +153,11 @@ public class SharingPermissionEntity implements Serializable {
         this.metadata = metadata;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

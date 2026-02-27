@@ -586,100 +586,24 @@ public class TestcontainersConfig {
     }
 
     /**
-     * Creates the EXPERIMENT_SUMMARY database view after Hibernate DDL runs.
-     * Also drops any auto-generated foreign key constraints on the EVENT table
+     * Post-DDL cleanup after Hibernate creates tables.
+     * Drops any auto-generated foreign key constraints on the EVENT table
      * that Hibernate may have created due to @OneToMany relationships.
-     *
-     * Hibernate's ddl-auto=create-drop creates a TABLE for ExperimentSummaryEntity,
-     * but it should be a VIEW that aggregates data from EXPERIMENT and STATUS (filtered by PARENT_TYPE='EXPERIMENT').
-     * RESOURCE_HOST_ID is now on EXPERIMENT (USER_CONFIGURATION_DATA merged).
      */
     @Bean
-    public org.springframework.boot.ApplicationRunner createExperimentSummaryView(DataSource dataSource) {
+    public org.springframework.boot.ApplicationRunner postDdlCleanup(DataSource dataSource) {
         return args -> {
-            logger.info("Creating EXPERIMENT_SUMMARY view and cleaning up constraints for tests");
+            logger.info("Running post-DDL cleanup for tests");
             try (java.sql.Connection conn = dataSource.getConnection();
                     java.sql.Statement stmt = conn.createStatement()) {
 
                 // Drop any auto-generated foreign key constraints on EVENT table
                 dropForeignKeyConstraints(stmt, "EVENT");
 
-                // Fix METADATA table if it has CREATION_TIME (legacy schema): align with entity CREATED_AT/UPDATED_AT
-                try {
-                    java.sql.ResultSet rs = stmt.executeQuery(
-                            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() "
-                                    + "AND TABLE_NAME = 'METADATA' AND COLUMN_NAME = 'CREATION_TIME'");
-                    if (rs.next()) {
-                        rs.close();
-                        stmt.execute(
-                                "ALTER TABLE METADATA CHANGE COLUMN CREATION_TIME CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
-                        java.sql.ResultSet rs2 = stmt.executeQuery(
-                                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'METADATA' AND COLUMN_NAME = 'UPDATE_TIME'");
-                        if (rs2.next()) {
-                            rs2.close();
-                            stmt.execute(
-                                    "ALTER TABLE METADATA CHANGE COLUMN UPDATE_TIME UPDATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
-                        } else {
-                            rs2.close();
-                        }
-                        logger.info("Aligned METADATA table with CREATED_AT/UPDATED_AT");
-                    } else {
-                        rs.close();
-                    }
-                } catch (Exception e) {
-                    logger.debug("METADATA table alignment skipped or failed: {}", e.getMessage());
-                }
-
-                // Check if EVENT table exists before creating dependent views
-                boolean eventsTableExists = false;
-                try {
-                    java.sql.ResultSet rs = stmt.executeQuery(
-                            "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'EVENT'");
-                    eventsTableExists = rs.next();
-                    rs.close();
-                } catch (Exception e) {
-                    logger.debug("Could not check EVENT table existence: {}", e.getMessage());
-                }
-
-                if (!eventsTableExists) {
-                    logger.warn(
-                            "EVENT table does not exist yet, skipping view creation (Hibernate DDL may not have run)");
-                    return;
-                }
-
-                // Drop the table Hibernate created
-                stmt.execute("DROP TABLE IF EXISTS EXPERIMENT_SUMMARY");
-                // Drop the view if it exists (for reusable containers)
-                stmt.execute("DROP VIEW IF EXISTS LATEST_EXPERIMENT_STATUS");
-                stmt.execute("DROP VIEW IF EXISTS EXPERIMENT_SUMMARY");
-
-                // Create LATEST_EXPERIMENT_STATUS view first (EXPERIMENT_SUMMARY depends on it)
-                // Uses EVENT table with EVENT_KIND='STATUS' and PARENT_TYPE='EXPERIMENT'
-                stmt.execute(
-                        "CREATE VIEW LATEST_EXPERIMENT_STATUS AS "
-                                + "SELECT E1.PARENT_ID AS EXPERIMENT_ID, E1.STATE AS STATE, "
-                                + "E1.EVENT_TIME AS TIME_OF_STATE_CHANGE "
-                                + "FROM EVENT E1 "
-                                + "WHERE E1.PARENT_TYPE = 'EXPERIMENT' AND E1.EVENT_KIND = 'STATUS' "
-                                + "AND E1.SEQUENCE_NUM = (SELECT MAX(E2.SEQUENCE_NUM) FROM EVENT E2 "
-                                + "WHERE E2.PARENT_ID = E1.PARENT_ID AND E2.PARENT_TYPE = 'EXPERIMENT' AND E2.EVENT_KIND = 'STATUS')");
-
-                // Create EXPERIMENT_SUMMARY view (matches V1 schema: GATEWAY_ID from PROJECT, CREATED_AT from
-                // EXPERIMENT)
-                stmt.execute("CREATE VIEW EXPERIMENT_SUMMARY AS "
-                        + "SELECT E.EXPERIMENT_ID AS EXPERIMENT_ID, E.PROJECT_ID AS PROJECT_ID, "
-                        + "P.GATEWAY_ID AS GATEWAY_ID, E.USER_NAME AS USER_NAME, "
-                        + "E.EXECUTION_ID AS EXECUTION_ID, E.EXPERIMENT_NAME AS EXPERIMENT_NAME, "
-                        + "E.CREATED_AT AS CREATED_AT, E.DESCRIPTION AS DESCRIPTION, "
-                        + "ES.STATE AS STATE, E.RESOURCE_HOST_ID AS RESOURCE_HOST_ID, "
-                        + "ES.TIME_OF_STATE_CHANGE AS TIME_OF_STATE_CHANGE "
-                        + "FROM (EXPERIMENT E INNER JOIN PROJECT P ON E.PROJECT_ID = P.PROJECT_ID "
-                        + "LEFT JOIN LATEST_EXPERIMENT_STATUS ES ON E.EXPERIMENT_ID = ES.EXPERIMENT_ID)");
-
-                logger.info("Successfully created EXPERIMENT_SUMMARY view");
+                logger.info("Post-DDL cleanup completed");
             } catch (Exception e) {
-                logger.error("Failed to create EXPERIMENT_SUMMARY view: {}", e.getMessage(), e);
-                throw new RuntimeException("Failed to create EXPERIMENT_SUMMARY view", e);
+                logger.error("Post-DDL cleanup failed: {}", e.getMessage(), e);
+                throw new RuntimeException("Post-DDL cleanup failed", e);
             }
         };
     }

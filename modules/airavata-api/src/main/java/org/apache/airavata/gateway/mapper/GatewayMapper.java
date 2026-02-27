@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.gateway.mapper;
 
-import java.util.List;
 import org.apache.airavata.config.EntityMapperConfiguration;
+import org.apache.airavata.core.mapper.EntityMapper;
 import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.apache.airavata.gateway.model.Gateway;
 import org.mapstruct.Mapper;
@@ -32,13 +32,4 @@ import org.mapstruct.Mapper;
  * so no custom {@code @Mapping} annotations are required.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfiguration.class)
-public interface GatewayMapper {
-
-    Gateway toModel(GatewayEntity entity);
-
-    GatewayEntity toEntity(Gateway model);
-
-    List<Gateway> toModelList(List<GatewayEntity> entities);
-
-    List<GatewayEntity> toEntityList(List<Gateway> models);
-}
+public interface GatewayMapper extends EntityMapper<GatewayEntity, Gateway> {}

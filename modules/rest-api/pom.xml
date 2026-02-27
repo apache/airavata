@@ -21,9 +21,9 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>build-parent</artifactId>
+        <artifactId>airavata</artifactId>
         <version>0.21-SNAPSHOT</version>
-        <relativePath>../build-parent/pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>rest-api</artifactId>
     <name>Airavata API (HTTP)</name>

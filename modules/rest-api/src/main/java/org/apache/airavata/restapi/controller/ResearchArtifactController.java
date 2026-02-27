@@ -21,20 +21,14 @@ package org.apache.airavata.restapi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.research.artifact.dto.ArtifactResponse;
-import org.apache.airavata.research.artifact.dto.CreateArtifactRequest;
-import org.apache.airavata.research.artifact.dto.ModifyArtifactRequest;
-import org.apache.airavata.research.artifact.entity.DatasetArtifactEntity;
-import org.apache.airavata.research.artifact.entity.ModelArtifactEntity;
-import org.apache.airavata.research.artifact.entity.NotebookArtifactEntity;
-import org.apache.airavata.research.artifact.entity.RepositoryArtifactEntity;
-import org.apache.airavata.research.artifact.entity.ResearchArtifactEntity;
-import org.apache.airavata.research.artifact.entity.TagEntity;
 import org.apache.airavata.research.artifact.model.ArtifactType;
+import org.apache.airavata.research.artifact.model.CreateArtifactRequest;
+import org.apache.airavata.research.artifact.model.ModifyArtifactRequest;
+import org.apache.airavata.research.artifact.model.ResearchArtifact;
 import org.apache.airavata.research.artifact.service.ArtifactService;
-import org.apache.airavata.research.project.entity.ResearchProjectEntity;
+import org.apache.airavata.research.project.model.ResearchProject;
 import org.apache.airavata.research.project.service.ResearchProjectService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("researchArtifactController")
+@RestController
 @RequestMapping("/api/v1/research/artifacts")
 @Tag(name = "Research Artifacts", description = "Datasets, notebooks, repositories, models")
 public class ResearchArtifactController {
@@ -61,49 +55,52 @@ public class ResearchArtifactController {
         this.projectService = projectService;
     }
 
+    @Operation(summary = "Create a dataset artifact")
     @PostMapping("/dataset")
-    public ResponseEntity<ArtifactResponse> createDatasetArtifact(@RequestBody DatasetArtifactEntity datasetArtifact) {
-        var response = artifactService.createArtifact(datasetArtifact, ArtifactType.DATASET);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResearchArtifact> createDatasetArtifact(@RequestBody CreateArtifactRequest request) {
+        var artifact = artifactService.createArtifact(request, ArtifactType.DATASET);
+        return ResponseEntity.ok(artifact);
     }
 
+    @Operation(summary = "Create a notebook artifact")
     @PostMapping("/notebook")
-    public ResponseEntity<ArtifactResponse> createNotebookArtifact(
-            @RequestBody NotebookArtifactEntity notebookArtifact) {
-        var response = artifactService.createArtifact(notebookArtifact, ArtifactType.REPOSITORY);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResearchArtifact> createNotebookArtifact(@RequestBody CreateArtifactRequest request) {
+        var artifact = artifactService.createArtifact(request, ArtifactType.REPOSITORY);
+        return ResponseEntity.ok(artifact);
     }
 
+    @Operation(summary = "Create a repository artifact")
     @PostMapping("/repository")
-    public ResponseEntity<ArtifactResponse> createRepositoryArtifact(
-            @RequestBody CreateArtifactRequest artifactRequest,
-            @RequestParam(value = "githubUrl") String repositoryUrl) {
-        var response = artifactService.createRepositoryArtifact(artifactRequest, repositoryUrl);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResearchArtifact> createRepositoryArtifact(
+            @RequestBody CreateArtifactRequest request, @RequestParam(value = "githubUrl") String repositoryUrl) {
+        request.setRepositoryUrl(repositoryUrl);
+        var artifact = artifactService.createArtifact(request, ArtifactType.REPOSITORY);
+        return ResponseEntity.ok(artifact);
     }
 
+    @Operation(summary = "Modify a repository artifact")
     @PatchMapping("/repository")
-    public ResponseEntity<ResearchArtifactEntity> modifyRepositoryArtifact(
-            @RequestBody ModifyArtifactRequest artifactRequest) {
-        var response = artifactService.modifyArtifact(artifactRequest);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResearchArtifact> modifyRepositoryArtifact(@RequestBody ModifyArtifactRequest request) {
+        var artifact = artifactService.modifyArtifact(request);
+        return ResponseEntity.ok(artifact);
     }
 
+    @Operation(summary = "Create a model artifact")
     @PostMapping("/model")
-    public ResponseEntity<ArtifactResponse> createModelArtifact(@RequestBody ModelArtifactEntity modelArtifact) {
-        var response = artifactService.createArtifact(modelArtifact, ArtifactType.REPOSITORY);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResearchArtifact> createModelArtifact(@RequestBody CreateArtifactRequest request) {
+        var artifact = artifactService.createArtifact(request, ArtifactType.REPOSITORY);
+        return ResponseEntity.ok(artifact);
     }
 
     @Operation(summary = "Get all tags")
     @GetMapping(value = "/public/tags/all")
-    public ResponseEntity<List<TagEntity>> getTags() {
+    public ResponseEntity<List<org.apache.airavata.research.artifact.model.Tag>> getTags() {
         return ResponseEntity.ok(artifactService.getAllTagsByAlphabeticalOrder());
     }
 
     @Operation(summary = "Get dataset, notebook, repository, or model")
     @GetMapping(value = "/public/{id}")
-    public ResponseEntity<ResearchArtifactEntity> getArtifact(@PathVariable(value = "id") String id) {
+    public ResponseEntity<ResearchArtifact> getArtifact(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok(artifactService.getArtifactById(id));
     }
 
@@ -115,53 +112,38 @@ public class ResearchArtifactController {
 
     @Operation(summary = "Get all artifacts")
     @GetMapping("/public")
-    public ResponseEntity<Page<ResearchArtifactEntity>> getAllArtifacts(
+    public ResponseEntity<Page<ResearchArtifact>> getAllArtifacts(
             @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "nameSearch") String nameSearch,
             @RequestParam(value = "type") ArtifactType[] types,
             @RequestParam(value = "tag", required = false) String[] tags) {
-        var typeList = new ArrayList<Class<? extends ResearchArtifactEntity>>();
-        for (ArtifactType artifactType : types) {
-            if (artifactType == ArtifactType.REPOSITORY) {
-                typeList.add(RepositoryArtifactEntity.class);
-                typeList.add(NotebookArtifactEntity.class);
-                typeList.add(ModelArtifactEntity.class);
-            } else if (artifactType == ArtifactType.DATASET) {
-                typeList.add(DatasetArtifactEntity.class);
-            }
-        }
-
-        var response = artifactService.getAllArtifacts(pageNumber, pageSize, typeList, tags, nameSearch);
-
+        var response = artifactService.getAllArtifacts(pageNumber, pageSize, Arrays.asList(types), tags, nameSearch);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Get artifact by name")
     @GetMapping("/search")
-    public ResponseEntity<List<ResearchArtifactEntity>> searchArtifact(
+    public ResponseEntity<List<ResearchArtifact>> searchArtifact(
             @RequestParam(value = "type") ArtifactType type,
             @RequestParam(value = "name", required = false) String name) {
-
-        var artifacts = artifactService.getAllArtifactsByTypeAndName(getArtifactType(type), name);
+        var artifacts = artifactService.getAllArtifactsByTypeAndName(type, name);
         return ResponseEntity.ok(artifacts);
     }
 
     @Operation(summary = "Get projects associated with an artifact")
     @GetMapping(value = "/public/{id}/projects")
-    public ResponseEntity<List<ResearchProjectEntity>> getProjectsFromArtifactId(
-            @PathVariable(value = "id") String id) {
+    public ResponseEntity<List<ResearchProject>> getProjectsFromArtifactId(@PathVariable(value = "id") String id) {
         var artifact = artifactService.getArtifactById(id);
-        List<ResearchProjectEntity> projects;
-        if (artifact.getClass() == RepositoryArtifactEntity.class) {
-            projects = projectService.findProjectsWithRepository((RepositoryArtifactEntity) artifact);
-        } else if (artifact.getClass() == DatasetArtifactEntity.class) {
-            projects = projectService.findProjectsContainingDataset((DatasetArtifactEntity) artifact);
+        List<ResearchProject> projects;
+        if (artifact.getType() == ArtifactType.REPOSITORY) {
+            projects = projectService.findProjectsWithRepository(id);
+        } else if (artifact.getType() == ArtifactType.DATASET) {
+            projects = projectService.findProjectsContainingDataset(id);
         } else {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "Projects are only associated with repositories and datasets, and id: " + id + " is not either.");
         }
-
         return ResponseEntity.ok(projects);
     }
 
@@ -178,23 +160,15 @@ public class ResearchArtifactController {
     }
 
     @Operation(summary = "Get artifact star count")
-    @GetMapping(value = "/artifacts/{id}/count")
+    @GetMapping(value = "/public/{id}/star/count")
     public ResponseEntity<Long> getArtifactStarCount(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok(artifactService.getArtifactStarCount(id));
     }
 
     @Operation(summary = "Get all starred artifacts of a user")
     @GetMapping(value = "/{userId}/stars")
-    public ResponseEntity<List<ResearchArtifactEntity>> getAllStarredArtifacts(
-            @PathVariable(value = "userId") String id) {
-        return ResponseEntity.ok(artifactService.getAllStarredArtifacts(id));
-    }
-
-    private Class<? extends ResearchArtifactEntity> getArtifactType(ArtifactType artifactType) {
-        return switch (artifactType) {
-            case REPOSITORY -> RepositoryArtifactEntity.class;
-            case DATASET -> DatasetArtifactEntity.class;
-            default -> null;
-        };
+    public ResponseEntity<List<ResearchArtifact>> getAllStarredArtifacts(
+            @PathVariable(value = "userId") String userId) {
+        return ResponseEntity.ok(artifactService.getAllStarredArtifacts(userId));
     }
 }

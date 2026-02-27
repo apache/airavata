@@ -131,7 +131,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
                 migrationScriptName = MIGRATE_SQL_MYSQL;
             } else {
                 logger.error("Unsupported database type: {}. Only MariaDB/MySQL is supported.", dbType);
-                throw new RuntimeException(
+                throw new IllegalArgumentException(
                         "Unsupported database type: " + dbType + ". Only MariaDB/MySQL is supported.");
             }
 
@@ -141,7 +141,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
 
             if (migrationScriptPath == null || !Files.exists(migrationScriptPath)) {
                 logger.error("Migration script not found: {}/{}/{}", MIGRATION_DIR, versionDir, migrationScriptName);
-                throw new RuntimeException(
+                throw new IllegalStateException(
                         "Migration script not found: " + MIGRATION_DIR + "/" + versionDir + "/" + migrationScriptName);
             }
 
@@ -159,7 +159,7 @@ public class DatabaseMigratorCommand implements CommandLineRunner {
             }
         } catch (Exception e) {
             logger.error("Error while updating the database", e);
-            throw new RuntimeException("Error while updating the database", e);
+            throw new IllegalStateException("Error while updating the database", e);
         } finally {
             if (connection != null) {
                 try {

@@ -129,13 +129,13 @@ public class DefaultStatusService implements StatusService {
         entity.setParentId(processId);
         entity.setEventKind(EventKind.ERROR);
         entity.setEventTime(
-                model.getCreationTime() > 0
-                        ? new java.sql.Timestamp(model.getCreationTime())
+                model.getCreatedAt() > 0
+                        ? java.time.Instant.ofEpochMilli(model.getCreatedAt())
                         : IdGenerator.getUniqueTimestamp());
         entity.setSequenceNum(eventRepository.getNextSequenceNum(processId));
         entity.setActualErrorMessage(model.getActualErrorMessage());
         entity.setUserFriendlyMessage(model.getUserFriendlyMessage());
-        entity.setTransientOrPersistent(model.getTransientOrPersistent());
+        entity.setTransientError(model.isTransientError());
         if (model.getRootCauseErrorIdList() != null
                 && !model.getRootCauseErrorIdList().isEmpty()) {
             entity.setRootCauseErrorIdList(String.join(",", model.getRootCauseErrorIdList()));
@@ -151,7 +151,9 @@ public class DefaultStatusService implements StatusService {
         entity.setState(state);
         entity.setReason(reason);
         entity.setEventTime(
-                timeOfStateChange > 0 ? new java.sql.Timestamp(timeOfStateChange) : IdGenerator.getUniqueTimestamp());
+                timeOfStateChange > 0
+                        ? java.time.Instant.ofEpochMilli(timeOfStateChange)
+                        : IdGenerator.getUniqueTimestamp());
         return entity;
     }
 
@@ -172,7 +174,7 @@ public class DefaultStatusService implements StatusService {
         ps.setTimeOfStateChange(
                 status.getTimeOfStateChange() > 0
                         ? status.getTimeOfStateChange()
-                        : IdGenerator.getCurrentTimestamp().getTime());
+                        : IdGenerator.getCurrentTimestamp().toEpochMilli());
         ps.setStatusId(status.getStatusId());
         return ps;
     }
@@ -186,7 +188,7 @@ public class DefaultStatusService implements StatusService {
         ps.setTimeOfStateChange(
                 status.getTimeOfStateChange() > 0
                         ? status.getTimeOfStateChange()
-                        : IdGenerator.getCurrentTimestamp().getTime());
+                        : IdGenerator.getCurrentTimestamp().toEpochMilli());
         ps.setStatusId(status.getStatusId());
         return ps;
     }

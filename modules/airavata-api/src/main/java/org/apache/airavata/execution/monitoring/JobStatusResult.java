@@ -21,50 +21,14 @@ package org.apache.airavata.execution.monitoring;
 
 import org.apache.airavata.compute.resource.model.JobState;
 
-public class JobStatusResult {
-    private JobState state;
-    private String jobId;
-    private String jobName;
-    private boolean authoritative = true;
-    private String publisherName;
+public record JobStatusResult(
+        JobState state, String jobId, String jobName, boolean authoritative, String publisherName) {
 
-    public String getJobName() {
-        return jobName;
+    public JobStatusResult(JobState state, String jobId, String jobName) {
+        this(state, jobId, jobName, true, null);
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
-
-    public JobState getState() {
-        return state;
-    }
-
-    public void setState(JobState state) {
-        this.state = state;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
-    }
-
-    public boolean isAuthoritative() {
-        return authoritative;
-    }
-
-    public void setAuthoritative(boolean authoritative) {
-        this.authoritative = authoritative;
-    }
-
-    public String getPublisherName() {
-        return publisherName;
-    }
-
-    public void setPublisherName(String publisherName) {
-        this.publisherName = publisherName;
+    public JobStatusResult withPublisherName(String publisherName) {
+        return new JobStatusResult(state, jobId, jobName, authoritative, publisherName);
     }
 }

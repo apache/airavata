@@ -83,9 +83,15 @@ public class BackgroundServicesStartupTest {
                 "org.apache.airavata.messaging",
                 "org.apache.airavata.config",
                 "org.apache.airavata.accountprovisioning",
+                "org.apache.airavata.credential",
                 "org.apache.airavata.job",
                 "org.apache.airavata.process",
                 "org.apache.airavata.user"
+            },
+            excludeFilters = {
+                @ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = IntegrationTestConfiguration.class)
             })
     static class TestConfiguration {}
 

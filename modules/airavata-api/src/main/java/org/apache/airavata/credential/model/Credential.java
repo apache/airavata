@@ -20,7 +20,6 @@
 package org.apache.airavata.credential.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Sealed interface for all credential types.
@@ -35,9 +34,9 @@ public sealed interface Credential extends Serializable
 
     void setUserId(String userId);
 
-    Date getPersistedTime();
+    long getCreatedAt();
 
-    void setPersistedTime(Date persistedTime);
+    void setCreatedAt(long createdAt);
 
     String getToken();
 

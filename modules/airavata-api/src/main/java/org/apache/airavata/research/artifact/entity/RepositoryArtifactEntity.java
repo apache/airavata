@@ -28,7 +28,7 @@ import org.apache.airavata.research.artifact.model.ArtifactType;
 @Table(name = "research_repository_artifact")
 public class RepositoryArtifactEntity extends ResearchArtifactEntity {
 
-    @Column(nullable = false)
+    @Column(name = "repository_url", nullable = false)
     private String repositoryUrl;
 
     @Override

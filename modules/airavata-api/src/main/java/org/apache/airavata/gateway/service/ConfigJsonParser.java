@@ -72,7 +72,7 @@ final class ConfigJsonParser {
         try {
             return OBJECT_MAPPER.writeValueAsString(value);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize to JSON", e);
+            throw new IllegalStateException("Failed to serialize to JSON", e);
         }
     }
 }

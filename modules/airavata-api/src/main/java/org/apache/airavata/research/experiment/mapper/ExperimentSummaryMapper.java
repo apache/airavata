@@ -19,21 +19,22 @@
 */
 package org.apache.airavata.research.experiment.mapper;
 
-import java.util.List;
 import org.apache.airavata.config.EntityMapperConfiguration;
+import org.apache.airavata.core.mapper.EntityMapper;
 import org.apache.airavata.research.experiment.entity.ExperimentSummaryEntity;
-import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
+import org.apache.airavata.research.experiment.model.ExperimentSummary;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * MapStruct mapper for converting between ExperimentSummaryEntity and ExperimentSummaryModel.
+ * MapStruct mapper for converting between ExperimentSummaryEntity and ExperimentSummary.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfiguration.class)
-public interface ExperimentSummaryMapper {
+public interface ExperimentSummaryMapper extends EntityMapper<ExperimentSummaryEntity, ExperimentSummary> {
 
+    @Override
     @Mapping(
-            target = "creationTime",
+            target = "createdAt",
             expression = "java(entity.getCreatedAt() != null ? entity.getCreatedAt().toEpochMilli() : 0L)")
     @Mapping(
             target = "statusUpdateTime",
@@ -41,19 +42,15 @@ public interface ExperimentSummaryMapper {
                     "java(entity.getStatusUpdateTime() != null ? entity.getStatusUpdateTime().toEpochMilli() : 0L)")
     @Mapping(target = "executionId", ignore = true)
     @Mapping(target = "resourceHostId", ignore = true)
-    ExperimentSummaryModel toModel(ExperimentSummaryEntity entity);
+    ExperimentSummary toModel(ExperimentSummaryEntity entity);
 
+    @Override
     @Mapping(
             target = "createdAt",
-            expression =
-                    "java(model.getCreationTime() > 0 ? java.time.Instant.ofEpochMilli(model.getCreationTime()) : null)")
+            expression = "java(model.getCreatedAt() > 0 ? java.time.Instant.ofEpochMilli(model.getCreatedAt()) : null)")
     @Mapping(
             target = "statusUpdateTime",
             expression =
                     "java(model.getStatusUpdateTime() > 0 ? java.time.Instant.ofEpochMilli(model.getStatusUpdateTime()) : null)")
-    ExperimentSummaryEntity toEntity(ExperimentSummaryModel model);
-
-    List<ExperimentSummaryModel> toModelList(List<ExperimentSummaryEntity> entities);
-
-    List<ExperimentSummaryEntity> toEntityList(List<ExperimentSummaryModel> models);
+    ExperimentSummaryEntity toEntity(ExperimentSummary model);
 }

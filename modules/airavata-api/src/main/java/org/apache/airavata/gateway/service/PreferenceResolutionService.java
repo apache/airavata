@@ -19,18 +19,10 @@
 */
 package org.apache.airavata.gateway.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.compute.resource.entity.ResourcePreferenceEntity;
 import org.apache.airavata.compute.resource.model.PreferenceLevel;
 import org.apache.airavata.compute.resource.model.PreferenceResourceType;
-import org.apache.airavata.compute.resource.model.PreferenceValueType;
-import org.apache.airavata.compute.resource.repository.ResourcePreferenceRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service providing multi-level preference resolution.
@@ -39,17 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  * This service is used by {@link ConfigService}
  * to read and write structured preferences from the RESOURCE_PREFERENCE table.
  */
-@Service
-@Transactional(readOnly = true)
-public class PreferenceResolutionService {
-
-    private static final Logger logger = LoggerFactory.getLogger(PreferenceResolutionService.class);
-
-    private final ResourcePreferenceRepository preferenceRepository;
-
-    public PreferenceResolutionService(ResourcePreferenceRepository preferenceRepository) {
-        this.preferenceRepository = preferenceRepository;
-    }
+public interface PreferenceResolutionService {
 
     /**
      * Resolve effective preferences for a resource by merging all levels (GATEWAY, GROUP, USER).
@@ -62,49 +44,12 @@ public class PreferenceResolutionService {
      * @param groupIds     list of group IDs for GROUP-level preferences
      * @return merged map of preference key to value
      */
-    public Map<String, String> resolvePreferences(
+    Map<String, String> resolvePreferences(
             PreferenceResourceType resourceType,
             String resourceId,
             String ownerId,
             String userId,
-            List<String> groupIds) {
-        Map<String, String> result = new HashMap<>();
-
-        // GATEWAY level (lowest precedence)
-        List<ResourcePreferenceEntity> gatewayPrefs =
-                preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
-                        resourceType, resourceId, ownerId, PreferenceLevel.GATEWAY);
-        for (ResourcePreferenceEntity pref : gatewayPrefs) {
-            result.put(pref.getKey(), pref.getValue());
-        }
-
-        // GROUP level (medium precedence) - last group wins if multiple groups set same key
-        if (groupIds != null) {
-            for (String groupId : groupIds) {
-                List<ResourcePreferenceEntity> groupPrefs =
-                        preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
-                                resourceType, resourceId, groupId, PreferenceLevel.GROUP);
-                for (ResourcePreferenceEntity pref : groupPrefs) {
-                    result.put(pref.getKey(), pref.getValue());
-                }
-            }
-        }
-
-        // GROUP level for user's personal group (highest precedence among regular principals).
-        // New writes use GROUP with ownerId = user's personal group ID.
-        // Legacy USER-level records in the DB are no longer written but may still exist
-        // until a migration updates preference_level = 'USER' rows to 'GROUP'.
-        if (userId != null) {
-            List<ResourcePreferenceEntity> userPrefs =
-                    preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
-                            resourceType, resourceId, userId, PreferenceLevel.GROUP);
-            for (ResourcePreferenceEntity pref : userPrefs) {
-                result.put(pref.getKey(), pref.getValue());
-            }
-        }
-
-        return result;
-    }
+            List<String> groupIds);
 
     /**
      * Get preferences stored at a specific level for a specific owner.
@@ -115,16 +60,8 @@ public class PreferenceResolutionService {
      * @param level        the preference level
      * @return map of preference key to value at that level
      */
-    public Map<String, String> getPreferencesAtLevel(
-            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level) {
-        List<ResourcePreferenceEntity> prefs = preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevel(
-                resourceType, resourceId, ownerId, level);
-        Map<String, String> result = new HashMap<>();
-        for (ResourcePreferenceEntity pref : prefs) {
-            result.put(pref.getKey(), pref.getValue());
-        }
-        return result;
-    }
+    Map<String, String> getPreferencesAtLevel(
+            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level);
 
     /**
      * Set a single preference value.
@@ -136,33 +73,13 @@ public class PreferenceResolutionService {
      * @param key          the preference key
      * @param value        the preference value
      */
-    @Transactional
-    public void setPreference(
+    void setPreference(
             PreferenceResourceType resourceType,
             String resourceId,
             String ownerId,
             PreferenceLevel level,
             String key,
-            String value) {
-        ResourcePreferenceEntity existing =
-                preferenceRepository.findByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(
-                        resourceType, resourceId, ownerId, level, key);
-        if (existing != null) {
-            existing.setValue(value);
-            preferenceRepository.save(existing);
-        } else {
-            ResourcePreferenceEntity entity = new ResourcePreferenceEntity();
-            entity.setResourceType(resourceType);
-            entity.setResourceId(resourceId);
-            entity.setOwnerId(ownerId);
-            entity.setLevel(level);
-            entity.setKey(key);
-            entity.setValue(value);
-            entity.setValueType(PreferenceValueType.STRING);
-            entity.setEnforced(false);
-            preferenceRepository.save(entity);
-        }
-    }
+            String value);
 
     /**
      * Delete a single preference.
@@ -173,12 +90,8 @@ public class PreferenceResolutionService {
      * @param level        the preference level
      * @param key          the preference key to delete
      */
-    @Transactional
-    public void deletePreference(
-            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level, String key) {
-        preferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevelAndKey(
-                resourceType, resourceId, ownerId, level, key);
-    }
+    void deletePreference(
+            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level, String key);
 
     /**
      * Delete all preferences for a resource at a specific owner/level.
@@ -188,10 +101,6 @@ public class PreferenceResolutionService {
      * @param ownerId      the owner identifier
      * @param level        the preference level
      */
-    @Transactional
-    public void deleteAllPreferences(
-            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level) {
-        preferenceRepository.deleteByResourceTypeAndResourceIdAndOwnerIdAndLevel(
-                resourceType, resourceId, ownerId, level);
-    }
+    void deleteAllPreferences(
+            PreferenceResourceType resourceType, String resourceId, String ownerId, PreferenceLevel level);
 }

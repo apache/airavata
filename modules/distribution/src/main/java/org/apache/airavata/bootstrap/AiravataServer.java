@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.status.entity",
             "org.apache.airavata.credential.model",
             "org.apache.airavata.research.artifact.entity",
-            "org.apache.airavata.agent.db.entity",
+            "org.apache.airavata.agent.entity",
             "org.apache.airavata.research.service.model.entity"
         })
 public class AiravataServer {

@@ -144,7 +144,7 @@ public class EmailMonitorWorkflow {
     @ActivityImpl(taskQueues = TASK_QUEUE)
     public static class MonitorActivitiesImpl implements MonitorActivities {
 
-        private static final Logger log = LoggerFactory.getLogger(MonitorActivitiesImpl.class);
+        private static final Logger logger = LoggerFactory.getLogger(MonitorActivitiesImpl.class);
         private static final String IMAPS = "imaps";
         private static final String POP3 = "pop3";
 
@@ -178,8 +178,8 @@ public class EmailMonitorWorkflow {
             try {
                 loadContext();
             } catch (Exception e) {
-                log.error("Error loading email context", e);
-                throw new RuntimeException("Failed to initialize email monitor", e);
+                logger.error("Error loading email context", e);
+                throw new IllegalStateException("Failed to initialize email monitor", e);
             }
             host = airavataProperties.services().monitor().email().host();
             emailAddress = airavataProperties.services().monitor().email().address();
@@ -190,7 +190,7 @@ public class EmailMonitorWorkflow {
                     airavataProperties.services().monitor().email().expiryMins();
             publisherId = airavataProperties.services().monitor().compute().emailPublisherId();
             if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
-                throw new RuntimeException("Unsupported store protocol, expected " + IMAPS + " or " + POP3
+                throw new IllegalArgumentException("Unsupported store protocol, expected " + IMAPS + " or " + POP3
                         + " but found " + storeProtocol);
             }
             mailProperties = new Properties();
@@ -198,8 +198,8 @@ public class EmailMonitorWorkflow {
             try {
                 populateAddressAndParserMap();
             } catch (Exception e) {
-                log.error("Error populating address and parser map", e);
-                throw new RuntimeException("Failed to initialize email monitor", e);
+                logger.error("Error populating address and parser map", e);
+                throw new IllegalStateException("Failed to initialize email monitor", e);
             }
         }
 
@@ -218,30 +218,30 @@ public class EmailMonitorWorkflow {
                 Message[] messages = folder.search(unseenBefore);
 
                 if (messages == null || messages.length == 0) {
-                    log.info("[EJM]: No new email messages");
+                    logger.info("[EJM]: No new email messages");
                     return;
                 }
 
-                log.info("[EJM]: {} new email/s received", messages.length);
+                logger.info("[EJM]: {} new email/s received", messages.length);
                 processMessages(messages, folder, store);
 
             } catch (Exception e) {
-                log.error("[EJM]: Error during email poll", e);
-                throw new RuntimeException("Email poll failed", e);
+                logger.error("[EJM]: Error during email poll", e);
+                throw new IllegalStateException("Email poll failed", e);
             } finally {
                 try {
                     if (folder != null && folder.isOpen()) {
                         folder.close(false);
                     }
                 } catch (MessagingException e) {
-                    log.warn("[EJM]: Error closing folder", e);
+                    logger.warn("[EJM]: Error closing folder", e);
                 }
                 try {
                     if (store != null && store.isConnected()) {
                         store.close();
                     }
                 } catch (MessagingException e) {
-                    log.warn("[EJM]: Error closing store", e);
+                    logger.warn("[EJM]: Error closing store", e);
                 }
             }
         }
@@ -256,7 +256,7 @@ public class EmailMonitorWorkflow {
             Object load = yaml.load(emailConfigStream);
 
             if (load == null) {
-                log.warn("Could not load email-config.yml. Email monitoring will use default configuration.");
+                logger.warn("Could not load email-config.yml. Email monitoring will use default configuration.");
                 return;
             }
 
@@ -311,25 +311,25 @@ public class EmailMonitorWorkflow {
                 var msgHash = message.hashCode();
                 try {
                     JobStatusResult jobStatusResult = parse(message);
-                    log.info("read JobStatusUpdate<{}> from {}: {}", msgHash, publisherId, jobStatusResult);
+                    logger.info("read JobStatusUpdate<{}> from {}: {}", msgHash, publisherId, jobStatusResult);
                     if (jobStatusMonitor != null) {
                         jobStatusMonitor.publish(jobStatusResult);
                     } else {
-                        log.warn(
+                        logger.warn(
                                 "[EJM]: JobStatusMonitor not available; dropping result for job {}",
-                                jobStatusResult.getJobId());
+                                jobStatusResult.jobId());
                     }
                     processedMessages.add(message);
                 } catch (Exception e) {
                     var msgTime = message.getReceivedDate().getTime();
                     var msgExpiryTime = msgTime
                             + Duration.ofMinutes(emailExpirationTimeMinutes).toMillis();
-                    if (IdGenerator.getUniqueTimestamp().getTime() > msgExpiryTime) {
+                    if (IdGenerator.getUniqueTimestamp().toEpochMilli() > msgExpiryTime) {
                         processedMessages.add(message);
-                        log.error(
+                        logger.error(
                                 "cannot read JobStatusUpdate<{}> from {}. marked as timeout", msgHash, publisherId, e);
                     } else {
-                        log.error(
+                        logger.error(
                                 "cannot read JobStatusUpdate<{}> from {}. marked as requeue", msgHash, publisherId, e);
                     }
                 }
@@ -357,13 +357,15 @@ public class EmailMonitorWorkflow {
                         + " for email monitoring --> " + addressStr);
             }
             JobStatusResult jobStatusResult = emailParser.parseEmail(message, jobService);
-            jobStatusResult.setPublisherName(publisherId);
-            log.info(
+            if (jobStatusResult != null) {
+                jobStatusResult = jobStatusResult.withPublisherName(publisherId);
+            }
+            logger.info(
                     "Parsed Job Status: From=[{}], Id={}, Name={}, State={}",
                     publisherId,
-                    jobStatusResult.getJobId(),
-                    jobStatusResult.getJobName(),
-                    jobStatusResult.getState());
+                    jobStatusResult != null ? jobStatusResult.jobId() : null,
+                    jobStatusResult != null ? jobStatusResult.jobName() : null,
+                    jobStatusResult != null ? jobStatusResult.state() : null);
             return jobStatusResult;
         }
 
@@ -387,7 +389,7 @@ public class EmailMonitorWorkflow {
     @Component
     public static class EmailMonitorLauncher {
 
-        private static final Logger log = LoggerFactory.getLogger(EmailMonitorLauncher.class);
+        private static final Logger logger = LoggerFactory.getLogger(EmailMonitorLauncher.class);
         private final WorkflowClient workflowClient;
         private final ServerProperties properties;
 
@@ -410,9 +412,9 @@ public class EmailMonitorWorkflow {
                 long retryInterval = properties.services().monitor().email().connectionRetryInterval();
 
                 WorkflowClient.start(workflow::run, new MonitorInput(pollInterval, retryInterval));
-                log.info("Started email monitor Temporal workflow");
+                logger.info("Started email monitor Temporal workflow");
             } catch (Exception e) {
-                log.error("Failed to start email monitor workflow", e);
+                logger.error("Failed to start email monitor workflow", e);
             }
         }
     }

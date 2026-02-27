@@ -29,9 +29,9 @@ public class Notification {
     private String gatewayId;
     private String title;
     private String notificationMessage;
-    private long creationTime;
-    private long publishedTime;
-    private long expirationTime;
+    private long createdAt;
+    private long publishedAt;
+    private long expiresAt;
     private NotificationPriority priority;
 
     public Notification() {}
@@ -68,28 +68,28 @@ public class Notification {
         this.notificationMessage = notificationMessage;
     }
 
-    public long getCreationTime() {
-        return creationTime;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(long creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public long getPublishedTime() {
-        return publishedTime;
+    public long getPublishedAt() {
+        return publishedAt;
     }
 
-    public void setPublishedTime(long publishedTime) {
-        this.publishedTime = publishedTime;
+    public void setPublishedAt(long publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
-    public long getExpirationTime() {
-        return expirationTime;
+    public long getExpiresAt() {
+        return expiresAt;
     }
 
-    public void setExpirationTime(long expirationTime) {
-        this.expirationTime = expirationTime;
+    public void setExpiresAt(long expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public NotificationPriority getPriority() {
@@ -109,29 +109,22 @@ public class Notification {
                 && Objects.equals(gatewayId, that.gatewayId)
                 && Objects.equals(title, that.title)
                 && Objects.equals(notificationMessage, that.notificationMessage)
-                && Objects.equals(creationTime, that.creationTime)
-                && Objects.equals(publishedTime, that.publishedTime)
-                && Objects.equals(expirationTime, that.expirationTime)
+                && Objects.equals(createdAt, that.createdAt)
+                && Objects.equals(publishedAt, that.publishedAt)
+                && Objects.equals(expiresAt, that.expiresAt)
                 && Objects.equals(priority, that.priority);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                notificationId,
-                gatewayId,
-                title,
-                notificationMessage,
-                creationTime,
-                publishedTime,
-                expirationTime,
-                priority);
+                notificationId, gatewayId, title, notificationMessage, createdAt, publishedAt, expiresAt, priority);
     }
 
     @Override
     public String toString() {
         return "Notification{" + "notificationId=" + notificationId + ", gatewayId=" + gatewayId + ", title=" + title
-                + ", notificationMessage=" + notificationMessage + ", creationTime=" + creationTime + ", publishedTime="
-                + publishedTime + ", expirationTime=" + expirationTime + ", priority=" + priority + "}";
+                + ", notificationMessage=" + notificationMessage + ", createdAt=" + createdAt + ", publishedAt="
+                + publishedAt + ", expiresAt=" + expiresAt + ", priority=" + priority + "}";
     }
 }

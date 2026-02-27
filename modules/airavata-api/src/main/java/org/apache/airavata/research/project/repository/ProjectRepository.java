@@ -32,7 +32,7 @@ import org.springframework.stereotype.Repository;
  * experiments. Method naming conventions are used for simple lookups; explicit JPQL is
  * avoided where derivation is straightforward.
  */
-@Repository("projectRepository")
+@Repository
 public interface ProjectRepository extends JpaRepository<ProjectEntity, String> {
 
     /**

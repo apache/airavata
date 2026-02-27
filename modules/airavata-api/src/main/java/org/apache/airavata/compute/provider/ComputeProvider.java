@@ -20,7 +20,7 @@
 package org.apache.airavata.compute.provider;
 
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 
 /**
  * Full lifecycle contract for a compute provider.
@@ -28,7 +28,7 @@ import org.apache.airavata.execution.task.TaskContext;
  * <p>Each compute backend (SLURM, AWS, Local) implements this interface as a
  * single class covering all lifecycle phases. The methods are registered as
  * individual {@link org.apache.airavata.execution.dag.DagTask} beans via
- * {@link ComputeProviderConfig} so the DAG engine can invoke them by name.
+ * {@link ComputeProviderConfiguration} so the DAG engine can invoke them by name.
  *
  * <p>Lifecycle-independent logic (parsers, job specs, SSH adapters) stays in
  * separate utility classes.

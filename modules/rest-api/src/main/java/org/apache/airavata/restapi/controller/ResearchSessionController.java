@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.apache.airavata.iam.model.UserContext;
-import org.apache.airavata.research.session.entity.SessionEntity;
+import org.apache.airavata.research.session.model.Session;
 import org.apache.airavata.research.session.model.SessionStatus;
 import org.apache.airavata.research.session.service.ResearchSessionService;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Sessions", description = "All operations related to sessions (created from projects")
 public class ResearchSessionController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResearchSessionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResearchSessionController.class);
 
     private final ResearchSessionService sessionService;
 
@@ -52,11 +52,11 @@ public class ResearchSessionController {
 
     @GetMapping("")
     @Operation(summary = "Get all sessions by session status and userId")
-    public ResponseEntity<List<SessionEntity>> getSessions(
+    public ResponseEntity<List<Session>> getSessions(
             @RequestParam(value = "status", required = false) SessionStatus status) {
-        LOGGER.info("Getting all sessions for user: {}, status filter: {}", UserContext.userId(), status);
+        logger.info("Getting all sessions for user: {}, status filter: {}", UserContext.userId(), status);
         var userId = UserContext.userId();
-        List<SessionEntity> sessions;
+        List<Session> sessions;
         if (status == null) {
             sessions = sessionService.findAllByUserId(userId);
         } else {
@@ -67,16 +67,16 @@ public class ResearchSessionController {
 
     @PatchMapping("/{sessionId}")
     @Operation(summary = "Update a session's status")
-    public ResponseEntity<SessionEntity> updateSessionStatus(
+    public ResponseEntity<Session> updateSessionStatus(
             @PathVariable(value = "sessionId") String sessionId, @RequestParam(value = "status") SessionStatus status) {
-        LOGGER.info("Updating session status for session: {} to {}", sessionId, status);
+        logger.info("Updating session status for session: {} to {}", sessionId, status);
         return ResponseEntity.ok(sessionService.updateSessionStatus(sessionId, status));
     }
 
     @DeleteMapping("/{sessionId}")
     @Operation(summary = "Delete a session")
     public ResponseEntity<Boolean> deleteSession(@PathVariable(value = "sessionId") String sessionId) {
-        LOGGER.info("Deleting session: {}", sessionId);
+        logger.info("Deleting session: {}", sessionId);
         sessionService.updateSessionStatus(sessionId, SessionStatus.TERMINATED);
         sessionService.deleteSession(sessionId);
         return ResponseEntity.ok(Boolean.TRUE);

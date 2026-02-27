@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.iam.mapper;
 
-import java.sql.Timestamp;
-import java.util.List;
+import java.time.Instant;
 import org.apache.airavata.config.EntityMapperConfiguration;
+import org.apache.airavata.core.mapper.EntityMapper;
 import org.apache.airavata.iam.entity.UserEntity;
 import org.apache.airavata.iam.model.User;
 import org.mapstruct.Mapper;
@@ -36,11 +36,12 @@ import org.mapstruct.Named;
         componentModel = "spring",
         config = EntityMapperConfiguration.class,
         implementationName = "SharingUserMapperImpl")
-public interface SharingUserMapper {
+public interface SharingUserMapper extends EntityMapper<UserEntity, User> {
 
+    @Override
     @Mapping(target = "userId", source = "sub")
     @Mapping(target = "domainId", source = "gatewayId")
-    @Mapping(target = "createdTime", source = "createdAt", qualifiedByName = "timestampToLong")
+    @Mapping(target = "createdTime", source = "createdAt", qualifiedByName = "instantToLong")
     @Mapping(target = "userName", expression = "java(entity.getSub() != null ? entity.getSub() : entity.getUserId())")
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
@@ -49,6 +50,7 @@ public interface SharingUserMapper {
     @Mapping(target = "icon", ignore = true)
     User toModel(UserEntity entity);
 
+    @Override
     @Mapping(target = "sub", source = "userId")
     @Mapping(target = "gatewayId", source = "domainId")
     @Mapping(target = "firstName", source = "firstName")
@@ -71,12 +73,8 @@ public interface SharingUserMapper {
     @Mapping(target = "personalGroupId", ignore = true)
     void updateEntityFromModel(User model, @MappingTarget UserEntity entity);
 
-    List<User> toModelList(List<UserEntity> entities);
-
-    List<UserEntity> toEntityList(List<User> models);
-
-    @Named("timestampToLong")
-    default Long timestampToLong(Timestamp timestamp) {
-        return timestamp != null ? timestamp.getTime() : null;
+    @Named("instantToLong")
+    default Long instantToLong(Instant instant) {
+        return instant != null ? instant.toEpochMilli() : null;
     }
 }

@@ -63,14 +63,14 @@ public class DefaultNotificationService implements NotificationService {
     public String createNotification(Notification notification) throws RegistryException {
         NotificationEntity entity = mapper.toEntity(notification);
         Instant now = Instant.now();
-        if (entity.getCreationTime() == null) {
-            entity.setCreationTime(now);
+        if (entity.getCreatedAt() == null) {
+            entity.setCreatedAt(now);
         }
-        if (entity.getPublishedTime() == null) {
-            entity.setPublishedTime(now);
+        if (entity.getPublishedAt() == null) {
+            entity.setPublishedAt(now);
         }
-        if (entity.getExpirationTime() == null) {
-            entity.setExpirationTime(now.plus(365, ChronoUnit.DAYS));
+        if (entity.getExpiresAt() == null) {
+            entity.setExpiresAt(now.plus(365, ChronoUnit.DAYS));
         }
         NotificationEntity saved = notificationRepository.save(entity);
         return saved.getNotificationId();
@@ -88,29 +88,29 @@ public class DefaultNotificationService implements NotificationService {
         NotificationEntity entity = mapper.toEntity(notification);
 
         // Preserve creation time from existing entity
-        if (existing != null && existing.getCreationTime() != null) {
-            entity.setCreationTime(existing.getCreationTime());
-        } else if (entity.getCreationTime() == null) {
-            entity.setCreationTime(Instant.now());
+        if (existing != null && existing.getCreatedAt() != null) {
+            entity.setCreatedAt(existing.getCreatedAt());
+        } else if (entity.getCreatedAt() == null) {
+            entity.setCreatedAt(Instant.now());
         }
 
         // Preserve published time if not set
-        if (entity.getPublishedTime() == null) {
-            if (existing != null && existing.getPublishedTime() != null) {
-                entity.setPublishedTime(existing.getPublishedTime());
+        if (entity.getPublishedAt() == null) {
+            if (existing != null && existing.getPublishedAt() != null) {
+                entity.setPublishedAt(existing.getPublishedAt());
             } else {
-                entity.setPublishedTime(Instant.now());
+                entity.setPublishedAt(Instant.now());
             }
         }
 
         // Set expirationTime from model if provided, otherwise preserve existing or use default
-        if (notification.getExpirationTime() > 0) {
-            entity.setExpirationTime(Instant.ofEpochMilli(notification.getExpirationTime()));
-        } else if (entity.getExpirationTime() == null) {
-            if (existing != null && existing.getExpirationTime() != null) {
-                entity.setExpirationTime(existing.getExpirationTime());
+        if (notification.getExpiresAt() > 0) {
+            entity.setExpiresAt(Instant.ofEpochMilli(notification.getExpiresAt()));
+        } else if (entity.getExpiresAt() == null) {
+            if (existing != null && existing.getExpiresAt() != null) {
+                entity.setExpiresAt(existing.getExpiresAt());
             } else {
-                entity.setExpirationTime(Instant.now().plus(365, ChronoUnit.DAYS));
+                entity.setExpiresAt(Instant.now().plus(365, ChronoUnit.DAYS));
             }
         }
 

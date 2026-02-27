@@ -37,11 +37,8 @@ public class ApplicationInstallation {
     private String loginUsername;
     /** Absolute path on the remote resource where the application is installed. */
     private String installPath;
-    /**
-     * Current installation lifecycle status.
-     * Accepted values: {@code "PENDING"}, {@code "INSTALLING"}, {@code "INSTALLED"}, {@code "FAILED"}.
-     */
-    private String status;
+    /** Current installation lifecycle status. */
+    private InstallationStatus status;
     /** Timestamp at which the installation reached {@code "INSTALLED"} status. Null otherwise. */
     private Instant installedAt;
     /** Human-readable error message populated when {@code status} is {@code "FAILED"}. */
@@ -91,11 +88,11 @@ public class ApplicationInstallation {
         this.installPath = installPath;
     }
 
-    public String getStatus() {
+    public InstallationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InstallationStatus status) {
         this.status = status;
     }
 

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.apache.airavata.credential.model.PasswordCredential;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 import org.apache.airavata.iam.service.CredentialStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SlurmOutputParser implements JobOutputParser {
-    private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(SlurmOutputParser.class);
     public static final int JOB_NAME_OUTPUT_LENGTH = 8;
     public static final String STATUS = "status";
     public static final String JOBID = "jobId";
@@ -43,7 +43,7 @@ public class SlurmOutputParser implements JobOutputParser {
      * @return
      */
     public String parseJobSubmission(String rawOutput) throws Exception {
-        log.info(rawOutput);
+        logger.info(rawOutput);
         Pattern pattern = Pattern.compile("Submitted batch job (?<" + JOBID + ">[^\\s]*)");
         Matcher matcher = pattern.matcher(rawOutput);
         if (matcher.find()) {
@@ -60,7 +60,7 @@ public class SlurmOutputParser implements JobOutputParser {
     }
 
     public StatusModel<JobState> parseJobStatus(String jobID, String rawOutput) throws Exception {
-        log.info(rawOutput);
+        logger.info(rawOutput);
         Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
         Matcher matcher = pattern.matcher(rawOutput);
         if (matcher.find()) {
@@ -73,11 +73,11 @@ public class SlurmOutputParser implements JobOutputParser {
 
     public void parseJobStatuses(String userName, Map<String, StatusModel<JobState>> statusMap, String rawOutput)
             throws Exception {
-        log.debug(rawOutput);
+        logger.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
-            log.info("There are no jobs with this username ... ");
+            logger.info("There are no jobs with this username ... ");
             return;
         }
         //        int lastStop = 0;
@@ -88,7 +88,7 @@ public class SlurmOutputParser implements JobOutputParser {
             for (int i = 0; i < info.length; i++) {
                 if (info[i].contains(jobName.substring(0, 8))) {
                     // now starts processing this line
-                    log.info(info[i]);
+                    logger.info(info[i]);
                     String correctLine = info[i];
                     List<String> columnList = java.util.Arrays.stream(correctLine.split(" "))
                             .filter(s -> !s.isEmpty())
@@ -107,7 +107,7 @@ public class SlurmOutputParser implements JobOutputParser {
                 }
             }
             if (!found) {
-                log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobId);
+                logger.error("Couldn't find the status of the Job with JobName: {} Job Id: {}", jobName, jobId);
             }
         }
     }
@@ -127,11 +127,11 @@ public class SlurmOutputParser implements JobOutputParser {
             if (matcher.find()) {
                 return matcher.group(regJobId);
             } else {
-                log.error("No match is found for JobName");
+                logger.error("No match is found for JobName");
                 return null;
             }
         } else {
-            log.error("Error: RawOutput shouldn't be null");
+            logger.error("Error: RawOutput shouldn't be null");
             return null;
         }
     }

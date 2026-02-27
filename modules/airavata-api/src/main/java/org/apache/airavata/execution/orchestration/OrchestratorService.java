@@ -23,12 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.exception.ValidationExceptions.LaunchValidationException;
-import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.ExperimentState;
-import org.apache.airavata.status.model.ErrorModel;
 
 /**
  * Experiment launch entry point and process coordination.
@@ -39,35 +34,14 @@ import org.apache.airavata.status.model.ErrorModel;
  */
 public interface OrchestratorService {
 
-    boolean validateExperiment(String experimentId)
-            throws LaunchValidationException, RegistryException, OrchestratorException;
-
-    boolean validateProcess(String experimentId, List<ProcessModel> processes)
-            throws LaunchValidationException, RegistryException, OrchestratorException;
+    boolean launchExperiment(String experimentId, String gatewayId, ExecutorService executorService)
+            throws OrchestratorException;
 
     boolean terminateExperiment(String experimentId, String gatewayId) throws RegistryException, OrchestratorException;
 
     void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
             throws RegistryException, OrchestratorException;
 
-    boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId)
-            throws RegistryException, OrchestratorException;
-
-    void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag)
-            throws OrchestratorException, RegistryException, LaunchValidationException;
-
-    void addProcessValidationErrors(String processId, ErrorModel details) throws RegistryException;
-
-    boolean launchSingleAppExperimentInternal(String experimentId, String airavataCredStoreToken, String gatewayId)
-            throws RegistryException, OrchestratorException;
-
     void launchQueuedExperiment(String experimentId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryException, LaunchValidationException;
-
-    StatusModel<ExperimentState> getExperimentStatus(String experimentId) throws RegistryException;
-
-    ProcessModel getProcess(String processId) throws RegistryException;
-
-    boolean launchExperiment(String experimentId, String gatewayId, ExecutorService executorService)
-            throws OrchestratorException;
 }

@@ -31,9 +31,9 @@ import org.apache.airavata.compute.resource.model.ComputeResourceType;
  *
  * <h3>Pre-execution DAG (SLURM/PLAIN)</h3>
  * <pre>
- * provision → stageIn → submit → checkIntermediate → [deprovision] → (end)
- *     ↓fail      ↓fail    ↓fail                ↓no
- *    fail        fail     fail                 (end)
+ * provision → stageIn → submit → (end)
+ *     ↓fail      ↓fail    ↓fail
+ *    fail        fail     fail
  * </pre>
  *
  * <h3>Post-execution DAG</h3>
@@ -58,28 +58,21 @@ public final class DAGTemplates {
 
     public static ProcessDAG preDag(ComputeResourceType type) {
         return ProcessDAG.builder("provision")
-                .node("provision", provisioningBean(type))
+                .node("provision", computeBean("provisioning", type))
                 .metadata("processState", "CONFIGURING_WORKSPACE")
                 .metadata("retryTier", "INFRASTRUCTURE")
                 .onSuccess("stageIn")
                 .onFailure("fail")
-                .node("stageIn", inputStagingBean())
+                .node("stageIn", INPUT_STAGING)
                 .metadata("processState", "INPUT_DATA_STAGING")
                 .metadata("retryTier", "DATA")
                 .onSuccess("submit")
                 .onFailure("fail")
-                .node("submit", submitBean(type))
+                .node("submit", computeBean("submit", type))
                 .metadata("processState", "EXECUTING")
                 .metadata("retryTier", "INFRASTRUCTURE")
-                .onSuccess("checkIntermediate")
+                .onSuccess(null)
                 .onFailure("fail")
-                .node("checkIntermediate", "checkIntermediateTransferTask")
-                .metadata("retryTier", "CHECK")
-                .onSuccess("preDeprovision")
-                .onFailure(null)
-                .node("preDeprovision", deprovisioningBean(type))
-                .metadata("retryTier", "CLEANUP")
-                .terminal()
                 .node("fail", "markFailedTask")
                 .metadata("retryTier", "CLEANUP")
                 .terminal()
@@ -92,7 +85,7 @@ public final class DAGTemplates {
 
     public static ProcessDAG postDag(ComputeResourceType type) {
         return ProcessDAG.builder("monitor")
-                .node("monitor", monitoringBean(type))
+                .node("monitor", computeBean("monitoring", type))
                 .metadata("processState", "MONITORING")
                 .metadata("retryTier", "MONITOR")
                 .onSuccess("checkOutputs")
@@ -105,16 +98,16 @@ public final class DAGTemplates {
                 .metadata("retryTier", "CHECK")
                 .onSuccess("outputStaging")
                 .onFailure("archive")
-                .node("outputStaging", outputStagingBean())
+                .node("outputStaging", OUTPUT_STAGING)
                 .metadata("processState", "OUTPUT_DATA_STAGING")
                 .metadata("retryTier", "DATA")
                 .onSuccess("archive")
                 .onFailure("archive")
-                .node("archive", archiveBean())
+                .node("archive", ARCHIVE)
                 .metadata("retryTier", "DATA")
                 .onSuccess("deprovision")
                 .onFailure("deprovision")
-                .node("deprovision", deprovisioningBean(type))
+                .node("deprovision", computeBean("deprovisioning", type))
                 .metadata("processState", "COMPLETED")
                 .metadata("retryTier", "CLEANUP")
                 .terminal()
@@ -127,7 +120,7 @@ public final class DAGTemplates {
 
     public static ProcessDAG cancelDag(ComputeResourceType type) {
         return ProcessDAG.builder("cancel")
-                .node("cancel", cancelBean(type))
+                .node("cancel", computeBean("cancel", type))
                 .metadata("processState", "CANCELED")
                 .metadata("retryTier", "CLEANUP")
                 .terminal()
@@ -138,59 +131,17 @@ public final class DAGTemplates {
     // Bean name helpers
     // -------------------------------------------------------------------------
 
-    private static String provisioningBean(ComputeResourceType type) {
-        return switch (type) {
-            case AWS -> "awsProvisioningTask";
-            case PLAIN -> "localProvisioningTask";
-            default -> "slurmProvisioningTask";
-        };
-    }
+    private static final String INPUT_STAGING = "sftpInputStagingTask";
+    private static final String OUTPUT_STAGING = "sftpOutputStagingTask";
+    private static final String ARCHIVE = "sftpArchiveTask";
 
-    private static String submitBean(ComputeResourceType type) {
-        return switch (type) {
-            case AWS -> "awsSubmitTask";
-            case PLAIN -> "localSubmitTask";
-            default -> "slurmSubmitTask";
-        };
-    }
-
-    private static String monitoringBean(ComputeResourceType type) {
-        return switch (type) {
-            case AWS -> "awsMonitoringTask";
-            case PLAIN -> "localMonitoringTask";
-            default -> "slurmMonitoringTask";
-        };
-    }
-
-    private static String cancelBean(ComputeResourceType type) {
-        return switch (type) {
-            case AWS -> "awsCancelTask";
-            case PLAIN -> "localCancelTask";
-            default -> "slurmCancelTask";
-        };
-    }
-
-    private static String deprovisioningBean(ComputeResourceType type) {
-        return switch (type) {
-            case AWS -> "awsDeprovisioningTask";
-            case PLAIN -> "localDeprovisioningTask";
-            default -> "slurmDeprovisioningTask";
-        };
-    }
-
-    // -------------------------------------------------------------------------
-    // Storage bean name helpers (currently SFTP-only; add S3 etc. later)
-    // -------------------------------------------------------------------------
-
-    private static String inputStagingBean() {
-        return "sftpInputStagingTask";
-    }
-
-    private static String outputStagingBean() {
-        return "sftpOutputStagingTask";
-    }
-
-    private static String archiveBean() {
-        return "sftpArchiveTask";
+    private static String computeBean(String phase, ComputeResourceType type) {
+        String prefix =
+                switch (type) {
+                    case AWS -> "aws";
+                    case PLAIN -> "local";
+                    default -> "slurm";
+                };
+        return prefix + Character.toUpperCase(phase.charAt(0)) + phase.substring(1) + "Task";
     }
 }

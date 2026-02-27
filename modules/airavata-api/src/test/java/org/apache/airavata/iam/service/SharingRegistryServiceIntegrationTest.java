@@ -282,7 +282,7 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         entity1.setName("test-project-1");
         entity1.setDescription("test project 1 description");
         entity1.setFullText("test project 1 stampede gaussian seagrid");
-        entity1.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
+        entity1.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         sharingService.createEntity(entity1);
         Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-project-1"), "Entity 1 should exist");
         SharingEntity retrievedEntity1 = sharingService.getEntity(domainId, "test-project-1");
@@ -299,7 +299,7 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         entity2.setDescription("test experiment 1 description");
         entity2.setParentEntityId("test-project-1");
         entity2.setFullText("test experiment 1 benzene");
-        entity2.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
+        entity2.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         sharingService.createEntity(entity2);
         Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-experiment-1"), "Entity 2 should exist");
 
@@ -312,7 +312,7 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         entity3.setDescription("test experiment 2 description");
         entity3.setParentEntityId("test-project-1");
         entity3.setFullText("test experiment 1 3-methyl 1-butanol stampede");
-        entity3.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
+        entity3.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         sharingService.createEntity(entity3);
         Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-experiment-2"), "Entity 3 should exist");
 
@@ -325,7 +325,7 @@ public class SharingRegistryServiceIntegrationTest extends ServiceIntegrationTes
         entity4.setDescription("test file 1 description");
         entity4.setParentEntityId("test-experiment-2");
         entity4.setFullText("test input file 1 for experiment 2");
-        entity4.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
+        entity4.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         sharingService.createEntity(entity4);
         Assertions.assertTrue(sharingService.isEntityExists(domainId, "test-file-1"), "Entity 4 should exist");
 

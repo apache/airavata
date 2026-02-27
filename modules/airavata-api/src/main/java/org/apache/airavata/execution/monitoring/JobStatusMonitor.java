@@ -19,99 +19,27 @@
 */
 package org.apache.airavata.execution.monitoring;
 
+import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.service.JobService;
-import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.execution.activity.JobStatusHandler;
-import org.apache.airavata.execution.service.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!test")
 public class JobStatusMonitor {
 
-    private static final Logger log = LoggerFactory.getLogger(JobStatusMonitor.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobStatusMonitor.class);
 
     private final JobStatusHandler jobStatusHandler;
     private final JobService jobService;
-    private final ProcessService processService;
-    private final JobStatusEventToResultConverter converter;
 
-    public JobStatusMonitor(
-            JobService jobService,
-            ProcessService processService,
-            @Autowired(required = false) JobStatusHandler jobStatusHandler,
-            @Autowired(required = false) JobStatusEventToResultConverter converter) {
+    public JobStatusMonitor(JobService jobService, @Nullable JobStatusHandler jobStatusHandler) {
         this.jobService = jobService;
-        this.processService = processService;
         this.jobStatusHandler = jobStatusHandler;
-        this.converter = converter;
-    }
-
-    private boolean validateJobStatus(JobStatusResult jobStatusResult) {
-        boolean validated = true;
-        try {
-            log.info("Fetching matching jobs for job id {} from database", jobStatusResult.getJobId());
-            var jobs = jobService.getJobs("jobId", jobStatusResult.getJobId());
-
-            if (!jobs.isEmpty()) {
-                log.info("Filtering total {} with target job name {}", jobs.size(), jobStatusResult.getJobName());
-                jobs = jobs.stream()
-                        .filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName()))
-                        .toList();
-            }
-
-            if (jobs.size() != 1) {
-                log.error(
-                        "Couldn't find exactly one job with id {} and name {} in the database. Count {}",
-                        jobStatusResult.getJobId(),
-                        jobStatusResult.getJobName(),
-                        jobs.size());
-                validated = false;
-
-            } else {
-                var jobModel = jobs.get(0);
-
-                var processId = jobModel.getProcessId();
-                var experimentId = processService.getProcess(processId).getExperimentId();
-
-                if (experimentId != null && processId != null) {
-                    log.info(
-                            "Job id {} is owned by process {} of experiment {}",
-                            jobStatusResult.getJobId(),
-                            processId,
-                            experimentId);
-                    validated = true;
-                } else {
-                    log.error("Experiment or process is null for job {}", jobStatusResult.getJobId());
-                    validated = false;
-                }
-            }
-            return validated;
-
-        } catch (RegistryException e) {
-            log.error("Error at validating job status {}", jobStatusResult.getJobId(), e);
-            return false;
-        }
-    }
-
-    public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
-        if (jobStatusHandler == null) {
-            throw new MonitoringException(
-                    "JobStatusHandler (e.g. ProcessActivityManager) is not available. Enable airavata.services.controller for direct job-status handling.");
-        }
-        try {
-            if (validateJobStatus(jobStatusResult)) {
-                jobStatusHandler.onJobStatusMessage(jobStatusResult);
-            } else {
-                throw new MonitoringException("Failed to validate job status for job id " + jobStatusResult.getJobId());
-            }
-        } catch (Exception e) {
-            throw new MonitoringException("Failed to submit job status for job id " + jobStatusResult.getJobId(), e);
-        }
     }
 
     /**
@@ -120,11 +48,11 @@ public class JobStatusMonitor {
      */
     public void publish(JobStatusResult result) {
         if (jobStatusHandler == null) {
-            log.warn("JobStatusHandler not available; job status result dropped");
+            logger.warn("JobStatusHandler not available; job status result dropped");
             return;
         }
         if (result != null) {
-            log.debug("Delivering job status result: jobId={} state={}", result.getJobId(), result.getState());
+            logger.debug("Delivering job status result: jobId={} state={}", result.jobId(), result.state());
             jobStatusHandler.onJobStatusMessage(result);
         }
     }
@@ -132,19 +60,69 @@ public class JobStatusMonitor {
     /**
      * Publish a canonical job status event by converting and delivering directly to JobStatusHandler.
      */
-    public void publish(MessagingContracts.JobStatusUpdateEvent event) {
-        log.debug("Delivering job status event: jobName={} status={}", event.getJobName(), event.getStatus());
-        if (jobStatusHandler == null || converter == null) {
-            log.warn("JobStatusHandler or converter not available; job status event dropped");
+    public void publish(JobStatusUpdateEvent event) {
+        logger.debug("Delivering job status event: jobName={} status={}", event.jobName(), event.status());
+        if (jobStatusHandler == null) {
+            logger.warn("JobStatusHandler not available; job status event dropped");
             return;
         }
-        if (jobService == null) {
-            log.warn("JobService not available; cannot deliver job status event");
-            return;
-        }
-        JobStatusResult result = converter.convert(event, jobService);
+        JobStatusResult result = convertEvent(event);
         if (result != null) {
             jobStatusHandler.onJobStatusMessage(result);
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Event conversion (inlined from former JobStatusEventToResultConverter)
+    // -------------------------------------------------------------------------
+
+    private JobStatusResult convertEvent(JobStatusUpdateEvent event) {
+        String jobName = event.jobName();
+        String status = event.status();
+        String taskId = event.taskId();
+        if (jobName == null || status == null || taskId == null) {
+            logger.error("Job name, status or taskId is null in event {}", event);
+            return null;
+        }
+        try {
+            var jobsOfTask = jobService.getJobs("taskId", taskId);
+            if (jobsOfTask == null || jobsOfTask.isEmpty()) {
+                logger.warn("No jobs found for task {}. Job record should have been saved before submission.", taskId);
+                return null;
+            }
+            String jobId = jobsOfTask.stream()
+                    .filter(job -> jobName.equals(job.getJobName()))
+                    .findFirst()
+                    .map(job -> job.getJobId())
+                    .orElse(null);
+            if (jobId == null) {
+                logger.error("No job id for job name {} task {}", jobName, taskId);
+                return null;
+            }
+            JobState jobState = mapStatus(status);
+            if (jobState == null) {
+                logger.error("Invalid job state {}", status);
+                return null;
+            }
+            return new JobStatusResult(jobState, jobId, jobName, true, event.publisherName());
+        } catch (Exception e) {
+            logger.error("Failed to convert job status event for job name {}", jobName, e);
+            return null;
+        }
+    }
+
+    private static JobState mapStatus(String status) {
+        return switch (status.toUpperCase()) {
+            case "RUNNING" -> JobState.ACTIVE;
+            case "COMPLETED" -> JobState.COMPLETED;
+            case "FAILED" -> JobState.FAILED;
+            case "SUBMITTED" -> JobState.SUBMITTED;
+            case "QUEUED" -> JobState.QUEUED;
+            case "CANCELED" -> JobState.CANCELED;
+            case "SUSPENDED" -> JobState.SUSPENDED;
+            case "UNKNOWN" -> JobState.UNKNOWN;
+            case "NON_CRITICAL_FAIL" -> JobState.NON_CRITICAL_FAIL;
+            default -> null;
+        };
     }
 }

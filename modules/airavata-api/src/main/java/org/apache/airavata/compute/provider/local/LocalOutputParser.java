@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LocalOutputParser implements JobOutputParser {
-    private static final Logger log = LoggerFactory.getLogger(LocalOutputParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(LocalOutputParser.class);
 
     @Override
     public String parseJobSubmission(String rawOutput) throws Exception {

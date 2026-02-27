@@ -21,6 +21,8 @@ package org.apache.airavata.research.application.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -29,6 +31,7 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 import org.apache.airavata.compute.resource.entity.ResourceEntity;
+import org.apache.airavata.research.application.model.InstallationStatus;
 
 /**
  * Entity tracking the installation state of an application on a specific compute resource.
@@ -63,8 +66,9 @@ public class ApplicationInstallationEntity implements Serializable {
     @Column(name = "install_path", length = 500)
     private String installPath;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50)
-    private String status = "PENDING";
+    private InstallationStatus status = InstallationStatus.PENDING;
 
     @Column(name = "installed_at")
     private Instant installedAt;
@@ -125,11 +129,11 @@ public class ApplicationInstallationEntity implements Serializable {
         this.installPath = installPath;
     }
 
-    public String getStatus() {
+    public InstallationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InstallationStatus status) {
         this.status = status;
     }
 

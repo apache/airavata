@@ -127,9 +127,15 @@ public abstract class ServiceStartupTestBase {
                 "org.apache.airavata.messaging",
                 "org.apache.airavata.config",
                 "org.apache.airavata.accountprovisioning",
+                "org.apache.airavata.credential",
                 "org.apache.airavata.job",
                 "org.apache.airavata.process",
                 "org.apache.airavata.user"
+            },
+            excludeFilters = {
+                @org.springframework.context.annotation.ComponentScan.Filter(
+                        type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+                        classes = IntegrationTestConfiguration.class)
             })
     // Spring Boot automatically loads application.properties from test resources
     static class TestConfiguration {}

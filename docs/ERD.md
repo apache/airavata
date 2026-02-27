@@ -4,25 +4,30 @@ Entity-Relationship Diagram for the Airavata database schema.
 
 ## Schema Summary
 
-- **41 tables** + **2 views** in the current schema
-- **26 tables** created by Flyway V1 baseline migration (uppercase names)
-- **15 tables** created by Hibernate `ddl-auto=update` (lowercase names)
-- **2 views**: `LATEST_EXPERIMENT_STATUS`, `EXPERIMENT_SUMMARY`
+- **38 tables** in the Flyway V1 baseline migration (`V1__Baseline_schema.sql`)
+- **No views** — `EXPERIMENT_SUMMARY` is a denormalized table
+- **No V2 migration** — all schema is in the single V1 baseline
 - **Engine**: InnoDB, charset `utf8mb4`, collation `utf8mb4_unicode_ci`
 - **Requires**: MariaDB 10.2+ (JSON column support)
+- **All table names use UPPER_CASE**
 
 ### Table Origin
 
-| Origin | Tables |
-|--------|--------|
-| Flyway V1 | GATEWAY, USER, EVENT, NOTIFICATION, RESOURCE, CREDENTIAL (CredentialStoreEntity), RESOURCE_BINDING, APPLICATION, APPLICATION_INSTALLATION, PROJECT, EXPERIMENT, EXPERIMENT_INPUT, EXPERIMENT_OUTPUT, PROCESS, JOB, ARTIFACT, REPOSITORY, EXPERIMENT_ARTIFACT, USER_GROUP, ALLOCATION_PROJECT, USER_ALLOCATION_PROJECT, WORKFLOW, WORKFLOW_RUN, CATALOG_ENTRY, COMPUTE_SUBMISSION_TRACKING, USER_CONTENT |
-| Hibernate | entity_relationship, resource_preference, credential_allocation_project, research_artifact, research_repository_artifact, research_model_artifact, research_notebook_artifact, research_dataset_artifact, tag, artifact_star, research_project, research_session, research_artifact_tags, research_artifact_authors, research_project_dataset |
+All 38 tables are defined in the V1 Flyway baseline migration. There are no Hibernate `ddl-auto`-created tables.
+
+| Part | Tables |
+|------|--------|
+| Part 1 — Tenant, Identity & IAM (7) | GATEWAY, USER, NOTIFICATION, TAG, USER_GROUP, GROUP_MEMBERSHIP, SHARING_PERMISSION |
+| Part 2 — Compute & Credentials (7) | RESOURCE, CREDENTIAL, RESOURCE_BINDING, RESOURCE_PREFERENCE, ALLOCATION_PROJECT, CREDENTIAL_ALLOCATION_PROJECT, COMPUTE_SUBMISSION_TRACKING |
+| Part 3 — Application & Experiment (10) | APPLICATION, APPLICATION_INSTALLATION, PROJECT, PROJECT_DATASET, EXPERIMENT, EXPERIMENT_INPUT, EXPERIMENT_OUTPUT, PROCESS, EVENT, JOB |
+| Part 4 — Research Platform (11) | RESEARCH_ARTIFACT, RESEARCH_MODEL_ARTIFACT, RESEARCH_NOTEBOOK_ARTIFACT, RESEARCH_REPOSITORY_ARTIFACT, RESEARCH_DATASET_ARTIFACT, RESEARCH_ARTIFACT_AUTHORS, RESEARCH_ARTIFACT_TAGS, ARTIFACT_STAR, RESEARCH_PROJECT, RESEARCH_PROJECT_DATASET, RESEARCH_SESSION |
+| Part 5 — Workflow & Tracking (3) | WORKFLOW, WORKFLOW_RUN, EXPERIMENT_SUMMARY |
 
 ---
 
 ## Part 1 — Tenant, Identity & IAM
 
-6 tables: GATEWAY, USER, NOTIFICATION, USER_GROUP, entity_relationship, USER_CONTENT
+7 tables: GATEWAY, USER, NOTIFICATION, TAG, USER_GROUP, GROUP_MEMBERSHIP, SHARING_PERMISSION
 
 ```mermaid
 %%{init: { "er": { "layoutDirection": "TB", "fontSize": 16 } }}%%
@@ -32,18 +37,6 @@ erDiagram
         varchar gateway_name UK
         varchar gateway_domain
         varchar email_address
-        varchar gateway_approval_status
-        varchar gateway_acronym
-        varchar gateway_url
-        text gateway_public_abstract
-        text gateway_review_proposal_description
-        varchar gateway_admin_first_name
-        varchar gateway_admin_last_name
-        varchar gateway_admin_email
-        text declined_reason
-        timestamp request_creation_time
-        varchar requester_username
-        text domain_description
         timestamp created_at
         timestamp updated_at
         varchar initial_user_group_id
@@ -71,6 +64,10 @@ erDiagram
         timestamp expires_at "NOT NULL"
         varchar priority "length=50"
     }
+    TAG {
+        varchar id PK "length=48"
+        varchar value "NOT NULL"
+    }
     USER_GROUP {
         varchar group_id PK
         varchar gateway_id PK "FK to GATEWAY"
@@ -83,24 +80,24 @@ erDiagram
         timestamp created_at "NOT NULL"
         timestamp updated_at
     }
-    entity_relationship {
-        varchar relationship_id PK "length=512"
-        varchar source_type "NOT NULL, length=50"
-        varchar source_id "NOT NULL"
-        varchar target_type "NOT NULL, length=50"
-        varchar target_id "NOT NULL"
-        varchar relation_kind "NOT NULL, length=50"
+    GROUP_MEMBERSHIP {
+        varchar membership_id PK "length=512"
+        varchar group_id "NOT NULL"
+        varchar user_id "NOT NULL"
         varchar role "length=50"
-        varchar permission_type_id
+        varchar domain_id
+        timestamp created_at "NOT NULL"
+    }
+    SHARING_PERMISSION {
+        varchar permission_id PK "length=512"
+        varchar resource_type "NOT NULL, length=50"
+        varchar resource_id "NOT NULL"
+        varchar grantee_type "NOT NULL, length=20"
+        varchar grantee_id "NOT NULL"
+        varchar permission "NOT NULL"
         varchar domain_id
         json metadata
-        timestamp created_at
-        timestamp updated_at
-    }
-    USER_CONTENT {
-        varchar state_key PK "length=512"
-        varchar scope "NOT NULL, length=50"
-        text content_data "NOT NULL"
+        timestamp created_at "NOT NULL"
     }
 
     GATEWAY ||--o{ USER : "has users"
@@ -110,16 +107,16 @@ erDiagram
 
 **Notes:**
 - `USER.user_id` format: `{sub}@{gatewayId}` (generated by `@PrePersist`)
-- `USER.first_name`, `last_name`, `email` are Hibernate-added columns (not in V1 migration)
 - `USER_GROUP` has composite PK: `(group_id, gateway_id)`
-- `entity_relationship.relation_kind`: `MEMBER_OF` (group membership), `HAS_PERMISSION` (sharing)
-- `entity_relationship` has no FK constraints — uses string discriminators for polymorphic references
+- `GROUP_MEMBERSHIP` has unique constraint: `(group_id, user_id, domain_id)`
+- `SHARING_PERMISSION` has unique constraint: `(resource_type, resource_id, grantee_type, grantee_id, permission, domain_id)`
+- `GROUP_MEMBERSHIP` and `SHARING_PERMISSION` replace the former polymorphic `entity_relationship` table
 
 ---
 
 ## Part 2 — Compute & Credentials
 
-8 tables: RESOURCE, CREDENTIAL, RESOURCE_BINDING, resource_preference, ALLOCATION_PROJECT, USER_ALLOCATION_PROJECT, credential_allocation_project, COMPUTE_SUBMISSION_TRACKING
+7 tables: RESOURCE, CREDENTIAL, RESOURCE_BINDING, RESOURCE_PREFERENCE, ALLOCATION_PROJECT, CREDENTIAL_ALLOCATION_PROJECT, COMPUTE_SUBMISSION_TRACKING
 
 ```mermaid
 %%{init: { "er": { "layoutDirection": "TB", "fontSize": 16 } }}%%
@@ -131,6 +128,7 @@ erDiagram
         varchar host_name "NOT NULL"
         int port "default 22"
         text description
+        varchar resource_type "NOT NULL, length=20, default COMPUTE"
         json capabilities "NOT NULL"
         timestamp created_at "NOT NULL"
         timestamp updated_at
@@ -138,10 +136,10 @@ erDiagram
     CREDENTIAL {
         varchar credential_id PK "UUID token string"
         varchar gateway_id FK "NOT NULL"
-        varchar type "NOT NULL, length=50"
-        longblob credential_data "encrypted"
+        varchar type "NOT NULL, length=20"
+        longblob credential_data "NOT NULL"
         varchar user_id "NOT NULL"
-        varchar name "NOT NULL"
+        varchar name
         text description
         timestamp created_at "NOT NULL"
     }
@@ -156,7 +154,7 @@ erDiagram
         timestamp created_at "NOT NULL"
         timestamp updated_at
     }
-    resource_preference {
+    RESOURCE_PREFERENCE {
         bigint preference_id PK "auto-increment"
         varchar resource_type "NOT NULL, length=64"
         varchar resource_id "NOT NULL, length=512"
@@ -175,15 +173,10 @@ erDiagram
         varchar gateway_id FK "NOT NULL"
         timestamp created_at "NOT NULL"
     }
-    USER_ALLOCATION_PROJECT {
-        varchar user_name PK
-        varchar allocation_project_id PK "FK"
-        varchar binding_id FK "NOT NULL"
-    }
-    credential_allocation_project {
+    CREDENTIAL_ALLOCATION_PROJECT {
         varchar credential_id PK
-        varchar allocation_project_id PK
-        varchar binding_id "NOT NULL"
+        varchar allocation_project_id PK "FK"
+        varchar binding_id "NOT NULL, FK"
     }
     COMPUTE_SUBMISSION_TRACKING {
         varchar compute_resource_id PK
@@ -193,24 +186,25 @@ erDiagram
     RESOURCE_BINDING }o--|| CREDENTIAL : "uses credential"
     RESOURCE_BINDING }o--|| RESOURCE : "binds to resource"
     ALLOCATION_PROJECT }o--|| RESOURCE : "for resource"
-    USER_ALLOCATION_PROJECT }o--|| ALLOCATION_PROJECT : "allocation"
-    USER_ALLOCATION_PROJECT }o--|| RESOURCE_BINDING : "binding"
+    CREDENTIAL_ALLOCATION_PROJECT }o--|| ALLOCATION_PROJECT : "allocation"
+    CREDENTIAL_ALLOCATION_PROJECT }o--|| RESOURCE_BINDING : "binding"
 ```
 
 **Notes:**
 - `RESOURCE.capabilities` JSON schema: `{ compute?: { type, batchQueues[] }, storage?: { protocol, basePath } }`
 - `RESOURCE` is a unified table replacing the old COMPUTE_RESOURCE, STORAGE_RESOURCE, and interface tables
-- `CREDENTIAL` table stores encrypted SSH keys, passwords, and certificates. PK is a UUID token string. `CredentialStoreEntity` maps to this table.
+- `RESOURCE.resource_type` discriminator: `COMPUTE` (default) or `STORAGE`
+- `CREDENTIAL` table stores encrypted SSH keys, passwords, and certificates. PK is a UUID token string.
+- `CREDENTIAL.type`: `SSH`, `PASSWORD`, or `CERTIFICATE` (see `CredentialType` enum)
 - `RESOURCE_BINDING.metadata` JSON: `{ scratchPath, defaultQueue, maxWalltime, storagePath, allocationProjects[] }`
-- `resource_preference.resource_type` enum: `COMPUTE`, `STORAGE`, `USER_GROUP_SELECTION`, etc.
-- `resource_preference.preference_level` enum: `GATEWAY`, `GROUP`, `USER`
-- `credential_allocation_project` is Hibernate-managed (no FK constraints in DDL)
+- `RESOURCE_PREFERENCE.resource_type` enum: `COMPUTE`, `STORAGE`, `USER_GROUP_SELECTION`, etc.
+- `RESOURCE_PREFERENCE.preference_level` enum: `GATEWAY`, `GROUP`, `USER`
 
 ---
 
 ## Part 3 — Application & Experiment Pipeline
 
-10 tables + 2 views: APPLICATION, APPLICATION_INSTALLATION, PROJECT, EXPERIMENT, EXPERIMENT_INPUT, EXPERIMENT_OUTPUT, PROCESS, JOB, EVENT, EXPERIMENT_ARTIFACT
+10 tables: APPLICATION, APPLICATION_INSTALLATION, PROJECT, PROJECT_DATASET, EXPERIMENT, EXPERIMENT_INPUT, EXPERIMENT_OUTPUT, PROCESS, EVENT, JOB
 
 ```mermaid
 %%{init: { "er": { "layoutDirection": "TB", "fontSize": 16 } }}%%
@@ -244,11 +238,17 @@ erDiagram
     PROJECT {
         varchar project_id PK
         varchar gateway_id FK "NOT NULL"
-        varchar user_name
-        varchar project_name
+        varchar owner_id "NOT NULL"
+        varchar name "NOT NULL"
         text description
+        varchar state "NOT NULL, length=50, default ACTIVE"
+        varchar repository_artifact_id FK
         timestamp created_at "NOT NULL"
         timestamp updated_at
+    }
+    PROJECT_DATASET {
+        varchar project_id PK "FK to PROJECT"
+        varchar dataset_artifact_id PK "FK to RESEARCH_DATASET_ARTIFACT"
     }
     EXPERIMENT {
         varchar experiment_id PK
@@ -261,57 +261,20 @@ erDiagram
         varchar binding_id FK "NOT NULL"
         varchar state "NOT NULL, default CREATED"
         json scheduling
-        bigint created_at
-        timestamp updated_at
-    }
-    PROCESS {
-        varchar process_id PK
-        varchar experiment_id FK "NOT NULL"
-        varchar application_id
-        varchar resource_id
-        varchar binding_id
-        longtext process_detail
-        json resource_schedule
+        varchar parent_experiment_id FK "self-ref"
+        json tags
         timestamp created_at "NOT NULL"
         timestamp updated_at
-    }
-    JOB {
-        varchar job_id PK
-        varchar process_id "NOT NULL"
-        varchar task_id
-        varchar job_name
-        mediumtext working_dir
-        mediumtext job_description
-        mediumtext std_out
-        mediumtext std_err
-        int exit_code "default 0"
-        bigint created_at "default 0"
-        varchar compute_resource_consumed
-        json job_statuses
-    }
-    EVENT {
-        varchar event_id PK
-        varchar parent_id PK "length=100 in key"
-        varchar parent_type PK "EXPERIMENT or PROCESS"
-        varchar event_kind "NOT NULL, STATUS or ERROR"
-        timestamp6 event_time "NOT NULL"
-        bigint sequence_num "NOT NULL, default 0"
-        varchar state
-        longtext reason
-        longtext actual_error_message
-        longtext user_friendly_message
-        boolean transient_or_persistent
-        longtext root_cause_error_id_list
     }
     EXPERIMENT_INPUT {
         varchar input_id PK
         varchar experiment_id FK "NOT NULL"
         varchar name "NOT NULL"
         varchar type "NOT NULL, length=50"
-        varchar artifact_id
-        varchar value
+        varchar artifact_id "length=48"
+        text value
         varchar command_line_arg
-        boolean is_required "default FALSE"
+        boolean required "default FALSE"
         boolean add_to_command_line "default TRUE"
         int order_index "default 0"
         text description
@@ -321,201 +284,100 @@ erDiagram
         varchar experiment_id FK "NOT NULL"
         varchar name "NOT NULL"
         varchar type "NOT NULL, length=50"
-        varchar artifact_id
-        varchar value
+        varchar artifact_id "length=48"
+        text value
         varchar command_line_arg
-        boolean is_required "default FALSE"
+        boolean required "default FALSE"
         boolean data_movement "default FALSE"
         int order_index "default 0"
         text description
         varchar location "length=1024"
     }
-    EXPERIMENT_ARTIFACT {
-        varchar experiment_artifact_id PK
+    PROCESS {
+        varchar process_id PK
         varchar experiment_id FK "NOT NULL"
-        varchar artifact_uri FK "NOT NULL"
-        varchar repository_id FK
-        varchar location_path "length=1024"
-        int order_index
+        varchar application_id
+        varchar resource_id FK
+        varchar binding_id
+        json provider_context
+        json resource_schedule
+        timestamp created_at "NOT NULL"
+        timestamp updated_at
+    }
+    EVENT {
+        varchar event_id PK
+        varchar parent_id "NOT NULL"
+        varchar parent_type "NOT NULL, length=20, default PROCESS"
+        varchar event_kind "NOT NULL"
+        timestamp6 event_time "NOT NULL"
+        bigint sequence_num "NOT NULL, default 0"
+        varchar state
+        mediumtext reason
+        mediumtext actual_error_message
+        mediumtext user_friendly_message
+        boolean transient_or_persistent
+        mediumtext root_cause_error_id_list
+    }
+    JOB {
+        varchar job_id PK
+        varchar process_id FK "NOT NULL"
+        varchar job_name
+        mediumtext working_dir
+        mediumtext job_description
+        mediumtext std_out
+        mediumtext std_err
+        int exit_code "default 0"
+        timestamp created_at "NOT NULL"
+        varchar compute_resource_consumed
     }
 
     PROJECT ||--o{ EXPERIMENT : "contains"
+    PROJECT ||--o{ PROJECT_DATASET : "has datasets"
     EXPERIMENT ||--o{ EXPERIMENT_INPUT : "has inputs"
     EXPERIMENT ||--o{ EXPERIMENT_OUTPUT : "has outputs"
     EXPERIMENT ||--o{ PROCESS : "has processes"
-    EXPERIMENT ||--o{ EXPERIMENT_ARTIFACT : "has artifacts"
     EXPERIMENT }o--|| APPLICATION : "runs application"
     EXPERIMENT }o--|| RESOURCE_BINDING : "uses binding"
+    EXPERIMENT }o--o| EXPERIMENT : "parent experiment"
     APPLICATION_INSTALLATION }o--|| APPLICATION : "installs"
     APPLICATION_INSTALLATION }o--|| RESOURCE : "on resource"
     PROCESS }o--|| EXPERIMENT : "belongs to"
+    JOB }o--|| PROCESS : "belongs to"
 ```
 
 **Notes:**
 - `EXPERIMENT_INPUT` and `EXPERIMENT_OUTPUT` are separate entity tables (not JSON columns). Each can be a plain parameter or an artifact reference (`type=ARTIFACT`, `artifact_id` populated).
 - `EXPERIMENT.scheduling` JSON: `{queueName, nodeCount, cpuCount, walltime, allocationProject}`
-- `EXPERIMENT.created_at` is `BIGINT` (Unix timestamp in millis), not `TIMESTAMP`
+- `EXPERIMENT.created_at` is `TIMESTAMP` (not BIGINT)
+- `EXPERIMENT.parent_experiment_id` is a self-referencing FK for experiment chains
+- `EXPERIMENT.tags` is a JSON column for experiment tags
+- `PROCESS.provider_context` JSON: provider-specific context passed between workflow steps (e.g., AWS EC2 instance IDs)
 - `PROCESS.resource_schedule` JSON: scheduling overrides used at submission time
-- `JOB.job_statuses` JSON: `[{state, reason, timeOfStateChange}]` — job status history
-- `JOB` has no FK constraint to PROCESS in V1 DDL (index only); JPA `@ManyToOne` adds logical relationship
-- `EVENT` has composite PK: `(event_id, parent_id(100), parent_type)` with CHECK constraint on parent_type
+- `JOB` has FK constraint to PROCESS (ON DELETE CASCADE)
+- `JOB.created_at` is `TIMESTAMP` (not BIGINT)
+- `EVENT` has single PK: `EVENT_ID` (not composite). Indexed on `(parent_id, parent_type, event_kind, sequence_num DESC)`.
 - `EVENT.event_time` is `TIMESTAMP(6)` (microsecond precision)
-- `EVENT.event_kind`: `STATUS` (state transitions) or `ERROR` (error records)
-- Experiment state is stored directly as `EXPERIMENT.STATE` column. Process statuses are still stored in the EVENT table and loaded as `@Transient` fields.
+- `EVENT.event_kind`: `STATUS` (state transitions) or `ERROR` (error records), enforced by CHECK constraint
+- `EVENT.parent_type`: `EXPERIMENT` or `PROCESS` (default `PROCESS`)
+- Experiment state is stored directly as `EXPERIMENT.STATE` column. Process statuses are stored in the EVENT table and loaded as `@Transient` fields.
+- `PROJECT.state`: default `ACTIVE`
+- `PROJECT.repository_artifact_id`: optional FK to `RESEARCH_REPOSITORY_ARTIFACT`
+- `PROJECT_DATASET`: join table linking PROJECT to RESEARCH_DATASET_ARTIFACT
 
-### Views
+### EXPERIMENT_SUMMARY Table
 
-```sql
--- Latest status per experiment (highest sequence_num)
-CREATE VIEW LATEST_EXPERIMENT_STATUS AS
-SELECT parent_id AS experiment_id, state, event_time AS time_of_state_change, reason
-FROM EVENT WHERE parent_type = 'EXPERIMENT' AND event_kind = 'STATUS'
-  AND sequence_num = (SELECT MAX(sequence_num) FROM EVENT e2
-    WHERE e2.parent_id = EVENT.parent_id
-      AND e2.parent_type = 'EXPERIMENT' AND e2.event_kind = 'STATUS');
-
--- Experiment summary with latest status
-CREATE VIEW EXPERIMENT_SUMMARY AS
-SELECT e.experiment_id, e.project_id, e.gateway_id, e.user_name,
-       e.experiment_name, e.created_at, e.description,
-       es.state, es.time_of_state_change
-FROM EXPERIMENT e LEFT JOIN LATEST_EXPERIMENT_STATUS es
-  ON e.experiment_id = es.experiment_id;
-```
-
-`ExperimentSummaryEntity` is an `@Immutable` JPA entity mapped to the `EXPERIMENT_SUMMARY` view with columns: `experiment_id`, `project_id`, `gateway_id`, `created_at`, `user_name`, `experiment_name`, `description`, `execution_id`, `state`, `resource_host_id`, `time_of_state_change`.
+`EXPERIMENT_SUMMARY` is a denormalized table (created in V1 migration) used for fast experiment listing. `ExperimentSummaryEntity` is an `@Immutable` JPA entity mapped to this table.
 
 ---
 
-## Part 4 — Artifacts, Catalog & Workflow
+## Part 4 — Research Platform
 
-5 tables: ARTIFACT, REPOSITORY, CATALOG_ENTRY, WORKFLOW, WORKFLOW_RUN
+11 tables: RESEARCH_ARTIFACT (+ 4 subtypes), RESEARCH_ARTIFACT_AUTHORS, RESEARCH_ARTIFACT_TAGS, ARTIFACT_STAR, RESEARCH_PROJECT, RESEARCH_PROJECT_DATASET, RESEARCH_SESSION
 
 ```mermaid
 %%{init: { "er": { "layoutDirection": "TB", "fontSize": 16 } }}%%
 erDiagram
-    ARTIFACT {
-        varchar artifact_uri PK
-        varchar gateway_id FK
-        mediumtext name
-        varchar description
-        varchar owner_name
-        varchar parent_artifact_uri FK "self-ref"
-        int size
-        varchar artifact_type "length=50"
-        timestamp created_at
-        timestamp updated_at
-        varchar primary_storage_resource_id FK
-        varchar primary_file_path "length=1024"
-        varchar status "length=50, default NONE"
-        varchar privacy "length=50, default PRIVATE"
-        varchar resource_scope "length=50, default USER"
-        varchar owner_id
-        varchar group_resource_profile_id
-        varchar header_image "length=1024"
-        varchar format
-        json authors
-        json tags
-        json replicas
-        json metadata
-    }
-    REPOSITORY {
-        varchar repository_id PK
-        varchar gateway_id FK
-        varchar owner_id
-        varchar name "NOT NULL"
-        text description
-        varchar notebook_path "length=1024"
-        varchar jupyter_server_url "length=1024"
-        varchar repository_url "length=1024"
-        varchar repository_branch
-        varchar repository_commit
-        varchar status "length=50, default NONE"
-        varchar privacy "length=50, default PRIVATE"
-        varchar header_image "length=1024"
-        json authors
-        json tags
-        timestamp created_at "NOT NULL"
-        timestamp updated_at
-    }
-    CATALOG_ENTRY {
-        varchar entry_id PK
-        varchar name "NOT NULL"
-        varchar description "length=4096"
-        varchar entry_type "NOT NULL, length=50"
-        varchar status "length=50, default NONE"
-        varchar privacy "length=50, default PRIVATE"
-        varchar scope "length=50, default USER"
-        varchar gateway_id
-        varchar owner_id
-        varchar group_resource_profile_id
-        varchar header_image
-        varchar notebook_path
-        varchar jupyter_server_url
-        varchar dataset_url
-        bigint dataset_size
-        varchar dataset_format
-        varchar repository_url
-        varchar repository_branch
-        varchar repository_commit
-        varchar model_url
-        varchar application_id
-        varchar model_framework
-        json authors
-        json tags
-        timestamp created_at "NOT NULL"
-        timestamp updated_at
-    }
-    WORKFLOW {
-        varchar workflow_id PK
-        varchar project_id FK "NOT NULL"
-        varchar gateway_id "NOT NULL"
-        varchar user_name "NOT NULL"
-        varchar workflow_name "NOT NULL"
-        text description
-        mediumtext steps "JSON, NOT NULL"
-        mediumtext edges "JSON, NOT NULL"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at
-    }
-    WORKFLOW_RUN {
-        varchar run_id PK
-        varchar workflow_id FK "NOT NULL"
-        varchar user_name "NOT NULL"
-        varchar status "NOT NULL, length=50, default CREATED"
-        mediumtext step_states "JSON, NOT NULL"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at
-    }
-
-    ARTIFACT ||--o| ARTIFACT : "parent"
-    EXPERIMENT_ARTIFACT }o--|| ARTIFACT : "references"
-    EXPERIMENT_ARTIFACT }o--o| REPOSITORY : "optional repo"
-    WORKFLOW_RUN }o--|| WORKFLOW : "run of"
-    WORKFLOW }o--|| PROJECT : "belongs to"
-```
-
-**Notes:**
-- `ARTIFACT.replicas` JSON: `[{replicaId, storageResourceId, filePath, ...}]`
-- `ARTIFACT.metadata` JSON: arbitrary key-value metadata
-- `ARTIFACT.parent_artifact_uri` is a self-referencing FK for hierarchical artifacts
-- `ARTIFACT.primary_storage_resource_id` FK references `RESOURCE.resource_id`
-- `CATALOG_ENTRY` is a wide polymorphic table; `entry_type` discriminates: DATASET, MODEL, NOTEBOOK, REPOSITORY
-- `WORKFLOW.steps` and `edges` are stored as MEDIUMTEXT (JSON-serialized `WorkflowStep[]` and `WorkflowEdge[]`)
-- `WORKFLOW_RUN.step_states` is MEDIUMTEXT (JSON-serialized `Map<String, WorkflowRunStepState>`)
-
----
-
-## Part 5 — Research Platform
-
-12 tables: research_artifact (+ 4 subtypes), tag, artifact_star, research_project, research_session, research_artifact_tags, research_artifact_authors, research_project_dataset
-
-All tables in this section are Hibernate-managed (`ddl-auto=update`), not in V1 migration.
-
-```mermaid
-%%{init: { "er": { "layoutDirection": "TB", "fontSize": 16 } }}%%
-erDiagram
-    research_artifact {
+    RESEARCH_ARTIFACT {
         varchar id PK "UUID, length=48"
         varchar name "NOT NULL"
         text description "NOT NULL"
@@ -526,42 +388,50 @@ erDiagram
         timestamp created_at "NOT NULL"
         timestamp updated_at "NOT NULL"
     }
-    research_repository_artifact {
-        varchar id PK "FK to research_artifact"
+    RESEARCH_REPOSITORY_ARTIFACT {
+        varchar id PK "FK to RESEARCH_ARTIFACT"
         varchar repository_url "NOT NULL"
     }
-    research_model_artifact {
-        varchar id PK "FK to research_artifact"
+    RESEARCH_MODEL_ARTIFACT {
+        varchar id PK "FK to RESEARCH_ARTIFACT"
         varchar application_interface_id "NOT NULL"
         varchar version "NOT NULL"
     }
-    research_notebook_artifact {
-        varchar id PK "FK to research_artifact"
+    RESEARCH_NOTEBOOK_ARTIFACT {
+        varchar id PK "FK to RESEARCH_ARTIFACT"
         varchar notebook_path "NOT NULL"
     }
-    research_dataset_artifact {
-        varchar id PK "FK to research_artifact"
+    RESEARCH_DATASET_ARTIFACT {
+        varchar id PK "FK to RESEARCH_ARTIFACT"
         varchar dataset_url "NOT NULL"
     }
-    tag {
-        varchar id PK "UUID, length=48"
-        varchar value "NOT NULL"
+    RESEARCH_ARTIFACT_TAGS {
+        varchar artifact_id PK "FK to RESEARCH_ARTIFACT"
+        varchar tag_id PK "FK to TAG"
     }
-    artifact_star {
+    RESEARCH_ARTIFACT_AUTHORS {
+        varchar artifact_id FK "to RESEARCH_ARTIFACT"
+        varchar author_id "element value"
+    }
+    ARTIFACT_STAR {
         varchar id PK "UUID, length=48"
         varchar user_id "NOT NULL"
         varchar artifact_id FK "NOT NULL"
     }
-    research_project {
+    RESEARCH_PROJECT {
         varchar id PK "UUID, length=48"
         varchar name "NOT NULL"
         varchar owner_id "NOT NULL"
         varchar repository_artifact_id FK "NOT NULL"
+        varchar state "NOT NULL, enum"
         timestamp created_at "NOT NULL"
         timestamp updated_at "NOT NULL"
-        varchar state "NOT NULL, enum"
     }
-    research_session {
+    RESEARCH_PROJECT_DATASET {
+        varchar project_id PK "FK to RESEARCH_PROJECT"
+        varchar dataset_artifact_id PK "FK to RESEARCH_DATASET_ARTIFACT"
+    }
+    RESEARCH_SESSION {
         varchar id PK "UUID, length=48"
         varchar session_name "NOT NULL"
         varchar user_id "NOT NULL"
@@ -570,94 +440,129 @@ erDiagram
         timestamp updated_at "NOT NULL"
         varchar status "NOT NULL, enum"
     }
-    research_artifact_tags {
-        varchar artifact_id FK "PK"
-        varchar tag_id FK "PK"
-    }
-    research_artifact_authors {
-        varchar artifact_id FK
-        varchar author_id "element value"
-    }
-    research_project_dataset {
-        varchar project_id FK "PK"
-        varchar dataset_artifact_id FK "PK"
-    }
 
-    research_artifact ||--o| research_repository_artifact : "JOINED"
-    research_artifact ||--o| research_model_artifact : "JOINED"
-    research_artifact ||--o| research_notebook_artifact : "JOINED"
-    research_artifact ||--o| research_dataset_artifact : "JOINED"
-    research_artifact ||--o{ research_artifact_tags : "has tags"
-    research_artifact ||--o{ research_artifact_authors : "has authors"
-    research_artifact_tags }o--|| tag : "tag"
-    artifact_star }o--|| research_artifact : "starred"
-    research_project }o--|| research_repository_artifact : "has repo"
-    research_project ||--o{ research_project_dataset : "has datasets"
-    research_project_dataset }o--|| research_dataset_artifact : "dataset"
-    research_session }o--|| research_project : "in project"
+    RESEARCH_ARTIFACT ||--o| RESEARCH_REPOSITORY_ARTIFACT : "JOINED"
+    RESEARCH_ARTIFACT ||--o| RESEARCH_MODEL_ARTIFACT : "JOINED"
+    RESEARCH_ARTIFACT ||--o| RESEARCH_NOTEBOOK_ARTIFACT : "JOINED"
+    RESEARCH_ARTIFACT ||--o| RESEARCH_DATASET_ARTIFACT : "JOINED"
+    RESEARCH_ARTIFACT ||--o{ RESEARCH_ARTIFACT_TAGS : "has tags"
+    RESEARCH_ARTIFACT ||--o{ RESEARCH_ARTIFACT_AUTHORS : "has authors"
+    RESEARCH_ARTIFACT_TAGS }o--|| TAG : "tag"
+    ARTIFACT_STAR }o--|| RESEARCH_ARTIFACT : "starred"
+    RESEARCH_PROJECT }o--|| RESEARCH_REPOSITORY_ARTIFACT : "has repo"
+    RESEARCH_PROJECT ||--o{ RESEARCH_PROJECT_DATASET : "has datasets"
+    RESEARCH_PROJECT_DATASET }o--|| RESEARCH_DATASET_ARTIFACT : "dataset"
+    RESEARCH_SESSION }o--|| RESEARCH_PROJECT : "in project"
 ```
 
 **Notes:**
-- `research_artifact` uses `@Inheritance(strategy = JOINED)` — subtypes stored in separate tables sharing the same PK
+- `RESEARCH_ARTIFACT` uses `@Inheritance(strategy = JOINED)` — subtypes stored in separate tables sharing the same PK
 - All IDs are UUID (`@UuidGenerator`, length=48)
-- `research_artifact.status` enum: `ArtifactStatus` (e.g., NONE, ACTIVE)
-- `research_artifact.state` enum: `ArtifactState` (e.g., DRAFT, PUBLISHED)
-- `research_artifact.privacy` enum: `Privacy` (e.g., PRIVATE, PUBLIC)
-- `research_artifact_authors` is an `@ElementCollection` table (Set<String>)
-- `research_artifact_tags` is a `@ManyToMany` join table
-- `research_project_dataset` is a `@ManyToMany` join table (ResearchProject ↔ DatasetArtifact)
-- `research_project.repository_artifact_id` FK to `research_repository_artifact` (ManyToOne, EAGER fetch)
-- `research_session.status` enum: `SessionStatus`
+- `RESEARCH_ARTIFACT.status` enum: `ArtifactStatus` (e.g., NONE, ACTIVE)
+- `RESEARCH_ARTIFACT.state` enum: `ArtifactState` (e.g., DRAFT, PUBLISHED)
+- `RESEARCH_ARTIFACT.privacy` enum: `Privacy` (e.g., PRIVATE, PUBLIC)
+- `RESEARCH_ARTIFACT_AUTHORS` is an `@ElementCollection` table (Set<String>)
+- `RESEARCH_ARTIFACT_TAGS` is a `@ManyToMany` join table
+- `RESEARCH_PROJECT_DATASET` is a `@ManyToMany` join table (ResearchProject ↔ DatasetArtifact)
+- `RESEARCH_PROJECT.repository_artifact_id` FK to `RESEARCH_REPOSITORY_ARTIFACT` (ManyToOne, EAGER fetch)
+- `RESEARCH_SESSION.status` enum: `SessionStatus`
+- All research tables are in the V1 Flyway baseline migration (UPPER_CASE names)
+
+---
+
+## Part 5 — Workflow & Tracking
+
+3 tables: WORKFLOW, WORKFLOW_RUN, EXPERIMENT_SUMMARY
+
+```mermaid
+%%{init: { "er": { "layoutDirection": "TB", "fontSize": 16 } }}%%
+erDiagram
+    WORKFLOW {
+        varchar workflow_id PK
+        varchar project_id FK "NOT NULL"
+        varchar gateway_id "NOT NULL"
+        varchar user_name "NOT NULL"
+        varchar workflow_name "NOT NULL"
+        text description
+        json steps "NOT NULL"
+        json edges "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at
+    }
+    WORKFLOW_RUN {
+        varchar run_id PK
+        varchar workflow_id FK "NOT NULL"
+        varchar user_name "NOT NULL"
+        varchar status "NOT NULL, length=50, default CREATED"
+        json step_states "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at
+    }
+    EXPERIMENT_SUMMARY {
+        varchar experiment_id PK
+        varchar project_id
+        varchar gateway_id
+        timestamp created_at
+        varchar user_name
+        varchar experiment_name
+        text description
+        varchar state
+        timestamp time_of_state_change
+    }
+
+    WORKFLOW_RUN }o--|| WORKFLOW : "run of"
+    WORKFLOW }o--|| PROJECT : "belongs to"
+```
+
+**Notes:**
+- `WORKFLOW.steps` and `edges` are stored as JSON (serialized `WorkflowStep[]` and `WorkflowEdge[]`)
+- `WORKFLOW_RUN.step_states` is JSON (serialized `Map<String, WorkflowRunStepState>`)
+- `EXPERIMENT_SUMMARY` is a denormalized table for fast experiment listing. Mapped by `ExperimentSummaryEntity` (`@Immutable`).
 
 ---
 
 ## Complete Table Index
 
-| # | Table | PK | Origin | JPA Entity |
-|---|-------|-----|--------|------------|
-| 1 | GATEWAY | gateway_id | V1 | GatewayEntity |
-| 2 | USER | user_id | V1+Hibernate | UserEntity |
-| 3 | EVENT | (event_id, parent_id, parent_type) | V1 | EventEntity |
-| 4 | NOTIFICATION | notification_id | V1 | NotificationEntity |
-| 5 | RESOURCE | resource_id | V1 | ComputeResourceEntity |
-| 6 | CREDENTIAL | credential_id | V1 | CredentialStoreEntity |
-| 7 | RESOURCE_BINDING | binding_id | V1 | ResourceBindingEntity |
-| 8 | resource_preference | preference_id (auto) | Hibernate | ResourcePreferenceEntity |
-| 9 | APPLICATION | application_id | V1 | ApplicationEntity |
-| 10 | APPLICATION_INSTALLATION | installation_id | V1 | ApplicationInstallationEntity |
-| 11 | PROJECT | project_id | V1 | ProjectEntity |
-| 12 | EXPERIMENT | experiment_id | V1 | ExperimentEntity |
-| 13 | EXPERIMENT_INPUT | input_id | V1 | ExperimentInputEntity |
-| 14 | EXPERIMENT_OUTPUT | output_id | V1 | ExperimentOutputEntity |
-| 15 | PROCESS | process_id | V1 | ProcessEntity |
-| 16 | JOB | job_id | V1 | JobEntity |
-| 17 | ARTIFACT | artifact_uri | V1 | ArtifactEntity |
-| 18 | REPOSITORY | repository_id | V1 | _(legacy, no active entity)_ |
-| 19 | EXPERIMENT_ARTIFACT | experiment_artifact_id | V1 | ExperimentArtifactEntity |
-| 20 | USER_GROUP | (group_id, gateway_id) | V1 | UserGroupEntity |
-| 21 | entity_relationship | relationship_id | Hibernate | EntityRelationshipEntity |
-| 22 | USER_CONTENT | state_key | V1 | UserContentEntity |
-| 23 | ALLOCATION_PROJECT | allocation_project_id | V1 | AllocationProjectEntity |
-| 24 | USER_ALLOCATION_PROJECT | (user_name, alloc_project_id) | V1 | _(no JPA entity)_ |
-| 25 | credential_allocation_project | (credential_id, alloc_project_id) | Hibernate | CredentialAllocationProjectEntity |
-| 26 | WORKFLOW | workflow_id | V1 | WorkflowEntity |
-| 27 | WORKFLOW_RUN | run_id | V1 | WorkflowRunEntity |
-| 28 | CATALOG_ENTRY | entry_id | V1 | _(no active entity)_ |
-| 29 | COMPUTE_SUBMISSION_TRACKING | compute_resource_id | V1 | ComputeSubmissionTrackingEntity |
-| 30 | research_artifact | id | Hibernate | ResearchArtifactEntity (abstract) |
-| 31 | research_repository_artifact | id | Hibernate | RepositoryArtifactEntity |
-| 32 | research_model_artifact | id | Hibernate | ModelArtifactEntity |
-| 33 | research_notebook_artifact | id | Hibernate | NotebookArtifactEntity |
-| 34 | research_dataset_artifact | id | Hibernate | DatasetArtifactEntity |
-| 35 | tag | id | Hibernate | TagEntity |
-| 36 | artifact_star | id | Hibernate | ArtifactStarEntity |
-| 37 | research_project | id | Hibernate | ResearchProjectEntity |
-| 38 | research_session | id | Hibernate | SessionEntity |
-| 39 | research_artifact_tags | (artifact_id, tag_id) | Hibernate | _(@ManyToMany join)_ |
-| 40 | research_artifact_authors | (artifact_id, value) | Hibernate | _(@ElementCollection)_ |
-| 41 | research_project_dataset | (project_id, dataset_id) | Hibernate | _(@ManyToMany join)_ |
-| — | EXPERIMENT_SUMMARY | _(view)_ | V1 | ExperimentSummaryEntity (@Immutable) |
-| — | LATEST_EXPERIMENT_STATUS | _(view)_ | V1 | _(used by EXPERIMENT_SUMMARY)_ |
+| # | Table | PK | JPA Entity |
+|---|-------|-----|------------|
+| 1 | GATEWAY | gateway_id | GatewayEntity |
+| 2 | USER | user_id | UserEntity |
+| 3 | NOTIFICATION | notification_id | NotificationEntity |
+| 4 | TAG | id | TagEntity |
+| 5 | RESOURCE | resource_id | ComputeResourceEntity |
+| 6 | CREDENTIAL | credential_id | CredentialEntity |
+| 7 | RESOURCE_BINDING | binding_id | ResourceBindingEntity |
+| 8 | RESOURCE_PREFERENCE | preference_id (auto) | ResourcePreferenceEntity |
+| 9 | APPLICATION | application_id | ApplicationEntity |
+| 10 | APPLICATION_INSTALLATION | installation_id | ApplicationInstallationEntity |
+| 11 | ALLOCATION_PROJECT | allocation_project_id | AllocationProjectEntity |
+| 12 | CREDENTIAL_ALLOCATION_PROJECT | (credential_id, alloc_project_id) | CredentialAllocationProjectEntity |
+| 13 | RESEARCH_ARTIFACT | id | ResearchArtifactEntity (abstract) |
+| 14 | RESEARCH_MODEL_ARTIFACT | id | ModelArtifactEntity |
+| 15 | RESEARCH_NOTEBOOK_ARTIFACT | id | NotebookArtifactEntity |
+| 16 | RESEARCH_REPOSITORY_ARTIFACT | id | RepositoryArtifactEntity |
+| 17 | RESEARCH_DATASET_ARTIFACT | id | DatasetArtifactEntity |
+| 18 | RESEARCH_ARTIFACT_AUTHORS | (artifact_id, value) | _(@ElementCollection)_ |
+| 19 | RESEARCH_ARTIFACT_TAGS | (artifact_id, tag_id) | _(@ManyToMany join)_ |
+| 20 | ARTIFACT_STAR | id | ArtifactStarEntity |
+| 21 | PROJECT | project_id | ProjectEntity |
+| 22 | RESEARCH_PROJECT | id | ResearchProjectEntity |
+| 23 | RESEARCH_PROJECT_DATASET | (project_id, dataset_id) | _(@ManyToMany join)_ |
+| 24 | PROJECT_DATASET | (project_id, dataset_artifact_id) | _(@ManyToMany join)_ |
+| 25 | EXPERIMENT | experiment_id | ExperimentEntity |
+| 26 | EXPERIMENT_INPUT | input_id | ExperimentInputEntity |
+| 27 | EXPERIMENT_OUTPUT | output_id | ExperimentOutputEntity |
+| 28 | PROCESS | process_id | ProcessEntity |
+| 29 | EVENT | event_id | EventEntity |
+| 30 | JOB | job_id | JobEntity |
+| 31 | RESEARCH_SESSION | id | SessionEntity |
+| 32 | USER_GROUP | (group_id, gateway_id) | UserGroupEntity |
+| 33 | GROUP_MEMBERSHIP | membership_id | GroupMembershipEntity |
+| 34 | SHARING_PERMISSION | permission_id | SharingPermissionEntity |
+| 35 | WORKFLOW | workflow_id | WorkflowEntity |
+| 36 | WORKFLOW_RUN | run_id | WorkflowRunEntity |
+| 37 | COMPUTE_SUBMISSION_TRACKING | compute_resource_id | ComputeSubmissionTrackingEntity |
+| — | EXPERIMENT_SUMMARY | experiment_id | ExperimentSummaryEntity (@Immutable) |
 
 ---
 
@@ -677,26 +582,37 @@ erDiagram
 | APPLICATION | gateway_id | GATEWAY | gateway_id | CASCADE |
 | APPLICATION_INSTALLATION | application_id | APPLICATION | application_id | CASCADE |
 | APPLICATION_INSTALLATION | resource_id | RESOURCE | resource_id | CASCADE |
+| ALLOCATION_PROJECT | resource_id | RESOURCE | resource_id | CASCADE |
+| ALLOCATION_PROJECT | gateway_id | GATEWAY | gateway_id | CASCADE |
+| CREDENTIAL_ALLOCATION_PROJECT | allocation_project_id | ALLOCATION_PROJECT | allocation_project_id | CASCADE |
+| CREDENTIAL_ALLOCATION_PROJECT | binding_id | RESOURCE_BINDING | binding_id | CASCADE |
+| RESEARCH_MODEL_ARTIFACT | id | RESEARCH_ARTIFACT | id | CASCADE |
+| RESEARCH_NOTEBOOK_ARTIFACT | id | RESEARCH_ARTIFACT | id | CASCADE |
+| RESEARCH_REPOSITORY_ARTIFACT | id | RESEARCH_ARTIFACT | id | CASCADE |
+| RESEARCH_DATASET_ARTIFACT | id | RESEARCH_ARTIFACT | id | CASCADE |
+| RESEARCH_ARTIFACT_AUTHORS | artifact_id | RESEARCH_ARTIFACT | id | CASCADE |
+| RESEARCH_ARTIFACT_TAGS | artifact_id | RESEARCH_ARTIFACT | id | CASCADE |
+| RESEARCH_ARTIFACT_TAGS | tag_id | TAG | id | CASCADE |
+| ARTIFACT_STAR | artifact_id | RESEARCH_ARTIFACT | id | CASCADE |
 | PROJECT | gateway_id | GATEWAY | gateway_id | CASCADE |
+| PROJECT | repository_artifact_id | RESEARCH_REPOSITORY_ARTIFACT | id | SET NULL |
+| RESEARCH_PROJECT | repository_artifact_id | RESEARCH_REPOSITORY_ARTIFACT | id | CASCADE |
+| RESEARCH_PROJECT_DATASET | project_id | RESEARCH_PROJECT | id | CASCADE |
+| RESEARCH_PROJECT_DATASET | dataset_artifact_id | RESEARCH_DATASET_ARTIFACT | id | CASCADE |
+| PROJECT_DATASET | project_id | PROJECT | project_id | CASCADE |
+| PROJECT_DATASET | dataset_artifact_id | RESEARCH_DATASET_ARTIFACT | id | CASCADE |
 | EXPERIMENT | project_id | PROJECT | project_id | SET NULL |
 | EXPERIMENT | gateway_id | GATEWAY | gateway_id | CASCADE |
 | EXPERIMENT | application_id | APPLICATION | application_id | RESTRICT |
 | EXPERIMENT | binding_id | RESOURCE_BINDING | binding_id | RESTRICT |
+| EXPERIMENT | parent_experiment_id | EXPERIMENT | experiment_id | SET NULL |
 | EXPERIMENT_INPUT | experiment_id | EXPERIMENT | experiment_id | CASCADE |
 | EXPERIMENT_OUTPUT | experiment_id | EXPERIMENT | experiment_id | CASCADE |
 | PROCESS | experiment_id | EXPERIMENT | experiment_id | CASCADE |
-| ARTIFACT | parent_artifact_uri | ARTIFACT | artifact_uri | SET NULL |
-| ARTIFACT | primary_storage_resource_id | RESOURCE | resource_id | SET NULL |
-| ARTIFACT | gateway_id | GATEWAY | gateway_id | SET NULL |
-| EXPERIMENT_ARTIFACT | experiment_id | EXPERIMENT | experiment_id | CASCADE |
-| EXPERIMENT_ARTIFACT | artifact_uri | ARTIFACT | artifact_uri | CASCADE |
-| EXPERIMENT_ARTIFACT | repository_id | REPOSITORY | repository_id | SET NULL |
+| PROCESS | resource_id | RESOURCE | resource_id | SET NULL |
+| JOB | process_id | PROCESS | process_id | CASCADE |
+| RESEARCH_SESSION | project_id | RESEARCH_PROJECT | id | CASCADE |
 | USER_GROUP | gateway_id | GATEWAY | gateway_id | CASCADE |
-| ALLOCATION_PROJECT | resource_id | RESOURCE | resource_id | CASCADE |
-| ALLOCATION_PROJECT | gateway_id | GATEWAY | gateway_id | CASCADE |
-| USER_ALLOCATION_PROJECT | allocation_project_id | ALLOCATION_PROJECT | allocation_project_id | CASCADE |
-| USER_ALLOCATION_PROJECT | binding_id | RESOURCE_BINDING | binding_id | CASCADE |
-| REPOSITORY | gateway_id | GATEWAY | gateway_id | SET NULL |
 | WORKFLOW | project_id | PROJECT | project_id | _(no action)_ |
 | WORKFLOW_RUN | workflow_id | WORKFLOW | workflow_id | _(no action)_ |
 
@@ -713,8 +629,6 @@ erDiagram
 | ExperimentEntity | outputs | List\<ExperimentOutputEntity\> | @OneToMany(cascade=ALL, orphanRemoval) |
 | ExperimentInputEntity | experiment | ExperimentEntity | @ManyToOne(LAZY) |
 | ExperimentOutputEntity | experiment | ExperimentEntity | @ManyToOne(LAZY) |
-| ExperimentEntity | artifacts | List\<ExperimentArtifactEntity\> | @OneToMany(cascade=ALL, orphanRemoval) |
-| ExperimentArtifactEntity | experiment | ExperimentEntity | @ManyToOne(LAZY) |
 | ApplicationInstallationEntity | application | ApplicationEntity | @ManyToOne(LAZY) |
 | ApplicationInstallationEntity | resource | ComputeResourceEntity | @ManyToOne(LAZY) |
 | ComputeResourceEntity | gateway | GatewayEntity | @ManyToOne(LAZY) |
@@ -728,124 +642,3 @@ erDiagram
 | SessionEntity | project | ResearchProjectEntity | @ManyToOne(EAGER) |
 | ResearchArtifactEntity | tags | Set\<TagEntity\> | @ManyToMany(cascade=MERGE, EAGER) |
 | ResearchArtifactEntity | authors | Set\<String\> | @ElementCollection(EAGER) |
-
----
-
-## Unique Constraints
-
-| Table | Constraint Name | Columns |
-|-------|----------------|---------|
-| GATEWAY | uk_gateway_name | (gateway_name) |
-| RESOURCE_BINDING | uk_binding_cred_resource | (credential_id, resource_id) |
-| APPLICATION_INSTALLATION | uk_installation | (application_id, resource_id, login_username) |
-| ALLOCATION_PROJECT | uk_alloc_project | (project_code, resource_id) |
-
----
-
-## Indexes
-
-| Table | Index Name | Columns |
-|-------|-----------|---------|
-| GATEWAY | idx_gateway_approval_status | (gateway_approval_status) |
-| USER | idx_user_sub | (sub) |
-| USER | idx_user_gateway_id | (gateway_id) |
-| USER | idx_user_sub_gateway | (sub, gateway_id) |
-| EVENT | idx_event_parent | (parent_id, parent_type) |
-| EVENT | idx_event_kind | (event_kind) |
-| EVENT | idx_event_parent_kind_seq | (parent_id, parent_type, event_kind, sequence_num DESC) |
-| EVENT | idx_event_time | (event_time) |
-| NOTIFICATION | idx_notification_gateway | (gateway_id) |
-| RESOURCE | idx_resource_gateway | (gateway_id) |
-| CREDENTIAL | idx_credential_gateway | (gateway_id) |
-| CREDENTIAL | idx_credential_user | (user_id) |
-| CREDENTIAL | idx_credential_gateway_user | (gateway_id, user_id) |
-| RESOURCE_BINDING | idx_binding_credential | (credential_id) |
-| RESOURCE_BINDING | idx_binding_resource | (resource_id) |
-| RESOURCE_BINDING | idx_binding_gateway | (gateway_id) |
-| APPLICATION | idx_application_gateway | (gateway_id) |
-| APPLICATION | idx_application_owner | (owner_name) |
-| PROJECT | idx_project_gateway | (gateway_id) |
-| PROJECT | idx_project_user | (user_name) |
-| EXPERIMENT | idx_experiment_project | (project_id) |
-| EXPERIMENT | idx_experiment_gateway | (gateway_id) |
-| EXPERIMENT | idx_experiment_user | (user_name) |
-| EXPERIMENT | idx_experiment_app | (application_id) |
-| EXPERIMENT | idx_experiment_binding | (binding_id) |
-| EXPERIMENT | idx_experiment_created_at | (created_at) |
-| EXPERIMENT_INPUT | idx_exp_input_experiment | (experiment_id) |
-| EXPERIMENT_INPUT | idx_exp_input_artifact | (artifact_id) |
-| EXPERIMENT_OUTPUT | idx_exp_output_experiment | (experiment_id) |
-| EXPERIMENT_OUTPUT | idx_exp_output_artifact | (artifact_id) |
-| PROCESS | idx_process_experiment | (experiment_id) |
-| JOB | idx_job_process_id | (process_id) |
-| JOB | idx_job_task_id | (task_id) |
-| JOB | idx_job_name | (job_name) |
-| ARTIFACT | idx_artifact_gateway | (gateway_id) |
-| ARTIFACT | idx_artifact_gateway_owner | (gateway_id, owner_name) |
-| ARTIFACT | idx_artifact_type | (artifact_type) |
-| ARTIFACT | idx_artifact_privacy | (privacy) |
-| ARTIFACT | idx_artifact_scope | (resource_scope) |
-| ARTIFACT | idx_artifact_owner_id | (owner_id) |
-| ARTIFACT | idx_artifact_primary_storage | (primary_storage_resource_id) |
-| EXPERIMENT_ARTIFACT | idx_exp_artifact_experiment | (experiment_id) |
-| EXPERIMENT_ARTIFACT | idx_exp_artifact_uri | (artifact_uri) |
-| USER_GROUP | idx_user_group_owner | (owner_id) |
-| USER_GROUP | idx_user_group_type | (group_type) |
-| USER_GROUP | idx_personal_group | (is_personal_group, owner_id) |
-| ALLOCATION_PROJECT | idx_alloc_project_resource | (resource_id) |
-| ALLOCATION_PROJECT | idx_alloc_project_gateway | (gateway_id) |
-| REPOSITORY | idx_repository_gateway | (gateway_id) |
-| REPOSITORY | idx_repository_owner | (owner_id) |
-| REPOSITORY | idx_repository_url | (repository_url(255)) |
-| WORKFLOW | idx_workflow_project | (project_id, gateway_id) |
-| WORKFLOW | idx_workflow_user | (user_name, gateway_id) |
-| WORKFLOW_RUN | idx_workflow_run_workflow | (workflow_id) |
-| WORKFLOW_RUN | idx_workflow_run_user | (user_name) |
-| CATALOG_ENTRY | idx_catalog_entry_type | (entry_type) |
-| CATALOG_ENTRY | idx_catalog_entry_gateway | (gateway_id) |
-| CATALOG_ENTRY | idx_catalog_entry_owner | (owner_id) |
-
----
-
-## JSON Column Schema Reference
-
-| Table | Column | JSON Structure |
-|-------|--------|---------------|
-| RESOURCE | capabilities | `{ compute?: { type: "SLURM"\|"FORK", batchQueues?: [{name, maxRuntime, maxNodes, maxProcessors, isDefault}] }, storage?: { protocol: "SFTP"\|"SCP", basePath? } }` |
-| RESOURCE_BINDING | metadata | `{ scratchLocation?, defaultQueue?, maxWalltime?, storagePath?, allocationProjects?: [{code, name}] }` |
-| APPLICATION | inputs | `[{name, type, description, required, defaultValue}]` |
-| APPLICATION | outputs | `[{name, type, description, required}]` |
-| EXPERIMENT | scheduling | `{queueName, nodeCount, cpuCount, walltime, allocationProject}` |
-| PROCESS | resource_schedule | `{queueName, allocationProjectNumber, overrideScratchLocation, staticWorkingDir, credentialToken, ...}` |
-| JOB | job_statuses | `[{state: "QUEUED"\|"ACTIVE"\|"COMPLETED"\|..., reason, timeOfStateChange}]` |
-| ARTIFACT | authors | `["author1", "author2"]` |
-| ARTIFACT | tags | `["tag1", "tag2"]` |
-| ARTIFACT | replicas | `[{replicaId, storageResourceId, filePath, ...}]` |
-| ARTIFACT | metadata | `{key: value, ...}` |
-| REPOSITORY | authors | `["author1", "author2"]` |
-| REPOSITORY | tags | `["tag1", "tag2"]` |
-| CATALOG_ENTRY | authors | `["author1", "author2"]` |
-| CATALOG_ENTRY | tags | `["tag1", "tag2"]` |
-| WORKFLOW | steps | `[{stepId, experimentSpec, ...}]` (MEDIUMTEXT) |
-| WORKFLOW | edges | `[{sourceStepId, targetStepId, condition}]` (MEDIUMTEXT) |
-| WORKFLOW_RUN | step_states | `{stepId: {status, experimentId, ...}}` (MEDIUMTEXT) |
-| entity_relationship | metadata | `{key: value, ...}` |
-
----
-
-## Execution Model
-
-```
-EXPERIMENT (user request)
-    ├── PROCESS (execution unit)
-    │       └── JOB (HPC/fork job tracking)
-    └── EVENT (status + error history)
-            ├── EVENT_KIND = 'STATUS' (state transitions)
-            └── EVENT_KIND = 'ERROR' (error records)
-```
-
-- **EXPERIMENT** = user-level request. Tied to APPLICATION, RESOURCE_BINDING, PROJECT.
-- **PROCESS** = operations-level execution unit. Carries APPLICATION_ID, RESOURCE_ID, BINDING_ID, RESOURCE_SCHEDULE.
-- **JOB** = HPC/fork job submitted to a compute resource. Status history stored as JSON in `job_statuses`.
-- **EVENT** = unified status/error audit log. `PARENT_TYPE` discriminates EXPERIMENT vs PROCESS.
-- Experiment state is stored directly as `EXPERIMENT.STATE` column. Process statuses are stored in the EVENT table.

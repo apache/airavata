@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ResourceProfileAdapter {
 
-    private static final Logger log = LoggerFactory.getLogger(ResourceProfileAdapter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResourceProfileAdapter.class);
 
     private final ResourceRepository resourceRepository;
     private final ResourceBindingRepository resourceBindingRepository;
@@ -76,7 +76,7 @@ public class ResourceProfileAdapter {
             bindings = resourceBindingRepository.findByResourceId(computeResourceId);
         }
         if (bindings.isEmpty()) {
-            log.debug("getBinding: no binding found for resourceId={}, gatewayId={}", computeResourceId, gatewayId);
+            logger.debug("getBinding: no binding found for resourceId={}, gatewayId={}", computeResourceId, gatewayId);
             return null;
         }
         return bindings.get(0);
@@ -94,7 +94,8 @@ public class ResourceProfileAdapter {
         List<ResourceBindingEntity> bindings =
                 resourceBindingRepository.findByGatewayIdAndResourceId(gatewayId, computeResourceId);
         if (bindings.isEmpty()) {
-            log.debug("getUserBinding: no binding found for gatewayId={}, resourceId={}", gatewayId, computeResourceId);
+            logger.debug(
+                    "getUserBinding: no binding found for gatewayId={}, resourceId={}", gatewayId, computeResourceId);
             return null;
         }
         return bindings.get(0);
@@ -111,7 +112,7 @@ public class ResourceProfileAdapter {
         List<ResourceBindingEntity> bindings =
                 resourceBindingRepository.findByGatewayIdAndResourceId(gatewayId, storageResourceId);
         if (bindings.isEmpty()) {
-            log.debug(
+            logger.debug(
                     "getStorageBinding: no binding found for gatewayId={}, storageResourceId={}",
                     gatewayId,
                     storageResourceId);

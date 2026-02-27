@@ -22,6 +22,7 @@ package org.apache.airavata.iam.repository;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.iam.entity.GroupMembershipEntity;
+import org.apache.airavata.iam.model.GroupMemberRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -36,5 +37,5 @@ public interface GroupMembershipRepository extends JpaRepository<GroupMembership
 
     void deleteByGroupIdAndUserId(String groupId, String userId);
 
-    List<GroupMembershipEntity> findByDomainIdAndGroupIdAndRole(String domainId, String groupId, String role);
+    List<GroupMembershipEntity> findByDomainIdAndGroupIdAndRole(String domainId, String groupId, GroupMemberRole role);
 }

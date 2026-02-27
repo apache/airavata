@@ -21,12 +21,15 @@ package org.apache.airavata.research.experiment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import org.apache.airavata.storage.resource.model.DataType;
 
 /**
  * Experiment output — either a parameter value or an artifact reference.
@@ -50,8 +53,9 @@ public class ExperimentOutputEntity implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 50)
-    private String type;
+    private DataType type;
 
     @Column(name = "artifact_id", length = 48)
     private String artifactId;
@@ -107,11 +111,11 @@ public class ExperimentOutputEntity implements Serializable {
         this.name = name;
     }
 
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 

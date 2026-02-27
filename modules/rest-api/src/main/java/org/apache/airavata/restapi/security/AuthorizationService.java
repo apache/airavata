@@ -26,6 +26,8 @@ import org.apache.airavata.gateway.service.GatewayService;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.iam.service.IamAdminService;
 import org.apache.airavata.iam.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,10 +37,10 @@ import org.springframework.web.server.ResponseStatusException;
  * Service for checking user authorization and gateway access.
  * Queries DB directly — user profile data is already DB-backed.
  */
-@Service("restApiAuthorizationService")
+@Service
 public class AuthorizationService {
 
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AuthorizationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
 
     @Value("${airavata.portal.root-admin-username:default-admin}")
     private String rootUserId;

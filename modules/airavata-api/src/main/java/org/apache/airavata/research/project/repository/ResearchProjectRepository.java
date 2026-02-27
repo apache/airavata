@@ -29,7 +29,7 @@ import org.apache.airavata.research.project.entity.ResearchProjectEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("researchProjectRepository")
+@Repository
 public interface ResearchProjectRepository extends JpaRepository<ResearchProjectEntity, String> {
 
     List<ResearchProjectEntity> findALlByState(ArtifactState state);

@@ -52,7 +52,7 @@ public class StatusModel<S extends Enum<S>> {
     public static <S extends Enum<S>> StatusModel<S> of(S state) {
         StatusModel<S> m = new StatusModel<>();
         m.state = state;
-        m.timeOfStateChange = IdGenerator.getCurrentTimestamp().getTime();
+        m.timeOfStateChange = IdGenerator.getCurrentTimestamp().toEpochMilli();
         return m;
     }
 

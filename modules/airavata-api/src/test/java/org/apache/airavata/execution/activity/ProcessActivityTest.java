@@ -63,7 +63,6 @@ public class ProcessActivityTest {
     private static final String PROCESS_ID = "proc-unit-001";
     private static final String EXPERIMENT_ID = "exp-unit-001";
     private static final String GATEWAY_ID = "gw-unit-001";
-    private static final String TOKEN_ID = "tok-unit-001";
 
     // -------------------------------------------------------------------------
     // 1. TASK_QUEUE constant
@@ -86,22 +85,11 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_recordAccessors_returnCorrectValues() {
-        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
 
         assertEquals(PROCESS_ID, input.processId(), "processId accessor mismatch");
         assertEquals(EXPERIMENT_ID, input.experimentId(), "experimentId accessor mismatch");
         assertEquals(GATEWAY_ID, input.gatewayId(), "gatewayId accessor mismatch");
-        assertEquals(TOKEN_ID, input.tokenId(), "tokenId accessor mismatch");
-    }
-
-    @Test
-    public void preInput_nullTokenId_isStoredAsNull() {
-        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, null);
-
-        assertNotNull(input.processId());
-        assertNotNull(input.experimentId());
-        assertNotNull(input.gatewayId());
-        assertEquals(null, input.tokenId(), "null tokenId must be preserved");
     }
 
     // -------------------------------------------------------------------------
@@ -147,24 +135,14 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_serialization_roundTrip_preservesAllFields() throws Exception {
-        PreInput original = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput original = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
 
         PreInput deserialized = serializeDeserialize(original, PreInput.class);
 
         assertEquals(original.processId(), deserialized.processId(), "processId lost during serialization");
         assertEquals(original.experimentId(), deserialized.experimentId(), "experimentId lost during serialization");
         assertEquals(original.gatewayId(), deserialized.gatewayId(), "gatewayId lost during serialization");
-        assertEquals(original.tokenId(), deserialized.tokenId(), "tokenId lost during serialization");
         assertEquals(original, deserialized, "Deserialized PreInput must equal the original");
-    }
-
-    @Test
-    public void preInput_serialization_withNullTokenId_roundTrip() throws Exception {
-        PreInput original = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, null);
-        PreInput deserialized = serializeDeserialize(original, PreInput.class);
-
-        assertEquals(null, deserialized.tokenId(), "null tokenId must survive serialization round-trip");
-        assertEquals(original, deserialized);
     }
 
     // -------------------------------------------------------------------------
@@ -213,8 +191,8 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_equality_twoIdenticalRecords_areEqual() {
-        PreInput first = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
-        PreInput second = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput first = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
+        PreInput second = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
 
         assertEquals(first, second, "Two PreInputs with identical fields must be equal");
         assertEquals(first.hashCode(), second.hashCode(), "Equal PreInputs must share the same hashCode");
@@ -222,23 +200,15 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_equality_differentProcessId_notEqual() {
-        PreInput first = new PreInput("proc-A", EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
-        PreInput second = new PreInput("proc-B", EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput first = new PreInput("proc-A", EXPERIMENT_ID, GATEWAY_ID);
+        PreInput second = new PreInput("proc-B", EXPERIMENT_ID, GATEWAY_ID);
 
         assertNotEquals(first, second, "PreInputs with different processId must not be equal");
     }
 
     @Test
-    public void preInput_equality_differentTokenId_notEqual() {
-        PreInput first = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, "token-X");
-        PreInput second = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, "token-Y");
-
-        assertNotEquals(first, second, "PreInputs with different tokenId must not be equal");
-    }
-
-    @Test
     public void preInput_equality_sameInstance_isEqual() {
-        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
 
         assertEquals(input, input, "A PreInput must equal itself");
     }
@@ -436,13 +406,12 @@ public class ProcessActivityTest {
 
     @Test
     public void preInput_toString_containsAllFieldValues() {
-        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID, TOKEN_ID);
+        PreInput input = new PreInput(PROCESS_ID, EXPERIMENT_ID, GATEWAY_ID);
         String str = input.toString();
 
         assertTrue(str.contains(PROCESS_ID), "toString must contain processId");
         assertTrue(str.contains(EXPERIMENT_ID), "toString must contain experimentId");
         assertTrue(str.contains(GATEWAY_ID), "toString must contain gatewayId");
-        assertTrue(str.contains(TOKEN_ID), "toString must contain tokenId");
     }
 
     @Test

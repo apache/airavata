@@ -94,7 +94,6 @@ my-env/
 ### Service Configuration (group_vars/all/vault.yml)
 - IAM/Keycloak credentials
 - OAuth client secrets
-- RabbitMQ connection strings
 - Email monitoring credentials
 - Tunnel server tokens
 - Keystore passwords

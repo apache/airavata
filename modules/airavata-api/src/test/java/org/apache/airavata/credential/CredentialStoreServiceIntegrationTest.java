@@ -198,7 +198,7 @@ public class CredentialStoreServiceIntegrationTest extends ServiceIntegrationTes
 
             // Then - Verify metadata
             assertNotNull(retrieved, "Retrieved credential should not be null");
-            assertNotNull(retrieved.getPersistedTime(), "Persisted time should be set");
+            assertTrue(retrieved.getCreatedAt() > 0, "Created-at epoch millis should be set");
             assertEquals(token, retrieved.getToken(), "Token should match");
         }
     }

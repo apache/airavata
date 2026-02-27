@@ -39,9 +39,9 @@ public class NotificationMapper implements EntityMapper<NotificationEntity, Noti
         model.setGatewayId(entity.getGatewayId());
         model.setTitle(entity.getTitle());
         model.setNotificationMessage(entity.getNotificationMessage());
-        model.setCreationTime(toEpochMilli(entity.getCreationTime()));
-        model.setPublishedTime(toEpochMilli(entity.getPublishedTime()));
-        model.setExpirationTime(toEpochMilli(entity.getExpirationTime()));
+        model.setCreatedAt(toEpochMilli(entity.getCreatedAt()));
+        model.setPublishedAt(toEpochMilli(entity.getPublishedAt()));
+        model.setExpiresAt(toEpochMilli(entity.getExpiresAt()));
         model.setPriority(entity.getPriority());
         return model;
     }
@@ -53,9 +53,9 @@ public class NotificationMapper implements EntityMapper<NotificationEntity, Noti
         entity.setGatewayId(model.getGatewayId());
         entity.setTitle(model.getTitle());
         entity.setNotificationMessage(model.getNotificationMessage());
-        entity.setCreationTime(toInstant(model.getCreationTime()));
-        entity.setPublishedTime(toInstant(model.getPublishedTime()));
-        entity.setExpirationTime(toInstant(model.getExpirationTime()));
+        entity.setCreatedAt(toInstant(model.getCreatedAt()));
+        entity.setPublishedAt(toInstant(model.getPublishedAt()));
+        entity.setExpiresAt(toInstant(model.getExpiresAt()));
         entity.setPriority(model.getPriority());
         return entity;
     }

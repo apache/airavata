@@ -35,7 +35,7 @@ public class Resource {
     private String hostName;
     private int port = 22;
     private String description;
-    private String resourceType = "COMPUTE";
+    private ResourceType resourceType = ResourceType.COMPUTE;
     private ResourceCapabilities capabilities;
     private Instant createdAt;
     private Instant updatedAt;
@@ -90,11 +90,11 @@ public class Resource {
         this.description = description;
     }
 
-    public String getResourceType() {
+    public ResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(String resourceType) {
+    public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

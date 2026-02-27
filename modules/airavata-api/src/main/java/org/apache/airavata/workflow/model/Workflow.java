@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.workflow.model;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -39,8 +40,8 @@ public class Workflow {
     private String description;
     private List<WorkflowStep> steps;
     private List<WorkflowEdge> edges;
-    private Long creationTime;
-    private Long updateTime;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public Workflow() {}
 
@@ -108,19 +109,19 @@ public class Workflow {
         this.edges = edges;
     }
 
-    public Long getCreationTime() {
-        return creationTime;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(Long creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Long getUpdateTime() {
-        return updateTime;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

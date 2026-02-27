@@ -22,12 +22,15 @@ package org.apache.airavata.workflow.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.airavata.workflow.model.WorkflowRunStatus;
 import org.apache.airavata.workflow.model.WorkflowRunStepState;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -59,8 +62,9 @@ public class WorkflowRunEntity implements Serializable {
     @Column(name = "user_name", nullable = false)
     private String userName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
-    private String status = "CREATED";
+    private WorkflowRunStatus status = WorkflowRunStatus.CREATED;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "step_states", columnDefinition = "json")
@@ -68,11 +72,11 @@ public class WorkflowRunEntity implements Serializable {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    private Instant updatedAt;
 
     public WorkflowRunEntity() {}
 
@@ -100,11 +104,11 @@ public class WorkflowRunEntity implements Serializable {
         this.userName = userName;
     }
 
-    public String getStatus() {
+    public WorkflowRunStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WorkflowRunStatus status) {
         this.status = status;
     }
 
@@ -116,19 +120,19 @@ public class WorkflowRunEntity implements Serializable {
         this.stepStates = stepStates;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

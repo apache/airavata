@@ -22,8 +22,8 @@ package org.apache.airavata.restapi.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.apache.airavata.research.project.dto.CreateProjectRequest;
-import org.apache.airavata.research.project.entity.ResearchProjectEntity;
+import org.apache.airavata.research.project.model.CreateProjectRequest;
+import org.apache.airavata.research.project.model.ResearchProject;
 import org.apache.airavata.research.project.service.ResearchProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("researchProjectController")
+@RestController
 @RequestMapping("/api/v1/research/artifacts/projects")
 @Tag(name = "Projects", description = "Projects are comprised of dataset and repository artifacts")
 public class ResearchProjectController {
@@ -47,20 +47,19 @@ public class ResearchProjectController {
 
     @GetMapping("")
     @Operation(summary = "Get all projects")
-    public ResponseEntity<List<ResearchProjectEntity>> getAllProjects() {
+    public ResponseEntity<List<ResearchProject>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
 
     @GetMapping("/{ownerId}")
     @Operation(summary = "Get all projects")
-    public ResponseEntity<List<ResearchProjectEntity>> getProjectsByOwnerId(
-            @PathVariable(value = "ownerId") String ownerId) {
+    public ResponseEntity<List<ResearchProject>> getProjectsByOwnerId(@PathVariable(value = "ownerId") String ownerId) {
         return ResponseEntity.ok(projectService.getAllProjectsByOwnerId(ownerId));
     }
 
     @PostMapping("")
     @Operation(summary = "Create a project")
-    public ResponseEntity<ResearchProjectEntity> createProject(@RequestBody CreateProjectRequest createProjectRequest) {
+    public ResponseEntity<ResearchProject> createProject(@RequestBody CreateProjectRequest createProjectRequest) {
         return ResponseEntity.ok(projectService.createProject(createProjectRequest));
     }
 

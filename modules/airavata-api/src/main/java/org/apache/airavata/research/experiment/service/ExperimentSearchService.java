@@ -26,7 +26,7 @@ import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.research.experiment.model.ExperimentSearchFields;
 import org.apache.airavata.research.experiment.model.ExperimentStatistics;
-import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
+import org.apache.airavata.research.experiment.model.ExperimentSummary;
 import org.apache.airavata.research.experiment.model.ResultOrderType;
 
 /**
@@ -36,7 +36,7 @@ import org.apache.airavata.research.experiment.model.ResultOrderType;
  */
 public interface ExperimentSearchService {
 
-    List<ExperimentSummaryModel> searchExperiments(
+    List<ExperimentSummary> searchExperiments(
             AuthzToken authzToken,
             String gatewayId,
             String userName,
@@ -59,7 +59,7 @@ public interface ExperimentSearchService {
 
     // ========== Summary/Statistics (from ExperimentSummaryService) ==========
 
-    List<ExperimentSummaryModel> searchAllAccessibleExperiments(
+    List<ExperimentSummary> searchAllAccessibleExperiments(
             List<String> accessibleExperimentIds,
             Map<String, String> filters,
             int limit,

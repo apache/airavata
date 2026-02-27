@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultAllocationProjectService implements AllocationProjectService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AllocationProjectService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultAllocationProjectService.class);
 
     /**
      * Metadata key used to carry the scheduler-level project code (e.g. a SLURM

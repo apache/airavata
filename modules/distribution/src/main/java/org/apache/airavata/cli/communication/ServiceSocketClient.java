@@ -94,8 +94,9 @@ public class ServiceSocketClient {
 
             if (!connected) {
                 // Wait for connection with timeout
-                long startTime = IdGenerator.getUniqueTimestamp().getTime();
-                while (!connected && (IdGenerator.getUniqueTimestamp().getTime() - startTime) < CONNECTION_TIMEOUT_MS) {
+                long startTime = IdGenerator.getUniqueTimestamp().toEpochMilli();
+                while (!connected
+                        && (IdGenerator.getUniqueTimestamp().toEpochMilli() - startTime) < CONNECTION_TIMEOUT_MS) {
                     connected = channel.finishConnect();
                     if (!connected) {
                         try {

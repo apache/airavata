@@ -27,9 +27,6 @@ import org.apache.airavata.storage.resource.model.StorageVolumeInfo;
 
 /**
  * Adapter for job submission and file operations on a compute resource.
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
  */
 public interface AgentAdapter {
 
@@ -64,4 +61,57 @@ public interface AgentAdapter {
     StorageVolumeInfo getStorageVolumeInfo(String location) throws AgentException;
 
     StorageDirectoryInfo getStorageDirectoryInfo(String location) throws AgentException;
+
+    // -------------------------------------------------------------------------
+    // Nested types
+    // -------------------------------------------------------------------------
+
+    record CommandOutput(String stdOut, String stdError, int exitCode) {
+
+        public String getStdOut() {
+            return stdOut;
+        }
+
+        public String getStdError() {
+            return stdError;
+        }
+
+        public int getExitCode() {
+            return exitCode;
+        }
+    }
+
+    record FileMetadata(String name, long size, int permissions, boolean isDirectory) {
+
+        public String getName() {
+            return name;
+        }
+
+        public long getSize() {
+            return size;
+        }
+
+        public int getPermissions() {
+            return permissions;
+        }
+
+        public boolean isDirectory() {
+            return isDirectory;
+        }
+    }
+
+    class AgentException extends Exception {
+
+        public AgentException(String message) {
+            super(message);
+        }
+
+        public AgentException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public AgentException(Throwable cause) {
+            super(cause);
+        }
+    }
 }

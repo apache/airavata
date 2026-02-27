@@ -25,7 +25,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ import org.apache.airavata.research.experiment.mapper.ExperimentSummaryMapper;
 import org.apache.airavata.research.experiment.model.ExperimentSearchFields;
 import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.research.experiment.model.ExperimentStatistics;
-import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
+import org.apache.airavata.research.experiment.model.ExperimentSummary;
 import org.apache.airavata.research.experiment.model.ResultOrderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +98,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
      * @param offset     zero-based result offset for pagination
      * @return list of accessible experiment summaries matching all filters
      */
-    public List<ExperimentSummaryModel> searchExperiments(
+    public List<ExperimentSummary> searchExperiments(
             AuthzToken authzToken,
             String gatewayId,
             String userName,
@@ -248,7 +248,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
         }
     }
 
-    public List<ExperimentSummaryModel> searchAllAccessibleExperiments(
+    public List<ExperimentSummary> searchAllAccessibleExperiments(
             List<String> accessibleExperimentIds,
             Map<String, String> filters,
             int limit,
@@ -302,10 +302,11 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
 
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
                 && filters.get(DBConstants.ExperimentSummary.TO_DATE) != null) {
-            Timestamp fromDate = new Timestamp(Long.valueOf(filters.get(DBConstants.ExperimentSummary.FROM_DATE)));
-            Timestamp toDate = new Timestamp(Long.valueOf(filters.get(DBConstants.ExperimentSummary.TO_DATE)));
-            if (toDate.after(fromDate)) {
-                predicates.add(cb.between(root.get("creationTime"), fromDate, toDate));
+            Instant fromDate =
+                    Instant.ofEpochMilli(Long.parseLong(filters.get(DBConstants.ExperimentSummary.FROM_DATE)));
+            Instant toDate = Instant.ofEpochMilli(Long.parseLong(filters.get(DBConstants.ExperimentSummary.TO_DATE)));
+            if (toDate.isAfter(fromDate)) {
+                predicates.add(cb.between(root.get("createdAt"), fromDate, toDate));
             }
         }
 
@@ -328,14 +329,14 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                 && resultOrderType != null
                 && orderByIdentifier.equals(DBConstants.Experiment.CREATION_TIME)) {
             if (resultOrderType == ResultOrderType.ASC) {
-                query.orderBy(cb.asc(root.get("creationTime")), cb.asc(root.get("experimentId")));
+                query.orderBy(cb.asc(root.get("createdAt")), cb.asc(root.get("experimentId")));
             } else {
-                query.orderBy(cb.desc(root.get("creationTime")), cb.asc(root.get("experimentId")));
+                query.orderBy(cb.desc(root.get("createdAt")), cb.asc(root.get("experimentId")));
             }
         }
 
         // Handle batching for large accessibleExperimentIds lists
-        List<ExperimentSummaryModel> allExperimentSummaryModels = new ArrayList<>();
+        List<ExperimentSummary> allExperimentSummarys = new ArrayList<>();
         double totalBatches = Math.ceil(
                 Integer.valueOf(accessibleExperimentIds.size()).floatValue() / ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE);
 
@@ -355,7 +356,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                 typedQuery.setFirstResult(0);
             }
             if (limit > 0) {
-                int remainingLimit = limit - allExperimentSummaryModels.size();
+                int remainingLimit = limit - allExperimentSummarys.size();
                 if (remainingLimit > 0) {
                     typedQuery.setMaxResults(remainingLimit);
                 } else {
@@ -364,14 +365,14 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
             }
 
             List<ExperimentSummaryEntity> entities = typedQuery.getResultList();
-            allExperimentSummaryModels.addAll(experimentSummaryMapper.toModelList(entities));
+            allExperimentSummarys.addAll(experimentSummaryMapper.toModelList(entities));
 
-            if (allExperimentSummaryModels.size() == limit) {
+            if (allExperimentSummarys.size() == limit) {
                 break;
             }
         }
 
-        return allExperimentSummaryModels;
+        return allExperimentSummarys;
     }
 
     public ExperimentStatistics getAccessibleExperimentStatistics(
@@ -383,8 +384,8 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
             String userName = null;
             String applicationName = null;
             String resourceHostName = null;
-            Timestamp fromDate = null;
-            Timestamp toDate = null;
+            Instant fromDate = null;
+            Instant toDate = null;
 
             if (filters == null || !filters.containsKey(DBConstants.Experiment.GATEWAY_ID)) {
                 logger.error("GatewayId is required");
@@ -405,10 +406,10 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     resourceHostName = filters.get(field);
                 }
                 if (field.equals(DBConstants.ExperimentSummary.FROM_DATE)) {
-                    fromDate = new Timestamp(Long.parseLong(filters.get(field)));
+                    fromDate = Instant.ofEpochMilli(Long.parseLong(filters.get(field)));
                 }
                 if (field.equals(DBConstants.ExperimentSummary.TO_DATE)) {
-                    toDate = new Timestamp(Long.parseLong(filters.get(field)));
+                    toDate = Instant.ofEpochMilli(Long.parseLong(filters.get(field)));
                 }
             }
 
@@ -421,7 +422,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     applicationName,
                     resourceHostName,
                     accessibleExperimentIds);
-            List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(
+            List<ExperimentSummary> allExperiments = getExperimentStatisticsForState(
                     null,
                     gatewayId,
                     fromDate,
@@ -445,7 +446,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     applicationName,
                     resourceHostName,
                     accessibleExperimentIds);
-            List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(
+            List<ExperimentSummary> createdExperiments = getExperimentStatisticsForState(
                     createdStates,
                     gatewayId,
                     fromDate,
@@ -470,7 +471,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     applicationName,
                     resourceHostName,
                     accessibleExperimentIds);
-            List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(
+            List<ExperimentSummary> runningExperiments = getExperimentStatisticsForState(
                     runningStates,
                     gatewayId,
                     fromDate,
@@ -494,7 +495,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     applicationName,
                     resourceHostName,
                     accessibleExperimentIds);
-            List<ExperimentSummaryModel> completedExperiments = getExperimentStatisticsForState(
+            List<ExperimentSummary> completedExperiments = getExperimentStatisticsForState(
                     completedStates,
                     gatewayId,
                     fromDate,
@@ -518,7 +519,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     applicationName,
                     resourceHostName,
                     accessibleExperimentIds);
-            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(
+            List<ExperimentSummary> failedExperiments = getExperimentStatisticsForState(
                     failedStates,
                     gatewayId,
                     fromDate,
@@ -542,7 +543,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
                     applicationName,
                     resourceHostName,
                     accessibleExperimentIds);
-            List<ExperimentSummaryModel> cancelledExperiments = getExperimentStatisticsForState(
+            List<ExperimentSummary> cancelledExperiments = getExperimentStatisticsForState(
                     cancelledStates,
                     gatewayId,
                     fromDate,
@@ -568,8 +569,8 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
     private int getExperimentStatisticsCountForState(
             List<ExperimentState> experimentStates,
             String gatewayId,
-            Timestamp fromDate,
-            Timestamp toDate,
+            Instant fromDate,
+            Instant toDate,
             String userName,
             String applicationName,
             String resourceHostName,
@@ -602,11 +603,11 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
         return Long.valueOf(count).intValue();
     }
 
-    private List<ExperimentSummaryModel> getExperimentStatisticsForState(
+    private List<ExperimentSummary> getExperimentStatisticsForState(
             List<ExperimentState> experimentStates,
             String gatewayId,
-            Timestamp fromDate,
-            Timestamp toDate,
+            Instant fromDate,
+            Instant toDate,
             String userName,
             String applicationName,
             String resourceHostName,
@@ -635,7 +636,7 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
         }
 
         query.where(cb.and(predicates.toArray(new Predicate[0])));
-        query.orderBy(cb.desc(root.get("creationTime")), cb.asc(root.get("experimentId")));
+        query.orderBy(cb.desc(root.get("createdAt")), cb.asc(root.get("experimentId")));
 
         TypedQuery<ExperimentSummaryEntity> typedQuery = entityManager.createQuery(query);
         if (offset > 0) {
@@ -654,8 +655,8 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
             Root<ExperimentSummaryEntity> root,
             List<ExperimentState> experimentStates,
             String gatewayId,
-            Timestamp fromDate,
-            Timestamp toDate,
+            Instant fromDate,
+            Instant toDate,
             String userName,
             String applicationName,
             String resourceHostName,
@@ -672,8 +673,8 @@ public class DefaultExperimentSearchService implements ExperimentSearchService {
             predicates.add(cb.equal(root.get("gatewayId"), gatewayId));
         }
 
-        if (fromDate != null && toDate != null && toDate.after(fromDate)) {
-            predicates.add(cb.between(root.get("creationTime"), fromDate, toDate));
+        if (fromDate != null && toDate != null && toDate.isAfter(fromDate)) {
+            predicates.add(cb.between(root.get("createdAt"), fromDate, toDate));
         }
 
         if (userName != null) {

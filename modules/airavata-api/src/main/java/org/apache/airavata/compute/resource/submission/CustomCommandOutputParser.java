@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * <p>Used by CloudJobManagerSpec for cloud VM job execution.
  */
 public class CustomCommandOutputParser implements JobOutputParser {
-    private static final Logger log = LoggerFactory.getLogger(CustomCommandOutputParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomCommandOutputParser.class);
 
     /**
      * Parse job ID (PID) from bash script execution output.
@@ -47,7 +47,7 @@ public class CustomCommandOutputParser implements JobOutputParser {
      */
     @Override
     public String parseJobSubmission(String rawOutput) throws Exception {
-        log.debug("Parsing job submission output: {}", rawOutput);
+        logger.debug("Parsing job submission output: {}", rawOutput);
         if (rawOutput == null || rawOutput.trim().isEmpty()) {
             return "";
         }
@@ -60,7 +60,7 @@ public class CustomCommandOutputParser implements JobOutputParser {
         Matcher matcher = pidPattern.matcher(rawOutput);
         if (matcher.find()) {
             String pid = matcher.group(1);
-            log.info("Extracted PID from submission output: {}", pid);
+            logger.info("Extracted PID from submission output: {}", pid);
             return pid;
         }
 
@@ -69,11 +69,11 @@ public class CustomCommandOutputParser implements JobOutputParser {
         matcher = numberPattern.matcher(rawOutput.trim());
         if (matcher.matches()) {
             String pid = matcher.group(1);
-            log.info("Extracted PID (number only): {}", pid);
+            logger.info("Extracted PID (number only): {}", pid);
             return pid;
         }
 
-        log.warn("Could not extract PID from submission output: {}", rawOutput);
+        logger.warn("Could not extract PID from submission output: {}", rawOutput);
         return "";
     }
 
@@ -110,7 +110,7 @@ public class CustomCommandOutputParser implements JobOutputParser {
      */
     @Override
     public StatusModel<JobState> parseJobStatus(String jobID, String rawOutput) throws Exception {
-        log.debug("Parsing job status for PID {}: {}", jobID, rawOutput);
+        logger.debug("Parsing job status for PID {}: {}", jobID, rawOutput);
         StatusModel<JobState> jobStatus = new StatusModel<>();
 
         if (rawOutput == null || rawOutput.trim().isEmpty()) {
@@ -146,7 +146,7 @@ public class CustomCommandOutputParser implements JobOutputParser {
                 break;
             default:
                 // Unknown status character
-                log.warn("Unknown ps status character: {} for PID {}", firstChar, jobID);
+                logger.warn("Unknown ps status character: {} for PID {}", firstChar, jobID);
                 jobStatus.setState(JobState.UNKNOWN);
         }
 
@@ -164,9 +164,9 @@ public class CustomCommandOutputParser implements JobOutputParser {
     @Override
     public void parseJobStatuses(String userName, Map<String, StatusModel<JobState>> statusMap, String rawOutput)
             throws Exception {
-        log.debug("Parsing job statuses for user {}: {}", userName, rawOutput);
+        logger.debug("Parsing job statuses for user {}: {}", userName, rawOutput);
         if (rawOutput == null || rawOutput.trim().isEmpty()) {
-            log.info("No processes found for user {}", userName);
+            logger.info("No processes found for user {}", userName);
             return;
         }
 
@@ -208,10 +208,10 @@ public class CustomCommandOutputParser implements JobOutputParser {
                             jobStatus.setState(JobState.UNKNOWN);
                     }
                     statusMap.put(pid, jobStatus);
-                    log.debug("Updated status for PID {}: {}", pid, jobStatus.getState());
+                    logger.debug("Updated status for PID {}: {}", pid, jobStatus.getState());
                 }
             } catch (Exception e) {
-                log.warn("Error parsing ps line: {}", line, e);
+                logger.warn("Error parsing ps line: {}", line, e);
             }
         }
 
@@ -235,7 +235,7 @@ public class CustomCommandOutputParser implements JobOutputParser {
      */
     @Override
     public String parseJobId(String jobName, String rawOutput) throws Exception {
-        log.debug("Parsing job ID for job name {}: {}", jobName, rawOutput);
+        logger.debug("Parsing job ID for job name {}: {}", jobName, rawOutput);
         if (rawOutput == null || rawOutput.trim().isEmpty()) {
             return null;
         }
@@ -249,15 +249,15 @@ public class CustomCommandOutputParser implements JobOutputParser {
                 // Validate it's a number (PID)
                 try {
                     Long.parseLong(line);
-                    log.info("Extracted PID from pgrep output: {}", line);
+                    logger.info("Extracted PID from pgrep output: {}", line);
                     return line;
                 } catch (NumberFormatException e) {
-                    log.warn("Invalid PID format in pgrep output: {}", line);
+                    logger.warn("Invalid PID format in pgrep output: {}", line);
                 }
             }
         }
 
-        log.warn("No valid PID found in pgrep output for job name: {}", jobName);
+        logger.warn("No valid PID found in pgrep output for job name: {}", jobName);
         return null;
     }
 }

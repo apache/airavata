@@ -22,12 +22,15 @@ package org.apache.airavata.research.application.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import org.apache.airavata.research.application.model.ApplicationField;
+import org.apache.airavata.research.application.model.ApplicationScope;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
@@ -42,9 +45,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * lists of {@link ApplicationField} descriptors, along with the install and run scripts used
  * during application deployment and execution on target resources.
  *
- * <p>The {@code scope} field controls visibility: {@code GATEWAY} scope makes the
- * application available to all users within the gateway, while narrower scopes (e.g.
- * {@code USER}) restrict access to the owning user.
+ * <p>The {@code scope} field controls visibility: {@link ApplicationScope#GATEWAY} makes the
+ * application available to all users within the gateway, while {@link ApplicationScope#USER}
+ * restricts access to the owning user.
  */
 @Entity
 @Table(name = "application")
@@ -85,8 +88,9 @@ public class ApplicationEntity implements Serializable {
     @Column(name = "run_script", columnDefinition = "MEDIUMTEXT")
     private String runScript;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "scope", length = 50)
-    private String scope = "GATEWAY";
+    private ApplicationScope scope = ApplicationScope.GATEWAY;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -178,11 +182,11 @@ public class ApplicationEntity implements Serializable {
         this.runScript = runScript;
     }
 
-    public String getScope() {
+    public ApplicationScope getScope() {
         return scope;
     }
 
-    public void setScope(String scope) {
+    public void setScope(ApplicationScope scope) {
         this.scope = scope;
     }
 

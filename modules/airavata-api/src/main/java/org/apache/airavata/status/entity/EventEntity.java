@@ -28,10 +28,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.status.model.EventKind;
+import org.apache.airavata.status.model.ParentType;
 
 /**
  * Unified EventEntity that consolidates status and error records for processes.
@@ -66,7 +67,8 @@ public class EventEntity implements Serializable {
     private String parentId;
 
     @Column(name = "parent_type", nullable = false, length = 20)
-    private String parentType = "PROCESS";
+    @Enumerated(EnumType.STRING)
+    private ParentType parentType = ParentType.PROCESS;
 
     @Column(name = "event_kind", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -76,7 +78,7 @@ public class EventEntity implements Serializable {
             name = "event_time",
             nullable = false,
             columnDefinition = "TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)")
-    private Timestamp eventTime;
+    private Instant eventTime;
 
     @Column(name = "sequence_num", nullable = false)
     private Long sequenceNum;
@@ -93,8 +95,8 @@ public class EventEntity implements Serializable {
     @Column(name = "user_friendly_message", columnDefinition = "MEDIUMTEXT")
     private String userFriendlyMessage;
 
-    @Column(name = "transient_or_persistent")
-    private Boolean transientOrPersistent;
+    @Column(name = "transient_error")
+    private Boolean transientError;
 
     @Column(name = "root_cause_error_id_list", columnDefinition = "MEDIUMTEXT")
     private String rootCauseErrorIdList;
@@ -117,11 +119,11 @@ public class EventEntity implements Serializable {
         this.parentId = parentId;
     }
 
-    public String getParentType() {
+    public ParentType getParentType() {
         return parentType;
     }
 
-    public void setParentType(String parentType) {
+    public void setParentType(ParentType parentType) {
         this.parentType = parentType;
     }
 
@@ -133,11 +135,11 @@ public class EventEntity implements Serializable {
         this.eventKind = eventKind;
     }
 
-    public Timestamp getEventTime() {
+    public Instant getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(Timestamp eventTime) {
+    public void setEventTime(Instant eventTime) {
         this.eventTime = eventTime;
     }
 
@@ -181,12 +183,12 @@ public class EventEntity implements Serializable {
         this.userFriendlyMessage = userFriendlyMessage;
     }
 
-    public Boolean getTransientOrPersistent() {
-        return transientOrPersistent;
+    public Boolean getTransientError() {
+        return transientError;
     }
 
-    public void setTransientOrPersistent(Boolean transientOrPersistent) {
-        this.transientOrPersistent = transientOrPersistent;
+    public void setTransientError(Boolean transientError) {
+        this.transientError = transientError;
     }
 
     public String getRootCauseErrorIdList() {
@@ -195,27 +197,6 @@ public class EventEntity implements Serializable {
 
     public void setRootCauseErrorIdList(String rootCauseErrorIdList) {
         this.rootCauseErrorIdList = rootCauseErrorIdList;
-    }
-
-    /** Alias for status compatibility: eventId maps to statusId. */
-    public String getStatusId() {
-        return eventId;
-    }
-    /** Alias for status compatibility: eventTime maps to timeOfStateChange. */
-    public Timestamp getTimeOfStateChange() {
-        return eventTime;
-    }
-    /** Alias for error compatibility: eventId maps to errorId. */
-    public String getErrorId() {
-        return eventId;
-    }
-    /** Alias for error compatibility: eventTime maps to creationTime. */
-    public Timestamp getCreationTime() {
-        return eventTime;
-    }
-    /** Alias for error compatibility. */
-    public boolean isTransientOrPersistent() {
-        return Boolean.TRUE.equals(transientOrPersistent);
     }
 
     @PrePersist

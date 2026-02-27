@@ -30,7 +30,7 @@ package org.apache.airavata.workflow.model;
 public class WorkflowRunStepState {
 
     private String experimentId;
-    private String status;
+    private WorkflowRunStatus status;
 
     public WorkflowRunStepState() {}
 
@@ -42,11 +42,11 @@ public class WorkflowRunStepState {
         this.experimentId = experimentId;
     }
 
-    public String getStatus() {
+    public WorkflowRunStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WorkflowRunStatus status) {
         this.status = status;
     }
 }

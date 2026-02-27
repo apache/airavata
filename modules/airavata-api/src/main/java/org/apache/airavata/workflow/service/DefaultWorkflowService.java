@@ -22,12 +22,12 @@ package org.apache.airavata.workflow.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.airavata.core.util.IdGenerator;
-import org.apache.airavata.workflow.entity.WorkflowEntity;
 import org.apache.airavata.workflow.entity.WorkflowRunEntity;
+import org.apache.airavata.workflow.mapper.WorkflowMapper;
 import org.apache.airavata.workflow.model.Workflow;
 import org.apache.airavata.workflow.model.WorkflowRun;
+import org.apache.airavata.workflow.model.WorkflowRunStatus;
 import org.apache.airavata.workflow.model.WorkflowRunStepState;
 import org.apache.airavata.workflow.model.WorkflowStep;
 import org.apache.airavata.workflow.repository.WorkflowRepository;
@@ -42,18 +42,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultWorkflowService implements WorkflowService {
     private static final Logger logger = LoggerFactory.getLogger(DefaultWorkflowService.class);
 
-    private static final String STATUS_PENDING = "PENDING";
-    private static final String STATUS_CREATED = "CREATED";
-    private static final String STATUS_RUNNING = "RUNNING";
-    private static final String STATUS_COMPLETED = "COMPLETED";
-    private static final String STATUS_FAILED = "FAILED";
-
     private final WorkflowRepository workflowRepository;
     private final WorkflowRunRepository workflowRunRepository;
+    private final WorkflowMapper mapper;
 
-    public DefaultWorkflowService(WorkflowRepository workflowRepository, WorkflowRunRepository workflowRunRepository) {
+    public DefaultWorkflowService(
+            WorkflowRepository workflowRepository, WorkflowRunRepository workflowRunRepository, WorkflowMapper mapper) {
         this.workflowRepository = workflowRepository;
         this.workflowRunRepository = workflowRunRepository;
+        this.mapper = mapper;
     }
 
     // -------------------------------------------------------------------------
@@ -61,13 +58,12 @@ public class DefaultWorkflowService implements WorkflowService {
     // -------------------------------------------------------------------------
 
     @Override
-    @Transactional
     public Workflow createWorkflow(Workflow workflow) {
         workflow.setWorkflowId(IdGenerator.getId("WORKFLOW"));
-        var entity = toEntity(workflow);
+        var entity = mapper.toEntity(workflow);
         var saved = workflowRepository.save(entity);
         logger.debug("Created workflow {} for project {}", saved.getWorkflowId(), saved.getProjectId());
-        return toModel(saved);
+        return mapper.toModel(saved);
     }
 
     @Override
@@ -78,27 +74,26 @@ public class DefaultWorkflowService implements WorkflowService {
             logger.debug("Workflow not found: {}", workflowId);
             return null;
         }
-        return toModel(entity);
+        return mapper.toModel(entity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Workflow> getWorkflowsByProject(String projectId, String gatewayId) {
         return workflowRepository.findByProjectIdAndGatewayId(projectId, gatewayId).stream()
-                .map(this::toModel)
-                .collect(Collectors.toList());
+                .map(mapper::toModel)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Workflow> getWorkflowsByUser(String userName, String gatewayId) {
         return workflowRepository.findByUserNameAndGatewayId(userName, gatewayId).stream()
-                .map(this::toModel)
-                .collect(Collectors.toList());
+                .map(mapper::toModel)
+                .toList();
     }
 
     @Override
-    @Transactional
     public Workflow updateWorkflow(String workflowId, Workflow workflow) {
         var entity = workflowRepository.findById(workflowId).orElse(null);
         if (entity == null) {
@@ -111,11 +106,10 @@ public class DefaultWorkflowService implements WorkflowService {
         entity.setEdges(workflow.getEdges());
         var saved = workflowRepository.save(entity);
         logger.debug("Updated workflow {}", workflowId);
-        return toModel(saved);
+        return mapper.toModel(saved);
     }
 
     @Override
-    @Transactional
     public void deleteWorkflow(String workflowId) {
         workflowRepository.deleteById(workflowId);
         logger.debug("Deleted workflow {}", workflowId);
@@ -126,7 +120,6 @@ public class DefaultWorkflowService implements WorkflowService {
     // -------------------------------------------------------------------------
 
     @Override
-    @Transactional
     public WorkflowRun createRun(String workflowId, String userName) {
         var workflowEntity = workflowRepository.findById(workflowId).orElse(null);
         if (workflowEntity == null) {
@@ -140,7 +133,7 @@ public class DefaultWorkflowService implements WorkflowService {
         if (steps != null) {
             for (var step : steps) {
                 var state = new WorkflowRunStepState();
-                state.setStatus(STATUS_PENDING);
+                state.setStatus(WorkflowRunStatus.PENDING);
                 stepStates.put(step.getStepId(), state);
             }
         }
@@ -149,12 +142,12 @@ public class DefaultWorkflowService implements WorkflowService {
         entity.setRunId(IdGenerator.getId("WORKFLOW_RUN"));
         entity.setWorkflowId(workflowId);
         entity.setUserName(userName);
-        entity.setStatus(STATUS_CREATED);
+        entity.setStatus(WorkflowRunStatus.CREATED);
         entity.setStepStates(stepStates);
 
         var saved = workflowRunRepository.save(entity);
         logger.debug("Created run {} for workflow {}", saved.getRunId(), workflowId);
-        return toRunModel(saved);
+        return mapper.toRunModel(saved);
     }
 
     @Override
@@ -165,20 +158,19 @@ public class DefaultWorkflowService implements WorkflowService {
             logger.debug("WorkflowRun not found: {}", runId);
             return null;
         }
-        return toRunModel(entity);
+        return mapper.toRunModel(entity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<WorkflowRun> getRunsByWorkflow(String workflowId) {
         return workflowRunRepository.findByWorkflowIdOrderByCreatedAtDesc(workflowId).stream()
-                .map(this::toRunModel)
-                .collect(Collectors.toList());
+                .map(mapper::toRunModel)
+                .toList();
     }
 
     @Override
-    @Transactional
-    public WorkflowRun updateRunStepState(String runId, String stepId, String experimentId, String status) {
+    public WorkflowRun updateRunStepState(String runId, String stepId, String experimentId, WorkflowRunStatus status) {
         var entity = workflowRunRepository.findById(runId).orElse(null);
         if (entity == null) {
             logger.warn("Cannot update step state for run {}: not found", runId);
@@ -199,12 +191,11 @@ public class DefaultWorkflowService implements WorkflowService {
 
         var saved = workflowRunRepository.save(entity);
         logger.debug("Updated step {} of run {} to status {}", stepId, runId, status);
-        return toRunModel(saved);
+        return mapper.toRunModel(saved);
     }
 
     @Override
-    @Transactional
-    public WorkflowRun updateRunStatus(String runId, String status) {
+    public WorkflowRun updateRunStatus(String runId, WorkflowRunStatus status) {
         var entity = workflowRunRepository.findById(runId).orElse(null);
         if (entity == null) {
             logger.warn("Cannot update status for run {}: not found", runId);
@@ -213,59 +204,7 @@ public class DefaultWorkflowService implements WorkflowService {
         entity.setStatus(status);
         var saved = workflowRunRepository.save(entity);
         logger.debug("Updated run {} status to {}", runId, status);
-        return toRunModel(saved);
-    }
-
-    // -------------------------------------------------------------------------
-    // Private helpers: entity <-> model conversion
-    // -------------------------------------------------------------------------
-
-    private Workflow toModel(WorkflowEntity entity) {
-        var model = new Workflow();
-        model.setWorkflowId(entity.getWorkflowId());
-        model.setProjectId(entity.getProjectId());
-        model.setGatewayId(entity.getGatewayId());
-        model.setUserName(entity.getUserName());
-        model.setWorkflowName(entity.getWorkflowName());
-        model.setDescription(entity.getDescription());
-        model.setSteps(entity.getSteps());
-        model.setEdges(entity.getEdges());
-        if (entity.getCreatedAt() != null) {
-            model.setCreationTime(entity.getCreatedAt().getTime());
-        }
-        if (entity.getUpdatedAt() != null) {
-            model.setUpdateTime(entity.getUpdatedAt().getTime());
-        }
-        return model;
-    }
-
-    private WorkflowEntity toEntity(Workflow model) {
-        var entity = new WorkflowEntity();
-        entity.setWorkflowId(model.getWorkflowId());
-        entity.setProjectId(model.getProjectId());
-        entity.setGatewayId(model.getGatewayId());
-        entity.setUserName(model.getUserName());
-        entity.setWorkflowName(model.getWorkflowName());
-        entity.setDescription(model.getDescription());
-        entity.setSteps(model.getSteps());
-        entity.setEdges(model.getEdges());
-        return entity;
-    }
-
-    private WorkflowRun toRunModel(WorkflowRunEntity entity) {
-        var model = new WorkflowRun();
-        model.setRunId(entity.getRunId());
-        model.setWorkflowId(entity.getWorkflowId());
-        model.setUserName(entity.getUserName());
-        model.setStatus(entity.getStatus());
-        model.setStepStates(entity.getStepStates());
-        if (entity.getCreatedAt() != null) {
-            model.setCreationTime(entity.getCreatedAt().getTime());
-        }
-        if (entity.getUpdatedAt() != null) {
-            model.setUpdateTime(entity.getUpdatedAt().getTime());
-        }
-        return model;
+        return mapper.toRunModel(saved);
     }
 
     // -------------------------------------------------------------------------
@@ -282,25 +221,25 @@ public class DefaultWorkflowService implements WorkflowService {
      *   <li>All steps PENDING → CREATED</li>
      * </ul>
      */
-    private String deriveRunStatus(Map<String, WorkflowRunStepState> stepStates) {
+    private WorkflowRunStatus deriveRunStatus(Map<String, WorkflowRunStepState> stepStates) {
         if (stepStates == null || stepStates.isEmpty()) {
-            return STATUS_CREATED;
+            return WorkflowRunStatus.CREATED;
         }
 
         var statuses = stepStates.values().stream()
                 .map(WorkflowRunStepState::getStatus)
                 .toList();
 
-        if (statuses.stream().anyMatch(STATUS_FAILED::equals)) {
-            return STATUS_FAILED;
+        if (statuses.stream().anyMatch(WorkflowRunStatus.FAILED::equals)) {
+            return WorkflowRunStatus.FAILED;
         }
-        if (statuses.stream().allMatch(STATUS_COMPLETED::equals)) {
-            return STATUS_COMPLETED;
+        if (statuses.stream().allMatch(WorkflowRunStatus.COMPLETED::equals)) {
+            return WorkflowRunStatus.COMPLETED;
         }
-        if (statuses.stream().allMatch(STATUS_PENDING::equals)) {
-            return STATUS_CREATED;
+        if (statuses.stream().allMatch(WorkflowRunStatus.PENDING::equals)) {
+            return WorkflowRunStatus.CREATED;
         }
         // Mix of pending/completed/running/other = in progress
-        return STATUS_RUNNING;
+        return WorkflowRunStatus.RUNNING;
     }
 }

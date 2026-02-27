@@ -52,7 +52,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.research.experiment.repository",
             "org.apache.airavata.compute.resource.repository",
             "org.apache.airavata.accounting.repository",
-            "org.apache.airavata.execution.repository",
+            "org.apache.airavata.execution.process",
+            "org.apache.airavata.execution.orchestration",
             "org.apache.airavata.research.application.repository",
             "org.apache.airavata.gateway.repository",
             "org.apache.airavata.iam.repository",
@@ -62,7 +63,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             "org.apache.airavata.research.artifact.repository",
             "org.apache.airavata.research.project.repository",
             "org.apache.airavata.research.session.repository",
-            "org.apache.airavata.agent.db.repository",
+            "org.apache.airavata.agent.repository",
             "org.apache.airavata.research.repository"
         })
 public class JpaConfiguration {
@@ -71,7 +72,8 @@ public class JpaConfiguration {
         "org.apache.airavata.research.experiment.entity",
         "org.apache.airavata.compute.resource.entity",
         "org.apache.airavata.accounting.entity",
-        "org.apache.airavata.execution.entity",
+        "org.apache.airavata.execution.process",
+        "org.apache.airavata.execution.orchestration",
         "org.apache.airavata.research.application.entity",
         "org.apache.airavata.gateway.entity",
         "org.apache.airavata.iam.entity",
@@ -81,7 +83,7 @@ public class JpaConfiguration {
         "org.apache.airavata.research.artifact.entity",
         "org.apache.airavata.research.project.entity",
         "org.apache.airavata.research.session.entity",
-        "org.apache.airavata.agent.db.entity",
+        "org.apache.airavata.agent.entity",
         "org.apache.airavata.research.entity"
     };
 

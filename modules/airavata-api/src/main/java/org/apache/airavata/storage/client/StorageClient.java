@@ -20,7 +20,7 @@
 package org.apache.airavata.storage.client;
 
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 
 /**
  * Full lifecycle contract for a storage provider.
@@ -28,7 +28,7 @@ import org.apache.airavata.execution.task.TaskContext;
  * <p>Each storage backend (SFTP, S3, etc.) implements this interface as a
  * single class covering all data movement phases. The methods are registered as
  * individual {@link org.apache.airavata.execution.dag.DagTask} beans via
- * {@link StorageClientConfig} so the DAG engine can invoke them by name.
+ * {@link StorageClientConfiguration} so the DAG engine can invoke them by name.
  *
  * <p>Lifecycle-independent logic (adapter resolution, transfer utilities) stays
  * in separate utility classes.

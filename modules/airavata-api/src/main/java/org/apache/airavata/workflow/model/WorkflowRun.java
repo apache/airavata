@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.workflow.model;
 
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -34,10 +35,10 @@ public class WorkflowRun {
     private String runId;
     private String workflowId;
     private String userName;
-    private String status;
+    private WorkflowRunStatus status;
     private Map<String, WorkflowRunStepState> stepStates;
-    private Long creationTime;
-    private Long updateTime;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public WorkflowRun() {}
 
@@ -65,11 +66,11 @@ public class WorkflowRun {
         this.userName = userName;
     }
 
-    public String getStatus() {
+    public WorkflowRunStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WorkflowRunStatus status) {
         this.status = status;
     }
 
@@ -81,19 +82,19 @@ public class WorkflowRun {
         this.stepStates = stepStates;
     }
 
-    public Long getCreationTime() {
-        return creationTime;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(Long creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Long getUpdateTime() {
-        return updateTime;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

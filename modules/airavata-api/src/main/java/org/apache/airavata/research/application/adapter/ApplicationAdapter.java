@@ -56,7 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ApplicationAdapter {
 
-    private static final Logger log = LoggerFactory.getLogger(ApplicationAdapter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationAdapter.class);
 
     private final ApplicationRepository applicationRepository;
     private final ApplicationInstallationRepository applicationInstallationRepository;
@@ -85,7 +85,7 @@ public class ApplicationAdapter {
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) {
         Optional<ApplicationEntity> optional = applicationRepository.findById(appInterfaceId);
         if (optional.isEmpty()) {
-            log.debug("getApplicationInterface: no application found for id={}", appInterfaceId);
+            logger.debug("getApplicationInterface: no application found for id={}", appInterfaceId);
             return null;
         }
         ApplicationEntity app = optional.get();
@@ -145,7 +145,7 @@ public class ApplicationAdapter {
     public List<ApplicationInput> getApplicationInputs(String appInterfaceId) {
         Optional<ApplicationEntity> optional = applicationRepository.findById(appInterfaceId);
         if (optional.isEmpty()) {
-            log.debug("getApplicationInputs: no application found for id={}", appInterfaceId);
+            logger.debug("getApplicationInputs: no application found for id={}", appInterfaceId);
             return Collections.emptyList();
         }
         return convertFieldsToInputs(optional.get().getInputs());
@@ -160,7 +160,7 @@ public class ApplicationAdapter {
     public List<ApplicationOutput> getApplicationOutputs(String appInterfaceId) {
         Optional<ApplicationEntity> optional = applicationRepository.findById(appInterfaceId);
         if (optional.isEmpty()) {
-            log.debug("getApplicationOutputs: no application found for id={}", appInterfaceId);
+            logger.debug("getApplicationOutputs: no application found for id={}", appInterfaceId);
             return Collections.emptyList();
         }
         return convertFieldsToOutputs(optional.get().getOutputs());

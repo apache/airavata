@@ -25,11 +25,13 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.core.util.Constants;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
+import org.apache.airavata.research.experiment.model.Experiment;
 import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
 import org.apache.airavata.restapi.util.AuthzTokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/experiments")
 @Tag(name = "Experiments")
 public class ExperimentController {
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ExperimentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentController.class);
 
     private final ExperimentService experimentService;
 
@@ -55,7 +57,7 @@ public class ExperimentController {
     }
 
     @GetMapping("/{experimentId}")
-    public ExperimentModel getExperiment(@PathVariable String experimentId) throws Exception {
+    public Experiment getExperiment(@PathVariable String experimentId) throws Exception {
         var experiment = experimentService.getExperiment(experimentId);
         if (experiment == null) {
             throw new ResourceNotFoundException("Experiment", experimentId);
@@ -64,7 +66,7 @@ public class ExperimentController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> createExperiment(@Valid @RequestBody ExperimentModel experiment)
+    public ResponseEntity<Map<String, String>> createExperiment(@Valid @RequestBody Experiment experiment)
             throws Exception {
         String gatewayId = experiment.getGatewayId();
         if (gatewayId == null) {
@@ -76,7 +78,7 @@ public class ExperimentController {
 
     @PutMapping("/{experimentId}")
     public ResponseEntity<Void> updateExperiment(
-            @PathVariable String experimentId, @Valid @RequestBody ExperimentModel experiment) throws Exception {
+            @PathVariable String experimentId, @Valid @RequestBody Experiment experiment) throws Exception {
         experiment.setExperimentId(experimentId);
         experimentService.updateExperiment(experimentId, experiment);
         return ResponseEntity.ok().build();
@@ -89,7 +91,7 @@ public class ExperimentController {
     }
 
     @GetMapping
-    public List<ExperimentModel> getExperiments(
+    public List<Experiment> getExperiments(
             HttpServletRequest request,
             @RequestParam(required = false) String gatewayId,
             @RequestParam(required = false) String userName,

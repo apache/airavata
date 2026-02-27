@@ -20,8 +20,8 @@
 package org.apache.airavata.iam.mapper;
 
 import java.time.Instant;
-import java.util.List;
 import org.apache.airavata.config.EntityMapperConfiguration;
+import org.apache.airavata.core.mapper.EntityMapper;
 import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.apache.airavata.iam.model.Domain;
 import org.mapstruct.Mapper;
@@ -44,7 +44,7 @@ import org.mapstruct.Named;
  * </ul>
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfiguration.class)
-public interface DomainMapper {
+public interface DomainMapper extends EntityMapper<GatewayEntity, Domain> {
 
     @Named("instantToLong")
     default Long instantToLong(Instant instant) {
@@ -56,12 +56,14 @@ public interface DomainMapper {
         return millis == null ? null : Instant.ofEpochMilli(millis);
     }
 
+    @Override
     @Mapping(target = "domainId", source = "gatewayId")
     @Mapping(target = "name", source = "gatewayName")
     @Mapping(target = "createdTime", source = "createdAt", qualifiedByName = "instantToLong")
     @Mapping(target = "updatedTime", source = "updatedAt", qualifiedByName = "instantToLong")
     Domain toModel(GatewayEntity entity);
 
+    @Override
     @Mapping(target = "gatewayId", source = "domainId")
     @Mapping(target = "gatewayName", source = "name")
     @Mapping(target = "createdAt", source = "createdTime", qualifiedByName = "longToInstant")
@@ -69,8 +71,4 @@ public interface DomainMapper {
     @Mapping(target = "domain", ignore = true)
     @Mapping(target = "emailAddress", ignore = true)
     GatewayEntity toEntity(Domain model);
-
-    List<Domain> toModelList(List<GatewayEntity> entities);
-
-    List<GatewayEntity> toEntityList(List<Domain> models);
 }

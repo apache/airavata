@@ -36,7 +36,7 @@ public class ArtifactStarEntity {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
+    @Column(name = "id", nullable = false, updatable = false, length = 48)
     private String id;
 
     @Column(name = "user_id", nullable = false)

@@ -89,11 +89,59 @@ public class RestApiConfiguration implements ApplicationListener<ApplicationEnvi
         // Map services.rest.server.* to server.*
         mapProperty("services.rest.server.port", "server.port", mappedProperties, environment);
 
+        // Map services.fileserver.spring.servlet.multipart.* to spring.servlet.multipart.*
+        mapProperty(
+                "services.fileserver.spring.servlet.multipart.max-file-size",
+                "spring.servlet.multipart.max-file-size",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "services.fileserver.spring.servlet.multipart.max-request-size",
+                "spring.servlet.multipart.max-request-size",
+                mappedProperties,
+                environment);
+
+        // Map services.agent.spring.servlet.multipart.* to spring.servlet.multipart.*
+        // (agent multipart settings override fileserver ones if both are present)
+        mapProperty(
+                "services.agent.spring.servlet.multipart.max-file-size",
+                "spring.servlet.multipart.max-file-size",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "services.agent.spring.servlet.multipart.max-request-size",
+                "spring.servlet.multipart.max-request-size",
+                mappedProperties,
+                environment);
+
+        // Map database.catalog.* to spring.datasource.*
+        mapProperty("database.catalog.url", "spring.datasource.url", mappedProperties, environment);
+        mapProperty("database.catalog.user", "spring.datasource.username", mappedProperties, environment);
+        mapProperty("database.catalog.password", "spring.datasource.password", mappedProperties, environment);
+        mapProperty(
+                "database.catalog.hikari.pool-name",
+                "spring.datasource.hikari.pool-name",
+                mappedProperties,
+                environment);
+        mapProperty(
+                "database.catalog.hikari.leak-detection-threshold",
+                "spring.datasource.hikari.leak-detection-threshold",
+                mappedProperties,
+                environment);
+
+        // Map services.agent.spring.jpa.* to spring.jpa.*
+        mapProperty(
+                "services.agent.spring.jpa.hibernate.ddl-auto",
+                "spring.jpa.hibernate.ddl-auto",
+                mappedProperties,
+                environment);
+        mapProperty("services.agent.spring.jpa.open-in-view", "spring.jpa.open-in-view", mappedProperties, environment);
+
         if (!mappedProperties.isEmpty()) {
             environment
                     .getPropertySources()
                     .addFirst(new MapPropertySource("restApiMappedProperties", mappedProperties));
-            logger.debug("Mapped {} rest.* properties to Spring Boot properties", mappedProperties.size());
+            logger.debug("Mapped {} rest/file properties to Spring Boot properties", mappedProperties.size());
         }
     }
 

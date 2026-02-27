@@ -23,15 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.task.TaskContext;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
 import org.apache.airavata.research.experiment.entity.ExperimentOutputEntity;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
+import org.apache.airavata.storage.resource.model.DataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Persists experiment output URIs collected by the output staging task.
@@ -42,6 +45,7 @@ import org.springframework.stereotype.Component;
  */
 @Component("saveExperimentOutputsTask")
 @ConditionalOnParticipant
+@Transactional
 public class SaveExperimentOutputsTask implements DagTask {
 
     private static final Logger logger = LoggerFactory.getLogger(SaveExperimentOutputsTask.class);
@@ -80,34 +84,30 @@ public class SaveExperimentOutputsTask implements DagTask {
             entity.setOutputs(outputs);
         }
 
-        int savedCount = 0;
+        Map<String, ExperimentOutputEntity> outputsByName =
+                outputs.stream().collect(Collectors.toMap(ExperimentOutputEntity::getName, Function.identity()));
+
         for (Map.Entry<String, String> entry : outputEntries) {
             String outputName = entry.getKey().substring(OUTPUT_KEY_PREFIX.length());
             String outputValue = entry.getValue();
 
-            boolean found = false;
-            for (ExperimentOutputEntity output : outputs) {
-                if (outputName.equals(output.getName())) {
-                    output.setValue(outputValue);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
+            ExperimentOutputEntity existing = outputsByName.get(outputName);
+            if (existing != null) {
+                existing.setValue(outputValue);
+            } else {
                 var newOutput = new ExperimentOutputEntity();
                 newOutput.setOutputId(UUID.randomUUID().toString());
                 newOutput.setName(outputName);
                 newOutput.setValue(outputValue);
-                newOutput.setType("STRING");
+                newOutput.setType(DataType.STRING);
                 newOutput.setExperiment(entity);
                 outputs.add(newOutput);
             }
-            savedCount++;
         }
 
         experimentRepository.save(entity);
-        logger.info("Persisted {} experiment output(s) for experiment {}", savedCount, experimentId);
+        logger.info("Persisted {} experiment output(s) for experiment {}", outputEntries.size(), experimentId);
         return new DagTaskResult.Success(
-                "Persisted " + savedCount + " experiment output(s) for experiment " + experimentId);
+                "Persisted " + outputEntries.size() + " experiment output(s) for experiment " + experimentId);
     }
 }

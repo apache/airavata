@@ -48,7 +48,7 @@ public class DefaultAuthorizationService implements AuthorizationService {
         try {
             return sharingService.userHasAccess(gatewayId, userId, entityId, permissionTypeId);
         } catch (Exception e) {
-            logger.error("Error checking user access: " + e.getMessage(), e);
+            logger.error("Error checking user access: {}", e.getMessage(), e);
             return false;
         }
     }

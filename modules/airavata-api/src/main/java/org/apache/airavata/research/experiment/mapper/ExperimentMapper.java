@@ -26,8 +26,8 @@ import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
 import org.apache.airavata.research.experiment.entity.ExperimentInputEntity;
 import org.apache.airavata.research.experiment.entity.ExperimentOutputEntity;
+import org.apache.airavata.research.experiment.model.Experiment;
 import org.apache.airavata.research.experiment.model.ExperimentInput;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
 import org.apache.airavata.research.experiment.model.ExperimentOutput;
 import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Hand-written Spring component mapper for {@link ExperimentEntity} and {@link ExperimentModel}.
+ * Hand-written Spring component mapper for {@link ExperimentEntity} and {@link Experiment}.
  *
  * <p>MapStruct is not used here because the mapping requires:
  * <ul>
@@ -47,13 +47,13 @@ import org.springframework.stereotype.Component;
  * </ul>
  */
 @Component
-public class ExperimentMapper implements EntityMapper<ExperimentEntity, ExperimentModel> {
+public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experiment> {
 
-    private static final Logger log = LoggerFactory.getLogger(ExperimentMapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentMapper.class);
 
     @Override
-    public ExperimentModel toModel(ExperimentEntity entity) {
-        var model = new ExperimentModel();
+    public Experiment toModel(ExperimentEntity entity) {
+        var model = new Experiment();
         model.setExperimentId(entity.getExperimentId());
         model.setProjectId(entity.getProjectId());
         model.setGatewayId(entity.getGatewayId());
@@ -68,32 +68,22 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
         model.setTags(entity.getTags());
 
         // State
-        if (entity.getState() != null) {
-            try {
-                model.setState(ExperimentState.valueOf(entity.getState()));
-            } catch (IllegalArgumentException e) {
-                log.debug(
-                        "Unknown experiment state '{}' for experiment '{}'; defaulting to CREATED",
-                        entity.getState(),
-                        entity.getExperimentId(),
-                        e);
-                model.setState(ExperimentState.CREATED);
-            }
-        } else {
-            model.setState(ExperimentState.CREATED);
-        }
+        model.setState(entity.getState() != null ? entity.getState() : ExperimentState.CREATED);
 
         // Inputs
         if (entity.getInputs() != null) {
-            model.setInputs(entity.getInputs().stream().map(this::toInputModel).toList());
+            model.setInputs(entity.getInputs().stream()
+                    .map(ExperimentMapper::toInputModel)
+                    .toList());
         } else {
             model.setInputs(new ArrayList<>());
         }
 
         // Outputs
         if (entity.getOutputs() != null) {
-            model.setOutputs(
-                    entity.getOutputs().stream().map(this::toOutputModel).toList());
+            model.setOutputs(entity.getOutputs().stream()
+                    .map(ExperimentMapper::toOutputModel)
+                    .toList());
         } else {
             model.setOutputs(new ArrayList<>());
         }
@@ -104,7 +94,7 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
     }
 
     @Override
-    public ExperimentEntity toEntity(ExperimentModel model) {
+    public ExperimentEntity toEntity(Experiment model) {
         var entity = new ExperimentEntity();
         entity.setExperimentId(model.getExperimentId());
         entity.setProjectId(model.getProjectId());
@@ -120,9 +110,7 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
         entity.setTags(model.getTags());
 
         // State
-        if (model.getState() != null) {
-            entity.setState(model.getState().name());
-        }
+        entity.setState(model.getState());
 
         // Inputs — set back-reference to parent entity
         if (model.getInputs() != null) {
@@ -151,7 +139,7 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
 
     // ---- Input conversion ----
 
-    private ExperimentInput toInputModel(ExperimentInputEntity entity) {
+    public static ExperimentInput toInputModel(ExperimentInputEntity entity) {
         var model = new ExperimentInput();
         model.setInputId(entity.getInputId());
         model.setName(entity.getName());
@@ -183,7 +171,7 @@ public class ExperimentMapper implements EntityMapper<ExperimentEntity, Experime
 
     // ---- Output conversion ----
 
-    private ExperimentOutput toOutputModel(ExperimentOutputEntity entity) {
+    public static ExperimentOutput toOutputModel(ExperimentOutputEntity entity) {
         var model = new ExperimentOutput();
         model.setOutputId(entity.getOutputId());
         model.setName(entity.getName());

@@ -28,7 +28,8 @@ import java.util.Objects;
  * Represents a scientific application registered in the gateway. An application defines its
  * interface (inputs/outputs via {@link ApplicationField}), an optional install script run once per
  * resource, and a run script executed for every experiment. The {@code scope} field controls
- * visibility: {@code "GATEWAY"} for all users or {@code "PRIVATE"} for the owner only.
+ * visibility: {@link ApplicationScope#GATEWAY} for all users or {@link ApplicationScope#USER}
+ * for the owner only.
  */
 public class Application {
     private String applicationId;
@@ -53,11 +54,8 @@ public class Application {
      * May reference input field names as template variables.
      */
     private String runScript;
-    /**
-     * Visibility scope.
-     * Accepted values: {@code "GATEWAY"}, {@code "PRIVATE"}.
-     */
-    private String scope;
+    /** Visibility scope controlling who can see and use this application. */
+    private ApplicationScope scope;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -144,11 +142,11 @@ public class Application {
         this.runScript = runScript;
     }
 
-    public String getScope() {
+    public ApplicationScope getScope() {
         return scope;
     }
 
-    public void setScope(String scope) {
+    public void setScope(ApplicationScope scope) {
         this.scope = scope;
     }
 

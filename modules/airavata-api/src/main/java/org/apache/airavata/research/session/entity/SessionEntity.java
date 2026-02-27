@@ -46,10 +46,10 @@ public class SessionEntity {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
+    @Column(name = "id", nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "session_name", nullable = false)
     private String sessionName;
 
     @Column(name = "user_id", nullable = false)
@@ -59,15 +59,15 @@ public class SessionEntity {
     @JoinColumn(name = "project_id")
     private ResearchProjectEntity project;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
 

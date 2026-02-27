@@ -25,56 +25,31 @@ The Airavata API provides HTTP endpoints for all core functionalities:
 | Experiments | `ExperimentController` | `/api/v1/experiments` | Experiment lifecycle management |
 | Processes | `ProcessController` | `/api/v1/processes` | Process execution and monitoring |
 | Jobs | `JobController` | `/api/v1/jobs` | Job status and management |
-| Applications | `ApplicationInterfaceController` | `/api/v1/application-interfaces` | Application interface definitions |
-| Application Modules | `ApplicationModuleController` | `/api/v1/application-modules` | Application module CRUD |
-| Deployments | `ApplicationDeploymentController` | `/api/v1/application-deployments` | Application deployment configurations |
-| Compute Resources | `ComputeResourceController` | `/api/v1/compute-resources` | Compute resource management |
-| Storage Resources | `StorageResourceController` | `/api/v1/storage-resources` | Storage resource management |
+| Applications | `ApplicationController` | `/api/v1/applications` | Application CRUD |
+| Installations | `ApplicationInstallationController` | `/api/v1/installations` | Application installation on resources |
+| Resources | `ResourceController` | `/api/v1/resources` | Unified compute/storage resource management |
+| Resource Bindings | `ResourceBindingController` | `/api/v1/bindings` | Credential-resource binding management |
 | Projects | `ProjectController` | `/api/v1/projects` | Project management and resource accounts |
+| Allocation Projects | `AllocationProjectController` | `/api/v1/allocation-projects` | HPC allocation project management |
 | Gateways | `GatewayController` | `/api/v1/gateways` | Gateway CRUD |
 | Gateway Config | `GatewayConfigController` | `/api/v1/gateway-config` | Gateway configuration and feature flags |
-| Gateway Resources | `GatewayResourceProfileController` | `/api/v1/gateway-resource-profile` | Gateway resource profiles |
-| Group Resources | `GroupResourceProfileController` | `/api/v1/group-resource-profiles` | Group resource profiles |
-| User Profiles | `UserResourceProfileController` | `/api/v1/user-resource-profiles` | User resource profiles |
 | Users | `UserController` | `/api/v1/users` | User management |
 | Groups | `GroupController` | `/api/v1/groups` | Group management and membership |
-| Workflows | `WorkflowController` | `/api/v1/workflows` | Workflow definitions |
-| Data Products | `DataProductController` | `/api/v1/data-products` | Data product management |
-| Notices | `NoticeController` | `/api/v1/notices` | Notification management |
-| Preferences | `PreferenceController` | `/api/v1/preferences` | Resource preferences (USER>GROUP>GATEWAY) |
 | Credentials | `CredentialController` | `/api/v1` | Credential summaries and SSH/password credential CRUD |
-| Resource Access | `ResourceAccessController` | `/api/v1/resource-access` | Access grants (credential + resource + login username) |
-| Resource Access Grants | `ResourceAccessGrantController` | `/api/v1/resource-access-grants` | Resource access grant CRUD |
-| Cluster Info | `ClusterInfoController` | `/api/v1/cluster-info` | SLURM partitions and grant-tied accounts |
-| Connectivity Test | `ConnectivityTestController` | `/api/v1/connectivity-test` | SSH/SFTP/SLURM connectivity validation |
+| Workflows | `WorkflowController` | `/api/v1/workflows` | Workflow definitions |
+| Workflow Runs | `WorkflowRunController` | `/api/v1/workflow-runs` | Workflow run execution and status |
+| Notices | `NoticeController` | `/api/v1/notices` | Notification management |
 | Statistics | `StatisticsController` | `/api/v1/statistics` | Experiment and system statistics |
-| Parsing Templates | `ParsingTemplateController` | `/api/v1/parsing-templates` | Parsing template CRUD |
 | System Config | `SystemConfigController` | `/api/v1/system-config` | Global/gateway system configuration |
 | SSH Keys | `SSHKeyController` | `/api/v1/ssh-keygen` | SSH key pair generation |
-| Catalog | `CatalogController` | `/api/v1/catalog` | Catalog resources (Airavata Portal) |
-| Proxy | `ProxyController` | (conditional) | Kafka topic proxy |
+| Connectivity Test | `ConnectivityTestController` | `/api/v1/connectivity-test` | SSH/SFTP/SLURM connectivity validation |
+| Monitoring | `MonitoringJobStatusController` | `/api/v1/monitoring` | Job status callback endpoint |
+| Research Hub | `ResearchHubController` | `/api/v1/research-hub` | Research hub portal |
+| Research Artifacts | `ResearchArtifactController` | `/api/v1/research/artifacts` | Research artifact CRUD |
+| Research Projects | `ResearchProjectController` | `/api/v1/research/artifacts/projects` | Research project management |
+| Research Sessions | `ResearchSessionController` | `/api/v1/research-hub/sessions` | Research session management |
 
 All endpoints are prefixed with `/api/v1/` and follow RESTful conventions.
-
-### Cluster info and grant-tied accounts on the portal
-
-When a credential is used to discover what is allowed on a resource, the system runs the bundled bash script (slurminfo.sh) via SSH and caches the result. The **cluster-info API** exposes this so the portal can show grant-tied partitions and accounts to users:
-
-- **POST** `/api/v1/cluster-info/fetch` — Body: `credentialToken`, `computeResourceId`, `hostname`, `port` (optional, default 22), `loginUsername` (required; from resource access/grant), `gatewayId` (optional, from auth). Fetches and caches partitions and accounts for this credential on this compute resource.
-- **GET** `/api/v1/cluster-info/{credentialToken}/{computeResourceId}` — Returns cached cluster info: `partitions` (list of partition objects with name, nodes, accounts, etc.) and `accounts` (list of Slurm account names). Use this to show "your accounts per resource" after fetch.
-- **DELETE** `/api/v1/cluster-info/{credentialToken}/{computeResourceId}` — Invalidates the cache.
-
-Portal flow: For each of the user's credential–resource pairs (e.g. from resource access grants), call fetch (once) then GET to display partitions and accounts. Users can then bind one account per resource to a project (see Project resource accounts).
-
-### Project resource accounts (one account per resource per project)
-
-A project can have **resource-account bindings**: for each compute resource, one Slurm account to use when running experiments in that project. This lets users work on a project with the correct accounts regardless of which resource runs.
-
-- **GET** `/api/v1/projects/{projectId}/resource-accounts` — List bindings for the project (each: computeResourceId, credentialToken, accountName, gatewayId).
-- **POST** `/api/v1/projects/{projectId}/resource-accounts` — Add or update a binding. Body: `{ "computeResourceId", "credentialToken", "accountName", "gatewayId" }` (gatewayId optional; defaults to project's gateway). The `accountName` must be one of the accounts returned by cluster-info for this credential and resource (fetch cluster info first).
-- **DELETE** `/api/v1/projects/{projectId}/resource-accounts/{computeResourceId}` — Remove the binding for that resource.
-
-Portal flow for editing a project's allocation: (1) List user's credential–resource pairs (e.g. from resource access). (2) For each, fetch cluster info and show accounts. (3) User selects one account per resource and POSTs to project resource-accounts. At job submit time, the system uses the project's account for the chosen compute resource when present. Credentials are stored without a login username; login username is set per resource in resource-access grants and must be supplied when testing connectivity.
 
 ## Configuration Properties
 

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.compute.resource.submission;
 
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

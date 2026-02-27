@@ -143,7 +143,7 @@ When using the distribution bundle (tarball or fat JAR):
 
 ## Architecture
 
-Five top-level services run in one JVM (`AiravataServer`) and handle the full job lifecycle.
+All services run in one JVM (`AiravataServer`) and handle the full job lifecycle.
 
 ```mermaid
 flowchart TB
@@ -152,18 +152,16 @@ flowchart TB
         Agents["Agents"]
     end
 
-    subgraph Server["Airavata Services"]
+    subgraph Server["Airavata Server (single JVM)"]
         HTTP["HTTP Server :8090<br/>REST API + File API"]
         gRPC["gRPC Server :9090<br/>Agent Streams"]
-        Orch["Orchestrator"]
-        PreWF["Pre Workflow Manager"]
-        PostWF["Post Workflow Manager"]
-        ParseWF["Parser Workflow Manager"]
+        Orch["OrchestratorService"]
+        PA["ProcessActivity<br/>(Pre/Post/Cancel/Parsing workflows)"]
     end
 
     subgraph Temporal["Temporal :7233"]
-        Workflows["Temporal Workflows<br/>(Pre/Post/Cancel/Parsing)"]
-        Activities["Temporal Activities<br/>(EnvSetup, InputStaging,<br/>JobSubmission, OutputStaging)"]
+        Workflows["Durable Workflows<br/>(Pre/Post/Cancel/Parsing)"]
+        Activities["Activities<br/>(EnvSetup, InputStaging,<br/>JobSubmission, OutputStaging)"]
     end
 
     subgraph External["Infrastructure"]
@@ -176,10 +174,8 @@ flowchart TB
     Portals --> HTTP
     Agents --> gRPC
     HTTP --> Orch
-    Orch --> PreWF & PostWF & ParseWF
-    PreWF --> Workflows
-    PostWF --> Workflows
-    ParseWF --> Workflows
+    Orch --> PA
+    PA --> Workflows
     Workflows --> Activities
     Activities -->|SSH/SSHJ| Compute
     Activities -->|SSH/SSHJ| Storage
@@ -202,14 +198,13 @@ flowchart LR
         gRPC["gRPC :9090"]
     end
 
-    subgraph App["Airavata Services"]
+    subgraph App["Internal Services (single JVM)"]
         direction LR
         O["Orchestrator"]
-        Ex["Execution"]
+        Ex["Execution<br/>(ProcessActivity)"]
         Res["Research"]
         S["IAM/Sharing"]
         Cr["Credential Store"]
-        W["Workflow Mgrs"]
     end
 
     subgraph Infra["Infrastructure"]
@@ -245,7 +240,7 @@ Domain-first layout where each domain owns its entity, repository, mapper, servi
 org.apache.airavata/
 ├── execution/             # Orchestration, scheduling, DAG execution, Temporal activities
 │   ├── activity/          # Temporal workflows (Pre/Post/Cancel) and ActivitiesImpl
-│   ├── orchestration/     # OrchestratorService, ProcessResourceResolver, task model builders
+│   ├── orchestration/     # OrchestratorService, ProcessResourceResolver, ValidationService
 │   ├── scheduling/        # ProcessScheduler, ScheduledTaskManager
 │   ├── dag/               # ProcessDAGEngine, TaskNode, interceptors
 │   ├── monitoring/        # JobStatusEventPublisher, email monitoring
@@ -254,10 +249,9 @@ org.apache.airavata/
 │   ├── entity/            # ProcessEntity, ComputeSubmissionTrackingEntity
 │   ├── repository/        # ProcessRepository
 │   ├── mapper/            # ProcessMapper
-│   ├── model/             # Process domain models
+│   ├── model/             # ProcessModel
 │   ├── event/             # LocalStatusEvent
-│   ├── task/              # TaskContext, TaskFailureException
-│   └── util/              # WorkflowNaming
+│   └── task/              # TaskContext
 ├── research/              # Research domain grouping
 │   ├── experiment/        # Experiments: entity/repo/mapper/service/model/util
 │   ├── application/       # App catalog: entity/repo/mapper/service/model/adapter
@@ -265,13 +259,11 @@ org.apache.airavata/
 │   ├── project/           # Research projects: entity/repo/service/dto
 │   └── session/           # User sessions: entity/repo/service/model/dto
 ├── compute/               # Compute resources and job execution
-│   ├── resource/          # Resource models/services + generic tasks
-│   ├── provider/          # Backend impls: slurm/, local/, aws/ (each has a Provisioner)
-│   ├── provisioning/      # Provisioner interface + shared job infra (entity, model, service, submission)
-│   └── monitoring/        # Job status monitoring (polling, email parsing)
+│   ├── resource/          # Resource models/services/entities/repos + job submission infra
+│   └── provider/          # Backend impls: slurm/, local/, aws/ (each has a ComputeProvider)
 ├── storage/               # Data staging
 │   ├── resource/          # Storage models (enums, POJOs)
-│   └── provider/          # SFTP staging tasks
+│   └── client/            # StorageClient interface + SftpStorageClient (sftp/)
 ├── status/                # Event and status management
 │   ├── entity/            # EventEntity
 │   ├── repository/        # StatusRepository
@@ -427,7 +419,7 @@ ansible-playbook -i inventories/my-deployment deploy.yml
 
 # Or deploy components individually using tags
 ansible-playbook -i inventories/my-deployment deploy.yml --tags database
-ansible-playbook -i inventories/my-deployment deploy.yml --tags redis
+ansible-playbook -i inventories/my-deployment deploy.yml --tags temporal
 ansible-playbook -i inventories/my-deployment deploy.yml --tags apiserver
 ansible-playbook -i inventories/my-deployment deploy.yml --tags keycloak
 ```
@@ -474,7 +466,7 @@ mvn test -Dtest=SomeTestClass               # Specific test
 
 Schema: single Flyway baseline at `src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql`. JPA via package scanning (no `persistence.xml`). To change schema: (1) Add or update the entity. (2) Add a versioned migration (e.g. `V2__Description.sql`) so DB matches entity; use `IF NOT EXISTS`/`IF EXISTS`. Drop column/table must be done manually. Tarball uses these Flyway scripts only.
 
-**Simplifications:** Child tables merged into JSON (e.g. `BATCH_QUEUE`, `COMPUTE_RESOURCE_FILE_SYSTEM` → `COMPUTE_RESOURCE.BATCH_QUEUES`, `FILE_SYSTEMS`). TASK/JOB dropped; task/job are Process with PROCESS_TYPE. [docs/ERD.md](docs/ERD.md), [dev-tools/migrations/schema_simplification/README.md](dev-tools/migrations/schema_simplification/README.md).
+**Simplifications:** Child tables merged into JSON (e.g. batch queues → `RESOURCE.capabilities`). TASK table removed (tasks are transient DAG nodes, not persisted). JOB table remains for HPC job tracking with FK to PROCESS. [docs/ERD.md](docs/ERD.md), [dev-tools/migrations/schema_simplification/README.md](dev-tools/migrations/schema_simplification/README.md).
 
 ---
 

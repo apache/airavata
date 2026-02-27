@@ -19,10 +19,11 @@
 */
 package org.apache.airavata.iam.mapper;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import org.apache.airavata.config.EntityMapperConfiguration;
+import org.apache.airavata.core.mapper.EntityMapper;
 import org.apache.airavata.iam.entity.UserEntity;
 import org.apache.airavata.iam.model.UserProfile;
 import org.mapstruct.Mapper;
@@ -33,12 +34,13 @@ import org.mapstruct.Named;
  * Maps minimal UserEntity to UserProfile. Profile fields are enriched from IAM by the service layer.
  */
 @Mapper(componentModel = "spring", config = EntityMapperConfiguration.class, implementationName = "IamUserMapperImpl")
-public interface UserMapper {
+public interface UserMapper extends EntityMapper<UserEntity, UserProfile> {
 
+    @Override
     @Mapping(target = "userId", source = "sub")
     @Mapping(target = "airavataInternalUserId", source = "userId")
     @Mapping(target = "gatewayId", source = "gatewayId")
-    @Mapping(target = "creationTime", source = "createdAt", qualifiedByName = "timestampToLong")
+    @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "instantToLong")
     @Mapping(target = "firstName", ignore = true)
     @Mapping(target = "lastName", ignore = true)
     @Mapping(target = "emails", ignore = true)
@@ -61,6 +63,7 @@ public interface UserMapper {
     @Mapping(target = "gpgKey", ignore = true)
     UserProfile toModel(UserEntity entity);
 
+    @Override
     @Mapping(target = "sub", source = "userId")
     @Mapping(target = "gatewayId", source = "gatewayId")
     @Mapping(target = "personalGroupId", ignore = true)
@@ -69,13 +72,9 @@ public interface UserMapper {
     @Mapping(target = "gateway", ignore = true)
     UserEntity toEntity(UserProfile model);
 
-    List<UserProfile> toModelList(List<UserEntity> entities);
-
-    List<UserEntity> toEntityList(List<UserProfile> models);
-
-    @Named("timestampToLong")
-    default long timestampToLong(Timestamp timestamp) {
-        return timestamp != null ? timestamp.getTime() : 0L;
+    @Named("instantToLong")
+    default long instantToLong(Instant instant) {
+        return instant != null ? instant.toEpochMilli() : 0L;
     }
 
     default List<String> emailToList(String email) {

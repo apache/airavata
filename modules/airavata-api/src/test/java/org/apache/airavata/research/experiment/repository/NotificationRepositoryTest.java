@@ -60,10 +60,10 @@ public class NotificationRepositoryTest extends TestBase {
         notification.setTitle("Test Notification Title");
         notification.setNotificationMessage("This is a comprehensive test notification message");
         notification.setPriority(NotificationPriority.HIGH);
-        long currentTime = IdGenerator.getUniqueTimestamp().getTime();
-        notification.setCreationTime(currentTime);
-        notification.setPublishedTime(currentTime);
-        notification.setExpirationTime(currentTime + 86400000L);
+        long currentTime = IdGenerator.getUniqueTimestamp().toEpochMilli();
+        notification.setCreatedAt(currentTime);
+        notification.setPublishedAt(currentTime);
+        notification.setExpiresAt(currentTime + 86400000L);
 
         String notificationId = notificationService.createNotification(notification);
         assertNotNull(notificationId);
@@ -107,7 +107,7 @@ public class NotificationRepositoryTest extends TestBase {
 
         Notification original = notificationService.getNotification(notificationId);
         assertNotNull(original);
-        long originalCreationTime = original.getCreationTime();
+        long originalCreationTime = original.getCreatedAt();
         assertTrue(originalCreationTime > 0);
 
         original.setTitle("Updated Title");
@@ -118,7 +118,7 @@ public class NotificationRepositoryTest extends TestBase {
         Notification updated = notificationService.getNotification(notificationId);
         assertNotNull(updated);
         assertEquals("Updated Title", updated.getTitle());
-        assertEquals(originalCreationTime, updated.getCreationTime());
+        assertEquals(originalCreationTime, updated.getCreatedAt());
 
         notificationService.deleteNotification(notificationId);
     }

@@ -20,18 +20,16 @@
 package org.apache.airavata.restapi.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.Job;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.core.util.DBConstants;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.service.ProcessService;
+import org.apache.airavata.execution.process.ProcessModel;
+import org.apache.airavata.execution.process.ProcessService;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
 import org.apache.airavata.status.service.StatusService;
@@ -71,19 +69,19 @@ public class JobController {
         if (process == null) {
             throw new ResourceNotFoundException("Job", jobId);
         }
-        JobModel job = processToJobModel(process);
+        Job job = processToJob(process);
         return ResponseEntity.ok(job);
     }
 
     @PostMapping
-    public ResponseEntity<?> createJob(@RequestParam String processId, @RequestBody JobModel job) {
+    public ResponseEntity<?> createJob(@RequestParam String processId, @RequestBody Job job) {
         return ResponseEntity.status(HttpStatus.GONE)
                 .body(Map.of("error", "Job API deprecated; use Process API with processType=JOB_SUBMISSION"));
     }
 
     @PutMapping("/{jobId}")
     public ResponseEntity<?> updateJob(
-            @PathVariable String jobId, @RequestParam(required = false) String taskId, @RequestBody JobModel job)
+            @PathVariable String jobId, @RequestParam(required = false) String taskId, @RequestBody Job job)
             throws RegistryException {
         ProcessModel process = processService.getProcess(jobId);
         if (process == null) {
@@ -103,24 +101,17 @@ public class JobController {
             @RequestParam(required = false) String taskId,
             @RequestParam(required = false) String jobId)
             throws RegistryException {
-        List<JobModel> jobs = new ArrayList<>();
+        List<Job> jobs = new ArrayList<>();
         if (jobId != null) {
             ProcessModel p = processService.getProcess(jobId);
-            if (p != null) jobs.add(processToJobModel(p));
+            if (p != null) jobs.add(processToJob(p));
         } else if (processId != null || taskId != null) {
             String parentId = processId != null ? processId : taskId;
             ProcessModel parent = processService.getProcess(parentId);
             if (parent != null) {
-                List<ProcessModel> processes =
-                        processService.getProcessList(DBConstants.Process.EXPERIMENT_ID, parent.getExperimentId());
-                if (processes != null) {
-                    for (ProcessModel p : processes) {
-                        String metaParent = getParentProcessIdFromMetadata(p.getProcessMetadata());
-                        if (parentId.equals(metaParent) && "JOB_SUBMISSION".equals(p.getProcessType())) {
-                            jobs.add(processToJobModel(p));
-                        }
-                    }
-                }
+                List<ProcessModel> processes = processService.getProcessList(parent.getExperimentId());
+                // Note: child-process-job lookup is not supported — processMetadata
+                // and processType are not populated on ProcessModel.
             }
         } else {
             throw new InvalidRequestException("One of processId, taskId, or jobId must be provided");
@@ -128,12 +119,11 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-    private static JobModel processToJobModel(ProcessModel process) {
-        JobModel job = new JobModel();
+    private static Job processToJob(ProcessModel process) {
+        Job job = new Job();
         job.setJobId(process.getProcessId());
-        job.setProcessId(getParentProcessIdFromMetadata(process.getProcessMetadata()));
-        long creationTimeMillis = process.getCreationTime();
-        job.setCreatedAt(creationTimeMillis > 0 ? Instant.ofEpochMilli(creationTimeMillis) : null);
+        job.setProcessId(null);
+        job.setCreatedAt(process.getCreatedAt());
         if (process.getProcessStatuses() != null) {
             List<StatusModel<JobState>> list = new ArrayList<>();
             for (StatusModel<ProcessState> ps : process.getProcessStatuses()) {
@@ -147,12 +137,6 @@ public class JobController {
             job.setJobStatuses(list);
         }
         return job;
-    }
-
-    private static String getParentProcessIdFromMetadata(Map<String, Object> metadata) {
-        if (metadata == null) return null;
-        Object v = metadata.get(METADATA_PARENT_PROCESS_ID);
-        return v != null ? v.toString() : null;
     }
 
     private static JobState processStateToJobState(ProcessState ps) {

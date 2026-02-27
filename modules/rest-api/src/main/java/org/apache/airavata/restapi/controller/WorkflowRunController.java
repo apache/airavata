@@ -22,6 +22,7 @@ package org.apache.airavata.restapi.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
 import org.apache.airavata.workflow.model.WorkflowRun;
+import org.apache.airavata.workflow.model.WorkflowRunStatus;
 import org.apache.airavata.workflow.service.WorkflowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class WorkflowRunController {
             @PathVariable("runId") String runId,
             @PathVariable("stepId") String stepId,
             @RequestParam String experimentId,
-            @RequestParam String status) {
+            @RequestParam WorkflowRunStatus status) {
         logger.debug(
                 "Updating step state: runId={}, stepId={}, experimentId={}, status={}",
                 runId,
@@ -105,7 +106,7 @@ public class WorkflowRunController {
      * @throws ResourceNotFoundException when no run exists for the given id
      */
     @PutMapping("/{runId}/status")
-    public WorkflowRun updateRunStatus(@PathVariable("runId") String runId, @RequestParam String status) {
+    public WorkflowRun updateRunStatus(@PathVariable("runId") String runId, @RequestParam WorkflowRunStatus status) {
         logger.debug("Updating run status: runId={}, status={}", runId, status);
         if (workflowService.getRun(runId) == null) {
             throw new ResourceNotFoundException("WorkflowRun", runId);

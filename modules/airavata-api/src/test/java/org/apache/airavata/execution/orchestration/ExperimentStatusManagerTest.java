@@ -30,16 +30,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.ResourceIdentifier;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.TaskModel;
-import org.apache.airavata.execution.model.TaskTypes;
-import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
 import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
@@ -54,7 +48,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /**
  * Pure unit tests for {@link ExperimentStatusManager}.
  *
- * <p>All collaborators ({@link ProcessService}, {@link ExperimentRepository},
+ * <p>All collaborators ({@link ExperimentRepository},
  * {@link OrchestratorService}) are mocked via Mockito — no Spring context is loaded.
  *
  * <p>The test suite is organised into four {@link Nested} groups mirroring the public
@@ -82,13 +76,10 @@ public class ExperimentStatusManagerTest {
     // -------------------------------------------------------------------------
 
     @Mock
-    private ProcessService processService;
-
-    @Mock
     private ExperimentRepository experimentRepository;
 
     @Mock
-    private OrchestratorService orchestratorService;
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     // -------------------------------------------------------------------------
     // System under test
@@ -98,9 +89,7 @@ public class ExperimentStatusManagerTest {
 
     @BeforeEach
     void setUp() {
-        // Construct directly — no Spring wiring needed. The @Lazy on orchestratorService
-        // is a Spring hint only; the constructor itself has no special behaviour.
-        manager = new ExperimentStatusManager(processService, experimentRepository, orchestratorService);
+        manager = new ExperimentStatusManager(experimentRepository, eventPublisher);
     }
 
     // -------------------------------------------------------------------------
@@ -124,42 +113,15 @@ public class ExperimentStatusManagerTest {
     }
 
     /**
-     * Returns a {@link ProcessModel} with no tasks — represents a standard (non-output-fetching)
-     * process.
-     */
-    private static ProcessModel standardProcess() {
-        ProcessModel model = new ProcessModel();
-        model.setProcessId(PROCESS_ID);
-        model.setExperimentId(EXPERIMENT_ID);
-        model.setTasks(Collections.emptyList());
-        return model;
-    }
-
-    /**
-     * Returns a {@link ProcessModel} whose task list contains an {@code OUTPUT_FETCHING} task,
-     * representing an intermediate output-fetching process that must not drive experiment status.
-     */
-    private static ProcessModel outputFetchingProcess() {
-        TaskModel ofTask = new TaskModel();
-        ofTask.setTaskId("task-of-001");
-        ofTask.setTaskType(TaskTypes.OUTPUT_FETCHING);
-        ProcessModel model = new ProcessModel();
-        model.setProcessId(PROCESS_ID);
-        model.setExperimentId(EXPERIMENT_ID);
-        model.setTasks(List.of(ofTask));
-        return model;
-    }
-
-    /**
      * Creates and stubs an {@link ExperimentEntity} whose stored state string is set to
      * {@code stateString}.  The entity is registered with the repository mock so that a
      * {@code findById(EXPERIMENT_ID)} call returns it.
      */
-    private ExperimentEntity stubExperimentInState(String stateString) {
+    private ExperimentEntity stubExperimentInState(ExperimentState state) {
         ExperimentEntity entity = new ExperimentEntity();
         entity.setExperimentId(EXPERIMENT_ID);
         entity.setGatewayId(GATEWAY_ID);
-        entity.setState(stateString);
+        entity.setState(state);
         when(experimentRepository.findById(EXPERIMENT_ID)).thenReturn(Optional.of(entity));
         return entity;
     }
@@ -177,14 +139,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processLaunched_setsExperimentToExecuting() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.LAUNCHED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.EXECUTING.name(),
+                    ExperimentState.EXECUTING,
                     entity.getState(),
                     "Experiment must transition to EXECUTING when process LAUNCHED");
         }
@@ -195,14 +157,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processCompleted_setsExperimentToCompleted() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.EXECUTING.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.EXECUTING);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.COMPLETED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.COMPLETED.name(),
+                    ExperimentState.COMPLETED,
                     entity.getState(),
                     "Experiment must transition to COMPLETED when process COMPLETED from EXECUTING");
         }
@@ -213,14 +175,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processCompleted_whileCanceling_setsExperimentToCanceled() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.CANCELING.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.CANCELING);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.COMPLETED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.CANCELED.name(),
+                    ExperimentState.CANCELED,
                     entity.getState(),
                     "CANCELING takes precedence: experiment must become CANCELED even when process COMPLETED");
         }
@@ -231,14 +193,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processFailed_setsExperimentToFailed() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.EXECUTING.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.EXECUTING);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.FAILED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.FAILED.name(),
+                    ExperimentState.FAILED,
                     entity.getState(),
                     "Experiment must transition to FAILED when process FAILED");
         }
@@ -249,14 +211,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processFailed_whileCanceling_setsExperimentToCanceled() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.CANCELING.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.CANCELING);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.FAILED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.CANCELED.name(),
+                    ExperimentState.CANCELED,
                     entity.getState(),
                     "CANCELING takes precedence: experiment must become CANCELED even when process FAILED");
         }
@@ -267,14 +229,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processCanceled_setsExperimentToCanceled() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.CANCELING.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.CANCELING);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.CANCELED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.CANCELED.name(),
+                    ExperimentState.CANCELED,
                     entity.getState(),
                     "Experiment must transition to CANCELED when process CANCELED");
         }
@@ -290,35 +252,20 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processQueued_setsExperimentToScheduled() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.EXECUTING.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.EXECUTING);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.QUEUED), processIdentity());
 
             verify(experimentRepository, atLeastOnce()).save(entity);
             assertEquals(
-                    ExperimentState.SCHEDULED.name(),
+                    ExperimentState.SCHEDULED,
                     entity.getState(),
                     "Experiment must transition to SCHEDULED when process QUEUED");
         }
 
         // ------------------------------------------------------------------
-        // 8. OUTPUT_FETCHING process must NOT update experiment status
-        // ------------------------------------------------------------------
-
-        @Test
-        void intermediateOutputProcess_doesNotUpdateExperimentStatus() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(outputFetchingProcess());
-
-            // Repository is NOT stubbed — if it were called the mock would return Optional.empty()
-            // and the state logic would still run.  What we assert is that save() is never called.
-            manager.handleProcessStatusChange(eventFor(ProcessState.COMPLETED), processIdentity());
-
-            verify(experimentRepository, never()).save(any());
-        }
-
-        // ------------------------------------------------------------------
-        // 9. COMPLETED from LAUNCHED -> EXECUTING inferred first, then COMPLETED
+        // 8. COMPLETED from LAUNCHED -> EXECUTING inferred first, then COMPLETED
         //
         // The state machine path:
         //   handleProcessStatusChange sees currentExpState == LAUNCHED
@@ -336,8 +283,8 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void processCompleted_fromLaunched_infersExecutingFirst() throws Exception {
-            when(processService.getProcess(PROCESS_ID)).thenReturn(standardProcess());
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED.name());
+
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED);
 
             manager.handleProcessStatusChange(eventFor(ProcessState.COMPLETED), processIdentity());
 
@@ -346,7 +293,7 @@ public class ExperimentStatusManagerTest {
 
             // After both mutations the entity must reflect the final COMPLETED state.
             assertEquals(
-                    ExperimentState.COMPLETED.name(),
+                    ExperimentState.COMPLETED,
                     entity.getState(),
                     "Final persisted state must be COMPLETED after the inferred EXECUTING step");
         }
@@ -365,14 +312,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void validTransition_updatesEntity() {
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED.name());
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED);
 
             StatusModel<ExperimentState> status = StatusModel.of(ExperimentState.EXECUTING, "test");
             manager.updateExperimentStatus(EXPERIMENT_ID, status, GATEWAY_ID);
 
             verify(experimentRepository, times(1)).save(entity);
             assertEquals(
-                    ExperimentState.EXECUTING.name(),
+                    ExperimentState.EXECUTING,
                     entity.getState(),
                     "Entity state must reflect the requested transition target");
         }
@@ -384,7 +331,7 @@ public class ExperimentStatusManagerTest {
         @Test
         void invalidTransition_rejected() {
             // COMPLETED -> LAUNCHED is not in the valid-transitions table
-            stubExperimentInState(ExperimentState.COMPLETED.name());
+            stubExperimentInState(ExperimentState.COMPLETED);
 
             StatusModel<ExperimentState> status = StatusModel.of(ExperimentState.LAUNCHED, "illegal");
             manager.updateExperimentStatus(EXPERIMENT_ID, status, GATEWAY_ID);
@@ -422,14 +369,14 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void failExperiment_setsFailedStatusAndReturnsException() {
-            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED.name());
+            ExperimentEntity entity = stubExperimentInState(ExperimentState.LAUNCHED);
             Exception cause = new RuntimeException("disk full");
 
             OrchestratorException result = manager.failExperiment(EXPERIMENT_ID, GATEWAY_ID, "disk error", cause);
 
             // Entity must be persisted as FAILED
             verify(experimentRepository, times(1)).save(entity);
-            assertEquals(ExperimentState.FAILED.name(), entity.getState(), "Entity must be saved with state FAILED");
+            assertEquals(ExperimentState.FAILED, entity.getState(), "Entity must be saved with state FAILED");
 
             // Returned exception must wrap the cause and reference the experiment ID
             assertNotNull(result, "failExperiment must return a non-null OrchestratorException");
@@ -455,7 +402,7 @@ public class ExperimentStatusManagerTest {
 
         @Test
         void getExperimentStatus_returnsCurrentState() throws Exception {
-            stubExperimentInState(ExperimentState.EXECUTING.name());
+            stubExperimentInState(ExperimentState.EXECUTING);
 
             StatusModel<ExperimentState> result = manager.getExperimentStatus(EXPERIMENT_ID);
 
@@ -478,26 +425,11 @@ public class ExperimentStatusManagerTest {
         }
 
         // ------------------------------------------------------------------
-        // Additional: Returns null when stored state string is unrecognised
-        // ------------------------------------------------------------------
-
-        @Test
-        void getExperimentStatus_returnsNull_whenStateIsUnknown() throws Exception {
-            stubExperimentInState("BOGUS_STATE");
-
-            StatusModel<ExperimentState> result = manager.getExperimentStatus(EXPERIMENT_ID);
-
-            assertNull(result, "getExperimentStatus must return null for an unrecognised state string");
-        }
-
-        // ------------------------------------------------------------------
         // Additional: Returns null when stored state is null
         // ------------------------------------------------------------------
 
         @Test
         void getExperimentStatus_returnsNull_whenEntityStateIsNull() throws Exception {
-            stubExperimentInState(null);
-            // Override the stub: the entity's state is null
             ExperimentEntity nullStateEntity = new ExperimentEntity();
             nullStateEntity.setExperimentId(EXPERIMENT_ID);
             nullStateEntity.setState(null);

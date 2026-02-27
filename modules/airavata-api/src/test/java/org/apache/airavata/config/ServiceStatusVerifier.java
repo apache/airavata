@@ -117,14 +117,14 @@ public class ServiceStatusVerifier {
      * @return true if service started within timeout, false otherwise
      */
     public boolean waitForService(String serviceName, int timeoutSeconds, long retryIntervalMs) {
-        long startTime = IdGenerator.getUniqueTimestamp().getTime();
+        long startTime = IdGenerator.getUniqueTimestamp().toEpochMilli();
         long timeoutMs = timeoutSeconds * 1000L;
 
         logger.info("Waiting for service {} to start (timeout: {}s)", serviceName, timeoutSeconds);
 
-        while (IdGenerator.getUniqueTimestamp().getTime() - startTime < timeoutMs) {
+        while (IdGenerator.getUniqueTimestamp().toEpochMilli() - startTime < timeoutMs) {
             if (isServiceRunning(serviceName)) {
-                long elapsed = IdGenerator.getUniqueTimestamp().getTime() - startTime;
+                long elapsed = IdGenerator.getUniqueTimestamp().toEpochMilli() - startTime;
                 logger.info("Service {} started after {}ms", serviceName, elapsed);
                 return true;
             }
@@ -191,14 +191,14 @@ public class ServiceStatusVerifier {
      * @return true if port became available, false if timeout
      */
     public boolean waitForPort(String host, int port, int timeoutSeconds, long retryIntervalMs) {
-        long startTime = IdGenerator.getUniqueTimestamp().getTime();
+        long startTime = IdGenerator.getUniqueTimestamp().toEpochMilli();
         long timeoutMs = timeoutSeconds * 1000L;
 
         logger.info("Waiting for port {}:{} to become available (timeout: {}s)", host, port, timeoutSeconds);
 
-        while (IdGenerator.getUniqueTimestamp().getTime() - startTime < timeoutMs) {
+        while (IdGenerator.getUniqueTimestamp().toEpochMilli() - startTime < timeoutMs) {
             if (isPortListening(host, port, 1000)) {
-                long elapsed = IdGenerator.getUniqueTimestamp().getTime() - startTime;
+                long elapsed = IdGenerator.getUniqueTimestamp().toEpochMilli() - startTime;
                 logger.info("Port {}:{} became available after {}ms", host, port, elapsed);
                 return true;
             }

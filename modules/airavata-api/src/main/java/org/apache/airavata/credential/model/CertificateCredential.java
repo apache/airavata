@@ -22,7 +22,6 @@ package org.apache.airavata.credential.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -33,7 +32,7 @@ public final class CertificateCredential implements Credential {
 
     // Base credential fields
     private String userId;
-    private Date persistedTime;
+    private long createdAt;
     private String token;
     private String gatewayId;
     private String name;
@@ -66,13 +65,13 @@ public final class CertificateCredential implements Credential {
     }
 
     @Override
-    public Date getPersistedTime() {
-        return persistedTime;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
     @Override
-    public void setPersistedTime(Date persistedTime) {
-        this.persistedTime = persistedTime;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -191,14 +190,13 @@ public final class CertificateCredential implements Credential {
                 && Objects.equals(privateKey, that.privateKey)
                 && Objects.equals(lifeTime, that.lifeTime)
                 && Objects.equals(notBefore, that.notBefore)
-                && Objects.equals(persistedTime, that.persistedTime)
+                && createdAt == that.createdAt
                 && Objects.equals(token, that.token);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                userId, gatewayId, x509Cert, notAfter, privateKey, lifeTime, notBefore, persistedTime, token);
+        return Objects.hash(userId, gatewayId, x509Cert, notAfter, privateKey, lifeTime, notBefore, createdAt, token);
     }
 
     @Override
@@ -211,7 +209,7 @@ public final class CertificateCredential implements Credential {
                 + ", privateKey='" + (privateKey != null ? "***" : null) + '\''
                 + ", lifeTime=" + lifeTime
                 + ", notBefore='" + notBefore + '\''
-                + ", persistedTime=" + persistedTime
+                + ", createdAt=" + createdAt
                 + ", token='" + token + '\''
                 + '}';
     }

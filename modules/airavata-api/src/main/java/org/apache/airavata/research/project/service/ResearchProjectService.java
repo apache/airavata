@@ -20,27 +20,25 @@
 package org.apache.airavata.research.project.service;
 
 import java.util.List;
-import org.apache.airavata.research.artifact.entity.DatasetArtifactEntity;
-import org.apache.airavata.research.artifact.entity.RepositoryArtifactEntity;
-import org.apache.airavata.research.project.dto.CreateProjectRequest;
-import org.apache.airavata.research.project.entity.ResearchProjectEntity;
+import org.apache.airavata.research.project.model.CreateProjectRequest;
+import org.apache.airavata.research.project.model.ResearchProject;
 
 /**
  * Service contract for managing research projects.
  */
 public interface ResearchProjectService {
 
-    ResearchProjectEntity findProject(String projectId);
+    ResearchProject findProject(String projectId);
 
-    ResearchProjectEntity createProject(CreateProjectRequest createProjectRequest);
+    ResearchProject createProject(CreateProjectRequest createProjectRequest);
 
-    List<ResearchProjectEntity> getAllProjects();
+    List<ResearchProject> getAllProjects();
 
-    List<ResearchProjectEntity> getAllProjectsByOwnerId(String ownerId);
+    List<ResearchProject> getAllProjectsByOwnerId(String ownerId);
 
     boolean deleteProject(String projectId);
 
-    List<ResearchProjectEntity> findProjectsWithRepository(RepositoryArtifactEntity repositoryArtifact);
+    List<ResearchProject> findProjectsWithRepository(String repositoryArtifactId);
 
-    List<ResearchProjectEntity> findProjectsContainingDataset(DatasetArtifactEntity datasetArtifact);
+    List<ResearchProject> findProjectsContainingDataset(String datasetArtifactId);
 }

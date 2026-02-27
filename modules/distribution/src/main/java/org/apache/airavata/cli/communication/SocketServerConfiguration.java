@@ -26,7 +26,6 @@ import java.io.IOException;
 import org.apache.airavata.cli.handlers.ServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +37,11 @@ import org.springframework.stereotype.Component;
 public class SocketServerConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(SocketServerConfiguration.class);
     private ServiceSocketManager socketManager;
+    private final ServiceHandler serviceHandler;
 
-    @Autowired
-    private ServiceHandler serviceHandler;
+    public SocketServerConfiguration(ServiceHandler serviceHandler) {
+        this.serviceHandler = serviceHandler;
+    }
 
     @PostConstruct
     public void startSocketServer() {

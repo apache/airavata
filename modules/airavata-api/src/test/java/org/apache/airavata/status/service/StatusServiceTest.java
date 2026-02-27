@@ -180,7 +180,7 @@ public class StatusServiceTest extends TestBase {
         ErrorModel error = new ErrorModel();
         error.setActualErrorMessage("NullPointerException at line 42");
         error.setUserFriendlyMessage("An unexpected error occurred");
-        error.setTransientOrPersistent(false);
+        error.setTransientError(false);
 
         String errorId = statusService.addProcessError(error, testProcessId);
 

@@ -25,9 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.compute.provider.ComputeProvider;
-import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.Job;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.repository.JobRepository;
 import org.apache.airavata.compute.resource.service.JobService;
@@ -42,11 +41,11 @@ import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.telemetry.CounterMetric;
-import org.apache.airavata.execution.scheduling.ComputeSubmissionTracker;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
+import org.apache.airavata.execution.orchestration.ComputeSubmissionTracker;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.CommandOutput;
+import org.apache.airavata.protocol.AgentAdapter.CommandOutput;
 import org.apache.airavata.status.model.ErrorModel;
 import org.apache.airavata.status.service.StatusService;
 import org.slf4j.Logger;
@@ -168,13 +167,13 @@ public class SlurmComputeProvider implements ComputeProvider {
             var jobsOfTask = jobService.getJobs("processId", context.getProcessId());
 
             if (!jobsOfTask.isEmpty()) {
-                logger.warn("A job is already available for process " + context.getProcessId());
+                logger.warn("A job is already available for process {}", context.getProcessId());
                 return new DagTaskResult.Success("A job is already available for process " + context.getProcessId());
             }
 
             var mapData = jobSubmissionDataBuilder.build(context);
 
-            var jobModel = jobSubmissionSupport.createJobModel(context.getProcessId(), context.getTaskId(), mapData);
+            var jobModel = jobSubmissionSupport.createJob(context.getProcessId(), context.getTaskId(), mapData);
 
             var submissionOutput = jobSubmissionSupport.submitBatchJob(
                     adapter,
@@ -321,7 +320,7 @@ public class SlurmComputeProvider implements ComputeProvider {
     @Override
     public DagTaskResult monitor(TaskContext context) {
         try {
-            List<JobModel> jobs = jobService.getJobs("processId", context.getProcessId());
+            List<Job> jobs = jobService.getJobs("processId", context.getProcessId());
             if (jobs == null || jobs.isEmpty()) {
                 return new DagTaskResult.Success("No running jobs found for process " + context.getProcessId());
             }
@@ -336,7 +335,7 @@ public class SlurmComputeProvider implements ComputeProvider {
                     context.getComputeResourceCredentialToken(),
                     context.getComputeResourceLoginUserName());
 
-            for (JobModel job : jobs) {
+            for (Job job : jobs) {
                 pollJobUntilSaturated(adapter, jobManagerConfig, job);
             }
 
@@ -374,7 +373,7 @@ public class SlurmComputeProvider implements ComputeProvider {
     // Monitor helpers
     // -------------------------------------------------------------------------
 
-    private void pollJobUntilSaturated(AgentAdapter adapter, JobManagerSpec config, JobModel job) {
+    private void pollJobUntilSaturated(AgentAdapter adapter, JobManagerSpec config, Job job) {
         try {
             var monitorCommand = config.getMonitorCommand(job.getJobId());
             if (monitorCommand.isEmpty()) {
@@ -410,7 +409,7 @@ public class SlurmComputeProvider implements ComputeProvider {
         try {
             status = jobSubmissionSupport.getJobStatus(agentAdapter, jobID, context.getComputeResource());
         } catch (Exception e) {
-            logger.warn("Error while fetching the job status for id " + jobID);
+            logger.warn("Error while fetching the job status for id {}", jobID);
         }
         return status != null && status.getState() != JobState.UNKNOWN;
     }
@@ -422,7 +421,7 @@ public class SlurmComputeProvider implements ComputeProvider {
             jobId = jobSubmissionSupport.getJobIdByJobName(
                     agentAdapter, jobName, userName, context.getComputeResource());
         } catch (Exception e) {
-            logger.warn("Error while verifying JobId from JobName " + jobName);
+            logger.warn("Error while verifying JobId from JobName {}", jobName);
         }
         return jobId;
     }
@@ -513,15 +512,15 @@ public class SlurmComputeProvider implements ComputeProvider {
     // -------------------------------------------------------------------------
 
     private void cancelRemoteJobs(TaskContext context) throws Exception {
-        List<JobModel> jobs = jobRepository.findByProcessId(context.getProcessId()).stream()
+        List<Job> jobs = jobRepository.findByProcessId(context.getProcessId()).stream()
                 .map(entity -> {
-                    JobModel m = new JobModel();
+                    Job m = new Job();
                     m.setJobId(entity.getJobId());
                     m.setProcessId(entity.getProcessId());
                     m.setJobStatuses(entity.getJobStatuses());
                     return m;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         if (jobs.isEmpty()) {
             logger.info("No jobs found for process {} — nothing to cancel", context.getProcessId());
@@ -549,7 +548,7 @@ public class SlurmComputeProvider implements ComputeProvider {
                 context.getComputeResourceCredentialToken(),
                 context.getComputeResourceLoginUserName());
 
-        for (JobModel job : jobs) {
+        for (Job job : jobs) {
             if (isJobAlreadySaturated(job, adapter, jobManagerConfig)) {
                 continue;
             }
@@ -575,7 +574,7 @@ public class SlurmComputeProvider implements ComputeProvider {
         }
     }
 
-    private boolean isJobAlreadySaturated(JobModel job, AgentAdapter adapter, JobManagerSpec config) {
+    private boolean isJobAlreadySaturated(Job job, AgentAdapter adapter, JobManagerSpec config) {
         if (job.getJobStatuses() != null && !job.getJobStatuses().isEmpty()) {
             StatusModel<JobState> lastStatus = job.getJobStatuses().stream()
                     .max(Comparator.comparing(StatusModel::getTimeOfStateChange))

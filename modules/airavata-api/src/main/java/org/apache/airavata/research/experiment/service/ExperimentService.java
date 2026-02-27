@@ -27,34 +27,34 @@ import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ProjectNotFoundException;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
+import org.apache.airavata.research.experiment.model.Experiment;
+import org.apache.airavata.research.experiment.model.UserConfigurationData;
 import org.apache.airavata.research.project.model.Project;
 
 public interface ExperimentService {
 
-    String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException;
+    String createExperiment(String gatewayId, Experiment experiment) throws AiravataSystemException;
 
-    ExperimentModel getExperiment(String airavataExperimentId) throws AiravataSystemException;
+    Experiment getExperiment(String airavataExperimentId) throws AiravataSystemException;
 
-    void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws AiravataSystemException;
+    void updateExperiment(String airavataExperimentId, Experiment experiment) throws AiravataSystemException;
 
     boolean deleteExperiment(String experimentId) throws AiravataSystemException;
 
     String cloneExperiment(String existingExperimentId, String newExperimentName) throws AiravataSystemException;
 
-    void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
+    void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration)
             throws AiravataSystemException;
 
-    List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
+    List<Experiment> getUserExperiments(String gatewayId, String userName, int limit, int offset)
             throws AiravataSystemException;
 
-    List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
+    List<Experiment> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
             throws AiravataSystemException;
 
     // Lifecycle (from ExperimentOperationsService)
 
-    ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId)
+    Experiment getExperiment(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, InvalidRequestException, AiravataSystemException;
 
     void launchExperiment(AuthzToken authzToken, String gatewayId, String airavataExperimentId)
@@ -66,7 +66,7 @@ public interface ExperimentService {
             String existingExperimentID,
             String newExperimentName,
             String newExperimentProjectId,
-            ExperimentModel existingExperiment)
+            Experiment existingExperiment)
             throws ExperimentNotFoundException, ProjectNotFoundException, AuthorizationException,
                     AiravataSystemException, InvalidRequestException;
 

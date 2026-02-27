@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.research.experiment.model;
 
+import org.apache.airavata.storage.resource.model.DataType;
+
 /**
  * Domain model for an experiment output parameter.
  *
@@ -30,7 +32,7 @@ public class ExperimentOutput {
 
     private String outputId;
     private String name;
-    private String type;
+    private DataType type;
     private String artifactId;
     private String value;
     private String commandLineArg;
@@ -58,11 +60,11 @@ public class ExperimentOutput {
         this.name = name;
     }
 
-    public String getType() {
+    public DataType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 

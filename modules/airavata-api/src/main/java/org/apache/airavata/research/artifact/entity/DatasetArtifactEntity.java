@@ -28,7 +28,7 @@ import org.apache.airavata.research.artifact.model.ArtifactType;
 @Table(name = "research_dataset_artifact")
 public class DatasetArtifactEntity extends ResearchArtifactEntity {
 
-    @Column(nullable = false)
+    @Column(name = "dataset_url", nullable = false)
     private String datasetUrl;
 
     @Override

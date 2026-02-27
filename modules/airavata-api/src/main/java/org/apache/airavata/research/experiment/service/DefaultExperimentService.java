@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
-import org.apache.airavata.compute.resource.model.ComputationalResourceSchedulingModel;
+import org.apache.airavata.compute.resource.model.ComputationalResourceScheduling;
 import org.apache.airavata.compute.resource.model.Resource;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
@@ -61,14 +61,14 @@ import org.apache.airavata.research.experiment.entity.ExperimentEntity;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ProjectNotFoundException;
 import org.apache.airavata.research.experiment.mapper.ExperimentMapper;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
+import org.apache.airavata.research.experiment.model.Experiment;
+import org.apache.airavata.research.experiment.model.UserConfigurationData;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
 import org.apache.airavata.research.project.model.Project;
 import org.apache.airavata.research.project.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,11 +76,11 @@ import org.springframework.transaction.annotation.Transactional;
  * Unified service for all experiment operations: CRUD, lifecycle (launch/clone/terminate),
  * project management, and sharing registry integration.
  */
-@Service("experimentServiceFacade")
+@Service
 @Transactional
 public class DefaultExperimentService implements ExperimentService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultExperimentService.class);
 
     // Core experiment persistence
     private final ExperimentRepository experimentRepository;
@@ -100,8 +100,7 @@ public class DefaultExperimentService implements ExperimentService {
     private final GatewayService gatewayGroupsService;
     private final GatewayGroupsInitializer gatewayGroupsInitializer;
 
-    @Autowired(required = false)
-    private OrchestratorService orchestratorService;
+    private final OrchestratorService orchestratorService;
 
     public DefaultExperimentService(
             ExperimentRepository experimentRepository,
@@ -114,7 +113,8 @@ public class DefaultExperimentService implements ExperimentService {
             SharingService sharingService,
             AuthorizationService authorizationService,
             GatewayService gatewayGroupsService,
-            GatewayGroupsInitializer gatewayGroupsInitializer) {
+            GatewayGroupsInitializer gatewayGroupsInitializer,
+            @Nullable OrchestratorService orchestratorService) {
         this.experimentRepository = experimentRepository;
         this.mapper = mapper;
         this.properties = properties;
@@ -126,6 +126,7 @@ public class DefaultExperimentService implements ExperimentService {
         this.authorizationService = authorizationService;
         this.gatewayGroupsService = gatewayGroupsService;
         this.gatewayGroupsInitializer = gatewayGroupsInitializer;
+        this.orchestratorService = orchestratorService;
     }
 
     // -------------------------------------------------------------------------
@@ -136,7 +137,7 @@ public class DefaultExperimentService implements ExperimentService {
      * Creates and persists an experiment, fires a CREATED status event, and registers it
      * in the sharing registry. This is the primary public entry point for experiment creation.
      */
-    public String createExperiment(String gatewayId, ExperimentModel experiment) throws AiravataSystemException {
+    public String createExperiment(String gatewayId, Experiment experiment) throws AiravataSystemException {
         if (experiment.getGatewayId() == null) {
             experiment.setGatewayId(gatewayId);
         }
@@ -145,7 +146,7 @@ public class DefaultExperimentService implements ExperimentService {
             createExperimentSharingEntity(experimentId, experiment);
         } catch (AiravataSystemException ex) {
             logger.error(ex.getMessage(), ex);
-            logger.error("Rolling back experiment creation Exp ID : " + experimentId);
+            logger.error("Rolling back experiment creation Exp ID : {}", experimentId);
             deleteExperiment(experimentId);
             throw ex;
         }
@@ -157,7 +158,7 @@ public class DefaultExperimentService implements ExperimentService {
     }
 
     @Transactional(readOnly = true)
-    public ExperimentModel getExperiment(String airavataExperimentId) throws AiravataSystemException {
+    public Experiment getExperiment(String airavataExperimentId) throws AiravataSystemException {
         try {
             return experimentRepository
                     .findById(airavataExperimentId)
@@ -170,8 +171,7 @@ public class DefaultExperimentService implements ExperimentService {
         }
     }
 
-    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment)
-            throws AiravataSystemException {
+    public void updateExperiment(String airavataExperimentId, Experiment experiment) throws AiravataSystemException {
         try {
             experiment.setExperimentId(airavataExperimentId);
             ExperimentEntity entity = mapper.toEntity(experiment);
@@ -199,19 +199,19 @@ public class DefaultExperimentService implements ExperimentService {
 
     /**
      * Simple clone without authorization check. For permission-checked cloning use
-     * {@link #cloneExperiment(AuthzToken, String, String, String, ExperimentModel)}.
+     * {@link #cloneExperiment(AuthzToken, String, String, String, Experiment)}.
      */
     public String cloneExperiment(String existingExperimentId, String newExperimentName)
             throws AiravataSystemException {
         try {
-            ExperimentModel existing = getExperiment(existingExperimentId);
+            Experiment existing = getExperiment(existingExperimentId);
             if (existing == null) {
                 throw ExceptionHandlerUtil.wrapAsAiravataException(
                         "Experiment not found: " + existingExperimentId, null);
             }
             existing.setExperimentId(IdGenerator.ensureId(null));
             existing.setExperimentName(newExperimentName);
-            existing.setCreationTime(System.currentTimeMillis());
+            existing.setCreatedAt(java.time.Instant.now());
             existing.setState(null);
             existing.setProcesses(null);
             return createExperiment(existing.getGatewayId(), existing);
@@ -227,7 +227,7 @@ public class DefaultExperimentService implements ExperimentService {
     /**
      * Update experiment configuration (scheduling data).
      */
-    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration)
+    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration)
             throws AiravataSystemException {
         try {
             ExperimentEntity entity =
@@ -253,7 +253,7 @@ public class DefaultExperimentService implements ExperimentService {
     }
 
     @Transactional(readOnly = true)
-    public List<ExperimentModel> getUserExperiments(String gatewayId, String userName, int limit, int offset)
+    public List<Experiment> getUserExperiments(String gatewayId, String userName, int limit, int offset)
             throws AiravataSystemException {
         try {
             List<ExperimentEntity> entities = experimentRepository.findByGatewayIdAndUserNameOrderByCreatedAtDesc(
@@ -267,7 +267,7 @@ public class DefaultExperimentService implements ExperimentService {
     }
 
     @Transactional(readOnly = true)
-    public List<ExperimentModel> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
+    public List<Experiment> getExperimentsInProject(String gatewayId, String projectId, int limit, int offset)
             throws AiravataSystemException {
         try {
             List<ExperimentEntity> entities = experimentRepository.findByProjectIdOrderByCreatedAtDesc(
@@ -287,7 +287,7 @@ public class DefaultExperimentService implements ExperimentService {
     /**
      * Get experiment with authorization check.
      */
-    public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId)
+    public Experiment getExperiment(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, InvalidRequestException, AiravataSystemException {
         var existingExperiment = getExperiment(airavataExperimentId);
         authorizationService.validateExperimentReadAccess(
@@ -300,7 +300,7 @@ public class DefaultExperimentService implements ExperimentService {
                     ExperimentNotFoundException, ProjectNotFoundException, SharingRegistryException {
         try {
             logger.info("Launching experiment {}", airavataExperimentId);
-            ExperimentModel experiment = getExperiment(airavataExperimentId);
+            Experiment experiment = getExperiment(airavataExperimentId);
 
             if (experiment == null) {
                 throw new ExperimentNotFoundException(
@@ -368,7 +368,7 @@ public class DefaultExperimentService implements ExperimentService {
             String existingExperimentID,
             String newExperimentName,
             String newExperimentProjectId,
-            ExperimentModel existingExperiment)
+            Experiment existingExperiment)
             throws ExperimentNotFoundException, ProjectNotFoundException, AuthorizationException,
                     AiravataSystemException, InvalidRequestException {
         try {
@@ -396,7 +396,7 @@ public class DefaultExperimentService implements ExperimentService {
                         "User does not have permission to clone an experiment in this project");
             }
 
-            existingExperiment.setCreationTime(IdGenerator.getCurrentTimestamp().getTime());
+            existingExperiment.setCreatedAt(IdGenerator.getCurrentTimestamp());
             if (newExperimentName != null && !newExperimentName.isBlank()) {
                 existingExperiment.setExperimentName(newExperimentName);
             }
@@ -419,7 +419,7 @@ public class DefaultExperimentService implements ExperimentService {
                         existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
                     }
                 } catch (AiravataSystemException e) {
-                    logger.warn("Error getting compute resource for experiment clone: " + e.getMessage());
+                    logger.warn("Error getting compute resource for experiment clone: {}", e.getMessage());
                 }
             }
             existingExperiment.setUserName(userId);
@@ -429,11 +429,11 @@ public class DefaultExperimentService implements ExperimentService {
                 createExperimentSharingEntity(expId, existingExperiment);
             } catch (AiravataSystemException ex) {
                 logger.error(ex.getMessage(), ex);
-                logger.error("rolling back experiment creation Exp ID : " + expId);
+                logger.error("rolling back experiment creation Exp ID : {}", expId);
                 try {
                     deleteExperiment(expId);
                 } catch (AiravataSystemException e) {
-                    logger.error("Error deleting experiment during rollback: " + e.getMessage());
+                    logger.error("Error deleting experiment during rollback: {}", e.getMessage());
                 }
                 throw ex;
             }
@@ -462,7 +462,7 @@ public class DefaultExperimentService implements ExperimentService {
                 default -> {
                     if (orchestratorService != null) {
                         orchestratorService.terminateExperiment(airavataExperimentId, gatewayId);
-                        logger.debug("Cancelled experiment with experiment id : " + airavataExperimentId);
+                        logger.debug("Cancelled experiment with experiment id : {}", airavataExperimentId);
                     } else {
                         logger.error("OrchestratorService is not available. Cannot terminate experiment.");
                         throw airavataSystemException(
@@ -497,7 +497,7 @@ public class DefaultExperimentService implements ExperimentService {
             createProjectSharingEntity(projectId, project);
         } catch (AiravataSystemException ex) {
             logger.error(ex.getMessage(), ex);
-            logger.error("Rolling back project creation Proj ID : " + projectId);
+            logger.error("Rolling back project creation Proj ID : {}", projectId);
             projectService.deleteProject(projectId);
             throw ex;
         }
@@ -548,13 +548,12 @@ public class DefaultExperimentService implements ExperimentService {
      * All callers that need sharing must call {@link #createExperimentSharingEntity} themselves,
      * or use the public {@link #createExperiment} entry point.
      */
-    private String createExperimentInternal(String gatewayId, ExperimentModel experiment)
-            throws AiravataSystemException {
+    private String createExperimentInternal(String gatewayId, Experiment experiment) throws AiravataSystemException {
         try {
             experiment.setExperimentId(IdGenerator.ensureId(experiment.getExperimentId()));
             experiment.setGatewayId(gatewayId);
-            if (experiment.getCreationTime() <= 0) {
-                experiment.setCreationTime(System.currentTimeMillis());
+            if (experiment.getCreatedAt() == null) {
+                experiment.setCreatedAt(java.time.Instant.now());
             }
 
             ExperimentEntity entity = mapper.toEntity(experiment);
@@ -575,7 +574,7 @@ public class DefaultExperimentService implements ExperimentService {
     /**
      * Creates a sharing entity for an experiment and shares it with admin gateway groups.
      */
-    private String createExperimentSharingEntity(String experimentId, ExperimentModel experiment)
+    private String createExperimentSharingEntity(String experimentId, Experiment experiment)
             throws AiravataSystemException {
         if (!properties.isSharingEnabled()) {
             return experimentId;
@@ -634,7 +633,7 @@ public class DefaultExperimentService implements ExperimentService {
     /**
      * Updates sharing entity metadata for an experiment.
      */
-    private void updateExperimentSharingEntity(String experimentId, ExperimentModel experiment)
+    private void updateExperimentSharingEntity(String experimentId, Experiment experiment)
             throws AiravataSystemException {
         if (!properties.isSharingEnabled()) {
             return;
@@ -678,7 +677,7 @@ public class DefaultExperimentService implements ExperimentService {
                     domainId + ":READ",
                     true);
         } catch (SharingRegistryException | RegistryException e) {
-            logger.error("Error sharing entity with admin gateway groups: " + e.getMessage(), e);
+            logger.error("Error sharing entity with admin gateway groups: {}", e.getMessage(), e);
             throw new SharingRegistryException("Error sharing entity with admin gateway groups: " + e.getMessage());
         }
     }
@@ -720,12 +719,12 @@ public class DefaultExperimentService implements ExperimentService {
                 permissionType.setDomainId(domainId);
                 permissionType.setName("MANAGE_SHARING");
                 permissionType.setDescription("Sharing permission type");
-                permissionType.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-                permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                permissionType.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+                permissionType.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                 sharingService.createPermissionType(permissionType);
             }
         } catch (SharingRegistryException | org.apache.airavata.core.exception.DuplicateEntryException e) {
-            logger.warn("Error creating/managing MANAGE_SHARING permission type: " + e.getMessage());
+            logger.warn("Error creating/managing MANAGE_SHARING permission type: {}", e.getMessage());
         }
     }
 
@@ -818,9 +817,9 @@ public class DefaultExperimentService implements ExperimentService {
     /**
      * Validates launch experiment access, checking group resource profile and application deployment permissions.
      * This logic lives here rather than in AuthorizationService because it inspects research domain models
-     * (ExperimentModel, ApplicationDeploymentDescription) that must not be imported by iam/.
+     * (Experiment, ApplicationDeploymentDescription) that must not be imported by iam/.
      */
-    private void validateLaunchExperimentAccess(AuthzToken authzToken, String gatewayId, ExperimentModel experiment)
+    private void validateLaunchExperimentAccess(AuthzToken authzToken, String gatewayId, Experiment experiment)
             throws InvalidRequestException, AuthorizationException, AiravataSystemException {
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
@@ -876,9 +875,9 @@ public class DefaultExperimentService implements ExperimentService {
                         .getUserConfigurationData()
                         .getAutoScheduledCompResourceSchedulingList()
                         .isEmpty()) {
-            List<ComputationalResourceSchedulingModel> compResourceSchedulingList =
+            List<ComputationalResourceScheduling> compResourceSchedulingList =
                     experiment.getUserConfigurationData().getAutoScheduledCompResourceSchedulingList();
-            for (ComputationalResourceSchedulingModel crScheduling : compResourceSchedulingList) {
+            for (ComputationalResourceScheduling crScheduling : compResourceSchedulingList) {
                 Optional<ApplicationDeploymentDescription> applicationDeploymentDescription =
                         applicationDeploymentDescriptions.stream()
                                 .filter(dep -> dep.getComputeResourceId().equals(crScheduling.getResourceHostId()))

@@ -123,7 +123,7 @@ public abstract class TestBase {
         cred.setGatewayId(gatewayId);
         cred.setCredentialId(tokenId);
         cred.setUserId("test-user");
-        cred.setType("SSH");
+        cred.setType(org.apache.airavata.credential.model.CredentialType.SSH);
         cred.setCredentialData(new byte[] {0});
         entityManager.persist(cred);
         entityManager.flush();

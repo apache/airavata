@@ -20,10 +20,10 @@
 package org.apache.airavata.protocol;
 
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
-import org.apache.airavata.storage.resource.model.DataMovementProtocol;
+import org.apache.airavata.protocol.AgentAdapter.AgentException;
 
 /**
- * Support for fetching job and storage adapters by gateway and protocol.
+ * Support for fetching agent adapters by gateway, resource, and protocol.
  *
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
@@ -31,17 +31,12 @@ import org.apache.airavata.storage.resource.model.DataMovementProtocol;
 public interface AdapterSupport {
     AgentAdapter fetchAdapter(
             String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId)
-            throws Exception;
-
-    StorageResourceAdapter fetchStorageAdapter(
-            String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId)
             throws AgentException;
 
-    AgentAdapter fetchComputeSSHAdapter(
-            String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
+    AgentAdapter fetchStorageAdapter(String gatewayId, String storageResourceId, String authToken, String userId)
             throws AgentException;
 
-    StorageResourceAdapter fetchStorageSSHAdapter(
+    AgentAdapter fetchSSHAdapter(
             String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
             throws AgentException;
 }

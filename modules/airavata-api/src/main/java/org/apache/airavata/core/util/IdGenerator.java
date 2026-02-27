@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.core.util;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 public class IdGenerator {
@@ -33,25 +33,25 @@ public class IdGenerator {
      * This method uses getUniqueTimestamp() internally to ensure consistency
      * and maximum precision across the codebase.
      *
-     * @return A Timestamp with microsecond precision
+     * @return An Instant with microsecond precision
      */
-    public static Timestamp getCurrentTimestamp() {
+    public static Instant getCurrentTimestamp() {
         return getUniqueTimestamp();
     }
 
     /**
-     * Converts a long time value to a Timestamp.
+     * Converts a long time value to an Instant.
      * If the time is 0 or negative, returns the current unique timestamp.
-     * Otherwise, creates a Timestamp from the provided time value.
+     * Otherwise, creates an Instant from the provided time value.
      *
      * @param time Time in milliseconds since epoch
-     * @return A Timestamp object
+     * @return An Instant object
      */
-    public static Timestamp getTime(long time) {
+    public static Instant getTime(long time) {
         if (time == 0 || time < 0) {
             return getUniqueTimestamp();
         }
-        return new Timestamp(time);
+        return Instant.ofEpochMilli(time);
     }
 
     /**
@@ -59,9 +59,9 @@ public class IdGenerator {
      * Uses System.currentTimeMillis() with System.nanoTime() for precise microsecond tracking.
      * The database column is TIMESTAMP(6) which supports microsecond precision.
      *
-     * @return A Timestamp with microsecond precision that is guaranteed to be unique and monotonically increasing
+     * @return An Instant with microsecond precision that is guaranteed to be unique and monotonically increasing
      */
-    public static Timestamp getUniqueTimestamp() {
+    public static Instant getUniqueTimestamp() {
         synchronized (timestampLock) {
             long currentTimeMillis = System.currentTimeMillis();
             // Use nanoTime to get precise sub-millisecond timing
@@ -92,11 +92,12 @@ public class IdGenerator {
                 lastMicrosecondFraction = microsecondFraction;
             }
 
-            // Create timestamp with microsecond precision
-            // Timestamp stores nanoseconds internally, so we multiply microseconds by 1000
-            var timestamp = new Timestamp(lastTimestampMillis);
-            timestamp.setNanos(lastMicrosecondFraction * 1000);
-            return timestamp;
+            // Create Instant with microsecond precision
+            // Instant.ofEpochSecond takes seconds + nanoAdjustment
+            long epochSeconds = lastTimestampMillis / 1000;
+            int remainderMillisNanos = (int) (lastTimestampMillis % 1000) * 1_000_000;
+            int microsNanos = lastMicrosecondFraction * 1000;
+            return Instant.ofEpochSecond(epochSeconds, remainderMillisNanos + microsNanos);
         }
     }
 

@@ -51,7 +51,7 @@ public class DatabaseInitializer {
 
         } catch (Exception e) {
             logger.error("Failed to initialize database: {}", dbName, e);
-            throw new RuntimeException("Database initialization failed for: " + dbName, e);
+            throw new IllegalStateException("Database initialization failed for: " + dbName, e);
         }
     }
 }

@@ -33,10 +33,12 @@ import org.apache.airavata.gateway.service.GatewayService;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.research.application.adapter.ApplicationAdapter;
 import org.apache.airavata.research.experiment.model.ExperimentStatistics;
-import org.apache.airavata.research.experiment.model.ExperimentSummaryModel;
+import org.apache.airavata.research.experiment.model.ExperimentSummary;
 import org.apache.airavata.research.experiment.service.ExperimentSearchService;
 import org.apache.airavata.restapi.exception.InvalidRequestException;
 import org.apache.airavata.restapi.util.AuthzTokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/statistics")
 @Tag(name = "Statistics")
 public class StatisticsController {
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(StatisticsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsController.class);
 
     private final ExperimentSearchService experimentSearchService;
     private final GatewayService gatewayService;
@@ -204,7 +206,7 @@ public class StatisticsController {
             byUser = stats.getAllExperiments().stream()
                     .filter(exp -> exp.getUserName() != null)
                     .collect(Collectors.groupingBy(
-                            ExperimentSummaryModel::getUserName,
+                            ExperimentSummary::getUserName,
                             Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
         }
         result.put("byUser", byUser);
@@ -215,7 +217,7 @@ public class StatisticsController {
             byGateway = stats.getAllExperiments().stream()
                     .filter(exp -> exp.getGatewayId() != null)
                     .collect(Collectors.groupingBy(
-                            ExperimentSummaryModel::getGatewayId,
+                            ExperimentSummary::getGatewayId,
                             Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
         }
         result.put("byGateway", byGateway);
@@ -224,7 +226,7 @@ public class StatisticsController {
         List<Map<String, Object>> recent = Collections.emptyList();
         if (stats.getAllExperiments() != null && !stats.getAllExperiments().isEmpty()) {
             recent = stats.getAllExperiments().stream()
-                    .sorted((a, b) -> Long.compare(b.getCreationTime(), a.getCreationTime()))
+                    .sorted((a, b) -> Long.compare(b.getCreatedAt(), a.getCreatedAt()))
                     .limit(10)
                     .map(this::transformExperimentSummary)
                     .collect(Collectors.toList());
@@ -242,16 +244,16 @@ public class StatisticsController {
     }
 
     /**
-     * Transform an ExperimentSummaryModel to a map for JSON serialization.
+     * Transform an ExperimentSummary to a map for JSON serialization.
      */
-    private Map<String, Object> transformExperimentSummary(ExperimentSummaryModel exp) {
+    private Map<String, Object> transformExperimentSummary(ExperimentSummary exp) {
         Map<String, Object> result = new HashMap<>();
         result.put("experimentId", exp.getExperimentId());
         result.put("experimentName", exp.getName());
         result.put("projectId", exp.getProjectId());
         result.put("gatewayId", exp.getGatewayId());
         result.put("userName", exp.getUserName());
-        result.put("creationTime", exp.getCreationTime());
+        result.put("creationTime", exp.getCreatedAt());
         result.put("experimentStatus", exp.getExperimentStatus());
         result.put("statusUpdateTime", exp.getStatusUpdateTime());
         result.put("description", exp.getDescription());

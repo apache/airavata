@@ -24,10 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JobStateParser {
-    private static final Logger log = LoggerFactory.getLogger(JobStateParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobStateParser.class);
 
     public static JobState getJobState(String status) {
-        log.info("parsing the job status returned : " + status);
+        logger.info("parsing the job status returned : {}", status);
         if (status != null) {
             if ("C".equals(status)
                     || "CD".equals(status)

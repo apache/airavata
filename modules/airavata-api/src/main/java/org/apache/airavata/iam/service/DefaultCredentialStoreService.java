@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.iam.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.credential.exception.CredentialStoreException;
@@ -35,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@Service("credentialStoreService")
+@Service
 public class DefaultCredentialStoreService implements CredentialStoreService {
-    private static final Logger logger = LoggerFactory.getLogger(CredentialStoreService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultCredentialStoreService.class);
 
     private final CredentialEntityService credentialEntityService;
     private final java.util.Set<String> deletedTokens =
@@ -269,9 +268,8 @@ public class DefaultCredentialStoreService implements CredentialStoreService {
         credentialSummary.setGatewayId(cred.getGatewayId());
         credentialSummary.setPublicKey(new String(cred.getPublicKey()));
         credentialSummary.setToken(cred.getToken());
-        Date persistedTime = cred.getPersistedTime();
-        credentialSummary.setPersistedTime(
-                persistedTime != null ? persistedTime.getTime() : System.currentTimeMillis());
+        long createdAt = cred.getCreatedAt();
+        credentialSummary.setCreatedAt(createdAt > 0 ? createdAt : System.currentTimeMillis());
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }
@@ -289,9 +287,8 @@ public class DefaultCredentialStoreService implements CredentialStoreService {
             credentialSummary.setPublicKey(certIdentifier);
         }
         credentialSummary.setToken(cred.getToken());
-        Date persistedTime = cred.getPersistedTime();
-        credentialSummary.setPersistedTime(
-                persistedTime != null ? persistedTime.getTime() : System.currentTimeMillis());
+        long createdAt = cred.getCreatedAt();
+        credentialSummary.setCreatedAt(createdAt > 0 ? createdAt : System.currentTimeMillis());
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }
@@ -303,9 +300,8 @@ public class DefaultCredentialStoreService implements CredentialStoreService {
         credentialSummary.setUsername(null);
         credentialSummary.setGatewayId(cred.getGatewayId());
         credentialSummary.setToken(cred.getToken());
-        Date persistedTime = cred.getPersistedTime();
-        credentialSummary.setPersistedTime(
-                persistedTime != null ? persistedTime.getTime() : System.currentTimeMillis());
+        long createdAt = cred.getCreatedAt();
+        credentialSummary.setCreatedAt(createdAt > 0 ? createdAt : System.currentTimeMillis());
         credentialSummary.setDescription(cred.getDescription());
         return credentialSummary;
     }
@@ -321,7 +317,7 @@ public class DefaultCredentialStoreService implements CredentialStoreService {
             cred.setLifeTime(cc.getLifeTime());
             cred.setNotAfter(cc.getNotAfter());
             cred.setNotBefore(cc.getNotBefore());
-            cred.setPersistedTime(cc.getPersistedTime());
+            cred.setCreatedAt(cc.getCreatedAt());
             if (cc.getPrivateKey() != null) {
                 cred.setPrivateKey(cc.getPrivateKey().toString());
             }
@@ -347,8 +343,7 @@ public class DefaultCredentialStoreService implements CredentialStoreService {
             cred.setPassword(pc.getPassword());
             cred.setDescription(pc.getDescription());
             cred.setToken(pc.getToken());
-            Date persistedTime = pc.getPersistedTime();
-            cred.setPersistedTime(persistedTime);
+            cred.setCreatedAt(pc.getCreatedAt());
             return cred;
         } else {
             var msg = String.format(

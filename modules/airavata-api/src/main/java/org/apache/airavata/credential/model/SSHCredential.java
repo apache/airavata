@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.credential.model;
 
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -31,7 +30,7 @@ public final class SSHCredential implements Credential {
 
     // Base credential fields
     private String userId;
-    private Date persistedTime;
+    private long createdAt;
     private String token;
     private String gatewayId;
     private String name;
@@ -55,13 +54,13 @@ public final class SSHCredential implements Credential {
     }
 
     @Override
-    public Date getPersistedTime() {
-        return persistedTime;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
     @Override
-    public void setPersistedTime(Date persistedTime) {
-        this.persistedTime = persistedTime;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -138,14 +137,14 @@ public final class SSHCredential implements Credential {
                 && Objects.equals(passphrase, that.passphrase)
                 && Objects.equals(publicKey, that.publicKey)
                 && Objects.equals(privateKey, that.privateKey)
-                && Objects.equals(persistedTime, that.persistedTime)
+                && createdAt == that.createdAt
                 && Objects.equals(token, that.token)
                 && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gatewayId, userId, passphrase, publicKey, privateKey, persistedTime, token, description);
+        return Objects.hash(gatewayId, userId, passphrase, publicKey, privateKey, createdAt, token, description);
     }
 
     @Override
@@ -156,7 +155,7 @@ public final class SSHCredential implements Credential {
                 + ", passphrase='" + (passphrase != null ? "***" : null) + '\''
                 + ", publicKey='" + (publicKey != null ? "***" : null) + '\''
                 + ", privateKey='" + (privateKey != null ? "***" : null) + '\''
-                + ", persistedTime=" + persistedTime
+                + ", createdAt=" + createdAt
                 + ", token='" + token + '\''
                 + ", description='" + description + '\''
                 + '}';

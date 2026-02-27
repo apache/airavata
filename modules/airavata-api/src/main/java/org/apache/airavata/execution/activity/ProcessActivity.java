@@ -37,19 +37,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
-import org.apache.airavata.compute.resource.model.Resource;
-import org.apache.airavata.compute.resource.service.ResourceService;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.execution.dag.DAGTemplates;
 import org.apache.airavata.execution.dag.DagTask;
 import org.apache.airavata.execution.dag.ProcessDAG;
 import org.apache.airavata.execution.dag.RetryTier;
+import org.apache.airavata.execution.dag.TaskContext;
 import org.apache.airavata.execution.dag.TaskContextFactory;
 import org.apache.airavata.execution.dag.TaskInterceptor;
 import org.apache.airavata.execution.dag.TaskNode;
-import org.apache.airavata.execution.service.ProcessService;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.orchestration.ProcessResourceResolver;
+import org.apache.airavata.execution.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -93,8 +92,7 @@ public class ProcessActivity {
     // Input records
     // -------------------------------------------------------------------------
 
-    public record PreInput(String processId, String experimentId, String gatewayId, String tokenId)
-            implements Serializable {}
+    public record PreInput(String processId, String experimentId, String gatewayId) implements Serializable {}
 
     public record PostInput(String processId, String experimentId, String gatewayId, boolean forceRun)
             implements Serializable {}
@@ -185,6 +183,21 @@ public class ProcessActivity {
     // Workflow implementations
     // -------------------------------------------------------------------------
 
+    /**
+     * Shared logic: resolve resource type → select DAG template → walk DAG.
+     * All three workflow phases (pre, post, cancel) use this pattern.
+     */
+    private static String resolveAndWalk(
+            Activities setup,
+            Map<RetryTier, Activities> tierStubs,
+            String processId,
+            String gatewayId,
+            java.util.function.Function<ComputeResourceType, ProcessDAG> dagSelector) {
+        ComputeResourceType type = setup.resolveResourceType(processId);
+        ProcessDAG dag = dagSelector.apply(type);
+        return walkDag(dag, processId, gatewayId, tierStubs);
+    }
+
     @WorkflowImpl(taskQueues = TASK_QUEUE)
     public static class PreWfImpl implements PreWf {
         private final Activities setup = buildSetupStub();
@@ -192,9 +205,7 @@ public class ProcessActivity {
 
         @Override
         public String execute(PreInput input) {
-            ComputeResourceType type = setup.resolveResourceType(input.processId());
-            ProcessDAG dag = DAGTemplates.preDag(type);
-            return walkDag(dag, input.processId(), input.gatewayId(), tierStubs);
+            return resolveAndWalk(setup, tierStubs, input.processId(), input.gatewayId(), DAGTemplates::preDag);
         }
     }
 
@@ -205,9 +216,7 @@ public class ProcessActivity {
 
         @Override
         public String execute(PostInput input) {
-            ComputeResourceType type = setup.resolveResourceType(input.processId());
-            ProcessDAG dag = DAGTemplates.postDag(type);
-            return walkDag(dag, input.processId(), input.gatewayId(), tierStubs);
+            return resolveAndWalk(setup, tierStubs, input.processId(), input.gatewayId(), DAGTemplates::postDag);
         }
     }
 
@@ -218,9 +227,7 @@ public class ProcessActivity {
 
         @Override
         public String execute(CancelInput input) {
-            ComputeResourceType type = setup.resolveResourceType(input.processId());
-            ProcessDAG dag = DAGTemplates.cancelDag(type);
-            return walkDag(dag, input.processId(), input.gatewayId(), tierStubs);
+            return resolveAndWalk(setup, tierStubs, input.processId(), input.gatewayId(), DAGTemplates::cancelDag);
         }
     }
 
@@ -239,31 +246,26 @@ public class ProcessActivity {
         private final TaskContextFactory contextFactory;
         private final List<TaskInterceptor> interceptors;
         private final ProcessService processService;
-        private final ResourceService resourceService;
+        private final ProcessResourceResolver resourceResolver;
 
         public ActivitiesImpl(
                 ApplicationContext applicationContext,
                 TaskContextFactory contextFactory,
                 List<TaskInterceptor> interceptors,
                 ProcessService processService,
-                ResourceService resourceService) {
+                ProcessResourceResolver resourceResolver) {
             this.applicationContext = applicationContext;
             this.contextFactory = contextFactory;
             this.interceptors = interceptors;
             this.processService = processService;
-            this.resourceService = resourceService;
+            this.resourceResolver = resourceResolver;
         }
 
         @Override
         public ComputeResourceType resolveResourceType(String processId) {
             try {
                 var processModel = processService.getProcess(processId);
-                Resource resource = resourceService.getResource(processModel.getResourceId());
-                if (resource != null
-                        && resource.getCapabilities() != null
-                        && resource.getCapabilities().getCompute() != null) {
-                    return resource.getCapabilities().getCompute().getComputeResourceType();
-                }
+                return resourceResolver.getComputeResourceType(processModel);
             } catch (Exception e) {
                 logger.warn("Failed to resolve resource type for process {}, defaulting to SLURM", processId, e);
             }

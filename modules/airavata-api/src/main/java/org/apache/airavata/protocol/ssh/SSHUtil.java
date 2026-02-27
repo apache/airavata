@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public final class SSHUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SSHUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(SSHUtil.class);
 
     private SSHUtil() {
         throw new IllegalStateException("Utility class");
@@ -69,7 +69,7 @@ public final class SSHUtil {
 
             return "ssh-rsa " + Base64.getEncoder().encodeToString(byteOs.toByteArray()) + " airavata-generated";
         } catch (IOException e) {
-            LOGGER.error("Error while generating the public key", e);
+            logger.error("Error while generating the public key", e);
             throw new Exception("Error while generating the public key", e);
         }
     }
@@ -87,7 +87,7 @@ public final class SSHUtil {
             client.authPublickey(username, keyProvider);
             return true;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         } finally {
             disconnectQuietly(client);
         }
@@ -109,43 +109,27 @@ public final class SSHUtil {
             try (var session = client.startSession()) {
                 var cmd = session.exec(command);
 
-                var result = new StringBuilder();
-                try (var stdout = cmd.getInputStream()) {
-                    byte[] tmp = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = stdout.read(tmp)) != -1) {
-                        result.append(new String(tmp, 0, bytesRead, StandardCharsets.UTF_8));
-                    }
-                }
-
-                var stderr = new StringBuilder();
-                try (var stderrStream = cmd.getErrorStream()) {
-                    byte[] tmp = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = stderrStream.read(tmp)) != -1) {
-                        stderr.append(new String(tmp, 0, bytesRead, StandardCharsets.UTF_8));
-                    }
-                }
+                var result = readStream(cmd.getInputStream());
+                var stderr = readStream(cmd.getErrorStream());
 
                 cmd.join(30, TimeUnit.SECONDS);
                 var exitStatus = cmd.getExitStatus();
 
-                LOGGER.debug("Output from command: {}", result);
-                LOGGER.debug("Exit status: {}", exitStatus);
+                logger.debug("Output from command: {}", result);
+                logger.debug("Exit status: {}", exitStatus);
 
                 if (exitStatus == null || exitStatus != 0) {
-                    var stderrStr = stderr.toString();
-                    if (!stderrStr.isEmpty()) {
-                        LOGGER.error("STDERR for command [{}]: {}", command, stderrStr);
+                    if (!stderr.isEmpty()) {
+                        logger.error("STDERR for command [{}]: {}", command, stderr);
                     }
-                    throw new RuntimeException("SSH command [" + command + "] exited with exit status: " + exitStatus
-                            + ", STDERR=" + stderrStr);
+                    throw new IllegalStateException("SSH command [" + command + "] exited with exit status: "
+                            + exitStatus + ", STDERR=" + stderr);
                 }
 
-                return result.toString();
+                return result;
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         } finally {
             disconnectQuietly(client);
         }
@@ -163,12 +147,36 @@ public final class SSHUtil {
         }
     }
 
+    private static String readStream(java.io.InputStream is) throws IOException {
+        var sb = new StringBuilder();
+        byte[] tmp = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = is.read(tmp)) != -1) {
+            sb.append(new String(tmp, 0, bytesRead, StandardCharsets.UTF_8));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Escapes shell metacharacters in file paths to prevent interpretation by remote shells.
+     */
+    public static String escapeSpecialCharacters(String inputString) {
+        final String[] metaCharacters = {"\\", "^", "$", "{", "}", "[", "]", "(", ")", "?", "&", "%"};
+
+        for (String metaCharacter : metaCharacters) {
+            if (inputString.contains(metaCharacter)) {
+                inputString = inputString.replace(metaCharacter, "\\" + metaCharacter);
+            }
+        }
+        return inputString;
+    }
+
     private static void disconnectQuietly(SSHClient client) {
         if (client != null && client.isConnected()) {
             try {
                 client.disconnect();
             } catch (IOException e) {
-                LOGGER.warn("Error disconnecting SSH client", e);
+                logger.warn("Error disconnecting SSH client", e);
             }
         }
     }

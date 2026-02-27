@@ -51,10 +51,10 @@ public class ResearchProjectEntity {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
+    @Column(name = "id", nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "owner_id", nullable = false)
@@ -71,15 +71,15 @@ public class ResearchProjectEntity {
             inverseJoinColumns = @JoinColumn(name = "dataset_artifact_id"))
     private Set<DatasetArtifactEntity> datasetArtifacts = new HashSet<>();
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
 
-    @Column(nullable = false)
+    @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private ArtifactState state;
 

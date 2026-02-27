@@ -23,7 +23,7 @@ import org.apache.airavata.compute.provider.ComputeProvider;
 import org.apache.airavata.compute.provider.slurm.SlurmComputeProvider;
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

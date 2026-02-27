@@ -20,8 +20,7 @@
 package org.apache.airavata.research.session.service;
 
 import java.util.List;
-import org.apache.airavata.research.project.entity.ResearchProjectEntity;
-import org.apache.airavata.research.session.entity.SessionEntity;
+import org.apache.airavata.research.session.model.Session;
 import org.apache.airavata.research.session.model.SessionStatus;
 
 /**
@@ -29,15 +28,15 @@ import org.apache.airavata.research.session.model.SessionStatus;
  */
 public interface ResearchSessionService {
 
-    SessionEntity findSession(String sessionId);
+    Session findSession(String sessionId);
 
-    SessionEntity createSession(String sessionName, ResearchProjectEntity project);
+    Session createSession(String sessionName, String projectId);
 
-    List<SessionEntity> findAllByUserId(String userId);
+    List<Session> findAllByUserId(String userId);
 
-    List<SessionEntity> findAllByUserIdAndStatus(String userId, SessionStatus status);
+    List<Session> findAllByUserIdAndStatus(String userId, SessionStatus status);
 
-    SessionEntity updateSessionStatus(String sessionId, SessionStatus status);
+    Session updateSessionStatus(String sessionId, SessionStatus status);
 
     int countSessionsByUserIdAndStatus(String userId, SessionStatus status);
 

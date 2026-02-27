@@ -23,9 +23,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
-import org.apache.airavata.core.util.DBConstants;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.service.ProcessService;
+import org.apache.airavata.execution.process.ProcessModel;
+import org.apache.airavata.execution.process.ProcessService;
 import org.apache.airavata.restapi.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +73,6 @@ public class ProcessController {
 
     @GetMapping
     public List<ProcessModel> getProcesses(@RequestParam String experimentId) throws RegistryException {
-        return processService.getProcessList(DBConstants.Process.EXPERIMENT_ID, experimentId);
+        return processService.getProcessList(experimentId);
     }
 }

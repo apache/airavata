@@ -21,12 +21,15 @@ package org.apache.airavata.iam.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
+import org.apache.airavata.iam.model.GroupMemberRole;
 
 @Entity
 @Table(
@@ -54,14 +57,15 @@ public class GroupMembershipEntity implements Serializable {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 50)
-    private String role;
+    private GroupMemberRole role;
 
     @Column(name = "domain_id")
     private String domainId;
 
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     public GroupMembershipEntity() {}
 
@@ -89,11 +93,11 @@ public class GroupMembershipEntity implements Serializable {
         this.userId = userId;
     }
 
-    public String getRole() {
+    public GroupMemberRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(GroupMemberRole role) {
         this.role = role;
     }
 
@@ -105,11 +109,11 @@ public class GroupMembershipEntity implements Serializable {
         this.domainId = domainId;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

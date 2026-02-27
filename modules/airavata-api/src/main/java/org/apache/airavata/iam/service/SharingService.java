@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.core.exception.DuplicateEntryException;
 import org.apache.airavata.core.model.SearchCriteria;
-import org.apache.airavata.iam.entity.GroupMemberPK;
-import org.apache.airavata.iam.entity.SharingPK;
 import org.apache.airavata.iam.exception.SharingRegistryException;
 import org.apache.airavata.iam.model.Domain;
 import org.apache.airavata.iam.model.EntityType;
@@ -211,15 +209,15 @@ public interface SharingService {
     // Group Membership Operations (formerly GroupMembershipService)
     // =========================================================================
 
-    GroupMember getMember(GroupMemberPK pk) throws SharingRegistryException;
+    GroupMember getMember(String domainId, String parentId, String childId) throws SharingRegistryException;
 
     GroupMember createMember(GroupMember groupMember) throws SharingRegistryException;
 
     GroupMember updateMember(GroupMember groupMember) throws SharingRegistryException;
 
-    boolean deleteMember(GroupMemberPK pk) throws SharingRegistryException;
+    boolean deleteMember(String domainId, String parentId, String childId) throws SharingRegistryException;
 
-    boolean isMemberExists(GroupMemberPK pk) throws SharingRegistryException;
+    boolean isMemberExists(String domainId, String parentId, String childId) throws SharingRegistryException;
 
     boolean isAdmin(String domainId, String groupId, String memberId) throws SharingRegistryException;
 
@@ -235,15 +233,21 @@ public interface SharingService {
     // Registry / Permission Record Operations (formerly SharingRegistryService)
     // =========================================================================
 
-    Sharing getPermission(SharingPK pk) throws SharingRegistryException;
+    Sharing getPermission(
+            String domainId, String entityId, String groupId, String permissionTypeId, String inheritedParentId)
+            throws SharingRegistryException;
 
     Sharing createPermission(Sharing sharing) throws SharingRegistryException;
 
     Sharing updatePermission(Sharing sharing) throws SharingRegistryException;
 
-    boolean deletePermission(SharingPK pk) throws SharingRegistryException;
+    boolean deletePermission(
+            String domainId, String entityId, String groupId, String permissionTypeId, String inheritedParentId)
+            throws SharingRegistryException;
 
-    boolean permissionExists(SharingPK pk) throws SharingRegistryException;
+    boolean permissionExists(
+            String domainId, String entityId, String groupId, String permissionTypeId, String inheritedParentId)
+            throws SharingRegistryException;
 
     List<Sharing> selectPermissions(Map<String, String> filters, int offset, int limit) throws SharingRegistryException;
 

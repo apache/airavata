@@ -21,11 +21,11 @@ package org.apache.airavata.restapi.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.airavata.execution.monitoring.JobStatusMonitor;
-import org.apache.airavata.execution.monitoring.MessagingContracts;
+import org.apache.airavata.execution.monitoring.JobStatusUpdateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,8 +48,7 @@ public class MonitoringJobStatusController {
 
     private final JobStatusMonitor jobStatusMonitor;
 
-    @Autowired
-    public MonitoringJobStatusController(@Autowired(required = false) JobStatusMonitor jobStatusMonitor) {
+    public MonitoringJobStatusController(@Nullable JobStatusMonitor jobStatusMonitor) {
         this.jobStatusMonitor = jobStatusMonitor;
     }
 
@@ -63,8 +62,7 @@ public class MonitoringJobStatusController {
             return ResponseEntity.badRequest().build();
         }
         try {
-            var event = new MessagingContracts.JobStatusUpdateEvent(
-                    req.jobName(), req.status(), req.task(), "job-callback", null);
+            var event = new JobStatusUpdateEvent(req.jobName(), req.status(), req.task(), "job-callback");
             jobStatusMonitor.publish(event);
         } catch (Exception e) {
             log.error("Error publishing job-status callback jobName={} status={}", req.jobName(), req.status(), e);

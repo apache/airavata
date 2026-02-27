@@ -489,7 +489,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             entity.setName("Test Entity 1");
             entity.setDescription("Test entity description");
             entity.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+                    IdGenerator.getUniqueTimestamp().toEpochMilli());
 
             // When
             sharingService.createEntity(entity);
@@ -517,7 +517,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             entity.setOwnerId("share-owner");
             entity.setName("Shared Entity");
             entity.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+                    IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharingService.createEntity(entity);
 
             // Verify initial access
@@ -557,7 +557,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             entity.setOwnerId("group-share-owner");
             entity.setName("Group Shared Entity");
             entity.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+                    IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharingService.createEntity(entity);
 
             // When
@@ -587,7 +587,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             parent.setOwnerId("cascade-owner");
             parent.setName("Parent Entity");
             parent.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+                    IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharingService.createEntity(parent);
 
             // Share parent with cascading
@@ -602,7 +602,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             child.setOwnerId("cascade-owner");
             child.setName("Child Entity");
             child.setParentEntityId("parent-entity");
-            child.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
+            child.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharingService.createEntity(child);
 
             // Then - Child should inherit permissions
@@ -625,7 +625,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             entity.setOwnerId("revoke-owner");
             entity.setName("Revoke Entity");
             entity.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+                    IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharingService.createEntity(entity);
 
             sharingService.shareEntityWithUsers(
@@ -658,7 +658,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
             entity.setOwnerId("count-owner");
             entity.setName("Count Entity");
             entity.setOriginalEntityCreationTime(
-                    IdGenerator.getUniqueTimestamp().getTime());
+                    IdGenerator.getUniqueTimestamp().toEpochMilli());
             sharingService.createEntity(entity);
 
             // Initially
@@ -810,7 +810,7 @@ public class SharingServiceComprehensiveTest extends ServiceIntegrationTestBase 
         entity.setOwnerId(ownerId);
         entity.setName(name);
         entity.setDescription("Test entity " + entityId);
-        entity.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().getTime());
+        entity.setOriginalEntityCreationTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         return entity;
     }
 }

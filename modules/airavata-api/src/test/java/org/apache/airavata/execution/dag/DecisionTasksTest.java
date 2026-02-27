@@ -33,11 +33,8 @@ import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.model.DagTaskResult;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.TaskModel;
-import org.apache.airavata.execution.model.TaskTypes;
 import org.apache.airavata.execution.orchestration.ExperimentStatusManager;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.process.ProcessModel;
 import org.apache.airavata.research.application.model.ApplicationOutput;
 import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.status.service.StatusService;
@@ -50,9 +47,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Unit tests for the four DAG decision tasks:
+ * Unit tests for the DAG decision tasks:
  * {@link CheckOutputsTask}, {@link CheckDataMovementTask},
- * {@link CheckIntermediateTransferTask}, and {@link MarkFailedTask}.
+ * and {@link MarkFailedTask}.
  *
  * <p>Each task is tested in its own {@link Nested} class. All tests are pure
  * unit tests using JUnit 5 and Mockito — no Spring context is required.
@@ -113,9 +110,9 @@ public class DecisionTasksTest {
             out1.setName("stdout");
             ApplicationOutput out2 = new ApplicationOutput();
             out2.setName("result.txt");
-            model.setProcessOutputs(List.of(out1, out2));
 
             TaskContext context = contextFor(model);
+            context.setProcessOutputs(List.of(out1, out2));
 
             DagTaskResult result = task.execute(context);
 
@@ -127,9 +124,8 @@ public class DecisionTasksTest {
         @Test
         void execute_returnsFailure_whenProcessOutputsIsNull() {
             ProcessModel model = newProcessModel();
-            model.setProcessOutputs(null);
-
             TaskContext context = contextFor(model);
+            context.setProcessOutputs(null);
 
             DagTaskResult result = task.execute(context);
 
@@ -143,9 +139,8 @@ public class DecisionTasksTest {
         @Test
         void execute_returnsFailure_whenProcessOutputsIsEmpty() {
             ProcessModel model = newProcessModel();
-            model.setProcessOutputs(Collections.emptyList());
-
             TaskContext context = contextFor(model);
+            context.setProcessOutputs(Collections.emptyList());
 
             DagTaskResult result = task.execute(context);
 
@@ -180,9 +175,9 @@ public class DecisionTasksTest {
             ApplicationOutput withMovement = new ApplicationOutput();
             withMovement.setName("result.txt");
             withMovement.setDataMovement(true);
-            model.setProcessOutputs(List.of(noMovement, withMovement));
 
             TaskContext context = contextFor(model);
+            context.setProcessOutputs(List.of(noMovement, withMovement));
 
             DagTaskResult result = task.execute(context);
 
@@ -205,9 +200,9 @@ public class DecisionTasksTest {
             ApplicationOutput out2 = new ApplicationOutput();
             out2.setName("stderr");
             out2.setDataMovement(false);
-            model.setProcessOutputs(List.of(out1, out2));
 
             TaskContext context = contextFor(model);
+            context.setProcessOutputs(List.of(out1, out2));
 
             DagTaskResult result = task.execute(context);
 
@@ -222,9 +217,8 @@ public class DecisionTasksTest {
         @Test
         void execute_returnsFailure_whenProcessOutputsIsNull() {
             ProcessModel model = newProcessModel();
-            model.setProcessOutputs(null);
-
             TaskContext context = contextFor(model);
+            context.setProcessOutputs(null);
 
             DagTaskResult result = task.execute(context);
 
@@ -233,88 +227,6 @@ public class DecisionTasksTest {
             assertTrue(
                     failure.reason().contains("No outputs defined"),
                     "Failure reason must indicate that no outputs are defined");
-        }
-    }
-
-    // =========================================================================
-    // CheckIntermediateTransferTask
-    // =========================================================================
-
-    @Nested
-    class CheckIntermediateTransferTaskTests {
-
-        private CheckIntermediateTransferTask task;
-
-        @BeforeEach
-        void setUp() {
-            task = new CheckIntermediateTransferTask();
-        }
-
-        @Test
-        void execute_returnsSuccess_whenProcessHasOutputFetchingTask() {
-            ProcessModel model = newProcessModel();
-            TaskModel outputFetchingTask = new TaskModel();
-            outputFetchingTask.setTaskId("task-of-001");
-            outputFetchingTask.setTaskType(TaskTypes.OUTPUT_FETCHING);
-            TaskModel submissionTask = new TaskModel();
-            submissionTask.setTaskId("task-sub-001");
-            submissionTask.setTaskType(TaskTypes.JOB_SUBMISSION);
-            model.setTasks(List.of(submissionTask, outputFetchingTask));
-
-            TaskContext context = contextFor(model);
-
-            DagTaskResult result = task.execute(context);
-
-            assertInstanceOf(
-                    DagTaskResult.Success.class,
-                    result,
-                    "Expected Success when process has at least one OUTPUT_FETCHING task");
-            DagTaskResult.Success success = (DagTaskResult.Success) result;
-            assertTrue(
-                    success.message().contains("Intermediate transfer tasks found"),
-                    "Success message must confirm intermediate transfer tasks were found");
-        }
-
-        @Test
-        void execute_returnsFailure_whenNoOutputFetchingTaskExists() {
-            ProcessModel model = newProcessModel();
-            TaskModel provisioningTask = new TaskModel();
-            provisioningTask.setTaskId("task-prov-001");
-            provisioningTask.setTaskType(TaskTypes.PROVISIONING);
-            TaskModel stagingTask = new TaskModel();
-            stagingTask.setTaskId("task-stage-001");
-            stagingTask.setTaskType(TaskTypes.DATA_STAGING);
-            TaskModel submissionTask = new TaskModel();
-            submissionTask.setTaskId("task-sub-001");
-            submissionTask.setTaskType(TaskTypes.JOB_SUBMISSION);
-            model.setTasks(List.of(provisioningTask, stagingTask, submissionTask));
-
-            TaskContext context = contextFor(model);
-
-            DagTaskResult result = task.execute(context);
-
-            assertInstanceOf(
-                    DagTaskResult.Failure.class, result, "Expected Failure when no OUTPUT_FETCHING task is present");
-            DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(
-                    failure.reason().contains("No intermediate transfer tasks"),
-                    "Failure reason must indicate no intermediate transfer tasks exist");
-        }
-
-        @Test
-        void execute_returnsFailure_whenTaskListIsEmpty() {
-            ProcessModel model = newProcessModel();
-            model.setTasks(Collections.emptyList());
-
-            TaskContext context = contextFor(model);
-
-            DagTaskResult result = task.execute(context);
-
-            assertInstanceOf(DagTaskResult.Failure.class, result, "Expected Failure when task list is empty");
-            DagTaskResult.Failure failure = (DagTaskResult.Failure) result;
-            assertTrue(
-                    failure.reason().contains("No intermediate transfer tasks"),
-                    "Failure reason must indicate no intermediate transfer tasks exist");
         }
     }
 

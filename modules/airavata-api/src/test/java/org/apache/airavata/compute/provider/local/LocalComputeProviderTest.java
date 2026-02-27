@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 import org.apache.airavata.compute.provider.slurm.SlurmComputeProvider;
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -26,13 +26,13 @@ import java.util.Objects;
 
 public class UserGroupPK implements Serializable {
     private String groupId;
-    private String domainId;
+    private String gatewayId;
 
     public UserGroupPK() {}
 
-    public UserGroupPK(String groupId, String domainId) {
+    public UserGroupPK(String groupId, String gatewayId) {
         this.groupId = groupId;
-        this.domainId = domainId;
+        this.gatewayId = gatewayId;
     }
 
     @Column(name = "group_id")
@@ -47,12 +47,12 @@ public class UserGroupPK implements Serializable {
 
     @Column(name = "gateway_id")
     @Id
-    public String getDomainId() {
-        return domainId;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     @Override
@@ -60,11 +60,11 @@ public class UserGroupPK implements Serializable {
         return this == o
                 || (o instanceof UserGroupPK that
                         && Objects.equals(groupId, that.groupId)
-                        && Objects.equals(domainId, that.domainId));
+                        && Objects.equals(gatewayId, that.gatewayId));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, domainId);
+        return Objects.hash(groupId, gatewayId);
     }
 }

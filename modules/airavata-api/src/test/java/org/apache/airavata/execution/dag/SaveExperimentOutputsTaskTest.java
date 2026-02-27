@@ -30,8 +30,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.process.ProcessModel;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
 import org.apache.airavata.research.experiment.entity.ExperimentOutputEntity;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
@@ -103,12 +102,12 @@ public class SaveExperimentOutputsTaskTest {
         for (ExperimentOutputEntity output : saved.getOutputs()) {
             if ("stdout".equals(output.getName())) {
                 assertEquals("/data/out/stdout.txt", output.getValue());
-                assertEquals("STRING", output.getType());
+                assertEquals(org.apache.airavata.storage.resource.model.DataType.STRING, output.getType());
                 assertEquals(entity, output.getExperiment());
                 foundStdout = true;
             } else if ("result".equals(output.getName())) {
                 assertEquals("/data/out/result.csv", output.getValue());
-                assertEquals("STRING", output.getType());
+                assertEquals(org.apache.airavata.storage.resource.model.DataType.STRING, output.getType());
                 assertEquals(entity, output.getExperiment());
                 foundResult = true;
             }
@@ -179,7 +178,7 @@ public class SaveExperimentOutputsTaskTest {
         existingOutput.setOutputId("existing-output-id");
         existingOutput.setName("stdout");
         existingOutput.setValue("/data/out/old-stdout.txt");
-        existingOutput.setType("STRING");
+        existingOutput.setType(org.apache.airavata.storage.resource.model.DataType.STRING);
         existingOutput.setExperiment(entity);
 
         ArrayList<ExperimentOutputEntity> outputs = new ArrayList<>();

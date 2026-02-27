@@ -32,12 +32,12 @@ public class ExperimentStatistics {
     private int failedExperimentCount;
     private int createdExperimentCount;
     private int runningExperimentCount;
-    private List<ExperimentSummaryModel> allExperiments;
-    private List<ExperimentSummaryModel> completedExperiments;
-    private List<ExperimentSummaryModel> failedExperiments;
-    private List<ExperimentSummaryModel> cancelledExperiments;
-    private List<ExperimentSummaryModel> createdExperiments;
-    private List<ExperimentSummaryModel> runningExperiments;
+    private List<ExperimentSummary> allExperiments;
+    private List<ExperimentSummary> completedExperiments;
+    private List<ExperimentSummary> failedExperiments;
+    private List<ExperimentSummary> cancelledExperiments;
+    private List<ExperimentSummary> createdExperiments;
+    private List<ExperimentSummary> runningExperiments;
 
     public ExperimentStatistics() {}
 
@@ -89,51 +89,51 @@ public class ExperimentStatistics {
         this.runningExperimentCount = runningExperimentCount;
     }
 
-    public List<ExperimentSummaryModel> getAllExperiments() {
+    public List<ExperimentSummary> getAllExperiments() {
         return allExperiments;
     }
 
-    public void setAllExperiments(List<ExperimentSummaryModel> allExperiments) {
+    public void setAllExperiments(List<ExperimentSummary> allExperiments) {
         this.allExperiments = allExperiments;
     }
 
-    public List<ExperimentSummaryModel> getCompletedExperiments() {
+    public List<ExperimentSummary> getCompletedExperiments() {
         return completedExperiments;
     }
 
-    public void setCompletedExperiments(List<ExperimentSummaryModel> completedExperiments) {
+    public void setCompletedExperiments(List<ExperimentSummary> completedExperiments) {
         this.completedExperiments = completedExperiments;
     }
 
-    public List<ExperimentSummaryModel> getFailedExperiments() {
+    public List<ExperimentSummary> getFailedExperiments() {
         return failedExperiments;
     }
 
-    public void setFailedExperiments(List<ExperimentSummaryModel> failedExperiments) {
+    public void setFailedExperiments(List<ExperimentSummary> failedExperiments) {
         this.failedExperiments = failedExperiments;
     }
 
-    public List<ExperimentSummaryModel> getCancelledExperiments() {
+    public List<ExperimentSummary> getCancelledExperiments() {
         return cancelledExperiments;
     }
 
-    public void setCancelledExperiments(List<ExperimentSummaryModel> cancelledExperiments) {
+    public void setCancelledExperiments(List<ExperimentSummary> cancelledExperiments) {
         this.cancelledExperiments = cancelledExperiments;
     }
 
-    public List<ExperimentSummaryModel> getCreatedExperiments() {
+    public List<ExperimentSummary> getCreatedExperiments() {
         return createdExperiments;
     }
 
-    public void setCreatedExperiments(List<ExperimentSummaryModel> createdExperiments) {
+    public void setCreatedExperiments(List<ExperimentSummary> createdExperiments) {
         this.createdExperiments = createdExperiments;
     }
 
-    public List<ExperimentSummaryModel> getRunningExperiments() {
+    public List<ExperimentSummary> getRunningExperiments() {
         return runningExperiments;
     }
 
-    public void setRunningExperiments(List<ExperimentSummaryModel> runningExperiments) {
+    public void setRunningExperiments(List<ExperimentSummary> runningExperiments) {
         this.runningExperiments = runningExperiments;
     }
 

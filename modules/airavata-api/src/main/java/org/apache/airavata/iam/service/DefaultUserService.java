@@ -30,7 +30,6 @@ import org.apache.airavata.iam.exception.AiravataSecurityException;
 import org.apache.airavata.iam.exception.IamAdminServicesException;
 import org.apache.airavata.iam.exception.UserProfileServiceException;
 import org.apache.airavata.iam.mapper.UserMapper;
-import org.apache.airavata.iam.mapper.UserProfileMapper;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.iam.model.Status;
 import org.apache.airavata.iam.model.UserInfo;
@@ -51,7 +50,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 /**
  * Service for managing users in the IAM layer.
  */
-@Service("iamUserService")
+@Service
 @Transactional
 public class DefaultUserService implements UserService {
 
@@ -59,7 +58,6 @@ public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final UserProfileMapper userProfileMapper;
     private final IamAdminService iamAdminService;
     private final RequestAuthenticator securityManager;
     private final EntityManager entityManager;
@@ -68,14 +66,12 @@ public class DefaultUserService implements UserService {
     public DefaultUserService(
             UserRepository userRepository,
             UserMapper userMapper,
-            UserProfileMapper userProfileMapper,
             IamAdminService iamAdminService,
             RequestAuthenticator securityManager,
             EntityManager entityManager,
             PlatformTransactionManager transactionManager) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.userProfileMapper = userProfileMapper;
         this.iamAdminService = iamAdminService;
         this.securityManager = securityManager;
         this.entityManager = entityManager;
@@ -175,7 +171,6 @@ public class DefaultUserService implements UserService {
     // UserProfile operations (merged from DefaultUserProfileService)
     // -----------------------------------------------------------------------
 
-    @Transactional
     public String initializeUserProfile(AuthzToken authzToken) throws UserProfileServiceException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         try {
@@ -189,17 +184,17 @@ public class DefaultUserService implements UserService {
             userProfile.setUserId(sub);
             userProfile.setGatewayId(gatewayId);
             userProfile.setAiravataInternalUserId(sub + "@" + gatewayId);
-            userProfile.setCreationTime(IdGenerator.getCurrentTimestamp().getTime());
+            userProfile.setCreatedAt(IdGenerator.getCurrentTimestamp().toEpochMilli());
             userProfile.setValidUntil(-1);
             userProfile.setState(Status.ACTIVE);
             if (userProfile.getEmails() == null) userProfile.setEmails(new java.util.ArrayList<>());
             userProfile.getEmails().add(userInfo.getEmailAddress());
             userProfile.setFirstName(userInfo.getFirstName());
             userProfile.setLastName(userInfo.getLastName());
-            userProfile.setLastAccessTime(IdGenerator.getCurrentTimestamp().getTime());
+            userProfile.setLastAccessTime(IdGenerator.getCurrentTimestamp().toEpochMilli());
             userProfile = createUserProfile(userProfile);
             if (null != userProfile) {
-                logger.info("Added UserProfile with userId: " + userProfile.getUserId());
+                logger.info("Added UserProfile with userId: {}", userProfile.getUserId());
                 return userProfile.getUserId();
             } else {
                 throw new UserProfileServiceException("User creation failed. Please try again.");
@@ -215,7 +210,6 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    @Transactional
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
             throws UserProfileServiceException, IamAdminServicesException {
         try {
@@ -242,7 +236,7 @@ public class DefaultUserService implements UserService {
             }
             userProfile = updateUserProfileInternal(userProfile, iamUpdater);
             if (null != userProfile) {
-                logger.info("Added UserProfile with userId: " + userProfile.getUserId());
+                logger.info("Added UserProfile with userId: {}", userProfile.getUserId());
                 return userProfile.getUserId();
             } else {
                 throw new UserProfileServiceException("User creation failed. Please try again.");
@@ -254,7 +248,6 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    @Transactional
     public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
             throws UserProfileServiceException, IamAdminServicesException {
         try {
@@ -275,7 +268,7 @@ public class DefaultUserService implements UserService {
                         "IAM service, security manager, authzToken, or userProfile not available, skipping IAM update");
             }
             if (updateUserProfileInternal(userProfile, iamUserProfileUpdater) != null) {
-                logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
+                logger.info("Updated UserProfile with userId: {}", userProfile.getUserId());
                 return true;
             }
             return false;
@@ -317,13 +310,12 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    @Transactional
     public boolean deleteUserProfile(AuthzToken authzToken, String userId, String gatewayId)
             throws UserProfileServiceException {
         try {
             UserProfile userProfile = getUserProfileByIdAndGateWay(userId, gatewayId);
             boolean deleteSuccess = deleteUserProfileByInternalId(userProfile.getAiravataInternalUserId());
-            logger.info("Delete UserProfile with userId: " + userId + ", " + (deleteSuccess ? "Success!" : "Failed!"));
+            logger.info("Delete UserProfile with userId: {}, {}", userId, (deleteSuccess ? "Success!" : "Failed!"));
             return deleteSuccess;
         } catch (RuntimeException e) {
             String message = "Error while deleting user profile: " + e.getMessage();
@@ -360,7 +352,7 @@ public class DefaultUserService implements UserService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        return userProfileMapper.toModel(entityOpt.get());
+        return userMapper.toModel(entityOpt.get());
     }
 
     public UserProfile createUserProfile(UserProfile userProfile) {
@@ -372,7 +364,7 @@ public class DefaultUserService implements UserService {
         if (entityOpt.isEmpty()) {
             return null;
         }
-        return userProfileMapper.toModel(entityOpt.get());
+        return userMapper.toModel(entityOpt.get());
     }
 
     // -----------------------------------------------------------------------
@@ -492,13 +484,13 @@ public class DefaultUserService implements UserService {
                     persistedCopy = existingEntity;
                     entityManager.flush();
                 } else {
-                    UserEntity entity = userProfileMapper.toEntity(userProfile);
+                    UserEntity entity = userMapper.toEntity(userProfile);
                     entity.setUserId(userId);
                     persistedCopy = entityManager.merge(entity);
                     entityManager.flush();
                 }
             } else {
-                UserEntity entity = userProfileMapper.toEntity(userProfile);
+                UserEntity entity = userMapper.toEntity(userProfile);
                 if (userProfile.getUserId() != null && userProfile.getGatewayId() != null) {
                     entity.setUserId(userProfile.getUserId() + "@" + userProfile.getGatewayId());
                 }
@@ -548,17 +540,17 @@ public class DefaultUserService implements UserService {
                 logger.debug("Skipping IAM update - transaction synchronization not available or registration failed");
             }
         }
-        return userProfileMapper.toModel(persistedCopy);
+        return userMapper.toModel(persistedCopy);
     }
 
     private List<UserProfile> getAllUserProfilesInGatewayInternal(String gatewayId, int offset, int limit) {
         if (limit > 0) {
             Pageable pageable = PageRequest.of(offset / limit, limit);
             Page<UserEntity> page = userRepository.findByGatewayId(gatewayId, pageable);
-            return userProfileMapper.toModelList(page.getContent());
+            return userMapper.toModelList(page.getContent());
         } else {
             List<UserEntity> entities = userRepository.findByGatewayId(gatewayId);
-            return userProfileMapper.toModelList(entities);
+            return userMapper.toModelList(entities);
         }
     }
 

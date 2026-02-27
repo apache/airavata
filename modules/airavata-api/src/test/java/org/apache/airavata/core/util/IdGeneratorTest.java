@@ -21,7 +21,7 @@ package org.apache.airavata.core.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -71,39 +71,38 @@ class IdGeneratorTest {
 
     @Test
     void getCurrentTimestamp_returnsNonNull() {
-        Timestamp ts = IdGenerator.getCurrentTimestamp();
+        Instant ts = IdGenerator.getCurrentTimestamp();
         assertNotNull(ts);
     }
 
     @Test
     void getCurrentTimestamp_returnsPositiveTime() {
-        Timestamp ts = IdGenerator.getCurrentTimestamp();
-        assertTrue(ts.getTime() > 0);
+        Instant ts = IdGenerator.getCurrentTimestamp();
+        assertTrue(ts.toEpochMilli() > 0);
     }
 
     // ========== getUniqueTimestamp ==========
 
     @Test
     void getUniqueTimestamp_consecutiveCallsAreMonotonicallyIncreasing() {
-        Timestamp[] timestamps = new Timestamp[100];
+        Instant[] timestamps = new Instant[100];
         for (int i = 0; i < timestamps.length; i++) {
             timestamps[i] = IdGenerator.getUniqueTimestamp();
         }
         for (int i = 1; i < timestamps.length; i++) {
-            long prev = timestamps[i - 1].getTime() * 1000 + timestamps[i - 1].getNanos() / 1000;
-            long curr = timestamps[i].getTime() * 1000 + timestamps[i].getNanos() / 1000;
             assertTrue(
-                    curr >= prev, "Timestamp at index " + i + " (" + curr + ") should be >= previous (" + prev + ")");
+                    !timestamps[i].isBefore(timestamps[i - 1]),
+                    "Timestamp at index " + i + " (" + timestamps[i] + ") should be >= previous (" + timestamps[i - 1]
+                            + ")");
         }
     }
 
     @Test
     void getUniqueTimestamp_producesUniqueValues() {
-        Set<String> seen = new HashSet<>();
+        Set<Instant> seen = new HashSet<>();
         for (int i = 0; i < 10; i++) {
-            Timestamp ts = IdGenerator.getUniqueTimestamp();
-            String key = ts.getTime() + ":" + ts.getNanos();
-            assertTrue(seen.add(key), "Duplicate timestamp at iteration " + i + ": " + key);
+            Instant ts = IdGenerator.getUniqueTimestamp();
+            assertTrue(seen.add(ts), "Duplicate timestamp at iteration " + i + ": " + ts);
         }
     }
 
@@ -111,23 +110,23 @@ class IdGeneratorTest {
 
     @Test
     void getTime_zeroInput_returnsCurrentTimestamp() {
-        Timestamp ts = IdGenerator.getTime(0);
+        Instant ts = IdGenerator.getTime(0);
         assertNotNull(ts);
-        assertTrue(ts.getTime() > 0);
+        assertTrue(ts.toEpochMilli() > 0);
     }
 
     @Test
     void getTime_negativeInput_returnsCurrentTimestamp() {
-        Timestamp ts = IdGenerator.getTime(-1);
+        Instant ts = IdGenerator.getTime(-1);
         assertNotNull(ts);
-        assertTrue(ts.getTime() > 0);
+        assertTrue(ts.toEpochMilli() > 0);
     }
 
     @Test
-    void getTime_positiveInput_returnsTimestampWithThatTime() {
+    void getTime_positiveInput_returnsInstantWithThatTime() {
         long epochMillis = 1700000000000L;
-        Timestamp ts = IdGenerator.getTime(epochMillis);
-        assertEquals(epochMillis, ts.getTime());
+        Instant ts = IdGenerator.getTime(epochMillis);
+        assertEquals(epochMillis, ts.toEpochMilli());
     }
 
     // ========== getId ==========

@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
  * {@link #deleteProject}, {@link #searchProjects}) are implemented here because they carry
  * extra parameters or return types that differ from the generic contract.
  */
-@Service("projectServiceFacade")
+@Service
 public class DefaultProjectService extends AbstractCrudService<ProjectEntity, Project> implements ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -77,7 +77,6 @@ public class DefaultProjectService extends AbstractCrudService<ProjectEntity, Pr
     // -------------------------------------------------------------------------
 
     @Override
-    @Transactional
     public String createProject(String gatewayId, Project project) {
         project.setProjectId(IdGenerator.ensureId(project.getProjectId()));
         project.setGatewayId(gatewayId);
@@ -87,7 +86,6 @@ public class DefaultProjectService extends AbstractCrudService<ProjectEntity, Pr
     }
 
     @Override
-    @Transactional
     public boolean deleteProject(String projectId) {
         if (!projectRepository.existsById(projectId)) {
             return false;

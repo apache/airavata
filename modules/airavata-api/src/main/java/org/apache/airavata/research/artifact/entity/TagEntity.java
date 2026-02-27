@@ -33,10 +33,10 @@ public class TagEntity {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
+    @Column(name = "id", nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "value", nullable = false)
     private String value;
 
     public String getId() {

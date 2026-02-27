@@ -34,9 +34,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class DefaultResourceService implements ResourceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultResourceService.class);
 
     private final ResourceRepository resourceRepository;
     private final ResourceMapper mapper;
@@ -65,7 +66,6 @@ public class DefaultResourceService implements ResourceService {
         return mapper.toModelList(resourceRepository.findByGatewayId(gatewayId));
     }
 
-    @Transactional
     public String createResource(Resource resource) {
         resource.setResourceId(IdGenerator.ensureId(resource.getResourceId()));
         var entity = mapper.toEntity(resource);
@@ -74,7 +74,6 @@ public class DefaultResourceService implements ResourceService {
         return saved.getResourceId();
     }
 
-    @Transactional
     public void updateResource(String resourceId, Resource resource) {
         if (!resourceRepository.existsById(resourceId)) {
             throw new IllegalArgumentException("Resource not found: " + resourceId);
@@ -84,7 +83,6 @@ public class DefaultResourceService implements ResourceService {
         logger.debug("Updated resource with id={}", resourceId);
     }
 
-    @Transactional
     public void deleteResource(String resourceId) {
         if (!resourceRepository.existsById(resourceId)) {
             throw new IllegalArgumentException("Resource not found: " + resourceId);
@@ -111,7 +109,6 @@ public class DefaultResourceService implements ResourceService {
         return bindingMapper.toModelList(bindingRepository.findByCredentialId(credentialId));
     }
 
-    @Transactional
     public String createBinding(ResourceBinding binding) {
         binding.setBindingId(IdGenerator.ensureId(binding.getBindingId()));
         var saved = bindingRepository.save(bindingMapper.toEntity(binding));
@@ -128,7 +125,6 @@ public class DefaultResourceService implements ResourceService {
         return saved.getBindingId();
     }
 
-    @Transactional
     public void updateBinding(String bindingId, ResourceBinding binding) {
         if (!bindingRepository.existsById(bindingId)) {
             throw new IllegalArgumentException("Resource binding not found with id: " + bindingId);
@@ -145,7 +141,6 @@ public class DefaultResourceService implements ResourceService {
                 binding.getMetadata());
     }
 
-    @Transactional
     public void deleteBinding(String bindingId) {
         if (!bindingRepository.existsById(bindingId)) {
             throw new IllegalArgumentException("Resource binding not found with id: " + bindingId);

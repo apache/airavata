@@ -20,38 +20,31 @@
 package org.apache.airavata.execution.orchestration;
 
 import jakarta.annotation.PostConstruct;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.exception.CoreExceptions.AiravataSystemException;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.exception.ValidationExceptions.LaunchValidationException;
-import org.apache.airavata.core.exception.ValidationExceptions.ValidationResults;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
+import org.apache.airavata.core.util.IdGenerator;
 import org.apache.airavata.core.util.LoggingUtil;
 import org.apache.airavata.execution.activity.ProcessActivityManager;
-import org.apache.airavata.execution.event.LocalStatusEvent;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.model.TaskTypes;
-import org.apache.airavata.execution.service.ProcessService;
-import org.apache.airavata.research.application.adapter.ApplicationAdapter;
-import org.apache.airavata.research.application.model.ApplicationOutput;
+import org.apache.airavata.execution.process.ProcessModel;
+import org.apache.airavata.execution.process.ProcessService;
 import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
+import org.apache.airavata.research.experiment.model.Experiment;
 import org.apache.airavata.research.experiment.model.ExperimentState;
-import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.apache.airavata.research.experiment.service.ExperimentService;
-import org.apache.airavata.research.experiment.util.ExperimentModelUtil;
+import org.apache.airavata.research.experiment.util.ExperimentUtil;
 import org.apache.airavata.status.model.ErrorModel;
+import org.apache.airavata.status.model.ExperimentDequeueEvent;
 import org.apache.airavata.status.model.ProcessStatusChangedEvent;
 import org.apache.airavata.status.service.StatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
@@ -73,32 +66,26 @@ public class DefaultOrchestratorService implements OrchestratorService {
     private final ExperimentService experimentService;
     private final ProcessService processService;
     private final StatusService statusService;
-    private final ApplicationAdapter applicationAdapter;
     private final ExperimentStatusManager experimentStatusManager;
     private final ProcessResourceResolver processResourceResolver;
     private final ServerProperties properties;
-    private final ValidationService validationService;
-
-    @Autowired(required = false)
-    private ProcessActivityManager processActivityManager;
+    private final ProcessActivityManager processActivityManager;
 
     public DefaultOrchestratorService(
             ExperimentService experimentService,
             ProcessService processService,
             StatusService statusService,
-            ApplicationAdapter applicationAdapter,
             ExperimentStatusManager experimentStatusManager,
             ProcessResourceResolver processResourceResolver,
             ServerProperties properties,
-            ValidationService validationService) {
+            @org.springframework.lang.Nullable ProcessActivityManager processActivityManager) {
         this.experimentService = experimentService;
         this.processService = processService;
         this.statusService = statusService;
-        this.applicationAdapter = applicationAdapter;
         this.experimentStatusManager = experimentStatusManager;
         this.processResourceResolver = processResourceResolver;
         this.properties = properties;
-        this.validationService = validationService;
+        this.processActivityManager = processActivityManager;
     }
 
     @PostConstruct
@@ -124,11 +111,20 @@ public class DefaultOrchestratorService implements OrchestratorService {
         }
     }
 
+    @EventListener
+    public void onExperimentDequeue(ExperimentDequeueEvent event) {
+        try {
+            launchQueuedExperiment(event.experimentId());
+        } catch (Exception e) {
+            logger.error("Error re-launching dequeued experiment {}", event.experimentId(), e);
+        }
+    }
+
     // -------------------------------------------------------------------------
-    // Package-private helpers used by ExperimentStatusManager (back-reference)
+    // Package-private helpers
     // -------------------------------------------------------------------------
 
-    ExperimentModel getExperimentOrThrow(String experimentId) throws RegistryException {
+    Experiment getExperimentOrThrow(String experimentId) throws RegistryException {
         try {
             return experimentService.getExperiment(experimentId);
         } catch (AiravataSystemException e) {
@@ -138,20 +134,10 @@ public class DefaultOrchestratorService implements OrchestratorService {
 
     boolean launchExperimentInternal(String experimentId, String gatewayId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryException, LaunchValidationException {
-        ExperimentModel experiment = getExperimentOrThrow(experimentId);
+        Experiment experiment = getExperimentOrThrow(experimentId);
+        prepareProcesses(experiment, gatewayId);
 
-        UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-        String token = processResourceResolver.getCredentialToken(experiment, userConfigurationData);
-
-        return launchSingleAppExperiment(experiment, experimentId, gatewayId, token);
-    }
-
-    private boolean launchSingleAppExperiment(
-            ExperimentModel experiment, String experimentId, String gatewayId, String token)
-            throws OrchestratorException, RegistryException, LaunchValidationException {
-        prepareProcesses(experiment, experimentId, gatewayId);
-
-        if (isReadyToLaunch(experiment, experimentId)) {
+        if (isReadyToLaunch(experiment)) {
             createAndValidateTasks(experiment, false);
             return true;
         } else {
@@ -160,37 +146,58 @@ public class DefaultOrchestratorService implements OrchestratorService {
         }
     }
 
-    @Override
-    public boolean validateExperiment(String experimentId)
-            throws LaunchValidationException, RegistryException, OrchestratorException {
-        ExperimentModel experimentModel = getExperimentOrThrow(experimentId);
-        return validationService.validateExperiment(experimentModel).getValidationState();
-    }
-
-    @Override
-    public boolean validateProcess(String experimentId, List<ProcessModel> processes)
-            throws LaunchValidationException, RegistryException, OrchestratorException {
-        ExperimentModel experimentModel = getExperimentOrThrow(experimentId);
+    private boolean validateProcess(Experiment experiment, List<ProcessModel> processes)
+            throws LaunchValidationException, OrchestratorException {
         for (ProcessModel processModel : processes) {
-            boolean state = validationService
-                    .validateProcess(experimentModel, processModel)
-                    .getValidationState();
-            if (!state) {
+            if (!validateExperimentState(experiment, processModel.getProcessId())) {
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * Validates that the experiment is in the CREATED state (required before launch).
+     * If validation is disabled via config, always returns true. On failure, records an
+     * error against the given entity ID and throws {@link LaunchValidationException}.
+     */
+    private boolean validateExperimentState(Experiment experiment, String errorEntityId)
+            throws OrchestratorException, LaunchValidationException {
+        if (!properties.validationEnabled()) {
+            return true;
+        }
+
+        if (ExperimentState.CREATED.equals(experiment.getState())) {
+            logger.info("Validation of experiment status is SUCCESSFUL");
+            return true;
+        }
+
+        String error = "During the validation step experiment status should be CREATED, "
+                + "But this experiment status is : " + experiment.getState();
+        logger.error(error);
+        logger.error(
+                "Validation of experiment status for {} is FAILED:[error]. Validation Errors : {}",
+                errorEntityId,
+                error);
+
+        var errorModel = new ErrorModel();
+        errorModel.setActualErrorMessage("Validation Errors : " + error + " ");
+        errorModel.setCreatedAt(IdGenerator.getUniqueTimestamp().toEpochMilli());
+        try {
+            statusService.addProcessError(errorModel, errorEntityId);
+        } catch (RegistryException e) {
+            throw new OrchestratorException("Error while saving error details to database", e);
+        }
+
+        var launchException = new LaunchValidationException();
+        launchException.setErrorMessage("Validation failed: " + error);
+        throw launchException;
+    }
+
     @Override
     public boolean terminateExperiment(String experimentId, String gatewayId)
             throws RegistryException, OrchestratorException {
-        logger.info("Experiment: {} is cancelling  !!!!!", experimentId);
-        return validateStatesAndCancel(experimentId, gatewayId);
-    }
-
-    private boolean validateStatesAndCancel(String experimentId, String gatewayId)
-            throws RegistryException, OrchestratorException {
+        logger.info("Experiment: {} is cancelling", experimentId);
         var experimentStatus = experimentStatusManager.getExperimentStatus(experimentId);
         return switch (experimentStatus.getState()) {
             case COMPLETED, CANCELED, FAILED, CANCELING -> {
@@ -205,14 +212,11 @@ public class DefaultOrchestratorService implements OrchestratorService {
             }
             default -> {
                 var experimentModel = getExperimentOrThrow(experimentId);
-                var token = processResourceResolver.getCredentialToken(
-                        experimentModel, experimentModel.getUserConfigurationData());
-
-                cancelExperimentProcesses(experimentModel, token);
+                cancelExperimentProcesses(experimentModel, gatewayId);
                 StatusModel<ExperimentState> status =
                         StatusModel.of(ExperimentState.CANCELING, "Experiment cancel request processed");
                 experimentStatusManager.updateExperimentStatus(experimentId, status, gatewayId);
-                logger.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
+                logger.info("expId : {} :- Experiment status updated to {}", experimentId, status.getState());
                 yield true;
             }
         };
@@ -221,43 +225,16 @@ public class DefaultOrchestratorService implements OrchestratorService {
     @Override
     public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
             throws RegistryException, OrchestratorException {
-        submitIntermediateOutputsProcess(experimentId, gatewayId, outputNames);
-    }
-
-    private void submitIntermediateOutputsProcess(String experimentId, String gatewayId, List<String> outputNames)
-            throws RegistryException, OrchestratorException {
-
-        ExperimentModel experimentModel = getExperimentOrThrow(experimentId);
-        ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
+        Experiment experimentModel = getExperimentOrThrow(experimentId);
+        ProcessModel processModel = ExperimentUtil.cloneProcessFromExperiment(experimentModel);
         processModel.setExperimentDataDir(processModel.getExperimentDataDir() + "/intermediates");
 
-        List<ApplicationOutput> applicationOutputs =
-                applicationAdapter.getApplicationOutputs(experimentModel.getApplicationId());
-        List<ApplicationOutput> requestedOutputs = new ArrayList<>();
-
-        for (ApplicationOutput output : applicationOutputs) {
-            if (outputNames.contains(output.getName())) {
-                requestedOutputs.add(output);
-            }
-        }
-        processModel.setProcessOutputs(requestedOutputs);
         String processId = processService.addProcess(processModel, experimentId);
         processModel.setProcessId(processId);
 
         try {
-            Optional<ProcessModel> jobSubmissionProcess = experimentModel.getProcesses().stream()
-                    .filter(p -> p.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.JOB_SUBMISSION))
-                    .findFirst();
-            if (!jobSubmissionProcess.isPresent()) {
-                throw new OrchestratorException(MessageFormat.format(
-                        "Could not find job submission process for experiment {0}, unable to fetch intermediate outputs {1}",
-                        experimentId, outputNames));
-            }
             processService.updateProcess(processModel, processModel.getProcessId());
-
-            String token = processResourceResolver.getCredentialToken(
-                    experimentModel, experimentModel.getUserConfigurationData());
-            launchProcessWorkflow(processModel, token);
+            launchProcessWorkflow(processModel);
         } catch (RegistryException | OrchestratorException e) {
             logger.error("Failed to launch process for intermediate output fetching", e);
 
@@ -269,9 +246,7 @@ public class DefaultOrchestratorService implements OrchestratorService {
         }
     }
 
-    @Override
-    public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId)
-            throws RegistryException, OrchestratorException {
+    private boolean launchProcess(String processId, String gatewayId) throws RegistryException, OrchestratorException {
         var processStatus = statusService.getLatestProcessStatus(processId);
 
         return switch (processStatus.getState()) {
@@ -286,21 +261,23 @@ public class DefaultOrchestratorService implements OrchestratorService {
                 var applicationDeploymentDescription =
                         processResourceResolver.getAppDeployment(processModel, applicationId);
                 if (applicationDeploymentDescription == null) {
-                    logger.error("Could not find an application deployment for " + processModel.getComputeResourceId()
-                            + " and application " + applicationId);
+                    logger.error(
+                            "Could not find an application deployment for {} and application {}",
+                            processModel.getComputeResourceId(),
+                            applicationId);
                     throw new OrchestratorException("Could not find an application deployment for "
                             + processModel.getComputeResourceId() + " and application " + applicationId);
                 }
-                var resourceSchedule = processModel.getProcessResourceSchedule();
+                var resourceSchedule = processModel.getResourceSchedule();
                 if (resourceSchedule != null && resourceSchedule.get("resourceHostId") != null) {
                     processModel.setComputeResourceId(
                             resourceSchedule.get("resourceHostId").toString());
                 }
                 processService.updateProcess(processModel, processModel.getProcessId());
-                yield launchProcessWorkflow(processModel, airavataCredStoreToken);
+                yield launchProcessWorkflow(processModel);
             }
             default -> {
-                logger.warn("Process " + processId + " is already launched. So it can not be relaunched");
+                logger.warn("Process {} is already launched. So it can not be relaunched", processId);
                 yield false;
             }
         };
@@ -310,37 +287,29 @@ public class DefaultOrchestratorService implements OrchestratorService {
     // Shared launch pipeline helpers
     // -------------------------------------------------------------------------
 
-    private List<ProcessModel> prepareProcesses(ExperimentModel experiment, String experimentId, String gatewayId)
+    private List<ProcessModel> prepareProcesses(Experiment experiment, String gatewayId)
             throws OrchestratorException, RegistryException, LaunchValidationException {
-        List<ProcessModel> processes = createProcesses(experimentId, gatewayId);
+        String experimentId = experiment.getExperimentId();
+        List<ProcessModel> processes = createProcesses(experiment);
 
         for (ProcessModel processModel : processes) {
             if (!experiment.getUserConfigurationData().getAiravataAutoSchedule()) {
-                var resourceSchedule = processModel.getProcessResourceSchedule();
-                var resourceHostId = resourceSchedule != null ? (String) resourceSchedule.get("resourceHostId") : null;
-                if (resourceHostId == null) {
-                    throw new OrchestratorException("Compute Resource Id cannot be null at this point");
-                }
+                requireResourceHostId(processModel);
             }
             processService.updateProcess(processModel, processModel.getProcessId());
         }
 
         if (!experiment.getUserConfigurationData().getAiravataAutoSchedule()
-                && !validateProcess(experimentId, processes)) {
-            LaunchValidationException exception = new LaunchValidationException();
-            ValidationResults validationResults = new ValidationResults();
-            validationResults.setValidationState(false);
-            validationResults.setValidationResultList(new ArrayList<>());
-            exception.setValidationResult(validationResults);
-            exception.setErrorMessage("Validating process fails for given experiment Id : " + experimentId);
-            throw exception;
+                && !validateProcess(experiment, processes)) {
+            throw validationFailure(experimentId);
         }
 
         return processes;
     }
 
-    private boolean isReadyToLaunch(ExperimentModel experiment, String experimentId) {
-        return !experiment.getUserConfigurationData().getAiravataAutoSchedule() || canLaunchProcesses(experimentId);
+    private boolean isReadyToLaunch(Experiment experiment) {
+        return !experiment.getUserConfigurationData().getAiravataAutoSchedule()
+                || canLaunchProcesses(experiment.getExperimentId());
     }
 
     private boolean canLaunchProcesses(String experimentId) {
@@ -370,61 +339,35 @@ public class DefaultOrchestratorService implements OrchestratorService {
         logger.info("expId: {}, Scheduled experiment", experimentId);
     }
 
-    @Override
-    public void createAndValidateTasks(ExperimentModel experiment, boolean recreateTaskDag)
+    private void createAndValidateTasks(Experiment experiment, boolean recreateTaskDag)
             throws OrchestratorException, RegistryException, LaunchValidationException {
         if (experiment.getUserConfigurationData().getAiravataAutoSchedule()) {
             List<ProcessModel> processModels = processService.getProcessList(experiment.getExperimentId());
             for (ProcessModel processModel : processModels) {
                 if (recreateTaskDag) {
-                    var resourceSchedule = processModel.getProcessResourceSchedule();
-                    var resourceHostId =
-                            resourceSchedule != null ? (String) resourceSchedule.get("resourceHostId") : null;
-                    if (resourceHostId == null) {
-                        throw new OrchestratorException("Compute Resource Id cannot be null at this point");
-                    }
+                    requireResourceHostId(processModel);
                     processService.updateProcess(processModel, processModel.getProcessId());
                 }
             }
-            if (!validateProcess(experiment.getExperimentId(), processModels)) {
-                LaunchValidationException exception = new LaunchValidationException();
-                ValidationResults validationResults = new ValidationResults();
-                validationResults.setValidationState(false);
-                validationResults.setValidationResultList(new ArrayList<>());
-                exception.setValidationResult(validationResults);
-                exception.setErrorMessage(
-                        "Validating process fails for given experiment Id : " + experiment.getExperimentId());
-                throw exception;
+            if (!validateProcess(experiment, processModels)) {
+                throw validationFailure(experiment.getExperimentId());
             }
         }
     }
 
-    @Override
-    public void addProcessValidationErrors(String processId, ErrorModel details) throws RegistryException {
-        statusService.addProcessError(details, processId);
-    }
-
-    @Override
-    public boolean launchSingleAppExperimentInternal(
-            String experimentId, String airavataCredStoreToken, String gatewayId)
+    private boolean launchSingleAppExperimentInternal(String experimentId, String gatewayId)
             throws RegistryException, OrchestratorException {
         try {
             List<String> processIds = processService.getProcessIds(experimentId);
             for (String processId : processIds) {
-                launchProcess(processId, airavataCredStoreToken, gatewayId);
+                launchProcess(processId, gatewayId);
             }
             return true;
-        } catch (RegistryException e) {
+        } catch (RegistryException | OrchestratorException e) {
             StatusModel<ExperimentState> status =
-                    StatusModel.of(ExperimentState.FAILED, "Error while retrieving process IDs");
+                    StatusModel.of(ExperimentState.FAILED, "Error while launching processes: " + e.getMessage());
             experimentStatusManager.updateExperimentStatus(experimentId, status, gatewayId);
-            logger.error("expId: " + experimentId + ", Error while retrieving process IDs", e);
-            throw e;
-        } catch (OrchestratorException e) {
-            StatusModel<ExperimentState> status =
-                    StatusModel.of(ExperimentState.FAILED, "Error while launching processes");
-            experimentStatusManager.updateExperimentStatus(experimentId, status, gatewayId);
-            logger.error("expId: " + experimentId + ", Error while launching processes", e);
+            logger.error("expId: {}, Error while launching processes", experimentId, e);
             throw e;
         }
     }
@@ -432,27 +375,14 @@ public class DefaultOrchestratorService implements OrchestratorService {
     @Override
     public void launchQueuedExperiment(String experimentId)
             throws ExperimentNotFoundException, OrchestratorException, RegistryException, LaunchValidationException {
-        ExperimentModel experiment = getExperimentOrThrow(experimentId);
-
-        UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-        String token = processResourceResolver.getCredentialToken(experiment, userConfigurationData);
+        Experiment experiment = getExperimentOrThrow(experimentId);
         createAndValidateTasks(experiment, true);
 
         StatusModel<ExperimentState> status = StatusModel.of(ExperimentState.LAUNCHED, "submitted all processes");
         experimentStatusManager.updateExperimentStatus(experimentId, status, experiment.getGatewayId());
         logger.info("expId: {}, Launched experiment ", experimentId);
 
-        launchSingleAppExperimentInternal(experimentId, token, experiment.getGatewayId());
-    }
-
-    @Override
-    public StatusModel<ExperimentState> getExperimentStatus(String experimentId) throws RegistryException {
-        return experimentStatusManager.getExperimentStatus(experimentId);
-    }
-
-    @Override
-    public ProcessModel getProcess(String processId) throws RegistryException {
-        return processService.getProcess(processId);
+        launchSingleAppExperimentInternal(experimentId, experiment.getGatewayId());
     }
 
     @Override
@@ -461,9 +391,7 @@ public class DefaultOrchestratorService implements OrchestratorService {
         try {
             boolean result = launchExperimentInternal(experimentId, gatewayId);
             if (result) {
-                ExperimentModel experiment = getExperimentOrThrow(experimentId);
-                String token =
-                        processResourceResolver.getCredentialToken(experiment, experiment.getUserConfigurationData());
+                Experiment experiment = getExperimentOrThrow(experimentId);
                 StatusModel<ExperimentState> status =
                         StatusModel.of(ExperimentState.LAUNCHED, "submitted all processes");
                 experimentStatusManager.updateExperimentStatus(experimentId, status, gatewayId);
@@ -472,9 +400,9 @@ public class DefaultOrchestratorService implements OrchestratorService {
                 if (executorService != null) {
                     Runnable runner = () -> {
                         try {
-                            launchSingleAppExperimentInternal(experimentId, token, gatewayId);
+                            launchSingleAppExperimentInternal(experimentId, gatewayId);
                         } catch (RegistryException | OrchestratorException e) {
-                            logger.error("expId: " + experimentId + ", Error while launching single app experiment", e);
+                            logger.error("expId: {}, Error while launching single app experiment", experimentId, e);
                         }
                     };
                     executorService.execute(LoggingUtil.withMDC(runner));
@@ -484,15 +412,9 @@ public class DefaultOrchestratorService implements OrchestratorService {
         } catch (LaunchValidationException e) {
             throw experimentStatusManager.failExperiment(
                     experimentId, gatewayId, "Validation failed: " + e.getErrorMessage(), e);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             throw experimentStatusManager.failExperiment(
-                    experimentId, gatewayId, "Database error: " + e.getMessage(), e);
-        } catch (ExperimentNotFoundException e) {
-            throw experimentStatusManager.failExperiment(
-                    experimentId, gatewayId, "Unexpected error occurred: " + e.getMessage(), e);
-        } catch (RuntimeException e) {
-            throw experimentStatusManager.failExperiment(
-                    experimentId, gatewayId, "Unexpected runtime error occurred: " + e.getMessage(), e);
+                    experimentId, gatewayId, "Error launching experiment: " + e.getMessage(), e);
         }
     }
 
@@ -500,10 +422,10 @@ public class DefaultOrchestratorService implements OrchestratorService {
     // Process lifecycle (inlined from former SimpleOrchestrator)
     // -------------------------------------------------------------------------
 
-    private boolean launchProcessWorkflow(ProcessModel processModel, String tokenId) throws OrchestratorException {
+    private boolean launchProcessWorkflow(ProcessModel processModel) throws OrchestratorException {
         if (processActivityManager == null) {
             throw new OrchestratorException(
-                    "Process launch requires ProcessActivityManager" + " (airavata.services.controller.enabled=true)");
+                    "Process launch requires ProcessActivityManager (airavata.services.controller.enabled=true)");
         }
         try {
             String processId = processModel.getProcessId();
@@ -513,15 +435,13 @@ public class DefaultOrchestratorService implements OrchestratorService {
                     processId,
                     processModel.getExperimentId());
             return true;
-        } catch (OrchestratorException e) {
-            throw e;
         } catch (Exception e) {
             logger.error("Error launching the process", e);
             throw new OrchestratorException("Error launching the process", e);
         }
     }
 
-    private void cancelExperimentProcesses(ExperimentModel experiment, String tokenId) throws OrchestratorException {
+    private void cancelExperimentProcesses(Experiment experiment, String gatewayId) throws OrchestratorException {
         logger.info("Terminating experiment {}", experiment.getExperimentId());
 
         try {
@@ -532,20 +452,6 @@ public class DefaultOrchestratorService implements OrchestratorService {
 
             var processIds = processService.getProcessIds(experiment.getExperimentId());
             if (processIds != null && !processIds.isEmpty()) {
-                String gatewayId = null;
-                var credentialService =
-                        processResourceResolver != null ? processResourceResolver.getCredentialEntityService() : null;
-                if (credentialService != null) {
-                    try {
-                        gatewayId = credentialService.getGatewayId(tokenId);
-                    } catch (Exception e) {
-                        logger.error(e.getLocalizedMessage());
-                    }
-                }
-                if (gatewayId == null || gatewayId.isEmpty()) {
-                    gatewayId = properties != null ? properties.defaultGateway() : "default";
-                }
-
                 for (String processId : processIds) {
                     logger.info("Terminating process {} of experiment {}", processId, experiment.getExperimentId());
                     processActivityManager.launchCancelWorkflow(processId, gatewayId);
@@ -567,12 +473,26 @@ public class DefaultOrchestratorService implements OrchestratorService {
     // Process and task DAG creation (inlined from former SimpleOrchestrator)
     // -------------------------------------------------------------------------
 
-    private List<ProcessModel> createProcesses(String experimentId, String gatewayId) throws OrchestratorException {
+    private static void requireResourceHostId(ProcessModel processModel) throws OrchestratorException {
+        var schedule = processModel.getResourceSchedule();
+        var hostId = schedule != null ? (String) schedule.get("resourceHostId") : null;
+        if (hostId == null) {
+            throw new OrchestratorException("Compute Resource Id cannot be null at this point");
+        }
+    }
+
+    private static LaunchValidationException validationFailure(String experimentId) {
+        var exception = new LaunchValidationException();
+        exception.setErrorMessage("Validating process fails for given experiment Id : " + experimentId);
+        return exception;
+    }
+
+    private List<ProcessModel> createProcesses(Experiment experiment) throws OrchestratorException {
         try {
-            var experimentModel = experimentService.getExperiment(experimentId);
+            String experimentId = experiment.getExperimentId();
             var processModels = processService.getProcessList(experimentId);
             if (processModels == null || processModels.isEmpty()) {
-                var processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
+                var processModel = ExperimentUtil.cloneProcessFromExperiment(experiment);
                 var processId = processService.addProcess(processModel, experimentId);
                 processModel.setProcessId(processId);
                 processModels = new ArrayList<>();

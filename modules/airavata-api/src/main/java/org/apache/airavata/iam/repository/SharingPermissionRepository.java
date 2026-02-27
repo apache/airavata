@@ -22,6 +22,7 @@ package org.apache.airavata.iam.repository;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.iam.entity.SharingPermissionEntity;
+import org.apache.airavata.iam.model.GranteeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,7 +35,7 @@ public interface SharingPermissionRepository extends JpaRepository<SharingPermis
             String domainId,
             String resourceType,
             String resourceId,
-            String granteeType,
+            GranteeType granteeType,
             String granteeId,
             String permission);
 
@@ -42,7 +43,7 @@ public interface SharingPermissionRepository extends JpaRepository<SharingPermis
             String domainId, String resourceType, String resourceId);
 
     List<SharingPermissionEntity> findByDomainIdAndResourceTypeAndGranteeTypeAndGranteeId(
-            String domainId, String resourceType, String granteeType, String granteeId);
+            String domainId, String resourceType, GranteeType granteeType, String granteeId);
 
     @Query("""
             SELECT COUNT(e) > 0

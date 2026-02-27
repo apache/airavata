@@ -23,18 +23,18 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import java.util.Comparator;
 import java.util.UUID;
-import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.Job;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.compute.resource.service.JobService;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.model.ProcessState;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.telemetry.CounterMetric;
-import org.apache.airavata.execution.model.ProcessModel;
 import org.apache.airavata.execution.monitoring.JobStatusResult;
-import org.apache.airavata.execution.service.ProcessService;
+import org.apache.airavata.execution.process.ProcessModel;
+import org.apache.airavata.execution.process.ProcessService;
 import org.apache.airavata.execution.state.StateValidators;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
+import org.apache.airavata.research.experiment.model.Experiment;
 import org.apache.airavata.research.experiment.service.ExperimentService;
 import org.apache.airavata.status.service.StatusService;
 import org.slf4j.Logger;
@@ -80,63 +80,33 @@ public class ProcessActivityManager implements JobStatusHandler {
     }
 
     // -------------------------------------------------------------------------
-    // Pre-workflow launch
+    // Workflow launch
     // -------------------------------------------------------------------------
 
     public String launchPreWorkflow(String processId, boolean forceRun) throws Exception {
         prewfCounter.inc();
 
-        ProcessModel processModel;
-        ExperimentModel experimentModel;
-        try {
-            processModel = processService.getProcess(processId);
-            experimentModel = experimentService.getExperiment(processModel.getExperimentId());
-        } catch (Exception e) {
-            logger.error("Failed to fetch experiment or process from database for process id {}", processId, e);
-            throw new Exception("Failed to fetch experiment or process from database for process id " + processId, e);
-        }
+        ProcessModel processModel = loadProcess(processId);
+        Experiment experimentModel = experimentService.getExperiment(processModel.getExperimentId());
 
         statusService.addProcessStatus(StatusModel.of(ProcessState.LAUNCHED), processId);
 
-        String workflowId = String.format("%s-PRE-%s", processId, UUID.randomUUID());
-        var options = WorkflowOptions.newBuilder()
-                .setWorkflowId(workflowId)
-                .setTaskQueue(ProcessActivity.TASK_QUEUE)
-                .build();
-        var workflow = workflowClient.newWorkflowStub(ProcessActivity.PreWf.class, options);
-
-        logger.info("Launching PreWorkflow {} for process {}", workflowId, processId);
-        WorkflowClient.start(
-                workflow::execute,
-                new ProcessActivity.PreInput(
-                        processId, experimentModel.getExperimentId(), experimentModel.getGatewayId(), null));
-        return workflowId;
+        return launchWorkflow(
+                ProcessActivity.PreWf.class,
+                processId,
+                "PRE",
+                wf -> wf.execute(new ProcessActivity.PreInput(
+                        processId, experimentModel.getExperimentId(), experimentModel.getGatewayId())));
     }
 
-    // -------------------------------------------------------------------------
-    // Cancel workflow launch
-    // -------------------------------------------------------------------------
-
     public String launchCancelWorkflow(String processId, String gateway) throws Exception {
-        ProcessModel processModel;
-        try {
-            processModel = processService.getProcess(processId);
-        } catch (Exception e) {
-            logger.error("Failed to fetch process from database for process id {}", processId, e);
-            throw new Exception("Failed to fetch process from database for process id " + processId, e);
-        }
+        ProcessModel processModel = loadProcess(processId);
 
-        String experimentId = processModel.getExperimentId();
-        String workflowId = String.format("%s-CANCEL-%s", processId, UUID.randomUUID());
-        var options = WorkflowOptions.newBuilder()
-                .setWorkflowId(workflowId)
-                .setTaskQueue(ProcessActivity.TASK_QUEUE)
-                .build();
-        var workflow = workflowClient.newWorkflowStub(ProcessActivity.CancelWf.class, options);
-
-        logger.info("Launching CancelWorkflow {} for process {}", workflowId, processId);
-        WorkflowClient.start(workflow::execute, new ProcessActivity.CancelInput(processId, experimentId, gateway));
-        return workflowId;
+        return launchWorkflow(
+                ProcessActivity.CancelWf.class,
+                processId,
+                "CANCEL",
+                wf -> wf.execute(new ProcessActivity.CancelInput(processId, processModel.getExperimentId(), gateway)));
     }
 
     // -------------------------------------------------------------------------
@@ -147,9 +117,9 @@ public class ProcessActivityManager implements JobStatusHandler {
     public void onJobStatusMessage(JobStatusResult message) {
         try {
             boolean success = process(message);
-            logger.info("Status of processing {} : {}", message.getJobId(), success);
+            logger.info("Status of processing {} : {}", message.jobId(), success);
         } catch (Exception e) {
-            logger.error("Error processing job status for job {}", message.getJobId(), e);
+            logger.error("Error processing job status for job {}", message.jobId(), e);
         }
     }
 
@@ -159,14 +129,11 @@ public class ProcessActivityManager implements JobStatusHandler {
             return false;
         }
 
-        var jobId = jobStatusResult.getJobId();
-        var jobName = jobStatusResult.getJobName();
-        var jobState = jobStatusResult.getState();
+        var jobId = jobStatusResult.jobId();
+        var jobName = jobStatusResult.jobName();
+        var jobState = jobStatusResult.state();
         logger.info(
-                "processing JobStatusUpdate<{}> from {}: {}",
-                jobId,
-                jobStatusResult.getPublisherName(),
-                jobStatusResult);
+                "processing JobStatusUpdate<{}> from {}: {}", jobId, jobStatusResult.publisherName(), jobStatusResult);
 
         try {
             var jobModel = resolveUniqueJob(jobId, jobName);
@@ -214,7 +181,12 @@ public class ProcessActivityManager implements JobStatusHandler {
 
             saveJobStatus(jobId, jobState);
 
-            if (isCancellingOrCanceled(processState) && isTerminalJobState(jobState)) {
+            boolean cancelling = processState == ProcessState.CANCELING || processState == ProcessState.CANCELED;
+            boolean terminalJob = jobState == JobState.FAILED
+                    || jobState == JobState.SUSPENDED
+                    || jobState == JobState.CANCELED
+                    || jobState == JobState.COMPLETED;
+            if (cancelling && terminalJob) {
                 logger.info("canceled job={}: eid={}, state={}", jobId, experimentId, jobState);
                 statusService.addProcessStatus(StatusModel.of(ProcessState.CANCELED), processId);
             } else if (jobState == JobState.COMPLETED || jobState == JobState.FAILED) {
@@ -230,8 +202,8 @@ public class ProcessActivityManager implements JobStatusHandler {
         } catch (Exception e) {
             logger.error(
                     "Failed to process job: {}, with status : {}",
-                    jobStatusResult.getJobId(),
-                    jobStatusResult.getState().name(),
+                    jobStatusResult.jobId(),
+                    jobStatusResult.state().name(),
                     e);
             return false;
         }
@@ -241,7 +213,7 @@ public class ProcessActivityManager implements JobStatusHandler {
     // Private helpers
     // -------------------------------------------------------------------------
 
-    private JobModel resolveUniqueJob(String jobId, String jobName) throws RegistryException {
+    private Job resolveUniqueJob(String jobId, String jobName) throws RegistryException {
         var jobs = jobService.getJobs("jobId", jobId);
         if (!jobs.isEmpty()) {
             jobs = jobs.stream().filter(jm -> jm.getJobName().equals(jobName)).toList();
@@ -251,17 +223,6 @@ public class ProcessActivityManager implements JobStatusHandler {
             return null;
         }
         return jobs.get(0);
-    }
-
-    private static boolean isCancellingOrCanceled(ProcessState state) {
-        return state == ProcessState.CANCELING || state == ProcessState.CANCELED;
-    }
-
-    private static boolean isTerminalJobState(JobState state) {
-        return state == JobState.FAILED
-                || state == JobState.SUSPENDED
-                || state == JobState.CANCELED
-                || state == JobState.COMPLETED;
     }
 
     private void advanceToExecutingIfNeeded(
@@ -279,27 +240,48 @@ public class ProcessActivityManager implements JobStatusHandler {
     private void executePostWorkflow(String processId, String gateway) throws Exception {
         postwfCounter.inc();
 
-        ProcessModel processModel;
-        ExperimentModel experimentModel;
-        try {
-            processModel = processService.getProcess(processId);
-            experimentModel = experimentService.getExperiment(processModel.getExperimentId());
-        } catch (Exception e) {
-            logger.error("Failed to fetch experiment/process from database for pid={}", processId, e);
-            throw new Exception("Failed to fetch experiment/process from database for pid=" + processId, e);
-        }
+        ProcessModel processModel = loadProcess(processId);
 
-        String workflowId = String.format("%s-POST-%s", processId, UUID.randomUUID());
-        var options = WorkflowOptions.newBuilder()
+        launchWorkflow(
+                ProcessActivity.PostWf.class,
+                processId,
+                "POST",
+                wf -> wf.execute(
+                        new ProcessActivity.PostInput(processId, processModel.getExperimentId(), gateway, false)));
+    }
+
+    /**
+     * Generic workflow launcher: builds ID, creates stub, logs, and starts.
+     */
+    private <W> String launchWorkflow(
+            Class<W> workflowClass, String processId, String tag, java.util.function.Function<W, String> starter) {
+        String workflowId = buildWorkflowId(processId, tag);
+        var options = buildWorkflowOptions(workflowId);
+        W workflow = workflowClient.newWorkflowStub(workflowClass, options);
+
+        logger.info("Launching {}Workflow {} for process {}", tag, workflowId, processId);
+        WorkflowClient.start(() -> starter.apply(workflow));
+        return workflowId;
+    }
+
+    private ProcessModel loadProcess(String processId) throws Exception {
+        try {
+            return processService.getProcess(processId);
+        } catch (Exception e) {
+            logger.error("Failed to fetch process from database for pid={}", processId, e);
+            throw new Exception("Failed to fetch process from database for pid=" + processId, e);
+        }
+    }
+
+    private static String buildWorkflowId(String processId, String tag) {
+        return String.format("%s-%s-%s", processId, tag, UUID.randomUUID());
+    }
+
+    private static WorkflowOptions buildWorkflowOptions(String workflowId) {
+        return WorkflowOptions.newBuilder()
                 .setWorkflowId(workflowId)
                 .setTaskQueue(ProcessActivity.TASK_QUEUE)
                 .build();
-        var workflow = workflowClient.newWorkflowStub(ProcessActivity.PostWf.class, options);
-
-        logger.info("Launching PostWorkflow {} for process {}", workflowId, processId);
-        WorkflowClient.start(
-                workflow::execute,
-                new ProcessActivity.PostInput(processId, experimentModel.getExperimentId(), gateway, false));
     }
 
     private void saveJobStatus(String jobId, JobState jobState) throws Exception {

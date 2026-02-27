@@ -35,7 +35,7 @@ public class CredentialSummary {
     private String username;
 
     private String publicKey;
-    private Long persistedTime;
+    private Long createdAt;
     private String token;
     private String description;
 
@@ -81,12 +81,12 @@ public class CredentialSummary {
         this.publicKey = publicKey;
     }
 
-    public Long getPersistedTime() {
-        return persistedTime;
+    public Long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setPersistedTime(Long persistedTime) {
-        this.persistedTime = persistedTime;
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getToken() {
@@ -115,14 +115,14 @@ public class CredentialSummary {
                 && Objects.equals(name, that.name)
                 && Objects.equals(username, that.username)
                 && Objects.equals(publicKey, that.publicKey)
-                && Objects.equals(persistedTime, that.persistedTime)
+                && Objects.equals(createdAt, that.createdAt)
                 && Objects.equals(token, that.token)
                 && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, gatewayId, name, username, publicKey, persistedTime, token, description);
+        return Objects.hash(type, gatewayId, name, username, publicKey, createdAt, token, description);
     }
 
     @Override
@@ -132,8 +132,8 @@ public class CredentialSummary {
                 + gatewayId + '\'' + ", name='"
                 + name + '\'' + ", username='"
                 + username + '\'' + ", publicKey='"
-                + (publicKey != null ? "***" : null) + '\'' + ", persistedTime="
-                + persistedTime + ", token='"
+                + (publicKey != null ? "***" : null) + '\'' + ", createdAt="
+                + createdAt + ", token='"
                 + token + '\'' + ", description='"
                 + description + '\'' + '}';
     }

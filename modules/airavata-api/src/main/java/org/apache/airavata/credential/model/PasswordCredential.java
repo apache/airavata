@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.credential.model;
 
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -32,7 +31,7 @@ public final class PasswordCredential implements Credential {
 
     // Base credential fields
     private String userId;
-    private Date persistedTime;
+    private long createdAt;
     private String token;
     private String gatewayId;
     private String name;
@@ -57,13 +56,13 @@ public final class PasswordCredential implements Credential {
     }
 
     @Override
-    public Date getPersistedTime() {
-        return persistedTime;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
     @Override
-    public void setPersistedTime(Date persistedTime) {
-        this.persistedTime = persistedTime;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -131,13 +130,13 @@ public final class PasswordCredential implements Credential {
                 && Objects.equals(userId, that.userId)
                 && Objects.equals(password, that.password)
                 && Objects.equals(description, that.description)
-                && Objects.equals(persistedTime, that.persistedTime)
+                && createdAt == that.createdAt
                 && Objects.equals(token, that.token);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gatewayId, userId, loginUserName, password, description, persistedTime, token);
+        return Objects.hash(gatewayId, userId, loginUserName, password, description, createdAt, token);
     }
 
     @Override
@@ -148,7 +147,7 @@ public final class PasswordCredential implements Credential {
                 + ", loginUserName='" + loginUserName + '\''
                 + ", password='" + (password != null ? "***" : null) + '\''
                 + ", description='" + description + '\''
-                + ", persistedTime=" + persistedTime
+                + ", createdAt=" + createdAt
                 + ", token='" + token + '\''
                 + '}';
     }

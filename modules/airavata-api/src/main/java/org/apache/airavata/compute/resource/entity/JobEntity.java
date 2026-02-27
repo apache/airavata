@@ -33,7 +33,7 @@ import java.time.Instant;
 import java.util.List;
 import org.apache.airavata.compute.resource.model.JobState;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.entity.ProcessEntity;
+import org.apache.airavata.execution.process.ProcessEntity;
 
 @Entity
 @Table(

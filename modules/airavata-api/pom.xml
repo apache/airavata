@@ -24,9 +24,9 @@ under the License.
 
   <parent>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>build-parent</artifactId>
+    <artifactId>airavata</artifactId>
     <version>0.21-SNAPSHOT</version>
-    <relativePath>../build-parent/pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>airavata-api</artifactId>
@@ -163,9 +163,8 @@ under the License.
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <scope>test</scope>
     </dependency>
-    <!-- spring-web removed - provided by spring-boot-starter-web -->
+    <!-- spring-web provided by spring-boot-starter-web -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -187,29 +186,7 @@ under the License.
       <scope>test</scope>
     </dependency>
     <!-- RabbitMQ/Spring AMQP removed - using Spring ApplicationEvents -->
-    <!-- gRPC dependencies for unified gRPC server configuration -->
-    <dependency>
-      <groupId>org.springframework.grpc</groupId>
-      <artifactId>spring-grpc-spring-boot-starter</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.grpc</groupId>
-          <artifactId>grpc-netty-shaded</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty</artifactId>
-    </dependency>
+    <!-- gRPC dependencies moved to grpc-api module -->
     <!-- Shiro removed - using Spring Security -->
     <!-- Spring Security for authentication -->
     <dependency>

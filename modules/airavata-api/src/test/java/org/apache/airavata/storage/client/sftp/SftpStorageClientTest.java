@@ -37,11 +37,11 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.model.DagTaskResult;
-import org.apache.airavata.execution.model.ProcessModel;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
+import org.apache.airavata.execution.process.ProcessModel;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.StorageResourceAdapter;
+import org.apache.airavata.protocol.FileTransfer;
 import org.apache.airavata.research.application.model.ApplicationInput;
 import org.apache.airavata.research.application.model.ApplicationOutput;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
@@ -65,7 +65,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SftpStorageClientTest {
 
     @Mock
-    private DataStagingSupport dataStagingSupport;
+    private FileTransfer fileTransfer;
 
     @Mock
     private SftpClient sftpClient;
@@ -89,14 +89,14 @@ class SftpStorageClientTest {
     private AgentAdapter computeAdapter;
 
     @Mock
-    private StorageResourceAdapter storageAdapter;
+    private AgentAdapter storageAdapter;
 
     private SftpStorageClient storageClient;
 
     @BeforeEach
     void setUp() throws Exception {
-        storageClient = new SftpStorageClient(
-                dataStagingSupport, sftpClient, adapterSupport, experimentRepository, serverProperties);
+        storageClient =
+                new SftpStorageClient(fileTransfer, sftpClient, adapterSupport, experimentRepository, serverProperties);
 
         // Common stubs used by most tests — lenient so unused stubs don't fail
         lenient().when(context.getProcessId()).thenReturn("process-1");
@@ -112,13 +112,13 @@ class SftpStorageClientTest {
 
     @Test
     void stageIn_withNoInputs_returnsSuccess() {
-        when(processModel.getProcessInputs()).thenReturn(null);
+        when(context.getProcessInputs()).thenReturn(null);
 
         DagTaskResult result = storageClient.stageIn(context);
 
         assertInstanceOf(DagTaskResult.Success.class, result, "stageIn with null inputs must return Success");
         verifyNoInteractions(sftpClient);
-        verifyNoInteractions(dataStagingSupport);
+        verifyNoInteractions(fileTransfer);
     }
 
     @Test
@@ -129,8 +129,8 @@ class SftpStorageClientTest {
         stringInput.setType(DataType.STRING);
         stringInput.setIsRequired(true);
 
-        when(processModel.getProcessInputs()).thenReturn(List.of(stringInput));
-        when(processModel.getInputStorageResourceId()).thenReturn("storage-1");
+        when(context.getProcessInputs()).thenReturn(List.of(stringInput));
+        when(context.getInputStorageResourceId()).thenReturn("storage-1");
         when(sftpClient.resolveStorageAdapter(anyString(), anyString(), any(), any(), anyString()))
                 .thenReturn(storageAdapter);
         when(sftpClient.getComputeResourceAdapter(any(), any(), anyString())).thenReturn(computeAdapter);
@@ -138,7 +138,7 @@ class SftpStorageClientTest {
         DagTaskResult result = storageClient.stageIn(context);
 
         assertInstanceOf(DagTaskResult.Success.class, result, "stageIn with only STRING inputs must return Success");
-        verify(dataStagingSupport, never())
+        verify(fileTransfer, never())
                 .transferFileToComputeResource(anyString(), anyString(), any(), any(), anyString());
     }
 
@@ -150,8 +150,8 @@ class SftpStorageClientTest {
         optionalInput.setType(DataType.URI);
         optionalInput.setIsRequired(false);
 
-        when(processModel.getProcessInputs()).thenReturn(List.of(optionalInput));
-        when(processModel.getInputStorageResourceId()).thenReturn("storage-1");
+        when(context.getProcessInputs()).thenReturn(List.of(optionalInput));
+        when(context.getInputStorageResourceId()).thenReturn("storage-1");
         when(sftpClient.resolveStorageAdapter(anyString(), anyString(), any(), any(), anyString()))
                 .thenReturn(storageAdapter);
         when(sftpClient.getComputeResourceAdapter(any(), any(), anyString())).thenReturn(computeAdapter);
@@ -160,7 +160,7 @@ class SftpStorageClientTest {
 
         assertInstanceOf(
                 DagTaskResult.Success.class, result, "stageIn with optional null URI input must return Success");
-        verify(dataStagingSupport, never())
+        verify(fileTransfer, never())
                 .transferFileToComputeResource(anyString(), anyString(), any(), any(), anyString());
     }
 
@@ -172,8 +172,8 @@ class SftpStorageClientTest {
         requiredInput.setType(DataType.URI);
         requiredInput.setIsRequired(true);
 
-        when(processModel.getProcessInputs()).thenReturn(List.of(requiredInput));
-        when(processModel.getInputStorageResourceId()).thenReturn("storage-1");
+        when(context.getProcessInputs()).thenReturn(List.of(requiredInput));
+        when(context.getInputStorageResourceId()).thenReturn("storage-1");
         when(sftpClient.resolveStorageAdapter(anyString(), anyString(), any(), any(), anyString()))
                 .thenReturn(storageAdapter);
         when(sftpClient.getComputeResourceAdapter(any(), any(), anyString())).thenReturn(computeAdapter);
@@ -195,8 +195,8 @@ class SftpStorageClientTest {
         uriInput.setType(DataType.URI);
         uriInput.setIsRequired(true);
 
-        when(processModel.getProcessInputs()).thenReturn(List.of(uriInput));
-        when(processModel.getInputStorageResourceId()).thenReturn("storage-1");
+        when(context.getProcessInputs()).thenReturn(List.of(uriInput));
+        when(context.getInputStorageResourceId()).thenReturn("storage-1");
         when(sftpClient.resolveStorageAdapter(anyString(), anyString(), any(), any(), anyString()))
                 .thenReturn(storageAdapter);
         when(sftpClient.getComputeResourceAdapter(any(), any(), anyString())).thenReturn(computeAdapter);
@@ -205,7 +205,7 @@ class SftpStorageClientTest {
 
         assertInstanceOf(DagTaskResult.Success.class, result, "stageIn with valid URI input must return Success");
         // URI path is "/path/to/file.txt", destination is workingDir + "/" + "file.txt"
-        verify(dataStagingSupport)
+        verify(fileTransfer)
                 .transferFileToComputeResource(
                         eq("/path/to/file.txt"),
                         eq("/scratch/process1/file.txt"),
@@ -222,8 +222,8 @@ class SftpStorageClientTest {
         collectionInput.setType(DataType.URI_COLLECTION);
         collectionInput.setIsRequired(true);
 
-        when(processModel.getProcessInputs()).thenReturn(List.of(collectionInput));
-        when(processModel.getInputStorageResourceId()).thenReturn("storage-1");
+        when(context.getProcessInputs()).thenReturn(List.of(collectionInput));
+        when(context.getInputStorageResourceId()).thenReturn("storage-1");
         when(sftpClient.resolveStorageAdapter(anyString(), anyString(), any(), any(), anyString()))
                 .thenReturn(storageAdapter);
         when(sftpClient.getComputeResourceAdapter(any(), any(), anyString())).thenReturn(computeAdapter);
@@ -231,21 +231,21 @@ class SftpStorageClientTest {
         DagTaskResult result = storageClient.stageIn(context);
 
         assertInstanceOf(DagTaskResult.Success.class, result, "stageIn with URI_COLLECTION input must return Success");
-        verify(dataStagingSupport)
+        verify(fileTransfer)
                 .transferFileToComputeResource(
                         eq("/data/file1.txt"),
                         eq("/scratch/process1/file1.txt"),
                         eq(computeAdapter),
                         eq(storageAdapter),
                         eq("process-1"));
-        verify(dataStagingSupport)
+        verify(fileTransfer)
                 .transferFileToComputeResource(
                         eq("/data/file2.txt"),
                         eq("/scratch/process1/file2.txt"),
                         eq(computeAdapter),
                         eq(storageAdapter),
                         eq("process-1"));
-        verify(dataStagingSupport, times(2))
+        verify(fileTransfer, times(2))
                 .transferFileToComputeResource(anyString(), anyString(), any(), any(), anyString());
     }
 
@@ -255,13 +255,13 @@ class SftpStorageClientTest {
 
     @Test
     void stageOut_withNoOutputs_returnsSuccess() {
-        when(processModel.getProcessOutputs()).thenReturn(null);
+        when(context.getProcessOutputs()).thenReturn(null);
 
         DagTaskResult result = storageClient.stageOut(context);
 
         assertInstanceOf(DagTaskResult.Success.class, result, "stageOut with null outputs must return Success");
         verifyNoInteractions(sftpClient);
-        verifyNoInteractions(dataStagingSupport);
+        verifyNoInteractions(fileTransfer);
     }
 
     @Test
@@ -271,16 +271,16 @@ class SftpStorageClientTest {
         uriOutput.setValue("output.txt");
         uriOutput.setType(DataType.URI);
 
-        when(processModel.getProcessOutputs()).thenReturn(List.of(uriOutput));
-        when(processModel.getOutputStorageResourceId()).thenReturn("storage-1");
+        when(context.getProcessOutputs()).thenReturn(List.of(uriOutput));
+        when(context.getOutputStorageResourceId()).thenReturn("storage-1");
         when(sftpClient.resolveStorageAdapter(anyString(), anyString(), any(), any(), anyString()))
                 .thenReturn(storageAdapter);
         when(sftpClient.getComputeResourceAdapter(any(), any(), anyString())).thenReturn(computeAdapter);
 
-        // Stub dataStagingSupport for output transfer
-        when(dataStagingSupport.buildDestinationFilePath(eq("/scratch/process1"), eq("output.txt"), eq(context)))
+        // Stub context for destination path building and fileTransfer for output transfer
+        when(context.buildDestinationFilePath(eq("/scratch/process1"), eq("output.txt")))
                 .thenReturn("/scratch/process1/exp-data/output.txt");
-        when(dataStagingSupport.transferFileToStorage(
+        when(fileTransfer.transferFileToStorage(
                         eq("/scratch/process1/output.txt"),
                         eq("/scratch/process1/exp-data/output.txt"),
                         eq("output.txt"),
@@ -288,8 +288,7 @@ class SftpStorageClientTest {
                         eq(storageAdapter),
                         eq("process-1")))
                 .thenReturn(true);
-        when(dataStagingSupport.escapeSpecialCharacters("file:///scratch/process1/exp-data/output.txt"))
-                .thenReturn("file:///scratch/process1/exp-data/output.txt");
+        // SSHUtil.escapeSpecialCharacters is static — no special chars in test value, passes through
 
         // Stub experimentRepository for saveExperimentOutput
         ExperimentEntity experimentEntity = new ExperimentEntity();
@@ -302,7 +301,7 @@ class SftpStorageClientTest {
         assertInstanceOf(DagTaskResult.Success.class, result, "stageOut with valid URI output must return Success");
 
         // Verify the file was transferred
-        verify(dataStagingSupport)
+        verify(fileTransfer)
                 .transferFileToStorage(
                         eq("/scratch/process1/output.txt"),
                         eq("/scratch/process1/exp-data/output.txt"),

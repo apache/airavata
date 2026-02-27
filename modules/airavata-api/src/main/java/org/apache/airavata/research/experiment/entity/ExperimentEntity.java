@@ -23,6 +23,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -34,7 +36,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.execution.entity.ProcessEntity;
+import org.apache.airavata.execution.process.ProcessEntity;
+import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.research.project.entity.ProjectEntity;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -81,7 +84,8 @@ public class ExperimentEntity implements Serializable {
     private String bindingId;
 
     @Column(name = "state", nullable = false, length = 50)
-    private String state = "CREATED";
+    @Enumerated(EnumType.STRING)
+    private ExperimentState state = ExperimentState.CREATED;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "scheduling", columnDefinition = "json")
@@ -183,11 +187,11 @@ public class ExperimentEntity implements Serializable {
         this.bindingId = bindingId;
     }
 
-    public String getState() {
+    public ExperimentState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(ExperimentState state) {
         this.state = state;
     }
 

@@ -29,7 +29,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.springframework.data.annotation.CreatedDate;
@@ -79,7 +79,7 @@ public class UserEntity {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     @ManyToOne(targetEntity = GatewayEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(
@@ -154,11 +154,11 @@ public class UserEntity {
         this.email = email;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -176,7 +176,7 @@ public class UserEntity {
             this.userId = createUserId(this.sub, this.gatewayId);
         }
         if (this.createdAt == null) {
-            this.createdAt = new Timestamp(System.currentTimeMillis());
+            this.createdAt = Instant.now();
         }
     }
 

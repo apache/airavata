@@ -25,6 +25,7 @@ import org.apache.airavata.core.util.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Base implementation of {@link CrudService} that eliminates per-domain CRUD boilerplate.
@@ -36,6 +37,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @param <E> the JPA entity type
  * @param <M> the domain model type
  */
+@Transactional
 public abstract class AbstractCrudService<E, M> implements CrudService<M> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

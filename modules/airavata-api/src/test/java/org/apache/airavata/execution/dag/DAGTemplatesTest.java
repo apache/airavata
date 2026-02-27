@@ -63,17 +63,15 @@ public class DAGTemplatesTest {
         assertNotNull(dag.getNode("provision"), "'provision' node must be present");
         assertNotNull(dag.getNode("stageIn"), "'stageIn' node must be present");
         assertNotNull(dag.getNode("submit"), "'submit' node must be present");
-        assertNotNull(dag.getNode("checkIntermediate"), "'checkIntermediate' node must be present");
-        assertNotNull(dag.getNode("preDeprovision"), "'preDeprovision' node must be present");
         assertNotNull(dag.getNode("fail"), "'fail' node must be present");
     }
 
-    @ParameterizedTest(name = "preDag({0}) has exactly 6 nodes")
+    @ParameterizedTest(name = "preDag({0}) has exactly 4 nodes")
     @EnumSource(ComputeResourceType.class)
-    public void preDag_hasExactlySixNodes(ComputeResourceType type) {
+    public void preDag_hasExactlyFourNodes(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
 
-        assertEquals(6, dag.nodes().size(), "preDag must contain exactly 6 nodes");
+        assertEquals(4, dag.nodes().size(), "preDag must contain exactly 4 nodes");
     }
 
     // ===========================================================================
@@ -110,16 +108,6 @@ public class DAGTemplatesTest {
                 "preDag 'stageIn' must use 'sftpInputStagingTask' for SLURM");
     }
 
-    @Test
-    public void preDag_slurm_preDeprovisionNode_usesSlurmDeprovisioningTask() {
-        ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.SLURM);
-
-        assertEquals(
-                "slurmDeprovisioningTask",
-                dag.getNode("preDeprovision").taskBeanName(),
-                "SLURM preDag 'preDeprovision' must use 'slurmDeprovisioningTask'");
-    }
-
     // ===========================================================================
     // preDag — AWS provider bean names
     // ===========================================================================
@@ -152,16 +140,6 @@ public class DAGTemplatesTest {
                 "AWS preDag 'stageIn' must use 'sftpInputStagingTask'");
     }
 
-    @Test
-    public void preDag_aws_preDeprovisionNode_usesAwsDeprovisioningTask() {
-        ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.AWS);
-
-        assertEquals(
-                "awsDeprovisioningTask",
-                dag.getNode("preDeprovision").taskBeanName(),
-                "AWS preDag 'preDeprovision' must use 'awsDeprovisioningTask'");
-    }
-
     // ===========================================================================
     // preDag — PLAIN provider bean names
     // ===========================================================================
@@ -186,30 +164,9 @@ public class DAGTemplatesTest {
                 "PLAIN preDag 'provision' must use 'localProvisioningTask'");
     }
 
-    @Test
-    public void preDag_plain_preDeprovisionNode_usesLocalDeprovisioningTask() {
-        ProcessDAG dag = DAGTemplates.preDag(ComputeResourceType.PLAIN);
-
-        assertEquals(
-                "localDeprovisioningTask",
-                dag.getNode("preDeprovision").taskBeanName(),
-                "PLAIN preDag 'preDeprovision' must use 'localDeprovisioningTask'");
-    }
-
     // ===========================================================================
     // preDag — shared node bean names (constant across all providers)
     // ===========================================================================
-
-    @ParameterizedTest(name = "preDag({0}) checkIntermediate uses 'checkIntermediateTransferTask'")
-    @EnumSource(ComputeResourceType.class)
-    public void preDag_checkIntermediateNode_usesCheckIntermediateTransferTask(ComputeResourceType type) {
-        ProcessDAG dag = DAGTemplates.preDag(type);
-
-        assertEquals(
-                "checkIntermediateTransferTask",
-                dag.getNode("checkIntermediate").taskBeanName(),
-                "checkIntermediate must always use 'checkIntermediateTransferTask'");
-    }
 
     @ParameterizedTest(name = "preDag({0}) fail uses 'markFailedTask'")
     @EnumSource(ComputeResourceType.class)
@@ -244,39 +201,14 @@ public class DAGTemplatesTest {
         assertEquals("fail", stageIn.onFailure(), "stageIn.onFailure must be 'fail'");
     }
 
-    @ParameterizedTest(name = "preDag({0}) submit → checkIntermediate on success, fail on failure")
+    @ParameterizedTest(name = "preDag({0}) submit is terminal on success, fail on failure")
     @EnumSource(ComputeResourceType.class)
     public void preDag_submitNode_edgesAreCorrect(ComputeResourceType type) {
         ProcessDAG dag = DAGTemplates.preDag(type);
         TaskNode submit = dag.getNode("submit");
 
-        assertEquals("checkIntermediate", submit.onSuccess(), "submit.onSuccess must be 'checkIntermediate'");
+        assertNull(submit.onSuccess(), "submit.onSuccess must be null (terminal after submission)");
         assertEquals("fail", submit.onFailure(), "submit.onFailure must be 'fail'");
-    }
-
-    @ParameterizedTest(name = "preDag({0}) checkIntermediate → preDeprovision on success, null on failure")
-    @EnumSource(ComputeResourceType.class)
-    public void preDag_checkIntermediateNode_edgesAreCorrect(ComputeResourceType type) {
-        ProcessDAG dag = DAGTemplates.preDag(type);
-        TaskNode checkIntermediate = dag.getNode("checkIntermediate");
-
-        assertEquals(
-                "preDeprovision",
-                checkIntermediate.onSuccess(),
-                "checkIntermediate.onSuccess must be 'preDeprovision'");
-        assertNull(
-                checkIntermediate.onFailure(),
-                "checkIntermediate.onFailure must be null (no intermediate transfer path)");
-    }
-
-    @ParameterizedTest(name = "preDag({0}) preDeprovision is terminal")
-    @EnumSource(ComputeResourceType.class)
-    public void preDag_preDeprovisionNode_isTerminal(ComputeResourceType type) {
-        ProcessDAG dag = DAGTemplates.preDag(type);
-        TaskNode preDeprovision = dag.getNode("preDeprovision");
-
-        assertNull(preDeprovision.onSuccess(), "preDeprovision.onSuccess must be null (terminal)");
-        assertNull(preDeprovision.onFailure(), "preDeprovision.onFailure must be null (terminal)");
     }
 
     @ParameterizedTest(name = "preDag({0}) fail is terminal")

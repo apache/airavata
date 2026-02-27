@@ -612,7 +612,7 @@ public class KeycloakRestClient {
         TokenCacheEntry(String token, int expiresInSeconds) {
             this.token = token;
             // Expire 5 seconds before actual expiration to be safe
-            this.expiresAt = IdGenerator.getUniqueTimestamp().getTime() + (expiresInSeconds - 5) * 1000L;
+            this.expiresAt = IdGenerator.getUniqueTimestamp().toEpochMilli() + (expiresInSeconds - 5) * 1000L;
         }
 
         String getToken() {
@@ -620,7 +620,7 @@ public class KeycloakRestClient {
         }
 
         boolean isExpired() {
-            return IdGenerator.getUniqueTimestamp().getTime() >= expiresAt;
+            return IdGenerator.getUniqueTimestamp().toEpochMilli() >= expiresAt;
         }
     }
 }

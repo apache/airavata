@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(prefix = "airavata.services.monitor.email", name = "enabled", havingValue = "true")
 public class SLURMEmailParser {
 
-    private static final Logger log = LoggerFactory.getLogger(SLURMEmailParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(SLURMEmailParser.class);
 
     static final String STATUS = "status";
     static final String JOBID = "jobId";
@@ -56,19 +56,19 @@ public class SLURMEmailParser {
 
     public JobStatusResult parseEmail(Message message, JobService jobService)
             throws MessagingException, AiravataException {
-        var jobStatusResult = new JobStatusResult();
-        parseSubject(message.getSubject(), jobStatusResult);
-        return jobStatusResult;
+        return parseSubject(message.getSubject());
     }
 
-    private void parseSubject(String subject, JobStatusResult jobStatusResult) throws MessagingException {
+    private JobStatusResult parseSubject(String subject) throws MessagingException {
         var matcher = pattern.matcher(subject);
         if (matcher.find()) {
-            jobStatusResult.setJobId(matcher.group(JOBID));
-            jobStatusResult.setJobName(matcher.group(JOBNAME));
-            jobStatusResult.setState(getJobState(matcher.group(STATUS), subject));
+            String jobId = matcher.group(JOBID);
+            String jobName = matcher.group(JOBNAME);
+            JobState state = getJobState(matcher.group(STATUS), subject);
+            return new JobStatusResult(state, jobId, jobName);
         } else {
-            log.error("[EJM]: No matched found for subject -> " + subject);
+            logger.error("[EJM]: No matched found for subject -> {}", subject);
+            return null;
         }
     }
 
@@ -90,7 +90,7 @@ public class SLURMEmailParser {
                     return JobState.FAILED;
                 }
             default:
-                log.error("[EJM]: Job State " + state + " isn't handle by SLURM parser");
+                logger.error("[EJM]: Job State {} isn't handle by SLURM parser", state);
                 return JobState.UNKNOWN;
         }
     }

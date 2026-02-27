@@ -21,14 +21,16 @@ package org.apache.airavata.cli.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.cli.communication.ServiceSocketClient;
 import org.apache.airavata.cli.util.ProcessManager;
 import org.apache.airavata.cli.util.PropertiesManager;
 import org.apache.airavata.config.ServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +67,6 @@ public class ServiceHandler {
         }
     }
 
-    @Autowired
     public ServiceHandler(ServerProperties properties, ServiceRegistry serviceRegistry) {
         this.properties = properties;
         this.serviceRegistry = serviceRegistry;

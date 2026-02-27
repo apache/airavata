@@ -21,10 +21,9 @@ package org.apache.airavata.storage.client.sftp;
 
 import org.apache.airavata.config.ServiceConditionals.ConditionalOnParticipant;
 import org.apache.airavata.core.exception.TaskFailureException;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.dag.TaskContext;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.StorageResourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -47,7 +46,7 @@ public class SftpClient {
      * @return the resolved storage resource adapter
      * @throws TaskFailureException if the adapter cannot be obtained
      */
-    public StorageResourceAdapter resolveStorageAdapter(
+    public AgentAdapter resolveStorageAdapter(
             String overrideStorageId,
             String label,
             AdapterSupport adapterSupport,
@@ -92,18 +91,17 @@ public class SftpClient {
         }
     }
 
-    private StorageResourceAdapter createStorageAdapter(
+    private AgentAdapter createStorageAdapter(
             AdapterSupport adapterSupport, String storageId, String adapterType, String gatewayId, String taskId)
             throws TaskFailureException {
         try {
-            StorageResourceAdapter storageResourceAdapter =
-                    adapterSupport.fetchStorageAdapter(gatewayId, storageId, null, null, null);
+            var adapter = adapterSupport.fetchStorageAdapter(gatewayId, storageId, null, null);
 
-            if (storageResourceAdapter == null) {
+            if (adapter == null) {
                 throw new TaskFailureException(
                         adapterType + " storage resource adapter for " + storageId + " can not be null", true, null);
             }
-            return storageResourceAdapter;
+            return adapter;
 
         } catch (Exception e) {
             throw new TaskFailureException(

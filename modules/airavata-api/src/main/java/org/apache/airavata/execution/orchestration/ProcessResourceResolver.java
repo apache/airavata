@@ -23,20 +23,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.apache.airavata.compute.resource.adapter.ComputeResourceAdapter;
 import org.apache.airavata.compute.resource.adapter.ResourceProfileAdapter;
 import org.apache.airavata.compute.resource.entity.ResourceBindingEntity;
 import org.apache.airavata.compute.resource.model.ComputeResourceType;
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
-import org.apache.airavata.compute.resource.model.SecurityProtocol;
+import org.apache.airavata.compute.resource.model.ResourceCapabilities;
 import org.apache.airavata.core.exception.CoreExceptions.AiravataException;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
-import org.apache.airavata.credential.service.CredentialEntityService;
-import org.apache.airavata.execution.model.ProcessModel;
+import org.apache.airavata.execution.dag.ScheduleHelper;
+import org.apache.airavata.execution.process.ProcessModel;
 import org.apache.airavata.research.application.adapter.ApplicationAdapter;
 import org.apache.airavata.research.application.model.ApplicationDeploymentDescription;
-import org.apache.airavata.research.experiment.model.ExperimentModel;
-import org.apache.airavata.research.experiment.model.UserConfigurationDataModel;
 import org.apache.airavata.storage.resource.model.DataMovementProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,63 +58,14 @@ public class ProcessResourceResolver {
     private final ApplicationAdapter applicationAdapter;
     private final ResourceProfileAdapter resourceProfileAdapter;
     private final ComputeResourceAdapter computeResourceAdapter;
-    private final CredentialEntityService credentialEntityService;
 
     public ProcessResourceResolver(
             ApplicationAdapter applicationAdapter,
             ResourceProfileAdapter resourceProfileAdapter,
-            ComputeResourceAdapter computeResourceAdapter,
-            CredentialEntityService credentialEntityService) {
+            ComputeResourceAdapter computeResourceAdapter) {
         this.applicationAdapter = applicationAdapter;
         this.resourceProfileAdapter = resourceProfileAdapter;
         this.computeResourceAdapter = computeResourceAdapter;
-        this.credentialEntityService = credentialEntityService;
-    }
-
-    // -------------------------------------------------------------------------
-    // Credential token resolution
-    // -------------------------------------------------------------------------
-
-    /**
-     * Resolves the credential store token for the given experiment by consulting the group resource
-     * profile and the compute-resource-specific preference.
-     *
-     * <p>Resolution order:
-     * <ol>
-     *   <li>Resource-specific credential token from the matching compute resource binding.
-     *   <li>Default credential token from the gateway-level binding.
-     * </ol>
-     *
-     * @throws OrchestratorException if no group resource profile is configured or no token is found
-     */
-    public String getCredentialToken(ExperimentModel experiment, UserConfigurationDataModel userConfigurationData)
-            throws OrchestratorException, RegistryException {
-        String token = null;
-        final String groupResourceProfileId = userConfigurationData.getGroupResourceProfileId();
-        if (groupResourceProfileId == null) {
-            throw new OrchestratorException(
-                    "Experiment not configured with a Group Resource Profile: " + experiment.getExperimentId());
-        }
-
-        if (userConfigurationData.getComputationalResourceScheduling() != null
-                && userConfigurationData.getComputationalResourceScheduling().getResourceHostId() != null) {
-            ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
-                    userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
-                    groupResourceProfileId);
-
-            if (binding != null && binding.getCredentialId() != null) {
-                token = binding.getCredentialId();
-            }
-        }
-        if (token == null || token.isEmpty()) {
-            token = resourceProfileAdapter.getGatewayDefaultCredentialToken(groupResourceProfileId);
-        }
-        if (token == null || token.isEmpty()) {
-            throw new OrchestratorException(
-                    "You have not configured credential store token at group resource profile or compute resource preference."
-                            + " Please provide the correct token at group resource profile or compute resource preference.");
-        }
-        return token;
     }
 
     // -------------------------------------------------------------------------
@@ -123,23 +73,11 @@ public class ProcessResourceResolver {
     // -------------------------------------------------------------------------
 
     /**
-     * Finds the best-matching {@link ApplicationDeploymentDescription} for the process and
-     * application, delegating to {@link #getAppDeploymentForModule}.
-     *
-     * <p>The {@code applicationId} is treated as an application interface ID; the deployment entity
-     * has an FK to the APPLICATION table which stores the interface.
-     */
-    public ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String applicationId)
-            throws OrchestratorException, RegistryException {
-        return getAppDeploymentForModule(processModel, applicationId);
-    }
-
-    /**
-     * Selects the deployment for {@code selectedModuleId} on the compute resource associated with
+     * Selects the deployment for the given application on the compute resource associated with
      * the process (picks the first matching host).
      */
-    public ApplicationDeploymentDescription getAppDeploymentForModule(
-            ProcessModel processModel, String selectedModuleId) throws OrchestratorException, RegistryException {
+    public ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String selectedModuleId)
+            throws OrchestratorException, RegistryException {
 
         List<ApplicationDeploymentDescription> applicationDeployements =
                 applicationAdapter.getApplicationDeployments(selectedModuleId);
@@ -161,133 +99,86 @@ public class ProcessResourceResolver {
 
     public JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model, String gatewayId)
             throws OrchestratorException {
-        try {
-            var resource = computeResourceAdapter.getResource(model.getComputeResourceId());
-            if (resource == null
-                    || resource.getCapabilities() == null
-                    || resource.getCapabilities().getCompute() == null) {
-                throw new OrchestratorException("Compute resource should have compute capabilities defined...");
-            }
-            return computeResourceAdapter.mapJobSubmissionProtocol(
-                    resource.getCapabilities().getCompute().getProtocol());
-        } catch (OrchestratorException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new OrchestratorException("Error occurred while retrieving data from application service", e);
+        var capabilities = getResourceCapabilities(model);
+        if (capabilities.getCompute() == null) {
+            throw new OrchestratorException("Compute resource should have compute capabilities defined...");
         }
-    }
-
-    public String getApplicationInterfaceName(ProcessModel model) throws RegistryException, OrchestratorException {
-        var appInterface = applicationAdapter.getApplicationInterface(model.getApplicationInterfaceId());
-        return appInterface.getApplicationName();
+        return computeResourceAdapter.mapJobSubmissionProtocol(
+                capabilities.getCompute().getProtocol());
     }
 
     public DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model, String gatewayId)
             throws OrchestratorException {
-        try {
-            var resource = computeResourceAdapter.getResource(model.getComputeResourceId());
-            if (resource == null
-                    || resource.getCapabilities() == null
-                    || resource.getCapabilities().getStorage() == null) {
-                throw new OrchestratorException("Compute resource should have storage capabilities defined...");
-            }
-            return computeResourceAdapter.mapDataMovementProtocol(
-                    resource.getCapabilities().getStorage().getProtocol());
-        } catch (OrchestratorException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new OrchestratorException("Error occurred while retrieving data from application service", e);
+        var capabilities = getResourceCapabilities(model);
+        if (capabilities.getStorage() == null) {
+            throw new OrchestratorException("Compute resource should have storage capabilities defined...");
         }
+        return computeResourceAdapter.mapDataMovementProtocol(
+                capabilities.getStorage().getProtocol());
     }
 
     public String getLoginUserName(ProcessModel processModel, String gatewayId)
             throws AiravataException, RegistryException {
-        ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
-                processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
-        String bindingLogin = binding != null ? binding.getLoginUsername() : null;
-        var processResourceSchedule = processModel.getProcessResourceSchedule();
-        String overrideLoginUserName = scheduleString(processResourceSchedule, "overrideLoginUserName");
-        if (processModel.getUseUserCRPref()) {
-            ResourceBindingEntity userBinding = resourceProfileAdapter.getUserBinding(
-                    processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
-            String userLogin = userBinding != null ? userBinding.getLoginUsername() : null;
-            if (isValid(userLogin)) {
-                return userLogin;
-            } else if (isValid(overrideLoginUserName)) {
-                logger.warn("User binding doesn't have valid user login name, using computer "
-                        + "resource scheduling login name " + overrideLoginUserName);
-                return overrideLoginUserName;
-            } else if (isValid(bindingLogin)) {
-                logger.warn("Either user binding or resource scheduling "
-                        + "doesn't have valid user login name, using group binding login name "
-                        + bindingLogin);
-                return bindingLogin;
-            } else {
-                throw new AiravataException("Login name is not found");
-            }
-        } else {
-            if (isValid(overrideLoginUserName)) {
-                return overrideLoginUserName;
-            } else if (isValid(bindingLogin)) {
-                logger.warn("Process compute resource scheduling doesn't have valid user login name, "
-                        + "using binding login name " + bindingLogin);
-                return bindingLogin;
-            } else {
-                throw new AiravataException("Login name is not found");
-            }
-        }
+        return resolveBindingProperty(
+                processModel,
+                gatewayId,
+                ResourceBindingEntity::getLoginUsername,
+                "overrideLoginUserName",
+                "Login name");
     }
 
     public String getScratchLocation(ProcessModel processModel, String gatewayId)
             throws AiravataException, RegistryException {
+        return resolveBindingProperty(
+                processModel,
+                gatewayId,
+                b -> ResourceProfileAdapter.getMetadataString(b.getMetadata(), "scratchLocation"),
+                "overrideScratchLocation",
+                "Scratch location");
+    }
+
+    /**
+     * Generic resolution cascade for binding-derived properties.
+     *
+     * <p>Resolution order when {@code useUserCRPref} is true:
+     * user binding → schedule override → group binding → error.
+     * Otherwise: schedule override → group binding → error.
+     */
+    private String resolveBindingProperty(
+            ProcessModel processModel,
+            String gatewayId,
+            Function<ResourceBindingEntity, String> extractor,
+            String scheduleKey,
+            String propertyName)
+            throws AiravataException, RegistryException {
+
         ResourceBindingEntity binding = resourceProfileAdapter.getBinding(
                 processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
-        String scratchLocation = binding != null
-                ? ResourceProfileAdapter.getMetadataString(binding.getMetadata(), "scratchLocation")
-                : null;
-        var processResourceSchedule = processModel.getProcessResourceSchedule();
-        String overrideScratchLocation = scheduleString(processResourceSchedule, "overrideScratchLocation");
+        String bindingValue = binding != null ? extractor.apply(binding) : null;
+        String overrideValue = scheduleString(processModel.getResourceSchedule(), scheduleKey);
 
         if (processModel.getUseUserCRPref()) {
             ResourceBindingEntity userBinding = resourceProfileAdapter.getUserBinding(
                     processModel.getUserName(), gatewayId, processModel.getComputeResourceId());
-            String userScratch = userBinding != null
-                    ? ResourceProfileAdapter.getMetadataString(userBinding.getMetadata(), "scratchLocation")
-                    : null;
-            if (isValid(userScratch)) {
-                return userScratch;
-            } else if (isValid(overrideScratchLocation)) {
-                logger.warn("User binding doesn't have valid scratch location, using computer "
-                        + "resource scheduling scratch location " + overrideScratchLocation);
-                return overrideScratchLocation;
-            } else if (isValid(scratchLocation)) {
-                logger.warn("Either user binding or resource scheduling doesn't have "
-                        + "valid scratch location, using group binding scratch location "
-                        + scratchLocation);
-                return scratchLocation;
-            } else {
-                throw new AiravataException("Scratch location is not found");
+            String userValue = userBinding != null ? extractor.apply(userBinding) : null;
+            if (isValid(userValue)) {
+                return userValue;
+            } else if (isValid(overrideValue)) {
+                logger.warn("{}: user binding empty, falling back to schedule override", propertyName);
+                return overrideValue;
+            } else if (isValid(bindingValue)) {
+                logger.warn("{}: user binding and schedule empty, falling back to group binding", propertyName);
+                return bindingValue;
             }
         } else {
-            if (isValid(overrideScratchLocation)) {
-                return overrideScratchLocation;
-            } else if (isValid(scratchLocation)) {
-                logger.warn("Process compute resource scheduling doesn't have valid scratch location, "
-                        + "using binding scratch location " + scratchLocation);
-                return scratchLocation;
-            } else {
-                throw new AiravataException("Scratch location is not found");
+            if (isValid(overrideValue)) {
+                return overrideValue;
+            } else if (isValid(bindingValue)) {
+                logger.warn("{}: schedule override empty, falling back to group binding", propertyName);
+                return bindingValue;
             }
         }
-    }
-
-    public int getDataMovementPort(ProcessModel processModel, String gatewayId) {
-        var resource = computeResourceAdapter.getResource(processModel.getComputeResourceId());
-        return resource != null ? resource.getPort() : 0;
-    }
-
-    public SecurityProtocol getSecurityProtocol(ProcessModel processModel, String gatewayId) {
-        return SecurityProtocol.SSH_KEYS;
+        throw new AiravataException(propertyName + " is not found");
     }
 
     public ComputeResourceType getComputeResourceType(ProcessModel model) {
@@ -300,17 +191,26 @@ public class ProcessResourceResolver {
         return ComputeResourceType.PLAIN;
     }
 
-    public CredentialEntityService getCredentialEntityService() {
-        return credentialEntityService;
+    private ResourceCapabilities getResourceCapabilities(ProcessModel model) throws OrchestratorException {
+        try {
+            var resource = computeResourceAdapter.getResource(model.getComputeResourceId());
+            if (resource == null || resource.getCapabilities() == null) {
+                throw new OrchestratorException(
+                        "Compute resource capabilities not defined for " + model.getComputeResourceId());
+            }
+            return resource.getCapabilities();
+        } catch (OrchestratorException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OrchestratorException("Error occurred while retrieving data from application service", e);
+        }
     }
 
-    private static String scheduleString(java.util.Map<String, Object> schedule, String key) {
-        if (schedule == null) return null;
-        Object val = schedule.get(key);
-        return val != null ? val.toString() : null;
+    private static String scheduleString(Map<String, Object> schedule, String key) {
+        return ScheduleHelper.getString(schedule, key);
     }
 
-    private boolean isValid(String str) {
-        return (str != null && !str.trim().isEmpty());
+    private static boolean isValid(String str) {
+        return ScheduleHelper.isValid(str);
     }
 }

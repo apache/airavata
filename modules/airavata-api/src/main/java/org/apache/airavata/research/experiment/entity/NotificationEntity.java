@@ -51,13 +51,13 @@ public class NotificationEntity implements Serializable {
     private String notificationMessage;
 
     @Column(name = "created_at", nullable = false)
-    private Instant creationTime;
+    private Instant createdAt;
 
     @Column(name = "published_at", nullable = false)
-    private Instant publishedTime;
+    private Instant publishedAt;
 
     @Column(name = "expires_at", nullable = false)
-    private Instant expirationTime;
+    private Instant expiresAt;
 
     @Column(name = "priority")
     @Enumerated(EnumType.STRING)
@@ -97,28 +97,28 @@ public class NotificationEntity implements Serializable {
         this.notificationMessage = notificationMessage;
     }
 
-    public Instant getCreationTime() {
-        return creationTime;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(Instant creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Instant getPublishedTime() {
-        return publishedTime;
+    public Instant getPublishedAt() {
+        return publishedAt;
     }
 
-    public void setPublishedTime(Instant publishedTime) {
-        this.publishedTime = publishedTime;
+    public void setPublishedAt(Instant publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
-    public Instant getExpirationTime() {
-        return expirationTime;
+    public Instant getExpiresAt() {
+        return expiresAt;
     }
 
-    public void setExpirationTime(Instant expirationTime) {
-        this.expirationTime = expirationTime;
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public NotificationPriority getPriority() {

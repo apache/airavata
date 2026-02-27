@@ -20,14 +20,14 @@
 package org.apache.airavata.compute.resource.service;
 
 import java.util.List;
-import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.model.Job;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 
 public interface JobService {
 
-    List<JobModel> getJobs(String fieldName, String fieldValue) throws RegistryException;
+    List<Job> getJobs(String fieldName, String fieldValue) throws RegistryException;
 
-    void saveJob(JobModel jobModel) throws RegistryException;
+    void saveJob(Job jobModel) throws RegistryException;
 
     void deleteJobsByProcessId(String processId) throws RegistryException;
 }

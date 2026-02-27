@@ -49,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ComputeResourceAdapter implements ResourceLookup {
 
-    private static final Logger log = LoggerFactory.getLogger(ComputeResourceAdapter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceAdapter.class);
 
     private final ResourceRepository resourceRepository;
 
@@ -78,7 +78,7 @@ public class ComputeResourceAdapter implements ResourceLookup {
     @Override
     public Resource getResource(String resourceId) {
         return resourceRepository.findById(resourceId).map(this::toModel).orElseGet(() -> {
-            log.debug("getResource: no resource found for id={}", resourceId);
+            logger.debug("getResource: no resource found for id={}", resourceId);
             return null;
         });
     }

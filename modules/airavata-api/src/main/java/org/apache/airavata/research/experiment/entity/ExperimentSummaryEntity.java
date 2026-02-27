@@ -21,10 +21,13 @@ package org.apache.airavata.research.experiment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
+import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.hibernate.annotations.Immutable;
 
 /**
@@ -61,8 +64,9 @@ public class ExperimentSummaryEntity implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    private String experimentStatus;
+    private ExperimentState experimentStatus;
 
     @Column(name = "time_of_state_change")
     private Instant statusUpdateTime;
@@ -125,11 +129,11 @@ public class ExperimentSummaryEntity implements Serializable {
         this.description = description;
     }
 
-    public String getExperimentStatus() {
+    public ExperimentState getExperimentStatus() {
         return experimentStatus;
     }
 
-    public void setExperimentStatus(String experimentStatus) {
+    public void setExperimentStatus(ExperimentState experimentStatus) {
         this.experimentStatus = experimentStatus;
     }
 

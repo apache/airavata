@@ -21,12 +21,15 @@ package org.apache.airavata.credential.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
+import org.apache.airavata.credential.model.CredentialType;
 
 /**
  * JPA entity for CREDENTIAL table.
@@ -53,8 +56,9 @@ public class CredentialEntity implements Serializable {
     @Column(name = "gateway_id", length = 255, nullable = false)
     private String gatewayId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 20, nullable = false)
-    private String type;
+    private CredentialType type;
 
     @Lob
     @Column(name = "credential_data", nullable = false, columnDefinition = "LONGBLOB")
@@ -66,8 +70,8 @@ public class CredentialEntity implements Serializable {
     @Column(name = "name", length = 255)
     private String name;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
 
     @Column(name = "description")
     private String description;
@@ -90,11 +94,11 @@ public class CredentialEntity implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getType() {
+    public CredentialType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(CredentialType type) {
         this.type = type;
     }
 
@@ -122,11 +126,11 @@ public class CredentialEntity implements Serializable {
         this.name = name;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -30,5 +30,6 @@ public enum DataType {
     URI_COLLECTION,
     STDOUT,
     STDERR,
-    STDIN;
+    STDIN,
+    ARTIFACT;
 }

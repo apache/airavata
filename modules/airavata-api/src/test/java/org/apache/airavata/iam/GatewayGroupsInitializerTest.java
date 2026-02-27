@@ -134,6 +134,6 @@ public class GatewayGroupsInitializerTest {
     }
 
     @Configuration
-    @ComponentScan(basePackages = {"org.apache.airavata.iam", "org.apache.airavata.config"})
+    @ComponentScan(basePackages = {"org.apache.airavata.iam"})
     static class TestConfiguration {}
 }

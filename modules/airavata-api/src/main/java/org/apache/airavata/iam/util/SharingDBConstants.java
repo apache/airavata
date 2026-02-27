@@ -46,7 +46,7 @@ public class SharingDBConstants {
 
     public static class UserGroupTable {
         public static final String GROUP_ID = "groupId";
-        public static final String DOMAIN_ID = "domainId";
+        public static final String DOMAIN_ID = "gatewayId";
         public static final String NAME = "name";
         public static final String DESCRIPTION = "description";
         public static final String OWNER_ID = "ownerId";

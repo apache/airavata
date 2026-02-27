@@ -27,10 +27,10 @@ import java.util.Objects;
  */
 public class ErrorModel {
     private String errorId;
-    private long creationTime;
+    private long createdAt;
     private String actualErrorMessage;
     private String userFriendlyMessage;
-    private boolean transientOrPersistent;
+    private boolean transientError;
     private List<String> rootCauseErrorIdList;
 
     public ErrorModel() {}
@@ -43,12 +43,12 @@ public class ErrorModel {
         this.errorId = errorId;
     }
 
-    public long getCreationTime() {
-        return creationTime;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(long creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getActualErrorMessage() {
@@ -67,12 +67,12 @@ public class ErrorModel {
         this.userFriendlyMessage = userFriendlyMessage;
     }
 
-    public boolean getTransientOrPersistent() {
-        return transientOrPersistent;
+    public boolean isTransientError() {
+        return transientError;
     }
 
-    public void setTransientOrPersistent(boolean transientOrPersistent) {
-        this.transientOrPersistent = transientOrPersistent;
+    public void setTransientError(boolean transientError) {
+        this.transientError = transientError;
     }
 
     public List<String> getRootCauseErrorIdList() {
@@ -89,28 +89,23 @@ public class ErrorModel {
         if (o == null || getClass() != o.getClass()) return false;
         ErrorModel that = (ErrorModel) o;
         return Objects.equals(errorId, that.errorId)
-                && Objects.equals(creationTime, that.creationTime)
+                && Objects.equals(createdAt, that.createdAt)
                 && Objects.equals(actualErrorMessage, that.actualErrorMessage)
                 && Objects.equals(userFriendlyMessage, that.userFriendlyMessage)
-                && Objects.equals(transientOrPersistent, that.transientOrPersistent)
+                && Objects.equals(transientError, that.transientError)
                 && Objects.equals(rootCauseErrorIdList, that.rootCauseErrorIdList);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                errorId,
-                creationTime,
-                actualErrorMessage,
-                userFriendlyMessage,
-                transientOrPersistent,
-                rootCauseErrorIdList);
+                errorId, createdAt, actualErrorMessage, userFriendlyMessage, transientError, rootCauseErrorIdList);
     }
 
     @Override
     public String toString() {
-        return "ErrorModel{" + "errorId=" + errorId + ", creationTime=" + creationTime + ", actualErrorMessage="
-                + actualErrorMessage + ", userFriendlyMessage=" + userFriendlyMessage + ", transientOrPersistent="
-                + transientOrPersistent + ", rootCauseErrorIdList=" + rootCauseErrorIdList + "}";
+        return "ErrorModel{" + "errorId=" + errorId + ", createdAt=" + createdAt + ", actualErrorMessage="
+                + actualErrorMessage + ", userFriendlyMessage=" + userFriendlyMessage + ", transientError="
+                + transientError + ", rootCauseErrorIdList=" + rootCauseErrorIdList + "}";
     }
 }

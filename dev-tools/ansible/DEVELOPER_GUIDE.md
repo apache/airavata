@@ -79,31 +79,38 @@ ansible -i inventories/my-env airavata_servers -m ping --ask-vault-pass
 
 ## Quick Start
 
-### 1. Initial Setup (First Time)
+### 1. Deploy (Recommended)
 
 ```bash
 cd dev-tools/ansible
 
 # Activate virtual environment
-source venv/bin/activate
+source ENV/bin/activate
 
-# Run full setup
-ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
+# Deploy everything
+ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass
 ```
 
 **What this does:**
 - Creates `airavata` user/group
-- Installs Java, Maven, Git
-- Sets up Zookeeper, Kafka, RabbitMQ, MariaDB
-- Installs Keycloak (IAM)
-- Builds and deploys all Airavata services
-- Starts all services
+- Installs Java 25
+- Sets up MariaDB
+- Installs Keycloak 26.5 (IAM)
+- Builds and deploys the unified Airavata API server
+- Configures HAProxy for SSL termination
+- Starts the server
 
-### 2. Update Existing Deployment
+### 2. Legacy Setup (Full Environment from Scratch)
+
+```bash
+ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
+```
+
+### 3. Update Existing Deployment
 
 ```bash
 cd dev-tools/ansible
-source venv/bin/activate
+source ENV/bin/activate
 
 # Update services (stops, builds, deploys, starts)
 ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
@@ -118,7 +125,7 @@ cd dev-tools/ansible
 
 # Encrypt vault files (will prompt for password)
 ansible-vault encrypt inventories/my-env/group_vars/all/vault.yml
-ansible-vault encrypt inventories/my-env/host_vars/dev-server/vault.yml
+ansible-vault encrypt inventories/my-env/host_vars/airavata-server/vault.yml
 ```
 
 **Important:** Set a strong password and store it securely. You'll need it every time you run playbooks.
@@ -155,30 +162,19 @@ ansible-vault rekey inventories/my-env/group_vars/all/vault.yml
 
 ## Service Management
 
-### Stop All Services
+### Stop Airavata Server
 
 ```bash
 cd dev-tools/ansible
 ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
 ```
 
-**What this does:**
-- Stops all Airavata services gracefully
-- Checks for processes holding ports
-- Kills processes if needed (SIGTERM, then SIGKILL)
-- Verifies all ports are free
-
-### Start All Services
+### Start Airavata Server
 
 ```bash
 cd dev-tools/ansible
 ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
 ```
-
-**What this does:**
-- Starts all Airavata services
-- Waits for services to be ready
-- Verifies ports are listening
 
 ## Configuration Files
 
@@ -205,7 +201,7 @@ ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
 |---------|------|-------------|
 | `deploy_user` | `vars.yml` | User for deployment (`airavata`) |
 | `user`, `group` | `vars.yml` | System user/group (`airavata`) |
-| `db_password` | `vault.yml` | Database password for all services |
+| `db_password` | `vault.yml` | Database password |
 | `iam_server_url` | `vault.yml` | Keycloak URL |
 | `keycloak_master_account_password` | `vault.yml` | Keycloak admin password |
 | `keycloak_db_password` | `vault.yml` | Keycloak database password |
@@ -214,7 +210,6 @@ ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
 | `keycloak_jupyterlab_client_secret` | `vault.yml` | JupyterLab OAuth client secret |
 | `keycloak_cilogon_client_id` | `vault.yml` | CILogon identity provider client ID |
 | `keycloak_cilogon_client_secret` | `vault.yml` | CILogon identity provider secret |
-| `rabbitmq_broker_url` | `vault.yml` | RabbitMQ connection string |
 | `*_jdbc_url` | `vault.yml` | Database URLs (use `localhost` or DB server IP) |
 
 ### Keystore Management
@@ -241,8 +236,8 @@ If you need to use a custom keystore file:
 ansible-vault encrypt inventories/my-env/group_vars/all/vault.yml
 ansible-vault encrypt inventories/my-env/host_vars/airavata-server/vault.yml
 
-# 3. Run setup
-ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass
+# 3. Deploy
+ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass
 ```
 
 ### Update Code and Redeploy
@@ -260,14 +255,14 @@ ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass
 # 1. Edit encrypted vault
 ansible-vault edit inventories/my-env/group_vars/all/vault.yml
 
-# 2. Stop services
+# 2. Stop server
 ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass
 
 # 3. Update deployment (will regenerate configs)
 ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass --skip-tags build
 ```
 
-### Restart Services Only
+### Restart Server Only
 
 ```bash
 # Stop
@@ -282,11 +277,11 @@ ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
 ### Check Services Are Running
 
 ```bash
-# Check ports
+# Check ports (unified HTTP + gRPC)
 ansible airavata-server -i inventories/my-env -m shell \
-  -a "ss -tuln | grep -E '8930|8940|8962|8970|8960|7878|18880|18899|8050|8082'"
+  -a "ss -tuln | grep -E '8090|9090'"
 
-# Check processes
+# Check process
 ansible airavata-server -i inventories/my-env -m shell \
   -a "ps aux | grep java | grep airavata | wc -l"
 ```
@@ -298,14 +293,14 @@ ansible airavata-server -i inventories/my-env -m shell \
 ssh <ansible_user>@<server_ip>
 
 # View logs
-tail -f /home/airavata/<airavata-deployment>/apache-airavata-api-server-*/logs/*.log
+tail -f /opt/apache-airavata/logs/airavata.log
 ```
 
-### Check Third-Party Services
+### Check Infrastructure Services
 
 ```bash
 ansible airavata-server -i inventories/my-env -m shell \
-  -a "systemctl status zookeeper kafka rabbitmq-server mariadb keycloak"
+  -a "systemctl status mariadb keycloak"
 ```
 
 ## Troubleshooting
@@ -318,27 +313,28 @@ ansible airavata-server -i inventories/my-env -m shell \
    ```
 
 2. **Check database connection:**
-   - Verify `*_jdbc_url` in vault.yml point to correct database
-   - Test: `mysql -h <db_host> -u <user> -p`
+   - Verify JDBC URL in vault.yml points to correct database
+   - Test: `mysql -h <db_host> -u airavata -p`
 
-3. **Check RabbitMQ:**
-   - Verify vhost exists: `rabbitmqctl list_vhosts`
-   - Verify user has permissions
+3. **Check Temporal:**
+   - Verify Temporal is running on port 7233
+   - Check `spring.temporal.connection.target` in configuration
 
 4. **Check logs:**
    ```bash
    ssh <server>
-   tail -f /home/airavata/<airavata-deployment>/apache-airavata-api-server-*/logs/*.log
+   tail -f /opt/apache-airavata/logs/airavata.log
    ```
 
 ## Quick Reference
 
 | Task | Command |
 |------|---------|
-| Full setup | `ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass` |
+| Deploy all | `ansible-playbook -i inventories/my-env deploy.yml --ask-vault-pass` |
+| Full setup (legacy) | `ansible-playbook -i inventories/my-env airavata_setup.yml --ask-vault-pass` |
 | Update services | `ansible-playbook -i inventories/my-env airavata_update.yml --ask-vault-pass` |
-| Stop services | `ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass` |
-| Start services | `ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass` |
+| Stop server | `ansible-playbook -i inventories/my-env stop_services.yml --ask-vault-pass` |
+| Start server | `ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass` |
 | Encrypt vault | `ansible-vault encrypt inventories/my-env/group_vars/all/vault.yml` |
 | Edit vault | `ansible-vault edit inventories/my-env/group_vars/all/vault.yml` |
 | Decrypt vault | `ansible-vault decrypt inventories/my-env/group_vars/all/vault.yml` |

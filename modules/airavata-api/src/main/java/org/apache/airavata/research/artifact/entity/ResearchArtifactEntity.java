@@ -57,16 +57,16 @@ public abstract class ResearchArtifactEntity {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(nullable = false, updatable = false, length = 48)
+    @Column(name = "id", nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "header_image", nullable = false)
     private String headerImage;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -81,23 +81,23 @@ public abstract class ResearchArtifactEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<TagEntity> tags = new HashSet<>();
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ArtifactStatus status;
 
-    @Column(nullable = false)
+    @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private ArtifactState state;
 
-    @Column(nullable = false)
+    @Column(name = "privacy", nullable = false)
     @Enumerated(EnumType.STRING)
     private Privacy privacy;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
 

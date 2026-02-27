@@ -54,7 +54,7 @@ public class GatewayGroupsInitializer {
     public GatewayGroups initialize(String gatewayId)
             throws SharingRegistryException, org.apache.airavata.core.exception.RegistryExceptions.RegistryException {
 
-        logger.info("Creating a GatewayGroups instance for gateway " + gatewayId + " ...");
+        logger.info("Creating a GatewayGroups instance for gateway {} ...", gatewayId);
 
         GatewayGroups gatewayGroups = new GatewayGroups();
         gatewayGroups.setGatewayId(gatewayId);
@@ -65,8 +65,8 @@ public class GatewayGroupsInitializer {
             User adminUser = new User();
             adminUser.setUserId(ownerId);
             adminUser.setDomainId(gatewayId);
-            adminUser.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-            adminUser.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+            adminUser.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+            adminUser.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
             adminUser.setUserName(adminOwnerUsername);
             sharingService.createUser(adminUser);
         }
@@ -101,8 +101,8 @@ public class GatewayGroupsInitializer {
         userGroup.setGroupId(IdGenerator.getId(groupName));
         userGroup.setDomainId(gatewayId);
         userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
-        userGroup.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
-        userGroup.setUpdatedTime(IdGenerator.getUniqueTimestamp().getTime());
+        userGroup.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
+        userGroup.setUpdatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
         userGroup.setName(groupName);
         userGroup.setDescription(groupDescription);
         userGroup.setOwnerId(ownerId);

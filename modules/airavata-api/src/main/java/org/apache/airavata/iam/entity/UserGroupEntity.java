@@ -22,6 +22,8 @@ package org.apache.airavata.iam.entity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -32,24 +34,26 @@ import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.List;
 import org.apache.airavata.gateway.entity.GatewayEntity;
+import org.apache.airavata.iam.model.GroupCardinality;
 import org.apache.airavata.iam.model.GroupMember;
+import org.apache.airavata.iam.model.GroupType;
 
 /**
  * Entity representing a user group in the sharing registry.
- * The domainId references the GatewayEntity's gatewayId (formerly via DomainEntity).
+ * The gatewayId references the GatewayEntity's gatewayId.
  */
 @Entity
 @Table(name = "user_group")
 @IdClass(UserGroupPK.class)
 public class UserGroupEntity {
     private String groupId;
-    private String domainId;
+    private String gatewayId;
     private GatewayEntity gateway;
     private String name;
     private String description;
     private String ownerId;
-    private String groupType;
-    private String groupCardinality;
+    private GroupType groupType;
+    private GroupCardinality groupCardinality;
     private Instant createdTime;
     private Instant updatedTime;
     private Boolean isPersonalGroup;
@@ -72,17 +76,17 @@ public class UserGroupEntity {
 
     @Id
     @Column(name = "gateway_id", nullable = false)
-    public String getDomainId() {
-        return domainId;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     /**
-     * Returns the associated gateway for this group's domain.
-     * The domainId references the gateway's gatewayId.
+     * Returns the associated gateway for this group.
+     * The gatewayId references the gateway's gatewayId.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gateway_id", referencedColumnName = "gateway_id", insertable = false, updatable = false)
@@ -124,23 +128,23 @@ public class UserGroupEntity {
         this.description = description;
     }
 
-    @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "group_cardinality", nullable = false)
-    public String getGroupCardinality() {
+    public GroupCardinality getGroupCardinality() {
         return groupCardinality;
     }
 
-    public void setGroupCardinality(String groupCardinality) {
+    public void setGroupCardinality(GroupCardinality groupCardinality) {
         this.groupCardinality = groupCardinality;
     }
 
-    @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "group_type", nullable = false)
-    public String getGroupType() {
+    public GroupType getGroupType() {
         return groupType;
     }
 
-    public void setGroupType(String type) {
+    public void setGroupType(GroupType type) {
         this.groupType = type;
     }
 
@@ -195,7 +199,7 @@ public class UserGroupEntity {
         UserGroupEntity that = (UserGroupEntity) o;
 
         if (getGroupId() != null ? !getGroupId().equals(that.getGroupId()) : that.getGroupId() != null) return false;
-        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+        if (getGatewayId() != null ? !getGatewayId().equals(that.getGatewayId()) : that.getGatewayId() != null)
             return false;
         if (getOwnerId() != null ? !getOwnerId().equals(that.getOwnerId()) : that.getOwnerId() != null) return false;
         if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;

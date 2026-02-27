@@ -31,7 +31,7 @@ public class Constants {
             public static final String OWNER = "owner";
             public static final String PROJECT_NAME = "name";
             public static final String DESCRIPTION = "description";
-            public static final String CREATION_TIME = "creationTime";
+            public static final String CREATION_TIME = "createdAt";
         }
 
         public final class ExperimentConstants {
@@ -41,7 +41,7 @@ public class Constants {
             public static final String EXPERIMENT_TYPE = "experimentType";
             public static final String USER_NAME = "userName";
             public static final String EXPERIMENT_NAME = "experimentName";
-            public static final String CREATION_TIME = "creationTime";
+            public static final String CREATION_TIME = "createdAt";
             public static final String DESCRIPTION = "description";
             public static final String EXECUTION_ID = "executionId";
             public static final String GATEWAY_EXECUTION_ID = "gatewayExecutionId";

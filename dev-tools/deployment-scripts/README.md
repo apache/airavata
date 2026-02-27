@@ -97,10 +97,10 @@ Configuration files should be in the `conf/` directory (mounted at `/opt/apache-
 The Ansible deployment sets up systemd service:
 
 ```bash
-systemctl start apiorch
-systemctl stop apiorch
-systemctl status apiorch
-systemctl restart apiorch
+systemctl start apiserver
+systemctl stop apiserver
+systemctl status apiserver
+systemctl restart apiserver
 ```
 
 ### Using Scripts

@@ -22,7 +22,8 @@ package org.apache.airavata.compute.resource.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.compute.resource.entity.JobEntity;
-import org.apache.airavata.compute.resource.model.JobModel;
+import org.apache.airavata.compute.resource.mapper.JobMapper;
+import org.apache.airavata.compute.resource.model.Job;
 import org.apache.airavata.compute.resource.repository.JobRepository;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.slf4j.Logger;
@@ -40,43 +41,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultJobService implements JobService {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultJobService.class);
 
     private final JobRepository jobRepository;
+    private final JobMapper mapper;
 
-    public DefaultJobService(JobRepository jobRepository) {
+    public DefaultJobService(JobRepository jobRepository, JobMapper mapper) {
         this.jobRepository = jobRepository;
-    }
-
-    private JobModel toModel(JobEntity entity) {
-        var model = new JobModel();
-        model.setJobId(entity.getJobId());
-        model.setProcessId(entity.getProcessId());
-        model.setJobDescription(entity.getJobDescription());
-        model.setCreatedAt(entity.getCreatedAt());
-        model.setJobStatuses(entity.getJobStatuses());
-        model.setComputeResourceConsumed(entity.getComputeResourceConsumed());
-        model.setJobName(entity.getJobName());
-        model.setWorkingDir(entity.getWorkingDir());
-        model.setStdOut(entity.getStdOut());
-        model.setStdErr(entity.getStdErr());
-        model.setExitCode(entity.getExitCode());
-        return model;
-    }
-
-    private JobEntity toEntity(JobModel model) {
-        var entity = new JobEntity();
-        entity.setJobId(model.getJobId());
-        entity.setProcessId(model.getProcessId());
-        entity.setJobDescription(model.getJobDescription());
-        entity.setCreatedAt(model.getCreatedAt());
-        entity.setComputeResourceConsumed(model.getComputeResourceConsumed());
-        entity.setJobName(model.getJobName());
-        entity.setWorkingDir(model.getWorkingDir());
-        entity.setStdOut(model.getStdOut());
-        entity.setStdErr(model.getStdErr());
-        entity.setExitCode(model.getExitCode());
-        return entity;
+        this.mapper = mapper;
     }
 
     /**
@@ -88,7 +60,7 @@ public class DefaultJobService implements JobService {
      * @throws RegistryException on retrieval failure
      */
     @Transactional(readOnly = true)
-    public List<JobModel> getJobs(String fieldName, String fieldValue) throws RegistryException {
+    public List<Job> getJobs(String fieldName, String fieldValue) throws RegistryException {
         try {
             if (fieldValue == null || fieldValue.isBlank()) {
                 return new ArrayList<>();
@@ -105,7 +77,7 @@ public class DefaultJobService implements JobService {
                     logger.warn("Unsupported job query field: {}", fieldName);
                     return new ArrayList<>();
             }
-            return entities.stream().map(this::toModel).toList();
+            return mapper.toModelList(entities);
         } catch (Exception e) {
             throw new RegistryException("Failed to query jobs by " + fieldName + "=" + fieldValue, e);
         }
@@ -117,9 +89,9 @@ public class DefaultJobService implements JobService {
      * @param jobModel the job to persist
      * @throws RegistryException on persistence failure
      */
-    public void saveJob(JobModel jobModel) throws RegistryException {
+    public void saveJob(Job jobModel) throws RegistryException {
         try {
-            JobEntity entity = toEntity(jobModel);
+            var entity = mapper.toEntity(jobModel);
             jobRepository.save(entity);
             logger.debug("Saved job {}", jobModel.getJobId());
         } catch (Exception e) {

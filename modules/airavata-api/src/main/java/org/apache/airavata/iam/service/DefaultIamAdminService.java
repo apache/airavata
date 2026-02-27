@@ -22,7 +22,6 @@ package org.apache.airavata.iam.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
 import org.apache.airavata.core.util.Constants;
@@ -33,7 +32,7 @@ import org.apache.airavata.gateway.model.Gateway;
 import org.apache.airavata.iam.exception.IamAdminServicesException;
 import org.apache.airavata.iam.keycloak.KeycloakGatewayManagement;
 import org.apache.airavata.iam.keycloak.KeycloakRestClient;
-import org.apache.airavata.iam.mapper.UserProfileMapper;
+import org.apache.airavata.iam.mapper.UserMapper;
 import org.apache.airavata.iam.model.AuthzToken;
 import org.apache.airavata.iam.model.Status;
 import org.apache.airavata.iam.model.UserProfile;
@@ -46,25 +45,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @ConditionalOnMissingBean(name = "testIamAdminService")
 public class DefaultIamAdminService implements IamAdminService {
     private static final Logger logger = LoggerFactory.getLogger(DefaultIamAdminService.class);
 
     private final ServerProperties properties;
     private final UserRepository userRepository;
-    private final UserProfileMapper userProfileMapper;
+    private final UserMapper userMapper;
     private final CredentialStoreService credentialStoreService;
     private final KeycloakAdminTokenResolver adminTokenResolver;
 
     public DefaultIamAdminService(
             ServerProperties properties,
             UserRepository userRepository,
-            UserProfileMapper userProfileMapper,
+            UserMapper userMapper,
             CredentialStoreService credentialStoreService,
             KeycloakAdminTokenResolver adminTokenResolver) {
         this.properties = properties;
         this.userRepository = userRepository;
-        this.userProfileMapper = userProfileMapper;
+        this.userMapper = userMapper;
         this.credentialStoreService = credentialStoreService;
         this.adminTokenResolver = adminTokenResolver;
     }
@@ -161,7 +161,6 @@ public class DefaultIamAdminService implements IamAdminService {
         }
     }
 
-    @Transactional
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
         try {
@@ -186,13 +185,12 @@ public class DefaultIamAdminService implements IamAdminService {
                     var userProfile = convertUserRepresentationToUserProfile(userRepresentation, gatewayId);
                     userProfile.setUserId(lowerUsername);
                     userProfile.setAiravataInternalUserId(lowerUsername + "@" + gatewayId);
-                    userProfile.setCreationTime(
-                            IdGenerator.getCurrentTimestamp().getTime());
+                    userProfile.setCreatedAt(IdGenerator.getCurrentTimestamp().toEpochMilli());
                     userProfile.setLastAccessTime(
-                            IdGenerator.getCurrentTimestamp().getTime());
+                            IdGenerator.getCurrentTimestamp().toEpochMilli());
                     userProfile.setValidUntil(-1);
                     // Convert to entity and save using repository
-                    var entity = userProfileMapper.toEntity(userProfile);
+                    var entity = userMapper.toEntity(userProfile);
                     userRepository.save(entity);
                 }
                 return true;
@@ -207,7 +205,6 @@ public class DefaultIamAdminService implements IamAdminService {
         }
     }
 
-    @Transactional
     public boolean disableUser(AuthzToken authzToken, String username) throws IamAdminServicesException {
         if (!isIamConfigured()) return true;
         try {
@@ -313,7 +310,7 @@ public class DefaultIamAdminService implements IamAdminService {
 
             return userRepresentationList.stream()
                     .map(ur -> convertUserRepresentationToUserProfile(ur, gatewayId))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (IamAdminServicesException ex) {
             String msg = String.format("Error while retrieving users from IAM backend: %s", ex.getMessage());
             logger.error(msg, ex);
@@ -433,14 +430,14 @@ public class DefaultIamAdminService implements IamAdminService {
 
             var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, adminToken);
             if (users.isEmpty()) {
-                logger.error("User not found: " + username);
+                logger.error("User not found: {}", username);
                 return false;
             }
 
             var user = users.get(0);
             var role = client.getRole(gatewayId, roleName, adminToken);
             if (role == null) {
-                logger.error("Role not found: " + roleName);
+                logger.error("Role not found: {}", roleName);
                 return false;
             }
 
@@ -462,14 +459,14 @@ public class DefaultIamAdminService implements IamAdminService {
 
             var users = client.searchUsers(gatewayId, username, null, null, null, 0, 1, adminToken);
             if (users.isEmpty()) {
-                logger.error("User not found: " + username);
+                logger.error("User not found: {}", username);
                 return false;
             }
 
             var user = users.get(0);
             var role = client.getRole(gatewayId, roleName, adminToken);
             if (role == null) {
-                logger.error("Role not found: " + roleName);
+                logger.error("Role not found: {}", roleName);
                 return false;
             }
 
@@ -532,7 +529,7 @@ public class DefaultIamAdminService implements IamAdminService {
         profile.setFirstName(user.getFirstName());
         profile.setLastName(user.getLastName());
         profile.setEmails(Arrays.asList(new String[] {user.getEmail()}));
-        profile.setCreationTime(user.getCreatedTimestamp() != null ? user.getCreatedTimestamp() : 0L);
+        profile.setCreatedAt(user.getCreatedTimestamp() != null ? user.getCreatedTimestamp() : 0L);
         profile.setLastAccessTime(0);
         profile.setValidUntil(0);
         if (user.isEnabled()) {

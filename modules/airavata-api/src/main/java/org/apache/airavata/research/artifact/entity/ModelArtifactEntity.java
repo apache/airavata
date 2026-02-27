@@ -28,10 +28,10 @@ import org.apache.airavata.research.artifact.model.ArtifactType;
 @Table(name = "research_model_artifact")
 public class ModelArtifactEntity extends ResearchArtifactEntity {
 
-    @Column(nullable = false)
+    @Column(name = "application_interface_id", nullable = false)
     private String applicationInterfaceId;
 
-    @Column(nullable = false)
+    @Column(name = "version", nullable = false)
     private String version;
 
     @Override

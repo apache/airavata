@@ -20,21 +20,19 @@
 package org.apache.airavata.execution.orchestration;
 
 import org.apache.airavata.core.exception.RegistryExceptions.RegistryException;
-import org.apache.airavata.core.exception.ValidationExceptions.LaunchValidationException;
 import org.apache.airavata.core.model.ResourceIdentifier;
 import org.apache.airavata.core.model.StatusModel;
-import org.apache.airavata.execution.model.TaskTypes;
-import org.apache.airavata.execution.service.ProcessService;
 import org.apache.airavata.execution.state.StateValidators;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
-import org.apache.airavata.research.experiment.exception.ExperimentExceptions.ExperimentNotFoundException;
 import org.apache.airavata.research.experiment.model.ExperimentState;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
+import org.apache.airavata.status.model.ExperimentDequeueEvent;
 import org.apache.airavata.status.model.ProcessStatusChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Manages experiment status transitions and event handling for the orchestrator.
@@ -43,27 +41,18 @@ import org.springframework.stereotype.Service;
  * into valid experiment state transitions and persisting state updates.
  */
 @Service
+@Transactional
 public class ExperimentStatusManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusManager.class);
 
-    private final ProcessService processService;
     private final ExperimentRepository experimentRepository;
-
-    /**
-     * Back-reference to OrchestratorService for operations that require the full launch pipeline
-     * (e.g. re-queued experiments, fetch intermediate outputs). Lazy to break the circular
-     * dependency between OrchestratorService and ExperimentStatusManager.
-     */
-    private final OrchestratorService orchestratorService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ExperimentStatusManager(
-            ProcessService processService,
-            ExperimentRepository experimentRepository,
-            @Lazy OrchestratorService orchestratorService) {
-        this.processService = processService;
+            ExperimentRepository experimentRepository, ApplicationEventPublisher eventPublisher) {
         this.experimentRepository = experimentRepository;
-        this.orchestratorService = orchestratorService;
+        this.eventPublisher = eventPublisher;
     }
 
     // -------------------------------------------------------------------------
@@ -81,17 +70,8 @@ public class ExperimentStatusManager {
             ExperimentEntity experimentEntity =
                     experimentRepository.findById(experimentId).orElse(null);
             ExperimentState currentState = null;
-            if (experimentEntity != null && experimentEntity.getState() != null) {
-                try {
-                    currentState = ExperimentState.valueOf(experimentEntity.getState());
-                } catch (IllegalArgumentException e) {
-                    // Unknown stored state — treat as null so any transition is allowed.
-                    logger.debug(
-                            "Unknown stored experiment state '{}' for experimentId={}; treating as null",
-                            experimentEntity.getState(),
-                            experimentId,
-                            e);
-                }
+            if (experimentEntity != null) {
+                currentState = experimentEntity.getState();
             }
 
             if (!StateValidators.StateTransitionService.validateAndLog(
@@ -109,13 +89,13 @@ public class ExperimentStatusManager {
             }
 
             if (experimentEntity != null) {
-                experimentEntity.setState(status.getState().name());
+                experimentEntity.setState(status.getState());
                 experimentRepository.save(experimentEntity);
             } else {
                 logger.error("expId : {} Cannot update state — experiment entity not found", experimentId);
             }
         } catch (Exception e) {
-            logger.error("expId : " + experimentId + " Error updating experiment status to " + status.toString(), e);
+            logger.error("expId : {} Error updating experiment status to {}", experimentId, status.toString(), e);
         }
     }
 
@@ -140,12 +120,7 @@ public class ExperimentStatusManager {
             return null;
         }
         StatusModel<ExperimentState> model = new StatusModel<>();
-        try {
-            model.setState(ExperimentState.valueOf(experimentEntity.getState()));
-        } catch (IllegalArgumentException e) {
-            logger.warn("Unknown experiment state '{}' for experimentId={}", experimentEntity.getState(), experimentId);
-            return null;
-        }
+        model.setState(experimentEntity.getState());
         return model;
     }
 
@@ -158,97 +133,68 @@ public class ExperimentStatusManager {
      * transition and persists it.
      */
     public void handleProcessStatusChange(
-            ProcessStatusChangedEvent processStatusChangeEvent, ResourceIdentifier processIdentity)
-            throws ExperimentNotFoundException, OrchestratorException, RegistryException, LaunchValidationException {
+            ProcessStatusChangedEvent processStatusChangeEvent, ResourceIdentifier processIdentity) {
         StatusModel<ExperimentState> status = null;
-
-        // Intermediate output-fetching processes must not drive experiment status.
-        var process = processService.getProcess(processIdentity.getProcessId());
-        boolean isIntermediateOutputFetchingProcess =
-                process.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING);
-        if (isIntermediateOutputFetchingProcess) {
-            logger.info("Not updating experiment status because process is an intermediate output fetching one");
-            return;
-        }
 
         ExperimentState currentExpState = experimentRepository
                 .findById(processIdentity.getExperimentId())
-                .map(e -> {
-                    try {
-                        return ExperimentState.valueOf(e.getState());
-                    } catch (IllegalArgumentException | NullPointerException ex) {
-                        // Unknown or null stored state for experiment; default to CREATED.
-                        logger.debug(
-                                "Unknown stored experiment state '{}' for experimentId={}; defaulting to CREATED",
-                                e.getState(),
-                                processIdentity.getExperimentId(),
-                                ex);
-                        return ExperimentState.CREATED;
-                    }
-                })
+                .map(ExperimentEntity::getState)
                 .orElse(ExperimentState.CREATED);
 
+        boolean canceling = currentExpState == ExperimentState.CANCELING;
+
         switch (processStatusChangeEvent.getState()) {
-            case LAUNCHED -> {
-                if (currentExpState == ExperimentState.CANCELING) {
-                    status = StatusModel.of(
-                            ExperimentState.CANCELING, "Process started but experiment cancelling is triggered");
-                } else {
-                    status = StatusModel.of(ExperimentState.EXECUTING, "process  started");
-                }
-            }
+            case LAUNCHED ->
+                status = canceling
+                        ? StatusModel.of(
+                                ExperimentState.CANCELING, "Process started but experiment cancelling is triggered")
+                        : StatusModel.of(ExperimentState.EXECUTING, "process started");
             case COMPLETED -> {
-                if (currentExpState == ExperimentState.CANCELING) {
+                if (canceling) {
                     status = StatusModel.of(
-                            ExperimentState.CANCELED, "Process competed but experiment cancelling is triggered");
+                            ExperimentState.CANCELED, "Process completed but experiment cancelling is triggered");
                 } else {
-                    // If experiment is still LAUNCHED (STARTED event was not delivered),
-                    // transition to EXECUTING first so the COMPLETED transition is valid.
+                    // If experiment is still LAUNCHED, transition to EXECUTING first
+                    // so the COMPLETED transition is valid.
                     if (currentExpState == ExperimentState.LAUNCHED) {
-                        StatusModel<ExperimentState> execStatus =
-                                StatusModel.of(ExperimentState.EXECUTING, "process started (inferred from completion)");
                         updateExperimentStatus(
-                                processIdentity.getExperimentId(), execStatus, processIdentity.getGatewayId());
+                                processIdentity.getExperimentId(),
+                                StatusModel.of(ExperimentState.EXECUTING, "process started (inferred from completion)"),
+                                processIdentity.getGatewayId());
                     }
-                    status = StatusModel.of(ExperimentState.COMPLETED, "process  completed");
+                    status = StatusModel.of(ExperimentState.COMPLETED, "process completed");
                 }
             }
-            case FAILED -> {
-                if (currentExpState == ExperimentState.CANCELING) {
-                    status = StatusModel.of(
-                            ExperimentState.CANCELED, "Process failed but experiment cancelling is triggered");
-                } else {
-                    status = StatusModel.of(ExperimentState.FAILED, "process  failed");
-                }
-            }
-            case CANCELED -> {
-                status = StatusModel.of(ExperimentState.CANCELED, "process  cancelled");
-            }
-            case QUEUED -> {
-                status = StatusModel.of(
-                        ExperimentState.SCHEDULED, "Process started but compute resource not avaialable");
-            }
-            case REQUEUED -> {
-                status = StatusModel.of(ExperimentState.SCHEDULED, "Job submission failed,  requeued to resubmit");
-            }
+            case FAILED ->
+                status = canceling
+                        ? StatusModel.of(
+                                ExperimentState.CANCELED, "Process failed but experiment cancelling is triggered")
+                        : StatusModel.of(ExperimentState.FAILED, "process failed");
+            case CANCELED -> status = StatusModel.of(ExperimentState.CANCELED, "process cancelled");
+            case QUEUED ->
+                status =
+                        StatusModel.of(ExperimentState.SCHEDULED, "Process started but compute resource not available");
+            case REQUEUED ->
+                status = StatusModel.of(ExperimentState.SCHEDULED, "Job submission failed, requeued to resubmit");
             case DEQUEUING -> {
-                if (currentExpState == ExperimentState.CANCELING) {
+                if (canceling) {
                     status = StatusModel.of(
                             ExperimentState.CANCELING, "Process started but experiment cancelling is triggered");
                 } else {
-                    orchestratorService.launchQueuedExperiment(processIdentity.getExperimentId());
+                    eventPublisher.publishEvent(new ExperimentDequeueEvent(processIdentity.getExperimentId()));
                 }
             }
             default -> {
-                // ignore other status changes
                 return;
             }
         }
 
         if (status != null) {
             updateExperimentStatus(processIdentity.getExperimentId(), status, processIdentity.getGatewayId());
-            logger.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to "
-                    + status.getState());
+            logger.info(
+                    "expId : {} :- Experiment status updated to {}",
+                    processIdentity.getExperimentId(),
+                    status.getState());
         }
     }
 }

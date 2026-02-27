@@ -22,7 +22,6 @@ package org.apache.airavata.iam.keycloak;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.config.ServerProperties;
 import org.apache.airavata.credential.model.PasswordCredential;
 import org.apache.airavata.gateway.model.Gateway;
@@ -141,7 +140,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
             client.createRealm(realmWithRoles);
             return gatewayDetails;
         } catch (Exception ex) {
-            logger.error("Error creating Realm in Keycloak Server, reason: " + ex.getMessage(), ex);
+            logger.error("Error creating Realm in Keycloak Server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error creating Realm in Keycloak Server, reason: " + ex.getMessage(), ex);
         }
@@ -191,7 +190,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
             user.setEmailVerified(true);
             user.setEnabled(true);
             var httpResponse = client.createUser(gatewayDetails.getGatewayId(), user, adminToken);
-            logger.info("Tenant Admin account creation exited with code : " + httpResponse.getStatusCode());
+            logger.info("Tenant Admin account creation exited with code : {}", httpResponse.getStatusCode());
             if (httpResponse.getStatusCode() == HttpStatus.CREATED) { // HTTP code for record creation: HTTP 201
                 var retrieveCreatedUserList = client.searchUsers(
                         gatewayDetails.getGatewayId(),
@@ -234,7 +233,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                         var manageRoles = availableRoles.stream()
                                 .filter(r -> r.getName().equals("manage-users")
                                         || r.getName().equals("manage-clients"))
-                                .collect(Collectors.toList());
+                                .toList();
                         if (!manageRoles.isEmpty()) {
                             client.addClientRolesToUser(
                                     gatewayDetails.getGatewayId(),
@@ -250,12 +249,13 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                     return false;
                 }
             } else {
-                logger.error("Request for Tenant Admin Account Creation failed with HTTP code : "
-                        + httpResponse.getStatusCode());
+                logger.error(
+                        "Request for Tenant Admin Account Creation failed with HTTP code : {}",
+                        httpResponse.getStatusCode());
                 return false;
             }
         } catch (Exception ex) {
-            logger.error("Error creating Realm Admin Account in keycloak server, reason: " + ex.getMessage(), ex);
+            logger.error("Error creating Realm Admin Account in keycloak server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error creating Realm Admin Account in keycloak server, reason: " + ex.getMessage(), ex);
         }
@@ -296,7 +296,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
             pgaClient.setRedirectUris(redirectUris);
             pgaClient.setPublicClient(false);
             var httpResponse = client.createClient(gatewayDetails.getGatewayId(), pgaClient, adminToken);
-            logger.info("Tenant Client configuration exited with code : " + httpResponse.getStatusCode());
+            logger.info("Tenant Client configuration exited with code : {}", httpResponse.getStatusCode());
 
             if (httpResponse.getStatusCode() == HttpStatus.CREATED) {
                 var clients = client.findClientsByClientId(
@@ -319,7 +319,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                             var manageRoles = availableRoles.stream()
                                     .filter(r -> r.getName().equals("manage-users")
                                             || r.getName().equals("manage-clients"))
-                                    .collect(Collectors.toList());
+                                    .toList();
                             if (!manageRoles.isEmpty()) {
                                 client.addClientRolesToUser(
                                         gatewayDetails.getGatewayId(),
@@ -338,11 +338,11 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                 }
             } else {
                 logger.error(
-                        "Request for Realm Client Creation failed with HTTP code : " + httpResponse.getStatusCode());
+                        "Request for Realm Client Creation failed with HTTP code : {}", httpResponse.getStatusCode());
                 return null;
             }
         } catch (Exception ex) {
-            logger.error("Error configuring client in keycloak server, reason: " + ex.getMessage(), ex);
+            logger.error("Error configuring client in keycloak server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error configuring client in keycloak server, reason: " + ex.getMessage(), ex);
         }
@@ -416,7 +416,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                 }
             } else {
                 logger.error(
-                        "Request for user Account Creation failed with HTTP code : " + httpResponse.getStatusCode());
+                        "Request for user Account Creation failed with HTTP code : {}", httpResponse.getStatusCode());
                 return false;
             }
         } catch (IamAdminServicesException e) {
@@ -439,7 +439,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                 client.updateUser(tenantId, userRepresentation.getId(), userRepresentation, accessToken);
                 return true;
             } else {
-                logger.error("User not found: " + username);
+                logger.error("User not found: {}", username);
                 return false;
             }
         } catch (IamAdminServicesException e) {
@@ -500,7 +500,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                     client.searchUsers(tenantId, search, null, null, null, offset, limit, accessToken);
             return userRepresentationList.stream()
                     .map(ur -> convertUserRepresentationToUserProfile(ur, tenantId))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (IamAdminServicesException e) {
             throw e;
         } catch (Exception e) {
@@ -532,7 +532,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                 return false;
             }
         } catch (Exception ex) {
-            logger.error("Error resetting user password in keycloak server, reason: " + ex.getMessage(), ex);
+            logger.error("Error resetting user password in keycloak server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error resetting user password in keycloak server, reason: " + ex.getMessage(), ex);
         }
@@ -559,7 +559,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
             }
             return userList;
         } catch (Exception ex) {
-            logger.error("Error finding user in keycloak server, reason: " + ex.getMessage(), ex);
+            logger.error("Error finding user in keycloak server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error finding user in keycloak server, reason: " + ex.getMessage(), ex);
         }
@@ -583,7 +583,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                 throw new IamAdminServicesException("User [" + username + "] wasn't found in Keycloak!");
             }
         } catch (Exception ex) {
-            logger.error("Error updating user profile in keycloak server, reason: " + ex.getMessage(), ex);
+            logger.error("Error updating user profile in keycloak server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error updating user profile in keycloak server, reason: " + ex.getMessage(), ex);
         }
@@ -601,7 +601,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
                 throw new IamAdminServicesException("User [" + username + "] wasn't found in Keycloak!");
             }
         } catch (Exception ex) {
-            logger.error("Error deleting user in keycloak server, reason: " + ex.getMessage(), ex);
+            logger.error("Error deleting user in keycloak server, reason: {}", ex.getMessage(), ex);
             throw new IamAdminServicesException(
                     "Error deleting user in keycloak server, reason: " + ex.getMessage(), ex);
         }
@@ -614,11 +614,11 @@ public class KeycloakGatewayManagement implements GatewayManagement {
             var adminToken = client.obtainAdminToken(tenantId, realmAdminCreds);
             var userRepresentation = getUserByUsername(client, tenantId, username, adminToken);
             if (userRepresentation == null) {
-                logger.warn("No Keycloak user found for username [" + username + "] in tenant [" + tenantId + "].");
+                logger.warn("No Keycloak user found for username [{}] in tenant [{}].", username, tenantId);
                 return null;
             }
             var roles = client.getUserRealmRoles(tenantId, userRepresentation.getId(), adminToken);
-            return roles.stream().map(RoleRepresentation::getName).collect(Collectors.toList());
+            return roles.stream().map(RoleRepresentation::getName).toList();
         } catch (IamAdminServicesException e) {
             throw e;
         } catch (Exception e) {
@@ -635,7 +635,7 @@ public class KeycloakGatewayManagement implements GatewayManagement {
         profile.setFirstName(userRepresentation.getFirstName());
         profile.setLastName(userRepresentation.getLastName());
         profile.setEmails(Arrays.asList(new String[] {userRepresentation.getEmail()}));
-        profile.setCreationTime(
+        profile.setCreatedAt(
                 userRepresentation.getCreatedTimestamp() != null
                         ? userRepresentation.getCreatedTimestamp()
                         : System.currentTimeMillis());

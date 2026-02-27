@@ -73,14 +73,14 @@ import org.springframework.context.annotation.Import;
             "org.apache.airavata.research.application.mapper",
             "org.apache.airavata.research.application.service",
             "org.apache.airavata.research.artifact",
-            "org.apache.airavata.execution.mapper",
+            "org.apache.airavata.execution.process",
             "org.apache.airavata.compute.resource.adapter",
+            "org.apache.airavata.compute.resource.mapper",
             "org.apache.airavata.gateway.mapper",
             "org.apache.airavata.iam.mapper",
             "org.apache.airavata.gateway.service",
             "org.apache.airavata.iam.service",
             "org.apache.airavata.compute.resource.service",
-            "org.apache.airavata.execution.service",
             "org.apache.airavata.workflow.service"
         },
         // Exclude components that require external dependencies

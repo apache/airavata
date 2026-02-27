@@ -83,7 +83,7 @@ public class ApplicationInstallationController {
         if (installation == null) {
             throw new ResourceNotFoundException("ApplicationInstallation", installationId);
         }
-        installation.setStatus("PENDING");
+        installation.setStatus(org.apache.airavata.research.application.model.InstallationStatus.PENDING);
         applicationInstallationService.updateInstallation(installationId, installation);
         return ResponseEntity.ok().build();
     }

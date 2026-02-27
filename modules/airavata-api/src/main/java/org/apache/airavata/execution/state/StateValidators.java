@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.state;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import org.apache.airavata.compute.resource.model.JobState;
@@ -101,37 +102,71 @@ public final class StateValidators {
     }
 
     // -------------------------------------------------------------------------
+    // Transition builder helpers
+    // -------------------------------------------------------------------------
+
+    /** Expands {@code from(X).to(A, B, C)} into individual StateTransitions. */
+    @SafeVarargs
+    static <S extends Enum<S>> Set<StateTransition<S>> from(S source, S... targets) {
+        var set = new HashSet<StateTransition<S>>();
+        for (S target : targets) {
+            set.add(new StateTransition<>(source, target));
+        }
+        return set;
+    }
+
+    /** Merges multiple transition sets into one immutable set. */
+    @SafeVarargs
+    static <S extends Enum<S>> Set<StateTransition<S>> transitions(Set<StateTransition<S>>... groups) {
+        var merged = new HashSet<StateTransition<S>>();
+        for (var group : groups) {
+            merged.addAll(group);
+        }
+        return Set.copyOf(merged);
+    }
+
+    // -------------------------------------------------------------------------
     // Concrete validators
     // -------------------------------------------------------------------------
 
-    /** Validates ExperimentState transitions. Terminal states: COMPLETED, FAILED, CANCELED */
+    /** Validates ExperimentState transitions. */
     public enum ExperimentStateValidator implements StateValidator<ExperimentState> {
         INSTANCE;
 
-        private static final Set<StateTransition<ExperimentState>> VALID_TRANSITIONS = Set.of(
-                new StateTransition<>(ExperimentState.CREATED, ExperimentState.VALIDATED),
-                new StateTransition<>(ExperimentState.CREATED, ExperimentState.SCHEDULED),
-                new StateTransition<>(ExperimentState.CREATED, ExperimentState.LAUNCHED),
-                new StateTransition<>(ExperimentState.CREATED, ExperimentState.FAILED),
-                new StateTransition<>(ExperimentState.VALIDATED, ExperimentState.LAUNCHED),
-                new StateTransition<>(ExperimentState.VALIDATED, ExperimentState.FAILED),
-                new StateTransition<>(ExperimentState.SCHEDULED, ExperimentState.LAUNCHED),
-                new StateTransition<>(ExperimentState.SCHEDULED, ExperimentState.SCHEDULED),
-                new StateTransition<>(ExperimentState.SCHEDULED, ExperimentState.CANCELING),
-                new StateTransition<>(ExperimentState.LAUNCHED, ExperimentState.EXECUTING),
-                new StateTransition<>(ExperimentState.LAUNCHED, ExperimentState.FAILED),
-                new StateTransition<>(ExperimentState.LAUNCHED, ExperimentState.CANCELING),
-                new StateTransition<>(ExperimentState.EXECUTING, ExperimentState.COMPLETED),
-                new StateTransition<>(ExperimentState.EXECUTING, ExperimentState.FAILED),
-                new StateTransition<>(ExperimentState.EXECUTING, ExperimentState.CANCELED),
-                new StateTransition<>(ExperimentState.EXECUTING, ExperimentState.SCHEDULED),
-                new StateTransition<>(ExperimentState.EXECUTING, ExperimentState.CANCELING),
-                new StateTransition<>(ExperimentState.CANCELING, ExperimentState.CANCELING),
-                new StateTransition<>(ExperimentState.CANCELING, ExperimentState.CANCELED),
-                /* Idempotent terminal state updates (e.g. workflow and launcher both set FAILED) */
-                new StateTransition<>(ExperimentState.FAILED, ExperimentState.FAILED),
-                new StateTransition<>(ExperimentState.COMPLETED, ExperimentState.COMPLETED),
-                new StateTransition<>(ExperimentState.CANCELED, ExperimentState.CANCELED));
+        private static final Set<StateTransition<ExperimentState>> VALID_TRANSITIONS;
+
+        static {
+            VALID_TRANSITIONS = transitions(
+                    from(
+                            ExperimentState.CREATED,
+                            ExperimentState.VALIDATED,
+                            ExperimentState.SCHEDULED,
+                            ExperimentState.LAUNCHED,
+                            ExperimentState.FAILED),
+                    from(ExperimentState.VALIDATED, ExperimentState.LAUNCHED, ExperimentState.FAILED),
+                    from(
+                            ExperimentState.SCHEDULED,
+                            ExperimentState.LAUNCHED,
+                            ExperimentState.SCHEDULED,
+                            ExperimentState.CANCELING),
+                    from(
+                            ExperimentState.LAUNCHED,
+                            ExperimentState.EXECUTING,
+                            ExperimentState.FAILED,
+                            ExperimentState.CANCELING),
+                    from(
+                            ExperimentState.EXECUTING,
+                            ExperimentState.COMPLETED,
+                            ExperimentState.FAILED,
+                            ExperimentState.CANCELED,
+                            ExperimentState.SCHEDULED,
+                            ExperimentState.CANCELING),
+                    from(ExperimentState.CANCELING, ExperimentState.CANCELING, ExperimentState.CANCELED),
+                    // Idempotent terminal self-transitions
+                    from(ExperimentState.FAILED, ExperimentState.FAILED),
+                    from(ExperimentState.COMPLETED, ExperimentState.COMPLETED),
+                    from(ExperimentState.CANCELED, ExperimentState.CANCELED));
+        }
 
         @Override
         public Set<StateTransition<ExperimentState>> getValidTransitions() {
@@ -139,39 +174,51 @@ public final class StateValidators {
         }
     }
 
-    /** Validates JobState transitions. Terminal states: COMPLETED, CANCELED, FAILED, SUSPENDED, UNKNOWN */
+    /** Validates JobState transitions. */
     public enum JobStateValidator implements StateValidator<JobState> {
         INSTANCE;
 
-        private static final Set<StateTransition<JobState>> VALID_TRANSITIONS = Set.of(
-                new StateTransition<>(JobState.SUBMITTED, JobState.QUEUED),
-                new StateTransition<>(JobState.SUBMITTED, JobState.ACTIVE),
-                new StateTransition<>(JobState.SUBMITTED, JobState.COMPLETED),
-                new StateTransition<>(JobState.SUBMITTED, JobState.CANCELED),
-                new StateTransition<>(JobState.SUBMITTED, JobState.FAILED),
-                new StateTransition<>(JobState.SUBMITTED, JobState.SUSPENDED),
-                new StateTransition<>(JobState.SUBMITTED, JobState.UNKNOWN),
-                new StateTransition<>(JobState.SUBMITTED, JobState.NON_CRITICAL_FAIL),
-                new StateTransition<>(JobState.QUEUED, JobState.ACTIVE),
-                new StateTransition<>(JobState.QUEUED, JobState.COMPLETED),
-                new StateTransition<>(JobState.QUEUED, JobState.CANCELED),
-                new StateTransition<>(JobState.QUEUED, JobState.FAILED),
-                new StateTransition<>(JobState.QUEUED, JobState.SUSPENDED),
-                new StateTransition<>(JobState.QUEUED, JobState.UNKNOWN),
-                new StateTransition<>(JobState.QUEUED, JobState.NON_CRITICAL_FAIL),
-                new StateTransition<>(JobState.ACTIVE, JobState.COMPLETED),
-                new StateTransition<>(JobState.ACTIVE, JobState.CANCELED),
-                new StateTransition<>(JobState.ACTIVE, JobState.FAILED),
-                new StateTransition<>(JobState.ACTIVE, JobState.SUSPENDED),
-                new StateTransition<>(JobState.ACTIVE, JobState.UNKNOWN),
-                new StateTransition<>(JobState.ACTIVE, JobState.NON_CRITICAL_FAIL),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.QUEUED),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.ACTIVE),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.COMPLETED),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.CANCELED),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.FAILED),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.SUSPENDED),
-                new StateTransition<>(JobState.NON_CRITICAL_FAIL, JobState.UNKNOWN));
+        private static final Set<StateTransition<JobState>> VALID_TRANSITIONS;
+
+        static {
+            VALID_TRANSITIONS = transitions(
+                    from(
+                            JobState.SUBMITTED,
+                            JobState.QUEUED,
+                            JobState.ACTIVE,
+                            JobState.COMPLETED,
+                            JobState.CANCELED,
+                            JobState.FAILED,
+                            JobState.SUSPENDED,
+                            JobState.UNKNOWN,
+                            JobState.NON_CRITICAL_FAIL),
+                    from(
+                            JobState.QUEUED,
+                            JobState.ACTIVE,
+                            JobState.COMPLETED,
+                            JobState.CANCELED,
+                            JobState.FAILED,
+                            JobState.SUSPENDED,
+                            JobState.UNKNOWN,
+                            JobState.NON_CRITICAL_FAIL),
+                    from(
+                            JobState.ACTIVE,
+                            JobState.COMPLETED,
+                            JobState.CANCELED,
+                            JobState.FAILED,
+                            JobState.SUSPENDED,
+                            JobState.UNKNOWN,
+                            JobState.NON_CRITICAL_FAIL),
+                    from(
+                            JobState.NON_CRITICAL_FAIL,
+                            JobState.QUEUED,
+                            JobState.ACTIVE,
+                            JobState.COMPLETED,
+                            JobState.CANCELED,
+                            JobState.FAILED,
+                            JobState.SUSPENDED,
+                            JobState.UNKNOWN));
+        }
 
         @Override
         public Set<StateTransition<JobState>> getValidTransitions() {
@@ -179,84 +226,109 @@ public final class StateValidators {
         }
     }
 
-    /** Validates ProcessState transitions. Terminal states: COMPLETED, FAILED, CANCELED */
+    /** Validates ProcessState transitions. */
     public enum ProcessStateValidator implements StateValidator<ProcessState> {
         INSTANCE;
 
-        private static final Set<StateTransition<ProcessState>> VALID_TRANSITIONS = Set.of(
-                new StateTransition<>(ProcessState.CREATED, ProcessState.VALIDATED),
-                new StateTransition<>(ProcessState.CREATED, ProcessState.LAUNCHED),
-                new StateTransition<>(ProcessState.CREATED, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.CREATED, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.VALIDATED, ProcessState.LAUNCHED),
-                new StateTransition<>(ProcessState.VALIDATED, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.VALIDATED, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.PRE_PROCESSING),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.CONFIGURING_WORKSPACE),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.INPUT_DATA_STAGING),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.LAUNCHED, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.PRE_PROCESSING, ProcessState.CONFIGURING_WORKSPACE),
-                new StateTransition<>(ProcessState.PRE_PROCESSING, ProcessState.INPUT_DATA_STAGING),
-                new StateTransition<>(ProcessState.PRE_PROCESSING, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.PRE_PROCESSING, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.PRE_PROCESSING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.PRE_PROCESSING, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.CONFIGURING_WORKSPACE, ProcessState.INPUT_DATA_STAGING),
-                new StateTransition<>(ProcessState.CONFIGURING_WORKSPACE, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.CONFIGURING_WORKSPACE, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.CONFIGURING_WORKSPACE, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.CONFIGURING_WORKSPACE, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.INPUT_DATA_STAGING, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.INPUT_DATA_STAGING, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.INPUT_DATA_STAGING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.INPUT_DATA_STAGING, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.MONITORING),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.OUTPUT_DATA_STAGING),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.POST_PROCESSING),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.COMPLETED),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.REQUEUED),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.EXECUTING, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.MONITORING, ProcessState.OUTPUT_DATA_STAGING),
-                new StateTransition<>(ProcessState.MONITORING, ProcessState.POST_PROCESSING),
-                new StateTransition<>(ProcessState.MONITORING, ProcessState.COMPLETED),
-                new StateTransition<>(ProcessState.MONITORING, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.MONITORING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.MONITORING, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.OUTPUT_DATA_STAGING, ProcessState.POST_PROCESSING),
-                new StateTransition<>(ProcessState.OUTPUT_DATA_STAGING, ProcessState.COMPLETED),
-                new StateTransition<>(ProcessState.OUTPUT_DATA_STAGING, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.OUTPUT_DATA_STAGING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.OUTPUT_DATA_STAGING, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.POST_PROCESSING, ProcessState.COMPLETED),
-                new StateTransition<>(ProcessState.POST_PROCESSING, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.POST_PROCESSING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.POST_PROCESSING, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.QUEUED, ProcessState.DEQUEUING),
-                new StateTransition<>(ProcessState.QUEUED, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.QUEUED, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.QUEUED, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.QUEUED, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.REQUEUED, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.REQUEUED, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.REQUEUED, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.REQUEUED, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.REQUEUED, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.DEQUEUING, ProcessState.EXECUTING),
-                new StateTransition<>(ProcessState.DEQUEUING, ProcessState.QUEUED),
-                new StateTransition<>(ProcessState.DEQUEUING, ProcessState.CANCELING),
-                new StateTransition<>(ProcessState.DEQUEUING, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.CANCELING, ProcessState.CANCELED),
-                new StateTransition<>(ProcessState.CANCELING, ProcessState.FAILED),
-                /* Idempotent terminal state updates */
-                new StateTransition<>(ProcessState.COMPLETED, ProcessState.COMPLETED),
-                new StateTransition<>(ProcessState.FAILED, ProcessState.FAILED),
-                new StateTransition<>(ProcessState.CANCELED, ProcessState.CANCELED));
+        private static final Set<StateTransition<ProcessState>> VALID_TRANSITIONS;
+
+        static {
+            VALID_TRANSITIONS = transitions(
+                    from(
+                            ProcessState.CREATED,
+                            ProcessState.VALIDATED,
+                            ProcessState.LAUNCHED,
+                            ProcessState.CANCELING,
+                            ProcessState.FAILED),
+                    from(ProcessState.VALIDATED, ProcessState.LAUNCHED, ProcessState.CANCELING, ProcessState.FAILED),
+                    from(
+                            ProcessState.LAUNCHED,
+                            ProcessState.PRE_PROCESSING,
+                            ProcessState.CONFIGURING_WORKSPACE,
+                            ProcessState.INPUT_DATA_STAGING,
+                            ProcessState.EXECUTING,
+                            ProcessState.QUEUED,
+                            ProcessState.CANCELING,
+                            ProcessState.FAILED),
+                    from(
+                            ProcessState.PRE_PROCESSING,
+                            ProcessState.CONFIGURING_WORKSPACE,
+                            ProcessState.INPUT_DATA_STAGING,
+                            ProcessState.EXECUTING,
+                            ProcessState.QUEUED,
+                            ProcessState.CANCELING,
+                            ProcessState.FAILED),
+                    from(
+                            ProcessState.CONFIGURING_WORKSPACE,
+                            ProcessState.INPUT_DATA_STAGING,
+                            ProcessState.EXECUTING,
+                            ProcessState.QUEUED,
+                            ProcessState.CANCELING,
+                            ProcessState.FAILED),
+                    from(
+                            ProcessState.INPUT_DATA_STAGING,
+                            ProcessState.EXECUTING,
+                            ProcessState.QUEUED,
+                            ProcessState.CANCELING,
+                            ProcessState.FAILED),
+                    from(
+                            ProcessState.EXECUTING,
+                            ProcessState.MONITORING,
+                            ProcessState.OUTPUT_DATA_STAGING,
+                            ProcessState.POST_PROCESSING,
+                            ProcessState.COMPLETED,
+                            ProcessState.FAILED,
+                            ProcessState.QUEUED,
+                            ProcessState.REQUEUED,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED),
+                    from(
+                            ProcessState.MONITORING,
+                            ProcessState.OUTPUT_DATA_STAGING,
+                            ProcessState.POST_PROCESSING,
+                            ProcessState.COMPLETED,
+                            ProcessState.FAILED,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED),
+                    from(
+                            ProcessState.OUTPUT_DATA_STAGING,
+                            ProcessState.POST_PROCESSING,
+                            ProcessState.COMPLETED,
+                            ProcessState.FAILED,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED),
+                    from(
+                            ProcessState.POST_PROCESSING,
+                            ProcessState.COMPLETED,
+                            ProcessState.FAILED,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED),
+                    from(
+                            ProcessState.QUEUED,
+                            ProcessState.DEQUEUING,
+                            ProcessState.EXECUTING,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED,
+                            ProcessState.FAILED),
+                    from(
+                            ProcessState.REQUEUED,
+                            ProcessState.QUEUED,
+                            ProcessState.EXECUTING,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED,
+                            ProcessState.FAILED),
+                    from(
+                            ProcessState.DEQUEUING,
+                            ProcessState.EXECUTING,
+                            ProcessState.QUEUED,
+                            ProcessState.CANCELING,
+                            ProcessState.CANCELED),
+                    from(ProcessState.CANCELING, ProcessState.CANCELED, ProcessState.FAILED),
+                    // Idempotent terminal self-transitions
+                    from(ProcessState.COMPLETED, ProcessState.COMPLETED),
+                    from(ProcessState.FAILED, ProcessState.FAILED),
+                    from(ProcessState.CANCELED, ProcessState.CANCELED));
+        }
 
         @Override
         public Set<StateTransition<ProcessState>> getValidTransitions() {
@@ -264,15 +336,13 @@ public final class StateValidators {
         }
     }
 
-    /** Validates TaskState transitions. Terminal states: COMPLETED, FAILED, CANCELED */
+    /** Validates TaskState transitions. */
     public enum TaskStateValidator implements StateValidator<TaskState> {
         INSTANCE;
 
-        private static final Set<StateTransition<TaskState>> VALID_TRANSITIONS = Set.of(
-                new StateTransition<>(TaskState.CREATED, TaskState.EXECUTING),
-                new StateTransition<>(TaskState.EXECUTING, TaskState.COMPLETED),
-                new StateTransition<>(TaskState.EXECUTING, TaskState.FAILED),
-                new StateTransition<>(TaskState.EXECUTING, TaskState.CANCELED));
+        private static final Set<StateTransition<TaskState>> VALID_TRANSITIONS = transitions(
+                from(TaskState.CREATED, TaskState.EXECUTING),
+                from(TaskState.EXECUTING, TaskState.COMPLETED, TaskState.FAILED, TaskState.CANCELED));
 
         @Override
         public Set<StateTransition<TaskState>> getValidTransitions() {

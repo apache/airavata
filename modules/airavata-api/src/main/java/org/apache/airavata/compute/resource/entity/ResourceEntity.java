@@ -22,6 +22,8 @@ package org.apache.airavata.compute.resource.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -30,6 +32,7 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 import org.apache.airavata.compute.resource.model.ResourceCapabilities;
+import org.apache.airavata.compute.resource.model.ResourceType;
 import org.apache.airavata.gateway.entity.GatewayEntity;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -43,8 +46,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * <p>A resource corresponds to a physical or virtual host that Airavata can submit
  * jobs to or transfer data from/to. The {@code capabilities} JSON field captures
  * the set of supported job submission and data movement protocols as a structured object.
- * The {@code resourceType} field classifies the resource (e.g., {@code "COMPUTE"} or
- * {@code "STORAGE"}).
+ * The {@code resourceType} field classifies the resource as either
+ * {@link ResourceType#COMPUTE} or {@link ResourceType#STORAGE}.
  */
 @Entity
 @Table(name = "resource")
@@ -71,8 +74,9 @@ public class ResourceEntity implements Serializable {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", nullable = false, length = 20)
-    private String resourceType = "COMPUTE";
+    private ResourceType resourceType = ResourceType.COMPUTE;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "capabilities", nullable = false, columnDefinition = "json")
@@ -140,11 +144,11 @@ public class ResourceEntity implements Serializable {
         this.description = description;
     }
 
-    public String getResourceType() {
+    public ResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(String resourceType) {
+    public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

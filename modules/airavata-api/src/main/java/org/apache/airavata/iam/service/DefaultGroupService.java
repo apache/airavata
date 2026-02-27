@@ -288,13 +288,13 @@ public class DefaultGroupService implements GroupService {
                             userId);
                     // Create a minimal user entry with just the userId to allow group membership
                     user.setUserName(userId.split("@")[0]); // Extract username from airavataInternalUserId
-                    user.setCreatedTime(IdGenerator.getUniqueTimestamp().getTime());
+                    user.setCreatedTime(IdGenerator.getUniqueTimestamp().toEpochMilli());
                     user.setEmail(null);
                     user.setFirstName(null);
                     user.setLastName(null);
                 } else {
                     user.setUserName(userProfile.getUserId());
-                    user.setCreatedTime(userProfile.getCreationTime());
+                    user.setCreatedTime(userProfile.getCreatedAt());
                     user.setEmail(
                             userProfile.getEmails() != null
                                             && userProfile.getEmails().size() > 0

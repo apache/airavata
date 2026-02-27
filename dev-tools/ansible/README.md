@@ -17,16 +17,11 @@ flowchart TB
         Portals["(Optional) Portals"]
     end
 
-    subgraph Server["Airavata API Server (Spring Boot)"]
-        REST["REST API (8090)"]
+    subgraph Server["Airavata API Server (single Spring Boot JVM)"]
+        REST["REST API + File API (8090)"]
         HTTPS["HTTPS via HAProxy (443)"]
-        Orch["Orchestrator (internal)"]
-        Reg["Registry (internal)"]
-        Profile["Profile Service (internal)"]
-        Sharing["Sharing Registry (internal)"]
-        Cred["Credential Store (internal)"]
-        WF["Workflow Managers"]
-        Exec["Task Executors"]
+        gRPC["gRPC Agent Streams (9090)"]
+        Internal["Orchestrator, Execution,<br/>Research, IAM, Credentials"]
     end
 
     MariaDB --> Server
@@ -64,7 +59,7 @@ These versions match the current codebase configuration:
 
 - **Java**: 25 (OpenJDK) - configured in `pom.xml` (`maven-compiler-plugin` release 25)
 - **Keycloak**: 26.5 (Quarkus-based) - matches `.devcontainer/compose.yml`
-- **MariaDB**: 11.8 LTS - matches `.devcontainer/compose.yml`
+- **MariaDB**: 11.7 - matches `.devcontainer/compose.yml`
 - **Temporal**: latest - matches `.devcontainer/compose.yml` (temporalio/admin-tools)
 - **Maven**: 3.9.6 - configured in Ansible variables
 

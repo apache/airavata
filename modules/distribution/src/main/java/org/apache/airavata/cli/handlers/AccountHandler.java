@@ -48,7 +48,7 @@ public class AccountHandler {
             // Check if any users already exist in the gateway (only one root user allowed)
             List<String> existingUsers = userService.getAllUsernamesInGateway(gatewayId);
             if (existingUsers != null && !existingUsers.isEmpty()) {
-                throw new RuntimeException("Root user already exists. Only one root user is allowed. "
+                throw new IllegalStateException("Root user already exists. Only one root user is allowed. "
                         + "Existing users in gateway: " + existingUsers.size());
             }
 
@@ -65,7 +65,7 @@ public class AccountHandler {
             sharingUser.setUserId(sharingUserId);
             sharingUser.setDomainId(gatewayId);
             sharingUser.setUserName(username);
-            long currentTime = IdGenerator.getUniqueTimestamp().getTime();
+            long currentTime = IdGenerator.getUniqueTimestamp().toEpochMilli();
             sharingUser.setCreatedTime(currentTime);
             sharingUser.setUpdatedTime(currentTime);
             sharingService.createUser(sharingUser);
@@ -75,9 +75,9 @@ public class AccountHandler {
             System.out.println(
                     "Note: Password has been stored. Authentication method depends on configured user store.");
         } catch (RegistryException e) {
-            throw new RuntimeException("Failed to create user: " + e.getMessage(), e);
+            throw new IllegalStateException("Failed to create user: " + e.getMessage(), e);
         } catch (SharingRegistryException e) {
-            throw new RuntimeException("Failed to create user in sharing registry: " + e.getMessage(), e);
+            throw new IllegalStateException("Failed to create user in sharing registry: " + e.getMessage(), e);
         }
     }
 }

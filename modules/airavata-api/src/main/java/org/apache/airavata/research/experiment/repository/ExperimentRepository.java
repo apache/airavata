@@ -38,7 +38,7 @@ import org.springframework.stereotype.Repository;
  * to express the ORDER BY clause, which cannot be derived from the method name alone when
  * combined with a single-field predicate in Spring Data JPA method naming.
  */
-@Repository("experimentRepository")
+@Repository
 public interface ExperimentRepository extends JpaRepository<ExperimentEntity, String> {
 
     /**

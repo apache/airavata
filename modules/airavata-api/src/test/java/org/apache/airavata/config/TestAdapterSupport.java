@@ -22,9 +22,7 @@ package org.apache.airavata.config;
 import org.apache.airavata.compute.resource.model.JobSubmissionProtocol;
 import org.apache.airavata.protocol.AdapterSupport;
 import org.apache.airavata.protocol.AgentAdapter;
-import org.apache.airavata.protocol.AgentException;
-import org.apache.airavata.protocol.StorageResourceAdapter;
-import org.apache.airavata.storage.resource.model.DataMovementProtocol;
+import org.apache.airavata.protocol.AgentAdapter.AgentException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -39,26 +37,18 @@ public class TestAdapterSupport implements AdapterSupport {
     @Override
     public AgentAdapter fetchAdapter(
             String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId)
-            throws Exception {
-        throw new UnsupportedOperationException("AdapterSupport is not available in test profile");
-    }
-
-    @Override
-    public StorageResourceAdapter fetchStorageAdapter(
-            String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId)
             throws AgentException {
         throw new UnsupportedOperationException("AdapterSupport is not available in test profile");
     }
 
     @Override
-    public AgentAdapter fetchComputeSSHAdapter(
-            String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
+    public AgentAdapter fetchStorageAdapter(String gatewayId, String storageResourceId, String authToken, String userId)
             throws AgentException {
         throw new UnsupportedOperationException("AdapterSupport is not available in test profile");
     }
 
     @Override
-    public StorageResourceAdapter fetchStorageSSHAdapter(
+    public AgentAdapter fetchSSHAdapter(
             String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)
             throws AgentException {
         throw new UnsupportedOperationException("AdapterSupport is not available in test profile");

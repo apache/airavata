@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.status.mapper;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import org.apache.airavata.core.model.StatusModel;
 import org.apache.airavata.core.util.EnumUtil;
@@ -44,7 +44,7 @@ public class StatusMapper {
         status.setState(mapToState(entity.getState(), stateClass));
         status.setReason(entity.getReason());
         status.setTimeOfStateChange(
-                entity.getEventTime() != null ? entity.getEventTime().getTime() : 0L);
+                entity.getEventTime() != null ? entity.getEventTime().toEpochMilli() : 0L);
         return status;
     }
 
@@ -62,11 +62,11 @@ public class StatusMapper {
         return EnumUtil.safeValueOf(enumClass, state);
     }
 
-    public long mapTimestampToLong(Timestamp timestamp) {
-        return timestamp != null ? timestamp.getTime() : 0L;
+    public long mapInstantToLong(Instant instant) {
+        return instant != null ? instant.toEpochMilli() : 0L;
     }
 
-    public Timestamp mapLongToTimestamp(long time) {
-        return time > 0 ? new Timestamp(time) : null;
+    public Instant mapLongToInstant(long time) {
+        return time > 0 ? Instant.ofEpochMilli(time) : null;
     }
 }

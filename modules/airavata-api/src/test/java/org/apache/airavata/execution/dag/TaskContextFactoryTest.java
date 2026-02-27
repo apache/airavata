@@ -28,10 +28,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import org.apache.airavata.compute.resource.service.ResourceService;
-import org.apache.airavata.execution.entity.ProcessEntity;
-import org.apache.airavata.execution.repository.ProcessRepository;
-import org.apache.airavata.execution.task.TaskContext;
+import org.apache.airavata.execution.process.ProcessEntity;
+import org.apache.airavata.execution.process.ProcessMapper;
+import org.apache.airavata.execution.process.ProcessRepository;
 import org.apache.airavata.research.experiment.entity.ExperimentEntity;
+import org.apache.airavata.research.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.research.experiment.repository.ExperimentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  *   <li>Exception propagation when the process record is absent</li>
  *   <li>Exception propagation when the experiment record is absent</li>
  *   <li>Field-level mapping fidelity for {@code ProcessModel}</li>
- *   <li>Field-level mapping fidelity for {@code ExperimentModel}</li>
+ *   <li>Field-level mapping fidelity for {@code Experiment}</li>
  *   <li>Presence of the experiment model on the returned context</li>
  * </ul>
  */
@@ -88,7 +89,8 @@ public class TaskContextFactoryTest {
 
     @BeforeEach
     public void setUp() {
-        factory = new TaskContextFactory(processRepository, experimentRepository, resourceService);
+        factory = new TaskContextFactory(
+                processRepository, experimentRepository, resourceService, new ProcessMapper(), new ExperimentMapper());
     }
 
     // -------------------------------------------------------------------------
@@ -309,7 +311,7 @@ public class TaskContextFactoryTest {
     }
 
     // -------------------------------------------------------------------------
-    // 5. ExperimentModel field mapping — all entity fields propagate correctly
+    // 5. Experiment field mapping — all entity fields propagate correctly
     // -------------------------------------------------------------------------
 
     @Test
@@ -321,8 +323,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 EXPERIMENT_ID,
-                context.getExperimentModel().getExperimentId(),
-                "ExperimentModel.experimentId must be mapped from ExperimentEntity.getExperimentId()");
+                context.getExperiment().getExperimentId(),
+                "Experiment.experimentId must be mapped from ExperimentEntity.getExperimentId()");
     }
 
     @Test
@@ -334,8 +336,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 EXP_NAME,
-                context.getExperimentModel().getExperimentName(),
-                "ExperimentModel.experimentName must be mapped from ExperimentEntity.getExperimentName()");
+                context.getExperiment().getExperimentName(),
+                "Experiment.experimentName must be mapped from ExperimentEntity.getExperimentName()");
     }
 
     @Test
@@ -347,8 +349,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 PROJECT_ID,
-                context.getExperimentModel().getProjectId(),
-                "ExperimentModel.projectId must be mapped from ExperimentEntity.getProjectId()");
+                context.getExperiment().getProjectId(),
+                "Experiment.projectId must be mapped from ExperimentEntity.getProjectId()");
     }
 
     @Test
@@ -360,8 +362,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 GATEWAY_ID,
-                context.getExperimentModel().getGatewayId(),
-                "ExperimentModel.gatewayId must be mapped from ExperimentEntity.getGatewayId()");
+                context.getExperiment().getGatewayId(),
+                "Experiment.gatewayId must be mapped from ExperimentEntity.getGatewayId()");
     }
 
     @Test
@@ -373,8 +375,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 USER_NAME,
-                context.getExperimentModel().getUserName(),
-                "ExperimentModel.userName must be mapped from ExperimentEntity.getUserName()");
+                context.getExperiment().getUserName(),
+                "Experiment.userName must be mapped from ExperimentEntity.getUserName()");
     }
 
     @Test
@@ -386,8 +388,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 DESCRIPTION,
-                context.getExperimentModel().getDescription(),
-                "ExperimentModel.description must be mapped from ExperimentEntity.getDescription()");
+                context.getExperiment().getDescription(),
+                "Experiment.description must be mapped from ExperimentEntity.getDescription()");
     }
 
     @Test
@@ -399,8 +401,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 EXP_APP_ID,
-                context.getExperimentModel().getApplicationId(),
-                "ExperimentModel.applicationId must be mapped from ExperimentEntity.getApplicationId()");
+                context.getExperiment().getApplicationId(),
+                "Experiment.applicationId must be mapped from ExperimentEntity.getApplicationId()");
     }
 
     @Test
@@ -412,8 +414,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 EXP_BINDING_ID,
-                context.getExperimentModel().getBindingId(),
-                "ExperimentModel.bindingId must be mapped from ExperimentEntity.getBindingId()");
+                context.getExperiment().getBindingId(),
+                "Experiment.bindingId must be mapped from ExperimentEntity.getBindingId()");
     }
 
     @Test
@@ -423,18 +425,18 @@ public class TaskContextFactoryTest {
 
         TaskContext context = factory.buildContext(PROCESS_ID, GATEWAY_ID, TASK_ID);
 
-        assertEquals(EXPERIMENT_ID, context.getExperimentModel().getExperimentId(), "experimentId mismatch");
-        assertEquals(EXP_NAME, context.getExperimentModel().getExperimentName(), "experimentName mismatch");
-        assertEquals(PROJECT_ID, context.getExperimentModel().getProjectId(), "projectId mismatch");
-        assertEquals(GATEWAY_ID, context.getExperimentModel().getGatewayId(), "gatewayId mismatch");
-        assertEquals(USER_NAME, context.getExperimentModel().getUserName(), "userName mismatch");
-        assertEquals(DESCRIPTION, context.getExperimentModel().getDescription(), "description mismatch");
-        assertEquals(EXP_APP_ID, context.getExperimentModel().getApplicationId(), "applicationId mismatch");
-        assertEquals(EXP_BINDING_ID, context.getExperimentModel().getBindingId(), "bindingId mismatch");
+        assertEquals(EXPERIMENT_ID, context.getExperiment().getExperimentId(), "experimentId mismatch");
+        assertEquals(EXP_NAME, context.getExperiment().getExperimentName(), "experimentName mismatch");
+        assertEquals(PROJECT_ID, context.getExperiment().getProjectId(), "projectId mismatch");
+        assertEquals(GATEWAY_ID, context.getExperiment().getGatewayId(), "gatewayId mismatch");
+        assertEquals(USER_NAME, context.getExperiment().getUserName(), "userName mismatch");
+        assertEquals(DESCRIPTION, context.getExperiment().getDescription(), "description mismatch");
+        assertEquals(EXP_APP_ID, context.getExperiment().getApplicationId(), "applicationId mismatch");
+        assertEquals(EXP_BINDING_ID, context.getExperiment().getBindingId(), "bindingId mismatch");
     }
 
     // -------------------------------------------------------------------------
-    // 6. ExperimentModel is set on the returned TaskContext
+    // 6. Experiment is set on the returned TaskContext
     // -------------------------------------------------------------------------
 
     @Test
@@ -444,7 +446,7 @@ public class TaskContextFactoryTest {
 
         TaskContext context = factory.buildContext(PROCESS_ID, GATEWAY_ID, TASK_ID);
 
-        assertNotNull(context.getExperimentModel(), "context.getExperimentModel() must not be null after buildContext");
+        assertNotNull(context.getExperiment(), "context.getExperiment() must not be null after buildContext");
     }
 
     @Test
@@ -456,8 +458,8 @@ public class TaskContextFactoryTest {
 
         assertEquals(
                 context.getProcessModel().getExperimentId(),
-                context.getExperimentModel().getExperimentId(),
-                "ExperimentModel.experimentId must match ProcessModel.experimentId, "
+                context.getExperiment().getExperimentId(),
+                "Experiment.experimentId must match ProcessModel.experimentId, "
                         + "confirming the experiment was looked up with the correct key");
     }
 

@@ -22,7 +22,6 @@ package org.apache.airavata.restapi.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Map;
 import org.apache.airavata.config.ServerProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,14 +36,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "System")
 public class SystemController {
 
-    @Autowired
-    private ServerProperties properties;
+    private final ServerProperties properties;
 
     @Value("${airavata.portal.assume-root-when-no-gateways:false}")
     private boolean assumeRootWhenNoGateways;
 
     @Value("${airavata.portal.app-version:}")
     private String appVersion;
+
+    public SystemController(ServerProperties properties) {
+        this.properties = properties;
+    }
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> health() {

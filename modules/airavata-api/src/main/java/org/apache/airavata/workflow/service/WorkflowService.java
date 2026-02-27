@@ -22,6 +22,7 @@ package org.apache.airavata.workflow.service;
 import java.util.List;
 import org.apache.airavata.workflow.model.Workflow;
 import org.apache.airavata.workflow.model.WorkflowRun;
+import org.apache.airavata.workflow.model.WorkflowRunStatus;
 
 /**
  * Service contract for managing workflows and their execution runs.
@@ -46,7 +47,7 @@ public interface WorkflowService {
 
     List<WorkflowRun> getRunsByWorkflow(String workflowId);
 
-    WorkflowRun updateRunStepState(String runId, String stepId, String experimentId, String status);
+    WorkflowRun updateRunStepState(String runId, String stepId, String experimentId, WorkflowRunStatus status);
 
-    WorkflowRun updateRunStatus(String runId, String status);
+    WorkflowRun updateRunStatus(String runId, WorkflowRunStatus status);
 }

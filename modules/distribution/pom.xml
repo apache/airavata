@@ -21,9 +21,9 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>build-parent</artifactId>
+        <artifactId>airavata</artifactId>
         <version>0.21-SNAPSHOT</version>
-        <relativePath>../build-parent/pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>distribution</artifactId>
     <name>Airavata Distribution</name>
@@ -60,7 +60,7 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>agent-service</artifactId>
+            <artifactId>grpc-api</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -77,17 +77,6 @@ under the License.
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>rest-api</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>file-server</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
