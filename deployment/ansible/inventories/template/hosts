@@ -1,0 +1,15 @@
+---
+[database]
+CHANGEME
+
+[apiserver]
+CHANGEME
+
+[keycloak]
+CHANGEME
+
+[temporal]
+CHANGEME
+
+[portal]
+CHANGEME

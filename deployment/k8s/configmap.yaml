@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airavata-config
+  namespace: airavata
+  labels:
+    app.kubernetes.io/part-of: airavata
+    app.kubernetes.io/component: config
+data:
+  # ---- Service hostnames (in-cluster DNS) ----
+  MARIADB_HOST: "mariadb.airavata.svc.cluster.local"
+  MARIADB_PORT: "3306"
+  MARIADB_DATABASE: "airavata"
+
+  KEYCLOAK_HOST: "keycloak.airavata.svc.cluster.local"
+  KEYCLOAK_PORT: "8080"
+
+  TEMPORAL_HOST: "temporal.airavata.svc.cluster.local"
+  TEMPORAL_PORT: "7233"
+
+  APISERVER_HOST: "apiserver.airavata.svc.cluster.local"
+  APISERVER_REST_PORT: "8090"
+  APISERVER_GRPC_PORT: "9090"
+
+  PORTAL_HOST: "portal.airavata.svc.cluster.local"
+  PORTAL_PORT: "3000"
+
+  # ---- Public URLs (subdomain-based) ----
+  # airavata.localhost          — portal
+  # api.airavata.localhost      — REST API + Swagger
+  # auth.airavata.localhost     — Keycloak
+  # temporal.airavata.localhost — Temporal UI
+  # grpc.airavata.localhost     — gRPC
+  # db.airavata.localhost       — not exposed (use port-forward)
+  PUBLIC_BASE_URL: "http://airavata.localhost"
+  API_URL: "http://api.airavata.localhost"
+  NEXTAUTH_URL: "http://airavata.localhost"
+  KEYCLOAK_ISSUER_URL: "http://auth.airavata.localhost/realms/default"
+
+  # ---- API server Spring profile ----
+  SPRING_PROFILES_ACTIVE: "kubernetes"
+
+  # ---- Keycloak container config ----
+  KC_DB: "mariadb"
+  KC_DB_URL: "jdbc:mariadb://mariadb.airavata.svc.cluster.local:3306/keycloak?useSSL=false&allowPublicKeyRetrieval=true"
+  KC_DB_USERNAME: "keycloak"
+  KC_HOSTNAME: "auth.airavata.localhost"
+  KC_HTTP_ENABLED: "true"
+  KC_PROXY: "edge"

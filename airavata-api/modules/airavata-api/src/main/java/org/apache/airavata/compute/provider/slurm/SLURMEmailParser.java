@@ -1,0 +1,97 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.compute.provider.slurm;
+
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import java.util.regex.Pattern;
+import org.apache.airavata.compute.resource.model.JobState;
+import org.apache.airavata.compute.resource.service.JobService;
+import org.apache.airavata.core.exception.CoreExceptions.AiravataException;
+import org.apache.airavata.execution.monitoring.JobStatusResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+@Component
+@Profile("!test")
+@ConditionalOnProperty(prefix = "airavata.services.monitor.email", name = "enabled", havingValue = "true")
+public class SLURMEmailParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(SLURMEmailParser.class);
+
+    static final String STATUS = "status";
+    static final String JOBID = "jobId";
+    static final String JOBNAME = "jobName";
+    static final String EXIT_STATUS = "exitStatus";
+
+    private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID + ">\\d*)[ ]*[a-zA-Z]*=(?<" + JOBNAME
+            + ">[a-zA-Z0-9-]*)[ ]*(?<" + STATUS + ">[]a-zA-Z ]*),.*";
+
+    public static final String BEGAN = "Began";
+    public static final String STAGE_OUT = "Staged Out";
+    public static final String ENDED = "Ended";
+    public static final String FAILED = "Failed";
+    private static final Pattern cancelledStatePattern = Pattern.compile("CANCELLED");
+    private static final Pattern pattern = Pattern.compile(REGEX);
+
+    public JobStatusResult parseEmail(Message message, JobService jobService)
+            throws MessagingException, AiravataException {
+        return parseSubject(message.getSubject());
+    }
+
+    private JobStatusResult parseSubject(String subject) throws MessagingException {
+        var matcher = pattern.matcher(subject);
+        if (matcher.find()) {
+            String jobId = matcher.group(JOBID);
+            String jobName = matcher.group(JOBNAME);
+            JobState state = getJobState(matcher.group(STATUS), subject);
+            return new JobStatusResult(state, jobId, jobName);
+        } else {
+            logger.error("[EJM]: No matched found for subject -> {}", subject);
+            return null;
+        }
+    }
+
+    private JobState getJobState(String state, String subject) {
+        switch (state.trim()) {
+            case BEGAN:
+            case STAGE_OUT:
+                return JobState.ACTIVE;
+            case ENDED:
+                var matcher = cancelledStatePattern.matcher(subject);
+                if (matcher.find()) {
+                    return JobState.CANCELED;
+                }
+                return JobState.COMPLETED;
+            case FAILED:
+                if (subject.contains("NODE_FAIL")) {
+                    return JobState.NON_CRITICAL_FAIL;
+                } else {
+                    return JobState.FAILED;
+                }
+            default:
+                logger.error("[EJM]: Job State {} isn't handle by SLURM parser", state);
+                return JobState.UNKNOWN;
+        }
+    }
+}

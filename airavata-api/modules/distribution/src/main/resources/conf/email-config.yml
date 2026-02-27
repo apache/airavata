@@ -1,0 +1,8 @@
+config:
+ resources:
+   - jobManagerType: SLURM
+     emailParser: org.apache.airavata.monitor.email.SLURMEmailParser
+     resourceEmailAddresses:
+       - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
+       - slurm@batch1.stampede.tacc.utexas.edu # stampede
+       - slurm@helix-slurm-headnode.novalocal

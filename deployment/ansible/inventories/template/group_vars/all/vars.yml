@@ -1,0 +1,109 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+ansible_connection: ssh
+ansible_user: root
+
+user: airavata
+group: airavata
+user_home: "/home/{{ user }}"
+
+deployment_dir: "{{ user_home }}/deployment"
+airavata_source_dir: "{{ user_home }}/source"
+airavata_repo: "https://github.com/apache/airavata.git"
+airavata_dist: "apache-airavata-server-0.21-SNAPSHOT"
+airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
+git_branch: master
+
+db_server: "{{ groups['database'][0] }}"
+db_server_port: "3306"
+db_user: "airavata"
+db_password: "CHANGEME"
+mysql_root_password: "CHANGEME"
+db_name: "airavata"
+
+api_server_host: "{{ groups['apiserver'][0] }}"
+api_server_port: "8090"
+tls_enable: "true"
+enable_sharing: "true"
+
+apiserver_dir: "{{ deployment_dir }}/apiserver"
+apiserver_log_dir: "{{ apiserver_dir }}/{{ airavata_dist }}/conf/logs"
+
+default_gateway: "default"
+
+keystore_src_path: "{{ inventory_dir }}/files/airavata.p12"
+keystore_passwd: "CHANGEME"
+cred_keystore_src_path: "{{ inventory_dir }}/files/airavata.p12"
+cred_keystore_passwd: "CHANGEME"
+cred_keystore_alias: "airavata"
+keystores_location: "{{ apiserver_dir }}/{{ airavata_dist }}/conf/keystores"
+
+iam_server_url: "https://{{ groups['keycloak'][0] }}:8443"
+iam_server_super_admin_username: "CHANGEME"
+iam_server_super_admin_password: "CHANGEME"
+iam_oauth_client_id: "pga"
+iam_oauth_client_secret: ""
+
+keycloak_db_host: "{{ groups['database'][0] }}"
+keycloak_db_username: "keycloak"
+keycloak_db_password: "CHANGEME"
+keycloak_master_account_username: "CHANGEME"
+keycloak_master_account_password: "CHANGEME"
+
+letsencrypt_email: "CHANGEME"
+api_server_public_hostname: "CHANGEME"
+
+mariadb_connector_jar_url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/3.5.4/mariadb-java-client-3.5.4.jar"
+
+apache_maven_version: "apache-maven-3.9.6"
+apache_maven_url: "https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz"
+
+haproxy_config_dir:
+  CentOS_7: "/etc/haproxy18"
+  Rocky_8: "/etc/haproxy"
+  Ubuntu: "/etc/haproxy"
+haproxy_service_name:
+  CentOS_7: "haproxy18"
+  Rocky_8: "haproxy"
+  Ubuntu: "haproxy"
+
+monitor_email_address: ""
+monitor_email_password: ""
+
+# Temporal settings
+temporal_version: "1.1.1"
+temporal_port: 7233
+temporal_ui_port: 8233
+spring_temporal_target: "{{ groups['temporal'][0] }}:{{ temporal_port }}"
+
+# Portal settings
+portal_repo: "https://github.com/apache/airavata.git"
+portal_repo_subdir: "airavata-portal"
+portal_port: 3000
+portal_hostname: "CHANGEME"
+portal_nextauth_url: "https://{{ portal_hostname }}"
+portal_keycloak_client_id_value: "pga"
+portal_keycloak_client_secret_value: "CHANGEME"
+portal_nextauth_secret_value: "CHANGEME"
+
+# Agent binary path (populated by apiserver role during deploy)
+agent_binary_path: "{{ apiserver_dir }}/{{ airavata_dist }}/bin/airavata-agent"

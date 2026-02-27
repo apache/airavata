@@ -1,0 +1,133 @@
+{
+  "realm": "default",
+  "enabled": true,
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "sslRequired": "external",
+  "accessTokenLifespan": 7200,
+  "ssoSessionIdleTimeout": 604800,
+  "ssoSessionMaxLifespan": 604800,
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "admin-read-only",
+        "description": "Read-only admin role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "gateway-user",
+        "description": "Gateway user role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "gateway-provider",
+        "description": "Gateway provider role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "user-pending",
+        "description": "Pending user role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "offline_access",
+        "description": "Offline access role",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "uma_authorization",
+        "description": "UMA authorization role",
+        "composite": false,
+        "clientRole": false
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "pga",
+      "name": "Airavata Portal Client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "m36BXQIxX3j3VILadeHMK5IvbOeRlCCc",
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:3000/api/auth/callback/keycloak",
+        "http://localhost:3000/login",
+        "http://localhost:8008/callback*",
+        "https://localhost:8009/auth/callback*",
+        "*"
+      ],
+      "webOrigins": ["*"],
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "true",
+        "post.logout.redirect.uris": "+"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "default-admin",
+      "email": "default-admin@default",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin", "gateway-provider", "offline_access", "uma_authorization"],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "manage-clients",
+          "view-clients",
+          "query-clients",
+          "manage-realm",
+          "view-realm"
+        ]
+      }
+    },
+    {
+      "username": "service-account-pga",
+      "enabled": true,
+      "serviceAccountClientId": "pga",
+      "realmRoles": ["offline_access", "uma_authorization"],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "manage-clients",
+          "view-clients",
+          "query-clients"
+        ]
+      }
+    }
+  ]
+}

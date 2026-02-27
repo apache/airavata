@@ -1,0 +1,192 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: portal
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: airavata
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: portal
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: portal
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/part-of: airavata
+    spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        # Ensure the API server is accepting requests before the portal starts.
+        - name: wait-for-apiserver
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              until nc -z "${APISERVER_HOST}" "${APISERVER_PORT}"; do
+                echo "Waiting for API server..."; sleep 5;
+              done
+              echo "API server is ready."
+          env:
+            - name: APISERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: APISERVER_HOST
+            - name: APISERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: APISERVER_REST_PORT
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+      containers:
+        - name: portal
+          image: apache/airavata-portal:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            # ---- API back-end ----
+            # NEXT_PUBLIC_ prefix makes this available in the browser bundle.
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: API_URL
+            # Internal (server-side) API URL used by Next.js API routes.
+            - name: INTERNAL_API_URL
+              value: "http://apiserver.airavata.svc.cluster.local:8090"
+            # ---- NextAuth ----
+            - name: NEXTAUTH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: NEXTAUTH_URL
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: portal-secret
+                  key: NEXTAUTH_SECRET
+            # ---- Keycloak OIDC provider ----
+            - name: KEYCLOAK_ISSUER
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: KEYCLOAK_ISSUER_URL
+            - name: KEYCLOAK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: portal-secret
+                  key: KEYCLOAK_CLIENT_ID
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: portal-secret
+                  key: KEYCLOAK_CLIENT_SECRET
+            # ---- Node.js ----
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+---
+# HorizontalPodAutoscaler for the portal.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: portal
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: portal
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: airavata
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: portal
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+# PodDisruptionBudget — keeps at least one portal pod running during node drains.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: portal
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: portal
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: airavata
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: portal
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: portal
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: airavata
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: portal

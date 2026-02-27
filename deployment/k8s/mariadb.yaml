@@ -1,0 +1,196 @@
+---
+# StorageClass reference: uses the cluster default.
+# Override by adding storageClassName to the PVC if needed.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-data
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: airavata
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+# InitJob: creates the keycloak database/user and grants airavata privileges.
+# Canonical SQL lives in conf/init-db/01-create-databases.sql (used by docker-compose).
+# K8s inlines the SQL here because Secrets must be interpolated at runtime.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mariadb-init
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/component: database-init
+    app.kubernetes.io/part-of: airavata
+  annotations:
+    # Re-run this job manually after changing passwords:
+    #   kubectl delete job mariadb-init -n airavata && kubectl apply -f mariadb.yaml
+    helm.sh/hook: post-install
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 5
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mariadb-init
+        app.kubernetes.io/part-of: airavata
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init-db
+          image: mariadb:11.7
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              until mariadb -h "${MARIADB_HOST}" -uroot -p"${MYSQL_ROOT_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1; do
+                echo "Waiting for MariaDB to be ready..."; sleep 3;
+              done
+              mariadb -h "${MARIADB_HOST}" -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
+                CREATE DATABASE IF NOT EXISTS keycloak CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+                CREATE USER IF NOT EXISTS 'keycloak'@'%' IDENTIFIED BY '${KC_DB_PASSWORD}';
+                GRANT ALL PRIVILEGES ON keycloak.* TO 'keycloak'@'%';
+                GRANT ALL PRIVILEGES ON airavata.* TO 'airavata'@'%';
+                FLUSH PRIVILEGES;
+              SQL
+              echo "Database initialisation complete."
+          env:
+            - name: MARIADB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: MARIADB_HOST
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: MYSQL_ROOT_PASSWORD
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: KC_DB_PASSWORD
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: airavata
+spec:
+  serviceName: mariadb
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mariadb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mariadb
+        app.kubernetes.io/component: database
+        app.kubernetes.io/part-of: airavata
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: mariadb
+          image: mariadb:11.7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: MARIADB_DATABASE
+            - name: MYSQL_USER
+              value: airavata
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: MYSQL_PASSWORD
+          args:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+            - --sql-mode=NO_ENGINE_SUBSTITUTION
+            - --max-connections=300
+            - --innodb-buffer-pool-size=512M
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - mariadb-admin ping -uroot -p"${MYSQL_ROOT_PASSWORD}"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - mariadb-admin ping -uroot -p"${MYSQL_ROOT_PASSWORD}"
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: airavata
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless — StatefulSet pods addressed directly
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: mariadb

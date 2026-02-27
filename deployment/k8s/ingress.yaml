@@ -1,0 +1,120 @@
+---
+# Ingress for local development using *.airavata.localhost subdomains.
+#
+# Prerequisites:
+#   1. An Ingress controller must be installed in the cluster.
+#      For local clusters (kind / minikube / k3s):
+#
+#        kind:
+#          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+#
+#        minikube:
+#          minikube addons enable ingress
+#
+#        k3s:
+#          Traefik is bundled; change ingressClassName to "traefik" and adjust
+#          the annotations accordingly.
+#
+#   2. Add the following entries to /etc/hosts (or use a local DNS resolver):
+#        127.0.0.1  airavata.localhost api.airavata.localhost auth.airavata.localhost temporal.airavata.localhost grpc.airavata.localhost
+#
+# Subdomain routing:
+#   airavata.localhost          → portal (port 3000)   — Next.js web interface
+#   api.airavata.localhost      → apiserver (port 8090) — Spring Boot REST API
+#   auth.airavata.localhost     → keycloak (port 8080)  — Keycloak identity provider
+#   temporal.airavata.localhost → temporal UI (port 8233)
+#   grpc.airavata.localhost     → apiserver gRPC (port 9090)
+#
+# MariaDB (db.airavata.localhost) is not exposed via Ingress — use port-forward
+# or a NodePort service for direct DB access during development.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: airavata
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: airavata-ingress
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: airavata
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+    nginx.ingress.kubernetes.io/preserve-host: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    # Portal — main entry point
+    - host: airavata.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portal
+                port:
+                  name: http
+    # API server — REST API and Swagger UI
+    - host: api.airavata.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: apiserver
+                port:
+                  name: http
+    # Keycloak — identity provider
+    - host: auth.airavata.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  name: http
+    # Temporal UI
+    - host: temporal.airavata.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: temporal
+                port:
+                  name: ui
+---
+# Separate Ingress for gRPC (requires HTTP/2 end-to-end).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: airavata-grpc
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: airavata-grpc-ingress
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: airavata
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    nginx.ingress.kubernetes.io/grpc-backend: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grpc.airavata.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: apiserver
+                port:
+                  name: grpc

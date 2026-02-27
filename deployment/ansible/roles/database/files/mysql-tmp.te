@@ -1,0 +1,12 @@
+module mysql-tmp 1.0;
+
+require {
+        type tmp_t;
+        type mysqld_t;
+        class file { create write setattr unlink };
+        class dir { write add_name };
+}
+
+#============= mysqld_t ==============
+allow mysqld_t tmp_t:file { create write setattr unlink };
+allow mysqld_t tmp_t:dir { write add_name };

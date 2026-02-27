@@ -1,0 +1,16 @@
+.git
+.github
+.gitignore
+.claude
+.DS_Store
+*.md
+*.test
+*.prof
+vendor/
+protos/
+application/
+jupyter/
+__pycache__/
+*.pyc
+*.egg-info
+*.sif
