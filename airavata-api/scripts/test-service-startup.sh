@@ -23,7 +23,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-API_MODULE="${PROJECT_ROOT}/airavata-api"
+API_MODULE="${PROJECT_ROOT}/modules/airavata-api"
 
 # Colors for output
 RED='\033[0;31m'
@@ -156,7 +156,7 @@ mkdir -p "${REPORT_DIR}"
 # Function to run tests
 run_tests() {
     local test_class="$1"
-    local mvn_args="-pl airavata-api"
+    local mvn_args="-pl modules/airavata-api"
     
     if [ "$VERBOSE" = true ]; then
         mvn_args="${mvn_args} -X"

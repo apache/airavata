@@ -1,6 +1,6 @@
 # Scripts
 
-From project root:
+From `airavata-api/`:
 
 | Script | Purpose |
 |--------|---------|

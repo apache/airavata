@@ -20,15 +20,15 @@ ARG DIST_NAME=airavata-0.21-SNAPSHOT
 FROM eclipse-temurin:25-jre
 ARG DIST_NAME
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /opt
 
 COPY ${DIST_NAME}.tar.gz /opt/
 RUN tar -xzf /opt/${DIST_NAME}.tar.gz && \
     rm /opt/${DIST_NAME}.tar.gz && \
-    mv /opt/${DIST_NAME} /opt/apache-airavata
-
-COPY ./*.sh /opt/apache-airavata/
-RUN chmod +x /opt/apache-airavata/*.sh /opt/apache-airavata/bin/*.sh
+    mv /opt/${DIST_NAME} /opt/apache-airavata && \
+    chmod +x /opt/apache-airavata/bin/*.sh
 
 ENV AIRAVATA_HOME=/opt/apache-airavata
 

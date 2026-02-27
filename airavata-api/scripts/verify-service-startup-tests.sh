@@ -16,7 +16,7 @@ echo ""
 
 # Test 1: ServiceConfigurationBuilderTest
 echo "Running ServiceConfigurationBuilderTest..."
-if mvn test -pl airavata-api -Dtest="ServiceConfigurationBuilderTest" -DfailIfNoTests=false -Djacoco.skip=true > /tmp/test1.log 2>&1; then
+if mvn test -pl modules/airavata-api -Dtest="ServiceConfigurationBuilderTest" -DfailIfNoTests=false -Djacoco.skip=true > /tmp/test1.log 2>&1; then
     TESTS_RUN=$(grep "Tests run:" /tmp/test1.log | tail -1 | awk '{print $3}')
     FAILURES=$(grep "Tests run:" /tmp/test1.log | tail -1 | awk '{print $5}')
     ERRORS=$(grep "Tests run:" /tmp/test1.log | tail -1 | awk '{print $7}')
@@ -29,7 +29,7 @@ fi
 
 # Test 2: ServiceStatusVerifierTest
 echo "Running ServiceStatusVerifierTest..."
-if mvn test -pl airavata-api -Dtest="ServiceStatusVerifierTest" -DfailIfNoTests=false -Djacoco.skip=true > /tmp/test2.log 2>&1; then
+if mvn test -pl modules/airavata-api -Dtest="ServiceStatusVerifierTest" -DfailIfNoTests=false -Djacoco.skip=true > /tmp/test2.log 2>&1; then
     TESTS_RUN=$(grep "Tests run:" /tmp/test2.log | tail -1 | awk '{print $3}')
     FAILURES=$(grep "Tests run:" /tmp/test2.log | tail -1 | awk '{print $5}')
     ERRORS=$(grep "Tests run:" /tmp/test2.log | tail -1 | awk '{print $7}')
@@ -42,7 +42,7 @@ fi
 
 # Test 3: Both together
 echo "Running all unit tests together..."
-if mvn test -pl airavata-api -Dtest="ServiceConfigurationBuilderTest,ServiceStatusVerifierTest" -DfailIfNoTests=false -Djacoco.skip=true > /tmp/test3.log 2>&1; then
+if mvn test -pl modules/airavata-api -Dtest="ServiceConfigurationBuilderTest,ServiceStatusVerifierTest" -DfailIfNoTests=false -Djacoco.skip=true > /tmp/test3.log 2>&1; then
     TESTS_RUN=$(grep "Tests run:" /tmp/test3.log | tail -1 | awk '{print $3}')
     FAILURES=$(grep "Tests run:" /tmp/test3.log | tail -1 | awk '{print $5}')
     ERRORS=$(grep "Tests run:" /tmp/test3.log | tail -1 | awk '{print $7}')
