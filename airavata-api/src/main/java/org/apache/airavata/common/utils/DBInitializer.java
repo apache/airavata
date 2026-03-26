@@ -19,54 +19,16 @@
 */
 package org.apache.airavata.common.utils;
 
-import java.sql.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DBInitializer {
     private static final Logger logger = LoggerFactory.getLogger(DBInitializer.class);
 
-    private JDBCConfig jdbcConfig;
-    private String initScriptPrefix;
-    private String checkTableName;
-
-    public DBInitializer(JDBCConfig jdbcConfig, String initScriptPrefix, String checkTableName) {
-        this.jdbcConfig = jdbcConfig;
-        this.initScriptPrefix = initScriptPrefix;
-        this.checkTableName = checkTableName;
-    }
-
     public static void initializeDB(DBInitConfig dbInitConfig) {
-
-        JDBCConfig jdbcConfig = dbInitConfig.getJDBCConfig();
-        DBInitializer dbInitializer =
-                new DBInitializer(jdbcConfig, dbInitConfig.getDBInitScriptPrefix(), dbInitConfig.getCheckTableName());
-        dbInitializer.initializeDB();
+        logger.info(
+                "Database initialization is now handled by schema migrations. Skipping legacy DB init for: {}",
+                dbInitConfig.getDBInitScriptPrefix());
         dbInitConfig.postInit();
-    }
-
-    public void initializeDB() {
-        // Create connection
-        Connection conn = null;
-        try {
-            DBUtil dbUtil = new DBUtil(jdbcConfig);
-            conn = dbUtil.getConnection();
-            if (!DatabaseCreator.isDatabaseStructureCreated(checkTableName, conn)) {
-                DatabaseCreator.createRegistryDatabase(initScriptPrefix, conn);
-                logger.info("New Database created from " + initScriptPrefix + " !!!");
-            } else {
-                logger.info("Table " + checkTableName + " already exists. Skipping database init script "
-                        + initScriptPrefix);
-            }
-
-        } catch (Exception e) {
-            String message = "Failed to initialize database for " + initScriptPrefix;
-            logger.error(message, e);
-            throw new RuntimeException(message, e);
-        } finally {
-            if (conn != null) {
-                DBUtil.cleanup(conn);
-            }
-        }
     }
 }

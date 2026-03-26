@@ -41,7 +41,7 @@ keycloak_master_account_password: "CHANGEME"
 keycloak_java_home: "{{ java_home }}"
 
 keycloak_db_vendor: "mariadb"
-keycloak_db_host: "localhost"
+keycloak_db_host: "airavata.localhost"
 keycloak_db_port: "3306"
 keycloak_db_schema_name: "keycloak"
 keycloak_db_url: "jdbc:mysql://{{keycloak_db_host}}:{{keycloak_db_port}}/{{keycloak_db_schema_name}}"
@@ -63,8 +63,8 @@ keycloak_logout_url: "https://{{ keycloak_vhost_servername }}/"
 # PGA client configuration
 keycloak_pga_client_secret: "CHANGEME_PGA_CLIENT_SECRET"
 keycloak_pga_redirect_uris:
-  - "http://airavata.host:8008/callback*"
-  - "https://airavata.host:8009/auth/callback*"
+  - "http://airavata.localhost:8008/callback*"
+  - "https://airavata.localhost:8009/auth/callback*"
 keycloak_pga_web_origins:
   - "*"
 
@@ -73,7 +73,7 @@ keycloak_jupyterlab_client_secret: "CHANGEME_JUPYTERLAB_CLIENT_SECRET"
 keycloak_jupyterlab_redirect_uris:
   - ""
   - "/*"
-  - "http://airavata.host:20000/hub/oauth_callback"
+  - "http://airavata.localhost:20000/hub/oauth_callback"
 
 # CILogon identity provider configuration
 keycloak_cilogon_client_id: "CHANGEME_CILOGON_CLIENT_ID"

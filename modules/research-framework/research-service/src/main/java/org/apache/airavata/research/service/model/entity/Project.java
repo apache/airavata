@@ -40,7 +40,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity(name = "PROJECT")
+@Entity(name = "RESEARCH_PROJECT")
 @EntityListeners(AuditingEntityListener.class)
 public class Project {
 

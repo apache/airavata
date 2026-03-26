@@ -26,7 +26,7 @@ tusd_vhost_servername: "tus.simvascular.scigap.org"
 # configure user_data_dir and real_user_data_dir
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/home/www-shared/gateway-user-data"
-django_database_host_ip_address: "localhost"
+django_database_host_ip_address: "airavata.localhost"
 django_database_hosts:
   # Database is installed on the same host as the Django server
   - simvascular

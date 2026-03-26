@@ -277,7 +277,6 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
         }
     }
 
-
     private void deleteDirectoryRecursively(SFTPClientWrapper sftpClient, String path) throws IOException {
         FileAttributes lstat = sftpClient.lstat(path);
         if (lstat.getMode().getType() == Type.DIRECTORY) {

@@ -134,7 +134,7 @@ sleep 10
 # Stream all service logs to docker logs and keep container running
 echo "🚀 All Airavata services are running!"
 echo "📋 Service status:"
-echo "   - ZooKeeper: Connected (no more 'airavata.host' errors)"
+echo "   - ZooKeeper: Connected (no more 'airavata.localhost' errors)"
 echo "   - All components started successfully"
 echo ""
 echo "🔍 Streaming all logs to 'docker logs -f airavata-monolithic'"

@@ -44,6 +44,6 @@ log_retention_check_interval: "300000"
 grp_initial_rebalance_delay: "0"
 kafka_listener_port: 9092
 kafka_rest_proxy_listener_port: 8082
-zookeeper_connection_url: "{{ zookeeper_connection | default('localhost:2181') }}"
+zookeeper_connection_url: "{{ zookeeper_connection | default('airavata.localhost:2181') }}"
 
 ...
