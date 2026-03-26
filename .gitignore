@@ -62,3 +62,5 @@ logs/
 /vault*
 airavata-api/distribution/
 airavata-api/target/
+keystores/airavata.p12
+keystores/aes.p12

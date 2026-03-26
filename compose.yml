@@ -43,7 +43,7 @@ services:
     container_name: airavata-kafka
     restart: unless-stopped
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: airavata.localhost
+      KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - kafka_data:/kafka
