@@ -57,7 +57,40 @@ Apache Airavata is composed of modular components spanning core services, data m
 
 Airavata is composed of a consolidated JVM server plus three Spring Boot microservices that together facilitate the full lifecycle of computational jobs.
 
-![image](assets/airavata-dataflow.png)
+```mermaid
+graph TB
+    subgraph "Docker Infrastructure"
+        DB[(MariaDB<br/>:13306)]
+        RMQ[RabbitMQ<br/>:5672]
+        ZK[ZooKeeper<br/>:2181]
+        KFK[Kafka<br/>:9092]
+        KC[Keycloak<br/>:18080]
+    end
+
+    subgraph "AiravataServer (single JVM, :8930)"
+        direction TB
+        MUX["TMultiplexedProcessor<br/>9 Thrift services"]
+        BG["Background Services<br/>12 IServer workers"]
+    end
+
+    subgraph "Spring Boot Modules"
+        AS[Agent Service<br/>:18880]
+        FS[File Server<br/>:8050]
+        RS[Research Service<br/>:18889]
+        RP[REST Proxy<br/>:8082]
+    end
+
+    SDK[Python SDK] -->|TMultiplexedProtocol| MUX
+    Portal[Web Portal] -->|REST| RP
+    MUX --> DB
+    MUX --> RMQ
+    BG --> ZK
+    BG --> KFK
+    BG --> RMQ
+    AS --> DB
+    RS --> DB
+    MUX -.->|auth| KC
+```
 
 ### 1. Airavata Server `(apache-airavata-api-server)`
 > Entry point: `org.apache.airavata.api.server.AiravataServer`
@@ -100,9 +133,36 @@ Airavata is composed of a consolidated JVM server plus three Spring Boot microse
 | `EmailBasedMonitor` | Polls email inbox for job status updates (optional) |
 | `RealtimeMonitor` | Listens on Kafka for real-time job state changes |
 
-![image](assets/airavata-state-transitions.png)
+```mermaid
+stateDiagram-v2
+    [*] --> CREATED
+    CREATED --> VALIDATED : validateExperiment
+    VALIDATED --> LAUNCHED : launchExperiment
+    LAUNCHED --> EXECUTING : PreWorkflowManager
+    EXECUTING --> MONITORING : job submitted
+    MONITORING --> COMPLETED : job finished
+    MONITORING --> FAILED : job error
+    EXECUTING --> CANCELLED : terminateExperiment
+    COMPLETED --> [*]
+    FAILED --> [*]
+    CANCELLED --> [*]
+```
 
-![image](assets/airavata-components.png)
+```mermaid
+graph LR
+    subgraph "Startup Sequence"
+        direction TB
+        A[1. DB Init] --> B[2. Thrift Handlers]
+        B --> C[3. TMultiplexedProcessor :8930]
+        C --> D[4. DBEventManager]
+        D --> E[5. MonitoringServer :9097]
+        E --> F[6. HelixController]
+        F --> G{waitForHelixCluster}
+        G --> H[7. HelixParticipant]
+        H --> I[8. Pre/Post/Parser WF Managers]
+        I --> J[9. Email/Realtime Monitors]
+    end
+```
 
 
 ### 2. Airavata File Server `(apache-airavata-file-server)`
