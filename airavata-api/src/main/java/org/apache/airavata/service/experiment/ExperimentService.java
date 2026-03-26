@@ -27,6 +27,7 @@ import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
 import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ public class ExperimentService {
     private final RegistryServerHandler registryHandler;
     private final SharingRegistryServerHandler sharingHandler;
     private final EventPublisher eventPublisher;
+    private GroupResourceProfileService groupResourceProfileService;
 
     public ExperimentService(
             RegistryServerHandler registryHandler,
@@ -56,6 +58,10 @@ public class ExperimentService {
         this.registryHandler = registryHandler;
         this.sharingHandler = sharingHandler;
         this.eventPublisher = eventPublisher;
+    }
+
+    public void setGroupResourceProfileService(GroupResourceProfileService groupResourceProfileService) {
+        this.groupResourceProfileService = groupResourceProfileService;
     }
 
     public String createExperiment(RequestContext ctx, ExperimentModel experiment) throws ServiceException {
@@ -569,8 +575,7 @@ public class ExperimentService {
         }
     }
 
-    public void launchExperiment(RequestContext ctx, String experimentId, String gatewayId,
-            List<org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile> accessibleGroupResourceProfiles)
+    public void launchExperiment(RequestContext ctx, String experimentId, String gatewayId)
             throws ServiceException {
         try {
             ExperimentModel experiment = registryHandler.getExperiment(experimentId);
@@ -580,6 +585,10 @@ public class ExperimentService {
 
             // For backwards compatibility, if there is no groupResourceProfileId, pick one
             if (!experiment.getUserConfigurationData().isSetGroupResourceProfileId()) {
+                List<org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile>
+                        accessibleGroupResourceProfiles = groupResourceProfileService != null
+                                ? groupResourceProfileService.getGroupResourceList(ctx, gatewayId)
+                                : List.of();
                 if (!accessibleGroupResourceProfiles.isEmpty()) {
                     final String groupResourceProfileId =
                             accessibleGroupResourceProfiles.get(0).getGroupResourceProfileId();
