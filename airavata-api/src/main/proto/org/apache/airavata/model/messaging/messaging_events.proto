@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.messaging.event;
 
-option java_package = "org.apache.airavata.model.messaging.event";
+option java_package = "org.apache.airavata.model.messaging.event.proto";
 option java_multiple_files = true;
 
 import "org/apache/airavata/model/status/status.proto";

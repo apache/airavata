@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.scheduling;
 
-option java_package = "org.apache.airavata.model.scheduling";
+option java_package = "org.apache.airavata.model.scheduling.proto";
 option java_multiple_files = true;
 
 message ComputationalResourceSchedulingModel {

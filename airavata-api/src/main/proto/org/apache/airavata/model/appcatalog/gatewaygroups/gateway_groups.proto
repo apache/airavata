@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.appcatalog.gatewaygroups;
 
-option java_package = "org.apache.airavata.model.appcatalog.gatewaygroups";
+option java_package = "org.apache.airavata.model.appcatalog.gatewaygroups.proto";
 option java_multiple_files = true;
 
 message GatewayGroups {

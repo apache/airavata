@@ -21,7 +21,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.parallelism;
 
-option java_package = "org.apache.airavata.model.parallelism";
+option java_package = "org.apache.airavata.model.parallelism.proto";
 option java_multiple_files = true;
 
 // Enumeration of application parallelism supported by Airavata.

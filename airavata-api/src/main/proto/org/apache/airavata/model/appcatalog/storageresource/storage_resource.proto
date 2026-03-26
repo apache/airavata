@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.appcatalog.storageresource;
 
-option java_package = "org.apache.airavata.model.appcatalog.storageresource";
+option java_package = "org.apache.airavata.model.appcatalog.storageresource.proto";
 option java_multiple_files = true;
 
 import "org/apache/airavata/model/data/movement/data_movement.proto";

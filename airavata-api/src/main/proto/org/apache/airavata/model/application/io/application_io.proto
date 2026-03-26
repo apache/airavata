@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.application.io;
 
-option java_package = "org.apache.airavata.model.application.io";
+option java_package = "org.apache.airavata.model.application.io.proto";
 option java_multiple_files = true;
 
 // Data Types supported in Airavata. The primitive data types.

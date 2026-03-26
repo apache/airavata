@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.data.movement;
 
-option java_package = "org.apache.airavata.model.data.movement";
+option java_package = "org.apache.airavata.model.data.movement.proto";
 option java_multiple_files = true;
 
 enum DMType {

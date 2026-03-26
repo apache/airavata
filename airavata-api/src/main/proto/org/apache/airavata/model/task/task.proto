@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.task;
 
-option java_package = "org.apache.airavata.model.task";
+option java_package = "org.apache.airavata.model.task.proto";
 option java_multiple_files = true;
 
 import "org/apache/airavata/model/commons/commons.proto";

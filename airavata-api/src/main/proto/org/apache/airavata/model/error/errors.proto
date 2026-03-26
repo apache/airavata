@@ -22,7 +22,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.error;
 
-option java_package = "org.apache.airavata.model.error";
+option java_package = "org.apache.airavata.model.error.proto";
 option java_multiple_files = true;
 
 // A list of Airavata API Error Message Types

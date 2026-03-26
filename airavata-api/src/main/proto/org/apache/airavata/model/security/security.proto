@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.security;
 
-option java_package = "org.apache.airavata.model.security";
+option java_package = "org.apache.airavata.model.security.proto";
 option java_multiple_files = true;
 
 // This file describes the definitions of the security model which encapsulates

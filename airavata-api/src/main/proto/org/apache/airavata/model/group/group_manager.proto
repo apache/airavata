@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.group;
 
-option java_package = "org.apache.airavata.model.group";
+option java_package = "org.apache.airavata.model.group.proto";
 option java_multiple_files = true;
 
 enum ResourceType {

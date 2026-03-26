@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.model.appcatalog.computeresource;
 
-option java_package = "org.apache.airavata.model.appcatalog.computeresource";
+option java_package = "org.apache.airavata.model.appcatalog.computeresource.proto";
 option java_multiple_files = true;
 
 import "org/apache/airavata/model/parallelism/parallelism.proto";
@@ -125,7 +125,7 @@ enum JobSubmissionProtocol {
   SSH = 2;
   GLOBUS = 3;
   UNICORE = 4;
-  CLOUD = 5;
+  JSP_CLOUD = 5;
   SSH_FORK = 6;
   LOCAL_FORK = 7;
 }

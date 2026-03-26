@@ -19,7 +19,7 @@ syntax = "proto3";
 
 package org.apache.airavata.sharing.registry.models;
 
-option java_package = "org.apache.airavata.sharing.registry.models";
+option java_package = "org.apache.airavata.sharing.registry.models.proto";
 option java_multiple_files = true;
 
 // Domain is the entity that enables multi-tenancy in this component. Every
