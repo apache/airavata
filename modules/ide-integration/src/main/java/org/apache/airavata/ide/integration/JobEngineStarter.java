@@ -30,6 +30,10 @@ import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.manager.zk.ZNRecordSerializer;
 import org.apache.helix.manager.zk.ZkClient;
 
+/**
+ * IDE convenience launcher for the Airavata job execution engine components.
+ * IServer implementations run via Runnable.run() — each is started in its own thread.
+ */
 public class JobEngineStarter {
 
     public static void main(String args[]) throws Exception {
@@ -44,9 +48,8 @@ public class JobEngineStarter {
         zkHelixAdmin.addCluster(ServerSettings.getSetting("helix.cluster.name"), true);
 
         System.out.println("Starting Helix Controller .......");
-        // Starting helix controller
         HelixController controller = new HelixController();
-        controller.startServer();
+        new Thread(controller, "helix-controller").start();
 
         ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
 
@@ -55,19 +58,15 @@ public class JobEngineStarter {
         }
 
         System.out.println("Starting Helix Participant .......");
-
-        // Starting helix participant
         GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
-        participant.startServer();
+        new Thread(participant, "helix-participant").start();
 
         System.out.println("Starting Pre Workflow Manager .......");
-
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.startServer();
+        new Thread(preWorkflowManager, "pre-workflow-manager").start();
 
         System.out.println("Starting Post Workflow Manager .......");
-
         PostWorkflowManager postWorkflowManager = new PostWorkflowManager();
-        postWorkflowManager.startServer();
+        new Thread(postWorkflowManager, "post-workflow-manager").start();
     }
 }
