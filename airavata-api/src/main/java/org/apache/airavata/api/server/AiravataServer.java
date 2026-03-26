@@ -20,8 +20,14 @@
 package org.apache.airavata.api.server;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMonitoringService;
+import org.apache.airavata.db.event.manager.DBEventManagerRunner;
+import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
+import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
+import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.Constants;
@@ -90,6 +96,7 @@ public class AiravataServer implements IServer {
 
     private ServerStatus status;
     private TServer server;
+    private final List<IServer> backgroundServices = new ArrayList<>();
 
     private final List<DBInitConfig> dbInitConfigs = Arrays.asList(
             new ExpCatalogDBInitConfig(),
@@ -205,6 +212,7 @@ public class AiravataServer implements IServer {
                             logger.info("Airavata Server started on port {}", serverPort);
                             logger.info("Registered services: Airavata, RegistryService, SharingRegistry, "
                                     + "CredentialStore, UserProfile, TenantProfile, IamAdminServices, GroupManager");
+                            startBackgroundServices();
                         }
                     })
                     .start();
@@ -216,11 +224,82 @@ public class AiravataServer implements IServer {
         }
     }
 
+    /**
+     * Starts background services after the Thrift server is ready.
+     * Each service has an independent lifecycle — failures are non-fatal
+     * and do not affect other services.
+     */
+    private void startBackgroundServices() {
+        logger.info("Starting background services...");
+
+        // DB Event Manager — processes async DB events
+        registerAndStart(new DBEventManagerRunner(), "db_event_manager");
+
+        // Monitoring Server — Prometheus metrics endpoint
+        try {
+            if (ServerSettings.getBooleanSetting("api.server.monitoring.enabled")) {
+                String monHost = ServerSettings.getSetting("api.server.monitoring.host", "localhost");
+                int monPort = Integer.parseInt(ServerSettings.getSetting("api.server.monitoring.port", "9097"));
+                MonitoringServer monitoringServer = new MonitoringServer(monHost, monPort);
+                monitoringServer.start();
+                logger.info("  monitoring_server: started on {}:{}", monHost, monPort);
+            }
+        } catch (Exception e) {
+            logger.warn("  monitoring_server: failed — {}", e.getMessage());
+        }
+
+        // Cluster status monitoring — polls compute resource queue status
+        try {
+            if (ServerSettings.enableClusterStatusMonitoring()) {
+                registerAndStart(new ComputationalResourceMonitoringService(), "cluster_status_monitor");
+            }
+        } catch (Exception e) {
+            logger.warn("  cluster_status_monitor: config error — {}", e.getMessage());
+        }
+
+        // Data interpreter — metadata analysis for submitted jobs
+        try {
+            if (ServerSettings.enableDataAnalyzerJobScanning()) {
+                registerAndStart(new DataInterpreterService(), "data_interpreter");
+            }
+        } catch (Exception e) {
+            logger.warn("  data_interpreter: config error — {}", e.getMessage());
+        }
+
+        // Process rescheduler — retries/reschedules failed processes
+        try {
+            if (ServerSettings.enableMetaschedulerJobScanning()) {
+                registerAndStart(new ProcessReschedulingService(), "process_rescheduler");
+            }
+        } catch (Exception e) {
+            logger.warn("  process_rescheduler: config error — {}", e.getMessage());
+        }
+
+        logger.info("Background services initialization complete ({} running)", backgroundServices.size());
+    }
+
+    private void registerAndStart(IServer service, String label) {
+        try {
+            service.start();
+            backgroundServices.add(service);
+            logger.info("  {}: started", label);
+        } catch (Exception e) {
+            logger.warn("  {}: failed — {}", label, e.getMessage());
+        }
+    }
+
     @Override
     public void stop() throws Exception {
         if (server != null && server.isServing()) {
             setStatus(ServerStatus.STOPING);
             server.stop();
+        }
+        for (IServer service : backgroundServices) {
+            try {
+                service.stop();
+            } catch (Exception e) {
+                logger.warn("Error stopping {}: {}", service.getName(), e.getMessage());
+            }
         }
     }
 
