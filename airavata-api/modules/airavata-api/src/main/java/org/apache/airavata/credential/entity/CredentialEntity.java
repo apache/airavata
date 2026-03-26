@@ -1,0 +1,144 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.credential.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import java.io.Serializable;
+import java.time.Instant;
+import org.apache.airavata.credential.model.CredentialType;
+
+/**
+ * JPA entity for CREDENTIAL table.
+ *
+ * <p>Stores SSH keys and other credentials used for accessing compute and storage resources.
+ * The {@code credentialId} is the token string (UUID) used throughout the system as the PK.
+ * The {@code userId} field tracks who owns/created this credential.
+ */
+@Entity
+@Table(
+        name = "credential",
+        indexes = {
+            @Index(name = "idx_credential_gateway", columnList = "gateway_id"),
+            @Index(name = "idx_credential_user", columnList = "user_id"),
+            @Index(name = "idx_credential_gateway_user", columnList = "gateway_id, user_id")
+        })
+public class CredentialEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "credential_id", length = 255)
+    private String credentialId;
+
+    @Column(name = "gateway_id", length = 255, nullable = false)
+    private String gatewayId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 20, nullable = false)
+    private CredentialType type;
+
+    @Lob
+    @Column(name = "credential_data", nullable = false, columnDefinition = "LONGBLOB")
+    private byte[] credentialData;
+
+    @Column(name = "user_id", length = 255, nullable = false)
+    private String userId;
+
+    @Column(name = "name", length = 255)
+    private String name;
+
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @Column(name = "description")
+    private String description;
+
+    public CredentialEntity() {}
+
+    public String getCredentialId() {
+        return credentialId;
+    }
+
+    public void setCredentialId(String credentialId) {
+        this.credentialId = credentialId;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public CredentialType getType() {
+        return type;
+    }
+
+    public void setType(CredentialType type) {
+        this.type = type;
+    }
+
+    public byte[] getCredentialData() {
+        return credentialData;
+    }
+
+    public void setCredentialData(byte[] credentialData) {
+        this.credentialData = credentialData;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}
