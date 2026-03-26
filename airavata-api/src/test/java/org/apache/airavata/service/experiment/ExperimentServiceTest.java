@@ -1,8 +1,10 @@
 package org.apache.airavata.service.experiment;
 
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class ExperimentServiceTest {
@@ -130,5 +133,48 @@ class ExperimentServiceTest {
         when(registryHandler.getExperimentOutputs("exp-123")).thenReturn(outputs);
         List<OutputDataObjectType> result = experimentService.getExperimentOutputs(ctx, "exp-123");
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void getExperimentStatistics_delegatesToRegistry() throws Exception {
+        ExperimentStatistics stats = new ExperimentStatistics();
+        stats.setAllExperimentCount(5);
+        when(registryHandler.getExperimentStatistics(
+                "testGateway", 1000L, 2000L, null, null, null, null, 10, 0))
+                .thenReturn(stats);
+        ExperimentStatistics result = experimentService.getExperimentStatistics(
+                ctx, "testGateway", 1000L, 2000L, null, null, null, 10, 0);
+        assertEquals(5, result.getAllExperimentCount());
+    }
+
+    @Test
+    void updateExperiment_ownerCanUpdate() throws Exception {
+        ExperimentModel existing = new ExperimentModel();
+        existing.setUserName("testUser");
+        existing.setGatewayId("testGateway");
+        ExperimentModel updated = new ExperimentModel();
+        updated.setExperimentName("new-name");
+        updated.setProjectId("proj-1");
+
+        when(registryHandler.getExperiment("exp-123")).thenReturn(existing);
+        doNothing().when(registryHandler).updateExperiment("exp-123", updated);
+
+        // Should not throw — owner has implicit WRITE
+        assertDoesNotThrow(() -> experimentService.updateExperiment(ctx, "exp-123", updated));
+        verify(registryHandler).updateExperiment("exp-123", updated);
+    }
+
+    @Test
+    void getJobStatuses_delegatesToRegistry() throws Exception {
+        Map<String, JobStatus> statuses = Map.of("job-1", new JobStatus());
+        when(registryHandler.getJobStatuses("exp-123")).thenReturn(statuses);
+        Map<String, JobStatus> result = experimentService.getJobStatuses(ctx, "exp-123");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void validateExperiment_returnsTrue() throws Exception {
+        boolean result = experimentService.validateExperiment(ctx, "exp-123");
+        assertTrue(result);
     }
 }

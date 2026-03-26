@@ -2,11 +2,17 @@ package org.apache.airavata.service.experiment;
 
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.ExperimentSearchFields;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
@@ -333,6 +339,132 @@ public class ExperimentService {
             throw e;
         } catch (Exception e) {
             throw new ServiceException("Error while cloning experiment: " + e.getMessage(), e);
+        }
+    }
+
+    public ExperimentStatistics getExperimentStatistics(
+            RequestContext ctx, String gatewayId, long fromTime, long toTime,
+            String userName, String applicationName, String resourceHostName,
+            int limit, int offset) throws ServiceException {
+        try {
+            return registryHandler.getExperimentStatistics(
+                    gatewayId, fromTime, toTime, userName, applicationName,
+                    resourceHostName, null, limit, offset);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving experiment statistics: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ExperimentModel> getExperimentsInProject(
+            RequestContext ctx, String projectId, int limit, int offset) throws ServiceException {
+        try {
+            Project project = registryHandler.getProject(projectId);
+            if (isSharingEnabled()
+                    && (!ctx.getUserId().equals(project.getOwner())
+                        || !ctx.getGatewayId().equals(project.getGatewayId()))) {
+                String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+                if (!sharingHandler.userHasAccess(
+                        ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":READ")) {
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access this resource");
+                }
+            }
+            return registryHandler.getExperimentsInProject(ctx.getGatewayId(), projectId, limit, offset);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving experiments in project: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ExperimentModel> getUserExperiments(
+            RequestContext ctx, String gatewayId, String userName, int limit, int offset) throws ServiceException {
+        try {
+            return registryHandler.getUserExperiments(gatewayId, userName, limit, offset);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving user experiments: " + e.getMessage(), e);
+        }
+    }
+
+    public ExperimentModel getDetailedExperimentTree(RequestContext ctx, String experimentId)
+            throws ServiceException {
+        try {
+            return registryHandler.getDetailedExperimentTree(experimentId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving experiment tree: " + e.getMessage(), e);
+        }
+    }
+
+    public void updateExperiment(RequestContext ctx, String experimentId, ExperimentModel experiment)
+            throws ServiceException {
+        try {
+            ExperimentModel existing = registryHandler.getExperiment(experimentId);
+            if (isSharingEnabled()
+                    && (!ctx.getUserId().equals(existing.getUserName())
+                        || !ctx.getGatewayId().equals(existing.getGatewayId()))) {
+                String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+                if (!sharingHandler.userHasAccess(
+                        ctx.getGatewayId(), qualifiedUserId, experimentId,
+                        ctx.getGatewayId() + ":WRITE")) {
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to update this resource");
+                }
+            }
+            if (isSharingEnabled()) {
+                try {
+                    Entity entity = sharingHandler.getEntity(ctx.getGatewayId(), experimentId);
+                    entity.setName(experiment.getExperimentName());
+                    entity.setDescription(experiment.getDescription());
+                    entity.setParentEntityId(experiment.getProjectId());
+                    sharingHandler.updateEntity(entity);
+                } catch (Exception e) {
+                    throw new ServiceException("Failed to update entity in sharing registry", e);
+                }
+            }
+            registryHandler.updateExperiment(experimentId, experiment);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating experiment: " + e.getMessage(), e);
+        }
+    }
+
+    public void updateExperimentConfiguration(RequestContext ctx, String experimentId,
+            UserConfigurationDataModel userConfiguration) throws ServiceException {
+        try {
+            registryHandler.updateExperimentConfiguration(experimentId, userConfiguration);
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating experiment configuration: " + e.getMessage(), e);
+        }
+    }
+
+    public void updateResourceScheduleing(RequestContext ctx, String experimentId,
+            ComputationalResourceSchedulingModel resourceScheduling) throws ServiceException {
+        try {
+            registryHandler.updateResourceScheduleing(experimentId, resourceScheduling);
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating resource scheduling: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean validateExperiment(RequestContext ctx, String experimentId) throws ServiceException {
+        // TODO: call validation module and validate experiment
+        return true;
+    }
+
+    public Map<String, JobStatus> getJobStatuses(RequestContext ctx, String experimentId) throws ServiceException {
+        try {
+            return registryHandler.getJobStatuses(experimentId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving job statuses: " + e.getMessage(), e);
+        }
+    }
+
+    public List<JobModel> getJobDetails(RequestContext ctx, String experimentId) throws ServiceException {
+        try {
+            return registryHandler.getJobDetails(experimentId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving job details: " + e.getMessage(), e);
         }
     }
 
