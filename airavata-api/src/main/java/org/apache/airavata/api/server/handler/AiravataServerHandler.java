@@ -97,6 +97,8 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.service.experiment.ExperimentService;
+import org.apache.airavata.service.messaging.EventPublisher;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.models.*;
@@ -114,6 +116,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private final RegistryServerHandler registryHandler;
     private final SharingRegistryServerHandler sharingHandler;
     private final CredentialStoreServerHandler credentialHandler;
+    private final ExperimentService experimentService;
 
     public AiravataServerHandler(
             RegistryServerHandler registryHandler,
@@ -134,6 +137,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         } catch (TException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         }
+        EventPublisher eventPub = new EventPublisher(statusPublisher, experimentPublisher);
+        this.experimentService = new ExperimentService(registryHandler, sharingHandler, eventPub);
     }
 
     public AiravataServerHandler() throws Exception {
@@ -1140,98 +1145,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            List<String> accessibleExpIds = new ArrayList<>();
-            Map<ExperimentSearchFields, String> filtersCopy = new HashMap<>(filters);
-            List<SearchCriteria> sharingFilters = new ArrayList<>();
-            SearchCriteria searchCriteria = new SearchCriteria();
-            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-            searchCriteria.setValue(gatewayId + ":EXPERIMENT");
-            sharingFilters.add(searchCriteria);
-
-            // Apply as much of the filters in the sharing API as possible,
-            // removing each filter that can be filtered via the sharing API
-            if (filtersCopy.containsKey(ExperimentSearchFields.FROM_DATE)) {
-                String fromTime = filtersCopy.remove(ExperimentSearchFields.FROM_DATE);
-                SearchCriteria fromCreatedTimeCriteria = new SearchCriteria();
-                fromCreatedTimeCriteria.setSearchField(EntitySearchField.CREATED_TIME);
-                fromCreatedTimeCriteria.setSearchCondition(SearchCondition.GTE);
-                fromCreatedTimeCriteria.setValue(fromTime);
-                sharingFilters.add(fromCreatedTimeCriteria);
-            }
-            if (filtersCopy.containsKey(ExperimentSearchFields.TO_DATE)) {
-                String toTime = filtersCopy.remove(ExperimentSearchFields.TO_DATE);
-                SearchCriteria toCreatedTimeCriteria = new SearchCriteria();
-                toCreatedTimeCriteria.setSearchField(EntitySearchField.CREATED_TIME);
-                toCreatedTimeCriteria.setSearchCondition(SearchCondition.LTE);
-                toCreatedTimeCriteria.setValue(toTime);
-                sharingFilters.add(toCreatedTimeCriteria);
-            }
-            if (filtersCopy.containsKey(ExperimentSearchFields.PROJECT_ID)) {
-                String projectId = filtersCopy.remove(ExperimentSearchFields.PROJECT_ID);
-                SearchCriteria projectParentEntityCriteria = new SearchCriteria();
-                projectParentEntityCriteria.setSearchField(EntitySearchField.PARRENT_ENTITY_ID);
-                projectParentEntityCriteria.setSearchCondition(SearchCondition.EQUAL);
-                projectParentEntityCriteria.setValue(projectId);
-                sharingFilters.add(projectParentEntityCriteria);
-            }
-            if (filtersCopy.containsKey(ExperimentSearchFields.USER_NAME)) {
-                String username = filtersCopy.remove(ExperimentSearchFields.USER_NAME);
-                SearchCriteria usernameOwnerCriteria = new SearchCriteria();
-                usernameOwnerCriteria.setSearchField(EntitySearchField.OWNER_ID);
-                usernameOwnerCriteria.setSearchCondition(SearchCondition.EQUAL);
-                usernameOwnerCriteria.setValue(username + "@" + gatewayId);
-                sharingFilters.add(usernameOwnerCriteria);
-            }
-            if (filtersCopy.containsKey(ExperimentSearchFields.EXPERIMENT_NAME)) {
-                String experimentName = filtersCopy.remove(ExperimentSearchFields.EXPERIMENT_NAME);
-                SearchCriteria experimentNameCriteria = new SearchCriteria();
-                experimentNameCriteria.setSearchField(EntitySearchField.NAME);
-                experimentNameCriteria.setSearchCondition(SearchCondition.LIKE);
-                experimentNameCriteria.setValue(experimentName);
-                sharingFilters.add(experimentNameCriteria);
-            }
-            if (filtersCopy.containsKey(ExperimentSearchFields.EXPERIMENT_DESC)) {
-                String experimentDescription = filtersCopy.remove(ExperimentSearchFields.EXPERIMENT_DESC);
-                SearchCriteria experimentDescriptionCriteria = new SearchCriteria();
-                experimentDescriptionCriteria.setSearchField(EntitySearchField.DESCRIPTION);
-                experimentDescriptionCriteria.setSearchCondition(SearchCondition.LIKE);
-                experimentDescriptionCriteria.setValue(experimentDescription);
-                sharingFilters.add(experimentDescriptionCriteria);
-            }
-            // Grab all of the matching experiments in the sharing registry
-            // unless all of the filtering can be done through the sharing API
-            int searchOffset = 0;
-            int searchLimit = Integer.MAX_VALUE;
-            boolean filteredInSharing = filtersCopy.isEmpty();
-            if (filteredInSharing) {
-                searchOffset = offset;
-                searchLimit = limit;
-            }
-            sharingHandler
-                    .searchEntities(
-                            authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                            userName + "@" + gatewayId,
-                            sharingFilters,
-                            searchOffset,
-                            searchLimit)
-                    .forEach(e -> accessibleExpIds.add(e.getEntityId()));
-            int finalOffset = offset;
-            // If no more filtering to be done (either empty or all done through sharing API), set the offset to 0
-            if (filteredInSharing) {
-                finalOffset = 0;
-            }
-            List<ExperimentSummaryModel> result = registryHandler.searchExperiments(
-                    gatewayId, userName, accessibleExpIds, filtersCopy, limit, finalOffset);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while retrieving experiments", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, gatewayId,
+                ctx -> experimentService.searchExperiments(ctx, gatewayId, userName, filters, limit, offset));
     }
 
     /**
@@ -1417,58 +1332,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        // TODO: verify that gatewayId and experiment.gatewayId match authzToken
-        logger.info("Api server accepted experiment creation with name {}", experiment.getExperimentName());
-        try {
-            String experimentId = registryHandler.createExperiment(gatewayId, experiment);
-
-            if (ServerSettings.isEnableSharing()) {
-                try {
-                    Entity entity = new Entity();
-                    entity.setEntityId(experimentId);
-                    final String domainId = experiment.getGatewayId();
-                    entity.setDomainId(domainId);
-                    entity.setEntityTypeId(domainId + ":" + "EXPERIMENT");
-                    entity.setOwnerId(experiment.getUserName() + "@" + domainId);
-                    entity.setName(experiment.getExperimentName());
-                    entity.setDescription(experiment.getDescription());
-                    entity.setParentEntityId(experiment.getProjectId());
-
-                    sharingHandler.createEntity(entity);
-                    shareEntityWithAdminGatewayGroups(entity);
-                } catch (Exception ex) {
-                    logger.error(ex.getMessage(), ex);
-                    logger.error("Rolling back experiment creation Exp ID : " + experimentId);
-                    registryHandler.deleteExperiment(experimentId);
-                    AiravataSystemException ase = new AiravataSystemException();
-                    ase.setMessage("Failed to create sharing registry record");
-                    throw ase;
-                }
-            }
-
-            ExperimentStatusChangeEvent event =
-                    new ExperimentStatusChangeEvent(ExperimentState.CREATED, experimentId, gatewayId);
-            String messageId = AiravataUtils.getId("EXPERIMENT");
-            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            if (statusPublisher != null) {
-                statusPublisher.publish(messageContext);
-            }
-            // logger.debug(experimentId, "Created new experiment with experiment name {}",
-            // experiment.getExperimentName());
-            logger.info(
-                    experimentId,
-                    "Created new experiment with experiment name {} and id ",
-                    experiment.getExperimentName(),
-                    experimentId);
-            return experimentId;
-        } catch (Exception e) {
-            logger.error("Error while creating the experiment with experiment name {}", experiment.getExperimentName());
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating the experiment. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, gatewayId,
+                ctx -> experimentService.createExperiment(ctx, experiment));
     }
 
     /**
@@ -1487,44 +1352,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteExperiment(AuthzToken authzToken, String experimentId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            ExperimentModel experimentModel = registryHandler.getExperiment(experimentId);
-
-            if (ServerSettings.isEnableSharing()
-                            && !authzToken
-                                    .getClaimsMap()
-                                    .get(org.apache.airavata.common.utils.Constants.USER_NAME)
-                                    .equals(experimentModel.getUserName())
-                    || !authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.GATEWAY_ID)
-                            .equals(experimentModel.getGatewayId())) {
-                try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if (!sharingHandler.userHasAccess(
-                            gatewayId, userId + "@" + gatewayId, experimentId, gatewayId + ":WRITE")) {
-                        throw new AuthorizationException("User does not have permission to access this resource");
-                    }
-                } catch (Exception e) {
-                    throw new AuthorizationException("User does not have permission to access this resource");
-                }
-            }
-
-            if (!(experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED)) {
-                logger.error("Error while deleting the experiment");
-                throw new RegistryServiceException(
-                        "Experiment is not in CREATED state. Hence cannot deleted. ID:" + experimentId);
-            }
-            boolean result = registryHandler.deleteExperiment(experimentId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while deleting the experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting the experiment. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.deleteExperiment(ctx, experimentId));
     }
 
     /**
@@ -1554,43 +1383,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        ExperimentModel experimentModel = null;
-        try {
-            experimentModel = registryHandler.getExperiment(airavataExperimentId);
-            if (authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.USER_NAME)
-                            .equals(experimentModel.getUserName())
-                    && authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.GATEWAY_ID)
-                            .equals(experimentModel.getGatewayId())) {
-                return experimentModel;
-            } else if (ServerSettings.isEnableSharing()) {
-                try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if (!sharingHandler.userHasAccess(
-                            gatewayId, userId + "@" + gatewayId, airavataExperimentId, gatewayId + ":READ")) {
-                        throw new AuthorizationException("User does not have permission to access this resource");
-                    }
-                    return experimentModel;
-                } catch (Exception e) {
-                    throw new AuthorizationException("User does not have permission to access this resource");
-                }
-            } else {
-                return null;
-            }
-        } catch (ExperimentNotFoundException e) {
-            logger.error(e.getMessage(), e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error while getting the experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting the experiment. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.getExperiment(ctx, airavataExperimentId));
     }
 
     @Override
@@ -1598,22 +1392,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentModel getExperimentByAdmin(AuthzToken authzToken, String airavataExperimentId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        ExperimentModel experimentModel = null;
-        try {
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            experimentModel = registryHandler.getExperiment(airavataExperimentId);
-            if (gatewayId.equals(experimentModel.getGatewayId())) {
-                return experimentModel;
-            } else {
-                throw new AuthorizationException("User does not have permission to access this resource");
-            }
-        } catch (Exception e) {
-            logger.error("Error while getting the experiment", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting the experiment. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.getExperimentByAdmin(ctx, airavataExperimentId));
     }
 
     /**
@@ -1843,30 +1623,16 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws TException {
-        try {
-            ExperimentStatus result = registryHandler.getExperimentStatus(airavataExperimentId);
-            return result;
-        } catch (Exception e) {
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setMessage(e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.getExperimentStatus(ctx, airavataExperimentId));
     }
 
     @Override
     @SecurityCheck
     public List<OutputDataObjectType> getExperimentOutputs(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, TException {
-        try {
-            List<OutputDataObjectType> result = registryHandler.getExperimentOutputs(airavataExperimentId);
-            return result;
-        } catch (Exception e) {
-            logger.error(airavataExperimentId, "Error while retrieving the experiment outputs", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the experiment outputs. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.getExperimentOutputs(ctx, airavataExperimentId));
     }
 
     @Override
@@ -2251,20 +2017,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, ProjectNotFoundException, TException {
-        try {
-            // getExperiment will apply sharing permissions
-            ExperimentModel existingExperiment = this.getExperiment(authzToken, existingExperimentID);
-            String result = cloneExperimentInternal(
-                    authzToken, existingExperimentID, newExperimentName, newExperimentProjectId, existingExperiment);
-            return result;
-        } catch (Exception e) {
-            logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while cloning the experiment with existing configuration. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.cloneExperiment(
+                        ctx, existingExperimentID, newExperimentName, newExperimentProjectId, false));
     }
 
     @Override
@@ -2273,118 +2028,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, ProjectNotFoundException, TException {
-        try {
-            // get existing experiment by bypassing normal sharing permissions for the admin user
-            ExperimentModel existingExperiment = this.getExperimentByAdmin(authzToken, existingExperimentID);
-            String result = cloneExperimentInternal(
-                    authzToken, existingExperimentID, newExperimentName, newExperimentProjectId, existingExperiment);
-            return result;
-        } catch (Exception e) {
-            logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(
-                    "Error while cloning the experiment with existing configuration. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    private String cloneExperimentInternal(
-            AuthzToken authzToken,
-            String existingExperimentID,
-            String newExperimentName,
-            String newExperimentProjectId,
-            ExperimentModel existingExperiment)
-            throws ExperimentNotFoundException, ProjectNotFoundException, TException, AuthorizationException,
-                    ApplicationSettingsException {
-        if (existingExperiment == null) {
-            logger.error(
-                    existingExperimentID,
-                    "Error while cloning experiment {}, experiment doesn't exist.",
-                    existingExperimentID);
-            throw new ExperimentNotFoundException(
-                    "Requested experiment id " + existingExperimentID + " does not exist in the system..");
-        }
-        if (newExperimentProjectId != null) {
-
-            // getProject will apply sharing permissions
-            Project project = this.getProject(authzToken, newExperimentProjectId);
-            if (project == null) {
-                logger.error(
-                        "Error while cloning experiment {}, project {} doesn't exist.",
-                        existingExperimentID,
-                        newExperimentProjectId);
-                throw new ProjectNotFoundException(
-                        "Requested project id " + newExperimentProjectId + " does not exist in the system..");
-            }
-            existingExperiment.setProjectId(project.getProjectID());
-        }
-
-        // make sure user has write access to the project
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        if (!sharingHandler.userHasAccess(
-                gatewayId, userId + "@" + gatewayId, existingExperiment.getProjectId(), gatewayId + ":WRITE")) {
-            logger.error(
-                    "Error while cloning experiment {}, user doesn't have write access to project {}",
-                    existingExperimentID,
-                    existingExperiment.getProjectId());
-            throw new AuthorizationException("User does not have permission to clone an experiment in this project");
-        }
-
-        existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-        if (existingExperiment.getExecutionId() != null) {
-            List<OutputDataObjectType> applicationOutputs =
-                    registryHandler.getApplicationOutputs(existingExperiment.getExecutionId());
-            existingExperiment.setExperimentOutputs(applicationOutputs);
-        }
-        if (validateString(newExperimentName)) {
-            existingExperiment.setExperimentName(newExperimentName);
-        }
-        existingExperiment.unsetErrors();
-        existingExperiment.unsetProcesses();
-        existingExperiment.unsetExperimentStatus();
-        if (existingExperiment.getUserConfigurationData() != null
-                && existingExperiment.getUserConfigurationData().getComputationalResourceScheduling() != null
-                && existingExperiment
-                                .getUserConfigurationData()
-                                .getComputationalResourceScheduling()
-                                .getResourceHostId()
-                        != null) {
-            String compResourceId = existingExperiment
-                    .getUserConfigurationData()
-                    .getComputationalResourceScheduling()
-                    .getResourceHostId();
-
-            ComputeResourceDescription computeResourceDescription = registryHandler.getComputeResource(compResourceId);
-            if (!computeResourceDescription.isEnabled()) {
-                existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
-            }
-        }
-        logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
-        existingExperiment.setUserName(userId);
-        String expId = registryHandler.createExperiment(gatewayId, existingExperiment);
-
-        if (ServerSettings.isEnableSharing()) {
-            try {
-                Entity entity = new Entity();
-                entity.setEntityId(expId);
-                final String domainId = existingExperiment.getGatewayId();
-                entity.setDomainId(domainId);
-                entity.setEntityTypeId(domainId + ":" + "EXPERIMENT");
-                entity.setOwnerId(existingExperiment.getUserName() + "@" + domainId);
-                entity.setName(existingExperiment.getExperimentName());
-                entity.setDescription(existingExperiment.getDescription());
-                sharingHandler.createEntity(entity);
-                shareEntityWithAdminGatewayGroups(entity);
-            } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
-                logger.error("rolling back experiment creation Exp ID : " + expId);
-                registryHandler.deleteExperiment(expId);
-            }
-        }
-
-        return expId;
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> experimentService.cloneExperiment(
+                        ctx, existingExperimentID, newExperimentName, newExperimentProjectId, true));
     }
 
     /**
@@ -2412,45 +2058,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String gatewayId)
             throws TException {
-        try {
-            ExperimentModel existingExperiment = registryHandler.getExperiment(airavataExperimentId);
-            ExperimentStatus experimentLastStatus = registryHandler.getExperimentStatus(airavataExperimentId);
-            if (existingExperiment == null) {
-                logger.error(
-                        airavataExperimentId,
-                        "Error while cancelling experiment {}, experiment doesn't exist.",
-                        airavataExperimentId);
-                throw new ExperimentNotFoundException(
-                        "Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-            }
-            switch (experimentLastStatus.getState()) {
-                case COMPLETED:
-                case CANCELED:
-                case FAILED:
-                case CANCELING:
-                    logger.warn(
-                            "Can't terminate already {} experiment",
-                            existingExperiment
-                                    .getExperimentStatus()
-                                    .get(0)
-                                    .getState()
-                                    .name());
-                    break;
-                case CREATED:
-                    logger.warn("Experiment termination is only allowed for launched experiments.");
-                    break;
-                default:
-                    submitCancelExperiment(gatewayId, airavataExperimentId);
-                    logger.debug("Airavata cancelled experiment with experiment id : " + airavataExperimentId);
-                    break;
-            }
-        } catch (RegistryServiceException | AiravataException e) {
-            logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while cancelling the experiment. More info : " + e.getMessage());
-            throw exception;
-        }
+        ThriftAdapter.executeVoid(authzToken, gatewayId,
+                ctx -> experimentService.terminateExperiment(ctx, airavataExperimentId));
     }
 
     /**
