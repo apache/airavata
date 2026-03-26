@@ -29,6 +29,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
@@ -58,6 +59,12 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
     public ThriftClientPool(
             ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig, String host, int port) {
         this(clientFactory, new BinaryOverSocketProtocolFactory(host, port), poolConfig);
+    }
+
+    public ThriftClientPool(
+            ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig,
+            String host, int port, String serviceName) {
+        this(clientFactory, new BinaryOverSocketProtocolFactory(host, port, serviceName), poolConfig);
     }
 
     public ThriftClientPool(
@@ -150,10 +157,16 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
 
         private String host;
         private int port;
+        private String serviceName;
 
         public BinaryOverSocketProtocolFactory(String host, int port) {
+            this(host, port, null);
+        }
+
+        public BinaryOverSocketProtocolFactory(String host, int port, String serviceName) {
             this.host = host;
             this.port = port;
+            this.serviceName = serviceName;
         }
 
         public TProtocol make() {
@@ -165,7 +178,11 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
                 logger.warn(e.getMessage(), e);
                 throw new ThriftClientException("Can not make protocol", e);
             }
-            return new TBinaryProtocol(transport);
+            TProtocol protocol = new TBinaryProtocol(transport);
+            if (serviceName != null) {
+                return new TMultiplexedProtocol(protocol, serviceName);
+            }
+            return protocol;
         }
     }
 
