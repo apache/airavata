@@ -22,38 +22,39 @@ package org.apache.airavata.common.utils;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Common lifecycle interface for all Airavata server components —
+ * both the main Thrift server and background services.
+ */
 public interface IServer {
-    public enum ServerStatus {
-        STOPING,
+
+    enum ServerStatus {
         STOPPED,
         STARTING,
         STARTED,
+        STOPPING,
         FAILED;
 
+        private Date timestamp;
+
         public void updateTime() {
-            now = Calendar.getInstance().getTime();
+            timestamp = Calendar.getInstance().getTime();
         }
 
-        private Date now;
-
         public Date getTime() {
-            return now;
+            return timestamp;
         }
     }
 
-    public String getName();
+    /** Human-readable name for logging and diagnostics. */
+    String getName();
 
-    public String getVersion();
+    /** Start this component. Implementations should set status to STARTING then STARTED. */
+    void start() throws Exception;
 
-    public void start() throws Exception;
+    /** Stop this component. Implementations should set status to STOPPING then STOPPED. */
+    void stop() throws Exception;
 
-    public void stop() throws Exception;
-
-    public void restart() throws Exception;
-
-    public void configure() throws Exception;
-
-    public ServerStatus getStatus() throws Exception;
-    //	public void waitForServerToStart() throws Exception;
-    //	public void waitForServerToStop() throws Exception;
+    /** Current lifecycle status. */
+    ServerStatus getStatus();
 }

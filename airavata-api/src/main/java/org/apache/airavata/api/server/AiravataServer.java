@@ -92,7 +92,6 @@ public class AiravataServer implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataServer.class);
     private static final String SERVER_NAME = "Airavata Server";
-    private static final String SERVER_VERSION = "1.0";
 
     private ServerStatus status;
     private TServer server;
@@ -291,7 +290,7 @@ public class AiravataServer implements IServer {
     @Override
     public void stop() throws Exception {
         if (server != null && server.isServing()) {
-            setStatus(ServerStatus.STOPING);
+            setStatus(ServerStatus.STOPPING);
             server.stop();
         }
         for (IServer service : backgroundServices) {
@@ -304,27 +303,13 @@ public class AiravataServer implements IServer {
     }
 
     @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
+    public ServerStatus getStatus() {
         return status;
     }
 
     @Override
     public String getName() {
         return SERVER_NAME;
-    }
-
-    @Override
-    public String getVersion() {
-        return SERVER_VERSION;
     }
 
     private void setStatus(ServerStatus stat) {

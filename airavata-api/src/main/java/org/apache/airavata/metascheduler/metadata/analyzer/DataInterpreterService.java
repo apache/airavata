@@ -35,7 +35,6 @@ public class DataInterpreterService implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInterpreterService.class);
     private static final String SERVER_NAME = "Data Interpreter Service";
-    private static final String SERVER_VERSION = "1.0";
 
     private static ServerStatus status;
     private static Scheduler scheduler;
@@ -44,11 +43,6 @@ public class DataInterpreterService implements IServer {
     @Override
     public String getName() {
         return SERVER_NAME;
-    }
-
-    @Override
-    public String getVersion() {
-        return SERVER_VERSION;
     }
 
     @Override
@@ -94,16 +88,7 @@ public class DataInterpreterService implements IServer {
     }
 
     @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
+    public ServerStatus getStatus() {
         return status;
     }
 

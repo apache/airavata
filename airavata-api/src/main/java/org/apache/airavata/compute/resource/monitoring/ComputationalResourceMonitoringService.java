@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 public class ComputationalResourceMonitoringService implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);
-    private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
-    private static final String SERVER_VERSION = "1.0";
+    private static final String SERVER_NAME = "Computational Resource Monitoring";
 
     private static ServerStatus status;
     private static Scheduler scheduler;
@@ -46,12 +45,7 @@ public class ComputationalResourceMonitoringService implements IServer {
 
     @Override
     public String getName() {
-        return null;
-    }
-
-    @Override
-    public String getVersion() {
-        return null;
+        return SERVER_NAME;
     }
 
     @Override
@@ -110,16 +104,7 @@ public class ComputationalResourceMonitoringService implements IServer {
     }
 
     @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
+    public ServerStatus getStatus() {
         return status;
     }
 

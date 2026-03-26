@@ -33,7 +33,6 @@ public class DBEventManagerRunner implements IServer {
     private static final Logger log = LogManager.getLogger(DBEventManagerRunner.class);
 
     private static final String SERVER_NAME = "DB Event Manager";
-    private static final String SERVER_VERSION = "1.0";
 
     private ServerStatus status;
 
@@ -85,11 +84,6 @@ public class DBEventManagerRunner implements IServer {
     }
 
     @Override
-    public String getVersion() {
-        return SERVER_VERSION;
-    }
-
-    @Override
     public void start() throws Exception {
 
         try {
@@ -113,22 +107,18 @@ public class DBEventManagerRunner implements IServer {
 
     @Override
     public void stop() throws Exception {
-
-        // TODO: implement stopping the DBEventManager
+        setStatus(ServerStatus.STOPPING);
+        try {
+            DBEventManagerMessagingFactory.close();
+            setStatus(ServerStatus.STOPPED);
+        } catch (Exception e) {
+            log.error("Error stopping DB Event Manager", e);
+            setStatus(ServerStatus.FAILED);
+        }
     }
 
     @Override
-    public void restart() throws Exception {
-
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
+    public ServerStatus getStatus() {
         return status;
     }
 
