@@ -1,6 +1,5 @@
 package org.apache.airavata.service.project;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.experiment.ProjectSearchFields;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
@@ -12,6 +11,7 @@ import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class ProjectService {
         try {
             String projectId = registryHandler.createProject(gatewayId, project);
 
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(projectId);
@@ -74,7 +74,7 @@ public class ProjectService {
 
             if (!ctx.getUserId().equals(existingProject.getOwner())
                     || !ctx.getGatewayId().equals(existingProject.getGatewayId())) {
-                if (isSharingEnabled()) {
+                if (SharingHelper.isSharingEnabled()) {
                     String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
                     if (!sharingHandler.userHasAccess(
                             ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":WRITE")) {
@@ -112,7 +112,7 @@ public class ProjectService {
 
             if (!ctx.getUserId().equals(existingProject.getOwner())
                     || !ctx.getGatewayId().equals(existingProject.getGatewayId())) {
-                if (isSharingEnabled()) {
+                if (SharingHelper.isSharingEnabled()) {
                     String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
                     if (!sharingHandler.userHasAccess(
                             ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":WRITE")) {
@@ -147,7 +147,7 @@ public class ProjectService {
                 return project;
             }
 
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
                 if (!sharingHandler.userHasAccess(
                         ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":READ")) {
@@ -168,7 +168,7 @@ public class ProjectService {
     public List<Project> getUserProjects(RequestContext ctx, String gatewayId, String userName, int limit, int offset)
             throws ServiceException {
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 List<String> accessibleProjectIds = new ArrayList<>();
                 List<SearchCriteria> filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
@@ -198,7 +198,7 @@ public class ProjectService {
         try {
             List<String> accessibleProjIds = new ArrayList<>();
 
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 List<SearchCriteria> sharingFilters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -220,11 +220,4 @@ public class ProjectService {
         }
     }
 
-    private boolean isSharingEnabled() {
-        try {
-            return ServerSettings.isEnableSharing();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

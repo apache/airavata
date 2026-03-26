@@ -1,11 +1,11 @@
 package org.apache.airavata.service.gateway;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.EntityType;
 import org.apache.airavata.sharing.registry.models.PermissionType;
@@ -31,7 +31,7 @@ public class GatewayService {
         try {
             String gatewayId = registryHandler.addGateway(gateway);
 
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 Domain domain = new Domain();
                 domain.setDomainId(gateway.getGatewayId());
                 domain.setName(gateway.getGatewayName());
@@ -165,11 +165,4 @@ public class GatewayService {
         }
     }
 
-    private boolean isSharingEnabled() {
-        try {
-            return ServerSettings.isEnableSharing();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

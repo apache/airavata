@@ -1,11 +1,9 @@
 package org.apache.airavata.service.appcatalog;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -17,10 +15,9 @@ import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.security.GatewayGroupsInitializer;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
@@ -28,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -91,7 +87,7 @@ public class ApplicationCatalogService {
             throws ServiceException {
         try {
             List<String> accessibleAppDeploymentIds = new ArrayList<>();
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 List<SearchCriteria> sharingFilters = new ArrayList<>();
                 SearchCriteria entityTypeFilter = new SearchCriteria();
                 entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -147,10 +143,8 @@ public class ApplicationCatalogService {
             entity.setName(result);
             entity.setDescription(applicationDeployment.getAppDeploymentDescription());
             sharingHandler.createEntity(entity);
-            shareEntityWithAdminGatewayGroups(entity);
+            SharingHelper.shareEntityWithAdminGatewayGroups(sharingHandler, registryHandler, entity);
             return result;
-        } catch (ServiceException e) {
-            throw e;
         } catch (Exception e) {
             throw new ServiceException("Error while adding application deployment: " + e.getMessage(), e);
         }
@@ -159,8 +153,8 @@ public class ApplicationCatalogService {
     public ApplicationDeploymentDescription getApplicationDeployment(RequestContext ctx, String appDeploymentId)
             throws ServiceException {
         try {
-            if (isSharingEnabled()) {
-                if (!userHasAccess(ctx, appDeploymentId, ResourcePermissionType.READ)) {
+            if (SharingHelper.isSharingEnabled()) {
+                if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), appDeploymentId, ResourcePermissionType.READ)) {
                     throw new ServiceAuthorizationException(
                             "User does not have access to application deployment " + appDeploymentId);
                 }
@@ -177,8 +171,8 @@ public class ApplicationCatalogService {
             RequestContext ctx, String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
             throws ServiceException {
         try {
-            if (isSharingEnabled()) {
-                if (!userHasAccess(ctx, appDeploymentId, ResourcePermissionType.WRITE)) {
+            if (SharingHelper.isSharingEnabled()) {
+                if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), appDeploymentId, ResourcePermissionType.WRITE)) {
                     throw new ServiceAuthorizationException(
                             "User does not have WRITE access to application deployment " + appDeploymentId);
                 }
@@ -193,7 +187,7 @@ public class ApplicationCatalogService {
 
     public boolean deleteApplicationDeployment(RequestContext ctx, String appDeploymentId) throws ServiceException {
         try {
-            if (!userHasAccess(ctx, appDeploymentId, ResourcePermissionType.WRITE)) {
+            if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), appDeploymentId, ResourcePermissionType.WRITE)) {
                 throw new ServiceAuthorizationException(
                         "User does not have WRITE access to application deployment " + appDeploymentId);
             }
@@ -217,7 +211,7 @@ public class ApplicationCatalogService {
             throws ServiceException {
         try {
             List<String> accessibleAppDeploymentIds = new ArrayList<>();
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 List<SearchCriteria> sharingFilters = new ArrayList<>();
                 SearchCriteria entityTypeFilter = new SearchCriteria();
                 entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -260,7 +254,7 @@ public class ApplicationCatalogService {
             RequestContext ctx, String appModuleId, String groupResourceProfileId)
             throws ServiceException {
         try {
-            if (!userHasAccess(ctx, groupResourceProfileId, ResourcePermissionType.READ)) {
+            if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), groupResourceProfileId, ResourcePermissionType.READ)) {
                 throw new ServiceAuthorizationException(
                         "User is not authorized to access Group Resource Profile " + groupResourceProfileId);
             }
@@ -413,91 +407,9 @@ public class ApplicationCatalogService {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private boolean isSharingEnabled() {
-        try {
-            return ServerSettings.isEnableSharing();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean userHasAccess(RequestContext ctx, String entityId, ResourcePermissionType permissionType) {
-        final String domainId = ctx.getGatewayId();
-        final String userId = ctx.getUserId() + "@" + domainId;
-        try {
-            final boolean hasOwnerAccess = sharingHandler.userHasAccess(
-                    domainId, userId, entityId, domainId + ":" + ResourcePermissionType.OWNER);
-            if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                return hasOwnerAccess
-                        || sharingHandler.userHasAccess(
-                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.WRITE);
-            } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                return hasOwnerAccess
-                        || sharingHandler.userHasAccess(
-                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.READ);
-            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
-                return hasOwnerAccess
-                        || sharingHandler.userHasAccess(
-                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.MANAGE_SHARING);
-            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                return hasOwnerAccess;
-            }
-            return false;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to check if user has access", e);
-        }
-    }
-
-    private void shareEntityWithAdminGatewayGroups(Entity entity) throws Exception {
-        final String domainId = entity.getDomainId();
-        GatewayGroups gatewayGroups = retrieveGatewayGroups(domainId);
-        createManageSharingPermissionTypeIfMissing(domainId);
-        sharingHandler.shareEntityWithGroups(
-                domainId,
-                entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId()),
-                domainId + ":MANAGE_SHARING",
-                true);
-        sharingHandler.shareEntityWithGroups(
-                domainId,
-                entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId()),
-                domainId + ":WRITE",
-                true);
-        sharingHandler.shareEntityWithGroups(
-                domainId,
-                entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
-                domainId + ":READ",
-                true);
-    }
-
-    private GatewayGroups retrieveGatewayGroups(String gatewayId) throws Exception {
-        if (registryHandler.isGatewayGroupsExists(gatewayId)) {
-            return registryHandler.getGatewayGroups(gatewayId);
-        } else {
-            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
-        }
-    }
-
-    private void createManageSharingPermissionTypeIfMissing(String domainId) throws Exception {
-        String permissionTypeId = domainId + ":MANAGE_SHARING";
-        if (!sharingHandler.isPermissionExists(domainId, permissionTypeId)) {
-            PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(permissionTypeId);
-            permissionType.setDomainId(domainId);
-            permissionType.setName("MANAGE_SHARING");
-            sharingHandler.createPermissionType(permissionType);
-        }
-    }
-
     private List<String> getAccessibleComputeResourceIds(RequestContext ctx, String gatewayId) throws Exception {
         List<String> accessibleComputeResourceIds = new ArrayList<>();
-        if (isSharingEnabled()) {
+        if (SharingHelper.isSharingEnabled()) {
             List<SearchCriteria> filters = new ArrayList<>();
             SearchCriteria searchCriteria = new SearchCriteria();
             searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);

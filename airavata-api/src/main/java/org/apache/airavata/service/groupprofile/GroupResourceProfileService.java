@@ -1,6 +1,5 @@
 package org.apache.airavata.service.groupprofile;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
@@ -12,10 +11,9 @@ import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.security.GatewayGroupsInitializer;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
@@ -23,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +43,7 @@ public class GroupResourceProfileService {
         try {
             validateGroupResourceProfileCredentials(ctx, groupResourceProfile);
             String groupResourceProfileId = registryHandler.createGroupResourceProfile(groupResourceProfile);
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(groupResourceProfileId);
@@ -56,7 +53,7 @@ public class GroupResourceProfileService {
                     entity.setOwnerId(userId + "@" + domainId);
                     entity.setName(groupResourceProfile.getGroupResourceProfileName());
                     sharingHandler.createEntity(entity);
-                    shareEntityWithAdminGatewayGroups(entity);
+                    SharingHelper.shareEntityWithAdminGatewayGroups(sharingHandler, registryHandler, entity);
                 } catch (Exception ex) {
                     logger.error("Rolling back group resource profile creation ID: {}", groupResourceProfileId, ex);
                     registryHandler.removeGroupResourceProfile(groupResourceProfileId);
@@ -78,7 +75,7 @@ public class GroupResourceProfileService {
         String profileId = groupResourceProfile.getGroupResourceProfileId();
         try {
             validateGroupResourceProfileCredentials(ctx, groupResourceProfile);
-            if (isSharingEnabled() && !userHasAccess(gatewayId, userId, profileId, ResourcePermissionType.WRITE)) {
+            if (SharingHelper.isSharingEnabled() && !SharingHelper.userHasAccess(sharingHandler, gatewayId, userId, profileId, ResourcePermissionType.WRITE)) {
                 throw new ServiceAuthorizationException("User does not have permission to update group resource profile");
             }
             registryHandler.updateGroupResourceProfile(groupResourceProfile);
@@ -94,7 +91,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
                         throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
@@ -119,7 +116,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
                         throw new ServiceAuthorizationException("User does not have permission to remove group resource profile");
@@ -145,7 +142,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         try {
             List<String> accessibleGroupResProfileIds = new ArrayList<>();
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 List<SearchCriteria> filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -168,7 +165,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
                         throw new ServiceAuthorizationException("User does not have permission to remove group compute preferences");
@@ -193,7 +190,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     ComputeResourcePolicy computeResourcePolicy = registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
@@ -220,7 +217,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     BatchQueueResourcePolicy batchQueueResourcePolicy = registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
@@ -247,7 +244,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
                         throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
@@ -272,7 +269,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     ComputeResourcePolicy computeResourcePolicy = registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
@@ -299,7 +296,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     BatchQueueResourcePolicy batchQueueResourcePolicy = registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
@@ -326,7 +323,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
                         throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
@@ -351,7 +348,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
                         throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
@@ -376,7 +373,7 @@ public class GroupResourceProfileService {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
                         throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
@@ -400,7 +397,7 @@ public class GroupResourceProfileService {
     public GatewayGroups getGatewayGroups(RequestContext ctx) throws ServiceException {
         String gatewayId = ctx.getGatewayId();
         try {
-            GatewayGroups gatewayGroups = retrieveGatewayGroups(gatewayId);
+            GatewayGroups gatewayGroups = SharingHelper.retrieveGatewayGroups(registryHandler, gatewayId);
             logger.debug("Retrieved GatewayGroups for gateway {}", gatewayId);
             return gatewayGroups;
         } catch (Exception e) {
@@ -425,74 +422,10 @@ public class GroupResourceProfileService {
             tokenIds.add(groupResourceProfile.getDefaultCredentialStoreToken());
         }
         for (String tokenId : tokenIds) {
-            if (!userHasAccess(gatewayId, userId, tokenId, ResourcePermissionType.READ)) {
+            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userId, tokenId, ResourcePermissionType.READ)) {
                 throw new ServiceAuthorizationException("User does not have READ permission to credential token " + tokenId + ".");
             }
         }
     }
 
-    private boolean userHasAccess(String gatewayId, String userId, String entityId, ResourcePermissionType permissionType) {
-        String qualifiedUserId = userId + "@" + gatewayId;
-        try {
-            boolean hasOwnerAccess = sharingHandler.userHasAccess(
-                    gatewayId, qualifiedUserId, entityId, gatewayId + ":" + ResourcePermissionType.OWNER);
-            if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                return hasOwnerAccess;
-            } else if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                return hasOwnerAccess || sharingHandler.userHasAccess(
-                        gatewayId, qualifiedUserId, entityId, gatewayId + ":" + ResourcePermissionType.WRITE);
-            } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                return hasOwnerAccess || sharingHandler.userHasAccess(
-                        gatewayId, qualifiedUserId, entityId, gatewayId + ":" + ResourcePermissionType.READ);
-            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
-                return hasOwnerAccess || sharingHandler.userHasAccess(
-                        gatewayId, qualifiedUserId, entityId, gatewayId + ":" + ResourcePermissionType.MANAGE_SHARING);
-            }
-            return false;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to check if user has access", e);
-        }
-    }
-
-    private GatewayGroups retrieveGatewayGroups(String gatewayId) throws Exception {
-        if (registryHandler.isGatewayGroupsExists(gatewayId)) {
-            return registryHandler.getGatewayGroups(gatewayId);
-        } else {
-            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
-        }
-    }
-
-    private void shareEntityWithAdminGatewayGroups(Entity entity) throws Exception {
-        final String domainId = entity.getDomainId();
-        GatewayGroups gatewayGroups = retrieveGatewayGroups(domainId);
-        createManageSharingPermissionTypeIfMissing(domainId);
-        sharingHandler.shareEntityWithGroups(domainId, entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":MANAGE_SHARING", true);
-        sharingHandler.shareEntityWithGroups(domainId, entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
-        sharingHandler.shareEntityWithGroups(domainId, entity.getEntityId(),
-                Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
-                domainId + ":READ", true);
-    }
-
-    private void createManageSharingPermissionTypeIfMissing(String domainId) throws Exception {
-        String permissionTypeId = domainId + ":MANAGE_SHARING";
-        if (!sharingHandler.isPermissionExists(domainId, permissionTypeId)) {
-            PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(permissionTypeId);
-            permissionType.setDomainId(domainId);
-            permissionType.setName("MANAGE_SHARING");
-            permissionType.setDescription("Manage sharing permission type");
-            sharingHandler.createPermissionType(permissionType);
-            logger.info("Created MANAGE_SHARING permission type for domain {}", domainId);
-        }
-    }
-
-    private boolean isSharingEnabled() {
-        try {
-            return ServerSettings.isEnableSharing();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

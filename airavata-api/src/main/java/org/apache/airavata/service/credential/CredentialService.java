@@ -1,6 +1,5 @@
 package org.apache.airavata.service.credential;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -15,6 +14,7 @@ import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +108,7 @@ public class CredentialService {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
-            if (!userHasAccess(gatewayId, userName, tokenId, ResourcePermissionType.READ)) {
+            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userName, tokenId, ResourcePermissionType.READ)) {
                 logger.info("User " + userName + " not allowed to access credential store token " + tokenId);
                 throw new ServiceAuthorizationException("User does not have permission to access this resource");
             }
@@ -149,7 +149,7 @@ public class CredentialService {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
-            if (!userHasAccess(gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
                 logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
                 throw new ServiceAuthorizationException("User does not have permission to delete this resource.");
             }
@@ -166,7 +166,7 @@ public class CredentialService {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
-            if (!userHasAccess(gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
                 logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
                 throw new ServiceAuthorizationException("User does not have permission to delete this resource.");
             }
@@ -179,31 +179,4 @@ public class CredentialService {
         }
     }
 
-    private boolean userHasAccess(String gatewayId, String userName, String entityId, ResourcePermissionType permissionType) {
-        String userId = userName + "@" + gatewayId;
-        try {
-            boolean hasOwnerAccess = sharingHandler.userHasAccess(
-                    gatewayId, userId, entityId, gatewayId + ":" + ResourcePermissionType.OWNER);
-            if (permissionType.equals(ResourcePermissionType.WRITE)) {
-                return hasOwnerAccess
-                        || sharingHandler.userHasAccess(gatewayId, userId, entityId, gatewayId + ":" + ResourcePermissionType.WRITE);
-            } else if (permissionType.equals(ResourcePermissionType.READ)) {
-                return hasOwnerAccess
-                        || sharingHandler.userHasAccess(gatewayId, userId, entityId, gatewayId + ":" + ResourcePermissionType.READ);
-            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
-                return hasOwnerAccess;
-            }
-            return false;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to check if user has access", e);
-        }
-    }
-
-    private boolean isSharingEnabled() {
-        try {
-            return ServerSettings.isEnableSharing();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

@@ -1,6 +1,5 @@
 package org.apache.airavata.service.experiment;
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
@@ -28,6 +27,7 @@ import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class ExperimentService {
         try {
             String experimentId = registryHandler.createExperiment(ctx.getGatewayId(), experiment);
 
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     Entity entity = new Entity();
                     entity.setEntityId(experimentId);
@@ -106,7 +106,7 @@ public class ExperimentService {
             }
 
             // Check sharing permissions
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
                 if (!sharingHandler.userHasAccess(
                         ctx.getGatewayId(), qualifiedUserId, experimentId, ctx.getGatewayId() + ":READ")) {
@@ -130,7 +130,7 @@ public class ExperimentService {
 
             if (!ctx.getUserId().equals(experiment.getUserName())
                     || !ctx.getGatewayId().equals(experiment.getGatewayId())) {
-                if (isSharingEnabled()) {
+                if (SharingHelper.isSharingEnabled()) {
                     String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
                     if (!sharingHandler.userHasAccess(
                             ctx.getGatewayId(), qualifiedUserId, experimentId,
@@ -368,7 +368,7 @@ public class ExperimentService {
             RequestContext ctx, String projectId, int limit, int offset) throws ServiceException {
         try {
             Project project = registryHandler.getProject(projectId);
-            if (isSharingEnabled()
+            if (SharingHelper.isSharingEnabled()
                     && (!ctx.getUserId().equals(project.getOwner())
                         || !ctx.getGatewayId().equals(project.getGatewayId()))) {
                 String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
@@ -408,7 +408,7 @@ public class ExperimentService {
             throws ServiceException {
         try {
             ExperimentModel existing = registryHandler.getExperiment(experimentId);
-            if (isSharingEnabled()
+            if (SharingHelper.isSharingEnabled()
                     && (!ctx.getUserId().equals(existing.getUserName())
                         || !ctx.getGatewayId().equals(existing.getGatewayId()))) {
                 String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
@@ -419,7 +419,7 @@ public class ExperimentService {
                             "User does not have permission to update this resource");
                 }
             }
-            if (isSharingEnabled()) {
+            if (SharingHelper.isSharingEnabled()) {
                 try {
                     Entity entity = sharingHandler.getEntity(ctx.getGatewayId(), experimentId);
                     entity.setName(experiment.getExperimentName());
@@ -685,11 +685,4 @@ public class ExperimentService {
         }
     }
 
-    private boolean isSharingEnabled() {
-        try {
-            return ServerSettings.isEnableSharing();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

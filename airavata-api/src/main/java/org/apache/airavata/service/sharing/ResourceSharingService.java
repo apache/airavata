@@ -7,8 +7,6 @@ import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.security.GatewayGroupsInitializer;
-import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
@@ -342,7 +340,10 @@ public class ResourceSharingService {
     }
 
     private void validateAdminGroupNotRevoked(String gatewayId, String resourceId, Map<String, ResourcePermissionType> groupPermissionList) throws Exception {
-        GatewayGroups gatewayGroups = retrieveGatewayGroups(gatewayId);
+        if (registryHandler == null) {
+            return;
+        }
+        GatewayGroups gatewayGroups = SharingHelper.retrieveGatewayGroups(registryHandler, gatewayId);
         if (gatewayGroups == null) {
             return;
         }
@@ -353,27 +354,7 @@ public class ResourceSharingService {
         }
     }
 
-    private GatewayGroups retrieveGatewayGroups(String gatewayId) throws Exception {
-        if (registryHandler == null) {
-            return null;
-        }
-        if (registryHandler.isGatewayGroupsExists(gatewayId)) {
-            return registryHandler.getGatewayGroups(gatewayId);
-        } else {
-            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
-        }
-    }
-
     void createManageSharingPermissionTypeIfMissing(String domainId) throws Exception {
-        String permissionTypeId = domainId + ":MANAGE_SHARING";
-        if (!sharingHandler.isPermissionExists(domainId, permissionTypeId)) {
-            PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(permissionTypeId);
-            permissionType.setDomainId(domainId);
-            permissionType.setName("MANAGE_SHARING");
-            permissionType.setDescription("Manage sharing permission type");
-            sharingHandler.createPermissionType(permissionType);
-            logger.info("Created MANAGE_SHARING permission type for domain {}", domainId);
-        }
+        SharingHelper.createManageSharingPermissionTypeIfMissing(sharingHandler, domainId);
     }
 }
