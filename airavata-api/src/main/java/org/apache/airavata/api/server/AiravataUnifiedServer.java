@@ -31,6 +31,8 @@ import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.server.OrchestratorServerHandler;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -158,6 +160,17 @@ public class AiravataUnifiedServer implements IServer {
             multiplexedProcessor.registerProcessor(
                     group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME,
                     new GroupManagerService.Processor<>(new GroupManagerServiceHandler()));
+
+            // Orchestrator service
+            try {
+                OrchestratorServerHandler orchestratorHandler = new OrchestratorServerHandler();
+                multiplexedProcessor.registerProcessor(
+                        "Orchestrator", new OrchestratorService.Processor<>(orchestratorHandler));
+                logger.info("Orchestrator service registered");
+            } catch (Exception e) {
+                logger.warn("Orchestrator service failed to initialize (ZooKeeper/Helix may not be available): {}",
+                        e.getMessage());
+            }
 
             // --- Transport and server ---
             TServerTransport serverTransport;
