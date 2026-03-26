@@ -21,7 +21,7 @@
 ###########################################################################
 #
 #  This properties file provides configuration for all Airavata Services:
-#  API Server, Registry, Workflow Interpreter, GFac, Orchestrator
+#  API Server, Registry, Workflow Interpreter, Orchestrator
 #
 ###########################################################################
 
@@ -93,10 +93,6 @@ credential.store.keystore.password={{ cred_keystore_passwd }}
 ###########################################################################
 # Monitoring module Configuration
 ###########################################################################
-
-#This will be the primary monitoring tool which runs in airavata, in future there will be multiple monitoring
-#mechanisms and one would be able to start a monitor
-monitors=org.apache.airavata.gfac.monitor.impl.pull.qstat.QstatMonitor,org.apache.airavata.gfac.monitor.impl.LocalJobMonitor
 
 #These properties will used to enable email base monitoring
 email.based.monitor.host=imap.gmail.com

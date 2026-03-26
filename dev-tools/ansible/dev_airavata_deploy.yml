@@ -30,5 +30,3 @@
   roles:
       - airavata_build
       - airavata_deploy
-
-# TODO: add gfac

@@ -98,13 +98,6 @@ cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 
-# Gfac related variables
-#gfac_name: "gfac-node0"
-#gfac_host: "{{ groups['gfac'][0] }}"
-#gfac_port: "8950"
-#gfac_dir: "{{ deployment_dir }}/gfac-instance"
-#gfac_log_dir: "{{ gfac_dir }}/logs"
-
 # Monitoring variables
 monitor_email_address: "stagingjobs@scigap.org"
 monitor_email_password: "{{ vault_monitor_email_password }}"

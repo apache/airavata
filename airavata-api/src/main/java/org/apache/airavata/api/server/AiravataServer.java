@@ -321,13 +321,15 @@ public class AiravataServer implements IServer {
     }
 
     private void startDaemon(String name, DaemonStarter starter) {
-        Thread t = new Thread(() -> {
-            try {
-                starter.start();
-            } catch (Exception e) {
-                logger.warn("  {}: failed — {}", name, e.getMessage());
-            }
-        }, "airavata-" + name);
+        Thread t = new Thread(
+                () -> {
+                    try {
+                        starter.start();
+                    } catch (Exception e) {
+                        logger.warn("  {}: failed — {}", name, e.getMessage());
+                    }
+                },
+                "airavata-" + name);
         t.setDaemon(true);
         t.start();
         logger.info("  {}: started", name);
