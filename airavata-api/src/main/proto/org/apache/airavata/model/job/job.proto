@@ -1,0 +1,40 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.job;
+
+option java_package = "org.apache.airavata.model.job";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/status/status.proto";
+
+message JobModel {
+  string job_id = 1;
+  string task_id = 2;
+  string process_id = 3;
+  string job_description = 4;
+  int64 creation_time = 5;
+  repeated org.apache.airavata.model.status.JobStatus job_statuses = 6;
+  string compute_resource_consumed = 7;
+  string job_name = 8;
+  string working_dir = 9;
+  string std_out = 10;
+  string std_err = 11;
+  int32 exit_code = 12;
+}

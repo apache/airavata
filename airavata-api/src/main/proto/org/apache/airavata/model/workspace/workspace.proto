@@ -1,0 +1,111 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// This file describes the definitions of the Airavata Workspace. The workspace
+// is a container for all user data organized as Projects and Experiments within
+// them.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.workspace;
+
+option java_package = "org.apache.airavata.model.workspace";
+option java_multiple_files = true;
+
+message Group {
+  string group_name = 1;
+  string description = 2;
+}
+
+message Project {
+  string project_id = 1;
+  string owner = 2;
+  string gateway_id = 3;
+  string name = 4;
+  string description = 5;
+  int64 creation_time = 6;
+  repeated string shared_users = 7;
+  repeated string shared_groups = 8;
+}
+
+message User {
+  string airavata_internal_user_id = 1;
+  string user_name = 2;
+  string gateway_id = 3;
+  string first_name = 4;
+  string last_name = 5;
+  string email = 6;
+}
+
+enum GatewayApprovalStatus {
+  GATEWAY_APPROVAL_STATUS_UNKNOWN = 0;
+  REQUESTED = 1;
+  APPROVED = 2;
+  ACTIVE = 3;
+  DEACTIVATED = 4;
+  CANCELLED = 5;
+  DENIED = 6;
+  CREATED = 7;
+  DEPLOYED = 8;
+}
+
+message Gateway {
+  string airavata_internal_gateway_id = 1;
+  string gateway_id = 2;
+  GatewayApprovalStatus gateway_approval_status = 3;
+  string gateway_name = 4;
+  string domain = 5;
+  string email_address = 6;
+  string gateway_acronym = 7;
+  string gateway_url = 8;
+  string gateway_public_abstract = 9;
+  string review_proposal_description = 10;
+  string gateway_admin_first_name = 11;
+  string gateway_admin_last_name = 12;
+  string gateway_admin_email = 13;
+  string identity_server_user_name = 14;
+  string identity_server_password_token = 15;
+  string declined_reason = 16;
+  string oauth_client_id = 17;
+  string oauth_client_secret = 18;
+  int64 request_creation_time = 19;
+  string requester_username = 20;
+}
+
+message GatewayUsageReportingCommand {
+  string gateway_id = 1;
+  string compute_resource_id = 2;
+  string command = 3;
+}
+
+enum NotificationPriority {
+  NOTIFICATION_PRIORITY_UNKNOWN = 0;
+  LOW = 1;
+  NORMAL = 2;
+  HIGH = 3;
+}
+
+message Notification {
+  string notification_id = 1;
+  string gateway_id = 2;
+  string title = 3;
+  string notification_message = 4;
+  int64 creation_time = 5;
+  int64 published_time = 6;
+  int64 expiration_time = 7;
+  NotificationPriority priority = 8;
+}

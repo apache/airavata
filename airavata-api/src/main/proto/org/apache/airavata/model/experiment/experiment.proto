@@ -1,0 +1,156 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.experiment;
+
+option java_package = "org.apache.airavata.model.experiment";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/commons/commons.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+import "org/apache/airavata/model/scheduling/scheduling.proto";
+import "org/apache/airavata/model/status/status.proto";
+import "org/apache/airavata/model/process/process.proto";
+import "org/apache/airavata/model/workflow/workflow.proto";
+
+enum ExperimentType {
+  EXPERIMENT_TYPE_UNKNOWN = 0;
+  SINGLE_APPLICATION = 1;
+  WORKFLOW = 2;
+}
+
+enum ExperimentSearchFields {
+  EXPERIMENT_SEARCH_FIELDS_UNKNOWN = 0;
+  EXPERIMENT_NAME = 1;
+  EXPERIMENT_DESC = 2;
+  APPLICATION_ID = 3;
+  FROM_DATE = 4;
+  TO_DATE = 5;
+  STATUS = 6;
+  PROJECT_ID = 7;
+  USER_NAME = 8;
+  JOB_ID = 9;
+}
+
+enum ProjectSearchFields {
+  PROJECT_SEARCH_FIELDS_UNKNOWN = 0;
+  PROJECT_NAME = 1;
+  PROJECT_DESCRIPTION = 2;
+}
+
+// UserConfigurationDataModel: A structure holding the experiment configuration.
+//
+// airavata_auto_schedule: Whether Airavata should auto schedule.
+// override_manual_scheduled_params: Whether to override manually scheduled params.
+// share_experiment_publicly: Whether to share the experiment publicly.
+// computational_resource_scheduling: Computational resource scheduling model.
+// throttle_resources: Whether to throttle resources.
+// user_dn: User DN for certificate generation.
+// generate_cert: Whether to generate a certificate.
+// input_storage_resource_id: Input storage resource id.
+// output_storage_resource_id: Output storage resource id.
+// experiment_data_dir: Experiment data directory.
+// use_user_cr_pref: Whether to use user compute resource preferences.
+// group_resource_profile_id: Group resource profile id.
+// auto_scheduled_comp_resource_scheduling_list: Auto-scheduled resource scheduling list.
+message UserConfigurationDataModel {
+  bool airavata_auto_schedule = 1;
+  bool override_manual_scheduled_params = 2;
+  bool share_experiment_publicly = 3;
+  org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel computational_resource_scheduling = 4;
+  bool throttle_resources = 5;
+  string user_dn = 6;
+  bool generate_cert = 7;
+  string input_storage_resource_id = 8;
+  string output_storage_resource_id = 9;
+  string experiment_data_dir = 10;
+  bool use_user_cr_pref = 11;
+  string group_resource_profile_id = 12;
+  repeated org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel auto_scheduled_comp_resource_scheduling_list = 13;
+}
+
+enum ExperimentCleanupStrategy {
+  EXPERIMENT_CLEANUP_STRATEGY_UNKNOWN = 0;
+  NONE = 1;
+  ALWAYS = 2;
+  ONLY_COMPLETED = 3;
+  ONLY_FAILED = 4;
+}
+
+// ExperimentModel: A structure holding the experiment metadata and its child models.
+//
+// experiment_id: Unique identifier for the experiment.
+// project_id: Project the experiment belongs to.
+// gateway_id: Gateway identifier.
+// experiment_type: Type of the experiment.
+// user_name: The user name of the targeted gateway end user.
+// experiment_name: The name of the experiment as defined by the user.
+// description: The verbose description of the experiment.
+message ExperimentModel {
+  string experiment_id = 1;
+  string project_id = 2;
+  string gateway_id = 3;
+  ExperimentType experiment_type = 4;
+  string user_name = 5;
+  string experiment_name = 6;
+  int64 creation_time = 7;
+  string description = 8;
+  string execution_id = 9;
+  string gateway_execution_id = 10;
+  string gateway_instance_id = 11;
+  bool enable_email_notification = 12;
+  repeated string email_addresses = 13;
+  UserConfigurationDataModel user_configuration_data = 14;
+  repeated org.apache.airavata.model.application.io.InputDataObjectType experiment_inputs = 15;
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType experiment_outputs = 16;
+  repeated org.apache.airavata.model.status.ExperimentStatus experiment_status = 17;
+  repeated org.apache.airavata.model.commons.ErrorModel errors = 18;
+  repeated org.apache.airavata.model.process.ProcessModel processes = 19;
+  org.apache.airavata.model.workflow.AiravataWorkflow workflow = 20;
+  ExperimentCleanupStrategy clean_up_strategy = 21;
+}
+
+message ExperimentSummaryModel {
+  string experiment_id = 1;
+  string project_id = 2;
+  string gateway_id = 3;
+  int64 creation_time = 4;
+  string user_name = 5;
+  string name = 6;
+  string description = 7;
+  string execution_id = 8;
+  string resource_host_id = 9;
+  string experiment_status = 10;
+  int64 status_update_time = 12;
+}
+
+message ExperimentStatistics {
+  int32 all_experiment_count = 1;
+  int32 completed_experiment_count = 2;
+  int32 cancelled_experiment_count = 3;
+  int32 failed_experiment_count = 4;
+  int32 created_experiment_count = 5;
+  int32 running_experiment_count = 6;
+  repeated ExperimentSummaryModel all_experiments = 7;
+  repeated ExperimentSummaryModel completed_experiments = 8;
+  repeated ExperimentSummaryModel failed_experiments = 9;
+  repeated ExperimentSummaryModel cancelled_experiments = 10;
+  repeated ExperimentSummaryModel created_experiments = 11;
+  repeated ExperimentSummaryModel running_experiments = 12;
+}

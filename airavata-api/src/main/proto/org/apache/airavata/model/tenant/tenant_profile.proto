@@ -1,0 +1,63 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.tenant;
+
+option java_package = "org.apache.airavata.model.tenant";
+option java_multiple_files = true;
+
+enum TenantApprovalStatus {
+  TENANT_APPROVAL_STATUS_UNKNOWN = 0;
+  REQUESTED = 1;
+  APPROVED = 2;
+  ACTIVE = 3;
+  DEACTIVATED = 4;
+  CANCELLED = 5;
+  DENIED = 6;
+  CREATED = 7;
+  DEPLOYED = 8;
+}
+
+message TenantPreferences {
+  string tenant_admin_first_name = 10;
+  string tenant_admin_last_name = 11;
+  string tenant_admin_email = 12;
+}
+
+message TenantConfig {
+  string oauth_client_id = 16;
+  string oauth_client_secret = 17;
+  string identity_server_user_name = 13;
+  string identity_server_password_token = 14;
+}
+
+message Tenant {
+  string tenant_id = 1;
+  TenantApprovalStatus tenant_approval_status = 2;
+  string tenant_name = 3;
+  string domain = 4;
+  string email_address = 5;
+  string tenant_acronym = 6;
+  string tenant_url = 7;
+  string tenant_public_abstract = 8;
+  string review_proposal_description = 9;
+  string declined_reason = 15;
+  int64 request_creation_time = 18;
+  string requester_username = 19;
+}

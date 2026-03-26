@@ -1,0 +1,52 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// This file describes the definitions of the Data Structures of Application
+// interfaces. These interfaces are mapped to application mapping on various resources.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.appcatalog.appinterface;
+
+option java_package = "org.apache.airavata.model.appcatalog.appinterface";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/application/io/application_io.proto";
+
+// Application Interface Description.
+//
+// application_interface_id: Airavata Internal Unique ID. This is set by the registry.
+// application_name: Name of the application interface.
+// application_description: Optional description.
+// application_modules: Associate all application modules with versions which
+//   interface is applicable to.
+// application_inputs: Inputs to be passed to the application.
+// application_outputs: Outputs generated from the application.
+// archive_working_directory: Whether to archive the working directory.
+// has_optional_file_inputs: Whether the application has optional file inputs.
+// clean_after_staged: Whether to clean up after staging.
+message ApplicationInterfaceDescription {
+  string application_interface_id = 1;
+  string application_name = 2;
+  string application_description = 3;
+  repeated string application_modules = 4;
+  repeated org.apache.airavata.model.application.io.InputDataObjectType application_inputs = 5;
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType application_outputs = 6;
+  bool archive_working_directory = 7;
+  bool has_optional_file_inputs = 8;
+  bool clean_after_staged = 9;
+}

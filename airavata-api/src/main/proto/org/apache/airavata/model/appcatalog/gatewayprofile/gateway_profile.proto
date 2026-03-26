@@ -1,0 +1,62 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.appcatalog.gatewayprofile;
+
+option java_package = "org.apache.airavata.model.appcatalog.gatewayprofile";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
+import "org/apache/airavata/model/data/movement/data_movement.proto";
+
+message ComputeResourcePreference {
+  string compute_resource_id = 1;
+  bool override_by_airavata = 2;
+  string login_user_name = 3;
+  org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferred_job_submission_protocol = 4;
+  org.apache.airavata.model.data.movement.DataMovementProtocol preferred_data_movement_protocol = 5;
+  string preferred_batch_queue = 6;
+  string scratch_location = 7;
+  string allocation_project_number = 8;
+  string resource_specific_credential_store_token = 9;
+  string usage_reporting_gateway_id = 10;
+  string quality_of_service = 11;
+  string reservation = 12;
+  int64 reservation_start_time = 13;
+  int64 reservation_end_time = 14;
+  string ssh_account_provisioner = 15;
+  map<string, string> ssh_account_provisioner_config = 16;
+  string ssh_account_provisioner_additional_info = 17;
+}
+
+message StoragePreference {
+  string storage_resource_id = 1;
+  string login_user_name = 2;
+  string file_system_root_location = 3;
+  string resource_specific_credential_store_token = 4;
+}
+
+message GatewayResourceProfile {
+  string gateway_id = 1;
+  string credential_store_token = 2;
+  repeated ComputeResourcePreference compute_resource_preferences = 3;
+  repeated StoragePreference storage_preferences = 4;
+  string identity_server_tenant = 5;
+  string identity_server_pwd_cred_token = 6;
+}

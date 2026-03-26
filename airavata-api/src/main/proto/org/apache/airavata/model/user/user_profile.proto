@@ -1,0 +1,137 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.user;
+
+option java_package = "org.apache.airavata.model.user";
+option java_multiple_files = true;
+
+enum Status {
+  STATUS_UNKNOWN = 0;
+  ACTIVE = 1;
+  CONFIRMED = 2;
+  APPROVED = 3;
+  DELETED = 4;
+  DUPLICATE = 5;
+  GRACE_PERIOD = 6;
+  INVITED = 7;
+  DENIED = 8;
+  PENDING = 9;
+  PENDING_APPROVAL = 10;
+  PENDING_CONFIRMATION = 11;
+  SUSPENDED = 12;
+  DECLINED = 13;
+  EXPIRED = 14;
+}
+
+enum USCitizenship {
+  US_CITIZENSHIP_UNKNOWN = 0;
+  US_CITIZEN = 1;
+  US_PERMANENT_RESIDENT = 2;
+  OTHER_NON_US_CITIZEN = 3;
+}
+
+enum Ethnicity {
+  ETHNICITY_UNKNOWN = 0;
+  HISPANIC_LATINO = 1;
+  NOT_HISPANIC_LATINO = 2;
+}
+
+enum Race {
+  RACE_UNKNOWN = 0;
+  ASIAN = 1;
+  AMERICAN_INDIAN_OR_ALASKAN_NATIVE = 2;
+  BLACK_OR_AFRICAN_AMERICAN = 3;
+  NATIVE_HAWAIIAN_OR_PACIFIC_ISLANDER = 4;
+  WHITE = 5;
+}
+
+enum Disability {
+  DISABILITY_UNKNOWN = 0;
+  HEARING_IMAPAIRED = 1;
+  VISUAL_IMPAIRED = 2;
+  MOBILITY_OR_ORTHOPEDIC_IMPAIRMENT = 3;
+  OTHER_IMPAIRMENT = 4;
+}
+
+message NSFDemographics {
+  string airavata_internal_user_id = 1;
+  string gender = 2;
+  USCitizenship us_citizenship = 3;
+  repeated Ethnicity ethnicities = 4;
+  repeated Race races = 5;
+  repeated Disability disabilities = 6;
+}
+
+message CustomDashboard {
+  string airavata_internal_user_id = 1;
+  string experiment_id = 2;
+  string name = 3;
+  string description = 4;
+  string project = 5;
+  string owner = 6;
+  string application = 7;
+  string compute_resource = 8;
+  string job_name = 9;
+  string job_id = 10;
+  string job_status = 11;
+  string job_creation_time = 12;
+  string notifications_to = 13;
+  string working_dir = 14;
+  string job_description = 15;
+  string creation_time = 16;
+  string last_modified_time = 17;
+  string wall_time = 18;
+  string cpu_count = 19;
+  string node_count = 20;
+  string queue = 21;
+  string inputs = 22;
+  string outputs = 23;
+  string storage_dir = 24;
+  string errors = 25;
+}
+
+message UserProfile {
+  string user_model_version = 1;
+  string airavata_internal_user_id = 2;
+  string user_id = 3;
+  string gateway_id = 4;
+  repeated string emails = 5;
+  string first_name = 6;
+  string last_name = 7;
+  string middle_name = 8;
+  string name_prefix = 9;
+  string name_suffix = 10;
+  string orcid_id = 11;
+  repeated string phones = 12;
+  string country = 13;
+  repeated string nationality = 14;
+  string home_organization = 15;
+  string origination_affiliation = 16;
+  int64 creation_time = 17;
+  int64 last_access_time = 18;
+  int64 valid_until = 19;
+  Status state = 20;
+  string comments = 21;
+  repeated string labeled_uri = 22;
+  string gpg_key = 23;
+  string time_zone = 24;
+  NSFDemographics nsf_demographics = 25;
+  CustomDashboard custom_dashboard = 26;
+}

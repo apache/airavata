@@ -1,0 +1,142 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.messaging.event;
+
+option java_package = "org.apache.airavata.model.messaging.event";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/status/status.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+
+enum MessageLevel {
+  MESSAGE_LEVEL_UNKNOWN = 0;
+  INFO = 1;
+  DEBUG = 2;
+  ERROR = 3;
+  ACK = 4;
+}
+
+enum MessageType {
+  MESSAGE_TYPE_UNKNOWN = 0;
+  EXPERIMENT = 1;
+  EXPERIMENT_CANCEL = 2;
+  TASK = 3;
+  PROCESS = 4;
+  JOB = 5;
+  LAUNCHPROCESS = 6;
+  TERMINATEPROCESS = 7;
+  PROCESSOUTPUT = 8;
+  DB_EVENT = 9;
+  INTERMEDIATE_OUTPUTS = 10;
+}
+
+message ExperimentStatusChangeEvent {
+  org.apache.airavata.model.status.ExperimentState state = 1;
+  string experiment_id = 2;
+  string gateway_id = 3;
+}
+
+message ProcessIdentifier {
+  string process_id = 1;
+  string experiment_id = 2;
+  string gateway_id = 3;
+}
+
+message TaskIdentifier {
+  string task_id = 1;
+  string process_id = 2;
+  string experiment_id = 3;
+  string gateway_id = 4;
+}
+
+message TaskStatusChangeEvent {
+  org.apache.airavata.model.status.TaskState state = 1;
+  TaskIdentifier task_identity = 2;
+}
+
+message TaskStatusChangeRequestEvent {
+  org.apache.airavata.model.status.TaskState state = 1;
+  TaskIdentifier task_identity = 2;
+}
+
+message ProcessStatusChangeEvent {
+  org.apache.airavata.model.status.ProcessState state = 1;
+  ProcessIdentifier process_identity = 2;
+}
+
+message ProcessStatusChangeRequestEvent {
+  org.apache.airavata.model.status.ProcessState state = 1;
+  ProcessIdentifier process_identity = 2;
+}
+
+message TaskOutputChangeEvent {
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType output = 1;
+  TaskIdentifier task_identity = 2;
+}
+
+message JobIdentifier {
+  string job_id = 1;
+  string task_id = 2;
+  string process_id = 3;
+  string experiment_id = 4;
+  string gateway_id = 5;
+}
+
+message ExperimentSubmitEvent {
+  string experiment_id = 1;
+  string gateway_id = 2;
+}
+
+message ProcessSubmitEvent {
+  string process_id = 1;
+  string gateway_id = 2;
+  string experiment_id = 3;
+  string token_id = 4;
+}
+
+message ProcessTerminateEvent {
+  string process_id = 1;
+  string gateway_id = 2;
+  string token_id = 3;
+}
+
+message JobStatusChangeEvent {
+  org.apache.airavata.model.status.JobState state = 1;
+  JobIdentifier job_identity = 2;
+}
+
+message JobStatusChangeRequestEvent {
+  org.apache.airavata.model.status.JobState state = 1;
+  JobIdentifier job_identity = 2;
+}
+
+message ExperimentIntermediateOutputsEvent {
+  string experiment_id = 1;
+  string gateway_id = 2;
+  repeated string output_names = 3;
+}
+
+message Message {
+  bytes event = 1;
+  string message_id = 2;
+  MessageType message_type = 3;
+  int64 updated_time = 4;
+  MessageLevel message_level = 5;
+}
