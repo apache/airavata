@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,10 +49,8 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 class ServiceHealthEndpointTest {
 
-    private static final String HOST =
-            System.getProperty("airavata.monitoring.host", "localhost");
-    private static final int PORT =
-            Integer.parseInt(System.getProperty("airavata.monitoring.port", "9097"));
+    private static final String HOST = System.getProperty("airavata.monitoring.host", "localhost");
+    private static final int PORT = Integer.parseInt(System.getProperty("airavata.monitoring.port", "9097"));
 
     private static final String HEALTH_URL = "http://" + HOST + ":" + PORT + "/health/services";
 
@@ -61,17 +59,16 @@ class ServiceHealthEndpointTest {
 
     @BeforeAll
     static void setUp() {
-        httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        httpClient =
+                HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
         objectMapper = new ObjectMapper();
     }
 
     @Test
     void healthEndpointShouldReturn200() throws Exception {
         HttpResponse<String> response = getServicesResponse();
-        assertEquals(200, response.statusCode(),
-                "Expected HTTP 200 from /health/services, got " + response.statusCode());
+        assertEquals(
+                200, response.statusCode(), "Expected HTTP 200 from /health/services, got " + response.statusCode());
     }
 
     @Test
@@ -106,11 +103,10 @@ class ServiceHealthEndpointTest {
 
             if ("UP".equals(statusNode.asText())) {
                 JsonNode uptimeNode = serviceNode.get("uptimeMs");
-                assertNotNull(uptimeNode,
-                        "UP service '" + serviceName + "' is missing 'uptimeMs' field");
-                assertTrue(uptimeNode.asLong() > 0,
-                        "UP service '" + serviceName + "' has non-positive uptimeMs: "
-                                + uptimeNode.asLong());
+                assertNotNull(uptimeNode, "UP service '" + serviceName + "' is missing 'uptimeMs' field");
+                assertTrue(
+                        uptimeNode.asLong() > 0,
+                        "UP service '" + serviceName + "' has non-positive uptimeMs: " + uptimeNode.asLong());
             }
         }
     }

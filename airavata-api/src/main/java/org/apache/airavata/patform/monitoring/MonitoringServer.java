@@ -135,8 +135,7 @@ public class MonitoringServer implements IServer {
             return;
         }
         try {
-            Map<String, ServiceStatus> statuses =
-                    serviceRegistry != null ? serviceRegistry.getStatuses() : Map.of();
+            Map<String, ServiceStatus> statuses = serviceRegistry != null ? serviceRegistry.getStatuses() : Map.of();
             sendJson(exchange, 200, Map.of("services", statuses));
         } catch (Exception e) {
             logger.error("Error serving /health/services", e);

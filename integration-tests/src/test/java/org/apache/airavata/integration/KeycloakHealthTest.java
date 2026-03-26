@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,26 +43,21 @@ import org.junit.jupiter.api.Test;
 @Tag("integration")
 class KeycloakHealthTest {
 
-    private static final String BASE_URL =
-            System.getProperty("airavata.keycloak.url", "http://localhost:18080");
-    private static final String REALM =
-            System.getProperty("airavata.keycloak.realm", "default");
-    private static final String CLIENT_ID =
-            System.getProperty("airavata.keycloak.client.id", "cs-jupyterlab");
+    private static final String BASE_URL = System.getProperty("airavata.keycloak.url", "http://localhost:18080");
+    private static final String REALM = System.getProperty("airavata.keycloak.realm", "default");
+    private static final String CLIENT_ID = System.getProperty("airavata.keycloak.client.id", "cs-jupyterlab");
     private static final String CLIENT_SECRET =
             System.getProperty("airavata.keycloak.client.secret", "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1");
 
-    private static final String OIDC_URL =
-            BASE_URL + "/realms/" + REALM + "/.well-known/openid-configuration";
+    private static final String OIDC_URL = BASE_URL + "/realms/" + REALM + "/.well-known/openid-configuration";
 
     private static HttpClient httpClient;
     private static ObjectMapper objectMapper;
 
     @BeforeAll
     static void setUp() {
-        httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        httpClient =
+                HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
         objectMapper = new ObjectMapper();
     }
 
@@ -76,13 +71,16 @@ class KeycloakHealthTest {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode(),
+        assertEquals(
+                200,
+                response.statusCode(),
                 "Expected HTTP 200 from OIDC discovery endpoint, got " + response.statusCode());
 
         JsonNode doc = objectMapper.readTree(response.body());
         JsonNode tokenEndpoint = doc.get("token_endpoint");
         assertNotNull(tokenEndpoint, "OIDC discovery document is missing 'token_endpoint'");
-        assertTrue(tokenEndpoint.asText().startsWith("http"),
+        assertTrue(
+                tokenEndpoint.asText().startsWith("http"),
                 "token_endpoint is not a valid URL: " + tokenEndpoint.asText());
     }
 
@@ -98,7 +96,8 @@ class KeycloakHealthTest {
                 httpClient.send(discoveryRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, discoveryResponse.statusCode(), "Could not reach Keycloak OIDC discovery");
 
-        String tokenEndpoint = objectMapper.readTree(discoveryResponse.body())
+        String tokenEndpoint = objectMapper
+                .readTree(discoveryResponse.body())
                 .get("token_endpoint")
                 .asText();
 
@@ -113,12 +112,13 @@ class KeycloakHealthTest {
                 .POST(HttpRequest.BodyPublishers.ofString(form))
                 .build();
 
-        HttpResponse<String> tokenResponse =
-                httpClient.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> tokenResponse = httpClient.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, tokenResponse.statusCode(),
-                "client_credentials grant failed with status " + tokenResponse.statusCode()
-                        + ": " + tokenResponse.body());
+        assertEquals(
+                200,
+                tokenResponse.statusCode(),
+                "client_credentials grant failed with status " + tokenResponse.statusCode() + ": "
+                        + tokenResponse.body());
 
         JsonNode tokenDoc = objectMapper.readTree(tokenResponse.body());
         JsonNode accessToken = tokenDoc.get("access_token");

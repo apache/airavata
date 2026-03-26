@@ -1,22 +1,22 @@
 /**
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,10 +47,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 @Tag("integration")
 class BackgroundServiceHealthTest {
 
-    private static final String HOST =
-            System.getProperty("airavata.monitoring.host", "localhost");
-    private static final int PORT =
-            Integer.parseInt(System.getProperty("airavata.monitoring.port", "9097"));
+    private static final String HOST = System.getProperty("airavata.monitoring.host", "localhost");
+    private static final int PORT = Integer.parseInt(System.getProperty("airavata.monitoring.port", "9097"));
 
     private static final String HEALTH_URL = "http://" + HOST + ":" + PORT + "/health/services";
 
@@ -60,9 +58,8 @@ class BackgroundServiceHealthTest {
 
     @BeforeAll
     static void fetchHealthResponse() throws Exception {
-        httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        httpClient =
+                HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
         objectMapper = new ObjectMapper();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -71,8 +68,8 @@ class BackgroundServiceHealthTest {
                 .GET()
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode(),
-                "Could not reach /health/services — got HTTP " + response.statusCode());
+        assertEquals(
+                200, response.statusCode(), "Could not reach /health/services — got HTTP " + response.statusCode());
         JsonNode body = objectMapper.readTree(response.body());
         cachedRoot = body.get("services");
         assertNotNull(cachedRoot, "Expected 'services' key in /health/services response");
@@ -94,7 +91,8 @@ class BackgroundServiceHealthTest {
     @MethodSource("expectedServices")
     void serviceShouldBeRegistered(String serviceName) {
         assertNotNull(cachedRoot, "/health/services response was not fetched");
-        assertTrue(cachedRoot.has(serviceName),
+        assertTrue(
+                cachedRoot.has(serviceName),
                 "Expected service '" + serviceName + "' to be registered, "
                         + "but it was not found in the health response. "
                         + "Registered services: " + cachedRoot.fieldNames());
@@ -110,13 +108,13 @@ class BackgroundServiceHealthTest {
 
         JsonNode statusNode = serviceNode.get("status");
         assertNotNull(statusNode, "Service '" + serviceName + "' has no 'status' field");
-        assertEquals("UP", statusNode.asText(),
-                "Service '" + serviceName + "' is not UP — status: " + statusNode.asText());
+        assertEquals(
+                "UP", statusNode.asText(), "Service '" + serviceName + "' is not UP — status: " + statusNode.asText());
 
         JsonNode uptimeNode = serviceNode.get("uptimeMs");
         assertNotNull(uptimeNode, "Service '" + serviceName + "' has no 'uptimeMs' field");
-        assertTrue(uptimeNode.asLong() > 0,
-                "Service '" + serviceName + "' is UP but uptimeMs is not positive: "
-                        + uptimeNode.asLong());
+        assertTrue(
+                uptimeNode.asLong() > 0,
+                "Service '" + serviceName + "' is UP but uptimeMs is not positive: " + uptimeNode.asLong());
     }
 }
