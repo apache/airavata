@@ -1,5 +1,29 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.resourceprofile;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
@@ -13,16 +37,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class UserResourceProfileServiceTest {
 
-    @Mock RegistryServerHandler registryHandler;
+    @Mock
+    RegistryServerHandler registryHandler;
 
     UserResourceProfileService service;
     RequestContext ctx;
@@ -30,8 +49,8 @@ class UserResourceProfileServiceTest {
     @BeforeEach
     void setUp() {
         service = new UserResourceProfileService(registryHandler);
-        ctx = new RequestContext("testUser", "testGateway", "token123",
-                Map.of("userName", "testUser", "gatewayId", "testGateway"));
+        ctx = new RequestContext(
+                "testUser", "testGateway", "token123", Map.of("userName", "testUser", "gatewayId", "testGateway"));
     }
 
     @Test
@@ -48,7 +67,8 @@ class UserResourceProfileServiceTest {
 
     @Test
     void isUserResourceProfileExists_delegatesToRegistry() throws Exception {
-        when(registryHandler.isUserResourceProfileExists("testUser", "testGateway")).thenReturn(true);
+        when(registryHandler.isUserResourceProfileExists("testUser", "testGateway"))
+                .thenReturn(true);
 
         boolean result = service.isUserResourceProfileExists(ctx, "testUser", "testGateway");
 
@@ -69,7 +89,8 @@ class UserResourceProfileServiceTest {
 
     @Test
     void deleteUserResourceProfile_delegatesToRegistry() throws Exception {
-        when(registryHandler.deleteUserResourceProfile("testUser", "testGateway")).thenReturn(true);
+        when(registryHandler.deleteUserResourceProfile("testUser", "testGateway"))
+                .thenReturn(true);
 
         boolean result = service.deleteUserResourceProfile(ctx, "testUser", "testGateway");
 
@@ -79,8 +100,8 @@ class UserResourceProfileServiceTest {
     @Test
     void addUserComputeResourcePreference_delegatesToRegistry() throws Exception {
         UserComputeResourcePreference pref = new UserComputeResourcePreference();
-        when(registryHandler.addUserComputeResourcePreference(
-                "testUser", "testGateway", "compute-1", pref)).thenReturn(true);
+        when(registryHandler.addUserComputeResourcePreference("testUser", "testGateway", "compute-1", pref))
+                .thenReturn(true);
 
         boolean result = service.addUserComputeResourcePreference(ctx, "testUser", "testGateway", "compute-1", pref);
 
@@ -90,7 +111,8 @@ class UserResourceProfileServiceTest {
     @Test
     void getAllUserComputeResourcePreferences_delegatesToRegistry() throws Exception {
         List<UserComputeResourcePreference> prefs = List.of(new UserComputeResourcePreference());
-        when(registryHandler.getAllUserComputeResourcePreferences("testUser", "testGateway")).thenReturn(prefs);
+        when(registryHandler.getAllUserComputeResourcePreferences("testUser", "testGateway"))
+                .thenReturn(prefs);
 
         List<UserComputeResourcePreference> result =
                 service.getAllUserComputeResourcePreferences(ctx, "testUser", "testGateway");
@@ -121,7 +143,8 @@ class UserResourceProfileServiceTest {
     @Test
     void addUserStoragePreference_delegatesToRegistry() throws Exception {
         UserStoragePreference pref = new UserStoragePreference();
-        when(registryHandler.addUserStoragePreference("testUser", "testGateway", "storage-1", pref)).thenReturn(true);
+        when(registryHandler.addUserStoragePreference("testUser", "testGateway", "storage-1", pref))
+                .thenReturn(true);
 
         boolean result = service.addUserStoragePreference(ctx, "testUser", "testGateway", "storage-1", pref);
 
@@ -133,7 +156,6 @@ class UserResourceProfileServiceTest {
         when(registryHandler.getUserResourceProfile("bad-user", "testGateway"))
                 .thenThrow(new RuntimeException("DB error"));
 
-        assertThrows(ServiceException.class, () ->
-                service.getUserResourceProfile(ctx, "bad-user", "testGateway"));
+        assertThrows(ServiceException.class, () -> service.getUserResourceProfile(ctx, "bad-user", "testGateway"));
     }
 }

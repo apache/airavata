@@ -1,5 +1,27 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.appcatalog;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -23,10 +45,6 @@ import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class ApplicationCatalogService {
 
@@ -100,12 +118,7 @@ public class ApplicationCatalogService {
                 permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
                 sharingFilters.add(permissionTypeFilter);
                 sharingHandler
-                        .searchEntities(
-                                ctx.getGatewayId(),
-                                ctx.getUserId() + "@" + gatewayId,
-                                sharingFilters,
-                                0,
-                                -1)
+                        .searchEntities(ctx.getGatewayId(), ctx.getUserId() + "@" + gatewayId, sharingFilters, 0, -1)
                         .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             }
             List<String> accessibleComputeResourceIds = getAccessibleComputeResourceIds(ctx, gatewayId);
@@ -154,7 +167,12 @@ public class ApplicationCatalogService {
             throws ServiceException {
         try {
             if (SharingHelper.isSharingEnabled()) {
-                if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), appDeploymentId, ResourcePermissionType.READ)) {
+                if (!SharingHelper.userHasAccess(
+                        sharingHandler,
+                        ctx.getGatewayId(),
+                        ctx.getUserId(),
+                        appDeploymentId,
+                        ResourcePermissionType.READ)) {
                     throw new ServiceAuthorizationException(
                             "User does not have access to application deployment " + appDeploymentId);
                 }
@@ -172,7 +190,12 @@ public class ApplicationCatalogService {
             throws ServiceException {
         try {
             if (SharingHelper.isSharingEnabled()) {
-                if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), appDeploymentId, ResourcePermissionType.WRITE)) {
+                if (!SharingHelper.userHasAccess(
+                        sharingHandler,
+                        ctx.getGatewayId(),
+                        ctx.getUserId(),
+                        appDeploymentId,
+                        ResourcePermissionType.WRITE)) {
                     throw new ServiceAuthorizationException(
                             "User does not have WRITE access to application deployment " + appDeploymentId);
                 }
@@ -187,7 +210,12 @@ public class ApplicationCatalogService {
 
     public boolean deleteApplicationDeployment(RequestContext ctx, String appDeploymentId) throws ServiceException {
         try {
-            if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), appDeploymentId, ResourcePermissionType.WRITE)) {
+            if (!SharingHelper.userHasAccess(
+                    sharingHandler,
+                    ctx.getGatewayId(),
+                    ctx.getUserId(),
+                    appDeploymentId,
+                    ResourcePermissionType.WRITE)) {
                 throw new ServiceAuthorizationException(
                         "User does not have WRITE access to application deployment " + appDeploymentId);
             }
@@ -207,8 +235,7 @@ public class ApplicationCatalogService {
     }
 
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
-            RequestContext ctx, String gatewayId, ResourcePermissionType permissionType)
-            throws ServiceException {
+            RequestContext ctx, String gatewayId, ResourcePermissionType permissionType) throws ServiceException {
         try {
             List<String> accessibleAppDeploymentIds = new ArrayList<>();
             if (SharingHelper.isSharingEnabled()) {
@@ -224,12 +251,7 @@ public class ApplicationCatalogService {
                 permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
                 sharingFilters.add(permissionTypeFilter);
                 sharingHandler
-                        .searchEntities(
-                                ctx.getGatewayId(),
-                                ctx.getUserId() + "@" + gatewayId,
-                                sharingFilters,
-                                0,
-                                -1)
+                        .searchEntities(ctx.getGatewayId(), ctx.getUserId() + "@" + gatewayId, sharingFilters, 0, -1)
                         .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
             }
             List<String> accessibleComputeResourceIds = getAccessibleComputeResourceIds(ctx, gatewayId);
@@ -251,15 +273,18 @@ public class ApplicationCatalogService {
     }
 
     public List<ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
-            RequestContext ctx, String appModuleId, String groupResourceProfileId)
-            throws ServiceException {
+            RequestContext ctx, String appModuleId, String groupResourceProfileId) throws ServiceException {
         try {
-            if (!SharingHelper.userHasAccess(sharingHandler, ctx.getGatewayId(), ctx.getUserId(), groupResourceProfileId, ResourcePermissionType.READ)) {
+            if (!SharingHelper.userHasAccess(
+                    sharingHandler,
+                    ctx.getGatewayId(),
+                    ctx.getUserId(),
+                    groupResourceProfileId,
+                    ResourcePermissionType.READ)) {
                 throw new ServiceAuthorizationException(
                         "User is not authorized to access Group Resource Profile " + groupResourceProfileId);
             }
-            GroupResourceProfile groupResourceProfile =
-                    registryHandler.getGroupResourceProfile(groupResourceProfileId);
+            GroupResourceProfile groupResourceProfile = registryHandler.getGroupResourceProfile(groupResourceProfileId);
             List<String> accessibleComputeResourceIds = new ArrayList<>();
             for (GroupComputeResourcePreference pref : groupResourceProfile.getComputePreferences()) {
                 accessibleComputeResourceIds.add(pref.getComputeResourceId());
@@ -279,11 +304,7 @@ public class ApplicationCatalogService {
             sharingFilters.add(permissionTypeFilter);
             sharingHandler
                     .searchEntities(
-                            ctx.getGatewayId(),
-                            ctx.getUserId() + "@" + ctx.getGatewayId(),
-                            sharingFilters,
-                            0,
-                            -1)
+                            ctx.getGatewayId(), ctx.getUserId() + "@" + ctx.getGatewayId(), sharingFilters, 0, -1)
                     .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
 
             return registryHandler.getAccessibleApplicationDeploymentsForAppModule(
@@ -319,8 +340,7 @@ public class ApplicationCatalogService {
             ApplicationInterfaceDescription existingInterface =
                     registryHandler.getApplicationInterface(existingAppInterfaceId);
             if (existingInterface == null) {
-                throw new ServiceException(
-                        "Provided application interface does not exist: " + existingAppInterfaceId);
+                throw new ServiceException("Provided application interface does not exist: " + existingAppInterfaceId);
             }
             existingInterface.setApplicationName(newApplicationName);
             existingInterface.setApplicationInterfaceId(airavata_commonsConstants.DEFAULT_ID);

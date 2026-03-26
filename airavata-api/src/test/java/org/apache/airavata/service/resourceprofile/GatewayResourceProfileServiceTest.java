@@ -1,5 +1,29 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.resourceprofile;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -12,16 +36,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class GatewayResourceProfileServiceTest {
 
-    @Mock RegistryServerHandler registryHandler;
+    @Mock
+    RegistryServerHandler registryHandler;
 
     GatewayResourceProfileService service;
     RequestContext ctx;
@@ -29,8 +48,8 @@ class GatewayResourceProfileServiceTest {
     @BeforeEach
     void setUp() {
         service = new GatewayResourceProfileService(registryHandler);
-        ctx = new RequestContext("admin", "testGateway", "token123",
-                Map.of("userName", "admin", "gatewayId", "testGateway"));
+        ctx = new RequestContext(
+                "admin", "testGateway", "token123", Map.of("userName", "admin", "gatewayId", "testGateway"));
     }
 
     @Test
@@ -60,7 +79,8 @@ class GatewayResourceProfileServiceTest {
     @Test
     void updateGatewayResourceProfile_delegatesToRegistry() throws Exception {
         GatewayResourceProfile profile = new GatewayResourceProfile();
-        when(registryHandler.updateGatewayResourceProfile("testGateway", profile)).thenReturn(true);
+        when(registryHandler.updateGatewayResourceProfile("testGateway", profile))
+                .thenReturn(true);
 
         boolean result = service.updateGatewayResourceProfile(ctx, "testGateway", profile);
 
@@ -79,7 +99,8 @@ class GatewayResourceProfileServiceTest {
     @Test
     void addGatewayComputeResourcePreference_delegatesToRegistry() throws Exception {
         ComputeResourcePreference pref = new ComputeResourcePreference();
-        when(registryHandler.addGatewayComputeResourcePreference("testGateway", "compute-1", pref)).thenReturn(true);
+        when(registryHandler.addGatewayComputeResourcePreference("testGateway", "compute-1", pref))
+                .thenReturn(true);
 
         boolean result = service.addGatewayComputeResourcePreference(ctx, "testGateway", "compute-1", pref);
 
@@ -89,10 +110,10 @@ class GatewayResourceProfileServiceTest {
     @Test
     void getAllGatewayComputeResourcePreferences_delegatesToRegistry() throws Exception {
         List<ComputeResourcePreference> prefs = List.of(new ComputeResourcePreference());
-        when(registryHandler.getAllGatewayComputeResourcePreferences("testGateway")).thenReturn(prefs);
+        when(registryHandler.getAllGatewayComputeResourcePreferences("testGateway"))
+                .thenReturn(prefs);
 
-        List<ComputeResourcePreference> result =
-                service.getAllGatewayComputeResourcePreferences(ctx, "testGateway");
+        List<ComputeResourcePreference> result = service.getAllGatewayComputeResourcePreferences(ctx, "testGateway");
 
         assertEquals(1, result.size());
     }
@@ -110,7 +131,8 @@ class GatewayResourceProfileServiceTest {
     @Test
     void addGatewayStoragePreference_delegatesToRegistry() throws Exception {
         StoragePreference pref = new StoragePreference();
-        when(registryHandler.addGatewayStoragePreference("testGateway", "storage-1", pref)).thenReturn(true);
+        when(registryHandler.addGatewayStoragePreference("testGateway", "storage-1", pref))
+                .thenReturn(true);
 
         boolean result = service.addGatewayStoragePreference(ctx, "testGateway", "storage-1", pref);
 
@@ -119,8 +141,7 @@ class GatewayResourceProfileServiceTest {
 
     @Test
     void registryException_wrappedAsServiceException() throws Exception {
-        when(registryHandler.getGatewayResourceProfile("bad-gw"))
-                .thenThrow(new RuntimeException("DB error"));
+        when(registryHandler.getGatewayResourceProfile("bad-gw")).thenThrow(new RuntimeException("DB error"));
 
         assertThrows(ServiceException.class, () -> service.getGatewayResourceProfile(ctx, "bad-gw"));
     }

@@ -1,26 +1,44 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.project;
-
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.ProjectSearchFields;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.service.context.RequestContext;
-import org.apache.airavata.service.exception.ServiceAuthorizationException;
-import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.exception.ServiceNotFoundException;
-import org.apache.airavata.sharing.registry.models.Entity;
-import org.apache.airavata.sharing.registry.models.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.SearchCondition;
-import org.apache.airavata.sharing.registry.models.SearchCriteria;
-import org.apache.airavata.service.sharing.SharingHelper;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.service.context.RequestContext;
+import org.apache.airavata.service.exception.ServiceAuthorizationException;
+import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.exception.ServiceNotFoundException;
+import org.apache.airavata.service.sharing.SharingHelper;
+import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntitySearchField;
+import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProjectService {
 
@@ -82,8 +100,7 @@ public class ProjectService {
                                 "User does not have permission to update this resource");
                     }
                 } else {
-                    throw new ServiceAuthorizationException(
-                            "User does not have permission to update this resource");
+                    throw new ServiceAuthorizationException("User does not have permission to update this resource");
                 }
             }
 
@@ -120,8 +137,7 @@ public class ProjectService {
                                 "User does not have permission to delete this resource");
                     }
                 } else {
-                    throw new ServiceAuthorizationException(
-                            "User does not have permission to delete this resource");
+                    throw new ServiceAuthorizationException("User does not have permission to delete this resource");
                 }
             }
 
@@ -142,8 +158,7 @@ public class ProjectService {
                 throw new ServiceNotFoundException("Project " + projectId + " does not exist");
             }
 
-            if (ctx.getUserId().equals(project.getOwner())
-                    && ctx.getGatewayId().equals(project.getGatewayId())) {
+            if (ctx.getUserId().equals(project.getOwner()) && ctx.getGatewayId().equals(project.getGatewayId())) {
                 return project;
             }
 
@@ -151,8 +166,7 @@ public class ProjectService {
                 String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
                 if (!sharingHandler.userHasAccess(
                         ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":READ")) {
-                    throw new ServiceAuthorizationException(
-                            "User does not have permission to access this resource");
+                    throw new ServiceAuthorizationException("User does not have permission to access this resource");
                 }
                 return project;
             }
@@ -176,8 +190,8 @@ public class ProjectService {
                 searchCriteria.setSearchCondition(SearchCondition.EQUAL);
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 filters.add(searchCriteria);
-                sharingHandler.searchEntities(
-                        gatewayId, userName + "@" + gatewayId, filters, 0, -1)
+                sharingHandler
+                        .searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1)
                         .forEach(p -> accessibleProjectIds.add(p.getEntityId()));
 
                 if (accessibleProjectIds.isEmpty()) {
@@ -193,8 +207,14 @@ public class ProjectService {
         }
     }
 
-    public List<Project> searchProjects(RequestContext ctx, String gatewayId, String userName,
-            Map<ProjectSearchFields, String> filters, int limit, int offset) throws ServiceException {
+    public List<Project> searchProjects(
+            RequestContext ctx,
+            String gatewayId,
+            String userName,
+            Map<ProjectSearchFields, String> filters,
+            int limit,
+            int offset)
+            throws ServiceException {
         try {
             List<String> accessibleProjIds = new ArrayList<>();
 
@@ -205,8 +225,8 @@ public class ProjectService {
                 searchCriteria.setSearchCondition(SearchCondition.EQUAL);
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 sharingFilters.add(searchCriteria);
-                sharingHandler.searchEntities(
-                        gatewayId, userName + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE)
+                sharingHandler
+                        .searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE)
                         .forEach(e -> accessibleProjIds.add(e.getEntityId()));
 
                 if (accessibleProjIds.isEmpty()) {
@@ -219,5 +239,4 @@ public class ProjectService {
             throw new ServiceException("Error while searching projects: " + e.getMessage(), e);
         }
     }
-
 }

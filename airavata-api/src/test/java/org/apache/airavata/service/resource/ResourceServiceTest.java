@@ -1,12 +1,32 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.resource;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Map;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.exception.ServiceException;
 import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
@@ -16,16 +36,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ResourceServiceTest {
 
-    @Mock RegistryServerHandler registryHandler;
-    @Mock GroupResourceProfileService groupResourceProfileService;
+    @Mock
+    RegistryServerHandler registryHandler;
+
+    @Mock
+    GroupResourceProfileService groupResourceProfileService;
 
     ResourceService resourceService;
 
@@ -115,7 +133,8 @@ class ResourceServiceTest {
     @Test
     void addSSHJobSubmissionDetails_returnsId() throws Exception {
         SSHJobSubmission submission = new SSHJobSubmission();
-        when(registryHandler.addSSHJobSubmissionDetails("cr-001", 1, submission)).thenReturn("js-001");
+        when(registryHandler.addSSHJobSubmissionDetails("cr-001", 1, submission))
+                .thenReturn("js-001");
 
         String result = resourceService.addSSHJobSubmissionDetails("cr-001", 1, submission);
 
@@ -173,7 +192,8 @@ class ResourceServiceTest {
         when(registryHandler.addSCPDataMovementDetails(any(), any(), anyInt(), any()))
                 .thenThrow(new RuntimeException("registry failure"));
 
-        assertThrows(ServiceException.class,
+        assertThrows(
+                ServiceException.class,
                 () -> resourceService.addSCPDataMovementDetails("cr-001", DMType.COMPUTE_RESOURCE, 0, movement));
     }
 

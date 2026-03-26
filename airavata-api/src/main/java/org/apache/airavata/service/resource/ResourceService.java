@@ -1,5 +1,27 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.resource;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
@@ -19,21 +41,14 @@ import org.apache.airavata.model.data.movement.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.UnicoreDataMovement;
-import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
 import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
-import org.apache.airavata.service.resourceprofile.GatewayResourceProfileService;
-import org.apache.airavata.service.resourceprofile.UserResourceProfileService;
 import org.apache.thrift.TApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class ResourceService {
 
@@ -42,8 +57,8 @@ public class ResourceService {
     private final RegistryServerHandler registryHandler;
     private final GroupResourceProfileService groupResourceProfileService;
 
-    public ResourceService(RegistryServerHandler registryHandler,
-            GroupResourceProfileService groupResourceProfileService) {
+    public ResourceService(
+            RegistryServerHandler registryHandler, GroupResourceProfileService groupResourceProfileService) {
         this.registryHandler = registryHandler;
         this.groupResourceProfileService = groupResourceProfileService;
     }
@@ -77,8 +92,8 @@ public class ResourceService {
         }
     }
 
-    public boolean updateComputeResource(String computeResourceId,
-            ComputeResourceDescription computeResourceDescription) throws ServiceException {
+    public boolean updateComputeResource(
+            String computeResourceId, ComputeResourceDescription computeResourceDescription) throws ServiceException {
         try {
             return registryHandler.updateComputeResource(computeResourceId, computeResourceDescription);
         } catch (Exception e) {
@@ -123,8 +138,8 @@ public class ResourceService {
         }
     }
 
-    public boolean updateStorageResource(String storageResourceId,
-            StorageResourceDescription storageResourceDescription) throws ServiceException {
+    public boolean updateStorageResource(
+            String storageResourceId, StorageResourceDescription storageResourceDescription) throws ServiceException {
         try {
             return registryHandler.updateStorageResource(storageResourceId, storageResourceDescription);
         } catch (Exception e) {
@@ -144,8 +159,8 @@ public class ResourceService {
     // Job Submission
     // -------------------------------------------------------------------------
 
-    public String addLocalSubmissionDetails(String computeResourceId, int priorityOrder,
-            LOCALSubmission localSubmission) throws ServiceException {
+    public String addLocalSubmissionDetails(
+            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws ServiceException {
         try {
             return registryHandler.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
         } catch (Exception e) {
@@ -170,8 +185,8 @@ public class ResourceService {
         }
     }
 
-    public String addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder,
-            SSHJobSubmission sshJobSubmission) throws ServiceException {
+    public String addSSHJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws ServiceException {
         try {
             return registryHandler.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
         } catch (Exception e) {
@@ -179,8 +194,8 @@ public class ResourceService {
         }
     }
 
-    public String addSSHForkJobSubmissionDetails(String computeResourceId, int priorityOrder,
-            SSHJobSubmission sshJobSubmission) throws ServiceException {
+    public String addSSHForkJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws ServiceException {
         try {
             return registryHandler.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
         } catch (Exception e) {
@@ -196,8 +211,9 @@ public class ResourceService {
         }
     }
 
-    public String addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder,
-            CloudJobSubmission cloudJobSubmission) throws ServiceException {
+    public String addCloudJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission)
+            throws ServiceException {
         try {
             return registryHandler.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission);
         } catch (Exception e) {
@@ -213,11 +229,12 @@ public class ResourceService {
         }
     }
 
-    public String addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder,
-            UnicoreJobSubmission unicoreJobSubmission) throws ServiceException {
+    public String addUNICOREJobSubmissionDetails(
+            String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
+            throws ServiceException {
         try {
-            return registryHandler.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder,
-                    unicoreJobSubmission);
+            return registryHandler.addUNICOREJobSubmissionDetails(
+                    computeResourceId, priorityOrder, unicoreJobSubmission);
         } catch (Exception e) {
             throw new ServiceException("Error while adding UNICORE job submission: " + e.getMessage(), e);
         }
@@ -240,8 +257,8 @@ public class ResourceService {
         }
     }
 
-    public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId,
-            CloudJobSubmission cloudJobSubmission) throws ServiceException {
+    public boolean updateCloudJobSubmissionDetails(
+            String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws ServiceException {
         try {
             return registryHandler.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission);
         } catch (Exception e) {
@@ -249,8 +266,8 @@ public class ResourceService {
         }
     }
 
-    public boolean updateUnicoreJobSubmissionDetails(String jobSubmissionInterfaceId,
-            UnicoreJobSubmission unicoreJobSubmission) throws ServiceException {
+    public boolean updateUnicoreJobSubmissionDetails(
+            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws ServiceException {
         try {
             return registryHandler.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
         } catch (Exception e) {
@@ -271,8 +288,9 @@ public class ResourceService {
     // Data Movement
     // -------------------------------------------------------------------------
 
-    public String addLocalDataMovementDetails(String resourceId, DMType dmType, int priorityOrder,
-            LOCALDataMovement localDataMovement) throws ServiceException {
+    public String addLocalDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, LOCALDataMovement localDataMovement)
+            throws ServiceException {
         try {
             return registryHandler.addLocalDataMovementDetails(resourceId, dmType, priorityOrder, localDataMovement);
         } catch (Exception e) {
@@ -297,8 +315,9 @@ public class ResourceService {
         }
     }
 
-    public String addSCPDataMovementDetails(String resourceId, DMType dmType, int priorityOrder,
-            SCPDataMovement scpDataMovement) throws ServiceException {
+    public String addSCPDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
+            throws ServiceException {
         try {
             return registryHandler.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
         } catch (Exception e) {
@@ -323,18 +342,19 @@ public class ResourceService {
         }
     }
 
-    public String addUnicoreDataMovementDetails(String resourceId, DMType dmType, int priorityOrder,
-            UnicoreDataMovement unicoreDataMovement) throws ServiceException {
+    public String addUnicoreDataMovementDetails(
+            String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
+            throws ServiceException {
         try {
-            return registryHandler.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder,
-                    unicoreDataMovement);
+            return registryHandler.addUnicoreDataMovementDetails(
+                    resourceId, dmType, priorityOrder, unicoreDataMovement);
         } catch (Exception e) {
             throw new ServiceException("Error while adding UNICORE data movement: " + e.getMessage(), e);
         }
     }
 
-    public boolean updateUnicoreDataMovementDetails(String dataMovementInterfaceId,
-            UnicoreDataMovement unicoreDataMovement) throws ServiceException {
+    public boolean updateUnicoreDataMovementDetails(
+            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws ServiceException {
         try {
             return registryHandler.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement);
         } catch (Exception e) {
@@ -350,18 +370,19 @@ public class ResourceService {
         }
     }
 
-    public String addGridFTPDataMovementDetails(String computeResourceId, DMType dmType, int priorityOrder,
-            GridFTPDataMovement gridFTPDataMovement) throws ServiceException {
+    public String addGridFTPDataMovementDetails(
+            String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
+            throws ServiceException {
         try {
-            return registryHandler.addGridFTPDataMovementDetails(computeResourceId, dmType, priorityOrder,
-                    gridFTPDataMovement);
+            return registryHandler.addGridFTPDataMovementDetails(
+                    computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
         } catch (Exception e) {
             throw new ServiceException("Error while adding GridFTP data movement: " + e.getMessage(), e);
         }
     }
 
-    public boolean updateGridFTPDataMovementDetails(String dataMovementInterfaceId,
-            GridFTPDataMovement gridFTPDataMovement) throws ServiceException {
+    public boolean updateGridFTPDataMovementDetails(
+            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws ServiceException {
         try {
             return registryHandler.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
         } catch (Exception e) {
@@ -398,8 +419,8 @@ public class ResourceService {
         }
     }
 
-    public boolean updateResourceJobManager(String resourceJobManagerId,
-            ResourceJobManager updatedResourceJobManager) throws ServiceException {
+    public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
+            throws ServiceException {
         try {
             return registryHandler.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
         } catch (Exception e) {
@@ -445,8 +466,8 @@ public class ResourceService {
         try {
             return context.adaptor().getStorageVolumeInfo(location);
         } catch (AgentException e) {
-            throw new ServiceException("Error while retrieving storage volume info for resource " + resourceId
-                    + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error while retrieving storage volume info for resource " + resourceId + ": " + e.getMessage(), e);
         }
     }
 
@@ -456,8 +477,9 @@ public class ResourceService {
         try {
             return context.adaptor().getStorageDirectoryInfo(location);
         } catch (AgentException e) {
-            throw new ServiceException("Error while retrieving storage directory info for resource " + resourceId
-                    + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error while retrieving storage directory info for resource " + resourceId + ": " + e.getMessage(),
+                    e);
         }
     }
 
@@ -488,13 +510,14 @@ public class ResourceService {
             } catch (TApplicationException e) {
                 logger.debug("Storage resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
             } catch (Exception e) {
-                throw new ServiceException("Error looking up storage resource " + resourceId + ": " + e.getMessage(), e);
+                throw new ServiceException(
+                        "Error looking up storage resource " + resourceId + ": " + e.getMessage(), e);
             }
         }
 
         if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
-            throw new ServiceException("Resource with ID '" + resourceId
-                    + "' not found as either compute resource or storage resource");
+            throw new ServiceException(
+                    "Resource with ID '" + resourceId + "' not found as either compute resource or storage resource");
         }
 
         try {
@@ -508,8 +531,8 @@ public class ResourceService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error resolving storage info context for resource " + resourceId
-                    + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error resolving storage info context for resource " + resourceId + ": " + e.getMessage(), e);
         }
     }
 
@@ -534,7 +557,8 @@ public class ResourceService {
             } else {
                 logger.debug(
                         "User resource profile does not exist for user {} in gateway {}, will try group preferences",
-                        userId, gatewayId);
+                        userId,
+                        gatewayId);
             }
         } catch (Exception e) {
             throw new ServiceException("Error retrieving user compute resource preference: " + e.getMessage(), e);
@@ -564,7 +588,8 @@ public class ResourceService {
                             loginUserName = groupPref.getLoginUserName();
                             groupComputePref = groupPref;
                             groupResourceProfile = groupProfile;
-                            logger.debug("Using login username from group compute resource preference for resource {}",
+                            logger.debug(
+                                    "Using login username from group compute resource preference for resource {}",
                                     resourceId);
                             break;
                         }
@@ -584,15 +609,20 @@ public class ResourceService {
         if (loginFromUserPref) {
             if (userComputePref != null
                     && userComputePref.getResourceSpecificCredentialStoreToken() != null
-                    && !userComputePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                    && !userComputePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
                 credentialToken = userComputePref.getResourceSpecificCredentialStoreToken();
             } else {
                 try {
-                    UserResourceProfile userResourceProfile =
-                            registryHandler.getUserResourceProfile(userId, gatewayId);
+                    UserResourceProfile userResourceProfile = registryHandler.getUserResourceProfile(userId, gatewayId);
                     if (userResourceProfile == null
                             || userResourceProfile.getCredentialStoreToken() == null
-                            || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                            || userResourceProfile
+                                    .getCredentialStoreToken()
+                                    .trim()
+                                    .isEmpty()) {
                         throw new ServiceAuthorizationException(
                                 "No credential store token found for user " + userId + " in gateway " + gatewayId);
                     }
@@ -606,19 +636,27 @@ public class ResourceService {
         } else {
             if (groupComputePref != null
                     && groupComputePref.getResourceSpecificCredentialStoreToken() != null
-                    && !groupComputePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                    && !groupComputePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
                 credentialToken = groupComputePref.getResourceSpecificCredentialStoreToken();
             } else if (groupResourceProfile != null
                     && groupResourceProfile.getDefaultCredentialStoreToken() != null
-                    && !groupResourceProfile.getDefaultCredentialStoreToken().trim().isEmpty()) {
+                    && !groupResourceProfile
+                            .getDefaultCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
                 credentialToken = groupResourceProfile.getDefaultCredentialStoreToken();
             } else {
                 try {
-                    UserResourceProfile userResourceProfile =
-                            registryHandler.getUserResourceProfile(userId, gatewayId);
+                    UserResourceProfile userResourceProfile = registryHandler.getUserResourceProfile(userId, gatewayId);
                     if (userResourceProfile == null
                             || userResourceProfile.getCredentialStoreToken() == null
-                            || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                            || userResourceProfile
+                                    .getCredentialStoreToken()
+                                    .trim()
+                                    .isEmpty()) {
                         throw new ServiceAuthorizationException(
                                 "No credential store token found for compute resource " + resourceId);
                     }
@@ -637,8 +675,8 @@ public class ResourceService {
             logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
             return new StorageInfoContext(loginUserName, credentialToken, adaptor);
         } catch (AgentException e) {
-            throw new ServiceException("Error creating SSH adaptor for compute resource " + resourceId
-                    + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error creating SSH adaptor for compute resource " + resourceId + ": " + e.getMessage(), e);
         }
     }
 
@@ -658,7 +696,8 @@ public class ResourceService {
             } else {
                 logger.debug(
                         "User resource profile does not exist for user {} in gateway {}, will try gateway preferences",
-                        userId, gatewayId);
+                        userId,
+                        gatewayId);
             }
         } catch (Exception e) {
             throw new ServiceException("Error retrieving user storage preference: " + e.getMessage(), e);
@@ -670,7 +709,8 @@ public class ResourceService {
             if (gwProfile != null) {
                 storagePref = registryHandler.getGatewayStoragePreference(gatewayId, resourceId);
             } else {
-                logger.debug("Gateway resource profile does not exist for gateway {}, will check user preference",
+                logger.debug(
+                        "Gateway resource profile does not exist for gateway {}, will check user preference",
                         gatewayId);
             }
         } catch (TApplicationException e) {
@@ -702,15 +742,20 @@ public class ResourceService {
         if (loginFromUserPref) {
             if (userStoragePref != null
                     && userStoragePref.getResourceSpecificCredentialStoreToken() != null
-                    && !userStoragePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                    && !userStoragePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
                 credentialToken = userStoragePref.getResourceSpecificCredentialStoreToken();
             } else {
                 try {
-                    UserResourceProfile userResourceProfile =
-                            registryHandler.getUserResourceProfile(userId, gatewayId);
+                    UserResourceProfile userResourceProfile = registryHandler.getUserResourceProfile(userId, gatewayId);
                     if (userResourceProfile == null
                             || userResourceProfile.getCredentialStoreToken() == null
-                            || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                            || userResourceProfile
+                                    .getCredentialStoreToken()
+                                    .trim()
+                                    .isEmpty()) {
                         throw new ServiceAuthorizationException(
                                 "No credential store token found for user " + userId + " in gateway " + gatewayId);
                     }
@@ -724,7 +769,10 @@ public class ResourceService {
         } else {
             if (storagePref != null
                     && storagePref.getResourceSpecificCredentialStoreToken() != null
-                    && !storagePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                    && !storagePref
+                            .getResourceSpecificCredentialStoreToken()
+                            .trim()
+                            .isEmpty()) {
                 credentialToken = storagePref.getResourceSpecificCredentialStoreToken();
             } else {
                 try {
@@ -732,7 +780,10 @@ public class ResourceService {
                             registryHandler.getGatewayResourceProfile(gatewayId);
                     if (gatewayResourceProfile == null
                             || gatewayResourceProfile.getCredentialStoreToken() == null
-                            || gatewayResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                            || gatewayResourceProfile
+                                    .getCredentialStoreToken()
+                                    .trim()
+                                    .isEmpty()) {
                         throw new ServiceAuthorizationException(
                                 "No credential store token found for gateway " + gatewayId);
                     }
@@ -751,8 +802,8 @@ public class ResourceService {
             logger.info("Resolved resource {} as storage resource to fetch storage details", resourceId);
             return new StorageInfoContext(loginUserName, credentialToken, adaptor);
         } catch (AgentException e) {
-            throw new ServiceException("Error creating SSH adaptor for storage resource " + resourceId
-                    + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error creating SSH adaptor for storage resource " + resourceId + ": " + e.getMessage(), e);
         }
     }
 

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.integration;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
@@ -27,8 +29,6 @@ import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration test for the sharing registry lifecycle. Extends {@link AbstractIntegrationTest}
@@ -182,8 +182,14 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
         return id;
     }
 
-    private static String createEntity(String entitySuffix, String entityTypeId, String ownerId, String name,
-            String description, String parentEntityId) throws Exception {
+    private static String createEntity(
+            String entitySuffix,
+            String entityTypeId,
+            String ownerId,
+            String name,
+            String description,
+            String parentEntityId)
+            throws Exception {
         long ts = System.currentTimeMillis();
         Entity entity = new Entity();
         entity.setEntityId(domainId + ":" + entitySuffix);
@@ -230,10 +236,18 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @Order(4)
     @DisplayName("Add and remove group admin")
     void addAndRemoveGroupAdmin() throws Exception {
-        assertTrue(handler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId7)), "addGroupAdmins should return true");
-        assertTrue(handler.hasAdminAccess(domainId, groupId1, userId7), "userId7 should have admin access after being added");
-        assertTrue(handler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId7)), "removeGroupAdmins should return true");
-        assertFalse(handler.hasAdminAccess(domainId, groupId1, userId7), "userId7 should not have admin access after removal");
+        assertTrue(
+                handler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId7)),
+                "addGroupAdmins should return true");
+        assertTrue(
+                handler.hasAdminAccess(domainId, groupId1, userId7),
+                "userId7 should have admin access after being added");
+        assertTrue(
+                handler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId7)),
+                "removeGroupAdmins should return true");
+        assertFalse(
+                handler.hasAdminAccess(domainId, groupId1, userId7),
+                "userId7 should not have admin access after removal");
     }
 
     @Test
@@ -241,10 +255,13 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("Transfer group ownership")
     void transferGroupOwnership() throws Exception {
         handler.addUsersToGroup(domainId, Arrays.asList(userId2), groupId1);
-        assertTrue(handler.transferGroupOwnership(domainId, groupId1, userId2), "ownership transfer should return true");
+        assertTrue(
+                handler.transferGroupOwnership(domainId, groupId1, userId2), "ownership transfer should return true");
         assertTrue(handler.hasOwnerAccess(domainId, groupId1, userId2), "userId2 should be the new owner");
         // Transfer back
-        assertTrue(handler.transferGroupOwnership(domainId, groupId1, userId1), "ownership transfer back should return true");
+        assertTrue(
+                handler.transferGroupOwnership(domainId, groupId1, userId1),
+                "ownership transfer back should return true");
         assertFalse(handler.hasOwnerAccess(domainId, groupId1, userId2), "userId2 should no longer be owner");
     }
 
@@ -257,11 +274,17 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
         handler.addUsersToGroup(domainId, Arrays.asList(userId2, userId3), groupId2);
         handler.addChildGroupsToParentGroup(domainId, Arrays.asList(groupId2), groupId1);
 
-        assertEquals(1, handler.getGroupMembersOfTypeGroup(domainId, groupId1, 0, 10).size(),
+        assertEquals(
+                1,
+                handler.getGroupMembersOfTypeGroup(domainId, groupId1, 0, 10).size(),
                 "groupId1 should have one child group (groupId2)");
-        assertEquals(2, handler.getGroupMembersOfTypeUser(domainId, groupId2, 0, 10).size(),
+        assertEquals(
+                2,
+                handler.getGroupMembersOfTypeUser(domainId, groupId2, 0, 10).size(),
                 "groupId2 should have two direct users");
-        assertEquals(1, handler.getAllMemberGroupsForUser(domainId, userId3).size(),
+        assertEquals(
+                1,
+                handler.getAllMemberGroupsForUser(domainId, userId3).size(),
                 "userId3 should be a member of groupId2");
     }
 
@@ -270,21 +293,27 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("Entity sharing via users propagates to children")
     void entitySharingPropagatesViaUsers() throws Exception {
         entityId1 = createEntity("Entity1", entityTypeId1, userId1, "Project name 1", "Project description", null);
-        entityId2 = createEntity("Entity2", entityTypeId2, userId1, "Experiment name", "Experiment description", entityId1);
-        entityId3 = createEntity("Entity3", entityTypeId2, userId1, "Experiment name", "Experiment description", entityId1);
+        entityId2 =
+                createEntity("Entity2", entityTypeId2, userId1, "Experiment name", "Experiment description", entityId1);
+        entityId3 =
+                createEntity("Entity3", entityTypeId2, userId1, "Experiment name", "Experiment description", entityId1);
 
         handler.shareEntityWithUsers(domainId, entityId1, Arrays.asList(userId2), permissionTypeId1, true);
         handler.shareEntityWithGroups(domainId, entityId3, Arrays.asList(groupId2), permissionTypeId1, true);
 
         entityId4 = createEntity("Entity4", entityTypeId3, userId3, "Input name", "Input file description", entityId3);
 
-        assertTrue(handler.userHasAccess(domainId, userId3, entityId4, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId3, entityId4, permissionTypeId1),
                 "userId3 (group member) should have access to child entity via group share");
-        assertTrue(handler.userHasAccess(domainId, userId2, entityId4, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId2, entityId4, permissionTypeId1),
                 "userId2 should have access to child entity via parent group share");
-        assertTrue(handler.userHasAccess(domainId, userId1, entityId4, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId1, entityId4, permissionTypeId1),
                 "owner userId1 should have access");
-        assertFalse(handler.userHasAccess(domainId, userId3, entityId1, permissionTypeId1),
+        assertFalse(
+                handler.userHasAccess(domainId, userId3, entityId1, permissionTypeId1),
                 "userId3 should not have access to entityId1 (shared only with userId2)");
     }
 
@@ -292,15 +321,19 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @Order(8)
     @DisplayName("Entity sharing with multiple permission types")
     void entitySharingWithMultiplePermissions() throws Exception {
-        entityId5 = createEntity("Entity5", entityTypeId4, userId1, "App deployment name", "App deployment description", null);
+        entityId5 = createEntity(
+                "Entity5", entityTypeId4, userId1, "App deployment name", "App deployment description", null);
         handler.shareEntityWithUsers(domainId, entityId5, Arrays.asList(userId2), permissionTypeId1, true);
         handler.shareEntityWithGroups(domainId, entityId5, Arrays.asList(groupId2), permissionTypeId2, true);
 
-        assertTrue(handler.userHasAccess(domainId, userId3, entityId5, permissionTypeId2),
+        assertTrue(
+                handler.userHasAccess(domainId, userId3, entityId5, permissionTypeId2),
                 "userId3 (group member) should have WRITE access via group");
-        assertTrue(handler.userHasAccess(domainId, userId2, entityId5, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId2, entityId5, permissionTypeId1),
                 "userId2 should have READ access via direct share");
-        assertFalse(handler.userHasAccess(domainId, userId3, entityId5, permissionTypeId1),
+        assertFalse(
+                handler.userHasAccess(domainId, userId3, entityId5, permissionTypeId1),
                 "userId3 should not have READ access (only WRITE via group)");
     }
 
@@ -321,7 +354,8 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
         typeCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
         filters.add(typeCriteria);
 
-        assertTrue(handler.searchEntities(domainId, userId1, filters, 0, -1).size() > 0,
+        assertTrue(
+                handler.searchEntities(domainId, userId1, filters, 0, -1).size() > 0,
                 "search should return at least entityId4 (FileInput entity with 'Input' in name)");
     }
 
@@ -329,12 +363,16 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @Order(10)
     @DisplayName("Get shared users and groups for entity")
     void getSharedUsersAndGroups() throws Exception {
-        assertNotNull(handler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1),
+        assertNotNull(
+                handler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1),
                 "getListOfSharedUsers should not return null");
-        assertNotNull(handler.getListOfSharedGroups(domainId, entityId1, permissionTypeId1),
+        assertNotNull(
+                handler.getListOfSharedGroups(domainId, entityId1, permissionTypeId1),
                 "getListOfSharedGroups should not return null");
-        assertEquals(1,
-                handler.getListOfSharedUsers(domainId, entityId1, domainId + ":OWNER").size(),
+        assertEquals(
+                1,
+                handler.getListOfSharedUsers(domainId, entityId1, domainId + ":OWNER")
+                        .size(),
                 "entityId1 should have exactly one owner");
     }
 
@@ -344,9 +382,11 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     void changingParentEntityUpdatesPermissions() throws Exception {
         // Setup: entityId2 parent is entityId1; entityId1 is shared with userId2
         assertTrue(handler.userHasAccess(domainId, userId2, entityId1, permissionTypeId1));
-        assertTrue(handler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1),
                 "userId2 should have access to entityId2 via parent entityId1");
-        assertFalse(handler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1),
+        assertFalse(
+                handler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1),
                 "userId3 should not yet have access to entityId2");
 
         // Create a second parent entity shared with userId3
@@ -368,13 +408,16 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
         assertEquals(entityId6, entity2Updated.getParentEntityId(), "parent should be updated to entityId6");
 
         // userId2's access should be removed (was from old parent)
-        assertFalse(handler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1),
+        assertFalse(
+                handler.userHasAccess(domainId, userId2, entityId2, permissionTypeId1),
                 "userId2 should lose access after parent change");
         // userId3 now has access via new parent
-        assertTrue(handler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId3, entityId2, permissionTypeId1),
                 "userId3 should gain access via new parent entityId6");
         // userId7's direct share is preserved
-        assertTrue(handler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1),
+        assertTrue(
+                handler.userHasAccess(domainId, userId7, entityId2, permissionTypeId1),
                 "userId7's direct share should be preserved after parent change");
     }
 
@@ -382,24 +425,35 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @Order(12)
     @DisplayName("getListOfDirectlySharedUsers returns only direct shares")
     void directlySharedUsersDoNotIncludeCascading() throws Exception {
-        assertEquals(Arrays.asList(user3),
+        assertEquals(
+                Arrays.asList(user3),
                 handler.getListOfDirectlySharedUsers(domainId, entityId6, permissionTypeId1),
                 "entityId6 should be directly shared with user3 only");
-        assertEquals(Arrays.asList(user7),
+        assertEquals(
+                Arrays.asList(user7),
                 handler.getListOfDirectlySharedUsers(domainId, entityId2, permissionTypeId1),
                 "entityId2 should be directly shared with user7 only");
 
         List<org.apache.airavata.sharing.registry.models.User> entityId2SharedUsers =
                 handler.getListOfSharedUsers(domainId, entityId2, permissionTypeId1);
-        assertEquals(2, entityId2SharedUsers.size(), "entityId2 should have 2 shared users total (user3 cascaded + user7 direct)");
-        assertTrue(entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7),
+        assertEquals(
+                2,
+                entityId2SharedUsers.size(),
+                "entityId2 should have 2 shared users total (user3 cascaded + user7 direct)");
+        assertTrue(
+                entityId2SharedUsers.contains(user3) && entityId2SharedUsers.contains(user7),
                 "shared users should contain both user3 and user7");
 
-        assertEquals(1,
-                handler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1).size(),
+        assertEquals(
+                1,
+                handler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1)
+                        .size(),
                 "entityId3 should have one directly shared group");
-        assertEquals(groupId2,
-                handler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1).get(0).getGroupId(),
+        assertEquals(
+                groupId2,
+                handler.getListOfDirectlySharedGroups(domainId, entityId3, permissionTypeId1)
+                        .get(0)
+                        .getGroupId(),
                 "the directly shared group for entityId3 should be groupId2");
     }
 
@@ -412,14 +466,15 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
         Domain domain = handler.getDomain(domainId);
         domain.setInitialUserGroupId(initialUserGroupId);
         assertTrue(handler.updateDomain(domain), "updateDomain should return true");
-        assertEquals(initialUserGroupId, handler.getDomain(domainId).getInitialUserGroupId(),
+        assertEquals(
+                initialUserGroupId,
+                handler.getDomain(domainId).getInitialUserGroupId(),
                 "domain should have initialUserGroupId set");
 
         String userId8 = createUser("test-user-8");
         List<UserGroup> user8Groups = handler.getAllMemberGroupsForUser(domainId, userId8);
         assertFalse(user8Groups.isEmpty(), "new user should be added to at least one group");
         assertEquals(1, user8Groups.size(), "new user should be in exactly one group");
-        assertEquals(initialUserGroupId, user8Groups.get(0).getGroupId(),
-                "new user should be in the initialUserGroup");
+        assertEquals(initialUserGroupId, user8Groups.get(0).getGroupId(), "new user should be in the initialUserGroup");
     }
 }

@@ -1,5 +1,27 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.credential;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -10,18 +32,14 @@ import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
-import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CredentialService {
 
@@ -30,7 +48,8 @@ public class CredentialService {
     private final CredentialStoreServerHandler credentialHandler;
     private final SharingRegistryServerHandler sharingHandler;
 
-    public CredentialService(CredentialStoreServerHandler credentialHandler, SharingRegistryServerHandler sharingHandler) {
+    public CredentialService(
+            CredentialStoreServerHandler credentialHandler, SharingRegistryServerHandler sharingHandler) {
         this.credentialHandler = credentialHandler;
         this.sharingHandler = sharingHandler;
     }
@@ -55,7 +74,8 @@ public class CredentialService {
                 sharingHandler.createEntity(entity);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back ssh key creation for user " + userName + " and description [" + description + "]");
+                logger.error("Rolling back ssh key creation for user " + userName + " and description [" + description
+                        + "]");
                 credentialHandler.deleteSSHCredential(key, gatewayId);
                 throw new ServiceException("Failed to create sharing registry record");
             }
@@ -64,7 +84,8 @@ public class CredentialService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error occurred while registering SSH Credential. More info : " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error occurred while registering SSH Credential. More info : " + e.getMessage(), e);
         }
     }
 
@@ -91,16 +112,19 @@ public class CredentialService {
                 sharingHandler.createEntity(entity);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back password registration for user " + userName + " and description [" + description + "]");
+                logger.error("Rolling back password registration for user " + userName + " and description ["
+                        + description + "]");
                 credentialHandler.deletePWDCredential(key, gatewayId);
                 throw new ServiceException("Failed to create sharing registry record");
             }
-            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : " + loginUserName);
+            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : "
+                    + loginUserName);
             return key;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error occurred while registering PWD Credential. More info : " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error occurred while registering PWD Credential. More info : " + e.getMessage(), e);
         }
     }
 
@@ -108,7 +132,8 @@ public class CredentialService {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
-            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userName, tokenId, ResourcePermissionType.READ)) {
+            if (!SharingHelper.userHasAccess(
+                    sharingHandler, gatewayId, userName, tokenId, ResourcePermissionType.READ)) {
                 logger.info("User " + userName + " not allowed to access credential store token " + tokenId);
                 throw new ServiceAuthorizationException("User does not have permission to access this resource");
             }
@@ -118,11 +143,15 @@ public class CredentialService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving credential summary for token " + tokenId + ". GatewayId: " + gatewayId + " More info : " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving credential summary for token " + tokenId + ". GatewayId: " + gatewayId
+                            + " More info : " + e.getMessage(),
+                    e);
         }
     }
 
-    public List<CredentialSummary> getAllCredentialSummaries(RequestContext ctx, SummaryType type) throws ServiceException {
+    public List<CredentialSummary> getAllCredentialSummaries(RequestContext ctx, SummaryType type)
+            throws ServiceException {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
@@ -138,10 +167,14 @@ public class CredentialService {
                             .collect(Collectors.toList());
             List<CredentialSummary> credentialSummaries =
                     credentialHandler.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
-            logger.debug("Airavata successfully retrieved credential summaries of type " + type + " GatewayId: " + gatewayId);
+            logger.debug("Airavata successfully retrieved credential summaries of type " + type + " GatewayId: "
+                    + gatewayId);
             return credentialSummaries;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving credential summaries of type " + type + ". GatewayId: " + gatewayId + " More info : " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving credential summaries of type " + type + ". GatewayId: " + gatewayId
+                            + " More info : " + e.getMessage(),
+                    e);
         }
     }
 
@@ -149,16 +182,20 @@ public class CredentialService {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
-            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
-                logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
+            if (!SharingHelper.userHasAccess(
+                    sharingHandler, gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+                logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token "
+                        + airavataCredStoreToken);
                 throw new ServiceAuthorizationException("User does not have permission to delete this resource.");
             }
-            logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
+            logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : "
+                    + airavataCredStoreToken);
             return credentialHandler.deleteSSHCredential(airavataCredStoreToken, gatewayId);
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error occurred while deleting SSH credential. More info : " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error occurred while deleting SSH credential. More info : " + e.getMessage(), e);
         }
     }
 
@@ -166,17 +203,20 @@ public class CredentialService {
         String gatewayId = ctx.getGatewayId();
         String userName = ctx.getUserId();
         try {
-            if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
-                logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token " + airavataCredStoreToken);
+            if (!SharingHelper.userHasAccess(
+                    sharingHandler, gatewayId, userName, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
+                logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token "
+                        + airavataCredStoreToken);
                 throw new ServiceAuthorizationException("User does not have permission to delete this resource.");
             }
-            logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : " + airavataCredStoreToken);
+            logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : "
+                    + airavataCredStoreToken);
             return credentialHandler.deletePWDCredential(airavataCredStoreToken, gatewayId);
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error occurred while deleting PWD credential. More info : " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error occurred while deleting PWD credential. More info : " + e.getMessage(), e);
         }
     }
-
 }

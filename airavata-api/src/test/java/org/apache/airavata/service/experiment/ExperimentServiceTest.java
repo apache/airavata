@@ -1,10 +1,33 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.experiment;
 
-import org.apache.airavata.model.application.io.InputDataObjectType;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
@@ -27,19 +50,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doNothing;
-
 @ExtendWith(MockitoExtension.class)
 class ExperimentServiceTest {
 
-    @Mock RegistryServerHandler registryHandler;
-    @Mock SharingRegistryServerHandler sharingHandler;
-    @Mock EventPublisher eventPublisher;
+    @Mock
+    RegistryServerHandler registryHandler;
+
+    @Mock
+    SharingRegistryServerHandler sharingHandler;
+
+    @Mock
+    EventPublisher eventPublisher;
 
     ExperimentService experimentService;
     RequestContext ctx;
@@ -47,8 +68,8 @@ class ExperimentServiceTest {
     @BeforeEach
     void setUp() {
         experimentService = new ExperimentService(registryHandler, sharingHandler, eventPublisher);
-        ctx = new RequestContext("testUser", "testGateway", "token123",
-                Map.of("userName", "testUser", "gatewayId", "testGateway"));
+        ctx = new RequestContext(
+                "testUser", "testGateway", "token123", Map.of("userName", "testUser", "gatewayId", "testGateway"));
     }
 
     @Test
@@ -148,11 +169,10 @@ class ExperimentServiceTest {
     void getExperimentStatistics_delegatesToRegistry() throws Exception {
         ExperimentStatistics stats = new ExperimentStatistics();
         stats.setAllExperimentCount(5);
-        when(registryHandler.getExperimentStatistics(
-                "testGateway", 1000L, 2000L, null, null, null, null, 10, 0))
+        when(registryHandler.getExperimentStatistics("testGateway", 1000L, 2000L, null, null, null, null, 10, 0))
                 .thenReturn(stats);
-        ExperimentStatistics result = experimentService.getExperimentStatistics(
-                ctx, "testGateway", 1000L, 2000L, null, null, null, 10, 0);
+        ExperimentStatistics result =
+                experimentService.getExperimentStatistics(ctx, "testGateway", 1000L, 2000L, null, null, null, 10, 0);
         assertEquals(5, result.getAllExperimentCount());
     }
 
@@ -195,7 +215,8 @@ class ExperimentServiceTest {
         when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:WRITE"))
                 .thenReturn(false);
 
-        assertThrows(ServiceAuthorizationException.class,
+        assertThrows(
+                ServiceAuthorizationException.class,
                 () -> experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1")));
     }
 
@@ -217,7 +238,8 @@ class ExperimentServiceTest {
         job.addToJobStatuses(jobStatus);
         when(registryHandler.getJobDetails("exp-123")).thenReturn(List.of(job));
 
-        assertThrows(ServiceException.class,
+        assertThrows(
+                ServiceException.class,
                 () -> experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1")));
     }
 
@@ -229,7 +251,7 @@ class ExperimentServiceTest {
         ExperimentModel experiment = new ExperimentModel();
         experiment.setUserName("testUser");
         experiment.setGatewayId("testGateway");
-        experiment.setProcesses(new java.util.ArrayList<>());  // no in-progress output fetch processes
+        experiment.setProcesses(new java.util.ArrayList<>()); // no in-progress output fetch processes
         when(registryHandler.getExperiment("exp-123")).thenReturn(experiment);
 
         JobModel job = new JobModel();
@@ -249,7 +271,8 @@ class ExperimentServiceTest {
         when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:READ"))
                 .thenReturn(false);
 
-        assertThrows(ServiceAuthorizationException.class,
+        assertThrows(
+                ServiceAuthorizationException.class,
                 () -> experimentService.getIntermediateOutputProcessStatus(ctx, "exp-123", List.of("output1")));
     }
 
@@ -277,8 +300,7 @@ class ExperimentServiceTest {
 
         when(registryHandler.getExperiment("exp-123")).thenReturn(experiment);
 
-        ProcessStatus result = experimentService.getIntermediateOutputProcessStatus(
-                ctx, "exp-123", List.of("output1"));
+        ProcessStatus result = experimentService.getIntermediateOutputProcessStatus(ctx, "exp-123", List.of("output1"));
 
         assertEquals(ProcessState.EXECUTING, result.getState());
     }

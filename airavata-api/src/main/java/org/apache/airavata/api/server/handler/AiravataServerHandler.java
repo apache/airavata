@@ -21,25 +21,16 @@ package org.apache.airavata.api.server.handler;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import org.apache.airavata.accountprovisioning.ConfigParam;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
-import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner;
-import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
-import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParamType;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -62,7 +53,6 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProf
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
@@ -73,45 +63,33 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.appcatalog.ApplicationCatalogService;
 import org.apache.airavata.service.credential.CredentialService;
+import org.apache.airavata.service.dataproduct.DataProductService;
 import org.apache.airavata.service.experiment.ExperimentService;
 import org.apache.airavata.service.gateway.GatewayService;
+import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
 import org.apache.airavata.service.messaging.EventPublisher;
 import org.apache.airavata.service.notification.NotificationService;
+import org.apache.airavata.service.parser.ParserService;
 import org.apache.airavata.service.project.ProjectService;
 import org.apache.airavata.service.resource.ResourceService;
 import org.apache.airavata.service.resourceprofile.GatewayResourceProfileService;
-import org.apache.airavata.service.dataproduct.DataProductService;
-import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
-import org.apache.airavata.service.parser.ParserService;
 import org.apache.airavata.service.resourceprofile.UserResourceProfileService;
-import org.apache.airavata.service.sharing.ResourceSharingService;
-import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.service.sharing.ResourceSharingService;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
-import org.apache.thrift.TApplicationException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,7 +319,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean isUserExists(AuthzToken authzToken, String gatewayId, String userName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> gatewayService.isUserExists(ctx, gatewayId, userName));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> gatewayService.isUserExists(ctx, gatewayId, userName));
     }
 
     @Override
@@ -373,7 +352,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.updateGateway(ctx, gatewayId, updatedGateway));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> gatewayService.updateGateway(ctx, gatewayId, updatedGateway));
     }
 
     @Override
@@ -420,7 +400,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createNotification(AuthzToken authzToken, Notification notification)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.createNotification(ctx, notification));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> notificationService.createNotification(ctx, notification));
     }
 
     @Override
@@ -428,7 +409,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateNotification(AuthzToken authzToken, Notification notification)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.updateNotification(ctx, notification));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> notificationService.updateNotification(ctx, notification));
     }
 
     @Override
@@ -436,7 +418,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteNotification(AuthzToken authzToken, String gatewayId, String notificationId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.deleteNotification(ctx, gatewayId, notificationId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> notificationService.deleteNotification(ctx, gatewayId, notificationId));
     }
 
     // No security check
@@ -444,7 +427,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Notification getNotification(AuthzToken authzToken, String gatewayId, String notificationId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.getNotification(ctx, gatewayId, notificationId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> notificationService.getNotification(ctx, gatewayId, notificationId));
     }
 
     // No security check
@@ -459,7 +443,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String generateAndRegisterSSHKeys(AuthzToken authzToken, String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.generateAndRegisterSSHKeys(ctx, description));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> credentialService.generateAndRegisterSSHKeys(ctx, description));
     }
 
     /**
@@ -476,7 +461,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerPwdCredential(
             AuthzToken authzToken, String loginUserName, String password, String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.registerPwdCredential(ctx, loginUserName, password, description));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> credentialService.registerPwdCredential(ctx, loginUserName, password, description));
     }
 
     @Override
@@ -498,14 +486,16 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.deleteSSHPubKey(ctx, airavataCredStoreToken));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> credentialService.deleteSSHPubKey(ctx, airavataCredStoreToken));
     }
 
     @Override
     @SecurityCheck
     public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.deletePWDCredential(ctx, airavataCredStoreToken));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> credentialService.deletePWDCredential(ctx, airavataCredStoreToken));
     }
 
     /**
@@ -518,8 +508,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createProject(AuthzToken authzToken, String gatewayId, Project project)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> projectService.createProject(ctx, gatewayId, project));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> projectService.createProject(ctx, gatewayId, project));
     }
 
     @Override
@@ -527,8 +517,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateProject(AuthzToken authzToken, String projectId, Project updatedProject)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        ThriftAdapter.execute(authzToken, null,
-                ctx -> { projectService.updateProject(ctx, projectId, updatedProject); return null; });
+        ThriftAdapter.execute(authzToken, null, ctx -> {
+            projectService.updateProject(ctx, projectId, updatedProject);
+            return null;
+        });
     }
 
     @Override
@@ -536,8 +528,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteProject(AuthzToken authzToken, String projectId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> projectService.deleteProject(ctx, projectId));
+        return ThriftAdapter.execute(authzToken, null, ctx -> projectService.deleteProject(ctx, projectId));
     }
 
     /**
@@ -550,8 +541,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Project getProject(AuthzToken authzToken, String projectId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> projectService.getProject(ctx, projectId));
+        return ThriftAdapter.execute(authzToken, null, ctx -> projectService.getProject(ctx, projectId));
     }
 
     /**
@@ -573,8 +563,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, String userName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> projectService.getUserProjects(ctx, gatewayId, userName, limit, offset));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> projectService.getUserProjects(ctx, gatewayId, userName, limit, offset));
     }
 
     /**
@@ -610,7 +600,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> projectService.searchProjects(ctx, gatewayId, userName, filters, limit, offset));
     }
 
@@ -640,7 +632,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> experimentService.searchExperiments(ctx, gatewayId, userName, filters, limit, offset));
     }
 
@@ -671,7 +665,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> experimentService.getExperimentStatistics(
                         ctx, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, limit, offset));
     }
@@ -692,8 +688,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ExperimentModel> getExperimentsInProject(AuthzToken authzToken, String projectId, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getExperimentsInProject(ctx, projectId, limit, offset));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getExperimentsInProject(ctx, projectId, limit, offset));
     }
 
     /**
@@ -715,7 +711,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, String userName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> experimentService.getUserExperiments(ctx, gatewayId, userName, limit, offset));
     }
 
@@ -746,8 +744,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> experimentService.createExperiment(ctx, experiment));
+        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> experimentService.createExperiment(ctx, experiment));
     }
 
     /**
@@ -766,8 +763,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteExperiment(AuthzToken authzToken, String experimentId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.deleteExperiment(ctx, experimentId));
+        return ThriftAdapter.execute(authzToken, null, ctx -> experimentService.deleteExperiment(ctx, experimentId));
     }
 
     /**
@@ -797,8 +793,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getExperiment(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getExperiment(ctx, airavataExperimentId));
     }
 
     @Override
@@ -806,8 +802,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentModel getExperimentByAdmin(AuthzToken authzToken, String airavataExperimentId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getExperimentByAdmin(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getExperimentByAdmin(ctx, airavataExperimentId));
     }
 
     /**
@@ -838,8 +834,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ExperimentModel getDetailedExperimentTree(AuthzToken authzToken, String airavataExperimentId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getDetailedExperimentTree(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getDetailedExperimentTree(ctx, airavataExperimentId));
     }
 
     /**
@@ -871,8 +867,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateExperiment(AuthzToken authzToken, String airavataExperimentId, ExperimentModel experiment)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        ThriftAdapter.executeVoid(authzToken, null,
-                ctx -> experimentService.updateExperiment(ctx, airavataExperimentId, experiment));
+        ThriftAdapter.executeVoid(
+                authzToken, null, ctx -> experimentService.updateExperiment(ctx, airavataExperimentId, experiment));
     }
 
     @Override
@@ -880,7 +876,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateExperimentConfiguration(
             AuthzToken authzToken, String airavataExperimentId, UserConfigurationDataModel userConfiguration)
             throws AuthorizationException, TException {
-        ThriftAdapter.executeVoid(authzToken, null,
+        ThriftAdapter.executeVoid(
+                authzToken,
+                null,
                 ctx -> experimentService.updateExperimentConfiguration(ctx, airavataExperimentId, userConfiguration));
     }
 
@@ -889,7 +887,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateResourceScheduleing(
             AuthzToken authzToken, String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)
             throws AuthorizationException, TException {
-        ThriftAdapter.executeVoid(authzToken, null,
+        ThriftAdapter.executeVoid(
+                authzToken,
+                null,
                 ctx -> experimentService.updateResourceScheduleing(ctx, airavataExperimentId, resourceScheduling));
     }
 
@@ -907,8 +907,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean validateExperiment(AuthzToken authzToken, String airavataExperimentId) throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.validateExperiment(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.validateExperiment(ctx, airavataExperimentId));
     }
 
     /**
@@ -936,16 +936,16 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getExperimentStatus(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getExperimentStatus(ctx, airavataExperimentId));
     }
 
     @Override
     @SecurityCheck
     public List<OutputDataObjectType> getExperimentOutputs(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getExperimentOutputs(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getExperimentOutputs(ctx, airavataExperimentId));
     }
 
     @Override
@@ -961,7 +961,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void fetchIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        ThriftAdapter.executeVoid(authzToken, null,
+        ThriftAdapter.executeVoid(
+                authzToken,
+                null,
                 ctx -> experimentService.fetchIntermediateOutputs(ctx, airavataExperimentId, outputNames));
     }
 
@@ -971,15 +973,17 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String airavataExperimentId, List<String> outputNames)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> experimentService.getIntermediateOutputProcessStatus(ctx, airavataExperimentId, outputNames));
     }
 
     @SecurityCheck
     public Map<String, JobStatus> getJobStatuses(AuthzToken authzToken, String airavataExperimentId)
             throws AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getJobStatuses(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getJobStatuses(ctx, airavataExperimentId));
     }
 
     @Override
@@ -987,8 +991,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<JobModel> getJobDetails(AuthzToken authzToken, String airavataExperimentId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> experimentService.getJobDetails(ctx, airavataExperimentId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> experimentService.getJobDetails(ctx, airavataExperimentId));
     }
 
     /**
@@ -1023,8 +1027,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws AuthorizationException, AiravataSystemException, TException {
         logger.info("Launching experiment {}", airavataExperimentId);
-        ThriftAdapter.executeVoid(authzToken, gatewayId,
-                ctx -> experimentService.launchExperiment(ctx, airavataExperimentId, gatewayId));
+        ThriftAdapter.executeVoid(
+                authzToken, gatewayId, ctx -> experimentService.launchExperiment(ctx, airavataExperimentId, gatewayId));
     }
 
     //    private OrchestratorService.Client getOrchestratorClient() throws TException {
@@ -1084,7 +1088,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, ProjectNotFoundException, TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> experimentService.cloneExperiment(
                         ctx, existingExperimentID, newExperimentName, newExperimentProjectId, false));
     }
@@ -1095,7 +1101,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException,
                     AiravataSystemException, AuthorizationException, ProjectNotFoundException, TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> experimentService.cloneExperiment(
                         ctx, existingExperimentID, newExperimentName, newExperimentProjectId, true));
     }
@@ -1125,8 +1133,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String gatewayId)
             throws TException {
-        ThriftAdapter.executeVoid(authzToken, gatewayId,
-                ctx -> experimentService.terminateExperiment(ctx, airavataExperimentId));
+        ThriftAdapter.executeVoid(
+                authzToken, gatewayId, ctx -> experimentService.terminateExperiment(ctx, airavataExperimentId));
     }
 
     /**
@@ -1142,7 +1150,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, ApplicationModule applicationModule)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> applicationCatalogService.registerApplicationModule(ctx, gatewayId, applicationModule));
     }
 
@@ -1158,8 +1168,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ApplicationModule getApplicationModule(AuthzToken authzToken, String appModuleId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appModuleId,
-                ctx -> applicationCatalogService.getApplicationModule(ctx, appModuleId));
+        return ThriftAdapter.execute(
+                authzToken, appModuleId, ctx -> applicationCatalogService.getApplicationModule(ctx, appModuleId));
     }
 
     /**
@@ -1176,7 +1186,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String appModuleId, ApplicationModule applicationModule)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appModuleId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appModuleId,
                 ctx -> applicationCatalogService.updateApplicationModule(ctx, appModuleId, applicationModule));
     }
 
@@ -1191,8 +1203,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ApplicationModule> getAllAppModules(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> applicationCatalogService.getAllAppModules(ctx, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> applicationCatalogService.getAllAppModules(ctx, gatewayId));
     }
 
     /**
@@ -1206,8 +1218,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ApplicationModule> getAccessibleAppModules(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> applicationCatalogService.getAccessibleAppModules(ctx, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> applicationCatalogService.getAccessibleAppModules(ctx, gatewayId));
     }
 
     /**
@@ -1222,8 +1234,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteApplicationModule(AuthzToken authzToken, String appModuleId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appModuleId,
-                ctx -> applicationCatalogService.deleteApplicationModule(ctx, appModuleId));
+        return ThriftAdapter.execute(
+                authzToken, appModuleId, ctx -> applicationCatalogService.deleteApplicationModule(ctx, appModuleId));
     }
 
     /**
@@ -1238,7 +1250,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, ApplicationDeploymentDescription applicationDeployment)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> applicationCatalogService.registerApplicationDeployment(ctx, gatewayId, applicationDeployment));
     }
 
@@ -1254,7 +1268,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appDeploymentId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appDeploymentId,
                 ctx -> applicationCatalogService.getApplicationDeployment(ctx, appDeploymentId));
     }
 
@@ -1272,8 +1288,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appDeploymentId,
-                ctx -> applicationCatalogService.updateApplicationDeployment(ctx, appDeploymentId, applicationDeployment));
+        return ThriftAdapter.execute(
+                authzToken,
+                appDeploymentId,
+                ctx -> applicationCatalogService.updateApplicationDeployment(
+                        ctx, appDeploymentId, applicationDeployment));
     }
 
     /**
@@ -1288,7 +1307,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appDeploymentId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appDeploymentId,
                 ctx -> applicationCatalogService.deleteApplicationDeployment(ctx, appDeploymentId));
     }
 
@@ -1303,8 +1324,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> applicationCatalogService.getAllApplicationDeployments(ctx, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> applicationCatalogService.getAllApplicationDeployments(ctx, gatewayId));
     }
 
     /**
@@ -1319,7 +1340,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> applicationCatalogService.getAccessibleApplicationDeployments(ctx, gatewayId, permissionType));
     }
 
@@ -1336,7 +1359,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<String> getAppModuleDeployedResources(AuthzToken authzToken, String appModuleId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appModuleId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appModuleId,
                 ctx -> applicationCatalogService.getAppModuleDeployedResources(ctx, appModuleId));
     }
 
@@ -1359,7 +1384,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String appModuleId, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appModuleId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appModuleId,
                 ctx -> applicationCatalogService.getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
                         ctx, appModuleId, groupResourceProfileId));
     }
@@ -1376,7 +1403,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, ApplicationInterfaceDescription applicationInterface)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> applicationCatalogService.registerApplicationInterface(ctx, gatewayId, applicationInterface));
     }
 
@@ -1386,7 +1415,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String existingAppInterfaceID, String newApplicationName, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> applicationCatalogService.cloneApplicationInterface(
                         ctx, existingAppInterfaceID, newApplicationName, gatewayId));
     }
@@ -1403,7 +1434,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, String appInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appInterfaceId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appInterfaceId,
                 ctx -> applicationCatalogService.getApplicationInterface(ctx, appInterfaceId));
     }
 
@@ -1421,7 +1454,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String appInterfaceId, ApplicationInterfaceDescription applicationInterface)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appInterfaceId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appInterfaceId,
                 ctx -> applicationCatalogService.updateApplicationInterface(ctx, appInterfaceId, applicationInterface));
     }
 
@@ -1437,7 +1472,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteApplicationInterface(AuthzToken authzToken, String appInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appInterfaceId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appInterfaceId,
                 ctx -> applicationCatalogService.deleteApplicationInterface(ctx, appInterfaceId));
     }
 
@@ -1452,7 +1489,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Map<String, String> getAllApplicationInterfaceNames(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
                 ctx -> applicationCatalogService.getAllApplicationInterfaceNames(ctx, gatewayId));
     }
 
@@ -1467,8 +1506,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId,
-                ctx -> applicationCatalogService.getAllApplicationInterfaces(ctx, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> applicationCatalogService.getAllApplicationInterfaces(ctx, gatewayId));
     }
 
     /**
@@ -1483,8 +1522,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<InputDataObjectType> getApplicationInputs(AuthzToken authzToken, String appInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appInterfaceId,
-                ctx -> applicationCatalogService.getApplicationInputs(ctx, appInterfaceId));
+        return ThriftAdapter.execute(
+                authzToken, appInterfaceId, ctx -> applicationCatalogService.getApplicationInputs(ctx, appInterfaceId));
     }
 
     /**
@@ -1499,7 +1538,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<OutputDataObjectType> getApplicationOutputs(AuthzToken authzToken, String appInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appInterfaceId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appInterfaceId,
                 ctx -> applicationCatalogService.getApplicationOutputs(ctx, appInterfaceId));
     }
 
@@ -1517,7 +1558,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Map<String, String> getAvailableAppInterfaceComputeResources(AuthzToken authzToken, String appInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, appInterfaceId,
+        return ThriftAdapter.execute(
+                authzToken,
+                appInterfaceId,
                 ctx -> applicationCatalogService.getAvailableAppInterfaceComputeResources(ctx, appInterfaceId));
     }
 
@@ -1533,7 +1576,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerComputeResource(AuthzToken authzToken, ComputeResourceDescription computeResourceDescription)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.registerComputeResource(computeResourceDescription));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.registerComputeResource(computeResourceDescription));
     }
 
     /**
@@ -1579,7 +1623,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, ComputeResourceDescription computeResourceDescription)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateComputeResource(computeResourceId, computeResourceDescription));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateComputeResource(computeResourceId, computeResourceDescription));
     }
 
     /**
@@ -1610,7 +1657,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerStorageResource(AuthzToken authzToken, StorageResourceDescription storageResourceDescription)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.registerStorageResource(storageResourceDescription));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.registerStorageResource(storageResourceDescription));
     }
 
     /**
@@ -1659,7 +1707,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String storageResourceId, StorageResourceDescription storageResourceDescription)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateStorageResource(storageResourceId, storageResourceDescription));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateStorageResource(storageResourceId, storageResourceDescription));
     }
 
     /**
@@ -1682,16 +1733,16 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public StorageVolumeInfo getResourceStorageInfo(AuthzToken authzToken, String resourceId, String location)
             throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> resourceService.getResourceStorageInfo(ctx, resourceId, location));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.getResourceStorageInfo(ctx, resourceId, location));
     }
 
     @Override
     @SecurityCheck
     public StorageDirectoryInfo getStorageDirectoryInfo(AuthzToken authzToken, String resourceId, String location)
             throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> resourceService.getStorageDirectoryInfo(ctx, resourceId, location));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.getStorageDirectoryInfo(ctx, resourceId, location));
     }
 
     /**
@@ -1710,7 +1761,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, int priorityOrder, LOCALSubmission localSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission));
     }
 
     /**
@@ -1727,7 +1781,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission));
     }
 
     @Override
@@ -1754,7 +1811,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission));
     }
 
     /**
@@ -1773,7 +1833,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addSSHForkJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addSSHForkJobSubmissionDetails(
+                        computeResourceId, priorityOrder, sshJobSubmission));
     }
 
     @Override
@@ -1800,7 +1864,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addCloudJobSubmissionDetails(
+                        computeResourceId, priorityOrder, cloudJobSubmission));
     }
 
     @Override
@@ -1820,7 +1888,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             UnicoreJobSubmission unicoreJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addUNICOREJobSubmissionDetails(
+                        computeResourceId, priorityOrder, unicoreJobSubmission));
     }
 
     @Override
@@ -1845,7 +1917,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission));
     }
 
     /**
@@ -1862,7 +1937,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, cloudJobSubmission));
     }
 
     @Override
@@ -1871,7 +1949,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateUnicoreJobSubmissionDetails(
+                        jobSubmissionInterfaceId, unicoreJobSubmission));
     }
 
     /**
@@ -1894,7 +1976,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             LOCALDataMovement localDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addLocalDataMovementDetails(resourceId, dmType, priorityOrder, localDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addLocalDataMovementDetails(
+                        resourceId, dmType, priorityOrder, localDataMovement));
     }
 
     /**
@@ -1911,7 +1997,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement));
     }
 
     @Override
@@ -1938,7 +2027,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement));
     }
 
     /**
@@ -1956,7 +2048,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement));
     }
 
     @Override
@@ -1977,7 +2072,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             UnicoreDataMovement unicoreDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addUnicoreDataMovementDetails(resourceId, dmType, priorityOrder, unicoreDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addUnicoreDataMovementDetails(
+                        resourceId, dmType, priorityOrder, unicoreDataMovement));
     }
 
     @Override
@@ -1986,7 +2085,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement));
     }
 
     @Override
@@ -2017,7 +2119,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             GridFTPDataMovement gridFTPDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.addGridFTPDataMovementDetails(computeResourceId, dmType, priorityOrder, gridFTPDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.addGridFTPDataMovementDetails(
+                        computeResourceId, dmType, priorityOrder, gridFTPDataMovement));
     }
 
     /**
@@ -2035,7 +2141,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement));
     }
 
     @Override
@@ -2123,7 +2232,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String jobSubmissionInterfaceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId));
     }
 
     /**
@@ -2139,7 +2251,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, String dataMovementInterfaceId, DMType dmType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType));
     }
 
     @Override
@@ -2147,7 +2262,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerResourceJobManager(AuthzToken authzToken, ResourceJobManager resourceJobManager)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.registerResourceJobManager(resourceJobManager));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.registerResourceJobManager(resourceJobManager));
     }
 
     @Override
@@ -2156,7 +2272,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceService.updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager));
     }
 
     @Override
@@ -2164,7 +2283,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ResourceJobManager getResourceJobManager(AuthzToken authzToken, String resourceJobManagerId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.getResourceJobManager(resourceJobManagerId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.getResourceJobManager(resourceJobManagerId));
     }
 
     @Override
@@ -2172,7 +2292,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteResourceJobManager(AuthzToken authzToken, String resourceJobManagerId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.deleteResourceJobManager(resourceJobManagerId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.deleteResourceJobManager(resourceJobManagerId));
     }
 
     @Override
@@ -2180,7 +2301,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteBatchQueue(AuthzToken authzToken, String computeResourceId, String queueName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceService.deleteBatchQueue(computeResourceId, queueName));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceService.deleteBatchQueue(computeResourceId, queueName));
     }
 
     /**
@@ -2197,7 +2319,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerGatewayResourceProfile(AuthzToken authzToken, GatewayResourceProfile gatewayResourceProfile)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.registerGatewayResourceProfile(ctx, gatewayResourceProfile));
     }
 
@@ -2213,8 +2337,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public GatewayResourceProfile getGatewayResourceProfile(AuthzToken authzToken, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> gatewayResourceProfileService.getGatewayResourceProfile(ctx, gatewayID));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> gatewayResourceProfileService.getGatewayResourceProfile(ctx, gatewayID));
     }
 
     /**
@@ -2229,8 +2353,11 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean updateGatewayResourceProfile(
             AuthzToken authzToken, String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> gatewayResourceProfileService.updateGatewayResourceProfile(ctx, gatewayID, gatewayResourceProfile));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> gatewayResourceProfileService.updateGatewayResourceProfile(
+                        ctx, gatewayID, gatewayResourceProfile));
     }
 
     /**
@@ -2243,8 +2370,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean deleteGatewayResourceProfile(AuthzToken authzToken, String gatewayID) throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> gatewayResourceProfileService.deleteGatewayResourceProfile(ctx, gatewayID));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> gatewayResourceProfileService.deleteGatewayResourceProfile(ctx, gatewayID));
     }
 
     /**
@@ -2266,7 +2393,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             ComputeResourcePreference computeResourcePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.addGatewayComputeResourcePreference(
                         ctx, gatewayID, computeResourceId, computeResourcePreference));
     }
@@ -2277,7 +2406,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayID, String storageResourceId, StoragePreference dataStoragePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.addGatewayStoragePreference(
                         ctx, gatewayID, storageResourceId, dataStoragePreference));
     }
@@ -2296,7 +2427,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayID, String computeResourceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.getGatewayComputeResourcePreference(
                         ctx, gatewayID, computeResourceId));
     }
@@ -2306,7 +2439,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public StoragePreference getGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.getGatewayStoragePreference(ctx, gatewayID, storageId));
     }
 
@@ -2323,7 +2458,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.getAllGatewayComputeResourcePreferences(ctx, gatewayID));
     }
 
@@ -2332,8 +2469,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<StoragePreference> getAllGatewayStoragePreferences(AuthzToken authzToken, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> gatewayResourceProfileService.getAllGatewayStoragePreferences(ctx, gatewayID));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> gatewayResourceProfileService.getAllGatewayStoragePreferences(ctx, gatewayID));
     }
 
     @Override
@@ -2341,8 +2478,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<GatewayResourceProfile> getAllGatewayResourceProfiles(AuthzToken authzToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> gatewayResourceProfileService.getAllGatewayResourceProfiles(ctx));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> gatewayResourceProfileService.getAllGatewayResourceProfiles(ctx));
     }
 
     /**
@@ -2363,7 +2500,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             ComputeResourcePreference computeResourcePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.updateGatewayComputeResourcePreference(
                         ctx, gatewayID, computeResourceId, computeResourcePreference));
     }
@@ -2374,7 +2513,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayID, String storageId, StoragePreference dataStoragePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.updateGatewayStoragePreference(
                         ctx, gatewayID, storageId, dataStoragePreference));
     }
@@ -2393,7 +2534,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayID, String computeResourceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.deleteGatewayComputeResourcePreference(
                         ctx, gatewayID, computeResourceId));
     }
@@ -2403,7 +2546,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteGatewayStoragePreference(AuthzToken authzToken, String gatewayID, String storageId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> gatewayResourceProfileService.deleteGatewayStoragePreference(ctx, gatewayID, storageId));
     }
 
@@ -2412,8 +2557,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<SSHAccountProvisioner> getSSHAccountProvisioners(AuthzToken authzToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> gatewayResourceProfileService.getSSHAccountProvisioners(ctx));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> gatewayResourceProfileService.getSSHAccountProvisioners(ctx));
     }
 
     @Override
@@ -2421,8 +2566,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String userId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> sshAccountService.doesUserHaveSSHAccount(ctx, computeResourceId, userId));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> sshAccountService.doesUserHaveSSHAccount(ctx, computeResourceId, userId));
     }
 
     @Override
@@ -2431,7 +2576,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> sshAccountService.isSSHSetupCompleteForUserComputeResourcePreference(
                         ctx, computeResourceId, airavataCredStoreToken));
     }
@@ -2442,7 +2589,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String userId, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> sshAccountService.setupUserComputeResourcePreferencesForSSH(
                         ctx, computeResourceId, userId, airavataCredStoreToken));
     }
@@ -2461,7 +2610,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.registerUserResourceProfile(ctx, userResourceProfile));
     }
 
@@ -2470,7 +2621,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean isUserResourceProfileExists(AuthzToken authzToken, String userId, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.isUserResourceProfileExists(ctx, userId, gatewayID));
     }
 
@@ -2489,8 +2642,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public UserResourceProfile getUserResourceProfile(AuthzToken authzToken, String userId, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> userResourceProfileService.getUserResourceProfile(ctx, userId, gatewayID));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> userResourceProfileService.getUserResourceProfile(ctx, userId, gatewayID));
     }
 
     /**
@@ -2507,8 +2660,11 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateUserResourceProfile(
             AuthzToken authzToken, String userId, String gatewayID, UserResourceProfile userResourceProfile)
             throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> userResourceProfileService.updateUserResourceProfile(ctx, userId, gatewayID, userResourceProfile));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> userResourceProfileService.updateUserResourceProfile(
+                        ctx, userId, gatewayID, userResourceProfile));
     }
 
     /**
@@ -2522,8 +2678,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean deleteUserResourceProfile(AuthzToken authzToken, String userId, String gatewayID) throws TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> userResourceProfileService.deleteUserResourceProfile(ctx, userId, gatewayID));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> userResourceProfileService.deleteUserResourceProfile(ctx, userId, gatewayID));
     }
 
     /**
@@ -2547,7 +2703,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             UserComputeResourcePreference userComputeResourcePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.addUserComputeResourcePreference(
                         ctx, userId, gatewayID, userComputeResourceId, userComputeResourcePreference));
     }
@@ -2562,7 +2720,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             UserStoragePreference dataStoragePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.addUserStoragePreference(
                         ctx, userId, gatewayID, userStorageResourceId, dataStoragePreference));
     }
@@ -2582,7 +2742,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.getUserComputeResourcePreference(
                         ctx, userId, gatewayID, userComputeResourceId));
     }
@@ -2593,7 +2755,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String userId, String gatewayID, String userStorageId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.getUserStoragePreference(ctx, userId, gatewayID, userStorageId));
     }
 
@@ -2611,7 +2775,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String userId, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.getAllUserComputeResourcePreferences(ctx, userId, gatewayID));
     }
 
@@ -2621,7 +2787,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String userId, String gatewayID)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.getAllUserStoragePreferences(ctx, userId, gatewayID));
     }
 
@@ -2630,8 +2798,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<UserResourceProfile> getAllUserResourceProfiles(AuthzToken authzToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> userResourceProfileService.getAllUserResourceProfiles(ctx));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> userResourceProfileService.getAllUserResourceProfiles(ctx));
     }
 
     /**
@@ -2654,7 +2822,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             UserComputeResourcePreference userComputeResourcePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.updateUserComputeResourcePreference(
                         ctx, userId, gatewayID, userComputeResourceId, userComputeResourcePreference));
     }
@@ -2669,7 +2839,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             UserStoragePreference dataStoragePreference)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.updateUserStoragePreference(
                         ctx, userId, gatewayID, userStorageId, dataStoragePreference));
     }
@@ -2689,7 +2861,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String userId, String gatewayID, String userComputeResourceId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.deleteUserComputeResourcePreference(
                         ctx, userId, gatewayID, userComputeResourceId));
     }
@@ -2700,7 +2874,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String userId, String gatewayID, String userStorageId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
                 ctx -> userResourceProfileService.deleteUserStoragePreference(ctx, userId, gatewayID, userStorageId));
     }
 
@@ -2709,8 +2885,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<QueueStatusModel> getLatestQueueStatuses(AuthzToken authzToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null,
-                ctx -> userResourceProfileService.getLatestQueueStatuses(ctx));
+        return ThriftAdapter.execute(authzToken, null, ctx -> userResourceProfileService.getLatestQueueStatuses(ctx));
     }
 
     /**
@@ -2724,7 +2899,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerDataProduct(AuthzToken authzToken, DataProductModel dataProductModel)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> dataProductService.registerDataProduct(ctx, dataProductModel));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> dataProductService.registerDataProduct(ctx, dataProductModel));
     }
 
     @Override
@@ -2740,7 +2916,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerReplicaLocation(AuthzToken authzToken, DataReplicaLocationModel replicaLocationModel)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> dataProductService.registerReplicaLocation(ctx, replicaLocationModel));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> dataProductService.registerReplicaLocation(ctx, replicaLocationModel));
     }
 
     @Override
@@ -2772,7 +2949,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> userPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.shareResourceWithUsers(ctx, resourceId, userPermissionList));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.shareResourceWithUsers(ctx, resourceId, userPermissionList));
     }
 
     @Override
@@ -2781,7 +2961,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.shareResourceWithGroups(ctx, resourceId, groupPermissionList));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.shareResourceWithGroups(ctx, resourceId, groupPermissionList));
     }
 
     @Override
@@ -2790,7 +2973,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> userPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.revokeSharingOfResourceFromUsers(ctx, resourceId, userPermissionList));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.revokeSharingOfResourceFromUsers(ctx, resourceId, userPermissionList));
     }
 
     @Override
@@ -2799,7 +2985,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, Map<String, ResourcePermissionType> groupPermissionList)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.revokeSharingOfResourceFromGroups(ctx, resourceId, groupPermissionList));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.revokeSharingOfResourceFromGroups(ctx, resourceId, groupPermissionList));
     }
 
     @Override
@@ -2808,7 +2997,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.getAllAccessibleUsers(ctx, resourceId, permissionType));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceSharingService.getAllAccessibleUsers(ctx, resourceId, permissionType));
     }
 
     @Override
@@ -2817,7 +3007,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.getAllDirectlyAccessibleUsers(ctx, resourceId, permissionType));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.getAllDirectlyAccessibleUsers(ctx, resourceId, permissionType));
     }
 
     private List<String> getAllAccessibleUsersInternal(
@@ -2864,7 +3057,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.getAllAccessibleGroups(ctx, resourceId, permissionType));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.getAllAccessibleGroups(ctx, resourceId, permissionType));
     }
 
     @Override
@@ -2873,7 +3069,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.getAllDirectlyAccessibleGroups(ctx, resourceId, permissionType));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> resourceSharingService.getAllDirectlyAccessibleGroups(ctx, resourceId, permissionType));
     }
 
     private List<String> getAllAccessibleGroupsInternal(
@@ -2910,7 +3109,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean userHasAccess(AuthzToken authzToken, String resourceId, ResourcePermissionType permissionType)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> resourceSharingService.userHasAccess(ctx, resourceId, permissionType));
+        return ThriftAdapter.execute(
+                authzToken, null, ctx -> resourceSharingService.userHasAccess(ctx, resourceId, permissionType));
     }
 
     @Override
@@ -2918,7 +3118,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.createGroupResourceProfile(ctx, groupResourceProfile));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.createGroupResourceProfile(ctx, groupResourceProfile));
     }
 
     @Override
@@ -2926,7 +3129,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        ThriftAdapter.executeVoid(authzToken, null, ctx -> groupResourceProfileService.updateGroupResourceProfile(ctx, groupResourceProfile));
+        ThriftAdapter.executeVoid(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.updateGroupResourceProfile(ctx, groupResourceProfile));
     }
 
     @Override
@@ -2934,7 +3140,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getGroupResourceProfile(ctx, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getGroupResourceProfile(ctx, groupResourceProfileId));
     }
 
     @Override
@@ -2942,7 +3151,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean removeGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.removeGroupResourceProfile(ctx, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.removeGroupResourceProfile(ctx, groupResourceProfileId));
     }
 
     @Override
@@ -2950,7 +3162,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<GroupResourceProfile> getGroupResourceList(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> groupResourceProfileService.getGroupResourceList(ctx, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> groupResourceProfileService.getGroupResourceList(ctx, gatewayId));
     }
 
     @Override
@@ -2959,7 +3172,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.removeGroupComputePrefs(ctx, computeResourceId, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.removeGroupComputePrefs(
+                        ctx, computeResourceId, groupResourceProfileId));
     }
 
     @Override
@@ -2967,7 +3184,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean removeGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.removeGroupComputeResourcePolicy(ctx, resourcePolicyId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.removeGroupComputeResourcePolicy(ctx, resourcePolicyId));
     }
 
     @Override
@@ -2975,7 +3195,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.removeGroupBatchQueueResourcePolicy(ctx, resourcePolicyId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.removeGroupBatchQueueResourcePolicy(ctx, resourcePolicyId));
     }
 
     @Override
@@ -2984,7 +3207,11 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getGroupComputeResourcePreference(ctx, computeResourceId, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getGroupComputeResourcePreference(
+                        ctx, computeResourceId, groupResourceProfileId));
     }
 
     @Override
@@ -2992,7 +3219,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getGroupComputeResourcePolicy(ctx, resourcePolicyId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getGroupComputeResourcePolicy(ctx, resourcePolicyId));
     }
 
     @Override
@@ -3000,7 +3230,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getBatchQueueResourcePolicy(ctx, resourcePolicyId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getBatchQueueResourcePolicy(ctx, resourcePolicyId));
     }
 
     @Override
@@ -3009,7 +3242,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getGroupComputeResourcePrefList(ctx, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getGroupComputeResourcePrefList(ctx, groupResourceProfileId));
     }
 
     @Override
@@ -3018,7 +3254,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getGroupBatchQueueResourcePolicyList(ctx, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getGroupBatchQueueResourcePolicyList(ctx, groupResourceProfileId));
     }
 
     @Override
@@ -3027,7 +3266,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String groupResourceProfileId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, null, ctx -> groupResourceProfileService.getGroupComputeResourcePolicyList(ctx, groupResourceProfileId));
+        return ThriftAdapter.execute(
+                authzToken,
+                null,
+                ctx -> groupResourceProfileService.getGroupComputeResourcePolicyList(ctx, groupResourceProfileId));
     }
 
     @Override
@@ -3067,7 +3309,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean removeParser(AuthzToken authzToken, String parserId, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> parserService.removeParser(ctx, parserId, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> parserService.removeParser(ctx, parserId, gatewayId));
     }
 
     @Override
@@ -3075,7 +3318,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public ParsingTemplate getParsingTemplate(AuthzToken authzToken, String templateId, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> parserService.getParsingTemplate(ctx, templateId, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> parserService.getParsingTemplate(ctx, templateId, gatewayId));
     }
 
     @Override
@@ -3084,7 +3328,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String experimentId, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> parserService.getParsingTemplatesForExperiment(ctx, experimentId, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken,
+                gatewayId,
+                ctx -> parserService.getParsingTemplatesForExperiment(ctx, experimentId, gatewayId));
     }
 
     @Override
@@ -3100,7 +3347,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean removeParsingTemplate(AuthzToken authzToken, String templateId, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> parserService.removeParsingTemplate(ctx, templateId, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> parserService.removeParsingTemplate(ctx, templateId, gatewayId));
     }
 
     @Override
@@ -3108,7 +3356,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ParsingTemplate> listAllParsingTemplates(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        return ThriftAdapter.execute(authzToken, gatewayId, ctx -> parserService.listAllParsingTemplates(ctx, gatewayId));
+        return ThriftAdapter.execute(
+                authzToken, gatewayId, ctx -> parserService.listAllParsingTemplates(ctx, gatewayId));
     }
-
 }

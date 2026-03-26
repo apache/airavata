@@ -1,5 +1,28 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.groupprofile;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
@@ -20,11 +43,6 @@ import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class GroupResourceProfileService {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupResourceProfileService.class);
@@ -32,12 +50,14 @@ public class GroupResourceProfileService {
     private final RegistryServerHandler registryHandler;
     private final SharingRegistryServerHandler sharingHandler;
 
-    public GroupResourceProfileService(RegistryServerHandler registryHandler, SharingRegistryServerHandler sharingHandler) {
+    public GroupResourceProfileService(
+            RegistryServerHandler registryHandler, SharingRegistryServerHandler sharingHandler) {
         this.registryHandler = registryHandler;
         this.sharingHandler = sharingHandler;
     }
 
-    public String createGroupResourceProfile(RequestContext ctx, GroupResourceProfile groupResourceProfile) throws ServiceException {
+    public String createGroupResourceProfile(RequestContext ctx, GroupResourceProfile groupResourceProfile)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
@@ -69,14 +89,18 @@ public class GroupResourceProfileService {
         }
     }
 
-    public void updateGroupResourceProfile(RequestContext ctx, GroupResourceProfile groupResourceProfile) throws ServiceException {
+    public void updateGroupResourceProfile(RequestContext ctx, GroupResourceProfile groupResourceProfile)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         String profileId = groupResourceProfile.getGroupResourceProfileId();
         try {
             validateGroupResourceProfileCredentials(ctx, groupResourceProfile);
-            if (SharingHelper.isSharingEnabled() && !SharingHelper.userHasAccess(sharingHandler, gatewayId, userId, profileId, ResourcePermissionType.WRITE)) {
-                throw new ServiceAuthorizationException("User does not have permission to update group resource profile");
+            if (SharingHelper.isSharingEnabled()
+                    && !SharingHelper.userHasAccess(
+                            sharingHandler, gatewayId, userId, profileId, ResourcePermissionType.WRITE)) {
+                throw new ServiceAuthorizationException(
+                        "User does not have permission to update group resource profile");
             }
             registryHandler.updateGroupResourceProfile(groupResourceProfile);
             logger.debug("Updated group resource profile {} for gateway {}", profileId, gatewayId);
@@ -87,19 +111,23 @@ public class GroupResourceProfileService {
         }
     }
 
-    public GroupResourceProfile getGroupResourceProfile(RequestContext ctx, String groupResourceProfileId) throws ServiceException {
+    public GroupResourceProfile getGroupResourceProfile(RequestContext ctx, String groupResourceProfileId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
             GroupResourceProfile groupResourceProfile = registryHandler.getGroupResourceProfile(groupResourceProfileId);
@@ -108,23 +136,28 @@ public class GroupResourceProfileService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
         }
     }
 
-    public boolean removeGroupResourceProfile(RequestContext ctx, String groupResourceProfileId) throws ServiceException {
+    public boolean removeGroupResourceProfile(RequestContext ctx, String groupResourceProfileId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
-                        throw new ServiceAuthorizationException("User does not have permission to remove group resource profile");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to remove group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to remove group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to remove group resource profile");
                 }
             }
             boolean result = registryHandler.removeGroupResourceProfile(groupResourceProfileId);
@@ -134,11 +167,13 @@ public class GroupResourceProfileService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error removing group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error removing group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
         }
     }
 
-    public List<GroupResourceProfile> getGroupResourceList(RequestContext ctx, String gatewayId) throws ServiceException {
+    public List<GroupResourceProfile> getGroupResourceList(RequestContext ctx, String gatewayId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         try {
             List<String> accessibleGroupResProfileIds = new ArrayList<>();
@@ -149,58 +184,78 @@ public class GroupResourceProfileService {
                 searchCriteria.setSearchCondition(SearchCondition.EQUAL);
                 searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
                 filters.add(searchCriteria);
-                sharingHandler.searchEntities(gatewayId, userId + "@" + gatewayId, filters, 0, -1)
+                sharingHandler
+                        .searchEntities(gatewayId, userId + "@" + gatewayId, filters, 0, -1)
                         .forEach(p -> accessibleGroupResProfileIds.add(p.getEntityId()));
             }
             List<GroupResourceProfile> groupResourceProfileList =
                     registryHandler.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
-            logger.debug("Retrieved {} group resource profiles for gateway {}", groupResourceProfileList.size(), gatewayId);
+            logger.debug(
+                    "Retrieved {} group resource profiles for gateway {}", groupResourceProfileList.size(), gatewayId);
             return groupResourceProfileList;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving group resource profile list for gateway " + gatewayId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving group resource profile list for gateway " + gatewayId + ": " + e.getMessage(), e);
         }
     }
 
-    public boolean removeGroupComputePrefs(RequestContext ctx, String computeResourceId, String groupResourceProfileId) throws ServiceException {
+    public boolean removeGroupComputePrefs(RequestContext ctx, String computeResourceId, String groupResourceProfileId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
-                        throw new ServiceAuthorizationException("User does not have permission to remove group compute preferences");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to remove group compute preferences");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to remove group compute preferences");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to remove group compute preferences");
                 }
             }
             boolean result = registryHandler.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
-            logger.debug("Removed group compute prefs for resource {} in profile {}", computeResourceId, groupResourceProfileId);
+            logger.debug(
+                    "Removed group compute prefs for resource {} in profile {}",
+                    computeResourceId,
+                    groupResourceProfileId);
             return result;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error removing group compute preferences for profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error removing group compute preferences for profile " + groupResourceProfileId + ": "
+                            + e.getMessage(),
+                    e);
         }
     }
 
-    public boolean removeGroupComputeResourcePolicy(RequestContext ctx, String resourcePolicyId) throws ServiceException {
+    public boolean removeGroupComputeResourcePolicy(RequestContext ctx, String resourcePolicyId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    ComputeResourcePolicy computeResourcePolicy = registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
-                            computeResourcePolicy.getGroupResourceProfileId(), gatewayId + ":WRITE")) {
-                        throw new ServiceAuthorizationException("User does not have permission to remove group compute resource policy");
+                    ComputeResourcePolicy computeResourcePolicy =
+                            registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId,
+                            userId + "@" + gatewayId,
+                            computeResourcePolicy.getGroupResourceProfileId(),
+                            gatewayId + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to remove group compute resource policy");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to remove group compute resource policy");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to remove group compute resource policy");
                 }
             }
             boolean result = registryHandler.removeGroupComputeResourcePolicy(resourcePolicyId);
@@ -209,25 +264,33 @@ public class GroupResourceProfileService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error removing group compute resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error removing group compute resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
         }
     }
 
-    public boolean removeGroupBatchQueueResourcePolicy(RequestContext ctx, String resourcePolicyId) throws ServiceException {
+    public boolean removeGroupBatchQueueResourcePolicy(RequestContext ctx, String resourcePolicyId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    BatchQueueResourcePolicy batchQueueResourcePolicy = registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
-                            batchQueueResourcePolicy.getGroupResourceProfileId(), gatewayId + ":WRITE")) {
-                        throw new ServiceAuthorizationException("User does not have permission to remove batch queue resource policy");
+                    BatchQueueResourcePolicy batchQueueResourcePolicy =
+                            registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId,
+                            userId + "@" + gatewayId,
+                            batchQueueResourcePolicy.getGroupResourceProfileId(),
+                            gatewayId + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to remove batch queue resource policy");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to remove batch queue resource policy");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to remove batch queue resource policy");
                 }
             }
             boolean result = registryHandler.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
@@ -236,50 +299,69 @@ public class GroupResourceProfileService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error removing batch queue resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error removing batch queue resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
         }
     }
 
-    public GroupComputeResourcePreference getGroupComputeResourcePreference(RequestContext ctx, String computeResourceId, String groupResourceProfileId) throws ServiceException {
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(
+            RequestContext ctx, String computeResourceId, String groupResourceProfileId) throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
-            GroupComputeResourcePreference result = registryHandler.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
-            logger.debug("Retrieved group compute resource preference for resource {} in profile {}", computeResourceId, groupResourceProfileId);
+            GroupComputeResourcePreference result =
+                    registryHandler.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            logger.debug(
+                    "Retrieved group compute resource preference for resource {} in profile {}",
+                    computeResourceId,
+                    groupResourceProfileId);
             return result;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving group compute resource preference for profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving group compute resource preference for profile " + groupResourceProfileId + ": "
+                            + e.getMessage(),
+                    e);
         }
     }
 
-    public ComputeResourcePolicy getGroupComputeResourcePolicy(RequestContext ctx, String resourcePolicyId) throws ServiceException {
+    public ComputeResourcePolicy getGroupComputeResourcePolicy(RequestContext ctx, String resourcePolicyId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    ComputeResourcePolicy computeResourcePolicy = registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
-                            computeResourcePolicy.getGroupResourceProfileId(), gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    ComputeResourcePolicy computeResourcePolicy =
+                            registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId,
+                            userId + "@" + gatewayId,
+                            computeResourcePolicy.getGroupResourceProfileId(),
+                            gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
             ComputeResourcePolicy result = registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
@@ -288,25 +370,33 @@ public class GroupResourceProfileService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving group compute resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving group compute resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
         }
     }
 
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(RequestContext ctx, String resourcePolicyId) throws ServiceException {
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(RequestContext ctx, String resourcePolicyId)
+            throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    BatchQueueResourcePolicy batchQueueResourcePolicy = registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
-                            batchQueueResourcePolicy.getGroupResourceProfileId(), gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    BatchQueueResourcePolicy batchQueueResourcePolicy =
+                            registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId,
+                            userId + "@" + gatewayId,
+                            batchQueueResourcePolicy.getGroupResourceProfileId(),
+                            gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
             BatchQueueResourcePolicy result = registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
@@ -315,82 +405,114 @@ public class GroupResourceProfileService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving batch queue resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving batch queue resource policy " + resourcePolicyId + ": " + e.getMessage(), e);
         }
     }
 
-    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(RequestContext ctx, String groupResourceProfileId) throws ServiceException {
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(
+            RequestContext ctx, String groupResourceProfileId) throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
-            List<GroupComputeResourcePreference> result = registryHandler.getGroupComputeResourcePrefList(groupResourceProfileId);
-            logger.debug("Retrieved {} compute prefs for group resource profile {}", result.size(), groupResourceProfileId);
+            List<GroupComputeResourcePreference> result =
+                    registryHandler.getGroupComputeResourcePrefList(groupResourceProfileId);
+            logger.debug(
+                    "Retrieved {} compute prefs for group resource profile {}", result.size(), groupResourceProfileId);
             return result;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving compute pref list for group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving compute pref list for group resource profile " + groupResourceProfileId + ": "
+                            + e.getMessage(),
+                    e);
         }
     }
 
-    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(RequestContext ctx, String groupResourceProfileId) throws ServiceException {
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(
+            RequestContext ctx, String groupResourceProfileId) throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
-            List<BatchQueueResourcePolicy> result = registryHandler.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
-            logger.debug("Retrieved {} batch queue policies for group resource profile {}", result.size(), groupResourceProfileId);
+            List<BatchQueueResourcePolicy> result =
+                    registryHandler.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+            logger.debug(
+                    "Retrieved {} batch queue policies for group resource profile {}",
+                    result.size(),
+                    groupResourceProfileId);
             return result;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving batch queue policy list for group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving batch queue policy list for group resource profile " + groupResourceProfileId
+                            + ": " + e.getMessage(),
+                    e);
         }
     }
 
-    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(RequestContext ctx, String groupResourceProfileId) throws ServiceException {
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(
+            RequestContext ctx, String groupResourceProfileId) throws ServiceException {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    if (!sharingHandler.userHasAccess(gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
-                        throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    if (!sharingHandler.userHasAccess(
+                            gatewayId, userId + "@" + gatewayId, groupResourceProfileId, gatewayId + ":READ")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to access group resource profile");
                     }
                 } catch (ServiceAuthorizationException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ServiceAuthorizationException("User does not have permission to access group resource profile");
+                    throw new ServiceAuthorizationException(
+                            "User does not have permission to access group resource profile");
                 }
             }
-            List<ComputeResourcePolicy> result = registryHandler.getGroupComputeResourcePolicyList(groupResourceProfileId);
-            logger.debug("Retrieved {} compute resource policies for group resource profile {}", result.size(), groupResourceProfileId);
+            List<ComputeResourcePolicy> result =
+                    registryHandler.getGroupComputeResourcePolicyList(groupResourceProfileId);
+            logger.debug(
+                    "Retrieved {} compute resource policies for group resource profile {}",
+                    result.size(),
+                    groupResourceProfileId);
             return result;
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving compute resource policy list for group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving compute resource policy list for group resource profile " + groupResourceProfileId
+                            + ": " + e.getMessage(),
+                    e);
         }
     }
 
@@ -401,13 +523,15 @@ public class GroupResourceProfileService {
             logger.debug("Retrieved GatewayGroups for gateway {}", gatewayId);
             return gatewayGroups;
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving GatewayGroups for gateway " + gatewayId + ": " + e.getMessage(), e);
+            throw new ServiceException(
+                    "Error retrieving GatewayGroups for gateway " + gatewayId + ": " + e.getMessage(), e);
         }
     }
 
     // Private helpers
 
-    private void validateGroupResourceProfileCredentials(RequestContext ctx, GroupResourceProfile groupResourceProfile) throws ServiceAuthorizationException {
+    private void validateGroupResourceProfileCredentials(RequestContext ctx, GroupResourceProfile groupResourceProfile)
+            throws ServiceAuthorizationException {
         String gatewayId = ctx.getGatewayId();
         String userId = ctx.getUserId();
         Set<String> tokenIds = new HashSet<>();
@@ -423,9 +547,9 @@ public class GroupResourceProfileService {
         }
         for (String tokenId : tokenIds) {
             if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userId, tokenId, ResourcePermissionType.READ)) {
-                throw new ServiceAuthorizationException("User does not have READ permission to credential token " + tokenId + ".");
+                throw new ServiceAuthorizationException(
+                        "User does not have READ permission to credential token " + tokenId + ".");
             }
         }
     }
-
 }

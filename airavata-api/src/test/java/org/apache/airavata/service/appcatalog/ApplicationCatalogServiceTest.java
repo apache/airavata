@@ -1,15 +1,37 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.appcatalog;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Map;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
-import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,18 +40,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ApplicationCatalogServiceTest {
 
-    @Mock RegistryServerHandler registryHandler;
-    @Mock SharingRegistryServerHandler sharingHandler;
-    @Mock CredentialStoreServerHandler credentialHandler;
+    @Mock
+    RegistryServerHandler registryHandler;
+
+    @Mock
+    SharingRegistryServerHandler sharingHandler;
+
+    @Mock
+    CredentialStoreServerHandler credentialHandler;
 
     ApplicationCatalogService service;
     RequestContext ctx;
@@ -37,8 +58,8 @@ class ApplicationCatalogServiceTest {
     @BeforeEach
     void setUp() {
         service = new ApplicationCatalogService(registryHandler, sharingHandler, credentialHandler);
-        ctx = new RequestContext("testUser", "testGateway", "token123",
-                Map.of("userName", "testUser", "gatewayId", "testGateway"));
+        ctx = new RequestContext(
+                "testUser", "testGateway", "token123", Map.of("userName", "testUser", "gatewayId", "testGateway"));
     }
 
     // -------------------------------------------------------------------------
@@ -180,7 +201,8 @@ class ApplicationCatalogServiceTest {
     void cloneApplicationInterface_throwsWhenSourceMissing() throws Exception {
         when(registryHandler.getApplicationInterface("iface-old")).thenReturn(null);
 
-        assertThrows(ServiceException.class,
+        assertThrows(
+                ServiceException.class,
                 () -> service.cloneApplicationInterface(ctx, "iface-old", "NewApp", "testGateway"));
     }
 
@@ -190,7 +212,8 @@ class ApplicationCatalogServiceTest {
         iface.setApplicationInterfaceId("iface-old");
         iface.setApplicationName("OldApp");
         when(registryHandler.getApplicationInterface("iface-old")).thenReturn(iface);
-        when(registryHandler.registerApplicationInterface(eq("testGateway"), any())).thenReturn("iface-new");
+        when(registryHandler.registerApplicationInterface(eq("testGateway"), any()))
+                .thenReturn("iface-new");
 
         String result = service.cloneApplicationInterface(ctx, "iface-old", "NewApp", "testGateway");
 

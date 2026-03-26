@@ -1,5 +1,25 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.service.resourceprofile;
 
+import java.util.List;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
@@ -9,8 +29,6 @@ import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class UserResourceProfileService {
 
@@ -36,8 +54,7 @@ public class UserResourceProfileService {
         try {
             return registryHandler.isUserResourceProfileExists(userId, gatewayId);
         } catch (Exception e) {
-            throw new ServiceException(
-                    "Error while checking existence of user resource profile: " + e.getMessage(), e);
+            throw new ServiceException("Error while checking existence of user resource profile: " + e.getMessage(), e);
         }
     }
 
@@ -50,8 +67,9 @@ public class UserResourceProfileService {
         }
     }
 
-    public boolean updateUserResourceProfile(RequestContext ctx, String userId, String gatewayId,
-            UserResourceProfile userResourceProfile) throws ServiceException {
+    public boolean updateUserResourceProfile(
+            RequestContext ctx, String userId, String gatewayId, UserResourceProfile userResourceProfile)
+            throws ServiceException {
         try {
             return registryHandler.updateUserResourceProfile(userId, gatewayId, userResourceProfile);
         } catch (Exception e) {
@@ -68,52 +86,61 @@ public class UserResourceProfileService {
         }
     }
 
-    public boolean addUserComputeResourcePreference(RequestContext ctx, String userId, String gatewayId,
-            String userComputeResourceId, UserComputeResourcePreference userComputeResourcePreference)
+    public boolean addUserComputeResourcePreference(
+            RequestContext ctx,
+            String userId,
+            String gatewayId,
+            String userComputeResourceId,
+            UserComputeResourcePreference userComputeResourcePreference)
             throws ServiceException {
         try {
             return registryHandler.addUserComputeResourcePreference(
                     userId, gatewayId, userComputeResourceId, userComputeResourcePreference);
         } catch (Exception e) {
-            throw new ServiceException(
-                    "Error while adding user compute resource preference: " + e.getMessage(), e);
+            throw new ServiceException("Error while adding user compute resource preference: " + e.getMessage(), e);
         }
     }
 
-    public UserComputeResourcePreference getUserComputeResourcePreference(RequestContext ctx, String userId,
-            String gatewayId, String userComputeResourceId) throws ServiceException {
+    public UserComputeResourcePreference getUserComputeResourcePreference(
+            RequestContext ctx, String userId, String gatewayId, String userComputeResourceId) throws ServiceException {
         try {
             return registryHandler.getUserComputeResourcePreference(userId, gatewayId, userComputeResourceId);
         } catch (Exception e) {
-            throw new ServiceException(
-                    "Error while reading user compute resource preference: " + e.getMessage(), e);
+            throw new ServiceException("Error while reading user compute resource preference: " + e.getMessage(), e);
         }
     }
 
-    public boolean updateUserComputeResourcePreference(RequestContext ctx, String userId, String gatewayId,
-            String userComputeResourceId, UserComputeResourcePreference userComputeResourcePreference)
+    public boolean updateUserComputeResourcePreference(
+            RequestContext ctx,
+            String userId,
+            String gatewayId,
+            String userComputeResourceId,
+            UserComputeResourcePreference userComputeResourcePreference)
             throws ServiceException {
         try {
             return registryHandler.updateUserComputeResourcePreference(
                     userId, gatewayId, userComputeResourceId, userComputeResourcePreference);
         } catch (Exception e) {
-            throw new ServiceException(
-                    "Error while updating user compute resource preference: " + e.getMessage(), e);
+            throw new ServiceException("Error while updating user compute resource preference: " + e.getMessage(), e);
         }
     }
 
-    public boolean deleteUserComputeResourcePreference(RequestContext ctx, String userId, String gatewayId,
-            String userComputeResourceId) throws ServiceException {
+    public boolean deleteUserComputeResourcePreference(
+            RequestContext ctx, String userId, String gatewayId, String userComputeResourceId) throws ServiceException {
         try {
             return registryHandler.deleteUserComputeResourcePreference(userId, gatewayId, userComputeResourceId);
         } catch (Exception e) {
-            throw new ServiceException(
-                    "Error while deleting user compute resource preference: " + e.getMessage(), e);
+            throw new ServiceException("Error while deleting user compute resource preference: " + e.getMessage(), e);
         }
     }
 
-    public boolean addUserStoragePreference(RequestContext ctx, String userId, String gatewayId,
-            String userStorageResourceId, UserStoragePreference storagePreference) throws ServiceException {
+    public boolean addUserStoragePreference(
+            RequestContext ctx,
+            String userId,
+            String gatewayId,
+            String userStorageResourceId,
+            UserStoragePreference storagePreference)
+            throws ServiceException {
         try {
             return registryHandler.addUserStoragePreference(
                     userId, gatewayId, userStorageResourceId, storagePreference);
@@ -122,8 +149,8 @@ public class UserResourceProfileService {
         }
     }
 
-    public UserStoragePreference getUserStoragePreference(RequestContext ctx, String userId, String gatewayId,
-            String userStorageId) throws ServiceException {
+    public UserStoragePreference getUserStoragePreference(
+            RequestContext ctx, String userId, String gatewayId, String userStorageId) throws ServiceException {
         try {
             return registryHandler.getUserStoragePreference(userId, gatewayId, userStorageId);
         } catch (Exception e) {
@@ -131,8 +158,13 @@ public class UserResourceProfileService {
         }
     }
 
-    public boolean updateUserStoragePreference(RequestContext ctx, String userId, String gatewayId,
-            String userStorageId, UserStoragePreference storagePreference) throws ServiceException {
+    public boolean updateUserStoragePreference(
+            RequestContext ctx,
+            String userId,
+            String gatewayId,
+            String userStorageId,
+            UserStoragePreference storagePreference)
+            throws ServiceException {
         try {
             return registryHandler.updateUserStoragePreference(userId, gatewayId, userStorageId, storagePreference);
         } catch (Exception e) {
@@ -140,8 +172,8 @@ public class UserResourceProfileService {
         }
     }
 
-    public boolean deleteUserStoragePreference(RequestContext ctx, String userId, String gatewayId,
-            String userStorageId) throws ServiceException {
+    public boolean deleteUserStoragePreference(
+            RequestContext ctx, String userId, String gatewayId, String userStorageId) throws ServiceException {
         try {
             return registryHandler.deleteUserStoragePreference(userId, gatewayId, userStorageId);
         } catch (Exception e) {
@@ -149,18 +181,17 @@ public class UserResourceProfileService {
         }
     }
 
-    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(RequestContext ctx,
-            String userId, String gatewayId) throws ServiceException {
+    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(
+            RequestContext ctx, String userId, String gatewayId) throws ServiceException {
         try {
             return registryHandler.getAllUserComputeResourcePreferences(userId, gatewayId);
         } catch (Exception e) {
-            throw new ServiceException(
-                    "Error while reading user compute resource preferences: " + e.getMessage(), e);
+            throw new ServiceException("Error while reading user compute resource preferences: " + e.getMessage(), e);
         }
     }
 
-    public List<UserStoragePreference> getAllUserStoragePreferences(RequestContext ctx, String userId,
-            String gatewayId) throws ServiceException {
+    public List<UserStoragePreference> getAllUserStoragePreferences(RequestContext ctx, String userId, String gatewayId)
+            throws ServiceException {
         try {
             return registryHandler.getAllUserStoragePreferences(userId, gatewayId);
         } catch (Exception e) {

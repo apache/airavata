@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.integration;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -34,8 +36,6 @@ import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration test template for ExperimentRepository. Demonstrates the recommended pattern for
@@ -137,8 +137,10 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         assertEquals("gw-instance-1", retrieved.getGatewayInstanceId());
         assertEquals(ExperimentType.SINGLE_APPLICATION, retrieved.getExperimentType());
         assertEquals(1, retrieved.getExperimentStatusSize(), "initial status should be set");
-        assertEquals(ExperimentState.CREATED,
-                retrieved.getExperimentStatus().get(0).getState(), "initial state should be CREATED");
+        assertEquals(
+                ExperimentState.CREATED,
+                retrieved.getExperimentStatus().get(0).getState(),
+                "initial state should be CREATED");
 
         // Cleanup
         experimentRepository.removeExperiment(experimentId);
@@ -152,7 +154,9 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         ExperimentModel experiment = buildExperiment("update-test-experiment");
         String experimentId = experimentRepository.addExperiment(experiment);
 
-        assertEquals(0, experimentRepository.getExperiment(experimentId).getEmailAddressesSize(),
+        assertEquals(
+                0,
+                experimentRepository.getExperiment(experimentId).getEmailAddressesSize(),
                 "freshly created experiment should have no email addresses");
 
         experiment.setDescription("updated description");
@@ -188,7 +192,9 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         config.setOverrideManualScheduledParams(false);
         config.setComputationalResourceScheduling(scheduling);
 
-        assertEquals(experimentId, experimentRepository.addUserConfigurationData(config, experimentId),
+        assertEquals(
+                experimentId,
+                experimentRepository.addUserConfigurationData(config, experimentId),
                 "addUserConfigurationData should return the experimentId");
 
         config.setInputStorageResourceId("storage-in");
@@ -216,13 +222,15 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
     void slashesInNameAreNormalized() throws Exception {
         ExperimentModel experiment = buildExperiment("name/forward-slash//a");
         String experimentId = experimentRepository.addExperiment(experiment);
-        assertTrue(experimentId.startsWith("name_forward-slash__a"),
+        assertTrue(
+                experimentId.startsWith("name_forward-slash__a"),
                 "forward slashes should be replaced with underscores");
         experimentRepository.removeExperiment(experimentId);
 
         experiment = buildExperiment("name\\backward-slash\\\\a");
         experimentId = experimentRepository.addExperiment(experiment);
-        assertTrue(experimentId.startsWith("name_backward-slash__a"),
+        assertTrue(
+                experimentId.startsWith("name_backward-slash__a"),
                 "backward slashes should be replaced with underscores");
         experimentRepository.removeExperiment(experimentId);
     }
