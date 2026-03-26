@@ -23,11 +23,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import org.apache.airavata.accountprovisioning.ConfigParam;
-import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.common.exception.AiravataException;
@@ -36,7 +33,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -141,6 +137,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private final GroupResourceProfileService groupResourceProfileService;
     private final ParserService parserService;
     private final ResourceSharingService resourceSharingService;
+    private final org.apache.airavata.service.ssh.SSHAccountService sshAccountService;
 
     public AiravataServerHandler(
             RegistryServerHandler registryHandler,
@@ -166,12 +163,14 @@ public class AiravataServerHandler implements Airavata.Iface {
         this.gatewayResourceProfileService = new GatewayResourceProfileService(registryHandler);
         this.notificationService = new NotificationService(registryHandler);
         this.projectService = new ProjectService(registryHandler, sharingHandler);
-        this.resourceService = new ResourceService(registryHandler);
         this.userResourceProfileService = new UserResourceProfileService(registryHandler);
         this.dataProductService = new DataProductService(registryHandler);
         this.groupResourceProfileService = new GroupResourceProfileService(registryHandler, sharingHandler);
+        this.experimentService.setGroupResourceProfileService(this.groupResourceProfileService);
+        this.resourceService = new ResourceService(registryHandler, this.groupResourceProfileService);
         this.parserService = new ParserService(registryHandler);
         this.resourceSharingService = new ResourceSharingService(sharingHandler, registryHandler);
+        this.sshAccountService = new org.apache.airavata.service.ssh.SSHAccountService(credentialHandler);
     }
 
     public AiravataServerHandler() throws Exception {
@@ -1024,10 +1023,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
             throws AuthorizationException, AiravataSystemException, TException {
         logger.info("Launching experiment {}", airavataExperimentId);
-        ThriftAdapter.executeVoid(authzToken, gatewayId, ctx -> {
-            List<GroupResourceProfile> groupResourceProfiles = groupResourceProfileService.getGroupResourceList(ctx, gatewayId);
-            experimentService.launchExperiment(ctx, airavataExperimentId, gatewayId, groupResourceProfiles);
-        });
+        ThriftAdapter.executeVoid(authzToken, gatewayId,
+                ctx -> experimentService.launchExperiment(ctx, airavataExperimentId, gatewayId));
     }
 
     //    private OrchestratorService.Client getOrchestratorClient() throws TException {
@@ -1685,134 +1682,16 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public StorageVolumeInfo getResourceStorageInfo(AuthzToken authzToken, String resourceId, String location)
             throws TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        StorageInfoContext context;
-
-        try {
-            Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
-            try {
-                ComputeResourceDescription computeResource = registryHandler.getComputeResource(resourceId);
-                if (computeResource != null) {
-                    computeResourceOp = Optional.of(computeResource);
-                }
-            } catch (TApplicationException e) {
-                // TApplicationException with "unknown result" means resource not found (null return for non-nullable
-                // type)
-                logger.debug("Compute resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
-            }
-
-            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
-            if (computeResourceOp.isEmpty()) {
-                try {
-                    StorageResourceDescription storageResource = registryHandler.getStorageResource(resourceId);
-                    if (storageResource != null) {
-                        storageResourceOp = Optional.of(storageResource);
-                    }
-                } catch (TApplicationException e) {
-                    // TApplicationException with "unknown result" means resource not found (null return for
-                    // non-nullable type)
-                    logger.debug(
-                            "Storage resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
-                }
-            }
-
-            if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
-                logger.error(
-                        "Resource with ID {} not found as either compute resource or storage resource", resourceId);
-                throw new InvalidRequestException("Resource with ID '" + resourceId
-                        + "' not found as either compute resource or storage resource");
-            }
-
-            if (computeResourceOp.isPresent()) {
-                logger.debug("Found compute resource with ID {}. Resolving login username and credentials", resourceId);
-                context = resolveComputeStorageInfoContext(authzToken, gatewayId, userId, resourceId);
-            } else {
-                logger.debug("Found storage resource with ID {}. Resolving login username and credentials", resourceId);
-                context = resolveStorageStorageInfoContext(authzToken, gatewayId, userId, resourceId);
-            }
-
-            return context.adaptor.getStorageVolumeInfo(location);
-
-        } catch (InvalidRequestException | AiravataClientException e) {
-            logger.error("Error while retrieving storage resource.", e);
-            throw e;
-
-        } catch (Exception e) {
-            logger.error("Error while retrieving storage volume info for resource {}", resourceId, e);
-
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving storage volume info. More info: " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> resourceService.getResourceStorageInfo(ctx, resourceId, location));
     }
 
     @Override
     @SecurityCheck
     public StorageDirectoryInfo getStorageDirectoryInfo(AuthzToken authzToken, String resourceId, String location)
             throws TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        StorageInfoContext context;
-
-        try {
-            Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
-            try {
-                ComputeResourceDescription computeResource = registryHandler.getComputeResource(resourceId);
-                if (computeResource != null) {
-                    computeResourceOp = Optional.of(computeResource);
-                }
-            } catch (TApplicationException e) {
-                // TApplicationException with "unknown result" means resource not found (null return for non-nullable
-                // type)
-                logger.debug("Compute resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
-            }
-
-            Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
-            if (computeResourceOp.isEmpty()) {
-                try {
-                    StorageResourceDescription storageResource = registryHandler.getStorageResource(resourceId);
-                    if (storageResource != null) {
-                        storageResourceOp = Optional.of(storageResource);
-                    }
-                } catch (TApplicationException e) {
-                    // TApplicationException with "unknown result" means resource not found (null return for
-                    // non-nullable type)
-                    logger.debug(
-                            "Storage resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
-                }
-            }
-
-            if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
-                logger.error(
-                        "Resource with ID {} not found as either compute resource or storage resource", resourceId);
-                throw new InvalidRequestException("Resource with ID '" + resourceId
-                        + "' not found as either compute resource or storage resource");
-            }
-
-            if (computeResourceOp.isPresent()) {
-                logger.debug("Found compute resource with ID {}. Resolving login username and credentials", resourceId);
-                context = resolveComputeStorageInfoContext(authzToken, gatewayId, userId, resourceId);
-            } else {
-                logger.debug("Found storage resource with ID {}. Resolving login username and credentials", resourceId);
-                context = resolveStorageStorageInfoContext(authzToken, gatewayId, userId, resourceId);
-            }
-
-            return context.adaptor.getStorageDirectoryInfo(location);
-
-        } catch (InvalidRequestException | AiravataClientException e) {
-            logger.error("Error while retrieving storage resource.", e);
-            throw e;
-
-        } catch (Exception e) {
-            logger.error("Error while retrieving storage volume info for resource {}", resourceId, e);
-
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving storage volume info. More info: " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> resourceService.getStorageDirectoryInfo(ctx, resourceId, location));
     }
 
     /**
@@ -2542,18 +2421,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String userId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
-        } catch (Exception e) {
-            String errorMessage = "Error occurred while checking if [" + userId + "] has an SSH Account on ["
-                    + computeResourceId + "].";
-            logger.error(errorMessage, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(errorMessage + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> sshAccountService.doesUserHaveSSHAccount(ctx, computeResourceId, userId));
     }
 
     @Override
@@ -2562,30 +2431,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        SSHCredential sshCredential = null;
-        try {
-            sshCredential = credentialHandler.getSSHCredential(airavataCredStoreToken, gatewayId);
-        } catch (Exception e) {
-            logger.error("Error occurred while retrieving SSH Credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH Credential. More info : " + e.getMessage());
-            throw exception;
-        }
-
-        try {
-            return SSHAccountManager.isSSHAccountSetupComplete(gatewayId, computeResourceId, userId, sshCredential);
-        } catch (Exception e) {
-            final String msg =
-                    "Error occurred while checking if setup of SSH account is complete for user [" + userId + "].";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> sshAccountService.isSSHSetupCompleteForUserComputeResourcePreference(
+                        ctx, computeResourceId, airavataCredStoreToken));
     }
 
     @Override
@@ -2594,30 +2442,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String computeResourceId, String userId, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        SSHCredential sshCredential = null;
-        try {
-            sshCredential = credentialHandler.getSSHCredential(airavataCredStoreToken, gatewayId);
-        } catch (Exception e) {
-            logger.error("Error occurred while retrieving SSH Credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while retrieving SSH Credential. More info : " + e.getMessage());
-            throw exception;
-        }
-
-        try {
-            UserComputeResourcePreference userComputeResourcePreference =
-                    SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
-            return userComputeResourcePreference;
-        } catch (Exception e) {
-            logger.error("Error occurred while automatically setting up SSH account for user [" + userId + "]", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while automatically setting up SSH account for user [" + userId
-                    + "]. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> sshAccountService.setupUserComputeResourcePreferencesForSSH(
+                        ctx, computeResourceId, userId, airavataCredStoreToken));
     }
 
     /**
@@ -3284,263 +3111,4 @@ public class AiravataServerHandler implements Airavata.Iface {
         return ThriftAdapter.execute(authzToken, gatewayId, ctx -> parserService.listAllParsingTemplates(ctx, gatewayId));
     }
 
-    /**
-     * To hold storage info context (login username, credential token, and adaptor)
-     */
-    private record StorageInfoContext(String loginUserName, String credentialToken, AgentAdaptor adaptor) {}
-
-    /**
-     * Check if a gateway resource profile exists
-     */
-    private boolean isGatewayResourceProfileExists(String gatewayId) throws TException {
-        try {
-            try {
-                GatewayResourceProfile profile = registryHandler.getGatewayResourceProfile(gatewayId);
-                return profile != null;
-            } catch (org.apache.thrift.TApplicationException e) {
-                logger.error("Gateway resource profile does not exist for gateway: {}", gatewayId, e);
-                return false;
-            }
-        } catch (Exception e) {
-            logger.error("Error while checking if gateway resource profile exists", e);
-            throw e;
-        }
-    }
-
-    private AiravataClientException clientException(AiravataErrorType errorType, String parameter) {
-        AiravataClientException exception = new AiravataClientException();
-        exception.setAiravataErrorType(errorType);
-        exception.setParameter(parameter);
-        return exception;
-    }
-
-    /**
-     * Resolves compute resource storage info context (login username, credential token, and adaptor).
-     * Handles user preference → group preference fallback for both login and credentials.
-     */
-    private StorageInfoContext resolveComputeStorageInfoContext(
-            AuthzToken authzToken, String gatewayId, String userId, String resourceId)
-            throws AgentException, TException {
-        String loginUserName = null;
-        boolean loginFromUserPref = false;
-        GroupComputeResourcePreference groupComputePref = null;
-        GroupResourceProfile groupResourceProfile = null;
-
-        UserComputeResourcePreference userComputePref = null;
-        if (isUserResourceProfileExists(authzToken, userId, gatewayId)) {
-            userComputePref = getUserComputeResourcePreference(authzToken, userId, gatewayId, resourceId);
-        } else {
-            logger.debug(
-                    "User resource profile does not exist for user {} in gateway {}, will try group preferences",
-                    userId,
-                    gatewayId);
-        }
-
-        if (userComputePref != null
-                && userComputePref.getLoginUserName() != null
-                && !userComputePref.getLoginUserName().trim().isEmpty()) {
-            loginUserName = userComputePref.getLoginUserName();
-            loginFromUserPref = true;
-            logger.debug("Using user preference login username: {}", loginUserName);
-
-        } else {
-            // Fallback to GroupComputeResourcePreference
-            List<GroupResourceProfile> groupResourceProfiles = getGroupResourceList(authzToken, gatewayId);
-            for (GroupResourceProfile groupProfile : groupResourceProfiles) {
-                List<GroupComputeResourcePreference> groupComputePrefs = groupProfile.getComputePreferences();
-
-                if (groupComputePrefs != null && !groupComputePrefs.isEmpty()) {
-                    for (GroupComputeResourcePreference groupPref : groupComputePrefs) {
-                        if (resourceId.equals(groupPref.getComputeResourceId())
-                                && groupPref.getLoginUserName() != null
-                                && !groupPref.getLoginUserName().trim().isEmpty()) {
-                            loginUserName = groupPref.getLoginUserName();
-                            groupComputePref = groupPref;
-                            groupResourceProfile = groupProfile;
-                            logger.debug(
-                                    "Using login username from group compute resource preference for resource {}",
-                                    resourceId);
-                            break;
-                        }
-                    }
-                }
-                if (loginUserName != null) {
-                    break;
-                }
-            }
-            if (loginUserName == null) {
-                logger.debug("No login username found for compute resource {}", resourceId);
-                throw new InvalidRequestException("No login username found for compute resource " + resourceId);
-            }
-        }
-
-        // Resolve credential token based on where login came from
-        String credentialToken;
-        if (loginFromUserPref) {
-            // Login username came from user preference. Use user preference token → user profile token
-            if (userComputePref != null
-                    && userComputePref.getResourceSpecificCredentialStoreToken() != null
-                    && !userComputePref
-                            .getResourceSpecificCredentialStoreToken()
-                            .trim()
-                            .isEmpty()) {
-                credentialToken = userComputePref.getResourceSpecificCredentialStoreToken();
-            } else {
-                UserResourceProfile userResourceProfile = getUserResourceProfile(authzToken, userId, gatewayId);
-                if (userResourceProfile == null
-                        || userResourceProfile.getCredentialStoreToken() == null
-                        || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
-                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
-                    throw clientException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for user " + userId + " in gateway " + gatewayId);
-                }
-                credentialToken = userResourceProfile.getCredentialStoreToken();
-            }
-        } else {
-            // Login username came from group preference. Use group preference token → group profile default token →
-            // user profile token (fallback)
-            if (groupComputePref != null
-                    && groupComputePref.getResourceSpecificCredentialStoreToken() != null
-                    && !groupComputePref
-                            .getResourceSpecificCredentialStoreToken()
-                            .trim()
-                            .isEmpty()) {
-                credentialToken = groupComputePref.getResourceSpecificCredentialStoreToken();
-
-            } else if (groupResourceProfile != null
-                    && groupResourceProfile.getDefaultCredentialStoreToken() != null
-                    && !groupResourceProfile
-                            .getDefaultCredentialStoreToken()
-                            .trim()
-                            .isEmpty()) {
-                credentialToken = groupResourceProfile.getDefaultCredentialStoreToken();
-
-            } else {
-                UserResourceProfile userResourceProfile = getUserResourceProfile(authzToken, userId, gatewayId);
-                if (userResourceProfile == null
-                        || userResourceProfile.getCredentialStoreToken() == null
-                        || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
-                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
-                    throw clientException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for compute resource " + resourceId);
-                }
-                credentialToken = userResourceProfile.getCredentialStoreToken();
-            }
-        }
-
-        AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
-                .fetchComputeSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
-        logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
-
-        return new StorageInfoContext(loginUserName, credentialToken, adaptor);
-    }
-
-    /**
-     * Resolves storage resource storage info context (login username, credential token, and adaptor).
-     * Handles user preference → gateway preference fallback for both login and credentials.
-     */
-    private StorageInfoContext resolveStorageStorageInfoContext(
-            AuthzToken authzToken, String gatewayId, String userId, String resourceId)
-            throws AgentException, TException {
-        UserStoragePreference userStoragePref = null;
-        if (isUserResourceProfileExists(authzToken, userId, gatewayId)) {
-            userStoragePref = getUserStoragePreference(authzToken, userId, gatewayId, resourceId);
-        } else {
-            logger.debug(
-                    "User resource profile does not exist for user {} in gateway {}, will try gateway preferences",
-                    userId,
-                    gatewayId);
-        }
-
-        StoragePreference storagePref = null;
-        if (isGatewayResourceProfileExists(gatewayId)) {
-            storagePref = getGatewayStoragePreference(authzToken, gatewayId, resourceId);
-        } else {
-            logger.debug(
-                    "Gateway resource profile does not exist for gateway {}, will check if user preference exists",
-                    gatewayId);
-        }
-
-        String loginUserName;
-        boolean loginFromUserPref;
-
-        if (userStoragePref != null
-                && userStoragePref.getLoginUserName() != null
-                && !userStoragePref.getLoginUserName().trim().isEmpty()) {
-            loginUserName = userStoragePref.getLoginUserName();
-            loginFromUserPref = true;
-            logger.debug("Using login username from user storage preference for resource {}", resourceId);
-
-        } else if (storagePref != null
-                && storagePref.getLoginUserName() != null
-                && !storagePref.getLoginUserName().trim().isEmpty()) {
-            loginUserName = storagePref.getLoginUserName();
-            loginFromUserPref = false;
-            logger.debug("Using login username from gateway storage preference for resource {}", resourceId);
-
-        } else {
-            logger.error("No login username found for storage resource {}", resourceId);
-            throw new InvalidRequestException("No login username found for storage resource " + resourceId);
-        }
-
-        // Resolve credential token based on where login came from
-        String credentialToken;
-        if (loginFromUserPref) {
-            // Login came from user preference. Use user preference token or user profile token
-            if (userStoragePref != null
-                    && userStoragePref.getResourceSpecificCredentialStoreToken() != null
-                    && !userStoragePref
-                            .getResourceSpecificCredentialStoreToken()
-                            .trim()
-                            .isEmpty()) {
-                credentialToken = userStoragePref.getResourceSpecificCredentialStoreToken();
-                logger.debug("Using login username from user preference for resource {}", resourceId);
-
-            } else {
-                UserResourceProfile userResourceProfile = getUserResourceProfile(authzToken, userId, gatewayId);
-                if (userResourceProfile == null
-                        || userResourceProfile.getCredentialStoreToken() == null
-                        || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
-                    logger.error("No credential store token found for user {} in gateway {}", userId, gatewayId);
-                    throw clientException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for user " + userId + " in gateway " + gatewayId);
-                }
-                credentialToken = userResourceProfile.getCredentialStoreToken();
-            }
-        } else {
-            // Login came from gateway preference. Use gateway preference token or gateway profile token
-            if (storagePref != null
-                    && storagePref.getResourceSpecificCredentialStoreToken() != null
-                    && !storagePref
-                            .getResourceSpecificCredentialStoreToken()
-                            .trim()
-                            .isEmpty()) {
-                credentialToken = storagePref.getResourceSpecificCredentialStoreToken();
-
-            } else {
-                GatewayResourceProfile gatewayResourceProfile = getGatewayResourceProfile(authzToken, gatewayId);
-                if (gatewayResourceProfile == null
-                        || gatewayResourceProfile.getCredentialStoreToken() == null
-                        || gatewayResourceProfile
-                                .getCredentialStoreToken()
-                                .trim()
-                                .isEmpty()) {
-                    logger.error("No credential store token found for gateway {}", gatewayId);
-                    throw clientException(
-                            AiravataErrorType.AUTHENTICATION_FAILURE,
-                            "No credential store token found for gateway " + gatewayId);
-                }
-                credentialToken = gatewayResourceProfile.getCredentialStoreToken();
-            }
-        }
-
-        AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
-                .fetchStorageSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
-        logger.info("Resolved resource {} as storage resource to fetch storage details", resourceId);
-
-        return new StorageInfoContext(loginUserName, credentialToken, adaptor);
-    }
 }

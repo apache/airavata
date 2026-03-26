@@ -9,6 +9,7 @@ import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +25,13 @@ import static org.mockito.Mockito.*;
 class ResourceServiceTest {
 
     @Mock RegistryServerHandler registryHandler;
+    @Mock GroupResourceProfileService groupResourceProfileService;
 
     ResourceService resourceService;
 
     @BeforeEach
     void setUp() {
-        resourceService = new ResourceService(registryHandler);
+        resourceService = new ResourceService(registryHandler, groupResourceProfileService);
     }
 
     // --- Compute Resource ---

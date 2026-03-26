@@ -1,27 +1,51 @@
 package org.apache.airavata.service.resource;
 
+import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.UnicoreDataMovement;
+import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.service.context.RequestContext;
+import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
+import org.apache.airavata.service.resourceprofile.GatewayResourceProfileService;
+import org.apache.airavata.service.resourceprofile.UserResourceProfileService;
+import org.apache.thrift.TApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ResourceService {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
 
     private final RegistryServerHandler registryHandler;
+    private final GroupResourceProfileService groupResourceProfileService;
 
-    public ResourceService(RegistryServerHandler registryHandler) {
+    public ResourceService(RegistryServerHandler registryHandler,
+            GroupResourceProfileService groupResourceProfileService) {
         this.registryHandler = registryHandler;
+        this.groupResourceProfileService = groupResourceProfileService;
     }
 
     // -------------------------------------------------------------------------
@@ -410,4 +434,330 @@ public class ResourceService {
             throw new ServiceException("Error while deleting batch queue: " + e.getMessage(), e);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Storage Info
+    // -------------------------------------------------------------------------
+
+    public StorageVolumeInfo getResourceStorageInfo(RequestContext ctx, String resourceId, String location)
+            throws ServiceException {
+        StorageInfoContext context = resolveStorageInfoContext(ctx, resourceId);
+        try {
+            return context.adaptor().getStorageVolumeInfo(location);
+        } catch (AgentException e) {
+            throw new ServiceException("Error while retrieving storage volume info for resource " + resourceId
+                    + ": " + e.getMessage(), e);
+        }
+    }
+
+    public StorageDirectoryInfo getStorageDirectoryInfo(RequestContext ctx, String resourceId, String location)
+            throws ServiceException {
+        StorageInfoContext context = resolveStorageInfoContext(ctx, resourceId);
+        try {
+            return context.adaptor().getStorageDirectoryInfo(location);
+        } catch (AgentException e) {
+            throw new ServiceException("Error while retrieving storage directory info for resource " + resourceId
+                    + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Detects whether resourceId is a compute or storage resource and resolves the appropriate context.
+     */
+    private StorageInfoContext resolveStorageInfoContext(RequestContext ctx, String resourceId)
+            throws ServiceException {
+        Optional<ComputeResourceDescription> computeResourceOp = Optional.empty();
+        try {
+            ComputeResourceDescription cr = registryHandler.getComputeResource(resourceId);
+            if (cr != null) {
+                computeResourceOp = Optional.of(cr);
+            }
+        } catch (TApplicationException e) {
+            logger.debug("Compute resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
+        } catch (Exception e) {
+            throw new ServiceException("Error looking up compute resource " + resourceId + ": " + e.getMessage(), e);
+        }
+
+        Optional<StorageResourceDescription> storageResourceOp = Optional.empty();
+        if (computeResourceOp.isEmpty()) {
+            try {
+                StorageResourceDescription sr = registryHandler.getStorageResource(resourceId);
+                if (sr != null) {
+                    storageResourceOp = Optional.of(sr);
+                }
+            } catch (TApplicationException e) {
+                logger.debug("Storage resource {} not found (TApplicationException): {}", resourceId, e.getMessage());
+            } catch (Exception e) {
+                throw new ServiceException("Error looking up storage resource " + resourceId + ": " + e.getMessage(), e);
+            }
+        }
+
+        if (computeResourceOp.isEmpty() && storageResourceOp.isEmpty()) {
+            throw new ServiceException("Resource with ID '" + resourceId
+                    + "' not found as either compute resource or storage resource");
+        }
+
+        try {
+            if (computeResourceOp.isPresent()) {
+                logger.debug("Found compute resource with ID {}. Resolving login username and credentials", resourceId);
+                return resolveComputeStorageInfoContext(ctx, resourceId);
+            } else {
+                logger.debug("Found storage resource with ID {}. Resolving login username and credentials", resourceId);
+                return resolveStorageStorageInfoContext(ctx, resourceId);
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error resolving storage info context for resource " + resourceId
+                    + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Resolves compute resource storage info context (login username, credential token, and adaptor).
+     * Handles user preference → group preference fallback for both login and credentials.
+     */
+    private StorageInfoContext resolveComputeStorageInfoContext(RequestContext ctx, String resourceId)
+            throws ServiceException {
+        String gatewayId = ctx.getGatewayId();
+        String userId = ctx.getUserId();
+
+        String loginUserName = null;
+        boolean loginFromUserPref = false;
+        GroupComputeResourcePreference groupComputePref = null;
+        GroupResourceProfile groupResourceProfile = null;
+
+        UserComputeResourcePreference userComputePref = null;
+        try {
+            if (registryHandler.isUserResourceProfileExists(userId, gatewayId)) {
+                userComputePref = registryHandler.getUserComputeResourcePreference(userId, gatewayId, resourceId);
+            } else {
+                logger.debug(
+                        "User resource profile does not exist for user {} in gateway {}, will try group preferences",
+                        userId, gatewayId);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Error retrieving user compute resource preference: " + e.getMessage(), e);
+        }
+
+        if (userComputePref != null
+                && userComputePref.getLoginUserName() != null
+                && !userComputePref.getLoginUserName().trim().isEmpty()) {
+            loginUserName = userComputePref.getLoginUserName();
+            loginFromUserPref = true;
+            logger.debug("Using user preference login username: {}", loginUserName);
+        } else {
+            // Fallback to GroupComputeResourcePreference
+            List<GroupResourceProfile> groupResourceProfiles;
+            try {
+                groupResourceProfiles = groupResourceProfileService.getGroupResourceList(ctx, gatewayId);
+            } catch (Exception e) {
+                throw new ServiceException("Error retrieving group resource profiles: " + e.getMessage(), e);
+            }
+            for (GroupResourceProfile groupProfile : groupResourceProfiles) {
+                List<GroupComputeResourcePreference> groupComputePrefs = groupProfile.getComputePreferences();
+                if (groupComputePrefs != null && !groupComputePrefs.isEmpty()) {
+                    for (GroupComputeResourcePreference groupPref : groupComputePrefs) {
+                        if (resourceId.equals(groupPref.getComputeResourceId())
+                                && groupPref.getLoginUserName() != null
+                                && !groupPref.getLoginUserName().trim().isEmpty()) {
+                            loginUserName = groupPref.getLoginUserName();
+                            groupComputePref = groupPref;
+                            groupResourceProfile = groupProfile;
+                            logger.debug("Using login username from group compute resource preference for resource {}",
+                                    resourceId);
+                            break;
+                        }
+                    }
+                }
+                if (loginUserName != null) {
+                    break;
+                }
+            }
+            if (loginUserName == null) {
+                throw new ServiceException("No login username found for compute resource " + resourceId);
+            }
+        }
+
+        // Resolve credential token based on where login came from
+        String credentialToken;
+        if (loginFromUserPref) {
+            if (userComputePref != null
+                    && userComputePref.getResourceSpecificCredentialStoreToken() != null
+                    && !userComputePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                credentialToken = userComputePref.getResourceSpecificCredentialStoreToken();
+            } else {
+                try {
+                    UserResourceProfile userResourceProfile =
+                            registryHandler.getUserResourceProfile(userId, gatewayId);
+                    if (userResourceProfile == null
+                            || userResourceProfile.getCredentialStoreToken() == null
+                            || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                        throw new ServiceAuthorizationException(
+                                "No credential store token found for user " + userId + " in gateway " + gatewayId);
+                    }
+                    credentialToken = userResourceProfile.getCredentialStoreToken();
+                } catch (ServiceAuthorizationException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ServiceException("Error retrieving user resource profile: " + e.getMessage(), e);
+                }
+            }
+        } else {
+            if (groupComputePref != null
+                    && groupComputePref.getResourceSpecificCredentialStoreToken() != null
+                    && !groupComputePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                credentialToken = groupComputePref.getResourceSpecificCredentialStoreToken();
+            } else if (groupResourceProfile != null
+                    && groupResourceProfile.getDefaultCredentialStoreToken() != null
+                    && !groupResourceProfile.getDefaultCredentialStoreToken().trim().isEmpty()) {
+                credentialToken = groupResourceProfile.getDefaultCredentialStoreToken();
+            } else {
+                try {
+                    UserResourceProfile userResourceProfile =
+                            registryHandler.getUserResourceProfile(userId, gatewayId);
+                    if (userResourceProfile == null
+                            || userResourceProfile.getCredentialStoreToken() == null
+                            || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                        throw new ServiceAuthorizationException(
+                                "No credential store token found for compute resource " + resourceId);
+                    }
+                    credentialToken = userResourceProfile.getCredentialStoreToken();
+                } catch (ServiceAuthorizationException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ServiceException("Error retrieving user resource profile: " + e.getMessage(), e);
+                }
+            }
+        }
+
+        try {
+            AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
+                    .fetchComputeSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
+            logger.info("Resolved resource {} as compute resource to fetch storage details", resourceId);
+            return new StorageInfoContext(loginUserName, credentialToken, adaptor);
+        } catch (AgentException e) {
+            throw new ServiceException("Error creating SSH adaptor for compute resource " + resourceId
+                    + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Resolves storage resource storage info context (login username, credential token, and adaptor).
+     * Handles user preference → gateway preference fallback for both login and credentials.
+     */
+    private StorageInfoContext resolveStorageStorageInfoContext(RequestContext ctx, String resourceId)
+            throws ServiceException {
+        String gatewayId = ctx.getGatewayId();
+        String userId = ctx.getUserId();
+
+        UserStoragePreference userStoragePref = null;
+        try {
+            if (registryHandler.isUserResourceProfileExists(userId, gatewayId)) {
+                userStoragePref = registryHandler.getUserStoragePreference(userId, gatewayId, resourceId);
+            } else {
+                logger.debug(
+                        "User resource profile does not exist for user {} in gateway {}, will try gateway preferences",
+                        userId, gatewayId);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Error retrieving user storage preference: " + e.getMessage(), e);
+        }
+
+        StoragePreference storagePref = null;
+        try {
+            GatewayResourceProfile gwProfile = registryHandler.getGatewayResourceProfile(gatewayId);
+            if (gwProfile != null) {
+                storagePref = registryHandler.getGatewayStoragePreference(gatewayId, resourceId);
+            } else {
+                logger.debug("Gateway resource profile does not exist for gateway {}, will check user preference",
+                        gatewayId);
+            }
+        } catch (TApplicationException e) {
+            logger.debug("Gateway resource profile does not exist for gateway {}: {}", gatewayId, e.getMessage());
+        } catch (Exception e) {
+            throw new ServiceException("Error retrieving gateway storage preference: " + e.getMessage(), e);
+        }
+
+        String loginUserName;
+        boolean loginFromUserPref;
+
+        if (userStoragePref != null
+                && userStoragePref.getLoginUserName() != null
+                && !userStoragePref.getLoginUserName().trim().isEmpty()) {
+            loginUserName = userStoragePref.getLoginUserName();
+            loginFromUserPref = true;
+            logger.debug("Using login username from user storage preference for resource {}", resourceId);
+        } else if (storagePref != null
+                && storagePref.getLoginUserName() != null
+                && !storagePref.getLoginUserName().trim().isEmpty()) {
+            loginUserName = storagePref.getLoginUserName();
+            loginFromUserPref = false;
+            logger.debug("Using login username from gateway storage preference for resource {}", resourceId);
+        } else {
+            throw new ServiceException("No login username found for storage resource " + resourceId);
+        }
+
+        String credentialToken;
+        if (loginFromUserPref) {
+            if (userStoragePref != null
+                    && userStoragePref.getResourceSpecificCredentialStoreToken() != null
+                    && !userStoragePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                credentialToken = userStoragePref.getResourceSpecificCredentialStoreToken();
+            } else {
+                try {
+                    UserResourceProfile userResourceProfile =
+                            registryHandler.getUserResourceProfile(userId, gatewayId);
+                    if (userResourceProfile == null
+                            || userResourceProfile.getCredentialStoreToken() == null
+                            || userResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                        throw new ServiceAuthorizationException(
+                                "No credential store token found for user " + userId + " in gateway " + gatewayId);
+                    }
+                    credentialToken = userResourceProfile.getCredentialStoreToken();
+                } catch (ServiceAuthorizationException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ServiceException("Error retrieving user resource profile: " + e.getMessage(), e);
+                }
+            }
+        } else {
+            if (storagePref != null
+                    && storagePref.getResourceSpecificCredentialStoreToken() != null
+                    && !storagePref.getResourceSpecificCredentialStoreToken().trim().isEmpty()) {
+                credentialToken = storagePref.getResourceSpecificCredentialStoreToken();
+            } else {
+                try {
+                    GatewayResourceProfile gatewayResourceProfile =
+                            registryHandler.getGatewayResourceProfile(gatewayId);
+                    if (gatewayResourceProfile == null
+                            || gatewayResourceProfile.getCredentialStoreToken() == null
+                            || gatewayResourceProfile.getCredentialStoreToken().trim().isEmpty()) {
+                        throw new ServiceAuthorizationException(
+                                "No credential store token found for gateway " + gatewayId);
+                    }
+                    credentialToken = gatewayResourceProfile.getCredentialStoreToken();
+                } catch (ServiceAuthorizationException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ServiceException("Error retrieving gateway resource profile: " + e.getMessage(), e);
+                }
+            }
+        }
+
+        try {
+            AgentAdaptor adaptor = AdaptorSupportImpl.getInstance()
+                    .fetchStorageSSHAdaptor(gatewayId, resourceId, credentialToken, userId, loginUserName);
+            logger.info("Resolved resource {} as storage resource to fetch storage details", resourceId);
+            return new StorageInfoContext(loginUserName, credentialToken, adaptor);
+        } catch (AgentException e) {
+            throw new ServiceException("Error creating SSH adaptor for storage resource " + resourceId
+                    + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Holds storage info context: login username, credential token, and adaptor.
+     */
+    private record StorageInfoContext(String loginUserName, String credentialToken, AgentAdaptor adaptor) {}
 }
