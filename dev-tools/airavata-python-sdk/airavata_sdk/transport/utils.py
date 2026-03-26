@@ -105,8 +105,11 @@ class ThriftClient:
         if self.transport.isOpen():
           self.transport.close()
         self.transport.open()
-        version = self.client.getAPIVersion() # type: ignore
-        log.debug(f"[AV] Connected to {self.host}:{self.port} passed! API version={version}")
+        try:
+          version = self.client.getAPIVersion() # type: ignore
+          log.debug(f"[AV] Connected to {self.host}:{self.port}, API version={version}")
+        except AttributeError:
+          log.debug(f"[AV] Connected to {self.host}:{self.port} (service has no getAPIVersion)")
         break
       except Exception as e:
         log.debug(f"[AV] Connection attempt {attempt + 1} failed: {repr(e)}")

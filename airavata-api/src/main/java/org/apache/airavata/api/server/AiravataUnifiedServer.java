@@ -36,9 +36,11 @@ import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
+import org.apache.airavata.registry.core.utils.WorkflowCatalogDBInitConfig;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.service.profile.handlers.GroupManagerServiceHandler;
@@ -91,6 +93,8 @@ public class AiravataUnifiedServer implements IServer {
             new ExpCatalogDBInitConfig(),
             new AppCatalogDBInitConfig(),
             new ReplicaCatalogDBInitConfig(),
+            new WorkflowCatalogDBInitConfig(),
+            new CredentialStoreDBInitConfig(),
             new UserProfileCatalogDBInitConfig());
 
     public AiravataUnifiedServer() {
