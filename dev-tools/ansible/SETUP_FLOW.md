@@ -81,17 +81,9 @@ This document explains the setup flow and how to configure Airavata components a
 **Purpose**: MariaDB installation and database setup
 - Installs MariaDB
 - Sets root password
-- Creates databases:
-  - `experiment_catalog`
-  - `app_catalog`
-  - `replica_catalog`
-  - `workflow_catalog`
-  - `sharing_catalog`
-  - `credential_store`
-  - `profile_service`
-  - `research_catalog`
-  - `keycloak` (if Keycloak role runs)
+- Creates the unified `airavata` database (all schemas are managed via Flyway migrations on first startup)
 - Creates database user (`db_user` with `db_password`)
+- Creates `keycloak` database (if Keycloak role runs)
 - **Runs on**: `[database]` group (can be separate host)
 
 #### 8. `letsencrypt`
@@ -135,7 +127,7 @@ This document explains the setup flow and how to configure Airavata components a
 - Builds Airavata from source (Maven)
 - Generates configuration files from templates
 - Deploys services to `deployment_dir`
-- Starts all services (API Server, Orchestrator, Registry, Agent Service, Research Service, File Server, REST Proxy)
+- Starts the consolidated `AiravataServer` (all Thrift services + background workers on port 8930) plus the Spring Boot microservices (Agent Service, File Server, Research Service, REST Proxy)
 - **Runs on**: `airavata_servers` only
 - **Become user**: `{{ user }}` (non-root)
 

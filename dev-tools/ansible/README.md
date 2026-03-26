@@ -167,7 +167,7 @@ If you need to spin up a new deployment (new environment, new server, etc.), fol
 - **zookeeper** - Zookeeper installation
 - **kafka** - Kafka installation
 - **rabbitmq** - RabbitMQ installation (uses distro packages)
-- **database** - MariaDB installation and database setup
+- **database** - MariaDB installation and unified `airavata` database setup (schemas managed by Flyway)
 - **letsencrypt** - SSL certificate generation (Let's Encrypt)
 - **keycloak** - Keycloak IAM server (24.0.0+ uses Quarkus with MariaDB driver)
 - **reverse_proxy** - Apache2 reverse proxy for Keycloak

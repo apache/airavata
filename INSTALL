@@ -1,32 +1,40 @@
-For detailed installation and further instructions please refer http://airavata.apache.org/:
-Documentation section in left hand panel. The website lists step by step instructions
+For detailed documentation please refer to http://airavata.apache.org/
 
-Installing  Apache Airavata 0.17
-------------------------------------------------
+Installing Apache Airavata 0.21-SNAPSHOT
+-----------------------------------------
 
 Prerequisites
 -------------
-Java 1.8 or later
-Maven 3 or later
+- Java 17 or later
+- Maven 3.8 or later
+- Docker Engine 20.10 or later
+- Docker Compose 2.0 or later
 
-Build Apache Airavata from Source
----------------------------------
-* Unzip/untar the source file or clone from git.
-* cd to project folder and type
-	$ mvn clean install
-	Note: in order to skip tests use the command
-			$ mvn clean install -Dmaven.test.skip=true
-* Alternatively, all  compressed binary distributions can be found at <PROJECT DIR>/modules/distribution/release/target/release-artifacts
+Quick Start
+-----------
+1. Start infrastructure services (MariaDB, RabbitMQ, ZooKeeper, Kafka, Keycloak):
+
+        docker compose up -d
+
+2. Build Airavata, initialize the database, and generate the classpath:
+
+        ./scripts/setup.sh
+
+3. Start the Airavata Server:
+
+        ./scripts/start.sh
+
+   The server starts on port 8930 (Thrift, multiplexed).
+   All Thrift services are available on this single port via TMultiplexedProtocol.
+
+Build from Source Only (without starting)
+------------------------------------------
+    mvn clean install -DskipTests
 
 Running Tests
 -------------
-* Unit tests & integrations tests will run while Apache Airavata is built from source (without "-Dmaven.test.skip=true").
-* To run the test samples
-    - You can find the binary distributions at <PROJECT DIR>/modules/distribution/release/target/release-artifacts or from 
-      the Apache Airavata download site.
-    - Extract the binary distributions and once the binary is unzipped, instructions to run the tests should be followed 
-      from README files found within.
+    mvn clean install
 
-Tutorials 
-----------
-The airavata documentation has instructions for basic tutorials at https://airavata.readthedocs.io/en/latest/
+Tutorials
+---------
+https://airavata.readthedocs.io/en/latest/
