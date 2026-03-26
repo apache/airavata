@@ -119,7 +119,8 @@ public class WorkflowManager {
                 RegistryService.Client::new,
                 poolConfig,
                 ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()));
+                Integer.parseInt(ServerSettings.getRegistryServerPort()),
+                "RegistryService");
     }
 
     public Publisher getStatusPublisher() {

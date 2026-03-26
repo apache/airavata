@@ -60,7 +60,8 @@ public class AbstractMonitor {
                 RegistryService.Client::new,
                 poolConfig,
                 ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()));
+                Integer.parseInt(ServerSettings.getRegistryServerPort()),
+                "RegistryService");
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
