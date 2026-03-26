@@ -36,10 +36,17 @@ import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.db.event.manager.DBEventManagerRunner;
+import org.apache.airavata.helix.core.AbstractTask;
+import org.apache.airavata.helix.impl.controller.HelixController;
+import org.apache.airavata.helix.impl.participant.GlobalParticipant;
+import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
+import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
 import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.monitor.realtime.RealtimeMonitor;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.server.OrchestratorServerHandler;
 import org.apache.airavata.patform.monitoring.MonitoringServer;
@@ -273,6 +280,28 @@ public class AiravataServer implements IServer {
             logger.warn("  process_rescheduler: config error — {}", e.getMessage());
         }
 
+        // Execution engine services
+        startDaemon("helix_controller", () -> new HelixController().startServer());
+        startDaemon("helix_participant", () -> {
+            ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
+            for (String name : GlobalParticipant.TASK_CLASS_NAMES) {
+                taskClasses.add(Class.forName(name).asSubclass(AbstractTask.class));
+            }
+            new GlobalParticipant(taskClasses, null).startServer();
+        });
+        startDaemon("pre_workflow_manager", () -> new PreWorkflowManager().startServer());
+        startDaemon("post_workflow_manager", () -> new PostWorkflowManager().startServer());
+
+        // Job monitors
+        try {
+            if (Boolean.parseBoolean(ServerSettings.getSetting("email.based.monitoring.enabled", "false"))) {
+                startDaemon("email_monitor", () -> new EmailBasedMonitor().startServer());
+            }
+        } catch (Exception e) {
+            logger.warn("  email_monitor: config error — {}", e.getMessage());
+        }
+        startDaemon("realtime_monitor", () -> new RealtimeMonitor().startServer());
+
         logger.info("Background services initialization complete ({} running)", backgroundServices.size());
     }
 
@@ -284,6 +313,24 @@ public class AiravataServer implements IServer {
         } catch (Exception e) {
             logger.warn("  {}: failed — {}", label, e.getMessage());
         }
+    }
+
+    @FunctionalInterface
+    private interface DaemonStarter {
+        void start() throws Exception;
+    }
+
+    private void startDaemon(String name, DaemonStarter starter) {
+        Thread t = new Thread(() -> {
+            try {
+                starter.start();
+            } catch (Exception e) {
+                logger.warn("  {}: failed — {}", name, e.getMessage());
+            }
+        }, "airavata-" + name);
+        t.setDaemon(true);
+        t.start();
+        logger.info("  {}: started", name);
     }
 
     @Override

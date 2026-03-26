@@ -93,7 +93,11 @@ public class RealtimeMonitor extends AbstractMonitor {
         }
     }
 
+    public void startServer() throws ApplicationSettingsException {
+        runConsumer();
+    }
+
     public static void main(String args[]) throws ApplicationSettingsException {
-        new RealtimeMonitor().runConsumer();
+        new RealtimeMonitor().startServer();
     }
 }
