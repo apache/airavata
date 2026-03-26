@@ -3,8 +3,8 @@
 ## Automated Deployments
 
 For docker-compose, Ansible, and Kubernetes, the canonical init script is
-`conf/init-db/01-create-databases.sql` at the repo root. It creates the
-`airavata` database with dev credentials.
+`conf/init-db/01-create-databases.sql` at the repo root. It creates both the
+`airavata` and `keycloak` databases with dev credentials.
 
 ## Manual Setup
 
@@ -30,7 +30,7 @@ For docker-compose, Ansible, and Kubernetes, the canonical init script is
 
 | File | Purpose |
 |------|---------|
-| `create-database.sql` | Manual/reference setup (creates airavata DB) |
+| `create-database.sql` | Manual/reference setup (creates airavata + keycloak DBs) |
 | `migration/airavata/V1__Baseline_schema.sql` | Flyway baseline migration (all tables) |
 | `conf/init-db/01-create-databases.sql` (repo root) | Canonical init for automated deployments |
 

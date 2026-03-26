@@ -1,0 +1,89 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: Set web server package and service
+  ansible.builtin.set_fact:
+    webserver_package: "{{ webserver_packages[ansible_os_family] }}"
+    webserver_service_name: "{{ webserver_service[ansible_os_family] }}"
+    vhost_config_directory: "{{ vhost_config_dir[ansible_os_family] }}"
+
+- name: Install web server
+  ansible.builtin.package:
+    name: "{{ webserver_package }}"
+    state: present
+  become: true
+
+- name: Set SELinux to permissive (RedHat)
+  ansible.posix.selinux:
+    state: permissive
+    policy: targeted
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Allow httpd to proxy to Keycloak process
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+  become: true
+
+- name: Enable HTTP/HTTPS service on firewall (RedHat)
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+    zone: public
+    immediate: true
+  loop:
+    - http
+    - https
+  become: true
+  when: ansible_os_family == "RedHat"
+
+- name: Enable HTTP/HTTPS service on firewall (Debian)
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "80"
+    - "443"
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Copy basic virtual host file for certbot verification
+  ansible.builtin.template:
+    src: basic-vhost.conf.j2
+    dest: "{{ vhost_config_directory }}/basic-vhost.conf"
+    backup: true
+  become: true
+
+- name: Enable basic virtual host site (Debian)
+  ansible.builtin.command: /usr/sbin/a2ensite basic-vhost.conf
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Start web server
+  ansible.builtin.systemd:
+    name: "{{ webserver_service_name }}"
+    state: started
+    enabled: true
+  become: true

@@ -1,0 +1,30 @@
+global
+    log         127.0.0.1 local2
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+    stats socket /var/lib/haproxy/stats
+
+defaults
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+
+frontend main
+  mode tcp
+  log global
+  option tcplog
+  bind *:443 ssl crt {{ haproxy_api_server_ssl_cert }}
+  default_backend airavata-backend
+
+backend airavata-backend
+  mode tcp
+  log global
+  option tcplog
+  server airavata {{ api_server_host }}:{{ api_server_port }} check

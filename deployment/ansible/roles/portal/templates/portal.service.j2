@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Airavata Next.js Portal
+Documentation=https://github.com/apache/airavata
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ user }}
+Group={{ group }}
+WorkingDirectory={{ portal_dir }}
+EnvironmentFile={{ portal_dir }}/.env.local
+ExecStart={{ portal_dir }}/node_modules/.bin/next start --port {{ portal_port }} --hostname 0.0.0.0
+ExecStartPre=/bin/bash -c 'test -d {{ portal_dir }}/.next || (echo "Portal not built — run the portal role first" && exit 1)'
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=airavata-portal
+
+[Install]
+WantedBy=multi-user.target

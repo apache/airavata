@@ -37,4 +37,12 @@ CREATE DATABASE IF NOT EXISTS airavata
 CREATE USER IF NOT EXISTS 'airavata'@'%' IDENTIFIED BY 'CHANGE_ME_IN_PRODUCTION';
 GRANT ALL PRIVILEGES ON airavata.* TO 'airavata'@'%';
 
+-- Keycloak database (same MariaDB instance)
+CREATE DATABASE IF NOT EXISTS keycloak
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'keycloak'@'%' IDENTIFIED BY 'CHANGE_ME_IN_PRODUCTION';
+GRANT ALL PRIVILEGES ON keycloak.* TO 'keycloak'@'%';
+
 FLUSH PRIVILEGES;

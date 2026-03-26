@@ -1,0 +1,134 @@
+---
+# Non-sensitive configuration variables for dev environment
+
+# Airavata version and build settings
+airavata_version: "0.21-SNAPSHOT"
+git_branch: "master"
+airavata_git_repo: "https://github.com/apache/airavata.git"
+airavata_source_dir: "/home/{{ deploy_user }}/airavata-src"
+deployment_dir: "/home/{{ deploy_user }}/airavata-deployment"
+
+# Maven version (should match common role's apache_maven_version)
+apache_maven_version: "apache-maven-3.9.11"
+
+# Deployment user
+deploy_user: "airavata"
+
+# System user/group (used by env_setup and other roles)
+user: "{{ deploy_user }}"
+group: "{{ deploy_user }}"
+user_home: "/home/{{ user }}"
+
+# Service ports
+api_server_port: 8930
+api_server_tls_port: 9930
+profile_service_port: 8962
+registry_port: 8970
+registry_server_port: 8970
+sharing_registry_port: 7878
+cred_store_port: 8960
+agent_service_port: 18880
+research_service_port: 18899
+file_server_port: 8050
+restproxy_port: 8082
+
+# Database names
+app_catalog: "app_catalog"
+exp_catalog: "experiment_catalog"
+replica_catalog: "replica_catalog"
+workflow_catalog: "workflow_catalog"
+sharing_catalog: "sharing_catalog"
+credential_store: "credential_store"
+profile_service: "profile_service"
+research_catalog: "research_catalog"
+
+# Database drivers
+registry_jdbc_driver: "org.mariadb.jdbc.Driver"
+appcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+replicacatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+workflowcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+sharingcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
+profile_service_jdbc_driver: "org.mariadb.jdbc.Driver"
+credential_store_jdbc_driver: "org.mariadb.jdbc.Driver"
+
+# Database users
+registry_jdbc_user: "{{ db_user | default('airavata') }}"
+appcatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+replicacatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+workflowcatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+sharingcatalog_jdbc_user: "{{ db_user | default('airavata') }}"
+profile_service_jdbc_user: "{{ db_user | default('airavata') }}"
+credential_store_jdbc_user: "{{ db_user | default('airavata') }}"
+
+# Paths
+local_data_location: "/home/{{ deploy_user }}/temp-storage"
+file_server_storage_location: "/home/{{ deploy_user }}/temp-storage"
+agent_service_storage_path: "/var/www/portals/gateway-user-data"
+
+# Keystore file name
+vault_keystore_file: "airavata.sym.p12"
+
+# Email monitor settings
+email_based_monitor_host: "imap.gmail.com"
+email_based_monitor_store_protocol: "imaps"
+email_based_monitor_folder_name: "INBOX"
+email_expiration_minutes: 60
+email_based_monitoring_period: 10000
+
+# Kafka and RabbitMQ
+kafka_broker_url: "localhost:9092"
+restproxy_broker_url: "localhost:9092"
+rabbitmq_port: 5672
+rabbitmq_status_exchange_name: "status_exchange"
+rabbitmq_process_exchange_name: "process_exchange"
+rabbitmq_experiment_exchange_name: "experiment_exchange"
+experiment_launch_queue: "experiment_launch"
+
+# Zookeeper connection
+zookeeper_client_port: 2181
+zookeeper_connection: "localhost:{{ zookeeper_client_port }}"
+embedded_zk: false
+# Zookeeper AdminServer port (default is 8081 to avoid conflict with Keycloak on 8080)
+# Can be overridden here if needed
+# zookeeper_admin_server_port: 8081
+
+# API Server public hostname (for HAProxy SSL termination)
+api_server_public_hostname: "api.dev.cybershuttle.org"
+
+# API Server connection settings for Django
+api_server_host: "{{ api_server_public_hostname }}"
+api_secured: true
+
+api_server_bind_host: "0.0.0.0"
+orchestrator_bind_host: "0.0.0.0"
+registry_bind_host: "0.0.0.0"
+sharing_registry_bind_host: "0.0.0.0"
+cred_store_server_bind_host: "0.0.0.0"
+profile_service_bind_host: "0.0.0.0"
+
+# TLS Configuration
+tls_enable: false
+
+# Let's Encrypt email for certificate notifications
+letsencrypt_email: "admin@cybershuttle.org"
+
+# Keycloak virtual host hostname (for Let's Encrypt certificate)
+keycloak_vhost_servername: "auth.dev.cybershuttle.org"
+
+# Firewall subnets (for allowing access to services)
+# These can be restricted to specific IP ranges for security
+# For test environment, using 0.0.0.0/0 to allow all (adjust for production)
+zk_subnets:
+  - "0.0.0.0/0"
+kafka_subnets:
+  - "0.0.0.0/0"
+rabbitmq_subnets:
+  - "0.0.0.0/0"
+db_subnets:
+  - "0.0.0.0/0"
+
+# Other non-sensitive configuration
+enable_sharing: true
+enable_validation: true
+enable_realtime_monitor: true
+job_notification_enable: true

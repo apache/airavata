@@ -3,6 +3,28 @@ Apache Airavata Release Notes
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
 
+Release Notes - Airavata - Version 1.0.0-SNAPSHOT (in development)
+
+** Architecture and data layer
+    * Unified distribution: single Spring Boot application with Thrift, HTTP, and gRPC endpoints
+    * Credential-centric access model: credentials linked to compute resources via CredentialComputeConfig; ApplicationDeployment bound to credential configs
+    * Unified database schema: single MariaDB schema with STATUS/ERROR and resource management entities
+    * Entity simplifications: Project and workflow entities no longer hold @OneToMany to resource accounts or status/error; status and error accessed via StatusRepository/ErrorRepository
+    * User profile: minimal research-context profile; demographics and dashboard data managed by Keycloak
+
+** Testing and distribution
+    * Integration test context: mock CredentialStoreService provided so registry tests load without full security stack
+    * Repository tests: ResourceAccessGrantRepositoryTest satisfies CREDENTIALS FK before inserting grants
+    * Documentation: ERD (docs/ERD.md), README quick start, and deployment options updated for distribution-ready use
+
+** Distribution and scripts (0.21)
+    * Distribution: tarball and fat JAR only; GraalVM/native image removed
+    * Launcher: single bin/airavata.sh with -d start|stop|restart; --home and --config-dir (or AIRAVATA_HOME, AIRAVATA_CONFIG_DIR)
+    * Cleanup: unused native-image resources and duplicate slurminfo.sh removed; INSTALL removed from tarball assembly
+    * Scripts: dev-tools/deployment-scripts updated to airavata-0.21-SNAPSHOT and bin/airavata.sh; docs/README.md and scripts/README.md document script and resource locations
+    * Integration test README: start-integration-services.sh removed; use scripts/full-init.sh or docker compose for db/redis
+
+
 Release Notes - Airavata - Version 0.17
 
 ** Epic

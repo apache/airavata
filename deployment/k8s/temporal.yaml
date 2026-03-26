@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: temporal
+    app.kubernetes.io/component: workflow-engine
+    app.kubernetes.io/part-of: airavata
+spec:
+  # Temporal server start-dev is a single-node in-memory dev server.
+  # For production, deploy the full Temporal cluster using the official Helm chart:
+  # https://github.com/temporalio/helm-charts
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: temporal
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: temporal
+        app.kubernetes.io/component: workflow-engine
+        app.kubernetes.io/part-of: airavata
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: temporal
+          image: temporalio/admin-tools:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - temporal
+            - server
+            - start-dev
+            - --ip
+            - "0.0.0.0"
+            - --port
+            - "7233"
+            - --ui-port
+            - "8233"
+            - --namespace
+            - default
+            - --log-level
+            - warn
+          ports:
+            - name: grpc
+              containerPort: 7233
+              protocol: TCP
+            - name: ui
+              containerPort: 8233
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 4
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: temporal
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: temporal
+    app.kubernetes.io/component: workflow-engine
+    app.kubernetes.io/part-of: airavata
+spec:
+  type: ClusterIP
+  ports:
+    - name: grpc
+      port: 7233
+      targetPort: grpc
+      protocol: TCP
+    - name: ui
+      port: 8233
+      targetPort: ui
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: temporal

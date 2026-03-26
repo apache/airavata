@@ -1,0 +1,318 @@
+---
+# ConfigMap for Spring Boot application properties that are too verbose for
+# the main airavata-config ConfigMap (e.g. multi-line or Spring-specific keys).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apiserver-spring-config
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: apiserver
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: airavata
+data:
+  # Spring Boot application.properties overrides mounted at
+  # /opt/apache-airavata/config/application-kubernetes.properties
+  # The container must have SPRING_CONFIG_ADDITIONAL_LOCATION pointing here,
+  # or the image must load config from this path by convention.
+  # Property names must match airavata-api application.properties.
+  # See: airavata-api/modules/distribution/src/main/resources/application.properties
+  application-kubernetes.properties: |
+    # ── DataSource ──────────────────────────────────────────────────────────
+    spring.datasource.url=jdbc:mariadb://mariadb.airavata.svc.cluster.local:3306/airavata?useSSL=false&allowPublicKeyRetrieval=true
+    spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+    spring.jpa.hibernate.ddl-auto=validate
+    spring.jpa.open-in-view=false
+
+    # ── Temporal ────────────────────────────────────────────────────────────
+    spring.temporal.connection.target=temporal.airavata.svc.cluster.local:7233
+    spring.temporal.namespace=default
+    spring.temporal.workers-auto-discovery.packages[0]=org.apache.airavata.execution
+
+    # ── IAM / Security ─────────────────────────────────────────────────────
+    airavata.security.iam.server-url=http://keycloak.airavata.svc.cluster.local:8080
+    airavata.security.iam.realm=default
+    airavata.security.iam.oauth-client-id=pga
+    airavata.security.tls.enabled=false
+    # JWT validation — issuer must match KC_HOSTNAME; JWKS fetched via internal URL
+    spring.security.oauth2.resourceserver.jwt.issuer-uri=http://auth.airavata.localhost/realms/default
+    spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://keycloak.airavata.svc.cluster.local:8080/realms/default/protocol/openid-connect/certs
+
+    # ── Server ──────────────────────────────────────────────────────────────
+    server.port=8090
+    spring.grpc.server.port=9090
+
+    # ── Actuator ────────────────────────────────────────────────────────────
+    management.endpoints.web.exposure.include=health,info,metrics,prometheus
+    management.endpoint.health.show-details=always
+    management.health.livenessState.enabled=true
+    management.health.readinessState.enabled=true
+
+    # ── Logging ─────────────────────────────────────────────────────────────
+    logging.level.org.apache.airavata=INFO
+    logging.level.io.temporal=WARN
+    spring.devtools.restart.enabled=false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apiserver
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: apiserver
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: airavata
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apiserver
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: apiserver
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: airavata
+      annotations:
+        # Force a rolling restart when the ConfigMap changes:
+        # kubectl rollout restart deployment/apiserver -n airavata
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8090"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      terminationGracePeriodSeconds: 60
+      serviceAccountName: default
+      initContainers:
+        # Wait for MariaDB before the API server starts (schema migration runs at boot).
+        - name: wait-for-db
+          image: mariadb:11.7
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              until mariadb -h "${MARIADB_HOST}" -u"${SPRING_DATASOURCE_USERNAME}" -p"${SPRING_DATASOURCE_PASSWORD}" airavata -e "SELECT 1" >/dev/null 2>&1; do
+                echo "Waiting for MariaDB..."; sleep 5;
+              done
+              echo "MariaDB is ready."
+          env:
+            - name: MARIADB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: MARIADB_HOST
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: apiserver-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: apiserver-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+        # Wait for Temporal gRPC port before the API server starts.
+        - name: wait-for-temporal
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              until nc -z "${TEMPORAL_HOST}" "${TEMPORAL_PORT}"; do
+                echo "Waiting for Temporal..."; sleep 5;
+              done
+              echo "Temporal is ready."
+          env:
+            - name: TEMPORAL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: TEMPORAL_HOST
+            - name: TEMPORAL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: TEMPORAL_PORT
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+      containers:
+        - name: apiserver
+          image: apache/airavata:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8090
+              protocol: TCP
+            - name: grpc
+              containerPort: 9090
+              protocol: TCP
+          env:
+            # Spring profiles — activates application-kubernetes.properties
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: airavata-config
+                  key: SPRING_PROFILES_ACTIVE
+            # Load the mounted properties file (application-kubernetes.properties)
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: "file:/opt/apache-airavata/config/"
+            # DataSource credentials (injected via env; URL/driver in properties file)
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: apiserver-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: apiserver-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+            # IAM client secret
+            - name: AIRAVATA_SECURITY_IAM_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: apiserver-secret
+                  key: KEYCLOAK_CLIENT_SECRET
+            # IAM admin credentials (for realm management)
+            - name: AIRAVATA_SECURITY_IAM_SUPER_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: KEYCLOAK_ADMIN
+            - name: AIRAVATA_SECURITY_IAM_SUPER_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            # JVM tuning
+            - name: JAVA_OPTS
+              value: >-
+                -XX:+UseContainerSupport
+                -XX:MaxRAMPercentage=70.0
+                -XX:+ExitOnOutOfMemoryError
+                -Djava.security.egd=file:/dev/./urandom
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            # Allow up to 5 min for first startup (schema migration may take time).
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          volumeMounts:
+            - name: spring-config
+              mountPath: /opt/apache-airavata/config
+              readOnly: true
+      volumes:
+        - name: spring-config
+          configMap:
+            name: apiserver-spring-config
+---
+# HorizontalPodAutoscaler — scales between 2 and 6 replicas based on CPU/memory.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: apiserver
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: apiserver
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: airavata
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: apiserver
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+---
+# PodDisruptionBudget — ensures at least one API server replica is always available.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: apiserver
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: apiserver
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: airavata
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: apiserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apiserver
+  namespace: airavata
+  labels:
+    app.kubernetes.io/name: apiserver
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: airavata
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8090
+      targetPort: http
+      protocol: TCP
+    - name: grpc
+      port: 9090
+      targetPort: grpc
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: apiserver

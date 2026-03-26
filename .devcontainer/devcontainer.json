@@ -1,0 +1,28 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+  "name": "Airavata",
+  "dockerComposeFile": "compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/home/developer/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": { "version": "25", "installMaven": "true" }
+  },
+  "forwardPorts": [],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens",
+        "foxundermoon.shell-format",
+        "golang.go",
+        "lkrms.inifmt",
+        "ms-python.python",
+        "ms-python.autopep8",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        "njpwerner.autodocstring",
+        "vscjava.vscode-java-pack"
+      ]
+    }
+  }
+}
