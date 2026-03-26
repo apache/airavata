@@ -23,6 +23,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.Constants;
@@ -246,12 +247,10 @@ public class AiravataServer implements IServer {
             if (ServerSettings.getBooleanSetting("api.server.monitoring.enabled")) {
                 String monHost = ServerSettings.getSetting("api.server.monitoring.host", "localhost");
                 int monPort = Integer.parseInt(ServerSettings.getSetting("api.server.monitoring.port", "9097"));
-                MonitoringServer monitoringServer = new MonitoringServer(monHost, monPort);
-                monitoringServer.start();
-                logger.info("  monitoring_server: started on {}:{}", monHost, monPort);
+                registerAndStart(new MonitoringServer(monHost, monPort), "monitoring_server");
             }
         } catch (Exception e) {
-            logger.warn("  monitoring_server: failed — {}", e.getMessage());
+            logger.warn("  monitoring_server: config error — {}", e.getMessage());
         }
 
         // Cluster status monitoring — polls compute resource queue status
@@ -282,27 +281,60 @@ public class AiravataServer implements IServer {
         }
 
         // Execution engine services
-        startDaemon("helix_controller", () -> new HelixController().startServer());
-        startDaemon("helix_participant", () -> {
-            ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
-            for (String name : GlobalParticipant.TASK_CLASS_NAMES) {
-                taskClasses.add(Class.forName(name).asSubclass(AbstractTask.class));
-            }
-            new GlobalParticipant(taskClasses, null).startServer();
-        });
-        startDaemon("pre_workflow_manager", () -> new PreWorkflowManager().startServer());
-        startDaemon("post_workflow_manager", () -> new PostWorkflowManager().startServer());
-        startDaemon("parser_workflow_manager", () -> new ParserWorkflowManager().startServer());
+        registerAndStart(
+                new BackgroundServiceAdapter("helix_controller", () -> {
+                    new HelixController().startServer();
+                    return null;
+                }),
+                "helix_controller");
+        registerAndStart(
+                new BackgroundServiceAdapter("helix_participant", () -> {
+                    ArrayList<Class<? extends AbstractTask>> taskClasses = new ArrayList<>();
+                    for (String taskName : GlobalParticipant.TASK_CLASS_NAMES) {
+                        taskClasses.add(Class.forName(taskName).asSubclass(AbstractTask.class));
+                    }
+                    new GlobalParticipant(taskClasses, null).startServer();
+                    return null;
+                }),
+                "helix_participant");
+        registerAndStart(
+                new BackgroundServiceAdapter("pre_workflow_manager", () -> {
+                    new PreWorkflowManager().startServer();
+                    return null;
+                }),
+                "pre_workflow_manager");
+        registerAndStart(
+                new BackgroundServiceAdapter("post_workflow_manager", () -> {
+                    new PostWorkflowManager().startServer();
+                    return null;
+                }),
+                "post_workflow_manager");
+        registerAndStart(
+                new BackgroundServiceAdapter("parser_workflow_manager", () -> {
+                    new ParserWorkflowManager().startServer();
+                    return null;
+                }),
+                "parser_workflow_manager");
 
         // Job monitors
         try {
             if (Boolean.parseBoolean(ServerSettings.getSetting("email.based.monitoring.enabled", "false"))) {
-                startDaemon("email_monitor", () -> new EmailBasedMonitor().startServer());
+                registerAndStart(
+                        new BackgroundServiceAdapter("email_monitor", () -> {
+                            new EmailBasedMonitor().startServer();
+                            return null;
+                        }),
+                        "email_monitor");
             }
         } catch (Exception e) {
             logger.warn("  email_monitor: config error — {}", e.getMessage());
         }
-        startDaemon("realtime_monitor", () -> new RealtimeMonitor().startServer());
+        registerAndStart(
+                new BackgroundServiceAdapter("realtime_monitor", () -> {
+                    new RealtimeMonitor().startServer();
+                    return null;
+                }),
+                "realtime_monitor");
 
         logger.info("Background services initialization complete ({} running)", backgroundServices.size());
     }
@@ -317,24 +349,55 @@ public class AiravataServer implements IServer {
         }
     }
 
-    @FunctionalInterface
-    private interface DaemonStarter {
-        void start() throws Exception;
-    }
+    private static class BackgroundServiceAdapter implements IServer {
+        private final String name;
+        private final Callable<Void> starter;
+        private ServerStatus status = ServerStatus.STOPPED;
+        private Thread thread;
 
-    private void startDaemon(String name, DaemonStarter starter) {
-        Thread t = new Thread(
-                () -> {
-                    try {
-                        starter.start();
-                    } catch (Exception e) {
-                        logger.warn("  {}: failed — {}", name, e.getMessage());
-                    }
-                },
-                "airavata-" + name);
-        t.setDaemon(true);
-        t.start();
-        logger.info("  {}: started", name);
+        BackgroundServiceAdapter(String name, Callable<Void> starter) {
+            this.name = name;
+            this.starter = starter;
+        }
+
+        @Override
+        public void start() throws Exception {
+            status = ServerStatus.STARTING;
+            thread = new Thread(
+                    () -> {
+                        try {
+                            status = ServerStatus.STARTED;
+                            starter.call();
+                        } catch (Exception e) {
+                            status = ServerStatus.FAILED;
+                            LoggerFactory.getLogger(BackgroundServiceAdapter.class)
+                                    .warn("{}: failed — {}", name, e.getMessage());
+                        }
+                    },
+                    "airavata-" + name);
+            thread.setDaemon(true);
+            thread.start();
+            status = ServerStatus.STARTED;
+        }
+
+        @Override
+        public void stop() throws Exception {
+            status = ServerStatus.STOPPING;
+            if (thread != null) {
+                thread.interrupt();
+            }
+            status = ServerStatus.STOPPED;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public ServerStatus getStatus() {
+            return status;
+        }
     }
 
     @Override
