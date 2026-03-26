@@ -80,6 +80,11 @@ public class ParserWorkflowManager extends WorkflowManager {
         manager.runConsumer();
     }
 
+    public void startServer() throws Exception {
+        init();
+        runConsumer();
+    }
+
     private void init() throws Exception {
         super.initComponents();
     }

@@ -39,6 +39,7 @@ import org.apache.airavata.db.event.manager.DBEventManagerRunner;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;
+import org.apache.airavata.helix.impl.workflow.ParserWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PostWorkflowManager;
 import org.apache.airavata.helix.impl.workflow.PreWorkflowManager;
 import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
@@ -291,6 +292,7 @@ public class AiravataServer implements IServer {
         });
         startDaemon("pre_workflow_manager", () -> new PreWorkflowManager().startServer());
         startDaemon("post_workflow_manager", () -> new PostWorkflowManager().startServer());
+        startDaemon("parser_workflow_manager", () -> new ParserWorkflowManager().startServer());
 
         // Job monitors
         try {
