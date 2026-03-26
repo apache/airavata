@@ -33,8 +33,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, String> {
 
-    @Query(
-            """
+    @Query("""
                     SELECT r
                     FROM Resource r
                     WHERE TYPE(r) IN :types
@@ -48,8 +47,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             @Param("nameSearch") String nameSearch,
             Pageable pageable);
 
-    @Query(
-            """
+    @Query("""
             SELECT DISTINCT r
             FROM Resource r
             JOIN r.authors a
@@ -65,8 +63,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             @Param("userId") String userId,
             Pageable pageable);
 
-    @Query(
-            """
+    @Query("""
                     SELECT r
                     FROM Resource r
                     JOIN r.tags t
@@ -86,8 +83,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             @Param("nameSearch") String nameSearch,
             Pageable pageable);
 
-    @Query(
-            """
+    @Query("""
             SELECT r
             FROM Resource r
             JOIN r.tags t
@@ -109,8 +105,7 @@ public interface ResourceRepository extends JpaRepository<Resource, String> {
             @Param("userId") String userId,
             Pageable pageable);
 
-    @Query(
-            """
+    @Query("""
                     SELECT r
                     FROM Resource r
                     JOIN r.authors a

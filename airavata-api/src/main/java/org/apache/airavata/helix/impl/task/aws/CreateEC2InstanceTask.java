@@ -158,10 +158,11 @@ public class CreateEC2InstanceTask extends AiravataTask {
                         .description("Airavata temporary security group for " + getProcessId())
                         .vpcId(vpcId));
 
-        ec2.authorizeSecurityGroupIngress(req -> req.groupId(sgRes.groupId()).ipPermissions(p -> p.ipProtocol("tcp")
-                .fromPort(22)
-                .toPort(22)
-                .ipRanges(r -> r.cidrIp("0.0.0.0/0")))); // TODO restrict the IP
+        ec2.authorizeSecurityGroupIngress(req -> req.groupId(sgRes.groupId())
+                .ipPermissions(p -> p.ipProtocol("tcp")
+                        .fromPort(22)
+                        .toPort(22)
+                        .ipRanges(r -> r.cidrIp("0.0.0.0/0")))); // TODO restrict the IP
 
         return sgRes.groupId();
     }

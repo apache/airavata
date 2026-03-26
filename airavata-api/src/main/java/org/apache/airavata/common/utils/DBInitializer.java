@@ -26,7 +26,8 @@ public class DBInitializer {
     private static final Logger logger = LoggerFactory.getLogger(DBInitializer.class);
 
     public static void initializeDB(DBInitConfig dbInitConfig) {
-        logger.info("Database initialization is now handled by schema migrations. Skipping legacy DB init for: {}",
+        logger.info(
+                "Database initialization is now handled by schema migrations. Skipping legacy DB init for: {}",
                 dbInitConfig.getDBInitScriptPrefix());
         dbInitConfig.postInit();
     }

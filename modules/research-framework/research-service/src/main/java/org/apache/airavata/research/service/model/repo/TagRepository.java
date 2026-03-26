@@ -29,15 +29,12 @@ public interface TagRepository extends JpaRepository<Tag, String> {
 
     Tag findByValue(String value);
 
-    @Query(
-            value =
-                    """
+    @Query(value = """
                       SELECT t.* FROM tag t
                       JOIN resource_tags rt ON t.id = rt.tag_id
                       GROUP BY t.id
                       ORDER BY COUNT(rt.resource_id) DESC
                       LIMIT :limit
-                    """,
-            nativeQuery = true)
+                    """, nativeQuery = true)
     List<Tag> findDistinctByPopularity(@Param("limit") int limit);
 }
