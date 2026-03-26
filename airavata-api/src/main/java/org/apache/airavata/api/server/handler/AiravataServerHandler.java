@@ -6483,7 +6483,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         MessageContext messageContext = new MessageContext(
                 event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
+        if (experimentPublisher != null) {
+            experimentPublisher.publish(messageContext);
+        }
     }
 
     private void submitCancelExperiment(String gatewayId, String experimentId) throws AiravataException {
@@ -6494,7 +6496,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 "CANCEL.EXP-" + UUID.randomUUID().toString(),
                 gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
+        if (experimentPublisher != null) {
+            experimentPublisher.publish(messageContext);
+        }
     }
 
     private void submitExperimentIntermediateOutputsEvent(
@@ -6508,7 +6512,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 "INTERMEDIATE_OUTPUTS.EXP-" + UUID.randomUUID().toString(),
                 gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        experimentPublisher.publish(messageContext);
+        if (experimentPublisher != null) {
+            experimentPublisher.publish(messageContext);
+        }
     }
 
     private void shareEntityWithAdminGatewayGroups(
