@@ -29,7 +29,7 @@
 - name: Wait for API Server orchestrator to be ready
   wait_for:
     port: '{{ orchestrator_server_port }}'
-    host: localhost
+    host: airavata.localhost
     delay: 5
     timeout: 60
   tags:

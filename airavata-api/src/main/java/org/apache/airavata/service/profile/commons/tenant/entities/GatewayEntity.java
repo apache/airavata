@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Entity
-@Table(name = "GATEWAY")
+@Table(name = "TENANT_GATEWAY")
 public class GatewayEntity {
     private static final Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
     private String airavataInternalGatewayId;

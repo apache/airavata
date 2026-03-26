@@ -31,7 +31,7 @@
                 systemUserPassword - The password of the LDAP server connection user
                 userDNTemplate - The DN structure of the users in LDAP
             -->
-                <url>ldap://localhost:10389</url>
+                <url>ldap://airavata.localhost:10389</url>
                 <systemUser>admin</systemUser>
                 <systemUserPassword>secret</systemUserPassword>
                 <userDNTemplate>uid={0},ou=system</userDNTemplate>

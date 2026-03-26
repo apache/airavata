@@ -30,7 +30,7 @@ iam_server_url: "https://iam.scigap.org/auth"
 iam_server_super_admin_username: "admin"
 #iam_server_super_admin_password: "changeme"
 
-profile_service_host: "localhost"
+profile_service_host: "airavata.localhost"
 profile_service_port: 8962
 
 mariadb_connector_jar_url: "http://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"
@@ -51,10 +51,10 @@ api_orch_systemd_unit_file: "/etc/systemd/system/apiorch.service"
 thrift_client_pool_abandoned_removal_enabled: false
 thrift_client_pool_abandoned_removal_logged: false
 
-api_server_public_hostname: "localhost"
+api_server_public_hostname: "airavata.localhost"
 api_server_port: 8930
 api_server_tls_port: 9930
-api_server_host: "localhost"
+api_server_host: "airavata.localhost"
 haproxy_api_server_ssl_cert: "/etc/ssl/{{ api_server_public_hostname }}/{{ api_server_public_hostname }}.pem"
 api_server_letsencrypt_ssl_cert: "/etc/letsencrypt/live/{{ api_server_public_hostname }}/cert.pem"
 haproxy_service_name:

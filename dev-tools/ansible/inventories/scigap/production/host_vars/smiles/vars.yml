@@ -42,8 +42,8 @@ ssl_certificate_key_file: "/etc/letsencrypt/live/{{ vhost_servername }}/privkey.
 django_file_upload_max_file_size_mb: 2000
 
 django_extra_settings:
-  CELERY_BROKER_URL: "redis://localhost:6379"
-  CELERY_RESULT_BACKEND: "redis://localhost:6379"
+  CELERY_BROKER_URL: "redis://airavata.localhost:6379"
+  CELERY_RESULT_BACKEND: "redis://airavata.localhost:6379"
   LOGIN_REDIRECT_URL: "/smiles/home/lit-dp-list"
   GATEWAY_DATA_SHARED_DIRECTORIES:
     shared:

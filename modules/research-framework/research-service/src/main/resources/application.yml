@@ -20,22 +20,22 @@ grpc:
 
 server:
   port: 18889
-  address: 0.0.0.0
+  address: airavata.localhost
 
 airavata:
   research-hub:
-    url: http://airavata.host:20000
+    url: http://airavata.localhost:20000
     dev-user: "airavata@apache.org"
     adminApiKey: "JUPYTER_ADMIN_API_KEY"
     limit: 10
   research-portal:
-    url: http://airavata.host:5173
-    dev-url: http://airavata.host:5173
+    url: http://airavata.localhost:5173
+    dev-url: http://airavata.localhost:5173
   openid:
-    url: "http://airavata.host:18080/realms/default"
+    url: "http://airavata.localhost:18080/realms/default"
   user-profile:
     server:
-      url: airavata.host
+      url: airavata.localhost
       port: 8962
 
 spring:
@@ -44,7 +44,7 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
   datasource:
-    url: "jdbc:mariadb://airavata.host:13306/research_catalog"
+    url: "jdbc:mariadb://airavata.localhost:13306/airavata"
     username: "airavata"
     password: "123456"
     driver-class-name: org.mariadb.jdbc.Driver

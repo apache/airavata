@@ -30,6 +30,6 @@
     RequestHeader set X-Forwarded-Proto "https"
     ProxyPreserveHost on
 
-    ProxyPass /files http://localhost:{{ tusd_port }}/files
-    ProxyPassReverse /files http://localhost:{{ tusd_port }}/files
+    ProxyPass /files http://airavata.localhost:{{ tusd_port }}/files
+    ProxyPassReverse /files http://airavata.localhost:{{ tusd_port }}/files
 </VirtualHost>
