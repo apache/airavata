@@ -38,11 +38,6 @@ restproxy_dir: "{{ deployment_dir }}/{{ restproxy_dist_name }}"
 
 # Service ports
 api_server_port: 8930
-profile_service_port: 8962
-registry_port: 8970
-registry_server_port: 8970
-sharing_registry_port: 7878
-cred_store_port: 8960
 agent_service_port: 18880
 agent_service_server_port: 18880
 research_service_port: 18899
@@ -52,7 +47,6 @@ restproxy_port: 8082
 
 # Service hosts
 api_server_host: "airavata.localhost"
-profile_service_host: "airavata.localhost"
 agent_service_server_address: "airavata.localhost"
 research_service_server_address: "airavata.localhost"
 
@@ -68,25 +62,10 @@ participant_monitoring_host: "airavata.localhost"
 pre_workflow_manager_monitoring_host: "airavata.localhost"
 post_workflow_manager_monitoring_host: "airavata.localhost"
 
-# Server hosts
-orchestrator_server_host: "airavata.localhost"
-regserver_server_host: "airavata.localhost"
-sharing_registry_server_host: "airavata.localhost"
-cred_store_server_host: "airavata.localhost"
+# All services run on unified server (no separate server hosts needed)
 
-# Orchestrator configuration
-orchestrator_class: "org.apache.airavata.orchestrator.server.OrchestratorServer"
-orchestrator_server_port: 8940
-orchestrator_server_min_threads: 50
-job_validators: "org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator"
-enable_validation: true
-host_scheduler: "org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler"
-
-# Registry server configuration
-regserver_class: "org.apache.airavata.registry.api.service.RegistryAPIServer"
-
-# Sharing registry configuration
-sharing_server_class: "org.apache.airavata.sharing.registry.server.SharingRegistryServer"
+# Unified Server (replaces separate service configurations)
+unified_server_class: "org.apache.airavata.api.server.AiravataUnifiedServer"
 enable_sharing: true
 
 # Default registry user

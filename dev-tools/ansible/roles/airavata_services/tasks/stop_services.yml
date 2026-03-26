@@ -19,58 +19,16 @@
 #
 
 ---
-- name: Check if API Server binary exists
+- name: Check if Unified Server binary exists
   stat:
-    path: "{{ api_server_dir }}/bin/orchestrator.sh"
-  register: api_server_exists
+    path: "{{ api_server_dir }}/bin/unified-server.sh"
+  register: unified_server_exists
   tags:
     - stop
 
-- name: Stop API Server orchestrator if exists
-  shell: "{{ api_server_dir }}/bin/orchestrator.sh -d stop api-orch"
-  when: api_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Stop API Server controller if exists
-  shell: "{{ api_server_dir }}/bin/controller.sh -d stop"
-  when: api_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Stop API Server participant if exists
-  shell: "{{ api_server_dir }}/bin/participant.sh -d stop"
-  when: api_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Stop API Server pre-wm if exists
-  shell: "{{ api_server_dir }}/bin/pre-wm.sh -d stop"
-  when: api_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Stop API Server post-wm if exists
-  shell: "{{ api_server_dir }}/bin/post-wm.sh -d stop"
-  when: api_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Stop API Server email-monitor if exists
-  shell: "{{ api_server_dir }}/bin/email-monitor.sh -d stop"
-  when: api_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Stop API Server realtime-monitor if exists
-  shell: "{{ api_server_dir }}/bin/realtime-monitor.sh -d stop"
-  when: api_server_exists.stat.exists
+- name: Stop Airavata Unified Server if exists
+  shell: "{{ api_server_dir }}/bin/unified-server.sh -d stop"
+  when: unified_server_exists.stat.exists
   tags:
     - stop
   ignore_errors: yes
@@ -141,25 +99,7 @@
   set_fact:
     airavata_ports:
       - port: "{{ api_server_port }}"
-        service: "API Server"
-      - port: "{{ orchestrator_server_port }}"
-        service: "Orchestrator"
-      - port: "{{ registry_server_port }}"
-        service: "Registry"
-      - port: "{{ sharing_registry_port }}"
-        service: "Sharing Registry"
-      - port: "{{ cred_store_port }}"
-        service: "Credential Store"
-      - port: "{{ profile_service_port }}"
-        service: "Profile Service"
-      - port: "{{ agent_service_server_port }}"
-        service: "Agent Service"
-      - port: "{{ research_service_server_port }}"
-        service: "Research Service"
-      - port: "{{ file_server_port }}"
-        service: "File Server"
-      - port: "{{ restproxy_port }}"
-        service: "REST Proxy"
+        service: "Unified Server"
       - port: "{{ participant_monitoring_port }}"
         service: "Participant Monitoring"
       - port: "{{ api_server_monitoring_port }}"
@@ -258,11 +198,7 @@
 - name: Define Airavata service log directories
   set_fact:
     airavata_log_dirs:
-      - { service: "API Server", path: "{{ api_server_dir }}/logs" }
-      - { service: "Agent Service", path: "{{ agent_service_dir }}/logs" }
-      - { service: "Research Service", path: "{{ research_service_dir }}/logs" }
-      - { service: "File Server", path: "{{ file_server_dir }}/logs" }
-      - { service: "REST Proxy", path: "{{ restproxy_dir }}/logs" }
+      - { service: "Unified Server", path: "{{ api_server_dir }}/logs" }
   when: archive_logs_on_stop | bool
 
 - name: Check log directories

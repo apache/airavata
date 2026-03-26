@@ -6,23 +6,11 @@ log() {
 }
 
 # ================================
-# Start the API Server
+# Start the Unified Server
 # ================================
-log "Starting the API Services..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d start api-orch
-log "Orchestrator started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/controller.sh -d start
-log "Controller started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/participant.sh -d start
-log "Participant started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/email-monitor.sh -d start
-log "Email Monitor started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/realtime-monitor.sh -d start
-log "Realtime Monitor started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/pre-wm.sh -d start
-log "Pre-Workflow Manager started."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/post-wm.sh -d start
-log "Post-Workflow Manager started."
+log "Starting the Airavata Unified Server..."
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/unified-server.sh -d start
+log "Unified Server started."
 
 # ================================
 # Start the Agent Service
