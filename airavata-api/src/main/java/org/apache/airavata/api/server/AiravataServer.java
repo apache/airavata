@@ -271,9 +271,11 @@ public class AiravataServer {
             logger.warn("  process_rescheduler: config error — {}", e.getMessage());
         }
 
-        // Execution engine services
+        // Execution engine services — controller must initialize the cluster
+        // in ZooKeeper before participants and workflow managers can join
         try {
             registerAndStart(new HelixController(), "helix_controller");
+            waitForHelixCluster();
         } catch (Exception e) {
             logger.warn("  helix_controller: config error — {}", e.getMessage());
         }
@@ -317,6 +319,30 @@ public class AiravataServer {
         }
 
         logger.info("Background services initialization complete ({} running)", backgroundServices.size());
+    }
+
+    private void waitForHelixCluster() {
+        String clusterName = ServerSettings.getSetting("helix.cluster.name", "AiravataCluster");
+        String zkUrl = ServerSettings.getSetting("zookeeper.server.connection", "localhost:2181");
+        logger.info("  Waiting for Helix cluster '{}' in ZooKeeper at {}...", clusterName, zkUrl);
+        for (int i = 0; i < 30; i++) {
+            try {
+                org.apache.helix.manager.zk.ZKHelixAdmin admin = new org.apache.helix.manager.zk.ZKHelixAdmin(zkUrl);
+                List<String> clusters = admin.getClusters();
+                admin.close();
+                if (clusters.contains(clusterName)) {
+                    logger.info("  Helix cluster '{}' is ready", clusterName);
+                    return;
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+        logger.warn("  Helix cluster '{}' not found after 30s — proceeding anyway", clusterName);
     }
 
     private void registerAndStart(IServer service, String label) {
