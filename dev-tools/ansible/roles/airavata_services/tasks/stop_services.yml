@@ -19,16 +19,16 @@
 #
 
 ---
-- name: Check if Unified Server binary exists
+- name: Check if Airavata Server binary exists
   stat:
-    path: "{{ api_server_dir }}/bin/unified-server.sh"
-  register: unified_server_exists
+    path: "{{ api_server_dir }}/bin/airavata-server.sh"
+  register: airavata_server_exists
   tags:
     - stop
 
-- name: Stop Airavata Unified Server if exists
-  shell: "{{ api_server_dir }}/bin/unified-server.sh -d stop"
-  when: unified_server_exists.stat.exists
+- name: Stop Airavata Airavata Server if exists
+  shell: "{{ api_server_dir }}/bin/airavata-server.sh -d stop"
+  when: airavata_server_exists.stat.exists
   tags:
     - stop
   ignore_errors: yes
@@ -99,7 +99,7 @@
   set_fact:
     airavata_ports:
       - port: "{{ api_server_port }}"
-        service: "Unified Server"
+        service: "Airavata Server"
       - port: "{{ participant_monitoring_port }}"
         service: "Participant Monitoring"
       - port: "{{ api_server_monitoring_port }}"
@@ -198,7 +198,7 @@
 - name: Define Airavata service log directories
   set_fact:
     airavata_log_dirs:
-      - { service: "Unified Server", path: "{{ api_server_dir }}/logs" }
+      - { service: "Airavata Server", path: "{{ api_server_dir }}/logs" }
   when: archive_logs_on_stop | bool
 
 - name: Check log directories

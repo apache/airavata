@@ -5,11 +5,11 @@ log() {
 }
 
 # ================================
-# Shutdown the Unified Server
+# Shutdown the Airavata Server
 # ================================
-log "Stopping the Airavata Unified Server..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/unified-server.sh -d stop
-log "Unified Server stopped."
+log "Stopping the Airavata Server..."
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/airavata-server.sh -d stop
+log "Airavata Server stopped."
 
 # ================================
 # Shutdown the Agent Service

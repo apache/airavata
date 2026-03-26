@@ -62,10 +62,10 @@ participant_monitoring_host: "airavata.localhost"
 pre_workflow_manager_monitoring_host: "airavata.localhost"
 post_workflow_manager_monitoring_host: "airavata.localhost"
 
-# All services run on unified server (no separate server hosts needed)
+# All services run on Airavata server (no separate server hosts needed)
 
-# Unified Server (replaces separate service configurations)
-unified_server_class: "org.apache.airavata.api.server.AiravataUnifiedServer"
+# Airavata Server (replaces separate service configurations)
+airavata_server_class: "org.apache.airavata.api.server.AiravataServer"
 enable_sharing: true
 
 # Default registry user

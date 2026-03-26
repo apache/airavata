@@ -15,5 +15,5 @@ fi
 # Build classpath
 CP=$(cat airavata-api/target/cp.txt):airavata-api/target/airavata-api-0.21-SNAPSHOT.jar
 
-echo "Starting Airavata Unified Server..."
-java -cp "$CP" org.apache.airavata.api.server.AiravataUnifiedServer "$@"
+echo "Starting Airavata Server..."
+java -cp "$CP" org.apache.airavata.api.server.AiravataServer "$@"

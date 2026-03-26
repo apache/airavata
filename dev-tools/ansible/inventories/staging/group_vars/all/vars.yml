@@ -32,7 +32,7 @@ research_service_port: 18899
 file_server_port: 8050
 restproxy_port: 8082
 
-# Database name (single unified database)
+# Database name (single database)
 db_name: "airavata"
 app_catalog: "{{ db_name }}"
 exp_catalog: "{{ db_name }}"

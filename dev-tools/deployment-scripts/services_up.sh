@@ -6,11 +6,11 @@ log() {
 }
 
 # ================================
-# Start the Unified Server
+# Start the Airavata Server
 # ================================
-log "Starting the Airavata Unified Server..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/unified-server.sh -d start
-log "Unified Server started."
+log "Starting the Airavata Server..."
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/airavata-server.sh -d start
+log "Airavata Server started."
 
 # ================================
 # Start the Agent Service

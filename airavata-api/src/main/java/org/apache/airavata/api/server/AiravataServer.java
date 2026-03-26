@@ -82,10 +82,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>All services share the same port (default 8930, from {@code apiserver.port}).
  */
-public class AiravataUnifiedServer implements IServer {
+public class AiravataServer implements IServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(AiravataUnifiedServer.class);
-    private static final String SERVER_NAME = "Airavata Unified Server";
+    private static final Logger logger = LoggerFactory.getLogger(AiravataServer.class);
+    private static final String SERVER_NAME = "Airavata Server";
     private static final String SERVER_VERSION = "1.0";
 
     private ServerStatus status;
@@ -99,7 +99,7 @@ public class AiravataUnifiedServer implements IServer {
             new CredentialStoreDBInitConfig(),
             new UserProfileCatalogDBInitConfig());
 
-    public AiravataUnifiedServer() {
+    public AiravataServer() {
         setStatus(ServerStatus.STOPPED);
     }
 
@@ -188,7 +188,7 @@ public class AiravataUnifiedServer implements IServer {
             new Thread(() -> {
                         server.serve();
                         setStatus(ServerStatus.STOPPED);
-                        logger.info("Airavata Unified Server stopped.");
+                        logger.info("Airavata Server stopped.");
                     })
                     .start();
 
@@ -202,7 +202,7 @@ public class AiravataUnifiedServer implements IServer {
                         }
                         if (server.isServing()) {
                             setStatus(ServerStatus.STARTED);
-                            logger.info("Airavata Unified Server started on port {}", serverPort);
+                            logger.info("Airavata Server started on port {}", serverPort);
                             logger.info("Registered services: Airavata, RegistryService, SharingRegistry, "
                                     + "CredentialStore, UserProfile, TenantProfile, IamAdminServices, GroupManager");
                         }
@@ -210,7 +210,7 @@ public class AiravataUnifiedServer implements IServer {
                     .start();
 
         } catch (TTransportException | ApplicationSettingsException e) {
-            logger.error("Failed to start Airavata Unified Server", e);
+            logger.error("Failed to start Airavata Server", e);
             setStatus(ServerStatus.FAILED);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -255,9 +255,9 @@ public class AiravataUnifiedServer implements IServer {
 
     public static void main(String[] args) {
         try {
-            new AiravataUnifiedServer().start();
+            new AiravataServer().start();
         } catch (Exception e) {
-            logger.error("Error starting Airavata Unified Server", e);
+            logger.error("Error starting Airavata Server", e);
         }
     }
 }

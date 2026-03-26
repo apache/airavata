@@ -18,15 +18,15 @@
 # under the License.
 #
 
-- name: Start Airavata Unified Server
-  shell: '{{ api_server_dir }}/bin/unified-server.sh -d start'
+- name: Start Airavata Airavata Server
+  shell: '{{ api_server_dir }}/bin/airavata-server.sh -d start'
   args:
     chdir: '{{ api_server_dir }}'
   tags:
     - start
     - api-server
 
-- name: Wait for Airavata Unified Server to be ready
+- name: Wait for Airavata Airavata Server to be ready
   wait_for:
     port: '{{ api_server_port }}'
     host: '{{ api_server_host }}'

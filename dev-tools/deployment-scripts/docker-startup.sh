@@ -5,7 +5,7 @@ set -e
 # Set Airavata configuration directory
 export AIRAVATA_CONFIG_DIR=/opt/airavata/vault
 
-echo "🚀 Starting Apache Airavata Unified Server..."
+echo "🚀 Starting Apache Airavata Server..."
 echo "📋 Single JVM server with all Thrift services multiplexed on port 8930"
 echo "📁 Properties file location: /opt/airavata/vault/airavata-server.properties"
 echo "📁 Configuration directory: $AIRAVATA_CONFIG_DIR"
@@ -66,14 +66,14 @@ start_service() {
 }
 
 # ================================
-# Start the Unified Server
+# Start the Airavata Server
 # ================================
-log "🔧 Starting Airavata Unified Server..."
+log "🔧 Starting Airavata Server..."
 
 cd ${AIRAVATA_HOME}
 
-# Start unified server - single JVM with all services multiplexed on port 8930
-start_service "Airavata Unified" "./bin/unified-server.sh" "${AIRAVATA_HOME}/logs/unified-server.log"
+# Start Airavata server - single JVM with all services multiplexed on port 8930
+start_service "Airavata Server" "./bin/airavata-server.sh" "${AIRAVATA_HOME}/logs/airavata-server.log"
 
 # ================================
 # Start the Agent Service (Optional)
@@ -114,14 +114,14 @@ fi
 # ================================
 # Monitor logs and keep container running
 # ================================
-log "🎉 Airavata Unified Server started successfully!"
+log "🎉 Airavata Server started successfully!"
 log "📊 Starting log monitoring..."
 
 # Wait a moment for server to initialize
 sleep 5
 
 # Stream server logs to docker logs and keep container running
-echo "🚀 Airavata Unified Server is running on port 8930!"
+echo "🚀 Airavata Server is running on port 8930!"
 echo "📋 Server status:"
 echo "   - Single JVM with all Thrift services multiplexed"
 echo "   - Services: Airavata, RegistryService, SharingRegistry, CredentialStore"
@@ -157,15 +157,15 @@ monitor_log() {
 }
 
 # Wait a moment for log file to be created
-echo "📊 Waiting for unified server log file to be created..."
+echo "📊 Waiting for Airavata server log file to be created..."
 sleep 5
 
-# Start monitoring unified server logs
-echo "📊 Starting log monitoring for unified server..."
+# Start monitoring Airavata server logs
+echo "📊 Starting log monitoring for Airavata server..."
 cd ${AIRAVATA_HOME}
 
-# Monitor unified server logs
-monitor_log "${AIRAVATA_HOME}/logs/unified-server.log" "Unified-Server"
+# Monitor Airavata server logs
+monitor_log "${AIRAVATA_HOME}/logs/airavata-server.log" "Airavata-Server"
 
 echo "📊 Log monitoring started!"
 echo "🔍 Use 'docker logs -f airavata-monolithic' to view server logs"
@@ -173,11 +173,11 @@ echo "🔍 Use 'docker logs -f airavata-monolithic' to view server logs"
 # Keep container running and show periodic status
 while true; do
     sleep 300  # Check every 5 minutes
-    echo "[Status] $(date): Container active, monitoring unified server logs"
+    echo "[Status] $(date): Container active, monitoring Airavata server logs"
 
-    # Check if unified server process is still running
-    if ! pgrep -f "AiravataUnifiedServer" > /dev/null; then
-        echo "[WARNING] Unified server process not found"
+    # Check if Airavata server process is still running
+    if ! pgrep -f "AiravataServer" > /dev/null; then
+        echo "[WARNING] Airavata server process not found"
     fi
 
     # Show number of running tail processes
