@@ -57,7 +57,7 @@ public class FileServerConfiguration {
         poolConfig.setNumTestsPerEvictionRun(10);
         poolConfig.setMaxWait(Duration.ofSeconds(3));
 
-        return new ThriftClientPool<>(RegistryService.Client::new, poolConfig,
-                airavataServerHost, airavataServerPort, "RegistryService");
+        return new ThriftClientPool<>(
+                RegistryService.Client::new, poolConfig, airavataServerHost, airavataServerPort, "RegistryService");
     }
 }

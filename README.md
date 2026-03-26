@@ -102,11 +102,34 @@ graph TB
 2. Registers 9 Thrift services on a single `TMultiplexedProcessor` (port **8930**)
 3. Starts background `IServer` workers after the Thrift server is ready
 
+#### Architecture: Service Layer + Thrift Transport
+
+All business logic lives in a transport-agnostic **service layer** (`org.apache.airavata.service.*`). Thrift handlers are thin adapters that delegate to services via `ThriftAdapter`, translating between Thrift types and service exceptions. This decoupling enables future REST/gRPC transports without duplicating logic.
+
+| Service | Responsibility |
+|---|---|
+| `ExperimentService` | Experiment lifecycle (create, launch, clone, terminate, intermediate outputs) |
+| `ProjectService` | Project CRUD and search |
+| `GatewayService` | Gateway management and sharing domain setup |
+| `ApplicationCatalogService` | App modules, deployments, and interfaces |
+| `ResourceService` | Compute/storage resources, job submission, data movement, storage info |
+| `CredentialService` | SSH/password credential management with sharing |
+| `ResourceSharingService` | Resource sharing and access control |
+| `GroupResourceProfileService` | Group resource profiles and policies |
+| `GatewayResourceProfileService` | Gateway resource preferences |
+| `UserResourceProfileService` | User resource preferences |
+| `SSHAccountService` | SSH account provisioning and validation |
+| `DataProductService` | Data products and replicas |
+| `NotificationService` | Notification CRUD |
+| `ParserService` | Parsers and parsing templates |
+
+Shared utilities: `SharingHelper` (sharing operations), `EventPublisher` (messaging), `RequestContext` (transport-agnostic identity).
+
 #### Thrift Services (all on port 8930, multiplexed)
 
 | Service name | Handler | Responsibility |
 |---|---|---|
-| `Airavata` | `AiravataServerHandler` | Public API consumed by SDKs and dashboards |
+| `Airavata` | `AiravataServerHandler` | Public API — delegates to service layer |
 | `RegistryService` | `RegistryServerHandler` | Metadata and definitions for tasks and applications |
 | `CredentialStore` | `CredentialStoreServerHandler` | Secure storage and retrieval of compute credentials |
 | `SharingRegistry` | `SharingRegistryServerHandler` | Sharing and permissioning of Airavata resources |

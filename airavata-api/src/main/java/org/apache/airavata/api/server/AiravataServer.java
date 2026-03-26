@@ -133,6 +133,7 @@ public class AiravataServer {
             // Until then this file will not compile.
             AiravataServerHandler airavataServerHandler = new AiravataServerHandler(
                     registryServerHandler, sharingRegistryServerHandler, credentialStoreServerHandler);
+            airavataServerHandler.initialize();
 
             // --- Build processors ---
             TMultiplexedProcessor multiplexedProcessor = new TMultiplexedProcessor();

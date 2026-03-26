@@ -67,34 +67,18 @@ ENV JAVA_OPTS="-server \
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8930/ || exit 1
 
-# sharing registry service
-EXPOSE 7878
-# tunnel service
-EXPOSE 8000
-# tunnel service (ingress)
-EXPOSE 17000
+# All Thrift services multiplexed on single port
+EXPOSE 8930
 # file service
 EXPOSE 8050
-# api service
-EXPOSE 8930
-# cred store service
-EXPOSE 8960
-# profile service
-EXPOSE 8962
-# registry service
-EXPOSE 8970
-# agent service (http)
+# agent service (http + gRPC)
 EXPOSE 18800
-# agent service (gRPC)
 EXPOSE 19900
-# research service (http)
+# research service (http + gRPC)
 EXPOSE 18889
-# research service (gRPC)
 EXPOSE 19908
-# monitoring
+# monitoring (prometheus)
 EXPOSE 9097
-# rest proxy (commented out as restproxy distribution is not available)
-# EXPOSE 8082
 
 # Copy startup script
 COPY dev-tools/deployment-scripts/docker-startup.sh /opt/airavata/start.sh
