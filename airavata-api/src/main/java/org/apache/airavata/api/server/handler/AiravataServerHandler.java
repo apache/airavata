@@ -152,13 +152,9 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
             experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
-            initSharingRegistry();
-            postInitDefaultGateway();
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (AiravataException e) {
-            logger.error("Error occured while reading airavata-server properties..", e);
-        } catch (TException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         }
         EventPublisher eventPub = new EventPublisher(statusPublisher, experimentPublisher);
@@ -180,6 +176,15 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     public AiravataServerHandler() throws Exception {
         this(new RegistryServerHandler(), new SharingRegistryServerHandler(), new CredentialStoreServerHandler());
+    }
+
+    public void initialize() {
+        try {
+            initSharingRegistry();
+            postInitDefaultGateway();
+        } catch (Exception e) {
+            logger.error("Error during server initialization", e);
+        }
     }
 
     /**
