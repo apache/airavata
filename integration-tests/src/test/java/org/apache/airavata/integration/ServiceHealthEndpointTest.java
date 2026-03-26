@@ -82,7 +82,9 @@ class ServiceHealthEndpointTest {
         JsonNode root = objectMapper.readTree(response.body());
         assertNotNull(root, "Response body could not be parsed as JSON");
         assertTrue(root.isObject(), "Expected JSON object at root, got: " + root.getNodeType());
-        assertFalse(root.isEmpty(), "Expected at least one service entry in the response");
+        JsonNode services = root.get("services");
+        assertNotNull(services, "Expected 'services' key in response, got: " + root);
+        assertFalse(services.isEmpty(), "Expected at least one service entry in the response");
     }
 
     @Test
@@ -91,7 +93,9 @@ class ServiceHealthEndpointTest {
         assertEquals(200, response.statusCode());
 
         JsonNode root = objectMapper.readTree(response.body());
-        Iterator<Map.Entry<String, JsonNode>> fields = root.fields();
+        JsonNode services = root.get("services");
+        assertNotNull(services, "Expected 'services' key in response");
+        Iterator<Map.Entry<String, JsonNode>> fields = services.fields();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> entry = fields.next();
             String serviceName = entry.getKey();

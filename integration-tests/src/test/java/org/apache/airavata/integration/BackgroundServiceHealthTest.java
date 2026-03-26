@@ -73,7 +73,9 @@ class BackgroundServiceHealthTest {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode(),
                 "Could not reach /health/services — got HTTP " + response.statusCode());
-        cachedRoot = objectMapper.readTree(response.body());
+        JsonNode body = objectMapper.readTree(response.body());
+        cachedRoot = body.get("services");
+        assertNotNull(cachedRoot, "Expected 'services' key in /health/services response");
     }
 
     static Stream<String> expectedServices() {

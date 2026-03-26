@@ -66,3 +66,5 @@ keystores/airavata.p12
 keystores/aes.p12
 modules/*/distribution/
 modules/*/*/distribution/
+
+docs/superpowers/
