@@ -22,6 +22,7 @@ package org.apache.airavata.helix.impl.participant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
@@ -29,9 +30,12 @@ import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GlobalParticipant extends HelixParticipant<AbstractTask> {
+public class GlobalParticipant extends HelixParticipant<AbstractTask> implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
+
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
+    private Thread serverThread;
 
     public static final String[] TASK_CLASS_NAMES = {
         "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
@@ -67,6 +71,42 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> {
     }
 
     public void stopServer() {}
+
+    @Override
+    public String getName() {
+        return "helix_participant";
+    }
+
+    @Override
+    public void start() throws Exception {
+        status = ServerStatus.STARTING;
+        serverThread = new Thread(
+                () -> {
+                    try {
+                        status = ServerStatus.STARTED;
+                        startServer();
+                    } catch (Exception e) {
+                        status = ServerStatus.FAILED;
+                    }
+                },
+                "airavata-" + getName());
+        serverThread.setDaemon(true);
+        serverThread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        if (serverThread != null) {
+            serverThread.interrupt();
+        }
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
+    }
 
     public static void main(String args[]) {
         logger.info("Starting global participant");

@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
@@ -37,13 +38,15 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RealtimeMonitor extends AbstractMonitor {
+public class RealtimeMonitor extends AbstractMonitor implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeMonitor.class);
 
     private final RealtimeJobStatusParser parser;
     private final String publisherId;
     private final String brokerTopic;
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
+    private Thread serverThread;
 
     public RealtimeMonitor() throws ApplicationSettingsException {
         parser = new RealtimeJobStatusParser();
@@ -95,6 +98,42 @@ public class RealtimeMonitor extends AbstractMonitor {
 
     public void startServer() throws ApplicationSettingsException {
         runConsumer();
+    }
+
+    @Override
+    public String getName() {
+        return "realtime_monitor";
+    }
+
+    @Override
+    public void start() throws Exception {
+        status = ServerStatus.STARTING;
+        serverThread = new Thread(
+                () -> {
+                    try {
+                        status = ServerStatus.STARTED;
+                        startServer();
+                    } catch (Exception e) {
+                        status = ServerStatus.FAILED;
+                    }
+                },
+                "airavata-" + getName());
+        serverThread.setDaemon(true);
+        serverThread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        if (serverThread != null) {
+            serverThread.interrupt();
+        }
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
     }
 
     public static void main(String args[]) throws ApplicationSettingsException {

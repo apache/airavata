@@ -21,6 +21,7 @@ package org.apache.airavata.helix.impl.workflow;
 
 import java.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
@@ -51,12 +52,14 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0.0-SNAPSHOT
  */
-public class ParserWorkflowManager extends WorkflowManager {
+public class ParserWorkflowManager extends WorkflowManager implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
     private static final CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
     private String parserStorageResourceId = ServerSettings.getSetting("data.parser.storage.resource.id");
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
+    private Thread serverThread;
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
         super(
@@ -83,6 +86,42 @@ public class ParserWorkflowManager extends WorkflowManager {
     public void startServer() throws Exception {
         init();
         runConsumer();
+    }
+
+    @Override
+    public String getName() {
+        return "parser_workflow_manager";
+    }
+
+    @Override
+    public void start() throws Exception {
+        status = ServerStatus.STARTING;
+        serverThread = new Thread(
+                () -> {
+                    try {
+                        status = ServerStatus.STARTED;
+                        startServer();
+                    } catch (Exception e) {
+                        status = ServerStatus.FAILED;
+                    }
+                },
+                "airavata-" + getName());
+        serverThread.setDaemon(true);
+        serverThread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        if (serverThread != null) {
+            serverThread.interrupt();
+        }
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
     }
 
     private void init() throws Exception {

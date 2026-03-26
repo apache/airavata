@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
@@ -55,12 +56,14 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PostWorkflowManager extends WorkflowManager {
+public class PostWorkflowManager extends WorkflowManager implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
     private static final CountMonitor postwfCounter = new CountMonitor("post_wf_counter");
 
     private final ExecutorService processingPool = Executors.newFixedThreadPool(10);
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
+    private Thread serverThread;
 
     public PostWorkflowManager() throws ApplicationSettingsException {
         super(
@@ -426,4 +429,40 @@ public class PostWorkflowManager extends WorkflowManager {
     }
 
     public void stopServer() {}
+
+    @Override
+    public String getName() {
+        return "post_workflow_manager";
+    }
+
+    @Override
+    public void start() throws Exception {
+        status = ServerStatus.STARTING;
+        serverThread = new Thread(
+                () -> {
+                    try {
+                        status = ServerStatus.STARTED;
+                        startServer();
+                    } catch (Exception e) {
+                        status = ServerStatus.FAILED;
+                    }
+                },
+                "airavata-" + getName());
+        serverThread.setDaemon(true);
+        serverThread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        if (serverThread != null) {
+            serverThread.interrupt();
+        }
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
+    }
 }

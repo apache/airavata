@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.monitor.AbstractMonitor;
@@ -44,9 +45,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
+public class EmailBasedMonitor extends AbstractMonitor implements Runnable, IServer {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
+
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
+    private Thread serverThread;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -305,6 +309,42 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable {
         Thread t = new Thread(this);
         t.start();
         t.join();
+    }
+
+    @Override
+    public String getName() {
+        return "email_monitor";
+    }
+
+    @Override
+    public void start() throws Exception {
+        status = ServerStatus.STARTING;
+        serverThread = new Thread(
+                () -> {
+                    try {
+                        status = ServerStatus.STARTED;
+                        startServer();
+                    } catch (Exception e) {
+                        status = ServerStatus.FAILED;
+                    }
+                },
+                "airavata-" + getName());
+        serverThread.setDaemon(true);
+        serverThread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        if (serverThread != null) {
+            serverThread.interrupt();
+        }
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
     }
 
     public static void main(String[] args) throws Exception {
