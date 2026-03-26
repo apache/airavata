@@ -1,0 +1,114 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.appcatalog.groupresourceprofile;
+
+option java_package = "org.apache.airavata.model.appcatalog.groupresourceprofile.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
+import "org/apache/airavata/model/data/movement/data_movement.proto";
+
+enum ResourceType {
+  RESOURCE_TYPE_UNKNOWN = 0;
+  SLURM = 1;
+  AWS = 2;
+}
+
+message GroupAccountSSHProvisionerConfig {
+  string resource_id = 1;
+  string group_resource_profile_id = 2;
+  string config_name = 3;
+  string config_value = 4;
+}
+
+message ComputeResourceReservation {
+  string reservation_id = 1;
+  string reservation_name = 2;
+  repeated string queue_names = 3;
+  int64 start_time = 4;
+  int64 end_time = 5;
+}
+
+message SlurmComputeResourcePreference {
+  string allocation_project_number = 1;
+  string preferred_batch_queue = 2;
+  string quality_of_service = 3;
+  string usage_reporting_gateway_id = 4;
+  string ssh_account_provisioner = 5;
+  repeated GroupAccountSSHProvisionerConfig group_ssh_account_provisioner_configs = 6;
+  string ssh_account_provisioner_additional_info = 7;
+  repeated ComputeResourceReservation reservations = 8;
+}
+
+message AwsComputeResourcePreference {
+  string region = 1;
+  string preferred_ami_id = 2;
+  string preferred_instance_type = 3;
+}
+
+// Thrift union — represented as a oneof message wrapper
+message EnvironmentSpecificPreferences {
+  oneof preferences {
+    SlurmComputeResourcePreference slurm = 1;
+    AwsComputeResourcePreference aws = 2;
+  }
+}
+
+message GroupComputeResourcePreference {
+  string compute_resource_id = 1;
+  string group_resource_profile_id = 2;
+  bool override_by_airavata = 3;
+  string login_user_name = 4;
+  string scratch_location = 5;
+  org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferred_job_submission_protocol = 6;
+  org.apache.airavata.model.data.movement.DataMovementProtocol preferred_data_movement_protocol = 7;
+  string resource_specific_credential_store_token = 8;
+  ResourceType resource_type = 9;
+  EnvironmentSpecificPreferences specific_preferences = 10;
+}
+
+message ComputeResourcePolicy {
+  string resource_policy_id = 1;
+  string compute_resource_id = 2;
+  string group_resource_profile_id = 3;
+  repeated string allowed_batch_queues = 4;
+}
+
+message BatchQueueResourcePolicy {
+  string resource_policy_id = 1;
+  string compute_resource_id = 2;
+  string group_resource_profile_id = 3;
+  string queuename = 4;
+  int32 max_allowed_nodes = 5;
+  int32 max_allowed_cores = 6;
+  int32 max_allowed_walltime = 7;
+}
+
+message GroupResourceProfile {
+  string gateway_id = 1;
+  string group_resource_profile_id = 2;
+  string group_resource_profile_name = 3;
+  repeated GroupComputeResourcePreference compute_preferences = 4;
+  repeated ComputeResourcePolicy compute_resource_policies = 5;
+  repeated BatchQueueResourcePolicy batch_queue_resource_policies = 6;
+  int64 creation_time = 7;
+  int64 updated_time = 8;
+  string default_credential_store_token = 9;
+}

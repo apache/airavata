@@ -21,9 +21,13 @@ package org.apache.airavata.ide.integration;
 
 import org.apache.airavata.monitor.email.EmailBasedMonitor;
 
+/**
+ * IDE convenience launcher for the email-based job monitor.
+ * EmailBasedMonitor implements IServer (Runnable) — started in its own thread.
+ */
 public class JobMonitorStarter {
     public static void main(String args[]) throws Exception {
         EmailBasedMonitor emailBasedMonitor = new EmailBasedMonitor();
-        emailBasedMonitor.startServer();
+        new Thread(emailBasedMonitor, "email-monitor").start();
     }
 }

@@ -1,0 +1,79 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.appcatalog.storageresource;
+
+option java_package = "org.apache.airavata.model.appcatalog.storageresource.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/data/movement/data_movement.proto";
+
+// Storage Resource Description.
+//
+// storage_resource_id: Airavata Internal Unique Identifier to distinguish
+//   Storage Resource.
+// host_name: Fully Qualified Host Name.
+// storage_resource_description: A user friendly description of the resource.
+// enabled: Whether the resource is enabled.
+// data_movement_interfaces: Available data movement interfaces.
+// creation_time: Creation time of the resource.
+// update_time: Last update time of the resource.
+message StorageResourceDescription {
+  string storage_resource_id = 1;
+  string host_name = 2;
+  string storage_resource_description = 3;
+  bool enabled = 4;
+  repeated org.apache.airavata.model.data.movement.DataMovementInterface data_movement_interfaces = 5;
+  int64 creation_time = 6;
+  int64 update_time = 7;
+}
+
+// Storage Volume Information.
+//
+// Contains disk usage information for a filesystem/mount point.
+//
+// total_size: Total size in human-readable format (e.g., "100G", "500M").
+// used_size: Used size in human-readable format.
+// available_size: Available size in human-readable format.
+// total_size_bytes: Total size in bytes.
+// used_size_bytes: Used size in bytes.
+// available_size_bytes: Available size in bytes.
+// percentage_used: Percentage used.
+// mount_point: Mount point/filesystem path.
+// filesystem_type: Filesystem type if available.
+message StorageVolumeInfo {
+  string total_size = 1;
+  string used_size = 2;
+  string available_size = 3;
+  int64 total_size_byte_count = 4;
+  int64 used_size_byte_count = 5;
+  int64 available_size_byte_count = 6;
+  double percentage_used = 7;
+  string mount_point = 8;
+  string filesystem_type = 9;
+}
+
+// Provides Directory Size Information of a given storage.
+//
+// total_size: Total size in human-readable format (e.g., "100G", "500M").
+// total_size_bytes: Total size in bytes.
+message StorageDirectoryInfo {
+  string total_size = 1;
+  int64 total_size_byte_count = 2;
+}

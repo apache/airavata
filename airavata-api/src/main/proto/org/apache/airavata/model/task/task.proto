@@ -1,0 +1,111 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.task;
+
+option java_package = "org.apache.airavata.model.task.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/commons/commons.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
+import "org/apache/airavata/model/data/movement/data_movement.proto";
+import "org/apache/airavata/model/job/job.proto";
+import "org/apache/airavata/model/status/status.proto";
+
+// TaskTypes: An enumerated list of TaskTypes. Task being generic, the task type
+// will provide the concrete interpretation.
+enum TaskTypes {
+  TASK_TYPES_UNKNOWN = 0;
+  ENV_SETUP = 1;
+  DATA_STAGING = 2;
+  JOB_SUBMISSION = 3;
+  ENV_CLEANUP = 4;
+  MONITORING = 5;
+  OUTPUT_FETCHING = 6;
+}
+
+// TaskModel: A structure holding the generic task details.
+//
+// task_id: Unique identifier for the task.
+// task_type: Type of the task.
+// parent_process_id: Process id that owns this task.
+// creation_time: Task creation time.
+// last_update_time: Last update time of the task.
+// task_statuses: List of task status objects.
+// task_detail: A friendly description of the task.
+// sub_task_model: A generic byte object for the Task developer to store internal
+//   serialized data into registry catalogs.
+// task_errors: List of error models.
+// jobs: List of jobs spawned by this task.
+// max_retry: Maximum retry count.
+// current_retry: Current retry count.
+message TaskModel {
+  string task_id = 1;
+  TaskTypes task_type = 2;
+  string parent_process_id = 3;
+  int64 creation_time = 4;
+  int64 last_update_time = 5;
+  repeated org.apache.airavata.model.status.TaskStatus task_statuses = 6;
+  string task_detail = 7;
+  bytes sub_task_model = 8;
+  repeated org.apache.airavata.model.commons.ErrorModel task_errors = 9;
+  repeated org.apache.airavata.model.job.JobModel jobs = 10;
+  int32 max_retry = 11;
+  int32 current_retry = 12;
+}
+
+// DataStageType: Type of data staging operation.
+enum DataStageType {
+  DATA_STAGE_TYPE_UNKNOWN = 0;
+  INPUT = 1;
+  OUPUT = 2;
+  ARCHIVE_OUTPUT = 3;
+}
+
+// DataStagingTaskModel: A structure holding the data staging task details.
+//
+// Source and Destination locations include standard representation of protocol,
+// host, port and path.
+message DataStagingTaskModel {
+  string source = 1;
+  string destination = 2;
+  DataStageType type = 3;
+  int64 transfer_start_time = 4;
+  int64 transfer_end_time = 5;
+  string transfer_rate = 6;
+  org.apache.airavata.model.application.io.InputDataObjectType process_input = 7;
+  org.apache.airavata.model.application.io.OutputDataObjectType process_output = 8;
+}
+
+// EnvironmentSetupTaskModel: A structure holding the environment creation task details.
+message EnvironmentSetupTaskModel {
+  string location = 1;
+  org.apache.airavata.model.data.movement.SecurityProtocol protocol = 2;
+}
+
+message JobSubmissionTaskModel {
+  org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol job_submission_protocol = 1;
+  org.apache.airavata.model.appcatalog.computeresource.MonitorMode monitor_mode = 2;
+  int32 wall_time = 3;
+}
+
+message MonitorTaskModel {
+  org.apache.airavata.model.appcatalog.computeresource.MonitorMode monitor_mode = 1;
+}

@@ -1,0 +1,73 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.process;
+
+option java_package = "org.apache.airavata.model.process.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/commons/commons.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+import "org/apache/airavata/model/scheduling/scheduling.proto";
+import "org/apache/airavata/model/status/status.proto";
+import "org/apache/airavata/model/task/task.proto";
+
+message ProcessWorkflow {
+  string process_id = 1;
+  string workflow_id = 2;
+  int64 creation_time = 3;
+  string type = 4;
+}
+
+// ProcessModel: A structure holding the process details. The information is
+// derived based on user provided configuration data or system inferred
+// information from scheduling and QoS parameters.
+//
+// process_id: Unique identifier for the process.
+// experiment_id: Parent experiment id.
+// process_detail: A friendly description of the process.
+message ProcessModel {
+  string process_id = 1;
+  string experiment_id = 2;
+  int64 creation_time = 3;
+  int64 last_update_time = 4;
+  repeated org.apache.airavata.model.status.ProcessStatus process_statuses = 5;
+  string process_detail = 6;
+  string application_interface_id = 7;
+  string application_deployment_id = 8;
+  string compute_resource_id = 9;
+  repeated org.apache.airavata.model.application.io.InputDataObjectType process_inputs = 10;
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType process_outputs = 11;
+  org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel process_resource_schedule = 12;
+  repeated org.apache.airavata.model.task.TaskModel tasks = 13;
+  string task_dag = 14;
+  repeated org.apache.airavata.model.commons.ErrorModel process_errors = 15;
+  string gateway_execution_id = 16;
+  bool enable_email_notification = 17;
+  repeated string email_addresses = 18;
+  string input_storage_resource_id = 19;
+  string output_storage_resource_id = 20;
+  string user_dn = 21;
+  bool generate_cert = 22;
+  string experiment_data_dir = 23;
+  string user_name = 24;
+  bool use_user_cr_pref = 25;
+  string group_resource_profile_id = 26;
+  repeated ProcessWorkflow process_workflows = 27;
+}

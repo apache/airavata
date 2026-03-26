@@ -69,6 +69,7 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
+        <module>airavata-thrift-server</module>
         <module>modules/file-server</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework/research-service</module>
@@ -483,6 +484,18 @@ under the License.
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.5.3</version>
+            </dependency>
+
+            <!-- MapStruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>1.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>1.6.3</version>
             </dependency>
 
             <!-- gRPC -->

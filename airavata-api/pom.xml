@@ -37,6 +37,10 @@ under the License.
   <dependencies>
     <!-- Core libraries -->
     <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.thrift</groupId>
       <artifactId>libthrift</artifactId>
     </dependency>
@@ -382,6 +386,26 @@ under the License.
 
   <build>
     <plugins>
+      <!-- Protobuf code generation -->
+      <plugin>
+        <groupId>io.github.ascopes</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-proto-sources</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <protocVersion>4.30.1</protocVersion>
+              <sourceDirectories>
+                <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
+              </sourceDirectories>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Enforce version convergence -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -422,7 +446,7 @@ under the License.
                   <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg value="${project.basedir}/../thrift-interface-descriptions/stubs_java.thrift" />
+                  <arg value="${project.basedir}/../airavata-thrift-server/src/main/thrift/stubs_java.thrift" />
                 </exec>
               </target>
             </configuration>

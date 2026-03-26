@@ -1,0 +1,259 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.appcatalog.computeresource;
+
+option java_package = "org.apache.airavata.model.appcatalog.computeresource.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/parallelism/parallelism.proto";
+import "org/apache/airavata/model/data/movement/data_movement.proto";
+
+// Enumeration of local resource job manager types supported by Airavata.
+//
+// FORK: Forking of commands without any job manager.
+// PBS: Job manager supporting the Portal Batch System (PBS) protocol.
+// SLURM: The Simple Linux Utility for Resource Management.
+// UGE: Univa Grid Engine, a variation of PBS implementation.
+// LSF: IBM Platform Load Sharing Facility.
+enum ResourceJobManagerType {
+  RESOURCE_JOB_MANAGER_TYPE_UNKNOWN = 0;
+  FORK = 1;
+  PBS = 2;
+  SLURM = 3;
+  LSF = 4;
+  UGE = 5;
+  CLOUD = 6;
+  AIRAVATA_CUSTOM = 7;
+  HTCONDOR = 8;
+}
+
+// Enumeration of resource job manager commands.
+//
+// SUBMISSION: Ex: qsub, sbatch.
+// JOB_MONITORING: Ex: qstat, squeue.
+// DELETION: Ex: qdel, scancel.
+// CHECK_JOB: Detailed Status about the Job. Ex: checkjob.
+// SHOW_QUEUE: List of Queued Job by the scheduler. Ex: showq.
+// SHOW_RESERVATION: List all reservations. Ex: showres.
+// SHOW_START: Display the start time of the specified job. Ex: showstart.
+enum JobManagerCommand {
+  JOB_MANAGER_COMMAND_UNKNOWN = 0;
+  SUBMISSION = 1;
+  JOB_MONITORING = 2;
+  DELETION = 3;
+  CHECK_JOB = 4;
+  SHOW_QUEUE = 5;
+  SHOW_RESERVATION = 6;
+  SHOW_START = 7;
+  SHOW_CLUSTER_INFO = 8;
+  SHOW_NO_OF_RUNNING_JOBS = 9;
+  SHOW_NO_OF_PENDING_JOBS = 10;
+}
+
+// Resource Job Manager Information.
+//
+// resource_job_manager_id: Airavata Internal Unique ID.
+// resource_job_manager_type: A typical HPC cluster has a single Job Manager.
+// push_monitoring_endpoint: If the job manager pushes out state changes to a
+//   database or bus, specify the service endpoint.
+// job_manager_bin_path: Path to the Job Manager Installation Binary directory.
+// job_manager_commands: An enumeration of commonly used manager commands.
+// parallelism_prefix: Prefix to use for each parallelism type.
+message ResourceJobManager {
+  string resource_job_manager_id = 1;
+  ResourceJobManagerType resource_job_manager_type = 2;
+  string push_monitoring_endpoint = 3;
+  string job_manager_bin_path = 4;
+  map<int32, string> job_manager_commands = 5;
+  map<int32, string> parallelism_prefix = 6;
+}
+
+// Enumeration of file systems on the resource.
+enum FileSystems {
+  FILE_SYSTEMS_UNKNOWN = 0;
+  HOME = 1;
+  WORK = 2;
+  LOCALTMP = 3;
+  SCRATCH = 4;
+  ARCHIVE = 5;
+}
+
+// Batch Queue Information on SuperComputers.
+//
+// max_run_time: Maximum allowed run time in hours.
+message BatchQueue {
+  string queue_name = 1;
+  string queue_description = 2;
+  int32 max_run_time = 3;
+  int32 max_nodes = 4;
+  int32 max_processors = 5;
+  int32 max_jobs_in_queue = 6;
+  int32 max_memory = 7;
+  int32 cpu_per_node = 8;
+  int32 default_node_count = 9;
+  int32 default_cpu_count = 10;
+  int32 default_walltime = 11;
+  string queue_specific_macros = 12;
+  bool is_default_queue = 13;
+}
+
+// Enumeration of Airavata supported Job Submission Mechanisms for HPC clusters.
+//
+// SSH: Execute remote job submission commands via secure shell protocol.
+// GLOBUS: Execute remote jobs via Globus GRAM service.
+// UNICORE: Execute remote jobs via Unicore services.
+enum JobSubmissionProtocol {
+  JOB_SUBMISSION_PROTOCOL_UNKNOWN = 0;
+  LOCAL = 1;
+  SSH = 2;
+  GLOBUS = 3;
+  UNICORE = 4;
+  JSP_CLOUD = 5;
+  SSH_FORK = 6;
+  LOCAL_FORK = 7;
+}
+
+// Monitoring modes.
+//
+// POLL_JOB_MANAGER: GFac needs to pull job status changes.
+// XSEDE_AMQP_SUBSCRIBE: Server will publish job status changes to AMQP server.
+enum MonitorMode {
+  MONITOR_MODE_UNKNOWN = 0;
+  POLL_JOB_MANAGER = 1;
+  CLOUD_JOB_MONITOR = 2;
+  JOB_EMAIL_NOTIFICATION_MONITOR = 3;
+  XSEDE_AMQP_SUBSCRIBE = 4;
+  MONITOR_FORK = 5;
+  MONITOR_LOCAL = 6;
+}
+
+enum DMType {
+  DM_TYPE_UNKNOWN = 0;
+  COMPUTE_RESOURCE = 1;
+  STORAGE_RESOURCE = 2;
+}
+
+// Locally Fork Jobs as OS processes.
+//
+// job_submission_interface_id: Airavata Internal Unique ID.
+// resource_job_manager: Resource job manager configuration.
+// security_protocol: Security protocol.
+message LOCALSubmission {
+  string job_submission_interface_id = 1;
+  ResourceJobManager resource_job_manager = 2;
+  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 3;
+}
+
+// Authenticate using Secured Shell.
+//
+// job_submission_interface_id: Airavata Internal Unique ID.
+// security_protocol: Security protocol.
+// resource_job_manager: Resource job manager configuration.
+// alternative_ssh_host_name: If the login to ssh is different than the hostname.
+// ssh_port: If a non-default port needs to be used.
+// monitor_mode: Job monitoring mode.
+// batch_queue_email_senders: Full email addresses for batch queue monitoring.
+message SSHJobSubmission {
+  string job_submission_interface_id = 1;
+  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
+  ResourceJobManager resource_job_manager = 3;
+  string alternative_ssh_host_name = 4;
+  int32 ssh_port = 5;
+  MonitorMode monitor_mode = 6;
+  repeated string batch_queue_email_senders = 7;
+}
+
+message GlobusJobSubmission {
+  string job_submission_interface_id = 1;
+  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
+  repeated string globus_gate_keeper_end_point = 3;
+}
+
+// Unicore Job Submission.
+//
+// unicore_end_point_url: unicoreGateway End Point.
+// security_protocol: The authenticationMode defines the way certificate is fetched.
+message UnicoreJobSubmission {
+  string job_submission_interface_id = 1;
+  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
+  string unicore_end_point_url = 3;
+}
+
+// Cloud provider name.
+enum ProviderName {
+  PROVIDER_NAME_UNKNOWN = 0;
+  EC2 = 1;
+  AWSEC2 = 2;
+  RACKSPACE = 3;
+}
+
+// Cloud Job Submission.
+message CloudJobSubmission {
+  string job_submission_interface_id = 1;
+  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
+  string node_id = 3;
+  string executable_type = 4;
+  ProviderName provider_name = 5;
+  string user_account_name = 6;
+}
+
+// Job Submission Interfaces.
+//
+// job_submission_interface_id: The Job Submission Interface has to be previously
+//   registered and referenced here.
+// priority_order: For resources with multiple interfaces, the priority order
+//   should be selected. Lower the numerical number, higher the priority.
+message JobSubmissionInterface {
+  string job_submission_interface_id = 1;
+  JobSubmissionProtocol job_submission_protocol = 2;
+  int32 priority_order = 3;
+}
+
+// Computational Resource Description.
+//
+// compute_resource_id: Airavata Internal Unique Identifier to distinguish
+//   Compute Resource.
+// host_name: Fully Qualified Host Name.
+// host_aliases: Aliases if any.
+// ip_addresses: IP Addresses of the Resource.
+// resource_description: A user friendly description of the resource.
+// job_submission_interfaces: All available mechanisms to interact with the resource.
+// data_movement_interfaces: Available data movement interfaces.
+// file_systems: Map of file systems type and the path.
+message ComputeResourceDescription {
+  string compute_resource_id = 1;
+  string host_name = 2;
+  repeated string host_aliases = 3;
+  repeated string ip_addresses = 4;
+  string resource_description = 5;
+  bool enabled = 6;
+  repeated BatchQueue batch_queues = 7;
+  map<int32, string> file_systems = 8;
+  repeated JobSubmissionInterface job_submission_interfaces = 9;
+  repeated org.apache.airavata.model.data.movement.DataMovementInterface data_movement_interfaces = 10;
+  int32 max_memory_per_node = 11;
+  bool gateway_usage_reporting = 12;
+  string gateway_usage_module_load_command = 13;
+  string gateway_usage_executable = 14;
+  int32 cpus_per_node = 15;
+  int32 default_node_count = 16;
+  int32 default_cpu_count = 17;
+  int32 default_walltime = 18;
+}
