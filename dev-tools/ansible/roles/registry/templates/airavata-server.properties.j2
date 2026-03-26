@@ -26,128 +26,31 @@
 ###########################################################################
 
 ###########################################################################
-#  API Server Registry Configuration
+# Database Configuration
 ###########################################################################
+airavata.jdbc.driver={{ airavata_jdbc_driver | default('org.mariadb.jdbc.Driver') }}
+airavata.jdbc.url={{ airavata_jdbc_url }}
+airavata.jdbc.user={{ airavata_jdbc_user }}
+airavata.jdbc.password={{ airavata_jdbc_password }}
+airavata.jdbc.validationQuery=SELECT 1
 
-#for derby [AiravataJPARegistry]
-#registry.jdbc.driver=org.apache.derby.jdbc.ClientDriver
-#registry.jdbc.url=jdbc:derby://localhost:1527/experiment_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-registry.jdbc.driver=com.mysql.jdbc.Driver
-registry.jdbc.url=jdbc:mysql://{{ db_server }}:{{ db_server_port }}/{{ exp_catalog }}
-registry.jdbc.user={{ db_user }}
-registry.jdbc.password={{ db_password }}
-#FIXME: Probably the following property should be removed.
-start.derby.server.mode=false
-validationQuery=SELECT 1 from CONFIGURATION
-#jpa.connection.properties=MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000,testWhileIdle=true,testOnBorrow=true
 enable.sharing={{enable_sharing}}
 
 # Properties for default user mode
 default.registry.user=admin
 default.registry.password=admin
-default.registry.password.hash.method=SHA
 default.registry.gateway={{ default_gateway }}
 super.tenant.gatewayId={{ default_gateway }}
-
-# Properties for cluster status monitoring
-# cluster status monitoring job repeat time in seconds
-cluster.status.monitoring.enable=false
-cluster.status.monitoring.repeat.time=18000
-
-
-###########################################################################
-#  Application Catalog DB Configuration
-###########################################################################
-#for derby [AiravataJPARegistry]
-#appcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
-#appcatalog.jdbc.url=jdbc:derby://localhost:1527/app_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-appcatalog.jdbc.driver=com.mysql.jdbc.Driver
-appcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ app_catalog }}
-appcatalog.jdbc.user={{ db_user }}
-appcatalog.jdbc.password={{ db_password }}
-appcatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-##########################################################################
-#  Replica Catalog DB Configuration
-###########################################################################
-#for derby [AiravataJPARegistry]
-#replicacatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
-#replicacatalog.jdbc.url=jdbc:derby://localhost:1527/replica_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-replicacatalog.jdbc.driver=com.mysql.jdbc.Driver
-replicacatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
-replicacatalog.jdbc.user={{ db_user }}
-replicacatalog.jdbc.password={{ db_password }}
-replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-###########################################################################
-#  Workflow Catalog DB Configuration
-###########################################################################
-#for derby [AiravataJPARegistry]
-#workflowcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
-#workflowcatalog.jdbc.url=jdbc:derby://localhost:1527/workflow_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-workflowcatalog.jdbc.driver=com.mysql.jdbc.Driver
-workflowcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
-workflowcatalog.jdbc.user={{ db_user }}
-workflowcatalog.jdbc.password={{ db_password }}
-workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-###########################################################################
-#  Sharing Catalog DB Configuration
-###########################################################################
-#for derby [AiravataJPARegistry]
-#sharingcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
-#sharingcatalog.jdbc.url=jdbc:derby://localhost:1527/sharing_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-sharingcatalog.jdbc.driver=com.mysql.jdbc.Driver
-sharingcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ sharing_catalog }}
-sharingcatalog.jdbc.user={{ db_user }}
-sharingcatalog.jdbc.password={{ db_password }}
-sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-###########################################################################
-#  Server module Configuration
-###########################################################################
-#credential store server should be started before API server
-#This is obsolete property with new script files.
-#servers=credentialstore,apiserver,orchestrator
 
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
-apiserver.class=org.apache.airavata.api.server.AiravataAPIServer
+apiserver.class=org.apache.airavata.api.server.AiravataServer
 apiserver.host={{ api_server_host }}
 apiserver.port={{ api_server_port }}
 
-###########################################################################
-#  Orchestrator Server Configurations
-###########################################################################
-orchestrator=org.apache.airavata.orchestrator.server.OrchestratorServer
-orchestrator.server.host={{ orchestrator_host }}
-orchestrator.server.port={{ orchestrator_port }}
-orchestrator.server.min.threads=50
 job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
 enable.validation=true
-
-###########################################################################
-#  Registry Server Configurations
-###########################################################################
-regserver=org.apache.airavata.registry.api.service.RegistryAPIServer
-regserver.server.host={{registry_host}}
-regserver.server.port={{registry_port}}
-regserver.server.min.threads=50
-
-###########################################################################
-#  GFac Server Configurations
-###########################################################################
-gfac=org.apache.airavata.gfac.server.GfacServer
-gfac.server.name={{ gfac_name }}
-gfac.server.host={{ gfac_host }}
-gfac.server.port={{ gfac_port }}
-gfac.thread.pool.size=50
 host.scheduler=org.apache.airavata.orchestrator.core.schedule.DefaultHostScheduler
 
 ###########################################################################
@@ -167,14 +70,6 @@ job.notification.emailids=
 credential.store.keystore.url={{ keystores_location }}/{{ cred_keystore }}
 credential.store.keystore.alias={{ cred_keystore_alias }}
 credential.store.keystore.password={{ cred_keystore_passwd }}
-credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ credential_store }}
-credential.store.jdbc.user={{ db_user }}
-credential.store.jdbc.password={{ db_password }}
-credential.store.jdbc.driver=com.mysql.jdbc.Driver
-credential.store.server.host={{ cred_store_server_host }}
-credential.store.server.port={{ cred_store_port }}
-credential.store.class=org.apache.airavata.credential.store.server.CredentialStoreServer
-credential.stroe.jdbc.validationQuery=SELECT 1 from CONFIGURATION
 
 # SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.
 # if user specify both password sshKeyAuthentication gets the higher preference

@@ -82,7 +82,7 @@ pga_git_branch: "master"
 airavata_server: "{{ groups['api-orch'][0] }}"
 airavata_port: "8930"
 airavata_profile_service_server: "{{ airavata_server }}"
-airavata_profile_service_port: "8962"
+airavata_profile_service_port: "8930"
 gateway_id: "{{ default_gateway }}"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"

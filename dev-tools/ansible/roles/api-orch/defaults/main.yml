@@ -31,7 +31,7 @@ iam_server_super_admin_username: "admin"
 #iam_server_super_admin_password: "changeme"
 
 profile_service_host: "airavata.localhost"
-profile_service_port: 8962
+profile_service_port: 8930
 
 mariadb_connector_jar_url: "http://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"
 sharing_registry_tls_enabled: "false"

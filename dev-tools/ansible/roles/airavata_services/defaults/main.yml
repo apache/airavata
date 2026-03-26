@@ -74,14 +74,8 @@ default_registry_gateway: "default"
 default_registry_oauth_client_id: "pga"
 super_tenant_gatewayId: "default"
 
-# JDBC driver
-registry_jdbc_driver: "org.mariadb.jdbc.Driver"
-appcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
-replicacatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
-workflowcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
-sharingcatalog_jdbc_driver: "org.mariadb.jdbc.Driver"
-profile_service_jdbc_driver: "org.mariadb.jdbc.Driver"
-credential_store_jdbc_driver: "org.mariadb.jdbc.Driver"
+# JDBC driver (unified)
+airavata_jdbc_driver: "org.mariadb.jdbc.Driver"
 
 # Security configuration
 security_manager_class: "org.apache.airavata.service.security.KeyCloakSecurityManager"
