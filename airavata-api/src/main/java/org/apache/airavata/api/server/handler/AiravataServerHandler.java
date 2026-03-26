@@ -97,6 +97,7 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.service.credential.CredentialService;
 import org.apache.airavata.service.experiment.ExperimentService;
 import org.apache.airavata.service.gateway.GatewayService;
 import org.apache.airavata.service.messaging.EventPublisher;
@@ -118,6 +119,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private final RegistryServerHandler registryHandler;
     private final SharingRegistryServerHandler sharingHandler;
     private final CredentialStoreServerHandler credentialHandler;
+    private final CredentialService credentialService;
     private final ExperimentService experimentService;
     private final GatewayService gatewayService;
     private final NotificationService notificationService;
@@ -142,6 +144,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             logger.error("Error occured while reading airavata-server properties..", e);
         }
         EventPublisher eventPub = new EventPublisher(statusPublisher, experimentPublisher);
+        this.credentialService = new CredentialService(credentialHandler, sharingHandler);
         this.experimentService = new ExperimentService(registryHandler, sharingHandler, eventPub);
         this.gatewayService = new GatewayService(registryHandler, sharingHandler);
         this.notificationService = new NotificationService(registryHandler);
@@ -434,41 +437,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public String generateAndRegisterSSHKeys(AuthzToken authzToken, String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        try {
-            SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername(userName);
-            sshCredential.setGatewayId(gatewayId);
-            sshCredential.setDescription(description);
-            String key = credentialHandler.addSSHCredential(sshCredential);
-            try {
-                Entity entity = new Entity();
-                entity.setEntityId(key);
-                entity.setDomainId(gatewayId);
-                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
-                entity.setOwnerId(userName + "@" + gatewayId);
-                entity.setName(key);
-                entity.setDescription(description);
-                sharingHandler.createEntity(entity);
-            } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back ssh key creation for user " + userName + " and description [" + description
-                        + "]");
-                credentialHandler.deleteSSHCredential(key, gatewayId);
-                AiravataSystemException ase = new AiravataSystemException();
-                ase.setMessage("Failed to create sharing registry record");
-                throw ase;
-            }
-            logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
-            return key;
-        } catch (Exception e) {
-            logger.error("Error occurred while registering SSH Credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.generateAndRegisterSSHKeys(ctx, description));
     }
 
     /**
@@ -485,44 +454,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String registerPwdCredential(
             AuthzToken authzToken, String loginUserName, String password, String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        try {
-            PasswordCredential pwdCredential = new PasswordCredential();
-            pwdCredential.setPortalUserName(userName);
-            pwdCredential.setLoginUserName(loginUserName);
-            pwdCredential.setPassword(password);
-            pwdCredential.setDescription(description);
-            pwdCredential.setGatewayId(gatewayId);
-            String key = credentialHandler.addPasswordCredential(pwdCredential);
-            try {
-                Entity entity = new Entity();
-                entity.setEntityId(key);
-                entity.setDomainId(gatewayId);
-                entity.setEntityTypeId(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN);
-                entity.setOwnerId(userName + "@" + gatewayId);
-                entity.setName(key);
-                entity.setDescription(description);
-                sharingHandler.createEntity(entity);
-            } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
-                logger.error("Rolling back password registration for user " + userName + " and description ["
-                        + description + "]");
-                credentialHandler.deletePWDCredential(key, gatewayId);
-                AiravataSystemException ase = new AiravataSystemException();
-                ase.setMessage("Failed to create sharing registry record");
-                throw ase;
-            }
-            logger.debug("Airavata generated PWD credential for gateway : " + gatewayId + " and for user : "
-                    + loginUserName);
-            return key;
-        } catch (Exception e) {
-            logger.error("Error occurred while registering PWD Credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while registering PWD Credential. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.registerPwdCredential(ctx, loginUserName, password, description));
     }
 
     @Override
@@ -530,110 +462,28 @@ public class AiravataServerHandler implements Airavata.Iface {
     public CredentialSummary getCredentialSummary(AuthzToken authzToken, String tokenId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            if (!userHasAccessInternal(authzToken, tokenId, ResourcePermissionType.READ)) {
-                throw new AuthorizationException("User does not have permission to access this resource");
-            }
-            CredentialSummary credentialSummary = credentialHandler.getCredentialSummary(tokenId, gatewayId);
-            logger.debug("Airavata retrived the credential summary for token " + tokenId + "GatewayId: " + gatewayId);
-            return credentialSummary;
-        } catch (AuthorizationException ae) {
-            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            logger.info("User " + userName + " not allowed to access credential store token " + tokenId);
-            throw ae;
-        } catch (Exception e) {
-            String msg = "Error retrieving credential summary for token " + tokenId + ". GatewayId: " + gatewayId;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.getCredentialSummary(ctx, tokenId));
     }
 
     @Override
     @SecurityCheck
     public List<CredentialSummary> getAllCredentialSummaries(AuthzToken authzToken, SummaryType type)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        try {
-            List<SearchCriteria> filters = new ArrayList<>();
-            SearchCriteria searchCriteria = new SearchCriteria();
-            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-            searchCriteria.setValue(gatewayId + ":" + ResourceType.CREDENTIAL_TOKEN.name());
-            filters.add(searchCriteria);
-            List<String> accessibleTokenIds =
-                    sharingHandler.searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1).stream()
-                            .map(p -> p.getEntityId())
-                            .collect(Collectors.toList());
-            List<CredentialSummary> credentialSummaries =
-                    credentialHandler.getAllCredentialSummaries(type, accessibleTokenIds, gatewayId);
-            logger.debug(
-                    "Airavata successfully retrived credential summaries of type " + type + " GatewayId: " + gatewayId);
-            return credentialSummaries;
-        } catch (Exception e) {
-            String msg = "Error retrieving credential summaries of type " + type + ". GatewayId: " + gatewayId;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.getAllCredentialSummaries(ctx, type));
     }
 
     @Override
     @SecurityCheck
     public boolean deleteSSHPubKey(AuthzToken authzToken, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            if (!userHasAccessInternal(authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
-                throw new AuthorizationException("User does not have permission to delete this resource.");
-            }
-            logger.debug("Airavata deleted SSH pub key for gateway Id : " + gatewayId + " and with token id : "
-                    + airavataCredStoreToken);
-            boolean result = credentialHandler.deleteSSHCredential(airavataCredStoreToken, gatewayId);
-            return result;
-        } catch (AuthorizationException ae) {
-            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token "
-                    + airavataCredStoreToken);
-            throw ae;
-        } catch (Exception e) {
-            logger.error("Error occurred while deleting SSH credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting SSH credential. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.deleteSSHPubKey(ctx, airavataCredStoreToken));
     }
 
     @Override
     @SecurityCheck
     public boolean deletePWDCredential(AuthzToken authzToken, String airavataCredStoreToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try {
-            if (!userHasAccessInternal(authzToken, airavataCredStoreToken, ResourcePermissionType.WRITE)) {
-                throw new AuthorizationException("User does not have permission to delete this resource.");
-            }
-            logger.debug("Airavata deleted PWD credential for gateway Id : " + gatewayId + " and with token id : "
-                    + airavataCredStoreToken);
-            boolean result = credentialHandler.deletePWDCredential(airavataCredStoreToken, gatewayId);
-            return result;
-        } catch (AuthorizationException ae) {
-            String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            logger.info("User " + userName + " not allowed to delete (no WRITE permission) credential store token "
-                    + airavataCredStoreToken);
-            throw ae;
-        } catch (Exception e) {
-            logger.error("Error occurred while deleting PWD credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while deleting PWD credential. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> credentialService.deletePWDCredential(ctx, airavataCredStoreToken));
     }
 
     /**
