@@ -4,7 +4,6 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
@@ -27,14 +26,17 @@ public class ThriftAdapter {
     }
 
     public static <T> T execute(AuthzToken authzToken, String gatewayId, ServiceCall<T> call)
-            throws AiravataSystemException, AuthorizationException, ExperimentNotFoundException {
+            throws AiravataSystemException, AuthorizationException {
         try {
             RequestContext ctx = toRequestContext(authzToken, gatewayId);
             return call.apply(ctx);
         } catch (ServiceAuthorizationException e) {
             throw new AuthorizationException(e.getMessage());
         } catch (ServiceNotFoundException e) {
-            throw new ExperimentNotFoundException(e.getMessage());
+            AiravataSystemException ase = new AiravataSystemException();
+            ase.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            ase.setMessage("Resource not found: " + e.getMessage());
+            throw ase;
         } catch (ServiceException e) {
             AiravataSystemException ase = new AiravataSystemException();
             ase.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -51,7 +53,7 @@ public class ThriftAdapter {
     }
 
     public static void executeVoid(AuthzToken authzToken, String gatewayId, ServiceVoidCall call)
-            throws AiravataSystemException, AuthorizationException, ExperimentNotFoundException {
+            throws AiravataSystemException, AuthorizationException {
         execute(authzToken, gatewayId, ctx -> {
             call.apply(ctx);
             return null;
