@@ -70,11 +70,11 @@ under the License.
     <modules>
         <module>airavata-api</module>
         <module>airavata-thrift-server</module>
+        <module>integration-tests</module>
         <module>modules/file-server</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework/research-service</module>
         <module>modules/restproxy</module>
-        <module>modules/ide-integration</module>
     </modules>
 
     <properties>
