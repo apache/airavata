@@ -62,17 +62,7 @@ public class DBEventManagerRunner implements IServer {
      */
     public static void main(String[] args) {
         try {
-            Runnable runner = new Runnable() {
-                @Override
-                public void run() {
-                    DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
-                    dBEventManagerRunner.startDBEventManagerRunner();
-                }
-            };
-
-            // start the worker thread
-            log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
+            new DBEventManagerRunner().run();
         } catch (Exception ex) {
             log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);
         }
@@ -84,21 +74,19 @@ public class DBEventManagerRunner implements IServer {
     }
 
     @Override
-    public void start() throws Exception {
-
+    public void run() {
+        setStatus(ServerStatus.STARTED);
         try {
-            Runnable runner = new Runnable() {
-                @Override
-                public void run() {
-                    DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
-                    dBEventManagerRunner.startDBEventManagerRunner();
-                }
-            };
-
-            // start the worker thread
             log.info("Starting the DB Event Manager runner.");
-            new Thread(runner).start();
-            setStatus(ServerStatus.STARTED);
+            startDBEventManagerRunner();
+            // Park this thread until interrupted — messaging callbacks run asynchronously
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         } catch (Exception ex) {
             log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);
             setStatus(ServerStatus.FAILED);

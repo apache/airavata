@@ -48,54 +48,67 @@ public class ProcessReschedulingService implements IServer {
     }
 
     @Override
-    public void start() throws Exception {
+    public void run() {
+        status = ServerStatus.STARTED;
+        try {
+            jobTriggerMap.clear();
+            SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+            scheduler = schedulerFactory.getScheduler();
 
-        jobTriggerMap.clear();
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
+            final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
+            final double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
 
-        final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerJobScanningInterval();
+            for (int i = 0; i < parallelJobs; i++) {
+                String name = Constants.PROCESS_SCANNER_TRIGGER + "_" + i;
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, Constants.PROCESS_SCANNER_GROUP)
+                        .startNow()
+                        .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                                .withIntervalInSeconds((int) scanningInterval)
+                                .repeatForever())
+                        .build();
 
-        for (int i = 0; i < parallelJobs; i++) {
-            String name = Constants.PROCESS_SCANNER_TRIGGER + "_" + i;
-            Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(name, Constants.PROCESS_SCANNER_GROUP)
-                    .startNow()
-                    .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                            .withIntervalInSeconds((int) scanningInterval)
-                            .repeatForever())
-                    .build();
+                String jobName = Constants.PROCESS_SCANNER_JOB + "_" + i;
 
-            String jobName = Constants.PROCESS_SCANNER_JOB + "_" + i;
-
-            JobDetail jobC = JobBuilder.newJob(ProcessScannerImpl.class)
-                    .withIdentity(jobName, Constants.PROCESS_SCANNER_JOB)
-                    .build();
-            jobTriggerMap.put(jobC, trigger);
-        }
-        scheduler.start();
-
-        jobTriggerMap.forEach((x, v) -> {
-            try {
-                scheduler.scheduleJob(x, v);
-            } catch (SchedulerException e) {
-                logger.error("Error occurred while scheduling job " + x.getKey().getName());
+                JobDetail jobC = JobBuilder.newJob(ProcessScannerImpl.class)
+                        .withIdentity(jobName, Constants.PROCESS_SCANNER_JOB)
+                        .build();
+                jobTriggerMap.put(jobC, trigger);
             }
-        });
+            scheduler.start();
+
+            jobTriggerMap.forEach((x, v) -> {
+                try {
+                    scheduler.scheduleJob(x, v);
+                } catch (SchedulerException e) {
+                    logger.error(
+                            "Error occurred while scheduling job " + x.getKey().getName());
+                }
+            });
+
+            // Quartz scheduler runs on its own threads; park here until interrupted
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("ProcessReschedulingService failed", e);
+            status = ServerStatus.FAILED;
+        }
     }
 
     @Override
     public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
         scheduler.unscheduleJobs(new ArrayList(jobTriggerMap.values()));
+        status = ServerStatus.STOPPED;
     }
 
     @Override
     public ServerStatus getStatus() {
         return status;
-    }
-
-    public void setServerStatus(ServerStatus status) {
-        this.status = status;
     }
 }

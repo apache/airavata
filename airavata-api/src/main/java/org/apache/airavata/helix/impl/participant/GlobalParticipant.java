@@ -35,7 +35,6 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
     private static final Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
 
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
-    private Thread serverThread;
 
     public static final String[] TASK_CLASS_NAMES = {
         "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
@@ -65,12 +64,11 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
         super(taskClasses, taskTypeName);
     }
 
-    public void startServer() {
-        Thread t = new Thread(this);
-        t.start();
+    @Override
+    public void run() {
+        status = ServerStatus.STARTED;
+        super.run();
     }
-
-    public void stopServer() {}
 
     @Override
     public String getName() {
@@ -78,28 +76,8 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
     }
 
     @Override
-    public void start() throws Exception {
-        status = ServerStatus.STARTING;
-        serverThread = new Thread(
-                () -> {
-                    try {
-                        status = ServerStatus.STARTED;
-                        startServer();
-                    } catch (Exception e) {
-                        status = ServerStatus.FAILED;
-                    }
-                },
-                "airavata-" + getName());
-        serverThread.setDaemon(true);
-        serverThread.start();
-    }
-
-    @Override
     public void stop() throws Exception {
         status = ServerStatus.STOPPING;
-        if (serverThread != null) {
-            serverThread.interrupt();
-        }
         status = ServerStatus.STOPPED;
     }
 
@@ -123,13 +101,13 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
                 MonitoringServer monitoringServer = new MonitoringServer(
                         ServerSettings.getSetting("participant.monitoring.host"),
                         ServerSettings.getIntSetting("participant.monitoring.port"));
-                monitoringServer.start();
+                new Thread(monitoringServer, "monitoring-server").start();
 
                 Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
             }
 
             GlobalParticipant participant = new GlobalParticipant(taskClasses, null);
-            participant.startServer();
+            participant.run();
 
         } catch (Exception e) {
             logger.error("Failed to start global participant", e);

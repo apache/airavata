@@ -56,17 +56,17 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PostWorkflowManager extends WorkflowManager implements IServer {
+public class PostWorkflowManager implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
     private static final CountMonitor postwfCounter = new CountMonitor("post_wf_counter");
 
+    private final WorkflowManager wfManager;
     private final ExecutorService processingPool = Executors.newFixedThreadPool(10);
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
-    private Thread serverThread;
 
     public PostWorkflowManager() throws ApplicationSettingsException {
-        super(
+        wfManager = new WorkflowManager(
                 ServerSettings.getSetting("post.workflow.manager.name"),
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
@@ -77,17 +77,17 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
             MonitoringServer monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
                     ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
-            monitoringServer.start();
+            new Thread(monitoringServer, "monitoring-server").start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }
 
         PostWorkflowManager postManager = new PostWorkflowManager();
-        postManager.startServer();
+        postManager.run();
     }
 
     private void init() throws Exception {
-        super.initComponents();
+        wfManager.initComponents();
     }
 
     private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
@@ -112,7 +112,8 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
             return false;
         }
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient =
+                wfManager.getRegistryClientPool().getResource();
 
         var jobId = jobStatusResult.getJobId();
         var jobName = jobStatusResult.getJobName();
@@ -131,7 +132,7 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
             }
             if (jobs.size() != 1) {
                 logger.error("Found {} job(s) in registry with id={} and name={}", jobs.size(), jobId, jobName);
-                getRegistryClientPool().returnResource(registryClient);
+                wfManager.getRegistryClientPool().returnResource(registryClient);
                 return false;
             }
             JobModel jobModel = jobs.get(0);
@@ -140,7 +141,7 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
             ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
 
             var processState = processStatus.getState();
-            getRegistryClientPool().returnResource(registryClient);
+            wfManager.getRegistryClientPool().returnResource(registryClient);
 
             if (experimentModel != null) {
                 jobModel.getJobStatuses()
@@ -179,7 +180,7 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
                         case CANCELED:
                         case COMPLETE:
                             logger.info("canceled job={}: eid={}, state={}", jobId, experimentId, jobState);
-                            publishProcessStatus(processId, experimentId, gateway, ProcessState.CANCELED);
+                            wfManager.publishProcessStatus(processId, experimentId, gateway, ProcessState.CANCELED);
                             break;
                         default:
                             logger.warn("skipping job={}: eid={}, state={}", jobId, experimentId, jobState);
@@ -194,7 +195,7 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Setting process {} of experiment {} to state=CANCELED", processId, experimentId);
-                        publishProcessStatus(processId, experimentId, gateway, ProcessState.CANCELED);
+                        wfManager.publishProcessStatus(processId, experimentId, gateway, ProcessState.CANCELED);
                     }
                 }
                 return true;
@@ -208,7 +209,7 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
                     jobStatusResult.getJobId(),
                     jobStatusResult.getState().name(),
                     e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
+            wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -216,7 +217,8 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
     private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         postwfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient =
+                wfManager.getRegistryClientPool().getResource();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
@@ -239,7 +241,7 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
             logger.error("Failed to fetch experiment/process from registry for pid={}", processId, e);
             throw new Exception("Failed to fetch experiment/process from registry for pid=" + processId, e);
         } finally {
-            getRegistryClientPool().returnResource(registryClient);
+            wfManager.getRegistryClientPool().returnResource(registryClient);
         }
 
         String taskDag = processModel.getTaskDag();
@@ -327,13 +329,25 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
         }
         allTasks.add(parsingTriggeringTask);
 
-        String workflowName = getWorkflowOperator()
+        String workflowName = wfManager
+                .getWorkflowOperator()
                 .launchWorkflow(processId + "-POST-" + UUID.randomUUID(), new ArrayList<>(allTasks), true, false);
 
-        registerWorkflowForProcess(processId, workflowName, "POST");
+        wfManager.registerWorkflowForProcess(processId, workflowName, "POST");
     }
 
-    public void startServer() throws Exception {
+    @Override
+    public void run() {
+        status = ServerStatus.STARTED;
+        try {
+            startServer();
+        } catch (Exception e) {
+            logger.error("PostWorkflowManager failed", e);
+            status = ServerStatus.FAILED;
+        }
+    }
+
+    private void startServer() throws Exception {
 
         init();
         final Consumer<String, JobStatusResult> consumer = createConsumer();
@@ -404,15 +418,16 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+            RegistryService.Client registryClient =
+                    wfManager.getRegistryClientPool().getResource();
 
             try {
                 registryClient.addJobStatus(jobStatus, taskId, jobId);
-                getRegistryClientPool().returnResource(registryClient);
+                wfManager.getRegistryClientPool().returnResource(registryClient);
 
             } catch (Exception e) {
                 logger.error("Failed to add job status " + jobId, e);
-                getRegistryClientPool().returnBrokenResource(registryClient);
+                wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             }
 
             JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
@@ -421,14 +436,12 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
             MessageContext msgCtx = new MessageContext(
                     jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId(MessageType.JOB.name()), gateway);
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
+            wfManager.getStatusPublisher().publish(msgCtx);
 
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
     }
-
-    public void stopServer() {}
 
     @Override
     public String getName() {
@@ -436,28 +449,8 @@ public class PostWorkflowManager extends WorkflowManager implements IServer {
     }
 
     @Override
-    public void start() throws Exception {
-        status = ServerStatus.STARTING;
-        serverThread = new Thread(
-                () -> {
-                    try {
-                        status = ServerStatus.STARTED;
-                        startServer();
-                    } catch (Exception e) {
-                        status = ServerStatus.FAILED;
-                    }
-                },
-                "airavata-" + getName());
-        serverThread.setDaemon(true);
-        serverThread.start();
-    }
-
-    @Override
     public void stop() throws Exception {
         status = ServerStatus.STOPPING;
-        if (serverThread != null) {
-            serverThread.interrupt();
-        }
         status = ServerStatus.STOPPED;
     }
 

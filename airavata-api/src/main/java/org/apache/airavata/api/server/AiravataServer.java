@@ -96,14 +96,13 @@ import org.slf4j.LoggerFactory;
  *
  * <p>All services share the same port (default 8930, from {@code apiserver.port}).
  */
-public class AiravataServer implements IServer {
+public class AiravataServer {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataServer.class);
-    private static final String SERVER_NAME = "Airavata Server";
 
-    private ServerStatus status;
     private TServer server;
     private final List<IServer> backgroundServices = new ArrayList<>();
+    private final List<Thread> serviceThreads = new ArrayList<>();
 
     private final List<DBInitConfig> dbInitConfigs = Arrays.asList(
             new ExpCatalogDBInitConfig(),
@@ -113,14 +112,7 @@ public class AiravataServer implements IServer {
             new CredentialStoreDBInitConfig(),
             new UserProfileCatalogDBInitConfig());
 
-    public AiravataServer() {
-        setStatus(ServerStatus.STOPPED);
-    }
-
-    @Override
     public void start() throws Exception {
-        setStatus(ServerStatus.STARTING);
-
         logger.info("Initializing databases...");
         for (DBInitConfig dbInitConfig : dbInitConfigs) {
             DBInitializer.initializeDB(dbInitConfig);
@@ -156,7 +148,7 @@ public class AiravataServer implements IServer {
             multiplexedProcessor.registerProcessor(
                     "CredentialStore", new CredentialStoreService.Processor<>(credentialStoreServerHandler));
 
-            // Profile services (multiplexed on the same port as the existing ProfileServiceServer)
+            // Profile services
             multiplexedProcessor.registerProcessor(
                     profile_user_cpiConstants.USER_PROFILE_CPI_NAME,
                     new UserProfileService.Processor<>(new UserProfileServiceHandler()));
@@ -198,12 +190,14 @@ public class AiravataServer implements IServer {
                     Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
             server = new TThreadPoolServer(options.processor(multiplexedProcessor));
 
-            new Thread(() -> {
+            Thread serveThread = new Thread(
+                    () -> {
                         server.serve();
-                        setStatus(ServerStatus.STOPPED);
                         logger.info("Airavata Server stopped.");
-                    })
-                    .start();
+                    },
+                    "airavata-thrift-server");
+            serveThread.setDaemon(true);
+            serveThread.start();
 
             new Thread(() -> {
                         while (!server.isServing()) {
@@ -214,7 +208,6 @@ public class AiravataServer implements IServer {
                             }
                         }
                         if (server.isServing()) {
-                            setStatus(ServerStatus.STARTED);
                             logger.info("Airavata Server started on port {}", serverPort);
                             logger.info("Registered services: Airavata, RegistryService, SharingRegistry, "
                                     + "CredentialStore, UserProfile, TenantProfile, IamAdminServices, GroupManager");
@@ -225,7 +218,6 @@ public class AiravataServer implements IServer {
 
         } catch (TTransportException | ApplicationSettingsException e) {
             logger.error("Failed to start Airavata Server", e);
-            setStatus(ServerStatus.FAILED);
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
     }
@@ -328,19 +320,16 @@ public class AiravataServer implements IServer {
     }
 
     private void registerAndStart(IServer service, String label) {
-        try {
-            service.start();
-            backgroundServices.add(service);
-            logger.info("  {}: started", label);
-        } catch (Exception e) {
-            logger.warn("  {}: failed — {}", label, e.getMessage());
-        }
+        Thread t = new Thread(service, "airavata-" + label);
+        t.setDaemon(true);
+        t.start();
+        backgroundServices.add(service);
+        serviceThreads.add(t);
+        logger.info("  {}: started", label);
     }
 
-    @Override
     public void stop() throws Exception {
         if (server != null && server.isServing()) {
-            setStatus(ServerStatus.STOPPING);
             server.stop();
         }
         for (IServer service : backgroundServices) {
@@ -350,21 +339,9 @@ public class AiravataServer implements IServer {
                 logger.warn("Error stopping {}: {}", service.getName(), e.getMessage());
             }
         }
-    }
-
-    @Override
-    public ServerStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getName() {
-        return SERVER_NAME;
-    }
-
-    private void setStatus(ServerStatus stat) {
-        status = stat;
-        status.updateTime();
+        for (Thread t : serviceThreads) {
+            t.interrupt();
+        }
     }
 
     public static void main(String[] args) {

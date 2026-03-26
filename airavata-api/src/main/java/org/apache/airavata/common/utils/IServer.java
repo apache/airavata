@@ -23,10 +23,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Common lifecycle interface for all Airavata server components —
- * both the main Thrift server and background services.
+ * Common lifecycle interface for all Airavata server components.
+ * Extends Runnable — implementations put blocking work in run().
+ * Thread creation is handled by the caller (e.g. AiravataServer.registerAndStart()).
  */
-public interface IServer {
+public interface IServer extends Runnable {
 
     enum ServerStatus {
         STOPPED,
@@ -49,10 +50,7 @@ public interface IServer {
     /** Human-readable name for logging and diagnostics. */
     String getName();
 
-    /** Start this component. Implementations should set status to STARTING then STARTED. */
-    void start() throws Exception;
-
-    /** Stop this component. Implementations should set status to STOPPING then STOPPED. */
+    /** Stop this component. */
     void stop() throws Exception;
 
     /** Current lifecycle status. */

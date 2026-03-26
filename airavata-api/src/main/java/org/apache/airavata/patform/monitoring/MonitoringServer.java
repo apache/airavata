@@ -46,12 +46,20 @@ public class MonitoringServer implements IServer {
     }
 
     @Override
-    public void start() throws IOException {
+    public void run() {
         setStatus(ServerStatus.STARTING);
         try {
             logger.info("Starting the monitoring server");
             httpServer = new HTTPServer(host, port, true);
             setStatus(ServerStatus.STARTED);
+            // HTTPServer is non-blocking; park this thread until interrupted
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         } catch (IOException e) {
             logger.error("Failed to start the monitoring server on host {} na port {}", host, port, e);
             setStatus(ServerStatus.FAILED);

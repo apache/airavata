@@ -64,27 +64,40 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PreWorkflowManager extends WorkflowManager implements IServer {
+public class PreWorkflowManager implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
     private static final CountMonitor prewfCounter = new CountMonitor("pre_wf_counter");
 
+    private final WorkflowManager wfManager;
     private Subscriber subscriber;
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
-    private Thread serverThread;
 
     public PreWorkflowManager() throws ApplicationSettingsException {
-        super(
+        wfManager = new WorkflowManager(
                 ServerSettings.getSetting("pre.workflow.manager.name"),
                 Boolean.parseBoolean(ServerSettings.getSetting("pre.workflow.manager.loadbalance.clusters")));
     }
 
-    public void startServer() throws Exception {
-        super.initComponents();
-        initLaunchSubscriber();
+    @Override
+    public void run() {
+        status = ServerStatus.STARTED;
+        try {
+            wfManager.initComponents();
+            initLaunchSubscriber();
+            // Park thread — messaging callbacks arrive asynchronously
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("PreWorkflowManager failed", e);
+            status = ServerStatus.FAILED;
+        }
     }
-
-    public void stopServer() {}
 
     @Override
     public String getName() {
@@ -92,28 +105,8 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
     }
 
     @Override
-    public void start() throws Exception {
-        status = ServerStatus.STARTING;
-        serverThread = new Thread(
-                () -> {
-                    try {
-                        status = ServerStatus.STARTED;
-                        startServer();
-                    } catch (Exception e) {
-                        status = ServerStatus.FAILED;
-                    }
-                },
-                "airavata-" + getName());
-        serverThread.setDaemon(true);
-        serverThread.start();
-    }
-
-    @Override
     public void stop() throws Exception {
         status = ServerStatus.STOPPING;
-        if (serverThread != null) {
-            serverThread.interrupt();
-        }
         status = ServerStatus.STOPPED;
     }
 
@@ -132,7 +125,8 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
     private String createAndLaunchPreWorkflow(String processId, boolean forceRun) throws Exception {
 
         prewfCounter.inc();
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient =
+                wfManager.getRegistryClientPool().getResource();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
@@ -140,7 +134,7 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
         try {
             processModel = registryClient.getProcess(processId);
             experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            getRegistryClientPool().returnResource(registryClient);
+            wfManager.getRegistryClientPool().returnResource(registryClient);
             ResourceType resourceType = registryClient
                     .getGroupComputeResourcePreference(
                             processModel.getComputeResourceId(), processModel.getGroupResourceProfileId())
@@ -151,7 +145,7 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
         } catch (Exception e) {
             logger.error(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
+            wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception(
                     "Failed to fetch experiment or process from registry associated with process id " + processId, e);
         }
@@ -233,31 +227,33 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
             allTasks.add(completingTask);
         }
 
-        String workflowName = getWorkflowOperator()
+        String workflowName = wfManager
+                .getWorkflowOperator()
                 .launchWorkflow(
                         processId + "-PRE-" + UUID.randomUUID().toString(), new ArrayList<>(allTasks), true, false);
 
-        registerWorkflowForProcess(processId, workflowName, "PRE");
+        wfManager.registerWorkflowForProcess(processId, workflowName, "PRE");
 
         return workflowName;
     }
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient =
+                wfManager.getRegistryClientPool().getResource();
 
         ProcessModel processModel;
         GroupComputeResourcePreference gcrPref;
 
         try {
             processModel = registryClient.getProcess(processId);
-            getRegistryClientPool().returnResource(registryClient);
+            wfManager.getRegistryClientPool().returnResource(registryClient);
             gcrPref = registryClient.getGroupComputeResourcePreference(
                     processModel.getComputeResourceId(), processModel.getGroupResourceProfileId());
 
         } catch (Exception e) {
             logger.error("Failed to fetch process from registry associated with process id " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
+            wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception("Failed to fetch process from registry associated with process id " + processId, e);
         }
 
@@ -320,8 +316,9 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
         }
         allTasks.add(cct);
 
-        String workflow =
-                getWorkflowOperator().launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID(), allTasks, true, false);
+        String workflow = wfManager
+                .getWorkflowOperator()
+                .launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID(), allTasks, true, false);
         logger.info("Started launching workflow {} to cancel process {}", workflow, processId);
         return workflow;
     }
@@ -332,13 +329,13 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
             MonitoringServer monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("pre.workflow.manager.monitoring.host"),
                     ServerSettings.getIntSetting("pre.workflow.manager.monitoring.port"));
-            monitoringServer.start();
+            new Thread(monitoringServer, "monitoring-server").start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }
 
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-        preWorkflowManager.startServer();
+        preWorkflowManager.run();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {
@@ -378,7 +375,7 @@ public class PreWorkflowManager extends WorkflowManager implements IServer {
                     ProcessStatus status = new ProcessStatus();
                     status.setState(ProcessState.STARTED);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    publishProcessStatus(processId, experimentId, gateway, ProcessState.STARTED);
+                    wfManager.publishProcessStatus(processId, experimentId, gateway, ProcessState.STARTED);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {
                     logger.error(

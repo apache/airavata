@@ -32,25 +32,32 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.util.*;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.monitor.AbstractMonitor;
 import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.monitor.MonitoringException;
 import org.apache.airavata.monitor.email.parser.EmailParser;
 import org.apache.airavata.monitor.email.parser.ResourceConfig;
+import org.apache.airavata.monitor.kafka.MessageProducer;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-public class EmailBasedMonitor extends AbstractMonitor implements Runnable, IServer {
+public class EmailBasedMonitor implements AbstractMonitor, IServer {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
-    private Thread serverThread;
+    private final ThriftClientPool<RegistryService.Client> registryClientPool;
+    private final MessageProducer messageProducer;
 
     private static final String IMAPS = "imaps";
     private static final String POP3 = "pop3";
@@ -67,8 +74,84 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
     private String publisherId;
 
     public EmailBasedMonitor() throws Exception {
+        this.registryClientPool = createRegistryClientPool();
+        this.messageProducer = new MessageProducer();
         init();
         populateAddressAndParserMap(resourceConfigs);
+    }
+
+    private static ThriftClientPool<RegistryService.Client> createRegistryClientPool()
+            throws ApplicationSettingsException {
+        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
+        poolConfig.setMaxTotal(100);
+        poolConfig.setMinIdle(5);
+        poolConfig.setBlockWhenExhausted(true);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestWhileIdle(true);
+        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
+        poolConfig.setNumTestsPerEvictionRun(10);
+        poolConfig.setMaxWait(Duration.ofSeconds(3));
+        return new ThriftClientPool<>(
+                RegistryService.Client::new,
+                poolConfig,
+                ServerSettings.getRegistryServerHost(),
+                Integer.parseInt(ServerSettings.getRegistryServerPort()),
+                "RegistryService");
+    }
+
+    @Override
+    public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
+        try {
+            if (validateJobStatus(jobStatusResult)) {
+                messageProducer.submitMessageToQueue(jobStatusResult);
+            } else {
+                throw new MonitoringException("Failed to validate job status for job id " + jobStatusResult.getJobId());
+            }
+        } catch (MonitoringException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MonitoringException(
+                    "Failed to submit job status for job id " + jobStatusResult.getJobId() + " to status queue", e);
+        }
+    }
+
+    private boolean validateJobStatus(JobStatusResult jobStatusResult) {
+        RegistryService.Client registryClient = registryClientPool.getResource();
+        try {
+            List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
+            if (!jobs.isEmpty()) {
+                jobs = jobs.stream()
+                        .filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName()))
+                        .toList();
+            }
+            if (jobs.size() != 1) {
+                log.error(
+                        "Couldn't find exactly one job with id {} and name {} in registry. Count {}",
+                        jobStatusResult.getJobId(),
+                        jobStatusResult.getJobName(),
+                        jobs.size());
+                registryClientPool.returnResource(registryClient);
+                return false;
+            }
+            JobModel jobModel = jobs.get(0);
+            String processId = jobModel.getProcessId();
+            String experimentId = registryClient.getProcess(processId).getExperimentId();
+            registryClientPool.returnResource(registryClient);
+            if (experimentId != null && processId != null) {
+                log.info(
+                        "Job {} owned by process {} of experiment {}",
+                        jobStatusResult.getJobId(),
+                        processId,
+                        experimentId);
+                return true;
+            }
+            log.error("Experiment or process null for job {}", jobStatusResult.getJobId());
+            return false;
+        } catch (Exception e) {
+            log.error("Error validating job status {}", jobStatusResult.getJobId(), e);
+            registryClientPool.returnBrokenResource(registryClient);
+            return false;
+        }
     }
 
     private void init() throws Exception {
@@ -155,7 +238,7 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
                     + " for email monitoring -->  " + addressStr);
         }
-        RegistryService.Client regClient = getRegistryClientPool().getResource();
+        RegistryService.Client regClient = registryClientPool.getResource();
 
         try {
             JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
@@ -166,10 +249,10 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
             log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
             return jobStatusResult;
         } catch (Exception e) {
-            getRegistryClientPool().returnBrokenResource(regClient);
+            registryClientPool.returnBrokenResource(regClient);
             throw e;
         } finally {
-            getRegistryClientPool().returnResource(regClient);
+            registryClientPool.returnResource(regClient);
         }
     }
 
@@ -184,8 +267,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
 
     @Override
     public void run() {
-
-        while (!ServerSettings.isStopAllThreads()) {
+        status = IServer.ServerStatus.STARTED;
+        while (!ServerSettings.isStopAllThreads() && !Thread.currentThread().isInterrupted()) {
             try {
                 Session session = Session.getDefaultInstance(properties);
                 store = session.getStore(storeProtocol);
@@ -193,7 +276,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
                 emailFolder = store.getFolder(folderName);
                 // first we search for all unread messages.
                 SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                while (!ServerSettings.isStopAllThreads()) {
+                while (!ServerSettings.isStopAllThreads()
+                        && !Thread.currentThread().isInterrupted()) {
                     Thread.sleep(ServerSettings.getEmailMonitorPeriod()); // sleep for long enough
                     if (!store.isConnected()) {
                         store.connect();
@@ -231,7 +315,8 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
             } catch (MessagingException e) {
                 log.error("[EJM]: Couldn't connect to the store ", e);
             } catch (InterruptedException e) {
-                log.error("[EJM]: Interrupt exception while sleep ", e);
+                Thread.currentThread().interrupt();
+                log.info("[EJM]: Interrupted, shutting down email monitor");
             } catch (AiravataException e) {
                 log.error("[EJM]: UnHandled arguments ", e);
             } catch (Throwable e) {
@@ -305,50 +390,24 @@ public class EmailBasedMonitor extends AbstractMonitor implements Runnable, ISer
         }
     }
 
-    public void startServer() throws InterruptedException {
-        Thread t = new Thread(this);
-        t.start();
-        t.join();
-    }
-
     @Override
     public String getName() {
         return "email_monitor";
     }
 
     @Override
-    public void start() throws Exception {
-        status = ServerStatus.STARTING;
-        serverThread = new Thread(
-                () -> {
-                    try {
-                        status = ServerStatus.STARTED;
-                        startServer();
-                    } catch (Exception e) {
-                        status = ServerStatus.FAILED;
-                    }
-                },
-                "airavata-" + getName());
-        serverThread.setDaemon(true);
-        serverThread.start();
-    }
-
-    @Override
     public void stop() throws Exception {
-        status = ServerStatus.STOPPING;
-        if (serverThread != null) {
-            serverThread.interrupt();
-        }
-        status = ServerStatus.STOPPED;
+        status = IServer.ServerStatus.STOPPING;
+        status = IServer.ServerStatus.STOPPED;
     }
 
     @Override
-    public ServerStatus getStatus() {
+    public IServer.ServerStatus getStatus() {
         return status;
     }
 
     public static void main(String[] args) throws Exception {
         EmailBasedMonitor monitor = new EmailBasedMonitor();
-        monitor.startServer();
+        monitor.run();
     }
 }
