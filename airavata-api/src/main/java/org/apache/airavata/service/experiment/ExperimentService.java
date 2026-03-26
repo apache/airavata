@@ -109,6 +109,233 @@ public class ExperimentService {
         }
     }
 
+    public boolean deleteExperiment(RequestContext ctx, String experimentId) throws ServiceException {
+        try {
+            ExperimentModel experiment = registryHandler.getExperiment(experimentId);
+
+            if (!ctx.getUserId().equals(experiment.getUserName())
+                    || !ctx.getGatewayId().equals(experiment.getGatewayId())) {
+                if (isSharingEnabled()) {
+                    String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+                    if (!sharingHandler.userHasAccess(
+                            ctx.getGatewayId(), qualifiedUserId, experimentId,
+                            ctx.getGatewayId() + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to delete this resource");
+                    }
+                }
+            }
+
+            if (experiment.getExperimentStatus().get(0).getState() != ExperimentState.CREATED) {
+                throw new ServiceException(
+                        "Experiment is not in CREATED state. Cannot be deleted. ID: " + experimentId);
+            }
+
+            return registryHandler.deleteExperiment(experimentId);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while deleting the experiment: " + e.getMessage(), e);
+        }
+    }
+
+    public ExperimentModel getExperimentByAdmin(RequestContext ctx, String experimentId)
+            throws ServiceException {
+        try {
+            ExperimentModel experiment = registryHandler.getExperiment(experimentId);
+            if (ctx.getGatewayId().equals(experiment.getGatewayId())) {
+                return experiment;
+            }
+            throw new ServiceAuthorizationException(
+                    "User does not have permission to access this resource");
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while getting the experiment: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ExperimentSummaryModel> searchExperiments(
+            RequestContext ctx, String gatewayId, String userName,
+            Map<ExperimentSearchFields, String> filters, int limit, int offset)
+            throws ServiceException {
+        try {
+            List<String> accessibleExpIds = new ArrayList<>();
+            Map<ExperimentSearchFields, String> filtersCopy = new HashMap<>(filters);
+            List<SearchCriteria> sharingFilters = new ArrayList<>();
+
+            SearchCriteria entityTypeCriteria = new SearchCriteria();
+            entityTypeCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            entityTypeCriteria.setSearchCondition(SearchCondition.EQUAL);
+            entityTypeCriteria.setValue(gatewayId + ":EXPERIMENT");
+            sharingFilters.add(entityTypeCriteria);
+
+            if (filtersCopy.containsKey(ExperimentSearchFields.FROM_DATE)) {
+                String fromTime = filtersCopy.remove(ExperimentSearchFields.FROM_DATE);
+                SearchCriteria c = new SearchCriteria();
+                c.setSearchField(EntitySearchField.CREATED_TIME);
+                c.setSearchCondition(SearchCondition.GTE);
+                c.setValue(fromTime);
+                sharingFilters.add(c);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.TO_DATE)) {
+                String toTime = filtersCopy.remove(ExperimentSearchFields.TO_DATE);
+                SearchCriteria c = new SearchCriteria();
+                c.setSearchField(EntitySearchField.CREATED_TIME);
+                c.setSearchCondition(SearchCondition.LTE);
+                c.setValue(toTime);
+                sharingFilters.add(c);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.PROJECT_ID)) {
+                String projectId = filtersCopy.remove(ExperimentSearchFields.PROJECT_ID);
+                SearchCriteria c = new SearchCriteria();
+                c.setSearchField(EntitySearchField.PARRENT_ENTITY_ID);
+                c.setSearchCondition(SearchCondition.EQUAL);
+                c.setValue(projectId);
+                sharingFilters.add(c);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.USER_NAME)) {
+                String username = filtersCopy.remove(ExperimentSearchFields.USER_NAME);
+                SearchCriteria c = new SearchCriteria();
+                c.setSearchField(EntitySearchField.OWNER_ID);
+                c.setSearchCondition(SearchCondition.EQUAL);
+                c.setValue(username + "@" + gatewayId);
+                sharingFilters.add(c);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.EXPERIMENT_NAME)) {
+                String name = filtersCopy.remove(ExperimentSearchFields.EXPERIMENT_NAME);
+                SearchCriteria c = new SearchCriteria();
+                c.setSearchField(EntitySearchField.NAME);
+                c.setSearchCondition(SearchCondition.LIKE);
+                c.setValue(name);
+                sharingFilters.add(c);
+            }
+            if (filtersCopy.containsKey(ExperimentSearchFields.EXPERIMENT_DESC)) {
+                String desc = filtersCopy.remove(ExperimentSearchFields.EXPERIMENT_DESC);
+                SearchCriteria c = new SearchCriteria();
+                c.setSearchField(EntitySearchField.DESCRIPTION);
+                c.setSearchCondition(SearchCondition.LIKE);
+                c.setValue(desc);
+                sharingFilters.add(c);
+            }
+
+            int searchOffset = 0;
+            int searchLimit = Integer.MAX_VALUE;
+            boolean filteredInSharing = filtersCopy.isEmpty();
+            if (filteredInSharing) {
+                searchOffset = offset;
+                searchLimit = limit;
+            }
+
+            sharingHandler.searchEntities(
+                    gatewayId, userName + "@" + gatewayId,
+                    sharingFilters, searchOffset, searchLimit)
+                    .forEach(e -> accessibleExpIds.add(e.getEntityId()));
+
+            int finalOffset = filteredInSharing ? 0 : offset;
+            return registryHandler.searchExperiments(
+                    gatewayId, userName, accessibleExpIds, filtersCopy, limit, finalOffset);
+        } catch (Exception e) {
+            throw new ServiceException("Error while searching experiments: " + e.getMessage(), e);
+        }
+    }
+
+    public ExperimentStatus getExperimentStatus(RequestContext ctx, String experimentId)
+            throws ServiceException {
+        try {
+            return registryHandler.getExperimentStatus(experimentId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while getting experiment status: " + e.getMessage(), e);
+        }
+    }
+
+    public List<OutputDataObjectType> getExperimentOutputs(RequestContext ctx, String experimentId)
+            throws ServiceException {
+        try {
+            return registryHandler.getExperimentOutputs(experimentId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving experiment outputs: " + e.getMessage(), e);
+        }
+    }
+
+    public void terminateExperiment(RequestContext ctx, String experimentId)
+            throws ServiceException {
+        try {
+            ExperimentModel experiment = registryHandler.getExperiment(experimentId);
+            if (experiment == null) {
+                throw new ServiceNotFoundException("Experiment " + experimentId + " does not exist");
+            }
+            ExperimentStatus status = registryHandler.getExperimentStatus(experimentId);
+            switch (status.getState()) {
+                case COMPLETED:
+                case CANCELED:
+                case FAILED:
+                case CANCELING:
+                    logger.warn("Can't terminate already {} experiment", status.getState().name());
+                    return;
+                case CREATED:
+                    logger.warn("Experiment termination is only allowed for launched experiments.");
+                    return;
+                default:
+                    eventPublisher.publishExperimentCancel(experimentId, ctx.getGatewayId());
+                    logger.debug("Cancelled experiment {}", experimentId);
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while cancelling the experiment: " + e.getMessage(), e);
+        }
+    }
+
+    public String cloneExperiment(RequestContext ctx, String existingExperimentId,
+                                   String newExperimentName, String newExperimentProjectId,
+                                   boolean adminMode) throws ServiceException {
+        try {
+            ExperimentModel existingExperiment;
+            if (adminMode) {
+                existingExperiment = getExperimentByAdmin(ctx, existingExperimentId);
+            } else {
+                existingExperiment = getExperiment(ctx, existingExperimentId);
+            }
+
+            if (existingExperiment == null) {
+                throw new ServiceNotFoundException("Experiment " + existingExperimentId + " does not exist");
+            }
+
+            if (newExperimentProjectId != null) {
+                existingExperiment.setProjectId(newExperimentProjectId);
+            }
+
+            // Verify write access to target project
+            String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+            if (!sharingHandler.userHasAccess(
+                    ctx.getGatewayId(), qualifiedUserId,
+                    existingExperiment.getProjectId(), ctx.getGatewayId() + ":WRITE")) {
+                throw new ServiceAuthorizationException(
+                        "User does not have permission to clone an experiment in this project");
+            }
+
+            existingExperiment.setCreationTime(System.currentTimeMillis());
+            if (existingExperiment.getExecutionId() != null) {
+                List<OutputDataObjectType> appOutputs =
+                        registryHandler.getApplicationOutputs(existingExperiment.getExecutionId());
+                existingExperiment.setExperimentOutputs(appOutputs);
+            }
+            if (newExperimentName != null && !newExperimentName.isEmpty()) {
+                existingExperiment.setExperimentName(newExperimentName);
+            }
+            existingExperiment.unsetErrors();
+            existingExperiment.unsetProcesses();
+            existingExperiment.unsetExperimentStatus();
+
+            return createExperiment(ctx, existingExperiment);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while cloning experiment: " + e.getMessage(), e);
+        }
+    }
+
     private boolean isSharingEnabled() {
         try {
             return ServerSettings.isEnableSharing();
