@@ -60,3 +60,5 @@ logs/
 **/generated-sources/
 /distribution
 /vault*
+airavata-api/distribution/
+airavata-api/target/

@@ -24,11 +24,11 @@ import org.apache.airavata.common.utils.JDBCConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 
 public class ReplicaCatalogJDBCConfig implements JDBCConfig {
-    private static final String REPLICA_CATALOG_JDBC_DRIVER = "replicacatalog.jdbc.driver";
-    private static final String REPLICA_CATALOG_JDBC_URL = "replicacatalog.jdbc.url";
-    private static final String REPLICA_CATALOG_JDBC_USER = "replicacatalog.jdbc.user";
-    private static final String REPLICA_CATALOG_JDBC_PASSWORD = "replicacatalog.jdbc.password";
-    private static final String REPLICA_CATALOG_VALIDATION_QUERY = "replicacatalog.validationQuery";
+    private static final String REPLICA_CATALOG_JDBC_DRIVER = "airavata.jdbc.driver";
+    private static final String REPLICA_CATALOG_JDBC_URL = "airavata.jdbc.url";
+    private static final String REPLICA_CATALOG_JDBC_USER = "airavata.jdbc.user";
+    private static final String REPLICA_CATALOG_JDBC_PASSWORD = "airavata.jdbc.password";
+    private static final String REPLICA_CATALOG_VALIDATION_QUERY = "airavata.jdbc.validationQuery";
 
     @Override
     public String getURL() {
