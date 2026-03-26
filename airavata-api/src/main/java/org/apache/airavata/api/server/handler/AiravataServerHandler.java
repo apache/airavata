@@ -102,6 +102,7 @@ import org.apache.airavata.service.experiment.ExperimentService;
 import org.apache.airavata.service.gateway.GatewayService;
 import org.apache.airavata.service.messaging.EventPublisher;
 import org.apache.airavata.service.notification.NotificationService;
+import org.apache.airavata.service.project.ProjectService;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.models.*;
@@ -123,6 +124,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private final ExperimentService experimentService;
     private final GatewayService gatewayService;
     private final NotificationService notificationService;
+    private final ProjectService projectService;
 
     public AiravataServerHandler(
             RegistryServerHandler registryHandler,
@@ -148,6 +150,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         this.experimentService = new ExperimentService(registryHandler, sharingHandler, eventPub);
         this.gatewayService = new GatewayService(registryHandler, sharingHandler);
         this.notificationService = new NotificationService(registryHandler);
+        this.projectService = new ProjectService(registryHandler, sharingHandler);
     }
 
     public AiravataServerHandler() throws Exception {
@@ -496,38 +499,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createProject(AuthzToken authzToken, String gatewayId, Project project)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        // TODO: verify that gatewayId and project.gatewayId match authzToken
-        try {
-            String projectId = registryHandler.createProject(gatewayId, project);
-            if (ServerSettings.isEnableSharing()) {
-                try {
-                    Entity entity = new Entity();
-                    entity.setEntityId(projectId);
-                    final String domainId = project.getGatewayId();
-                    entity.setDomainId(domainId);
-                    entity.setEntityTypeId(domainId + ":" + "PROJECT");
-                    entity.setOwnerId(project.getOwner() + "@" + domainId);
-                    entity.setName(project.getName());
-                    entity.setDescription(project.getDescription());
-                    sharingHandler.createEntity(entity);
-                } catch (Exception ex) {
-                    logger.error(ex.getMessage(), ex);
-                    logger.error("Rolling back project creation Proj ID : " + projectId);
-                    registryHandler.deleteProject(projectId);
-                    AiravataSystemException ase = new AiravataSystemException();
-                    ase.setMessage("Failed to create entry for project in Sharing Registry");
-                    throw ase;
-                }
-            }
-            logger.debug("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
-            return projectId;
-        } catch (Exception e) {
-            logger.error("Error while creating the project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating the project. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, gatewayId,
+                ctx -> projectService.createProject(ctx, gatewayId, project));
     }
 
     @Override
@@ -535,43 +508,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateProject(AuthzToken authzToken, String projectId, Project updatedProject)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        try {
-            Project existingProject = registryHandler.getProject(projectId);
-            if (ServerSettings.isEnableSharing()
-                            && !authzToken
-                                    .getClaimsMap()
-                                    .get(org.apache.airavata.common.utils.Constants.USER_NAME)
-                                    .equals(existingProject.getOwner())
-                    || !authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.GATEWAY_ID)
-                            .equals(existingProject.getGatewayId())) {
-                try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if (!sharingHandler.userHasAccess(
-                            gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
-                        throw new AuthorizationException("User does not have permission to access this resource");
-                    }
-                } catch (Exception e) {
-                    throw new AuthorizationException("User does not have permission to access this resource");
-                }
-            }
-            if (!updatedProject.getOwner().equals(existingProject.getOwner())) {
-                throw new InvalidRequestException("Owner of a project cannot be changed");
-            }
-            if (!updatedProject.getGatewayId().equals(existingProject.getGatewayId())) {
-                throw new InvalidRequestException("Gateway ID of a project cannot be changed");
-            }
-            registryHandler.updateProject(projectId, updatedProject);
-            logger.debug("Airavata updated project with project Id : " + projectId);
-        } catch (Exception e) {
-            logger.error("Error while updating the project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
-            throw exception;
-        }
+        ThriftAdapter.execute(authzToken, null,
+                ctx -> { projectService.updateProject(ctx, projectId, updatedProject); return null; });
     }
 
     @Override
@@ -579,37 +517,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteProject(AuthzToken authzToken, String projectId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        try {
-            Project existingProject = registryHandler.getProject(projectId);
-            if (ServerSettings.isEnableSharing()
-                            && !authzToken
-                                    .getClaimsMap()
-                                    .get(org.apache.airavata.common.utils.Constants.USER_NAME)
-                                    .equals(existingProject.getOwner())
-                    || !authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.GATEWAY_ID)
-                            .equals(existingProject.getGatewayId())) {
-                try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if (!sharingHandler.userHasAccess(
-                            gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":WRITE")) {
-                        throw new AuthorizationException("User does not have permission to access this resource");
-                    }
-                } catch (Exception e) {
-                    throw new AuthorizationException("User does not have permission to access this resource");
-                }
-            }
-            boolean ret = registryHandler.deleteProject(projectId);
-            logger.debug("Airavata deleted project with project Id : " + projectId);
-            return ret;
-        } catch (Exception e) {
-            logger.error("Error while removing the project", e);
-            ProjectNotFoundException exception = new ProjectNotFoundException();
-            exception.setMessage("Error while removing the project. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> projectService.deleteProject(ctx, projectId));
     }
 
     private boolean validateString(String name) {
@@ -630,38 +539,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Project getProject(AuthzToken authzToken, String projectId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
                     AuthorizationException, TException {
-        try {
-            Project project = registryHandler.getProject(projectId);
-            if (authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.USER_NAME)
-                            .equals(project.getOwner())
-                    && authzToken
-                            .getClaimsMap()
-                            .get(org.apache.airavata.common.utils.Constants.GATEWAY_ID)
-                            .equals(project.getGatewayId())) {
-                return project;
-            } else if (ServerSettings.isEnableSharing()) {
-                try {
-                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if (!sharingHandler.userHasAccess(
-                            gatewayId, userId + "@" + gatewayId, projectId, gatewayId + ":READ")) {
-                        throw new AuthorizationException("User does not have permission to access this resource");
-                    }
-                    return project;
-                } catch (Exception e) {
-                    throw new AuthorizationException("User does not have permission to access this resource");
-                }
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            logger.error("Error while retrieving the project", e);
-            ProjectNotFoundException exception = new ProjectNotFoundException();
-            exception.setMessage("Error while retrieving the project. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null,
+                ctx -> projectService.getProject(ctx, projectId));
     }
 
     /**
@@ -683,45 +562,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             AuthzToken authzToken, String gatewayId, String userName, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            if (ServerSettings.isEnableSharing()) {
-                // user projects + user accessible projects
-                List<String> accessibleProjectIds = new ArrayList<>();
-                List<SearchCriteria> filters = new ArrayList<>();
-                SearchCriteria searchCriteria = new SearchCriteria();
-                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-                searchCriteria.setValue(gatewayId + ":PROJECT");
-                filters.add(searchCriteria);
-                sharingHandler
-                        .searchEntities(
-                                authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                                userName + "@" + gatewayId,
-                                filters,
-                                0,
-                                -1)
-                        .stream()
-                        .forEach(p -> accessibleProjectIds.add(p.getEntityId()));
-                List<Project> result;
-                if (accessibleProjectIds.isEmpty()) {
-                    result = Collections.emptyList();
-                } else {
-                    result = registryHandler.searchProjects(
-                            gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
-                }
-                return result;
-            } else {
-                List<Project> result = registryHandler.getUserProjects(gatewayId, userName, limit, offset);
-                return result;
-            }
-
-        } catch (Exception e) {
-            logger.error("Error while retrieving projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, gatewayId,
+                ctx -> projectService.getUserProjects(ctx, gatewayId, userName, limit, offset));
     }
 
     /**
@@ -757,43 +599,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            List<String> accessibleProjIds = new ArrayList<>();
-
-            List<Project> result;
-            if (ServerSettings.isEnableSharing()) {
-                List<SearchCriteria> sharingFilters = new ArrayList<>();
-                SearchCriteria searchCriteria = new SearchCriteria();
-                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
-                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
-                searchCriteria.setValue(gatewayId + ":PROJECT");
-                sharingFilters.add(searchCriteria);
-                sharingHandler
-                        .searchEntities(
-                                authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                                userName + "@" + gatewayId,
-                                sharingFilters,
-                                0,
-                                Integer.MAX_VALUE)
-                        .stream()
-                        .forEach(e -> accessibleProjIds.add(e.getEntityId()));
-                if (accessibleProjIds.isEmpty()) {
-                    result = Collections.emptyList();
-                } else {
-                    result = registryHandler.searchProjects(
-                            gatewayId, userName, accessibleProjIds, filters, limit, offset);
-                }
-            } else {
-                result = registryHandler.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
-            }
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while retrieving projects", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, gatewayId,
+                ctx -> projectService.searchProjects(ctx, gatewayId, userName, filters, limit, offset));
     }
 
     /**
