@@ -29,27 +29,59 @@ under the License.
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>airavata-thrift-server</artifactId>
+  <artifactId>airavata-integration-tests</artifactId>
   <packaging>jar</packaging>
-  <name>Airavata Thrift Server</name>
+  <name>Airavata Integration Tests</name>
 
   <dependencies>
+    <!-- Airavata API (thrift clients, model classes) -->
     <dependency>
       <groupId>org.apache.airavata</groupId>
       <artifactId>airavata-api</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
+
+    <!-- Thrift runtime -->
     <dependency>
       <groupId>org.apache.thrift</groupId>
       <artifactId>libthrift</artifactId>
+      <scope>test</scope>
     </dependency>
+
+    <!-- MariaDB JDBC driver -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+      <scope>test</scope>
     </dependency>
+
+    <!-- RabbitMQ AMQP client -->
     <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
+      <groupId>com.rabbitmq</groupId>
+      <artifactId>amqp-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Kafka admin client -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JSON parsing for health endpoint responses -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit 5 -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -57,15 +89,9 @@ under the License.
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
+        <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>org.mapstruct</groupId>
-              <artifactId>mapstruct-processor</artifactId>
-              <version>1.6.3</version>
-            </path>
-          </annotationProcessorPaths>
+          <excludedGroups>integration</excludedGroups>
         </configuration>
       </plugin>
     </plugins>

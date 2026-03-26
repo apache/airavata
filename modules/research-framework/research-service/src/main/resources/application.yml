@@ -68,3 +68,9 @@ springdoc:
       use-pkce-with-authorization-code-grant: true
       client-id: data-catalog-portal
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
