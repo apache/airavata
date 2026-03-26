@@ -61,9 +61,9 @@ message StorageVolumeInfo {
   string total_size = 1;
   string used_size = 2;
   string available_size = 3;
-  int64 total_size_bytes = 4;
-  int64 used_size_bytes = 5;
-  int64 available_size_bytes = 6;
+  int64 total_size_byte_count = 4;
+  int64 used_size_byte_count = 5;
+  int64 available_size_byte_count = 6;
   double percentage_used = 7;
   string mount_point = 8;
   string filesystem_type = 9;
@@ -75,5 +75,5 @@ message StorageVolumeInfo {
 // total_size_bytes: Total size in bytes.
 message StorageDirectoryInfo {
   string total_size = 1;
-  int64 total_size_bytes = 2;
+  int64 total_size_byte_count = 2;
 }
