@@ -1,0 +1,101 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.common.utils;
+
+import java.sql.Connection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.MariaDBContainer;
+
+/**
+ * Base class for database tests using Testcontainers MariaDB.
+ * Provides a real MariaDB instance via Docker for integration testing.
+ */
+public class DatabaseTestCases {
+
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseTestCases.class);
+
+    private static final MariaDBContainer<?> mariadb;
+
+    protected static String hostAddress;
+    protected static int port;
+    protected static String userName;
+    protected static String password;
+    protected static String driver = "org.mariadb.jdbc.Driver";
+
+    static {
+        mariadb = new MariaDBContainer<>("mariadb:11")
+                .withDatabaseName("airavata")
+                .withUsername("airavata")
+                .withPassword("airavata");
+        mariadb.start();
+
+        hostAddress = mariadb.getHost();
+        port = mariadb.getFirstMappedPort();
+        userName = mariadb.getUsername();
+        password = mariadb.getPassword();
+
+        logger.info("Test MariaDB started at {}:{}", hostAddress, port);
+    }
+
+    public static String getHostAddress() {
+        return hostAddress;
+    }
+
+    public static int getPort() {
+        return port;
+    }
+
+    public static String getUserName() {
+        return userName;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
+
+    public static String getDriver() {
+        return driver;
+    }
+
+    public static String getJDBCUrl() {
+        return mariadb.getJdbcUrl();
+    }
+
+    public static void waitTillServerStarts() {
+        // Testcontainers waits for readiness automatically
+    }
+
+    public static void executeSQL(String sql) throws Exception {
+        DBUtil dbUtil = new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
+        dbUtil.executeSQL(sql);
+    }
+
+    public DBUtil getDbUtil() throws Exception {
+        return new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
+    }
+
+    public Connection getConnection() throws Exception {
+        DBUtil dbUtil = getDbUtil();
+        Connection connection = dbUtil.getConnection();
+        connection.setAutoCommit(true);
+        return connection;
+    }
+}
