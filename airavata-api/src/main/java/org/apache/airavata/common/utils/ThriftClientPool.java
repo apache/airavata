@@ -62,8 +62,11 @@ public class ThriftClientPool<T extends BaseAPI.Client> implements AutoCloseable
     }
 
     public ThriftClientPool(
-            ClientFactory<T> clientFactory, GenericObjectPoolConfig<T> poolConfig,
-            String host, int port, String serviceName) {
+            ClientFactory<T> clientFactory,
+            GenericObjectPoolConfig<T> poolConfig,
+            String host,
+            int port,
+            String serviceName) {
         this(clientFactory, new BinaryOverSocketProtocolFactory(host, port, serviceName), poolConfig);
     }
 

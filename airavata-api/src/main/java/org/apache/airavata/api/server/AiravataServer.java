@@ -23,11 +23,6 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMonitoringService;
-import org.apache.airavata.db.event.manager.DBEventManagerRunner;
-import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
-import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.Constants;
@@ -36,15 +31,20 @@ import org.apache.airavata.common.utils.DBInitConfig;
 import org.apache.airavata.common.utils.DBInitializer;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMonitoringService;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.server.OrchestratorServerHandler;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
+import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
+import org.apache.airavata.db.event.manager.DBEventManagerRunner;
+import org.apache.airavata.metascheduler.metadata.analyzer.DataInterpreterService;
+import org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ProcessReschedulingService;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.server.OrchestratorServerHandler;
+import org.apache.airavata.patform.monitoring.MonitoringServer;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
@@ -121,8 +121,7 @@ public class AiravataServer implements IServer {
 
         try {
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
-            final int serverPort =
-                    Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT, "8930"));
 
             // --- Instantiate handlers ---
             CredentialStoreServerHandler credentialStoreServerHandler = new CredentialStoreServerHandler();
@@ -138,8 +137,7 @@ public class AiravataServer implements IServer {
             // --- Build processors ---
             TMultiplexedProcessor multiplexedProcessor = new TMultiplexedProcessor();
 
-            multiplexedProcessor.registerProcessor(
-                    "Airavata", new Airavata.Processor<>(airavataServerHandler));
+            multiplexedProcessor.registerProcessor("Airavata", new Airavata.Processor<>(airavataServerHandler));
 
             multiplexedProcessor.registerProcessor(
                     "RegistryService", new RegistryService.Processor<>(registryServerHandler));
@@ -174,7 +172,8 @@ public class AiravataServer implements IServer {
                         "Orchestrator", new OrchestratorService.Processor<>(orchestratorHandler));
                 logger.info("Orchestrator service registered");
             } catch (Exception e) {
-                logger.warn("Orchestrator service failed to initialize (ZooKeeper/Helix may not be available): {}",
+                logger.warn(
+                        "Orchestrator service failed to initialize (ZooKeeper/Helix may not be available): {}",
                         e.getMessage());
             }
 
