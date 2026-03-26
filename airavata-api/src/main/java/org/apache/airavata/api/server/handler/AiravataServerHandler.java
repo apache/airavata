@@ -98,7 +98,9 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.experiment.ExperimentService;
+import org.apache.airavata.service.gateway.GatewayService;
 import org.apache.airavata.service.messaging.EventPublisher;
+import org.apache.airavata.service.notification.NotificationService;
 import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.models.*;
@@ -117,6 +119,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     private final SharingRegistryServerHandler sharingHandler;
     private final CredentialStoreServerHandler credentialHandler;
     private final ExperimentService experimentService;
+    private final GatewayService gatewayService;
+    private final NotificationService notificationService;
 
     public AiravataServerHandler(
             RegistryServerHandler registryHandler,
@@ -139,6 +143,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         EventPublisher eventPub = new EventPublisher(statusPublisher, experimentPublisher);
         this.experimentService = new ExperimentService(registryHandler, sharingHandler, eventPub);
+        this.gatewayService = new GatewayService(registryHandler, sharingHandler);
+        this.notificationService = new NotificationService(registryHandler);
     }
 
     public AiravataServerHandler() throws Exception {
@@ -318,82 +324,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String addGateway(AuthzToken authzToken, Gateway gateway)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            String gatewayId = registryHandler.addGateway(gateway);
-            Domain domain = new Domain();
-            domain.setDomainId(gateway.getGatewayId());
-            domain.setName(gateway.getGatewayName());
-            domain.setDescription("Domain entry for " + domain.getName());
-            sharingHandler.createDomain(domain);
-
-            // Creating Entity Types for each domain
-            EntityType entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":PROJECT");
-            entityType.setDomainId(domain.getDomainId());
-            entityType.setName("PROJECT");
-            entityType.setDescription("Project entity type");
-            sharingHandler.createEntityType(entityType);
-
-            entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":EXPERIMENT");
-            entityType.setDomainId(domain.getDomainId());
-            entityType.setName("EXPERIMENT");
-            entityType.setDescription("Experiment entity type");
-            sharingHandler.createEntityType(entityType);
-
-            entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":FILE");
-            entityType.setDomainId(domain.getDomainId());
-            entityType.setName("FILE");
-            entityType.setDescription("File entity type");
-            sharingHandler.createEntityType(entityType);
-
-            entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
-            entityType.setDomainId(domain.getDomainId());
-            entityType.setName("APPLICATION-DEPLOYMENT");
-            entityType.setDescription("Application Deployment entity type");
-            sharingHandler.createEntityType(entityType);
-
-            entityType = new EntityType();
-            entityType.setEntityTypeId(domain.getDomainId() + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
-            entityType.setDomainId(domain.getDomainId());
-            entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
-            entityType.setDescription("Group Resource Profile entity type");
-            sharingHandler.createEntityType(entityType);
-
-            // Creating Permission Types for each domain
-            PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.getDomainId() + ":READ");
-            permissionType.setDomainId(domain.getDomainId());
-            permissionType.setName("READ");
-            permissionType.setDescription("Read permission type");
-            sharingHandler.createPermissionType(permissionType);
-
-            permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.getDomainId() + ":WRITE");
-            permissionType.setDomainId(domain.getDomainId());
-            permissionType.setName("WRITE");
-            permissionType.setDescription("Write permission type");
-            sharingHandler.createPermissionType(permissionType);
-
-            permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.getDomainId() + ":MANAGE_SHARING");
-            permissionType.setDomainId(domain.getDomainId());
-            permissionType.setName("MANAGE_SHARING");
-            permissionType.setDescription("Sharing permission type");
-            sharingHandler.createPermissionType(permissionType);
-
-            logger.debug("Airavata successfully created the gateway with " + gatewayId);
-
-            return gatewayId;
-        } catch (Exception e) {
-            logger.error("Error while adding gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.addGateway(ctx, gateway));
     }
 
     /**
@@ -409,16 +340,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<String> getAllUsersInGateway(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            List<String> result = registryHandler.getAllUsersInGateway(gatewayId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while retrieving users", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving users. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.getAllUsersInGateway(ctx, gatewayId));
     }
 
     @Override
@@ -426,17 +348,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-
-        try {
-            boolean result = registryHandler.updateGateway(gatewayId, updatedGateway);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while updating the gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating the gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.updateGateway(ctx, gatewayId, updatedGateway));
     }
 
     @Override
@@ -444,18 +356,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Gateway getGateway(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-
-        try {
-            Gateway result = registryHandler.getGateway(gatewayId);
-            logger.debug("Airavata found the gateway with " + gatewayId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while getting the gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting the gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.getGateway(ctx, gatewayId));
     }
 
     @Override
@@ -463,16 +364,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteGateway(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            boolean result = registryHandler.deleteGateway(gatewayId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while deleting the gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting the gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.deleteGateway(ctx, gatewayId));
     }
 
     @Override
@@ -480,17 +372,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<Gateway> getAllGateways(AuthzToken authzToken)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            logger.debug("Airavata searching for all gateways");
-            List<Gateway> result = registryHandler.getAllGateways();
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while getting all the gateways", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting all the gateways. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.getAllGateways(ctx));
     }
 
     @Override
@@ -498,17 +380,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            logger.debug("Airavata verifying if the gateway with " + gatewayId + "exits");
-            boolean result = registryHandler.isGatewayExist(gatewayId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while getting gateway", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> gatewayService.isGatewayExist(ctx, gatewayId));
     }
 
     /**
@@ -523,16 +395,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createNotification(AuthzToken authzToken, Notification notification)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            String result = registryHandler.createNotification(notification);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while creating notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while creating notification. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.createNotification(ctx, notification));
     }
 
     @Override
@@ -540,16 +403,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateNotification(AuthzToken authzToken, Notification notification)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            boolean result = registryHandler.updateNotification(notification);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while updating notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.updateNotification(ctx, notification));
     }
 
     @Override
@@ -557,16 +411,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean deleteNotification(AuthzToken authzToken, String gatewayId, String notificationId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            boolean result = registryHandler.deleteNotification(gatewayId, notificationId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while deleting notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while deleting notification. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.deleteNotification(ctx, gatewayId, notificationId));
     }
 
     // No security check
@@ -574,16 +419,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Notification getNotification(AuthzToken authzToken, String gatewayId, String notificationId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            Notification result = registryHandler.getNotification(gatewayId, notificationId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while retrieving notification", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retreiving notification. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.getNotification(ctx, gatewayId, notificationId));
     }
 
     // No security check
@@ -591,16 +427,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<Notification> getAllNotifications(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException,
                     TException {
-        try {
-            List<Notification> result = registryHandler.getAllNotifications(gatewayId);
-            return result;
-        } catch (Exception e) {
-            logger.error("Error while getting all notifications", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while getting all notifications. More info : " + e.getMessage());
-            throw exception;
-        }
+        return ThriftAdapter.execute(authzToken, null, ctx -> notificationService.getAllNotifications(ctx, gatewayId));
     }
 
     @Override
