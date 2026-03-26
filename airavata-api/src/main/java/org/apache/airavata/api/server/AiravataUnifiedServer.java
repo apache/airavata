@@ -121,7 +121,7 @@ public class AiravataUnifiedServer implements IServer {
             // AiravataServerHandler constructor accepting in-process handler refs is added in Task 3.
             // Until then this file will not compile.
             AiravataServerHandler airavataServerHandler = new AiravataServerHandler(
-                    credentialStoreServerHandler, registryServerHandler, sharingRegistryServerHandler);
+                    registryServerHandler, sharingRegistryServerHandler, credentialStoreServerHandler);
 
             // --- Build processors ---
             TMultiplexedProcessor multiplexedProcessor = new TMultiplexedProcessor();
