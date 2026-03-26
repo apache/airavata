@@ -72,14 +72,18 @@ public class ServiceRegistry {
 
     /**
      * Returns a snapshot of statuses keyed by label.
-     * Status is {@code "UP"} when the thread is alive, {@code "DOWN"} otherwise.
+     * A service is "UP" if its IServer status is STARTED (preferred) or its thread is alive.
+     * Some services (e.g. PostWorkflowManager) spawn sub-threads and let their main thread
+     * exit — IServer.getStatus() remains STARTED in that case.
      */
     public synchronized Map<String, ServiceStatus> getStatuses() {
         Map<String, ServiceStatus> result = new LinkedHashMap<>();
+        long now = System.currentTimeMillis();
         for (Map.Entry<String, Entry> e : entries.entrySet()) {
             Entry entry = e.getValue();
-            String status = entry.thread.isAlive() ? "UP" : "DOWN";
-            long uptimeMs = entry.thread.isAlive() ? System.currentTimeMillis() - entry.startedAt : 0L;
+            boolean up = entry.server.getStatus() == IServer.ServerStatus.STARTED || entry.thread.isAlive();
+            String status = up ? "UP" : "DOWN";
+            long uptimeMs = up ? now - entry.startedAt : 0L;
             result.put(e.getKey(), new ServiceStatus(status, uptimeMs, entry.lastError));
         }
         return result;
