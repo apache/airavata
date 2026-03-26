@@ -517,6 +517,9 @@ under the License.
             <exclude>**/DAOBaseTestCase.java</exclude>
             <exclude>**/MappingDAOTest.java</exclude>
           </excludes>
+          <!-- Exclude @Tag("integration") tests by default — they require Docker.
+               Run with: mvn test -Dgroups=integration -DexcludedGroups="" -->
+          <excludedGroups>integration</excludedGroups>
         </configuration>
       </plugin>
 
