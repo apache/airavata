@@ -1,11 +1,20 @@
 package org.apache.airavata.service.experiment;
 
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
@@ -176,5 +185,101 @@ class ExperimentServiceTest {
     void validateExperiment_returnsTrue() throws Exception {
         boolean result = experimentService.validateExperiment(ctx, "exp-123");
         assertTrue(result);
+    }
+
+    @Test
+    void fetchIntermediateOutputs_throwsWhenNoAccess() throws Exception {
+        // User doesn't have owner or write access
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:OWNER"))
+                .thenReturn(false);
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:WRITE"))
+                .thenReturn(false);
+
+        assertThrows(ServiceAuthorizationException.class,
+                () -> experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1")));
+    }
+
+    @Test
+    void fetchIntermediateOutputs_throwsWhenNoActiveJob() throws Exception {
+        // User has write access
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:OWNER"))
+                .thenReturn(true);
+
+        ExperimentModel experiment = new ExperimentModel();
+        experiment.setUserName("testUser");
+        experiment.setGatewayId("testGateway");
+        experiment.setProcesses(new java.util.ArrayList<>());
+        when(registryHandler.getExperiment("exp-123")).thenReturn(experiment);
+
+        // No active jobs
+        JobModel job = new JobModel();
+        JobStatus jobStatus = new JobStatus(JobState.COMPLETE);
+        job.addToJobStatuses(jobStatus);
+        when(registryHandler.getJobDetails("exp-123")).thenReturn(List.of(job));
+
+        assertThrows(ServiceException.class,
+                () -> experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1")));
+    }
+
+    @Test
+    void fetchIntermediateOutputs_publishesEventWhenValid() throws Exception {
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:OWNER"))
+                .thenReturn(true);
+
+        ExperimentModel experiment = new ExperimentModel();
+        experiment.setUserName("testUser");
+        experiment.setGatewayId("testGateway");
+        experiment.setProcesses(new java.util.ArrayList<>());  // no in-progress output fetch processes
+        when(registryHandler.getExperiment("exp-123")).thenReturn(experiment);
+
+        JobModel job = new JobModel();
+        JobStatus jobStatus = new JobStatus(JobState.ACTIVE);
+        job.addToJobStatuses(jobStatus);
+        when(registryHandler.getJobDetails("exp-123")).thenReturn(List.of(job));
+
+        experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1"));
+
+        verify(eventPublisher).publishIntermediateOutputs("exp-123", "testGateway", List.of("output1"));
+    }
+
+    @Test
+    void getIntermediateOutputProcessStatus_throwsWhenNoAccess() throws Exception {
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:OWNER"))
+                .thenReturn(false);
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:READ"))
+                .thenReturn(false);
+
+        assertThrows(ServiceAuthorizationException.class,
+                () -> experimentService.getIntermediateOutputProcessStatus(ctx, "exp-123", List.of("output1")));
+    }
+
+    @Test
+    void getIntermediateOutputProcessStatus_returnsLatestStatus() throws Exception {
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:OWNER"))
+                .thenReturn(true);
+
+        ExperimentModel experiment = new ExperimentModel();
+        experiment.setUserName("testUser");
+        experiment.setGatewayId("testGateway");
+
+        // Build a process with OUTPUT_FETCHING task and a matching output
+        ProcessModel process = new ProcessModel();
+        process.setLastUpdateTime(1000L);
+        TaskModel task = new TaskModel();
+        task.setTaskType(TaskTypes.OUTPUT_FETCHING);
+        process.addToTasks(task);
+        OutputDataObjectType out = new OutputDataObjectType();
+        out.setName("output1");
+        process.addToProcessOutputs(out);
+        ProcessStatus ps = new ProcessStatus(ProcessState.EXECUTING);
+        process.addToProcessStatuses(ps);
+        experiment.addToProcesses(process);
+
+        when(registryHandler.getExperiment("exp-123")).thenReturn(experiment);
+
+        ProcessStatus result = experimentService.getIntermediateOutputProcessStatus(
+                ctx, "exp-123", List.of("output1"));
+
+        assertEquals(ProcessState.EXECUTING, result.getState());
     }
 }

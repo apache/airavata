@@ -156,6 +156,15 @@ public class GatewayService {
         }
     }
 
+    public boolean isUserExists(RequestContext ctx, String gatewayId, String userName) throws ServiceException {
+        try {
+            logger.debug("Checking if the user {} exists in the gateway {}", userName, gatewayId);
+            return registryHandler.isUserExists(gatewayId, userName);
+        } catch (Exception e) {
+            throw new ServiceException("Error while verifying user: " + e.getMessage(), e);
+        }
+    }
+
     private boolean isSharingEnabled() {
         try {
             return ServerSettings.isEnableSharing();

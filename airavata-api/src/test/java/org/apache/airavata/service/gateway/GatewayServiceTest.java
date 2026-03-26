@@ -119,4 +119,23 @@ class GatewayServiceTest {
         assertEquals(2, result.size());
         verify(registryHandler).getAllUsersInGateway("gw-1");
     }
+
+    @Test
+    void isUserExists_returnsTrueWhenExists() throws Exception {
+        when(registryHandler.isUserExists("gw-1", "alice")).thenReturn(true);
+
+        boolean result = gatewayService.isUserExists(ctx, "gw-1", "alice");
+
+        assertTrue(result);
+        verify(registryHandler).isUserExists("gw-1", "alice");
+    }
+
+    @Test
+    void isUserExists_returnsFalseWhenNotExists() throws Exception {
+        when(registryHandler.isUserExists("gw-1", "nobody")).thenReturn(false);
+
+        boolean result = gatewayService.isUserExists(ctx, "gw-1", "nobody");
+
+        assertFalse(result);
+    }
 }
