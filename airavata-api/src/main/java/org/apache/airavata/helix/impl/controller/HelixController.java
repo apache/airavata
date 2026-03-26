@@ -21,6 +21,7 @@ package org.apache.airavata.helix.impl.controller;
 
 import java.util.concurrent.CountDownLatch;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
-public class HelixController implements Runnable {
+public class HelixController implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HelixController.class);
 
@@ -47,6 +48,8 @@ public class HelixController implements Runnable {
     private CountDownLatch startLatch = new CountDownLatch(1);
     private CountDownLatch stopLatch = new CountDownLatch(1);
 
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
+
     @SuppressWarnings("WeakerAccess")
     public HelixController() throws ApplicationSettingsException {
         this.clusterName = ServerSettings.getSetting("helix.cluster.name");
@@ -54,7 +57,9 @@ public class HelixController implements Runnable {
         this.zkAddress = ServerSettings.getZookeeperConnection();
     }
 
+    @Override
     public void run() {
+        status = ServerStatus.STARTED;
         try {
             ZkClient zkClient = new ZkClient(
                     ServerSettings.getZookeeperConnection(),
@@ -78,6 +83,9 @@ public class HelixController implements Runnable {
                     zkAddress, clusterName, controllerName, HelixControllerMain.STANDALONE);
             startLatch.countDown();
             stopLatch.await();
+        } catch (InterruptedException ex) {
+            logger.info("Controller: " + controllerName + " interrupted, shutting down");
+            Thread.currentThread().interrupt();
         } catch (Exception ex) {
             logger.error("Error in run() for Controller: " + controllerName + ", reason: " + ex, ex);
         } finally {
@@ -85,28 +93,26 @@ public class HelixController implements Runnable {
         }
     }
 
-    public void startServer() throws Exception {
-
-        // WorkflowCleanupAgent cleanupAgent = new WorkflowCleanupAgent();
-        // cleanupAgent.init();
-        // ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        // executor.scheduleWithFixedDelay(cleanupAgent, 10, 120, TimeUnit.SECONDS);
-
-        new Thread(this).start();
-        try {
-            startLatch.await();
-            logger.info("Controller: " + controllerName + ", has connected to cluster: " + clusterName);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(this::disconnect));
-
-        } catch (InterruptedException ex) {
-            logger.error("Controller: " + controllerName + ", is interrupted! reason: " + ex, ex);
-        }
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    public void stopInternal() {
+        stopLatch.countDown();
     }
 
-    @SuppressWarnings({"WeakerAccess", "unused"})
-    public void stop() {
-        stopLatch.countDown();
+    @Override
+    public String getName() {
+        return "helix_controller";
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        stopInternal();
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
     }
 
     private void disconnect() {
@@ -118,12 +124,9 @@ public class HelixController implements Runnable {
 
     public static void main(String args[]) {
         try {
-
             logger.info("Starting helix controller");
-
             HelixController helixController = new HelixController();
-            helixController.startServer();
-
+            helixController.run();
         } catch (Exception e) {
             logger.error("Failed to start the helix controller", e);
         }

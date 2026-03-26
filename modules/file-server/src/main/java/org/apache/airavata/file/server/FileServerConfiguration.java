@@ -39,13 +39,11 @@ public class FileServerConfiguration {
         return AdaptorSupportImpl.getInstance();
     }
 
-    // regserver.server.host
-    @Value("${regserver.server.host:localhost}")
-    private String registryServerHost;
-    // regserver.server.port
+    @Value("${airavata.server.host:localhost}")
+    private String airavataServerHost;
 
-    @Value("${regserver.server.port:8970}")
-    private int registryServerPort;
+    @Value("${airavata.server.port:8930}")
+    private int airavataServerPort;
 
     @Bean
     public ThriftClientPool<RegistryService.Client> registryClientPool() {
@@ -55,11 +53,11 @@ public class FileServerConfiguration {
         poolConfig.setBlockWhenExhausted(true);
         poolConfig.setTestOnBorrow(true);
         poolConfig.setTestWhileIdle(true);
-        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
         poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
         poolConfig.setNumTestsPerEvictionRun(10);
         poolConfig.setMaxWait(Duration.ofSeconds(3));
 
-        return new ThriftClientPool<>(RegistryService.Client::new, poolConfig, registryServerHost, registryServerPort);
+        return new ThriftClientPool<>(RegistryService.Client::new, poolConfig,
+                airavataServerHost, airavataServerPort, "RegistryService");
     }
 }

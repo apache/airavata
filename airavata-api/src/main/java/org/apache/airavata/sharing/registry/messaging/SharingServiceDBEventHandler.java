@@ -38,7 +38,6 @@ import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.registry.utils.ThriftDataModelConversion;
 import org.apache.thrift.TException;
@@ -57,8 +56,8 @@ public class SharingServiceDBEventHandler implements MessageHandler {
     SharingServiceDBEventHandler() throws ApplicationSettingsException, SharingRegistryException {
         log.info("Starting sharing registry client.....");
         sharingRegistryClient = SharingRegistryServiceClientFactory.createSharingRegistryClient(
-                ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_HOST),
-                Integer.parseInt(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_PORT)));
+                ServerSettings.getSetting("sharing.registry.server.host"),
+                Integer.parseInt(ServerSettings.getSetting("sharing.registry.server.port")));
     }
 
     @Override

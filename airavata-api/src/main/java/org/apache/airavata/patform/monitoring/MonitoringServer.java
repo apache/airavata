@@ -21,35 +21,68 @@ package org.apache.airavata.patform.monitoring;
 
 import io.prometheus.client.exporter.HTTPServer;
 import java.io.IOException;
+import org.apache.airavata.common.utils.IServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MonitoringServer {
+public class MonitoringServer implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(MonitoringServer.class);
+    private static final String SERVER_NAME = "Monitoring Server";
 
     private String host;
     private int port;
     private HTTPServer httpServer;
+    private ServerStatus status = ServerStatus.STOPPED;
 
     public MonitoringServer(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    public void start() throws IOException {
+    @Override
+    public String getName() {
+        return SERVER_NAME;
+    }
+
+    @Override
+    public void run() {
+        setStatus(ServerStatus.STARTING);
         try {
             logger.info("Starting the monitoring server");
             httpServer = new HTTPServer(host, port, true);
+            setStatus(ServerStatus.STARTED);
+            // HTTPServer is non-blocking; park this thread until interrupted
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         } catch (IOException e) {
             logger.error("Failed to start the monitoring server on host {} na port {}", host, port, e);
+            setStatus(ServerStatus.FAILED);
         }
     }
 
+    @Override
     public void stop() {
+        setStatus(ServerStatus.STOPPING);
         if (httpServer != null) {
             logger.info("Stopping the monitor server");
             httpServer.stop();
         }
+        setStatus(ServerStatus.STOPPED);
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
+    }
+
+    private void setStatus(ServerStatus stat) {
+        status = stat;
+        status.updateTime();
     }
 }

@@ -20,6 +20,16 @@ The Apache Airavata Python SDK for third party clients to integrate with Airavat
 - `airavata_jupyter_magic`
   Jupyter Plugin providing magic annotations (%) to shift notebook runtimes between resources (local/remote).
 
+### Connection Model
+
+All Thrift services (Airavata, RegistryService, CredentialStore, SharingRegistry, UserProfile,
+TenantProfile, IamAdminServices, GroupManager, Orchestrator) are served on a **single port** (default `8930`)
+using `TMultiplexedProcessor`. The SDK uses `TMultiplexedProtocol` to route each client call to the
+correct service by name. No separate per-service port configuration is needed.
+
+The default server settings are in `airavata_sdk/__init__.py` (`Settings` class) and can be overridden
+with environment variables (e.g., `API_SERVER_HOSTNAME`, `API_SERVER_PORT`).
+
 ### Before Integration
 
 - Create a virtual environment
@@ -34,8 +44,10 @@ The Apache Airavata Python SDK for third party clients to integrate with Airavat
   ```bash
   pip install -e .
   ```
-- Create a INI file containing server configuration details. For more information refer to default settings file
-  [settings.ini](airavata_sdk/transport/settings.ini)
+- Configure server connection via environment variables or the `Settings` class defaults:
+  - `API_SERVER_HOSTNAME` (default: `api.gateway.cybershuttle.org`)
+  - `API_SERVER_PORT` (default: `8930`)
+  - `AUTH_SERVER_URL`, `AUTH_REALM`, `AUTH_CLIENT_ID` for Keycloak authentication
 
 ### Generating Distribution Archives (Optional)
 

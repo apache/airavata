@@ -22,38 +22,37 @@ package org.apache.airavata.common.utils;
 import java.util.Calendar;
 import java.util.Date;
 
-public interface IServer {
-    public enum ServerStatus {
-        STOPING,
+/**
+ * Common lifecycle interface for all Airavata server components.
+ * Extends Runnable — implementations put blocking work in run().
+ * Thread creation is handled by the caller (e.g. AiravataServer.registerAndStart()).
+ */
+public interface IServer extends Runnable {
+
+    enum ServerStatus {
         STOPPED,
         STARTING,
         STARTED,
+        STOPPING,
         FAILED;
 
+        private Date timestamp;
+
         public void updateTime() {
-            now = Calendar.getInstance().getTime();
+            timestamp = Calendar.getInstance().getTime();
         }
 
-        private Date now;
-
         public Date getTime() {
-            return now;
+            return timestamp;
         }
     }
 
-    public String getName();
+    /** Human-readable name for logging and diagnostics. */
+    String getName();
 
-    public String getVersion();
+    /** Stop this component. */
+    void stop() throws Exception;
 
-    public void start() throws Exception;
-
-    public void stop() throws Exception;
-
-    public void restart() throws Exception;
-
-    public void configure() throws Exception;
-
-    public ServerStatus getStatus() throws Exception;
-    //	public void waitForServerToStart() throws Exception;
-    //	public void waitForServerToStop() throws Exception;
+    /** Current lifecycle status. */
+    ServerStatus getStatus();
 }

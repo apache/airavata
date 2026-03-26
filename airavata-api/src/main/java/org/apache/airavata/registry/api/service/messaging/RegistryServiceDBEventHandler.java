@@ -71,7 +71,8 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                 tProtocol -> new RegistryService.Client(tProtocol),
                 poolConfig,
                 ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()));
+                Integer.parseInt(ServerSettings.getRegistryServerPort()),
+                "RegistryService");
     }
 
     @Override

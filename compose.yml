@@ -11,7 +11,7 @@ services:
       MYSQL_PASSWORD: 123456
     volumes:
       - db_data:/var/lib/mysql
-      - ./airavata-api/modules/distribution/src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./airavata-api/src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     ports:
       - "13306:3306"
 
@@ -43,7 +43,7 @@ services:
     container_name: airavata-kafka
     restart: unless-stopped
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: airavata.localhost
+      KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - kafka_data:/kafka

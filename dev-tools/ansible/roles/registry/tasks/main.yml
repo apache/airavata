@@ -43,7 +43,7 @@
              dest="{{ registry_dir }}/"
              copy=no
 
-- name: set gfac private ip
+- name: set registry private ip
   set_fact:
     registry_host: "{{ ansible_eth0.ipv4.address }}"
 

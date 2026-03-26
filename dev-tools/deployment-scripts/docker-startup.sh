@@ -5,8 +5,8 @@ set -e
 # Set Airavata configuration directory
 export AIRAVATA_CONFIG_DIR=/opt/airavata/vault
 
-echo "🚀 Starting Apache Airavata Monolithic Server..."
-echo "📋 All services included: API Server, Agent Service, Research Service, File Server"
+echo "🚀 Starting Apache Airavata Server..."
+echo "📋 Single JVM server with all Thrift services multiplexed on port 8930"
 echo "📁 Properties file location: /opt/airavata/vault/airavata-server.properties"
 echo "📁 Configuration directory: $AIRAVATA_CONFIG_DIR"
 echo "📊 All logs will be captured and visible via 'docker logs'"
@@ -66,25 +66,14 @@ start_service() {
 }
 
 # ================================
-# Start the API Server Components
+# Start the Airavata Server
 # ================================
-log "🔧 Starting the API Services..."
+log "🔧 Starting Airavata Server..."
 
 cd ${AIRAVATA_HOME}
 
-# Start all API services
-start_service "Orchestrator" "./bin/orchestrator.sh" "${AIRAVATA_HOME}/logs/orchestrator.log"
-start_service "Controller" "./bin/controller.sh" "${AIRAVATA_HOME}/logs/controller.log"
-start_service "Participant" "./bin/participant.sh" "${AIRAVATA_HOME}/logs/participant.log"
-# Email Monitor (disabled by default due to config requirements)
-log "📧 Email Monitor disabled (requires email config)"
-echo "$(date '+%Y-%m-%d %H:%M:%S') - Email Monitor disabled (requires email config)" | sed "s/^/[Email Monitor] /"
-
-# Realtime Monitor (disabled due to API connection dependency)  
-log "⏱️  Realtime Monitor disabled (requires API server running)"
-echo "$(date '+%Y-%m-%d %H:%M:%S') - Realtime Monitor disabled (requires API server running)" | sed "s/^/[Realtime Monitor] /"
-start_service "Pre-WM" "./bin/pre-wm.sh" "${AIRAVATA_HOME}/logs/pre-wm.log"
-start_service "Post-WM" "./bin/post-wm.sh" "${AIRAVATA_HOME}/logs/post-wm.log"
+# Start Airavata server - single JVM with all services multiplexed on port 8930
+start_service "Airavata Server" "./bin/airavata-server.sh" "${AIRAVATA_HOME}/logs/airavata-server.log"
 
 # ================================
 # Start the Agent Service (Optional)
@@ -123,21 +112,22 @@ else
 fi
 
 # ================================
-# Monitor all logs and keep container running
+# Monitor logs and keep container running
 # ================================
-log "🎉 All Airavata services started successfully!"
-log "📊 Starting comprehensive log monitoring..."
+log "🎉 Airavata Server started successfully!"
+log "📊 Starting log monitoring..."
 
-# Wait a moment for all services to initialize
-sleep 10
+# Wait a moment for server to initialize
+sleep 5
 
-# Stream all service logs to docker logs and keep container running
-echo "🚀 All Airavata services are running!"
-echo "📋 Service status:"
-echo "   - ZooKeeper: Connected (no more 'airavata.localhost' errors)"
-echo "   - All components started successfully"
+# Stream server logs to docker logs and keep container running
+echo "🚀 Airavata Server is running on port 8930!"
+echo "📋 Server status:"
+echo "   - Single JVM with all Thrift services multiplexed"
+echo "   - Services: Airavata, RegistryService, SharingRegistry, CredentialStore"
+echo "   - Additional: UserProfile, TenantProfile, IamAdminServices, GroupManager"
 echo ""
-echo "🔍 Streaming all logs to 'docker logs -f airavata-monolithic'"
+echo "🔍 Streaming logs to 'docker logs -f airavata-monolithic'"
 echo ""
 
 # Function to monitor log file and stream to stdout with prefix
@@ -166,48 +156,30 @@ monitor_log() {
     fi
 }
 
-# Wait a moment for log files to be created
-echo "📊 Waiting for log files to be created..."
-sleep 15
+# Wait a moment for log file to be created
+echo "📊 Waiting for Airavata server log file to be created..."
+sleep 5
 
-# Start monitoring all service logs
-echo "📊 Starting log monitoring for all services..."
+# Start monitoring Airavata server logs
+echo "📊 Starting log monitoring for Airavata server..."
 cd ${AIRAVATA_HOME}
 
-# Monitor core service logs
-monitor_log "${AIRAVATA_HOME}/logs/controller.log" "Controller"
-monitor_log "${AIRAVATA_HOME}/logs/participant.log" "Participant"
+# Monitor Airavata server logs
+monitor_log "${AIRAVATA_HOME}/logs/airavata-server.log" "Airavata-Server"
 
-# Monitor workflow manager logs if they exist
-monitor_log "${AIRAVATA_HOME}/logs/pre-wm.log" "Pre-WM"
-monitor_log "${AIRAVATA_HOME}/logs/post-wm.log" "Post-WM"
-
-# Monitor additional service logs if they exist
-monitor_log "${AIRAVATA_HOME}/logs/orchestrator.log" "Orchestrator"
-monitor_log "${AIRAVATA_HOME}/logs/email-monitor.log" "Email-Monitor"
-monitor_log "${AIRAVATA_HOME}/logs/realtime-monitor.log" "Realtime-Monitor"
-
-# Monitor optional service logs
-monitor_log "${AIRAVATA_HOME}/logs/agent-service.log" "Agent"
-monitor_log "${AIRAVATA_HOME}/logs/research-service.log" "Research"
-monitor_log "${AIRAVATA_HOME}/logs/file-service.log" "File"
-
-echo "📊 All log monitoring started!"
-echo "🔍 Use 'docker logs -f airavata-monolithic' to view all service logs"
+echo "📊 Log monitoring started!"
+echo "🔍 Use 'docker logs -f airavata-monolithic' to view server logs"
 
 # Keep container running and show periodic status
 while true; do
     sleep 300  # Check every 5 minutes
-    echo "[Status] $(date): Container active, monitoring logs from all services"
-    
-    # Check if critical processes are still running
-    if ! pgrep -f "controller" > /dev/null; then
-        echo "[WARNING] Controller process not found"
+    echo "[Status] $(date): Container active, monitoring Airavata server logs"
+
+    # Check if Airavata server process is still running
+    if ! pgrep -f "AiravataServer" > /dev/null; then
+        echo "[WARNING] Airavata server process not found"
     fi
-    if ! pgrep -f "participant" > /dev/null; then
-        echo "[WARNING] Participant process not found"
-    fi
-    
+
     # Show number of running tail processes
     tail_count=$(pgrep -f "tail -F" | wc -l)
     echo "[Status] Currently monitoring $tail_count log files"

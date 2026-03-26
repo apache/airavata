@@ -35,7 +35,6 @@ public class DataInterpreterService implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInterpreterService.class);
     private static final String SERVER_NAME = "Data Interpreter Service";
-    private static final String SERVER_VERSION = "1.0";
 
     private static ServerStatus status;
     private static Scheduler scheduler;
@@ -47,67 +46,67 @@ public class DataInterpreterService implements IServer {
     }
 
     @Override
-    public String getVersion() {
-        return SERVER_VERSION;
-    }
+    public void run() {
+        status = ServerStatus.STARTED;
+        try {
+            jobTriggerMap.clear();
+            SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+            scheduler = schedulerFactory.getScheduler();
 
-    @Override
-    public void start() throws Exception {
-        jobTriggerMap.clear();
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
+            final int parallelJobs = ServerSettings.getDataAnalyzerNoOfScanningParallelJobs();
+            final double scanningInterval = ServerSettings.getDataAnalyzerScanningInterval();
 
-        final int parallelJobs = ServerSettings.getDataAnalyzerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getDataAnalyzerScanningInterval();
+            for (int i = 0; i < parallelJobs; i++) {
+                String name = Constants.METADATA_SCANNER_TRIGGER + "_" + i;
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, Constants.METADATA_SCANNER_GROUP)
+                        .startNow()
+                        .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                                .withIntervalInSeconds((int) scanningInterval)
+                                .repeatForever())
+                        .build();
 
-        for (int i = 0; i < parallelJobs; i++) {
-            String name = Constants.METADATA_SCANNER_TRIGGER + "_" + i;
-            Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(name, Constants.METADATA_SCANNER_GROUP)
-                    .startNow()
-                    .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                            .withIntervalInSeconds((int) scanningInterval)
-                            .repeatForever())
-                    .build();
+                String jobName = Constants.METADATA_SCANNER_JOB + "_" + i;
 
-            String jobName = Constants.METADATA_SCANNER_JOB + "_" + i;
-
-            JobDetail jobC = JobBuilder.newJob(DataAnalyzerImpl.class)
-                    .withIdentity(jobName, Constants.METADATA_SCANNER_JOB)
-                    .build();
-            jobTriggerMap.put(jobC, trigger);
-        }
-        scheduler.start();
-
-        jobTriggerMap.forEach((x, v) -> {
-            try {
-                scheduler.scheduleJob(x, v);
-            } catch (SchedulerException e) {
-                logger.error("Error occurred while scheduling job " + x.getKey().getName());
+                JobDetail jobC = JobBuilder.newJob(DataAnalyzerImpl.class)
+                        .withIdentity(jobName, Constants.METADATA_SCANNER_JOB)
+                        .build();
+                jobTriggerMap.put(jobC, trigger);
             }
-        });
+            scheduler.start();
+
+            jobTriggerMap.forEach((x, v) -> {
+                try {
+                    scheduler.scheduleJob(x, v);
+                } catch (SchedulerException e) {
+                    logger.error(
+                            "Error occurred while scheduling job " + x.getKey().getName());
+                }
+            });
+
+            // Quartz scheduler runs on its own threads; park here until interrupted
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("DataInterpreterService failed", e);
+            status = ServerStatus.FAILED;
+        }
     }
 
     @Override
     public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
         scheduler.unscheduleJobs(new ArrayList(jobTriggerMap.values()));
+        status = ServerStatus.STOPPED;
     }
 
     @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
+    public ServerStatus getStatus() {
         return status;
-    }
-
-    public void setServerStatus(ServerStatus status) {
-        this.status = status;
     }
 }

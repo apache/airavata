@@ -21,6 +21,7 @@ package org.apache.airavata.helix.impl.workflow;
 
 import java.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
@@ -51,15 +52,17 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0.0-SNAPSHOT
  */
-public class ParserWorkflowManager extends WorkflowManager {
+public class ParserWorkflowManager implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserWorkflowManager.class);
     private static final CountMonitor parserwfCounter = new CountMonitor("parser_wf_counter");
 
+    private final WorkflowManager wfManager;
     private String parserStorageResourceId = ServerSettings.getSetting("data.parser.storage.resource.id");
+    private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
 
     public ParserWorkflowManager() throws ApplicationSettingsException {
-        super(
+        wfManager = new WorkflowManager(
                 ServerSettings.getSetting("parser.workflow.manager.name"),
                 Boolean.parseBoolean(ServerSettings.getSetting("post.workflow.manager.loadbalance.clusters")));
     }
@@ -70,23 +73,51 @@ public class ParserWorkflowManager extends WorkflowManager {
             MonitoringServer monitoringServer = new MonitoringServer(
                     ServerSettings.getSetting("parser.workflow.manager.monitoring.host"),
                     ServerSettings.getIntSetting("parser.workflow.manager.monitoring.port"));
-            monitoringServer.start();
+            new Thread(monitoringServer, "monitoring-server").start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
         }
 
         ParserWorkflowManager manager = new ParserWorkflowManager();
-        manager.init();
-        manager.runConsumer();
+        manager.run();
+    }
+
+    @Override
+    public void run() {
+        status = ServerStatus.STARTED;
+        try {
+            init();
+            runConsumer();
+        } catch (Exception e) {
+            logger.error("ParserWorkflowManager failed", e);
+            status = ServerStatus.FAILED;
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "parser_workflow_manager";
+    }
+
+    @Override
+    public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
+        status = ServerStatus.STOPPED;
+    }
+
+    @Override
+    public ServerStatus getStatus() {
+        return status;
     }
 
     private void init() throws Exception {
-        super.initComponents();
+        wfManager.initComponents();
     }
 
     private boolean process(ProcessCompletionMessage completionMessage) {
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient =
+                wfManager.getRegistryClientPool().getResource();
 
         try {
             ProcessModel processModel;
@@ -189,7 +220,8 @@ public class ParserWorkflowManager extends WorkflowManager {
                             completionMessage,
                             registryClient);
                 }
-                String workflow = getWorkflowOperator()
+                String workflow = wfManager
+                        .getWorkflowOperator()
                         .launchWorkflow(
                                 "Parser-" + completionMessage.getProcessId()
                                         + UUID.randomUUID().toString(),
@@ -197,18 +229,18 @@ public class ParserWorkflowManager extends WorkflowManager {
                                 true,
                                 false);
                 // TODO: figure out processId and register
-                // registerWorkflowForProcess(processId, workflow, "PARSER");
+                // wfManager.registerWorkflowForProcess(processId, workflow, "PARSER");
                 logger.info("Launched workflow " + workflow);
                 parserwfCounter.inc();
             }
 
-            getRegistryClientPool().returnResource(registryClient);
+            wfManager.getRegistryClientPool().returnResource(registryClient);
 
             return true;
 
         } catch (Exception e) {
             logger.error("Failed to create the DataParsing task DAG", e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
+            wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -220,8 +252,8 @@ public class ParserWorkflowManager extends WorkflowManager {
             RegistryService.Client registryClient)
             throws Exception {
         DataParsingTask parsingTask = new DataParsingTask();
-        parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId() + "-"
-                + UUID.randomUUID().toString()));
+        parsingTask.setTaskId(wfManager.normalizeTaskId(completionMessage.getExperimentId() + "-" + parserInfo.getId()
+                + "-" + UUID.randomUUID().toString()));
         parsingTask.setGatewayId(completionMessage.getGatewayId());
         parsingTask.setParserId(parserInfo.getId());
         parsingTask.setLocalDataDir("/tmp");
@@ -329,7 +361,8 @@ public class ParserWorkflowManager extends WorkflowManager {
     }
 
     private String processExpression(String expression, ProcessCompletionMessage completionMessage) throws Exception {
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+        RegistryService.Client registryClient =
+                wfManager.getRegistryClientPool().getResource();
 
         try {
             if (expression != null) {
@@ -352,10 +385,10 @@ public class ParserWorkflowManager extends WorkflowManager {
                     }
                 }
             }
-            getRegistryClientPool().returnResource(registryClient);
+            wfManager.getRegistryClientPool().returnResource(registryClient);
             return expression;
         } catch (Exception e) {
-            getRegistryClientPool().returnBrokenResource(registryClient);
+            wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             throw new Exception("Failed to resolve expression " + expression, e);
         }
     }
@@ -374,7 +407,7 @@ public class ParserWorkflowManager extends WorkflowManager {
                 Parser childParserInfo =
                         registryClient.getParser(connector.getChildParserId(), completionMessage.getGatewayId());
                 DataParsingTask parsingTask = new DataParsingTask();
-                parsingTask.setTaskId(normalizeTaskId(completionMessage.getExperimentId() + "-"
+                parsingTask.setTaskId(wfManager.normalizeTaskId(completionMessage.getExperimentId() + "-"
                         + childParserInfo.getId() + "-" + UUID.randomUUID().toString()));
                 parsingTask.setGatewayId(completionMessage.getGatewayId());
                 parsingTask.setParserId(childParserInfo.getId());

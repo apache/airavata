@@ -110,13 +110,6 @@ cred_store_port: "8960"
 keystores_location: "{{ deployment_dir }}/keystores"
 cred_store_server_bind_host: "{{ cred_store_server_host }}"
 
-# Gfac related variables
-gfac_name: "gfac-node0"
-gfac_host: "{{ groups['gfac'][0] }}"
-gfac_port: "8950"
-gfac_dir: "{{ deployment_dir }}/gfac-instance"
-gfac_log_dir: "{{ gfac_dir }}/logs"
-
 # Monitoring variables
 monitor_email_address: ""
 monitor_email_password: ""

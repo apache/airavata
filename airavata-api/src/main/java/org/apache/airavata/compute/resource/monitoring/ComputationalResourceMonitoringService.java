@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 public class ComputationalResourceMonitoringService implements IServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputationalResourceMonitoringService.class);
-    private static final String SERVER_NAME = "Airavata Compute Resource Monitoring Service";
-    private static final String SERVER_VERSION = "1.0";
+    private static final String SERVER_NAME = "Computational Resource Monitoring";
 
     private static ServerStatus status;
     private static Scheduler scheduler;
@@ -46,84 +45,83 @@ public class ComputationalResourceMonitoringService implements IServer {
 
     @Override
     public String getName() {
-        return null;
+        return SERVER_NAME;
     }
 
     @Override
-    public String getVersion() {
-        return null;
-    }
+    public void run() {
+        status = ServerStatus.STARTED;
+        try {
+            jobTriggerMap.clear();
+            SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+            scheduler = schedulerFactory.getScheduler();
 
-    @Override
-    public void start() throws Exception {
+            final String metaUsername = ServerSettings.getMetaschedulerUsername();
+            final String metaGatewayId = ServerSettings.getMetaschedulerGateway();
+            final String metaGroupResourceProfileId = ServerSettings.getMetaschedulerGrpId();
+            final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
+            final double scanningInterval = ServerSettings.getMetaschedulerClusterScanningInterval();
 
-        jobTriggerMap.clear();
-        SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
+            for (int i = 0; i < parallelJobs; i++) {
+                String name = Constants.COMPUTE_RESOURCE_SCANNER_TRIGGER + "_" + i;
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(name, Constants.COMPUTE_RESOURCE_SCANNER_GROUP)
+                        .startNow()
+                        .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                                .withIntervalInSeconds((int) scanningInterval)
+                                .repeatForever())
+                        .build();
 
-        final String metaUsername = ServerSettings.getMetaschedulerUsername();
-        final String metaGatewayId = ServerSettings.getMetaschedulerGateway();
-        final String metaGroupResourceProfileId = ServerSettings.getMetaschedulerGrpId();
-        final int parallelJobs = ServerSettings.getMetaschedulerNoOfScanningParallelJobs();
-        final double scanningInterval = ServerSettings.getMetaschedulerClusterScanningInterval();
+                String jobName = Constants.COMPUTE_RESOURCE_SCANNER_JOB + "_" + i;
 
-        for (int i = 0; i < parallelJobs; i++) {
-            String name = Constants.COMPUTE_RESOURCE_SCANNER_TRIGGER + "_" + i;
-            Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(name, Constants.COMPUTE_RESOURCE_SCANNER_GROUP)
-                    .startNow()
-                    .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                            .withIntervalInSeconds((int) scanningInterval)
-                            .repeatForever())
-                    .build();
-
-            String jobName = Constants.COMPUTE_RESOURCE_SCANNER_JOB + "_" + i;
-
-            JobDetail jobC = JobBuilder.newJob(MonitoringJob.class)
-                    .withIdentity(jobName, Constants.COMPUTE_RESOURCE_SCANNER_JOB)
-                    .usingJobData(Constants.METASCHEDULER_SCANNING_JOBS, parallelJobs)
-                    .usingJobData(Constants.METASCHEDULER_SCANNING_JOB_ID, i)
-                    .usingJobData(Constants.METASCHEDULER_USERNAME, metaUsername)
-                    .usingJobData(Constants.METASCHEDULER_GATEWAY, metaGatewayId)
-                    .usingJobData(Constants.METASCHEDULER_GRP_ID, metaGroupResourceProfileId)
-                    .build();
-            jobTriggerMap.put(jobC, trigger);
-        }
-        scheduler.start();
-
-        jobTriggerMap.forEach((x, v) -> {
-            try {
-                scheduler.scheduleJob(x, v);
-            } catch (SchedulerException e) {
-                logger.error("Error occurred while scheduling job " + x.getKey().getName());
+                JobDetail jobC = JobBuilder.newJob(MonitoringJob.class)
+                        .withIdentity(jobName, Constants.COMPUTE_RESOURCE_SCANNER_JOB)
+                        .usingJobData(Constants.METASCHEDULER_SCANNING_JOBS, parallelJobs)
+                        .usingJobData(Constants.METASCHEDULER_SCANNING_JOB_ID, i)
+                        .usingJobData(Constants.METASCHEDULER_USERNAME, metaUsername)
+                        .usingJobData(Constants.METASCHEDULER_GATEWAY, metaGatewayId)
+                        .usingJobData(Constants.METASCHEDULER_GRP_ID, metaGroupResourceProfileId)
+                        .build();
+                jobTriggerMap.put(jobC, trigger);
             }
-        });
+            scheduler.start();
+
+            jobTriggerMap.forEach((x, v) -> {
+                try {
+                    scheduler.scheduleJob(x, v);
+                } catch (SchedulerException e) {
+                    logger.error(
+                            "Error occurred while scheduling job " + x.getKey().getName());
+                }
+            });
+
+            // Quartz scheduler runs on its own threads; park here until interrupted
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(Long.MAX_VALUE);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("ComputationalResourceMonitoringService failed", e);
+            status = ServerStatus.FAILED;
+        }
     }
 
     @Override
     public void stop() throws Exception {
+        status = ServerStatus.STOPPING;
         scheduler.unscheduleJobs(jobTriggerMap.values().stream()
                 .map(trigger -> {
                     return trigger.getKey();
                 })
                 .collect(Collectors.toList()));
+        status = ServerStatus.STOPPED;
     }
 
     @Override
-    public void restart() throws Exception {
-        stop();
-        start();
-    }
-
-    @Override
-    public void configure() throws Exception {}
-
-    @Override
-    public ServerStatus getStatus() throws Exception {
+    public ServerStatus getStatus() {
         return status;
-    }
-
-    public void setServerStatus(ServerStatus status) {
-        this.status = status;
     }
 }

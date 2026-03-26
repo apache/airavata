@@ -64,7 +64,7 @@ public class WorkflowManager {
         this.loadBalanceClusters = loadBalanceClusters;
     }
 
-    protected void initComponents() throws Exception {
+    public void initComponents() throws Exception {
         initRegistryClientPool();
         initHelixAdmin();
         initWorkflowOperators();
@@ -119,7 +119,8 @@ public class WorkflowManager {
                 RegistryService.Client::new,
                 poolConfig,
                 ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()));
+                Integer.parseInt(ServerSettings.getRegistryServerPort()),
+                "RegistryService");
     }
 
     public Publisher getStatusPublisher() {
@@ -171,7 +172,7 @@ public class WorkflowManager {
         return taskId.replace(":", "-").replace(",", "-");
     }
 
-    protected void registerWorkflowForProcess(String processId, String workflowName, String workflowType) {
+    public void registerWorkflowForProcess(String processId, String workflowName, String workflowType) {
         RegistryService.Client registryClient = getRegistryClientPool().getResource();
         try {
             ProcessWorkflow processWorkflow = new ProcessWorkflow();

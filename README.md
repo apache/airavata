@@ -55,75 +55,114 @@ Apache Airavata is composed of modular components spanning core services, data m
 
 ## 🔄 How Airavata Works
 
-Airavata is composed as 4 top-level services that work together to facilitate the full lifecycle of computational jobs.
+Airavata is composed of a consolidated JVM server plus three Spring Boot microservices that together facilitate the full lifecycle of computational jobs.
 
-![image](assets/airavata-dataflow.png)
+```mermaid
+graph TB
+    subgraph "Docker Infrastructure"
+        DB[(MariaDB<br/>:13306)]
+        RMQ[RabbitMQ<br/>:5672]
+        ZK[ZooKeeper<br/>:2181]
+        KFK[Kafka<br/>:9092]
+        KC[Keycloak<br/>:18080]
+    end
 
-### 1. Airavata API Server `(apache-airavata-api-server)`
+    subgraph "AiravataServer (single JVM, :8930)"
+        direction TB
+        MUX["TMultiplexedProcessor<br/>9 Thrift services"]
+        BG["Background Services<br/>12 IServer workers"]
+    end
 
-The Airavata API Server bootstraps the services needed to run/monitor computational jobs, access/share results of computational runs, and manage fine-grained access to computational resources.
+    subgraph "Spring Boot Modules"
+        AS[Agent Service<br/>:18880]
+        FS[File Server<br/>:8050]
+        RS[Research Service<br/>:18889]
+        RP[REST Proxy<br/>:8082]
+    end
 
+    SDK[Python SDK] -->|TMultiplexedProtocol| MUX
+    Portal[Web Portal] -->|REST| RP
+    MUX --> DB
+    MUX --> RMQ
+    BG --> ZK
+    BG --> KFK
+    BG --> RMQ
+    AS --> DB
+    RS --> DB
+    MUX -.->|auth| KC
+```
 
-#### Orchestrator
-> Class Name: `org.apache.airavata.server.ServerMain`
-> Command: `bin/orchestrator.sh`
+### 1. Airavata Server `(apache-airavata-api-server)`
+> Entry point: `org.apache.airavata.api.server.AiravataServer`
+> Started via: `./scripts/start.sh`
 
-The Orchestrator spins up 7 servers (of type `org.apache.airavata.common.utils.IServer`) for external clients to run computational jobs from.
+`AiravataServer` is the single JVM that hosts all Thrift services and background workers. On startup it:
 
-- **API** - public-facing API consumed by Airavata SDKs and dashboards. It bridges external clients and internal services, and is served over Thrift.
-  (`org.apache.airavata.api.server.AiravataAPIServer`)
-- **DB Event Manager** - Monitors task execution events (launch, transitions, completion/failure) and syncs them to the Airavata DB via pub/sub hooks.
-  (`org.apache.airavata.db.event.manager.DBEventManagerRunner`)
-- **Registry** - Manages metadata and definitions for executable tasks and applications.
-  (`org.apache.airavata.registry.api.service.RegistryAPIServer`)
-- **Credential Store** - Manages secure storage and retrieval of credentials for accessing registered compute resources.
-  (`org.apache.airavata.credential.store.server.CredentialStoreServer`)
-- **Sharing Registry** - Handles sharing and permissioning of Airavata resources between users and groups.
-  (`org.apache.airavata.sharing.registry.server.SharingRegistryServer`)
-- **Orchestrator** - Constructs workflow DAGs, assigns unique IDs to tasks, and hands them off to the workflow manager.
-  (`org.apache.airavata.orchestrator.server.OrchestratorServer`)
-- **Profile** - Manages users, tenants, compute resources, and group profiles.
-  (`org.apache.airavata.service.profile.server.ProfileServiceServer`)
+1. Initializes the unified `airavata` database via Flyway
+2. Registers 9 Thrift services on a single `TMultiplexedProcessor` (port **8930**)
+3. Starts background `IServer` workers after the Thrift server is ready
 
-#### Controller
-> Class Name: `org.apache.airavata.helix.impl.controller.HelixController`
-> Command: `bin/controller.sh`
+#### Thrift Services (all on port 8930, multiplexed)
 
-The Controller manages the step-by-step transition of task state on *helix-side*. It uses Apache Helix to track step start, completion, and failure paths, ensuring the next step starts upon successful completion or retrying the current step on failure.
+| Service name | Handler | Responsibility |
+|---|---|---|
+| `Airavata` | `AiravataServerHandler` | Public API consumed by SDKs and dashboards |
+| `RegistryService` | `RegistryServerHandler` | Metadata and definitions for tasks and applications |
+| `CredentialStore` | `CredentialStoreServerHandler` | Secure storage and retrieval of compute credentials |
+| `SharingRegistry` | `SharingRegistryServerHandler` | Sharing and permissioning of Airavata resources |
+| `UserProfile` | `UserProfileServiceHandler` | User profile management |
+| `TenantProfile` | `TenantProfileServiceHandler` | Tenant/gateway management |
+| `IamAdminServices` | `IamAdminServicesHandler` | IAM administration |
+| `GroupManager` | `GroupManagerServiceHandler` | Group and role management |
+| `Orchestrator` | `OrchestratorServerHandler` | Workflow DAG construction and task dispatch |
 
-![image](assets/airavata-state-transitions.png)
+#### Background Services (IServer lifecycle, same JVM)
 
-#### Participant
-> Class Name: `org.apache.airavata.helix.impl.participant.GlobalParticipant`
-> Command: `bin/participant.sh`
+| Service | Responsibility |
+|---|---|
+| `DBEventManagerRunner` | Syncs task execution events to the DB via pub/sub |
+| `MonitoringServer` | Prometheus metrics endpoint (optional) |
+| `ComputationalResourceMonitoringService` | Polls compute resource queue status |
+| `DataInterpreterService` | Metadata analysis for submitted jobs |
+| `ProcessReschedulingService` | Retries and reschedules failed processes |
+| `HelixController` | Manages Helix cluster state transitions |
+| `GlobalParticipant` | Executes task steps (`EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`) |
+| `PreWorkflowManager` | Handles pre-execution phase (env setup, data staging) |
+| `PostWorkflowManager` | Handles post-execution phase (cleanup, output fetching) |
+| `ParserWorkflowManager` | Handles parsing/data-interpretation workflow phase |
+| `EmailBasedMonitor` | Polls email inbox for job status updates (optional) |
+| `RealtimeMonitor` | Listens on Kafka for real-time job state changes |
 
-The participant synchronizes the *helix-side* state transition of a task with its concrete execution at *airavata-side*. The currently registered steps are: `EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`, and `MockTask`.
+```mermaid
+stateDiagram-v2
+    [*] --> CREATED
+    CREATED --> VALIDATED : validateExperiment
+    VALIDATED --> LAUNCHED : launchExperiment
+    LAUNCHED --> EXECUTING : PreWorkflowManager
+    EXECUTING --> MONITORING : job submitted
+    MONITORING --> COMPLETED : job finished
+    MONITORING --> FAILED : job error
+    EXECUTING --> CANCELLED : terminateExperiment
+    COMPLETED --> [*]
+    FAILED --> [*]
+    CANCELLED --> [*]
+```
 
-#### Email Monitor
-> Class Name: `org.apache.airavata.monitor.email.EmailBasedMonitor`
-> Command: `bin/email-monitor.sh`
-
-The email monitor periodically checks an email inbox for job status updates sent via email. If it reads a new email with a job status update, it relays that state-change to the internal MQ (KafkaProducer).
-
-#### Realtime Monitor
-> Class Name: `org.apache.airavata.monitor.realtime.RealtimeMonitor`
-> Command: `bin/realtime-monitor.sh`
-
-The realtime monitor listens to incoming state-change messages on the internal MQ (KafkaConsumer), and relays that state-change to the internal MQ (KafkaProducer). When a task is completed at the compute resource, the realtime monitor is notified of this.
-
-#### Pre Workflow Manager
-> Class Name: `org.apache.airavata.helix.impl.workflow.PreWorkflowManager`
-> Command: `bin/pre-wm.sh`
-
-The pre-workflow manager listens on the internal MQ (KafkaConsumer) to inbound tasks at **pre-execution** phase. When a task DAG is received, it handles the environment setup and data staging phases of the DAG in a robust manner, which includes fault-handling. All these happen BEFORE the task DAG is submitted to the controller, and subsequently to the participant.
-
-#### Post Workflow Manager
-> Class Name: `org.apache.airavata.helix.impl.workflow.PostWorkflowManager`
-> Command: `bin/post-wm.sh`
-
-The post-workflow listens on the internal MQ (KafkaConsumer) to inbound tasks at **post-execution** phase. Once a task is received, it handles the cleanup and output fetching phases of the task DAG in a robust manner, which includes fault-handling. Once the main task completes executing, this is announced to the realtime monitor, upon which the post-workflow phase is triggered. Once triggered, it submits this state change to the controller.
-
-![image](assets/airavata-components.png)
+```mermaid
+graph LR
+    subgraph "Startup Sequence"
+        direction TB
+        A[1. DB Init] --> B[2. Thrift Handlers]
+        B --> C[3. TMultiplexedProcessor :8930]
+        C --> D[4. DBEventManager]
+        D --> E[5. MonitoringServer :9097]
+        E --> F[6. HelixController]
+        F --> G{waitForHelixCluster}
+        G --> H[7. HelixParticipant]
+        H --> I[8. Pre/Post/Parser WF Managers]
+        I --> J[9. Email/Realtime Monitors]
+    end
+```
 
 
 ### 2. Airavata File Server `(apache-airavata-file-server)`
@@ -149,156 +188,58 @@ The Airavata Research Service is the backend for the **research catalog** in Air
 
 ## 🏗️ Getting Started
 
-
-### Option 1 - Build from Source
-
-Before setting up Apache Airavata, ensure that you have:
+### Prerequisites
 
 | Requirement | Version | Check Using |
 |-------------|---------|-------|
 | **Java SDK** | 17+ | `java --version` |
 | **Apache Maven** | 3.8+ | `mvn -v` |
-| **Git** | Latest | `git -v` |
-
-First, clone the project repository from GitHub.
-```bash
-git clone https://github.com/apache/airavata.git
-cd airavata
-```
-
-Next, build the project using Maven.
-```bash
-# with tests (slower, but safer)
-mvn clean install
-# OR without tests (faster)
-mvn clean install -DskipTests
-```
-
-Once the project is built, four `tar.gz` bundles will be generated in the `./distributions` folder.
-```bash
-├── apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-file-server-0.21-SNAPSHOT.tar.gz
-└── apache-airavata-research-service-0.21-SNAPSHOT.tar.gz
-
-1 directory, 4 files
-```
-
-Next, copy the deployment scripts and configurations into the `./distributions` folder.
-
-```bash
-cp -r dev-tools/deployment-scripts/ distribution
-cp -r vault/ distribution/vault
-
-tree ./distribution
-distribution
-├── apache-airavata-agent-service-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-api-server-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-file-server-0.21-SNAPSHOT.tar.gz
-├── apache-airavata-research-service-0.21-SNAPSHOT.tar.gz
-├── distribution_backup.sh
-├── distribution_update.sh
-├── services_down.sh
-├── services_up.sh
-└── vault
-    ├── airavata-server.properties
-    ├── airavata.sym.p12
-    ├── application-agent-service.yml
-    ├── application-research-service.yml
-    ├── email-config.yml
-    └── log4j2.xml
-
-2 directories, 16 files
-```
-
-**What's in the vault?**
-
-* `airavata.sym.p12` - contains the symmetric key used to secure stored credentials.
-* `airavata-server.properties` - config file for the airavata api server.
-* `application-agent-service.yml` - config file for the airavata agent service.
-* `application-file-server.yml` - config file for the airavata file server.
-* `application-research-service.yml` - config file for the airavata research service.
-* `application-restproxy.properties` - config file for the airavata rest proxy.
-* `email-config.yml` - contains the email addresses observed by the email monitor.
-* `log4j2.xml` - contains the Log4j configuration for all airavata services.
-
-Next, start the services using the deployment scripts.
-
-```bash
-cd distribution
-./distribution_update.sh
-./services_up.sh
-```
-
-Voila, you are now running Airavata! You can now tail the server logs using `multitail` (all logs) or `tail` (specific logs).
-
-```bash
-multitail apache-airavata-*/logs/*.log
-
-```
-
-### 🐳 Option 2 - Run with Docker (Experimental)
-
-> ⚠️ **Note:** Docker deployment is experimental and not recommended for production use.
-
-Before setting up Apache Airavata, ensure that you have:
-
-| Requirement | Version | Check Using |
-|-------------|---------|-------|
-| **Java SDK** | 17+ | `java --version` |
-| **Apache Maven** | 3.8+ | `mvn -v` |
-| **Git** | Latest | `git -v` |
 | **Docker Engine** | 20.10+ | `docker -v` |
 | **Docker Compose** | 2.0+ | `docker compose version` |
 
-In your `/etc/hosts`, point `airavata.host` to `127.0.0.1`:
-```
-127.0.0.1    airavata.host
-```
+### Quick Start
 
-First, clone the project repository from GitHub.
+First, clone the repository and start the infrastructure (MariaDB, RabbitMQ, ZooKeeper, Kafka, Keycloak):
+
 ```bash
 git clone https://github.com/apache/airavata.git
 cd airavata
+docker compose up -d
 ```
 
-Next, build the project distribution using Maven.
+Next, build Airavata and set up the database:
 
 ```bash
-# with tests (slower, but safer)
-mvn clean install
-# OR without tests (faster)
-mvn clean install -DskipTests
+./scripts/setup.sh
 ```
 
-Next, build the containers and start them through compose.
+Finally, start the server:
 
 ```bash
-
-# build the containers
-mvn docker:build -pl modules/distribution
-
-# start containers via compose
-docker-compose \
-  -f modules/distribution/src/main/docker/docker-compose.yml \
-  up -d
-
-# check whether services are running
-docker-compose ps
+./scripts/start.sh
 ```
 
-**Service Endpoints:**
-- **API Server:** `airavata.host:8960`
-- **Profile Service:** `airavata.host:8962`
-- **Keycloak:** `airavata.host:8443`
+The Airavata Server will be available on port **8930** (Thrift, multiplexed). All 9 Thrift services are served on this single port.
 
-**Stop Services:**
-```bash
-docker-compose \
-  -f modules/ide-integration/src/main/containers/docker-compose.yml \
-  -f modules/distribution/src/main/docker/docker-compose.yml \
-  down
-```
+### Configuration
+
+The main configuration file is `airavata-api/src/main/resources/airavata-server.properties`. Key settings:
+
+* `apiserver.port` — Thrift port (default: `8930`)
+* `spring.datasource.url` — JDBC URL for the unified `airavata` database
+* `email.based.monitoring.enabled` — Enable/disable email-based job monitor
+* `api.server.monitoring.enabled` — Enable/disable Prometheus metrics endpoint
+
+### Spring Boot Microservices
+
+The following services are separate Spring Boot applications, packaged independently:
+
+| Service | Entry point | Purpose |
+|---|---|---|
+| **Agent Service** | `AgentServiceApplication` | Backend for interactive jobs via gRPC |
+| **File Server** | `FileServerApplication` | SFTP wrapper for storage nodes |
+| **Research Service** | `ResearchServiceApplication` | Research catalog API |
+| **REST Proxy** | *(restproxy module)* | REST-to-Thrift proxy for the API |
 
 
 ## 🤝 Contributing

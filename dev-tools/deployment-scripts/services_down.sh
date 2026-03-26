@@ -5,23 +5,11 @@ log() {
 }
 
 # ================================
-# Shutdown the API Server
+# Shutdown the Airavata Server
 # ================================
-log "Stopping the API Services..."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/orchestrator.sh -d stop api-orch
-log "Orchestrator stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/controller.sh -d stop
-log "Controller stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/participant.sh -d stop
-log "Participant stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/pre-wm.sh -d stop
-log "Pre-Workflow Manager stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/post-wm.sh -d stop
-log "Post-Workflow Manager stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/email-monitor.sh -d stop
-log "Email Monitor stopped."
-./apache-airavata-api-server-0.21-SNAPSHOT/bin/realtime-monitor.sh -d stop
-log "Realtime Monitor stopped."
+log "Stopping the Airavata Server..."
+./apache-airavata-api-server-0.21-SNAPSHOT/bin/airavata-server.sh -d stop
+log "Airavata Server stopped."
 
 # ================================
 # Shutdown the Agent Service

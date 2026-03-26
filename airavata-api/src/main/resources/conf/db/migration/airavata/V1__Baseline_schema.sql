@@ -1716,5 +1716,32 @@ CREATE TABLE IF NOT EXISTS plan (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================================
+-- CREDENTIALS - Credential store (raw JDBC, not JPA)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS CREDENTIALS (
+    GATEWAY_ID VARCHAR(256) NOT NULL,
+    TOKEN_ID VARCHAR(256) NOT NULL,
+    CREDENTIAL BLOB NOT NULL,
+    PORTAL_USER_ID VARCHAR(256) NOT NULL,
+    TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    DESCRIPTION VARCHAR(500),
+    CREDENTIAL_OWNER_TYPE VARCHAR(50),
+    PRIMARY KEY (GATEWAY_ID, TOKEN_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================================
+-- COMMUNITY_USER - Community user mapping for credentials
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS COMMUNITY_USER (
+    GATEWAY_ID VARCHAR(256) NOT NULL,
+    COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,
+    TOKEN_ID VARCHAR(256) NOT NULL,
+    COMMUNITY_USER_EMAIL VARCHAR(256),
+    PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================================
 -- END OF BASELINE SCHEMA
 -- ============================================================================

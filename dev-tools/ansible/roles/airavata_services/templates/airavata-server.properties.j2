@@ -25,69 +25,18 @@
 ###########################################################################
 
 ###########################################################################
-#  API Server Registry DB Configuration
+# Database Configuration
 ###########################################################################
-registry.jdbc.driver={{ registry_jdbc_driver }}
-registry.jdbc.url={{ registry_jdbc_url }}
-registry.jdbc.user={{ registry_jdbc_user }}
-registry.jdbc.password={{ registry_jdbc_password }}
-validationQuery=SELECT 1 from CONFIGURATION
-
-###########################################################################
-#  Application Catalog DB Configuration
-###########################################################################
-appcatalog.jdbc.driver={{ appcatalog_jdbc_driver }}
-appcatalog.jdbc.url={{ appcatalog_jdbc_url }}
-appcatalog.jdbc.user={{ appcatalog_jdbc_user }}
-appcatalog.jdbc.password={{ appcatalog_jdbc_password }}
-appcatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-##########################################################################
-#  Replica Catalog DB Configuration
-###########################################################################
-replicacatalog.jdbc.driver={{ replicacatalog_jdbc_driver }}
-replicacatalog.jdbc.url={{ replicacatalog_jdbc_url }}
-replicacatalog.jdbc.user={{ replicacatalog_jdbc_user }}
-replicacatalog.jdbc.password={{ replicacatalog_jdbc_password }}
-replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-###########################################################################
-#  Workflow Catalog DB Configuration
-###########################################################################
-workflowcatalog.jdbc.driver={{ workflowcatalog_jdbc_driver }}
-workflowcatalog.jdbc.url={{ workflowcatalog_jdbc_url }}
-workflowcatalog.jdbc.user={{ workflowcatalog_jdbc_user }}
-workflowcatalog.jdbc.password={{ workflowcatalog_jdbc_password }}
-workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
-
-###########################################################################
-#  Sharing Catalog DB Configuration
-###########################################################################
-sharingcatalog.jdbc.driver={{ sharingcatalog_jdbc_driver }}
-sharingcatalog.jdbc.url={{ sharingcatalog_jdbc_url }}
-sharingcatalog.jdbc.user={{ sharingcatalog_jdbc_user }}
-sharingcatalog.jdbc.password={{ sharingcatalog_jdbc_password }}
-sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
+airavata.jdbc.driver={{ airavata_jdbc_driver | default('org.mariadb.jdbc.Driver') }}
+airavata.jdbc.url={{ airavata_jdbc_url }}
+airavata.jdbc.user={{ airavata_jdbc_user }}
+airavata.jdbc.password={{ airavata_jdbc_password }}
+airavata.jdbc.validationQuery=SELECT 1
 
 ###########################################################################
 #  Generic Server Configurations
 ###########################################################################
 enable.sharing={{ enable_sharing }}
-
-###########################################################################
-#  Sharing Registry Server Configuration
-###########################################################################
-sharing_server={{ sharing_server_class }}
-sharing.registry.server.host={{ sharing_registry_bind_host | default(sharing_registry_server_host) }}
-sharing.registry.server.port={{ sharing_registry_port }}
-
-###########################################################################
-#  Registry Server Configurations
-###########################################################################
-regserver={{ regserver_class }}
-regserver.server.host={{ registry_bind_host | default(regserver_server_host) }}
-regserver.server.port={{ registry_server_port }}
-regserver.server.min.threads={{ orchestrator_server_min_threads }}
 
 default.registry.user={{ default_registry_user }}
 default.registry.password={{ default_registry_password }}
@@ -99,20 +48,12 @@ super.tenant.gatewayId={{ super_tenant_gatewayId }}
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
-apiserver.class={{ apiserver_class }}
+apiserver.class=org.apache.airavata.api.server.AiravataServer
 apiserver.host={{ api_server_bind_host | default(api_server_host) }}
 apiserver.port={{ api_server_port }}
 api.server.monitoring.enabled={{ api_server_monitoring_enabled }}
 api.server.monitoring.host={{ api_server_monitoring_host }}
 api.server.monitoring.port={{ api_server_monitoring_port }}
-
-###########################################################################
-#  Orchestrator Server Configurations
-###########################################################################
-orchestrator={{ orchestrator_class }}
-orchestrator.server.host={{ orchestrator_bind_host | default(orchestrator_server_host) }}
-orchestrator.server.port={{ orchestrator_server_port }}
-orchestrator.server.min.threads={{ orchestrator_server_min_threads }}
 
 job.validators={{ job_validators }}
 enable.validation={{ enable_validation }}
@@ -132,14 +73,6 @@ job.status.publish.endpoint={{ job_status_publish_endpoint }}
 credential.store.keystore.url={{ credential_store_keystore_url }}
 credential.store.keystore.alias={{ credential_store_keystore_alias }}
 credential.store.keystore.password={{ credential_store_keystore_password }}
-credential.store.jdbc.url={{ credential_store_jdbc_url }}
-credential.store.jdbc.user={{ credential_store_jdbc_user }}
-credential.store.jdbc.password={{ credential_store_jdbc_password }}
-credential.store.jdbc.driver={{ credential_store_jdbc_driver }}
-credential.store.server.host={{ cred_store_server_bind_host | default(cred_store_server_host) }}
-credential.store.server.port={{ cred_store_port }}
-credential.store.class={{ credential_store_class }}
-credential.store.jdbc.validationQuery={{ credential_store_validation_query }}
 
 ###########################################################################
 # AMQP Notification Configuration
@@ -173,15 +106,6 @@ in.memory.cache.size={{ in_memory_cache_size }}
 ###########################################################################
 # Profile Service Configuration
 ###########################################################################
-profile.service.server.host={{ profile_service_bind_host }}
-profile.service.server.port={{ profile_service_port }}
-profile_service.class={{ profile_service_class }}
-# MariaDB properties
-profile.service.jdbc.url={{ profile_service_jdbc_url }}
-profile.service.jdbc.user={{ profile_service_jdbc_user }}
-profile.service.jdbc.password={{ profile_service_jdbc_password }}
-profile.service.jdbc.driver={{ profile_service_jdbc_driver }}
-profile.service.validationQuery={{ profile_service_validation_query }}
 
 ###########################################################################
 # Iam Admin services Configuration

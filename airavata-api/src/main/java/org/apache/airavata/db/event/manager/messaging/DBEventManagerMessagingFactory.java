@@ -70,4 +70,18 @@ public class DBEventManagerMessagingFactory {
         }
         return dbEventPublisher;
     }
+
+    /**
+     * Reset subscriber and publisher references, releasing them for GC.
+     */
+    public static synchronized void close() {
+        if (dbEventSubscriber != null) {
+            log.info("Releasing DB Event subscriber");
+            dbEventSubscriber = null;
+        }
+        if (dbEventPublisher != null) {
+            log.info("Releasing DB Event publisher");
+            dbEventPublisher = null;
+        }
+    }
 }

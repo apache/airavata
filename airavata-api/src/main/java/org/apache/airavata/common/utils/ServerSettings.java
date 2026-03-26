@@ -32,17 +32,17 @@ public class ServerSettings extends ApplicationSettings {
     // Zookeeper + curator constants
     public static final String EMBEDDED_ZK = "embedded.zk";
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
-    private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
-    private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
-    private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
-    private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
+    private static final String CREDENTIAL_STORE_DB_URL = "airavata.jdbc.url";
+    private static final String CREDENTIAL_STORE_DB_USER = "airavata.jdbc.user";
+    private static final String CREDENTIAL_STORE_DB_PASSWORD = "airavata.jdbc.password";
+    private static final String CREDENTIAL_STORE_DB_DRIVER = "airavata.jdbc.driver";
     private static final java.lang.String SHARING_REGISTRY_PORT = "sharing.registry.server.port";
     private static final java.lang.String SHARING_REGISTRY_HOST = "sharing.registry.server.host";
 
-    private static final String REGISTRY_DB_URL = "registry.jdbc.url";
-    private static final String REGISTRY_DB_USER = "registry.jdbc.user";
-    private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
-    private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
+    private static final String REGISTRY_DB_URL = "airavata.jdbc.url";
+    private static final String REGISTRY_DB_USER = "airavata.jdbc.user";
+    private static final String REGISTRY_DB_PASSWORD = "airavata.jdbc.password";
+    private static final String REGISTRY_DB_DRIVER = "airavata.jdbc.driver";
     private static final String HOST_SCHEDULER = "host.scheduler";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
