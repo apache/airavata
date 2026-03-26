@@ -36,9 +36,9 @@ class SharingRegistryClient(object):
     def __init__(self):
         self.settings = Settings()
         self.client = utils.initialize_sharing_registry_client(
-            self.settings.SHARING_API_HOST,
-            self.settings.SHARING_API_PORT,
-            self.settings.SHARING_API_SECURE,
+            self.settings.API_SERVER_HOSTNAME,
+            self.settings.API_SERVER_PORT,
+            self.settings.API_SERVER_SECURE,
         )
         # expose the needed functions
         self.create_domain = self.client.createDomain
