@@ -1,10 +1,13 @@
 package org.apache.airavata.service.sharing;
 
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
+import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.security.GatewayGroupsInitializer;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.models.UserGroup;
@@ -25,9 +28,16 @@ public class ResourceSharingService {
     private static final Logger logger = LoggerFactory.getLogger(ResourceSharingService.class);
 
     private final SharingRegistryServerHandler sharingHandler;
+    private final RegistryServerHandler registryHandler;
 
-    public ResourceSharingService(SharingRegistryServerHandler sharingHandler) {
+    public ResourceSharingService(SharingRegistryServerHandler sharingHandler, RegistryServerHandler registryHandler) {
         this.sharingHandler = sharingHandler;
+        this.registryHandler = registryHandler;
+    }
+
+    // Backwards-compatible constructor for tests
+    public ResourceSharingService(SharingRegistryServerHandler sharingHandler) {
+        this(sharingHandler, null);
     }
 
     public boolean shareResourceWithUsers(RequestContext ctx, String resourceId, Map<String, ResourcePermissionType> userPermissionList) throws ServiceException {
@@ -332,9 +342,26 @@ public class ResourceSharingService {
     }
 
     private void validateAdminGroupNotRevoked(String gatewayId, String resourceId, Map<String, ResourcePermissionType> groupPermissionList) throws Exception {
-        var gatewayGroups = sharingHandler.getEntity(gatewayId, gatewayId + ":GATEWAY_GROUPS");
-        // Note: admin group validation is best-effort based on gateway groups entity
-        // The actual validation uses GatewayGroups from registryHandler (done in caller context)
+        GatewayGroups gatewayGroups = retrieveGatewayGroups(gatewayId);
+        if (gatewayGroups == null) {
+            return;
+        }
+        String adminsGroupId = gatewayGroups.getAdminsGroupId();
+        if (adminsGroupId != null && groupPermissionList.containsKey(adminsGroupId)) {
+            throw new ServiceAuthorizationException(
+                    "Cannot revoke sharing from the admin group " + adminsGroupId);
+        }
+    }
+
+    private GatewayGroups retrieveGatewayGroups(String gatewayId) throws Exception {
+        if (registryHandler == null) {
+            return null;
+        }
+        if (registryHandler.isGatewayGroupsExists(gatewayId)) {
+            return registryHandler.getGatewayGroups(gatewayId);
+        } else {
+            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+        }
     }
 
     void createManageSharingPermissionTypeIfMissing(String domainId) throws Exception {
