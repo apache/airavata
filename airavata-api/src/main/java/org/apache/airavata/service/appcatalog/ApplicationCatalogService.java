@@ -1,0 +1,523 @@
+package org.apache.airavata.service.appcatalog;
+
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.group.ResourcePermissionType;
+import org.apache.airavata.model.group.ResourceType;
+import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.service.context.RequestContext;
+import org.apache.airavata.service.exception.ServiceAuthorizationException;
+import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.service.security.GatewayGroupsInitializer;
+import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntitySearchField;
+import org.apache.airavata.sharing.registry.models.PermissionType;
+import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+public class ApplicationCatalogService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationCatalogService.class);
+
+    private final RegistryServerHandler registryHandler;
+    private final SharingRegistryServerHandler sharingHandler;
+    private final CredentialStoreServerHandler credentialHandler;
+
+    public ApplicationCatalogService(
+            RegistryServerHandler registryHandler,
+            SharingRegistryServerHandler sharingHandler,
+            CredentialStoreServerHandler credentialHandler) {
+        this.registryHandler = registryHandler;
+        this.sharingHandler = sharingHandler;
+        this.credentialHandler = credentialHandler;
+    }
+
+    // -------------------------------------------------------------------------
+    // Application Modules
+    // -------------------------------------------------------------------------
+
+    public String registerApplicationModule(RequestContext ctx, String gatewayId, ApplicationModule applicationModule)
+            throws ServiceException {
+        try {
+            return registryHandler.registerApplicationModule(gatewayId, applicationModule);
+        } catch (Exception e) {
+            throw new ServiceException("Error while adding application module: " + e.getMessage(), e);
+        }
+    }
+
+    public ApplicationModule getApplicationModule(RequestContext ctx, String appModuleId) throws ServiceException {
+        try {
+            return registryHandler.getApplicationModule(appModuleId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application module: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean updateApplicationModule(RequestContext ctx, String appModuleId, ApplicationModule applicationModule)
+            throws ServiceException {
+        try {
+            return registryHandler.updateApplicationModule(appModuleId, applicationModule);
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating application module: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ApplicationModule> getAllAppModules(RequestContext ctx, String gatewayId) throws ServiceException {
+        try {
+            return registryHandler.getAllAppModules(gatewayId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving all application modules: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ApplicationModule> getAccessibleAppModules(RequestContext ctx, String gatewayId)
+            throws ServiceException {
+        try {
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            if (isSharingEnabled()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria entityTypeFilter = new SearchCriteria();
+                entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                sharingFilters.add(entityTypeFilter);
+                SearchCriteria permissionTypeFilter = new SearchCriteria();
+                permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+                permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                permissionTypeFilter.setValue(gatewayId + ":" + ResourcePermissionType.READ);
+                sharingFilters.add(permissionTypeFilter);
+                sharingHandler
+                        .searchEntities(
+                                ctx.getGatewayId(),
+                                ctx.getUserId() + "@" + gatewayId,
+                                sharingFilters,
+                                0,
+                                -1)
+                        .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
+            }
+            List<String> accessibleComputeResourceIds = getAccessibleComputeResourceIds(ctx, gatewayId);
+            return registryHandler.getAccessibleAppModules(
+                    gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving accessible application modules: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean deleteApplicationModule(RequestContext ctx, String appModuleId) throws ServiceException {
+        try {
+            return registryHandler.deleteApplicationModule(appModuleId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while deleting application module: " + e.getMessage(), e);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Application Deployments
+    // -------------------------------------------------------------------------
+
+    public String registerApplicationDeployment(
+            RequestContext ctx, String gatewayId, ApplicationDeploymentDescription applicationDeployment)
+            throws ServiceException {
+        try {
+            String result = registryHandler.registerApplicationDeployment(gatewayId, applicationDeployment);
+            Entity entity = new Entity();
+            entity.setEntityId(result);
+            entity.setDomainId(gatewayId);
+            entity.setEntityTypeId(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            entity.setOwnerId(ctx.getUserId() + "@" + gatewayId);
+            entity.setName(result);
+            entity.setDescription(applicationDeployment.getAppDeploymentDescription());
+            sharingHandler.createEntity(entity);
+            shareEntityWithAdminGatewayGroups(entity);
+            return result;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while adding application deployment: " + e.getMessage(), e);
+        }
+    }
+
+    public ApplicationDeploymentDescription getApplicationDeployment(RequestContext ctx, String appDeploymentId)
+            throws ServiceException {
+        try {
+            if (isSharingEnabled()) {
+                if (!userHasAccess(ctx, appDeploymentId, ResourcePermissionType.READ)) {
+                    throw new ServiceAuthorizationException(
+                            "User does not have access to application deployment " + appDeploymentId);
+                }
+            }
+            return registryHandler.getApplicationDeployment(appDeploymentId);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application deployment: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean updateApplicationDeployment(
+            RequestContext ctx, String appDeploymentId, ApplicationDeploymentDescription applicationDeployment)
+            throws ServiceException {
+        try {
+            if (isSharingEnabled()) {
+                if (!userHasAccess(ctx, appDeploymentId, ResourcePermissionType.WRITE)) {
+                    throw new ServiceAuthorizationException(
+                            "User does not have WRITE access to application deployment " + appDeploymentId);
+                }
+            }
+            return registryHandler.updateApplicationDeployment(appDeploymentId, applicationDeployment);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating application deployment: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean deleteApplicationDeployment(RequestContext ctx, String appDeploymentId) throws ServiceException {
+        try {
+            if (!userHasAccess(ctx, appDeploymentId, ResourcePermissionType.WRITE)) {
+                throw new ServiceAuthorizationException(
+                        "User does not have WRITE access to application deployment " + appDeploymentId);
+            }
+            boolean result = registryHandler.deleteApplicationDeployment(appDeploymentId);
+            sharingHandler.deleteEntity(ctx.getGatewayId(), appDeploymentId);
+            return result;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while deleting application deployment: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(RequestContext ctx, String gatewayId)
+            throws ServiceException {
+        return getAccessibleApplicationDeployments(ctx, gatewayId, ResourcePermissionType.READ);
+    }
+
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(
+            RequestContext ctx, String gatewayId, ResourcePermissionType permissionType)
+            throws ServiceException {
+        try {
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            if (isSharingEnabled()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria entityTypeFilter = new SearchCriteria();
+                entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                sharingFilters.add(entityTypeFilter);
+                SearchCriteria permissionTypeFilter = new SearchCriteria();
+                permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+                permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
+                sharingFilters.add(permissionTypeFilter);
+                sharingHandler
+                        .searchEntities(
+                                ctx.getGatewayId(),
+                                ctx.getUserId() + "@" + gatewayId,
+                                sharingFilters,
+                                0,
+                                -1)
+                        .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
+            }
+            List<String> accessibleComputeResourceIds = getAccessibleComputeResourceIds(ctx, gatewayId);
+            return registryHandler.getAccessibleApplicationDeployments(
+                    gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application deployments: " + e.getMessage(), e);
+        }
+    }
+
+    public List<String> getAppModuleDeployedResources(RequestContext ctx, String appModuleId) throws ServiceException {
+        try {
+            return registryHandler.getAppModuleDeployedResources(appModuleId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application deployments: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ApplicationDeploymentDescription> getApplicationDeploymentsForAppModuleAndGroupResourceProfile(
+            RequestContext ctx, String appModuleId, String groupResourceProfileId)
+            throws ServiceException {
+        try {
+            if (!userHasAccess(ctx, groupResourceProfileId, ResourcePermissionType.READ)) {
+                throw new ServiceAuthorizationException(
+                        "User is not authorized to access Group Resource Profile " + groupResourceProfileId);
+            }
+            GroupResourceProfile groupResourceProfile =
+                    registryHandler.getGroupResourceProfile(groupResourceProfileId);
+            List<String> accessibleComputeResourceIds = new ArrayList<>();
+            for (GroupComputeResourcePreference pref : groupResourceProfile.getComputePreferences()) {
+                accessibleComputeResourceIds.add(pref.getComputeResourceId());
+            }
+
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            List<SearchCriteria> sharingFilters = new ArrayList<>();
+            SearchCriteria entityTypeFilter = new SearchCriteria();
+            entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+            entityTypeFilter.setValue(ctx.getGatewayId() + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+            sharingFilters.add(entityTypeFilter);
+            SearchCriteria permissionTypeFilter = new SearchCriteria();
+            permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+            permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+            permissionTypeFilter.setValue(ctx.getGatewayId() + ":" + ResourcePermissionType.READ);
+            sharingFilters.add(permissionTypeFilter);
+            sharingHandler
+                    .searchEntities(
+                            ctx.getGatewayId(),
+                            ctx.getUserId() + "@" + ctx.getGatewayId(),
+                            sharingFilters,
+                            0,
+                            -1)
+                    .forEach(a -> accessibleAppDeploymentIds.add(a.getEntityId()));
+
+            return registryHandler.getAccessibleApplicationDeploymentsForAppModule(
+                    ctx.getGatewayId(), appModuleId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException(
+                    "Error while retrieving application deployments for module and group resource profile: "
+                            + e.getMessage(),
+                    e);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Application Interfaces
+    // -------------------------------------------------------------------------
+
+    public String registerApplicationInterface(
+            RequestContext ctx, String gatewayId, ApplicationInterfaceDescription applicationInterface)
+            throws ServiceException {
+        try {
+            return registryHandler.registerApplicationInterface(gatewayId, applicationInterface);
+        } catch (Exception e) {
+            throw new ServiceException("Error while adding application interface: " + e.getMessage(), e);
+        }
+    }
+
+    public String cloneApplicationInterface(
+            RequestContext ctx, String existingAppInterfaceId, String newApplicationName, String gatewayId)
+            throws ServiceException {
+        try {
+            ApplicationInterfaceDescription existingInterface =
+                    registryHandler.getApplicationInterface(existingAppInterfaceId);
+            if (existingInterface == null) {
+                throw new ServiceException(
+                        "Provided application interface does not exist: " + existingAppInterfaceId);
+            }
+            existingInterface.setApplicationName(newApplicationName);
+            existingInterface.setApplicationInterfaceId(airavata_commonsConstants.DEFAULT_ID);
+            String interfaceId = registryHandler.registerApplicationInterface(gatewayId, existingInterface);
+            logger.debug("Cloned application interface {} for gateway {}", existingAppInterfaceId, gatewayId);
+            return interfaceId;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while cloning application interface: " + e.getMessage(), e);
+        }
+    }
+
+    public ApplicationInterfaceDescription getApplicationInterface(RequestContext ctx, String appInterfaceId)
+            throws ServiceException {
+        try {
+            return registryHandler.getApplicationInterface(appInterfaceId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application interface: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean updateApplicationInterface(
+            RequestContext ctx, String appInterfaceId, ApplicationInterfaceDescription applicationInterface)
+            throws ServiceException {
+        try {
+            return registryHandler.updateApplicationInterface(appInterfaceId, applicationInterface);
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating application interface: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean deleteApplicationInterface(RequestContext ctx, String appInterfaceId) throws ServiceException {
+        try {
+            return registryHandler.deleteApplicationInterface(appInterfaceId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while deleting application interface: " + e.getMessage(), e);
+        }
+    }
+
+    public Map<String, String> getAllApplicationInterfaceNames(RequestContext ctx, String gatewayId)
+            throws ServiceException {
+        try {
+            return registryHandler.getAllApplicationInterfaceNames(gatewayId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application interface names: " + e.getMessage(), e);
+        }
+    }
+
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(RequestContext ctx, String gatewayId)
+            throws ServiceException {
+        try {
+            return registryHandler.getAllApplicationInterfaces(gatewayId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application interfaces: " + e.getMessage(), e);
+        }
+    }
+
+    public List<InputDataObjectType> getApplicationInputs(RequestContext ctx, String appInterfaceId)
+            throws ServiceException {
+        try {
+            return registryHandler.getApplicationInputs(appInterfaceId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application inputs: " + e.getMessage(), e);
+        }
+    }
+
+    public List<OutputDataObjectType> getApplicationOutputs(RequestContext ctx, String appInterfaceId)
+            throws ServiceException {
+        try {
+            return registryHandler.getApplicationOutputs(appInterfaceId);
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving application outputs: " + e.getMessage(), e);
+        }
+    }
+
+    public Map<String, String> getAvailableAppInterfaceComputeResources(RequestContext ctx, String appInterfaceId)
+            throws ServiceException {
+        try {
+            return registryHandler.getAvailableAppInterfaceComputeResources(appInterfaceId);
+        } catch (Exception e) {
+            throw new ServiceException(
+                    "Error while retrieving available compute resources for interface: " + e.getMessage(), e);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private boolean isSharingEnabled() {
+        try {
+            return ServerSettings.isEnableSharing();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean userHasAccess(RequestContext ctx, String entityId, ResourcePermissionType permissionType) {
+        final String domainId = ctx.getGatewayId();
+        final String userId = ctx.getUserId() + "@" + domainId;
+        try {
+            final boolean hasOwnerAccess = sharingHandler.userHasAccess(
+                    domainId, userId, entityId, domainId + ":" + ResourcePermissionType.OWNER);
+            if (permissionType.equals(ResourcePermissionType.WRITE)) {
+                return hasOwnerAccess
+                        || sharingHandler.userHasAccess(
+                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.WRITE);
+            } else if (permissionType.equals(ResourcePermissionType.READ)) {
+                return hasOwnerAccess
+                        || sharingHandler.userHasAccess(
+                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.READ);
+            } else if (permissionType.equals(ResourcePermissionType.MANAGE_SHARING)) {
+                return hasOwnerAccess
+                        || sharingHandler.userHasAccess(
+                                domainId, userId, entityId, domainId + ":" + ResourcePermissionType.MANAGE_SHARING);
+            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
+                return hasOwnerAccess;
+            }
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to check if user has access", e);
+        }
+    }
+
+    private void shareEntityWithAdminGatewayGroups(Entity entity) throws Exception {
+        final String domainId = entity.getDomainId();
+        GatewayGroups gatewayGroups = retrieveGatewayGroups(domainId);
+        createManageSharingPermissionTypeIfMissing(domainId);
+        sharingHandler.shareEntityWithGroups(
+                domainId,
+                entity.getEntityId(),
+                Arrays.asList(gatewayGroups.getAdminsGroupId()),
+                domainId + ":MANAGE_SHARING",
+                true);
+        sharingHandler.shareEntityWithGroups(
+                domainId,
+                entity.getEntityId(),
+                Arrays.asList(gatewayGroups.getAdminsGroupId()),
+                domainId + ":WRITE",
+                true);
+        sharingHandler.shareEntityWithGroups(
+                domainId,
+                entity.getEntityId(),
+                Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
+                domainId + ":READ",
+                true);
+    }
+
+    private GatewayGroups retrieveGatewayGroups(String gatewayId) throws Exception {
+        if (registryHandler.isGatewayGroupsExists(gatewayId)) {
+            return registryHandler.getGatewayGroups(gatewayId);
+        } else {
+            return GatewayGroupsInitializer.initializeGatewayGroups(gatewayId);
+        }
+    }
+
+    private void createManageSharingPermissionTypeIfMissing(String domainId) throws Exception {
+        String permissionTypeId = domainId + ":MANAGE_SHARING";
+        if (!sharingHandler.isPermissionExists(domainId, permissionTypeId)) {
+            PermissionType permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(permissionTypeId);
+            permissionType.setDomainId(domainId);
+            permissionType.setName("MANAGE_SHARING");
+            sharingHandler.createPermissionType(permissionType);
+        }
+    }
+
+    private List<String> getAccessibleComputeResourceIds(RequestContext ctx, String gatewayId) throws Exception {
+        List<String> accessibleComputeResourceIds = new ArrayList<>();
+        if (isSharingEnabled()) {
+            List<SearchCriteria> filters = new ArrayList<>();
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+            searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+            searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+            filters.add(searchCriteria);
+            List<String> accessibleGroupResProfileIds = new ArrayList<>();
+            sharingHandler
+                    .searchEntities(ctx.getGatewayId(), ctx.getUserId() + "@" + gatewayId, filters, 0, -1)
+                    .forEach(p -> accessibleGroupResProfileIds.add(p.getEntityId()));
+            List<GroupResourceProfile> groupResourceProfiles =
+                    registryHandler.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+            for (GroupResourceProfile groupResourceProfile : groupResourceProfiles) {
+                List<GroupComputeResourcePreference> groupComputeResourcePreferenceList =
+                        groupResourceProfile.getComputePreferences();
+                for (GroupComputeResourcePreference pref : groupComputeResourcePreferenceList) {
+                    accessibleComputeResourceIds.add(pref.getComputeResourceId());
+                }
+            }
+        }
+        return accessibleComputeResourceIds;
+    }
+}
