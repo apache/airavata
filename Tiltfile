@@ -7,7 +7,7 @@ docker_compose('./compose.yml')
 # --- Build ---
 local_resource(
     'build',
-    cmd='mvn package -DskipTests -T4 -am -q',
+    cmd='mvn install -DskipTests -T4 -am -q',
     deps=[
         'airavata-api/src',
         'airavata-api/pom.xml',
