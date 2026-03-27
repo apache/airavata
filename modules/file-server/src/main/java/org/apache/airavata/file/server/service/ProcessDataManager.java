@@ -20,12 +20,12 @@
 package org.apache.airavata.file.server.service;
 
 import java.util.UUID;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentUtils;
+import org.apache.airavata.compute.util.AgentAdaptor;
+import org.apache.airavata.compute.util.AgentUtils;
 import org.apache.airavata.common.util.ThriftClientPool;
-import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
-import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
-import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
+import org.apache.airavata.compute.util.SSHJAgentAdaptor;
+import org.apache.airavata.compute.task.aws.AWSProcessContextManager;
+import org.apache.airavata.storage.task.OutputDataStagingTask;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.credential.store.SSHCredential;

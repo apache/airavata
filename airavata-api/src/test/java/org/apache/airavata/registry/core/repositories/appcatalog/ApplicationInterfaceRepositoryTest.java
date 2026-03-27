@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.appcatalog;
+package org.apache.airavata.compute.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

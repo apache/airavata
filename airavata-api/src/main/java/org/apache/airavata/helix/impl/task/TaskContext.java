@@ -67,7 +67,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.model.util.GroupComputeResourcePreferenceUtil;
+import org.apache.airavata.compute.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.security.service.AiravataSecurityManager;

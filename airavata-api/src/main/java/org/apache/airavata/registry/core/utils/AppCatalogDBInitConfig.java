@@ -23,7 +23,7 @@ import org.apache.airavata.common.db.DBInitConfig;
 import org.apache.airavata.common.db.JDBCConfig;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.compute.repository.GwyResourceProfileRepository;
 
 public class AppCatalogDBInitConfig implements DBInitConfig {
 
