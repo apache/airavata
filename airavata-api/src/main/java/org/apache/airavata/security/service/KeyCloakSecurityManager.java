@@ -44,7 +44,7 @@ import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.security.service.authzcache.*;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;

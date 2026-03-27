@@ -72,8 +72,8 @@ import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstant
 import org.apache.airavata.security.profile.user.core.utils.UserProfileCatalogDBInitConfig;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
-import org.apache.airavata.sharing.registry.db.utils.SharingRegistryDBInitConfig;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.server.TServer;

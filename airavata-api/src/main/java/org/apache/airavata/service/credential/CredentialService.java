@@ -32,12 +32,12 @@ import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.sharing.SharingHelper;
+import org.apache.airavata.sharing.service.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.SearchCondition;
 import org.apache.airavata.sharing.registry.models.SearchCriteria;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

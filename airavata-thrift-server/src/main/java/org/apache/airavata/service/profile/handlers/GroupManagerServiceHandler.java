@@ -35,7 +35,7 @@ import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManag
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
 import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.security.service.interceptor.SecurityCheck;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
