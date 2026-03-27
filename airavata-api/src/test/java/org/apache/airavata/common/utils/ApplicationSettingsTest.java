@@ -21,6 +21,7 @@ package org.apache.airavata.common.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.junit.jupiter.api.Test;
 
 /**

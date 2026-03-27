@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 
 /**

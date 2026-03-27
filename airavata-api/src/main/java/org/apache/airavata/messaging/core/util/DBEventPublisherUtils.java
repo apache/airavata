@@ -22,7 +22,7 @@ package org.apache.airavata.messaging.core.util;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;

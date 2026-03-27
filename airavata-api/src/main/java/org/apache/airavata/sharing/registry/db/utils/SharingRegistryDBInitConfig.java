@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.sharing.registry.db.utils;
 
-import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.db.DBInitConfig;
+import org.apache.airavata.common.db.JDBCConfig;
 
 public class SharingRegistryDBInitConfig implements DBInitConfig {
     private String dbInitScriptPrefix = "database_scripts/sharing-registry";

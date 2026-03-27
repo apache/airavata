@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;

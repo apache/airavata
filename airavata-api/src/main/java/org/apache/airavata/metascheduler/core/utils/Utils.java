@@ -20,9 +20,9 @@
 package org.apache.airavata.metascheduler.core.utils;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;

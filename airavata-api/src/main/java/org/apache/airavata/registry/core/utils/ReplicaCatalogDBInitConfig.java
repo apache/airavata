@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.registry.core.utils;
 
-import org.apache.airavata.common.utils.DBInitConfig;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.db.DBInitConfig;
+import org.apache.airavata.common.db.JDBCConfig;
 
 public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 

@@ -20,7 +20,7 @@
 package org.apache.airavata.client.secure.client;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.util.AiravataClientFactory;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

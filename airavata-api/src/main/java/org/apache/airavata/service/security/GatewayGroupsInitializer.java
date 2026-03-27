@@ -20,9 +20,9 @@
 package org.apache.airavata.service.security;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;

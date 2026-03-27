@@ -20,7 +20,7 @@
 package org.apache.airavata.db.event.manager;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.IServer;
+import org.apache.airavata.common.server.IServer;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerMessagingFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

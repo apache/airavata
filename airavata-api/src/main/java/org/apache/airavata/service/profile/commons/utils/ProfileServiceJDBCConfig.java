@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.service.profile.commons.utils;
 
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.db.JDBCConfig;
 
 public class ProfileServiceJDBCConfig implements JDBCConfig {
 

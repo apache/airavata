@@ -21,8 +21,8 @@ package org.apache.airavata.helix.impl.controller;
 
 import java.util.concurrent.CountDownLatch;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.server.IServer;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.manager.zk.ZNRecordSerializer;

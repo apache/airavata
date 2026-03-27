@@ -20,7 +20,7 @@
 package org.apache.airavata.security.userstore;
 
 import javax.sql.DataSource;
-import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.security.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
 import org.apache.shiro.authc.AuthenticationException;

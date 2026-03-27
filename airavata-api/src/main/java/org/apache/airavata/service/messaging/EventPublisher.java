@@ -22,7 +22,7 @@ package org.apache.airavata.service.messaging;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;

@@ -20,7 +20,7 @@
 package org.apache.airavata.service.sharing;
 
 import java.util.Arrays;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;

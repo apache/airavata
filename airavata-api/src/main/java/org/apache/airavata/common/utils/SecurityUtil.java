@@ -24,6 +24,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import org.apache.airavata.common.server.KeyStorePasswordCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

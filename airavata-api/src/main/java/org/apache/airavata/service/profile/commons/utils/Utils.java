@@ -21,7 +21,7 @@ package org.apache.airavata.service.profile.commons.utils;
 
 import java.net.URI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

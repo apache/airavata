@@ -20,8 +20,8 @@
 package org.apache.airavata.metascheduler.metadata.analyzer.impl;
 
 import java.util.Map;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.engine.DataAnalyzer;
 import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.status.JobState;

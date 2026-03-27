@@ -22,11 +22,11 @@ package org.apache.airavata.helix.impl.participant;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.IServer;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.server.IServer;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
-import org.apache.airavata.patform.monitoring.MonitoringServer;
+import org.apache.airavata.common.server.MonitoringServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

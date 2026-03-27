@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.repositories.expcatalog;
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity;

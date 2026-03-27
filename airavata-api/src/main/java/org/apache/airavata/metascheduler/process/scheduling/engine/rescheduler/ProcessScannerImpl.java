@@ -20,8 +20,8 @@
 package org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler;
 
 import java.util.List;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.engine.ProcessScanner;
 import org.apache.airavata.metascheduler.core.engine.ReScheduler;
 import org.apache.airavata.metascheduler.core.utils.Utils;

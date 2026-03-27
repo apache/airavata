@@ -21,8 +21,8 @@ package org.apache.airavata.orchestrator.core.impl;
 
 import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;

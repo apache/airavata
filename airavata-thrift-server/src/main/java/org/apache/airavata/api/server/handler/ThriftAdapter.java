@@ -20,7 +20,7 @@
 package org.apache.airavata.api.server.handler;
 
 import java.util.Map;
-import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.config.Constants;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;

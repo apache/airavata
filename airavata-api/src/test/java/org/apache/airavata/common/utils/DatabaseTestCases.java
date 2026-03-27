@@ -20,6 +20,7 @@
 package org.apache.airavata.common.utils;
 
 import java.sql.Connection;
+import org.apache.airavata.common.db.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MariaDBContainer;

@@ -21,13 +21,13 @@ package org.apache.airavata.sharing.registry.db.utils;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.apache.airavata.common.utils.JDBCConfig;
+import org.apache.airavata.common.db.JDBCConfig;
 
 public class JPAUtils {
     public static final String PERSISTENCE_UNIT_NAME = "airavata-sharing-registry";
     private static final JDBCConfig JDBC_CONFIG = new SharingRegistryJDBCConfig();
     private static final EntityManagerFactory factory =
-            org.apache.airavata.common.utils.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+            org.apache.airavata.common.db.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
 
     public static EntityManager getEntityManager() {
         return factory.createEntityManager();

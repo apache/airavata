@@ -28,7 +28,7 @@ import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.function.Function;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.RabbitMQProperties;

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.common.context;
 
+import org.apache.airavata.common.config.RequestContext;
+
 /**
  * The workflow context class. This will be local to a thread. Workflow data that needs to propagate relevant to a
  * request will be stored here. We use thread local globals to store request data. Currently we only store user

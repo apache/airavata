@@ -20,8 +20,8 @@
 package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.JDBCConfig;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.db.JDBCConfig;
+import org.apache.airavata.common.config.ServerSettings;
 
 public class ReplicaCatalogJDBCConfig implements JDBCConfig {
     private static final String REPLICA_CATALOG_JDBC_DRIVER = "airavata.jdbc.driver";

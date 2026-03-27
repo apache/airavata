@@ -22,7 +22,7 @@ package org.apache.airavata.helix.impl.task.parsing;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.parsing.kafka.ProcessCompletionMessageSerializer;

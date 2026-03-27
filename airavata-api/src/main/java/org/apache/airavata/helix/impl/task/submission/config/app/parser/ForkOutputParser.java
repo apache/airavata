@@ -20,7 +20,7 @@
 package org.apache.airavata.helix.impl.task.submission.config.app.parser;
 
 import java.util.Map;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;

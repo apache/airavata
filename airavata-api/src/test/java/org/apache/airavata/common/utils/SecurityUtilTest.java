@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import org.apache.airavata.common.server.KeyStorePasswordCallback;
 import org.junit.jupiter.api.Test;
 
 /**

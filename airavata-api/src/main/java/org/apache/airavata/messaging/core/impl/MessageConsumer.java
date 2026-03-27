@@ -21,7 +21,7 @@ package org.apache.airavata.messaging.core.impl;
 
 import com.rabbitmq.client.*;
 import java.io.IOException;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
