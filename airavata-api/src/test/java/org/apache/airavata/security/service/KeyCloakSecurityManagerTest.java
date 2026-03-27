@@ -44,7 +44,7 @@ import org.apache.airavata.security.service.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.service.authzcache.AuthzCacheManager;
 import org.apache.airavata.security.service.authzcache.AuthzCacheManagerFactory;
 import org.apache.airavata.security.service.authzcache.AuthzCachedStatus;
-import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
