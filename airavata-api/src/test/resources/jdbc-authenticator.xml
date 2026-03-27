@@ -21,8 +21,8 @@
   ~  */
   -->
 <authenticators>
-    <authenticator name="dbAuthenticator1" class="org.apache.airavata.security.configurations.TestDBAuthenticator1"
-                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+    <authenticator name="dbAuthenticator1" class="org.apache.airavata.security.util.TestDBAuthenticator1"
+                   enabled="true" priority="6" userstore="org.apache.airavata.security.repository.JDBCUserStore">
         <specificConfigurations>
             <database>
                 <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->

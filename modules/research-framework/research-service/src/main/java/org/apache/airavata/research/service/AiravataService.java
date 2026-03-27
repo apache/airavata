@@ -22,7 +22,7 @@ package org.apache.airavata.research.service;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.research.service.model.UserContext;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.thrift.TException;

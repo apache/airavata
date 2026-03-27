@@ -17,14 +17,14 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.client.samples;
+package org.apache.airavata.security.profile.client.samples;
 
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.client.util.ProfileServiceClientUtil;
+import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.security.profile.client.util.ProfileServiceClientUtil;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

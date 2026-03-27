@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
-import org.apache.airavata.common.utils.SecurityUtil;
+import org.apache.airavata.security.util.SecurityUtil;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.store.CredentialStoreException;

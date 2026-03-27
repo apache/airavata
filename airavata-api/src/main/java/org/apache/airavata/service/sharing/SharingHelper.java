@@ -24,7 +24,7 @@ import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.service.security.GatewayGroupsInitializer;
+import org.apache.airavata.security.service.GatewayGroupsInitializer;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;

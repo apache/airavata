@@ -50,7 +50,7 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.commons.io.FileUtils;

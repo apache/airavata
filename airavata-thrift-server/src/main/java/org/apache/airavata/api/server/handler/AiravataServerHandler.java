@@ -86,7 +86,7 @@ import org.apache.airavata.service.project.ProjectService;
 import org.apache.airavata.service.resource.ResourceService;
 import org.apache.airavata.service.resourceprofile.GatewayResourceProfileService;
 import org.apache.airavata.service.resourceprofile.UserResourceProfileService;
-import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.service.interceptor.SecurityCheck;
 import org.apache.airavata.service.sharing.ResourceSharingService;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;

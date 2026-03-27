@@ -78,12 +78,12 @@ super_tenant_gatewayId: "default"
 airavata_jdbc_driver: "org.mariadb.jdbc.Driver"
 
 # Security configuration
-security_manager_class: "org.apache.airavata.service.security.KeyCloakSecurityManager"
+security_manager_class: "org.apache.airavata.security.service.KeyCloakSecurityManager"
 TLS_enabled: false
 TLS_client_timeout: 10000
 keystore_path: "keystores/airavata.p12"
 authz_cache_enabled: true
-authz_cache_manager_class: "org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager"
+authz_cache_manager_class: "org.apache.airavata.security.service.authzcache.DefaultAuthzCacheManager"
 in_memory_cache_size: 1000
 
 # Keystore configuration

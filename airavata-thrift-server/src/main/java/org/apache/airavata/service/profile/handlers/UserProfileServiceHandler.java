@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.handlers;
+package org.apache.airavata.security.profile.handlers;
 
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -32,18 +32,18 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.security.AiravataSecurityException;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.security.util.AiravataSecurityException;
+import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
+import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
-import org.apache.airavata.service.security.AiravataSecurityManager;
-import org.apache.airavata.service.security.SecurityManagerFactory;
-import org.apache.airavata.service.security.UserInfo;
-import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.service.AiravataSecurityManager;
+import org.apache.airavata.security.service.SecurityManagerFactory;
+import org.apache.airavata.security.service.UserInfo;
+import org.apache.airavata.security.service.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

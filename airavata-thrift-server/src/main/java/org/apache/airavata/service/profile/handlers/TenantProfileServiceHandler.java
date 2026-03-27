@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.handlers;
+package org.apache.airavata.security.profile.handlers;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,12 +36,12 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
-import org.apache.airavata.service.profile.tenant.core.repositories.TenantProfileRepository;
+import org.apache.airavata.security.profile.commons.tenant.entities.GatewayEntity;
+import org.apache.airavata.security.profile.tenant.core.repositories.TenantProfileRepository;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
-import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.service.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

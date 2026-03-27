@@ -17,14 +17,14 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.iam.admin.services.core.tests;
+package org.apache.airavata.security.profile.iam.admin.services.core.tests;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
+import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

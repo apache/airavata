@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.profile.handlers;
+package org.apache.airavata.security.profile.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +33,8 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
-import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
-import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
+import org.apache.airavata.security.service.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.GroupType;
