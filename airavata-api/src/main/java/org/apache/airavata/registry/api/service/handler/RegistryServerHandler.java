@@ -66,7 +66,7 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
 import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.core.repositories.appcatalog.*;
+import org.apache.airavata.compute.repository.*;
 import org.apache.airavata.registry.core.repositories.expcatalog.*;
 import org.apache.airavata.storage.repository.DataProductRepository;
 import org.apache.airavata.storage.repository.DataReplicaLocationRepository;

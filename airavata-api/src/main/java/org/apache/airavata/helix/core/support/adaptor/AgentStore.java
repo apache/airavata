@@ -22,7 +22,7 @@ package org.apache.airavata.helix.core.support.adaptor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.compute.util.AgentAdaptor;
 import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;

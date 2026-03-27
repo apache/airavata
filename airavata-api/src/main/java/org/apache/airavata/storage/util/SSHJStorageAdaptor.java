@@ -20,10 +20,10 @@
 package org.apache.airavata.storage.util;
 
 import java.util.Optional;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
+import org.apache.airavata.compute.util.AgentException;
+import org.apache.airavata.compute.util.AgentUtils;
+import org.apache.airavata.compute.util.CommandOutput;
+import org.apache.airavata.compute.util.SSHJAgentAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.data.movement.DataMovementInterface;

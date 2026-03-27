@@ -20,7 +20,7 @@
 package org.apache.airavata.storage.repository;
 
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.registry.core.repositories.appcatalog.AppCatAbstractRepository;
+import org.apache.airavata.compute.repository.AppCatAbstractRepository;
 import org.apache.airavata.storage.model.StoragePreferenceEntity;
 import org.apache.airavata.storage.model.StoragePreferencePK;
 

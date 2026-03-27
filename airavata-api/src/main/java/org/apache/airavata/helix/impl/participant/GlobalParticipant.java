@@ -42,9 +42,9 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
         "org.apache.airavata.storage.task.OutputDataStagingTask",
         "org.apache.airavata.helix.impl.task.staging.JobVerificationTask",
         "org.apache.airavata.helix.impl.task.completing.CompletingTask",
-        "org.apache.airavata.helix.impl.task.submission.ForkJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.submission.LocalJobSubmissionTask",
+        "org.apache.airavata.compute.task.ForkJobSubmissionTask",
+        "org.apache.airavata.compute.task.DefaultJobSubmissionTask",
+        "org.apache.airavata.compute.task.LocalJobSubmissionTask",
         "org.apache.airavata.storage.task.ArchiveTask",
         "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask",
         "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
@@ -52,10 +52,10 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
         "org.apache.airavata.helix.impl.task.parsing.DataParsingTask",
         "org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask",
         "org.apache.airavata.helix.impl.task.mock.MockTask",
-        "org.apache.airavata.helix.impl.task.aws.CreateEC2InstanceTask",
-        "org.apache.airavata.helix.impl.task.aws.NoOperationTask",
-        "org.apache.airavata.helix.impl.task.aws.AWSJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.aws.AWSCompletingTask",
+        "org.apache.airavata.compute.task.aws.CreateEC2InstanceTask",
+        "org.apache.airavata.compute.task.aws.NoOperationTask",
+        "org.apache.airavata.compute.task.aws.AWSJobSubmissionTask",
+        "org.apache.airavata.compute.task.aws.AWSCompletingTask",
     };
 
     @SuppressWarnings("WeakerAccess")

@@ -21,7 +21,7 @@ package org.apache.airavata.storage.repository;
 
 import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.registry.core.repositories.appcatalog.AppCatAbstractRepository;
+import org.apache.airavata.compute.repository.AppCatAbstractRepository;
 import org.apache.airavata.storage.model.DataMovementInterfaceEntity;
 import org.apache.airavata.storage.model.DataMovementInterfacePK;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;

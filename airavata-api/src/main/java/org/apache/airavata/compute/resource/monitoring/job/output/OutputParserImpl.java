@@ -20,7 +20,7 @@
 package org.apache.airavata.compute.resource.monitoring.job.output;
 
 import java.util.Scanner;
-import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.compute.util.CommandOutput;
 import org.apache.airavata.compute.resource.monitoring.utils.Constants;
 
 /**

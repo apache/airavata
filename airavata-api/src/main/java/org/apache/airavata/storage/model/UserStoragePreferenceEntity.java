@@ -20,7 +20,7 @@
 package org.apache.airavata.storage.model;
 
 import jakarta.persistence.*;
-import org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity;
+import org.apache.airavata.compute.model.UserResourceProfileEntity;
 
 /**
  * The persistent class for the user_storage_preference database table.

@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.storage.util;
 
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.compute.util.AgentException;
+import org.apache.airavata.compute.util.AgentUtils;
+import org.apache.airavata.compute.util.CommandOutput;
 import org.apache.airavata.storage.util.StorageResourceAdaptor;
-import org.apache.airavata.helix.agent.ssh.SshAdaptorParams;
-import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
+import org.apache.airavata.compute.util.SshAdaptorParams;
+import org.apache.airavata.compute.util.SshAgentAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.slf4j.Logger;

@@ -22,9 +22,9 @@ package org.apache.airavata.storage.util;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.CommandOutput;
+import org.apache.airavata.compute.util.AgentAdaptor;
+import org.apache.airavata.compute.util.AgentException;
+import org.apache.airavata.compute.util.CommandOutput;
 
 public interface StorageResourceAdaptor extends AgentAdaptor {
     public void init(String storageResourceId, String gatewayId, String loginUser, String token) throws AgentException;

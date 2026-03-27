@@ -22,7 +22,7 @@ package org.apache.airavata.storage.task;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.airavata.agents.api.*;
+import org.apache.airavata.compute.util.*;
 import org.apache.airavata.storage.util.FileMetadata;
 import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.apache.airavata.common.config.ServerSettings;

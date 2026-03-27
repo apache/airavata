@@ -20,7 +20,7 @@
 package org.apache.airavata.storage.repository;
 
 import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.registry.core.repositories.appcatalog.AppCatAbstractRepository;
+import org.apache.airavata.compute.repository.AppCatAbstractRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

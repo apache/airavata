@@ -26,7 +26,7 @@ import org.apache.airavata.storage.task.ArchiveTask;
 import org.apache.airavata.storage.task.InputDataStagingTask;
 import org.apache.airavata.helix.impl.task.staging.JobVerificationTask;
 import org.apache.airavata.storage.task.OutputDataStagingTask;
-import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
+import org.apache.airavata.compute.task.DefaultJobSubmissionTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

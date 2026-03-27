@@ -21,7 +21,7 @@ package org.apache.airavata.storage.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity;
+import org.apache.airavata.compute.model.GatewayProfileEntity;
 
 /**
  * The persistent class for the storage_preference database table.
