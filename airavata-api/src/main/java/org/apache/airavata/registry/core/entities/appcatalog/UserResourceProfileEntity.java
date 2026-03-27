@@ -22,6 +22,7 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.util.*;
+import org.apache.airavata.storage.model.UserStoragePreferenceEntity;
 
 /**
  * The persistent class for the user_resource_profile database table.

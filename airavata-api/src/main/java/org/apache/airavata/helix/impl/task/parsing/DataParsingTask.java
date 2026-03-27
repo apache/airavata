@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
+import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;

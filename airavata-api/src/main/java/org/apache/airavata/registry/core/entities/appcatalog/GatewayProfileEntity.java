@@ -23,6 +23,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.storage.model.StoragePreferenceEntity;
 
 /**
  * The persistent class for the gateway_profile database table.

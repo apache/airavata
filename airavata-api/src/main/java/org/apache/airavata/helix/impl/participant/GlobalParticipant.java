@@ -38,14 +38,14 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
 
     public static final String[] TASK_CLASS_NAMES = {
         "org.apache.airavata.credential.task.EnvSetupTask",
-        "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
-        "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
+        "org.apache.airavata.storage.task.InputDataStagingTask",
+        "org.apache.airavata.storage.task.OutputDataStagingTask",
         "org.apache.airavata.helix.impl.task.staging.JobVerificationTask",
         "org.apache.airavata.helix.impl.task.completing.CompletingTask",
         "org.apache.airavata.helix.impl.task.submission.ForkJobSubmissionTask",
         "org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask",
         "org.apache.airavata.helix.impl.task.submission.LocalJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.staging.ArchiveTask",
+        "org.apache.airavata.storage.task.ArchiveTask",
         "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask",
         "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
         "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask",

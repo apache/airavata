@@ -75,7 +75,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.appcatalog.ApplicationCatalogService;
 import org.apache.airavata.credential.service.CredentialService;
-import org.apache.airavata.service.dataproduct.DataProductService;
+import org.apache.airavata.storage.service.DataProductService;
 import org.apache.airavata.service.experiment.ExperimentService;
 import org.apache.airavata.service.gateway.GatewayService;
 import org.apache.airavata.service.groupprofile.GroupResourceProfileService;

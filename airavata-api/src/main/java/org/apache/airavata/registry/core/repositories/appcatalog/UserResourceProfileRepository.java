@@ -28,7 +28,8 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePrefe
 import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferencePK;
 import org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfilePK;
-import org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferencePK;
+import org.apache.airavata.storage.model.UserStoragePreferencePK;
+import org.apache.airavata.storage.repository.UserStoragePreferenceRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;

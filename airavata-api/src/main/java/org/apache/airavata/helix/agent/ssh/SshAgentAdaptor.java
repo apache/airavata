@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.agents.api.*;
+import org.apache.airavata.storage.util.FileMetadata;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;

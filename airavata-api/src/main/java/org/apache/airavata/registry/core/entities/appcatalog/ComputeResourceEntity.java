@@ -23,6 +23,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.storage.model.DataMovementInterfaceEntity;
 
 /**
  * The persistent class for the compute_resource database table.

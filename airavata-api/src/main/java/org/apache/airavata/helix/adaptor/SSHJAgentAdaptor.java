@@ -43,6 +43,7 @@ import net.schmizz.sshj.xfer.LocalDestFile;
 import net.schmizz.sshj.xfer.LocalFileFilter;
 import net.schmizz.sshj.xfer.LocalSourceFile;
 import org.apache.airavata.agents.api.*;
+import org.apache.airavata.storage.util.FileMetadata;
 import org.apache.airavata.helix.adaptor.wrapper.SCPFileTransferWrapper;
 import org.apache.airavata.helix.adaptor.wrapper.SFTPClientWrapper;
 import org.apache.airavata.helix.adaptor.wrapper.SessionWrapper;

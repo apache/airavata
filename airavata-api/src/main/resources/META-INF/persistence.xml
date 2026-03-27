@@ -35,7 +35,7 @@
   </persistence-unit>
   <persistence-unit name="appcatalog_data_new">
     <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity</class>
+    <class>org.apache.airavata.storage.model.GridftpDataMovementEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity</class>
@@ -43,19 +43,19 @@
     <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInterfaceEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayGroupsEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.StorageResourceEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.ScpDataMovementEntity</class>
+    <class>org.apache.airavata.storage.model.StorageResourceEntity</class>
+    <class>org.apache.airavata.storage.model.ScpDataMovementEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.SshJobSubmissionEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusSubmissionEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshSubmissionEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointEntity</class>
+    <class>org.apache.airavata.storage.model.GridftpEndpointEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferenceEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.JobSubmissionInterfaceEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfaceEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfaceEntity</class>
+    <class>org.apache.airavata.storage.model.DataMovementInterfaceEntity</class>
+    <class>org.apache.airavata.storage.model.StorageInterfaceEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.LocalSubmissionEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusGkEndpointEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.UnicoreDatamovementEntity</class>
+    <class>org.apache.airavata.storage.model.UnicoreDatamovementEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.UnicoreSubmissionEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandEntity</class>
@@ -73,8 +73,8 @@
     <class>org.apache.airavata.registry.core.entities.appcatalog.CloudJobSubmissionEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.LocalDataMovementEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.StoragePreferenceEntity</class>
+    <class>org.apache.airavata.storage.model.LocalDataMovementEntity</class>
+    <class>org.apache.airavata.storage.model.StoragePreferenceEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.SSHAccountProvisionerConfiguration</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueueResourcePolicyEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePolicyEntity</class>
@@ -86,7 +86,7 @@
     <class>org.apache.airavata.registry.core.entities.appcatalog.ModuleLoadCmdEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity</class>
-    <class>org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity</class>
+    <class>org.apache.airavata.storage.model.UserStoragePreferenceEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ParserEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ParserInputEntity</class>
     <class>org.apache.airavata.registry.core.entities.appcatalog.ParserOutputEntity</class>
@@ -104,11 +104,11 @@
   </persistence-unit>
   <persistence-unit name="replicacatalog_data_new">
     <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-    <class>org.apache.airavata.registry.core.entities.replicacatalog.ConfigurationEntity</class>
-    <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
-    <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
-    <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity</class>
-    <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
+    <class>org.apache.airavata.storage.model.ConfigurationEntity</class>
+    <class>org.apache.airavata.storage.model.DataProductEntity</class>
+    <class>org.apache.airavata.storage.model.DataProductMetadataEntity</class>
+    <class>org.apache.airavata.storage.model.DataReplicaLocationEntity</class>
+    <class>org.apache.airavata.storage.model.DataReplicaMetadataEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="openjpa.jdbc.MappingDefaults"

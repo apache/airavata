@@ -30,8 +30,10 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
-import org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity;
+import org.apache.airavata.storage.model.DataReplicaMetadataEntity;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
+import org.apache.airavata.storage.repository.DataProductRepository;
+import org.apache.airavata.storage.repository.DataReplicaLocationRepository;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.junit.jupiter.api.Test;
 

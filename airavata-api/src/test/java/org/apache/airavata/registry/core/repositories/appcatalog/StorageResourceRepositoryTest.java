@@ -31,6 +31,7 @@ import org.apache.airavata.model.data.movement.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
+import org.apache.airavata.storage.repository.StorageResourceRepository;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
