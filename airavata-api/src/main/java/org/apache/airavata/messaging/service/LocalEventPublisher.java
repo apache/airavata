@@ -17,26 +17,29 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.registry.utils;
+package org.apache.airavata.messaging.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.airavata.messaging.util.DBEventService;
+import com.google.common.eventbus.EventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Created by Ajinkya on 3/28/17.
- */
-public class Constants {
-    /**
-     * List of publishers in which sharing service is interested.
-     * Add publishers as required
-     */
-    public static final List<String> PUBLISHERS = new ArrayList<String>() {
-        {
-            add(DBEventService.USER_PROFILE.toString());
-            add(DBEventService.TENANT.toString());
-            add(DBEventService.REGISTRY.toString());
-            add(DBEventService.IAM_ADMIN.toString());
-        }
-    };
+public class LocalEventPublisher {
+    private static final Logger logger = LoggerFactory.getLogger(LocalEventPublisher.class);
+    private EventBus eventBus;
+
+    public LocalEventPublisher(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
+    public void registerListener(Object listener) {
+        eventBus.register(listener);
+    }
+
+    public void unregisterListener(Object listener) {
+        eventBus.unregister(listener);
+    }
+
+    public void publish(Object o) {
+        eventBus.post(o);
+    }
 }

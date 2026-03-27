@@ -17,26 +17,17 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.registry.utils;
+package org.apache.airavata.messaging.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.airavata.messaging.util.DBEventService;
+@Deprecated
+public abstract class MessagingConstants {
+    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
+    public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status.exchange.name";
+    public static final String RABBITMQ_TASK_EXCHANGE_NAME = "rabbitmq.task.exchange.name";
 
-/**
- * Created by Ajinkya on 3/28/17.
- */
-public class Constants {
-    /**
-     * List of publishers in which sharing service is interested.
-     * Add publishers as required
-     */
-    public static final List<String> PUBLISHERS = new ArrayList<String>() {
-        {
-            add(DBEventService.USER_PROFILE.toString());
-            add(DBEventService.TENANT.toString());
-            add(DBEventService.REGISTRY.toString());
-            add(DBEventService.IAM_ADMIN.toString());
-        }
-    };
+    public static final String RABBIT_ROUTING_KEY = "routingKey";
+    public static final String RABBIT_QUEUE = "queue";
+    public static final String RABBIT_CONSUMER_TAG = "consumerTag";
+    public static final String DURABLE_QUEUE = "durable.queue";
+    public static final String PREFETCH_COUNT = "prefetch.count";
 }

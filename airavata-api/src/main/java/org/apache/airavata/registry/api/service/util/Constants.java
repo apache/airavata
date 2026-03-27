@@ -21,7 +21,7 @@ package org.apache.airavata.registry.api.service.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.messaging.util.DBEventService;
 
 public class Constants {
     public static final String REGISTRY_SERVER_PORT = "regserver.server.port";

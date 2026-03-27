@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;

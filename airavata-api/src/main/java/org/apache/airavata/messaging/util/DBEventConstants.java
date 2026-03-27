@@ -17,26 +17,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.registry.utils;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.airavata.messaging.util.DBEventService;
+package org.apache.airavata.messaging.util;
 
 /**
- * Created by Ajinkya on 3/28/17.
+ * Created by Ajinkya on 3/1/17.
  */
-public class Constants {
-    /**
-     * List of publishers in which sharing service is interested.
-     * Add publishers as required
-     */
-    public static final List<String> PUBLISHERS = new ArrayList<String>() {
-        {
-            add(DBEventService.USER_PROFILE.toString());
-            add(DBEventService.TENANT.toString());
-            add(DBEventService.REGISTRY.toString());
-            add(DBEventService.IAM_ADMIN.toString());
-        }
-    };
+public class DBEventConstants {
+
+    public static final String DB_EVENT_MGR_ZK_PATH = "db-event-mgr";
 }

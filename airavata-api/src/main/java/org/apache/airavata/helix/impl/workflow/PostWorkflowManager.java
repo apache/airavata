@@ -30,7 +30,7 @@ import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.HelixTaskFactory;
 import org.apache.airavata.helix.impl.task.TaskFactory;
-import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;

@@ -17,26 +17,28 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.registry.utils;
+package org.apache.airavata.messaging.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.airavata.messaging.util.DBEventService;
+import org.apache.airavata.common.exception.AiravataException;
 
 /**
- * Created by Ajinkya on 3/28/17.
+ * This is the basic publisher interface.
  */
-public class Constants {
+// @FunctionalInterface
+public interface Publisher {
+
     /**
-     * List of publishers in which sharing service is interested.
-     * Add publishers as required
+     *
+     * @param messageContext object of message context which will include actual event and other information
+     * @throws AiravataException
      */
-    public static final List<String> PUBLISHERS = new ArrayList<String>() {
-        {
-            add(DBEventService.USER_PROFILE.toString());
-            add(DBEventService.TENANT.toString());
-            add(DBEventService.REGISTRY.toString());
-            add(DBEventService.IAM_ADMIN.toString());
-        }
-    };
+    public void publish(MessageContext messageContext) throws AiravataException;
+
+    /**
+     * For publishing DB Events
+     * @param messageContext object of message context which will include actual db event and other information
+     * @param routingKey
+     * @throws AiravataException
+     */
+    public void publish(MessageContext messageContext, String routingKey) throws AiravataException;
 }

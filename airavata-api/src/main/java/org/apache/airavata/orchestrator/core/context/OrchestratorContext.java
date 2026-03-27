@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.orchestrator.core.context;
 
-import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 
 /**

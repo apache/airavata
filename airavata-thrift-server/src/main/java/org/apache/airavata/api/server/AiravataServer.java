@@ -36,7 +36,7 @@ import org.apache.airavata.compute.resource.monitoring.ComputationalResourceMoni
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.store.impl.util.CredentialStoreDBInitConfig;
-import org.apache.airavata.db.event.manager.DBEventManagerRunner;
+import org.apache.airavata.messaging.handler.DBEventManagerRunner;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.impl.controller.HelixController;
 import org.apache.airavata.helix.impl.participant.GlobalParticipant;

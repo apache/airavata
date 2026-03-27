@@ -50,7 +50,7 @@ import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
 import org.apache.airavata.service.exception.ServiceNotFoundException;
 import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
-import org.apache.airavata.service.messaging.EventPublisher;
+import org.apache.airavata.messaging.service.EventPublisher;
 import org.apache.airavata.service.sharing.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.EntitySearchField;
