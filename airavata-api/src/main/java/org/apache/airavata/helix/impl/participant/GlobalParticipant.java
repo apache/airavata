@@ -37,7 +37,7 @@ public class GlobalParticipant extends HelixParticipant<AbstractTask> implements
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
 
     public static final String[] TASK_CLASS_NAMES = {
-        "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
+        "org.apache.airavata.credential.task.EnvSetupTask",
         "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
         "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
         "org.apache.airavata.helix.impl.task.staging.JobVerificationTask",

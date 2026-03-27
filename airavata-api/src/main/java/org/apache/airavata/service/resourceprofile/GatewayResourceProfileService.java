@@ -21,9 +21,9 @@ package org.apache.airavata.service.resourceprofile;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.accountprovisioning.ConfigParam;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
+import org.apache.airavata.credential.service.provisioning.ConfigParam;
+import org.apache.airavata.credential.service.provisioning.SSHAccountProvisionerFactory;
+import org.apache.airavata.credential.service.provisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParamType;

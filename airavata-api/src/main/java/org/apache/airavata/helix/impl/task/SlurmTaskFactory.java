@@ -20,7 +20,7 @@
 package org.apache.airavata.helix.impl.task;
 
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
-import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
+import org.apache.airavata.credential.task.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.parsing.ParsingTriggeringTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;

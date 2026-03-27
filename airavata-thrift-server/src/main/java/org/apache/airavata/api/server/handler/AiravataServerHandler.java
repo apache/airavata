@@ -26,7 +26,7 @@ import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.credential.store.server.CredentialStoreServerHandler;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.messaging.service.MessagingFactory;
 import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.messaging.service.Type;
@@ -74,7 +74,7 @@ import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.appcatalog.ApplicationCatalogService;
-import org.apache.airavata.service.credential.CredentialService;
+import org.apache.airavata.credential.service.CredentialService;
 import org.apache.airavata.service.dataproduct.DataProductService;
 import org.apache.airavata.service.experiment.ExperimentService;
 import org.apache.airavata.service.gateway.GatewayService;
@@ -115,7 +115,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private final GroupResourceProfileService groupResourceProfileService;
     private final ParserService parserService;
     private final ResourceSharingService resourceSharingService;
-    private final org.apache.airavata.service.ssh.SSHAccountService sshAccountService;
+    private final org.apache.airavata.credential.service.SSHAccountService sshAccountService;
 
     public AiravataServerHandler(
             RegistryServerHandler registryHandler,
@@ -148,7 +148,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         this.resourceService = new ResourceService(registryHandler, this.groupResourceProfileService);
         this.parserService = new ParserService(registryHandler);
         this.resourceSharingService = new ResourceSharingService(sharingHandler, registryHandler);
-        this.sshAccountService = new org.apache.airavata.service.ssh.SSHAccountService(credentialHandler);
+        this.sshAccountService = new org.apache.airavata.credential.service.SSHAccountService(credentialHandler);
     }
 
     public AiravataServerHandler() throws Exception {
