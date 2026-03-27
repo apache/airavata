@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.registry;
+package org.apache.airavata.sharing.handler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
