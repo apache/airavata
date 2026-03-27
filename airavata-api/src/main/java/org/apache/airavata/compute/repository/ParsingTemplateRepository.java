@@ -22,10 +22,10 @@ package org.apache.airavata.compute.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.compute.model.ParsingTemplateEntity;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
+import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 
 public class ParsingTemplateRepository
         extends AppCatAbstractRepository<ParsingTemplate, ParsingTemplateEntity, String> {

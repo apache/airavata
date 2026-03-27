@@ -22,15 +22,15 @@ package org.apache.airavata.compute.repository;
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.compute.model.ApplicationDeploymentEntity;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.ApplicationDeployment;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

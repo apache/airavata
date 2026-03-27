@@ -24,9 +24,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.execution.handler.RegistryServerHandler;
-import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.model.workspace.Notification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

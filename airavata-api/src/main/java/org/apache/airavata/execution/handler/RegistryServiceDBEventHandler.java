@@ -21,15 +21,15 @@ package org.apache.airavata.execution.handler;
 
 import java.time.Duration;
 import java.util.List;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.messaging.util.DBEventService;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessageHandler;
 import org.apache.airavata.messaging.util.DBEventPublisherUtils;
+import org.apache.airavata.messaging.util.DBEventService;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventPublisherContext;

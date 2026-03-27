@@ -23,12 +23,12 @@ import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.compute.model.ParserEntity;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
+import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

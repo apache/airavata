@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -31,8 +33,6 @@ import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.execution.util.common.TestBase;
-import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

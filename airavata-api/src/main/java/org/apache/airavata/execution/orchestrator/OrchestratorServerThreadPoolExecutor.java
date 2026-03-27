@@ -21,8 +21,8 @@ package org.apache.airavata.execution.orchestrator;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

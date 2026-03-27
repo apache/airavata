@@ -80,8 +80,8 @@ public class Utility {
         return new char[0];
     }
 
-    public static org.apache.airavata.credential.model.SSHCredential generateKeyPair(
-            SSHCredential credential) throws Exception {
+    public static org.apache.airavata.credential.model.SSHCredential generateKeyPair(SSHCredential credential)
+            throws Exception {
         JSch jsch = new JSch();
         try {
             KeyPair kpair = KeyPair.genKeyPair(jsch, KeyPair.RSA, 2048);

@@ -22,8 +22,6 @@ package org.apache.airavata.execution.scheduler;
 import java.util.Map;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftClientPool;
-import org.apache.airavata.execution.scheduler.DataAnalyzer;
-import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.api.RegistryService;

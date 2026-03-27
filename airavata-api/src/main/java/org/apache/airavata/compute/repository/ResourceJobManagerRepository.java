@@ -23,12 +23,12 @@ import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.compute.model.*;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 
 public class ResourceJobManagerRepository
         extends AppCatAbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.security.util;
 
-import org.apache.airavata.security.util.UserStore;
 import org.w3c.dom.Node;
 
 /**

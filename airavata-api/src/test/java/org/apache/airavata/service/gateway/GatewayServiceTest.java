@@ -24,9 +24,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.execution.handler.RegistryServerHandler;
-import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.compute.model.ComputeResourcePolicyEntity;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 
 /**
  * Created by skariyat on 2/10/18.

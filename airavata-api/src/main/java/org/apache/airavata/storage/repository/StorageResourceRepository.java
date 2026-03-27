@@ -20,22 +20,22 @@
 package org.apache.airavata.storage.repository;
 
 import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.compute.repository.AppCatAbstractRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.data.movement.DataMovementInterface;
-import org.apache.airavata.storage.model.StorageInterfaceEntity;
-import org.apache.airavata.storage.model.StorageInterfacePK;
-import org.apache.airavata.storage.model.StorageResourceEntity;
+import org.apache.airavata.compute.repository.AppCatAbstractRepository;
 import org.apache.airavata.execution.util.AppCatalogUtils;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.StorageResource;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.storage.model.StorageInterfaceEntity;
+import org.apache.airavata.storage.model.StorageInterfacePK;
+import org.apache.airavata.storage.model.StorageResourceEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

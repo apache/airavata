@@ -19,11 +19,12 @@
 */
 package org.apache.airavata.execution.orchestrator;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftUtils;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
@@ -31,7 +32,6 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

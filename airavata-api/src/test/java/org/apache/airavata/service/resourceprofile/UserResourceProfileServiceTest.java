@@ -24,13 +24,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
+import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.execution.service.ServiceException;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.execution.handler.RegistryServerHandler;
-import org.apache.airavata.execution.service.RequestContext;
-import org.apache.airavata.execution.service.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.execution.util;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.db.DBInitConfig;
 import org.apache.airavata.common.db.JDBCConfig;
-import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.execution.repository.GatewayRepository;
+import org.apache.airavata.execution.repository.UserRepository;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.execution.repository.GatewayRepository;
-import org.apache.airavata.execution.repository.UserRepository;
 
 public class ExpCatalogDBInitConfig implements DBInitConfig {
 

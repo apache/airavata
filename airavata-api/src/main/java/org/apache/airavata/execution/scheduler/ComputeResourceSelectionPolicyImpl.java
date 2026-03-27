@@ -20,8 +20,6 @@
 package org.apache.airavata.execution.scheduler;
 
 import org.apache.airavata.common.util.ThriftClientPool;
-import org.apache.airavata.execution.scheduler.ComputeResourceSelectionPolicy;
-import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.registry.api.RegistryService;
 

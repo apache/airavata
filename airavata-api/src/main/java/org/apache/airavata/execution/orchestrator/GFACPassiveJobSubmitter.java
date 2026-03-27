@@ -20,9 +20,9 @@
 package org.apache.airavata.execution.orchestrator;
 
 import java.util.UUID;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.credential.repository.CredentialReader;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessagingFactory;
@@ -31,10 +31,6 @@ import org.apache.airavata.messaging.service.Type;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
-import org.apache.airavata.execution.orchestrator.OrchestratorContext;
-import org.apache.airavata.execution.orchestrator.OrchestratorException;
-import org.apache.airavata.execution.orchestrator.JobSubmitter;
-import org.apache.airavata.execution.orchestrator.OrchestratorUtils;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;

@@ -23,14 +23,14 @@ import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataProductType;
-import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.DataProductInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataProductType;
+import org.apache.airavata.storage.model.DataProductEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

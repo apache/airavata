@@ -21,11 +21,9 @@ package org.apache.airavata.execution.orchestrator;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.execution.orchestrator.AbstractTask;
-import org.apache.airavata.execution.orchestrator.HelixParticipant;
 import org.apache.airavata.common.server.MonitoringServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -26,13 +26,13 @@ package org.apache.airavata.execution.orchestrator;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.execution.util.ExperimentModelUtil;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.execution.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.thrift.TException;
 

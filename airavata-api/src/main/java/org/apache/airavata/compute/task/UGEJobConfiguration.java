@@ -21,9 +21,6 @@ package org.apache.airavata.compute.task;
 
 import java.io.File;
 import java.util.Map;
-import org.apache.airavata.compute.task.JobManagerConfiguration;
-import org.apache.airavata.compute.task.OutputParser;
-import org.apache.airavata.compute.task.RawCommandInfo;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.commons.io.FilenameUtils;
 

@@ -20,7 +20,6 @@
 package org.apache.airavata.compute.util;
 
 import java.io.*;
-import org.apache.airavata.compute.util.AdaptorParams;
 
 /**
  * TODO: Class level comments please

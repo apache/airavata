@@ -21,8 +21,8 @@ package org.apache.airavata.compute.task.aws;
 
 import org.apache.airavata.execution.orchestrator.AiravataTask;
 import org.apache.airavata.execution.orchestrator.TaskContext;
-import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.airavata.execution.orchestrator.TaskDef;
+import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.helix.task.TaskResult;
 
 @TaskDef(name = "No Operation Task")

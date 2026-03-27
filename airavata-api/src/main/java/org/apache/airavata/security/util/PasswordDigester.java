@@ -22,8 +22,6 @@ package org.apache.airavata.security.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.apache.airavata.security.util.SecurityUtil;
-import org.apache.airavata.security.util.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

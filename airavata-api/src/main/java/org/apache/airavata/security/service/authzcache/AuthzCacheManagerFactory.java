@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.security.service.authzcache;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

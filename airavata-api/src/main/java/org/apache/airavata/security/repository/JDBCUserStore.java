@@ -21,8 +21,8 @@ package org.apache.airavata.security.repository;
 
 import javax.sql.DataSource;
 import org.apache.airavata.common.db.DBUtil;
-import org.apache.airavata.security.util.UserStoreException;
 import org.apache.airavata.security.util.PasswordDigester;
+import org.apache.airavata.security.util.UserStoreException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

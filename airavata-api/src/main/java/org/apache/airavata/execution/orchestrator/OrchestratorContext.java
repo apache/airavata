@@ -20,7 +20,6 @@
 package org.apache.airavata.execution.orchestrator;
 
 import org.apache.airavata.messaging.service.Publisher;
-import org.apache.airavata.execution.orchestrator.OrchestratorConfiguration;
 
 /**
  * This is the context object used in orchestrator which

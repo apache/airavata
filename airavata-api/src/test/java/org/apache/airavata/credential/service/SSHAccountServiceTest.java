@@ -23,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
-import org.apache.airavata.credential.service.provisioning.SSHAccountManager;
 import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.credential.service.provisioning.SSHAccountManager;
 import org.apache.airavata.execution.service.RequestContext;
 import org.apache.airavata.execution.service.ServiceException;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.credential.store.SSHCredential;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

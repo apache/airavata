@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.compute.model.BatchQueueResourcePolicyEntity;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 
 /**
  * Created by skariyat on 2/10/18.

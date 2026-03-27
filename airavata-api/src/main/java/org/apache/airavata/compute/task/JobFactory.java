@@ -19,11 +19,9 @@
 */
 package org.apache.airavata.compute.task;
 
-import org.apache.airavata.compute.task.*;
-import org.apache.airavata.compute.task.*;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,13 +21,12 @@ package org.apache.airavata.execution.task;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.execution.orchestrator.AiravataTask;
 import org.apache.airavata.execution.orchestrator.TaskContext;
-import org.apache.airavata.execution.task.ProcessCompletionMessageSerializer;
-import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.airavata.execution.orchestrator.TaskDef;
+import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.helix.task.TaskResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;

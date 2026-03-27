@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.execution.monitor.JobStatusResult;
 import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

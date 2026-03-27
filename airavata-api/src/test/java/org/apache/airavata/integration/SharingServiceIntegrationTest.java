@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
-import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.models.*;
+import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

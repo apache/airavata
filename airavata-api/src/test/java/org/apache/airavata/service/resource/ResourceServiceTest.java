@@ -23,13 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
+import org.apache.airavata.execution.service.ServiceException;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
-import org.apache.airavata.execution.handler.RegistryServerHandler;
-import org.apache.airavata.execution.service.ServiceException;
-import org.apache.airavata.compute.service.GroupResourceProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.credential.util.notifier.impl;
 
+import org.apache.airavata.credential.repository.CredentialStoreException;
 import org.apache.airavata.credential.util.notifier.CredentialStoreNotifier;
 import org.apache.airavata.credential.util.notifier.NotificationMessage;
-import org.apache.airavata.credential.repository.CredentialStoreException;
 import org.apache.commons.mail.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

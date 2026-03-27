@@ -23,15 +23,15 @@ import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.execution.model.ProjectEntity;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
+import org.apache.airavata.execution.util.cpi.Constants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.execution.util.cpi.ResultOrderType;
-import org.apache.airavata.execution.util.cpi.Constants;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.workspace.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

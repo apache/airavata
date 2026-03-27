@@ -19,9 +19,6 @@
 */
 package org.apache.airavata.execution.orchestrator;
 
-import org.apache.airavata.execution.orchestrator.OrchestratorContext;
-import org.apache.airavata.execution.orchestrator.OrchestratorException;
-
 /**
  * This is the submitter interface, orchestrator can
  * submit jobs to gfac in different modes, gfac running embedded

@@ -21,9 +21,8 @@ package org.apache.airavata.execution.monitor;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.execution.monitor.JobStatusResult;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;

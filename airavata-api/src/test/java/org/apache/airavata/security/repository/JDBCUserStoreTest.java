@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.db.DerbyUtil;
+import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.security.util.UserStore;
 import org.junit.jupiter.api.*;
 import org.w3c.dom.Document;

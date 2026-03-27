@@ -22,12 +22,11 @@ package org.apache.airavata.execution.orchestrator;
 import java.util.Optional;
 import org.apache.airavata.compute.util.AgentAdaptor;
 import org.apache.airavata.compute.util.AgentException;
-import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.apache.airavata.compute.util.SSHJAgentAdaptor;
-import org.apache.airavata.storage.util.SSHJStorageAdaptor;
-import org.apache.airavata.execution.orchestrator.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.storage.util.SSHJStorageAdaptor;
+import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

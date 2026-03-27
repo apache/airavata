@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.execution.util;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.db.DBInitConfig;
 import org.apache.airavata.common.db.JDBCConfig;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.compute.repository.GwyResourceProfileRepository;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
 public class AppCatalogDBInitConfig implements DBInitConfig {
 

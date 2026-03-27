@@ -22,9 +22,9 @@ package org.apache.airavata.sharing.repository;
 import java.util.*;
 import org.apache.airavata.sharing.model.EntityEntity;
 import org.apache.airavata.sharing.model.EntityPK;
+import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.DBConstants;
 import org.apache.airavata.sharing.util.SharingRegistryJDBCConfig;
-import org.apache.airavata.sharing.registry.models.*;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
 

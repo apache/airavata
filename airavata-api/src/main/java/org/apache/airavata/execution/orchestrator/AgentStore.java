@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.compute.util.AgentAdaptor;
-import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.storage.util.StorageResourceAdaptor;
 
 /**
  * TODO: Class level comments please

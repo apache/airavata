@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.execution.scheduler;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessagingFactory;

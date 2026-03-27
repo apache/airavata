@@ -22,6 +22,10 @@ package org.apache.airavata.integration;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.airavata.common.db.DBInitializer;
+import org.apache.airavata.execution.repository.ExperimentRepository;
+import org.apache.airavata.execution.repository.GatewayRepository;
+import org.apache.airavata.execution.repository.ProjectRepository;
+import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -29,10 +33,6 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.execution.repository.ExperimentRepository;
-import org.apache.airavata.execution.repository.GatewayRepository;
-import org.apache.airavata.execution.repository.ProjectRepository;
-import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.compute.model.ApplicationModuleEntity;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 
 public class ApplicationModuleRepository
         extends AppCatAbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {

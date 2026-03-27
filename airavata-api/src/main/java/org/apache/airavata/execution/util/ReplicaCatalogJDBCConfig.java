@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.execution.util;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.db.JDBCConfig;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.db.JDBCConfig;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 public class ReplicaCatalogJDBCConfig implements JDBCConfig {
     private static final String REPLICA_CATALOG_JDBC_DRIVER = "airavata.jdbc.driver";

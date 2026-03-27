@@ -22,14 +22,14 @@ package org.apache.airavata.execution.repository;
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
-import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.execution.model.TaskStatusEntity;
 import org.apache.airavata.execution.model.TaskStatusPK;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.TaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

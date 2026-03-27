@@ -23,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.execution.util.cpi.RegistryException;
+import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.junit.jupiter.api.Test;
 
 public class GatewayRepositoryTest extends TestBase {

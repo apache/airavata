@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.compute.model.ApplicationInputEntity;
 import org.apache.airavata.compute.model.ApplicationInputPK;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 
 public class ApplicationInputRepository
         extends AppCatAbstractRepository<InputDataObjectType, ApplicationInputEntity, ApplicationInputPK> {

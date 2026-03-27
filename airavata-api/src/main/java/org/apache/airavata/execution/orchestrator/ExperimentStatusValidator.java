@@ -26,7 +26,6 @@ import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.execution.orchestrator.JobMetadataValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

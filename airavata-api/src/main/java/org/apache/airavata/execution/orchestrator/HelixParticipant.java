@@ -20,11 +20,8 @@
 package org.apache.airavata.execution.orchestrator;
 
 import java.util.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.execution.orchestrator.AbstractTask;
-import org.apache.airavata.execution.orchestrator.TaskHelperImpl;
-import org.apache.airavata.execution.orchestrator.TaskDef;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.helix.InstanceType;
 import org.apache.helix.examples.OnlineOfflineStateModelFactory;
 import org.apache.helix.manager.zk.ZKHelixAdmin;

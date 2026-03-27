@@ -20,16 +20,14 @@
 package org.apache.airavata.execution.service;
 
 import java.util.List;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.execution.handler.RegistryServerHandler;
-import org.apache.airavata.execution.service.RequestContext;
-import org.apache.airavata.execution.service.ServiceException;
-import org.apache.airavata.sharing.service.SharingHelper;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.EntityType;
 import org.apache.airavata.sharing.registry.models.PermissionType;
-import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.service.SharingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

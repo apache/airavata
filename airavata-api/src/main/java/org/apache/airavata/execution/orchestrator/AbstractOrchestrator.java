@@ -20,13 +20,8 @@
 package org.apache.airavata.execution.orchestrator;
 
 import java.io.IOException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.execution.orchestrator.OrchestratorConfiguration;
-import org.apache.airavata.execution.orchestrator.OrchestratorContext;
-import org.apache.airavata.execution.orchestrator.OrchestratorException;
-import org.apache.airavata.execution.orchestrator.OrchestratorUtils;
-import org.apache.airavata.execution.orchestrator.Orchestrator;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

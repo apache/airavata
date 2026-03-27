@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.execution.orchestrator;
 
-import org.apache.airavata.execution.task.CompletingTask;
+import org.apache.airavata.compute.task.DefaultJobSubmissionTask;
 import org.apache.airavata.credential.task.EnvSetupTask;
+import org.apache.airavata.execution.task.CompletingTask;
+import org.apache.airavata.execution.task.JobVerificationTask;
 import org.apache.airavata.execution.task.ParsingTriggeringTask;
 import org.apache.airavata.storage.task.ArchiveTask;
 import org.apache.airavata.storage.task.InputDataStagingTask;
-import org.apache.airavata.execution.task.JobVerificationTask;
 import org.apache.airavata.storage.task.OutputDataStagingTask;
-import org.apache.airavata.compute.task.DefaultJobSubmissionTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

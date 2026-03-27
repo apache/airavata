@@ -25,11 +25,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.execution.service.RequestContext;
 import org.apache.airavata.execution.service.ServiceAuthorizationException;
-import org.apache.airavata.sharing.registry.models.User;
+import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

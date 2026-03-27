@@ -23,7 +23,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.airavata.common.db.JDBCConfig;
 import org.apache.airavata.common.db.JPAUtils;
-import org.apache.airavata.execution.util.ExpCatalogJDBCConfig;
 
 public class ExpCatalogJPAUtils {
     public static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";

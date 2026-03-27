@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.execution.model.NotificationEntity;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
+import org.apache.airavata.model.workspace.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

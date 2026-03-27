@@ -21,18 +21,26 @@ package org.apache.airavata.orchestrator.server;
 
 import java.text.MessageFormat;
 import java.util.*;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.config.ZkConstants;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
 import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.common.config.ZkConstants;
-import org.apache.airavata.messaging.service.*;
-import org.apache.airavata.messaging.util.*;
+import org.apache.airavata.execution.orchestrator.HostScheduler;
+import org.apache.airavata.execution.orchestrator.OrchestratorConstants;
+import org.apache.airavata.execution.orchestrator.OrchestratorException;
+import org.apache.airavata.execution.orchestrator.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.execution.orchestrator.OrchestratorServerUtils;
+import org.apache.airavata.execution.orchestrator.SimpleOrchestratorImpl;
 import org.apache.airavata.execution.scheduler.ProcessScheduler;
 import org.apache.airavata.execution.scheduler.ProcessSchedulerImpl;
+import org.apache.airavata.execution.util.ExperimentModelUtil;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.messaging.service.*;
+import org.apache.airavata.messaging.util.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -53,17 +61,9 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.execution.util.ExperimentModelUtil;
-import org.apache.airavata.execution.orchestrator.OrchestratorException;
-import org.apache.airavata.execution.orchestrator.HostScheduler;
-import org.apache.airavata.execution.orchestrator.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.execution.orchestrator.SimpleOrchestratorImpl;
-import org.apache.airavata.execution.orchestrator.OrchestratorServerThreadPoolExecutor;
-import org.apache.airavata.execution.orchestrator.OrchestratorServerUtils;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
@@ -275,7 +275,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     status.setReason("Compute resources are not ready");
                     status.setTimeOfStateChange(
                             AiravataUtils.getCurrentTimestamp().getTime());
-                    OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+                    OrchestratorServerUtils.updateAndPublishExperimentStatus(
+                            experimentId, status, publisher, gatewayId);
                     log.info("expId: {}, Scheduled experiment ", experimentId);
                 }
             } else if (executionType == ExperimentType.WORKFLOW) {
@@ -654,7 +655,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     status.setReason("Experiment cancel request processed");
                     status.setTimeOfStateChange(
                             AiravataUtils.getCurrentTimestamp().getTime());
-                    OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+                    OrchestratorServerUtils.updateAndPublishExperimentStatus(
+                            experimentId, status, publisher, gatewayId);
                     log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
                 }
                 return true;

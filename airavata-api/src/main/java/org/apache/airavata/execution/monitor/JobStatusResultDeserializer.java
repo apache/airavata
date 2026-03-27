@@ -21,7 +21,6 @@ package org.apache.airavata.execution.monitor;
 
 import java.util.Map;
 import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.execution.monitor.JobStatusResult;
 import org.apache.kafka.common.serialization.Deserializer;
 
 public class JobStatusResultDeserializer implements Deserializer<JobStatusResult> {

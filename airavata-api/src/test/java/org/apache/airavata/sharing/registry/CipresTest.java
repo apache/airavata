@@ -21,8 +21,8 @@ package org.apache.airavata.sharing.registry;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.logging.log4j.LogManager;

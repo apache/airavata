@@ -26,18 +26,18 @@ package org.apache.airavata.credential.util.notifier;
  */
 import java.text.ParseException;
 import java.util.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.db.DBUtil;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.model.CertificateCredential;
 import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.Credential;
-import org.apache.airavata.credential.model.CertificateCredential;
+import org.apache.airavata.credential.repository.CredentialReader;
+import org.apache.airavata.credential.repository.CredentialReaderImpl;
+import org.apache.airavata.credential.repository.CredentialStoreException;
+import org.apache.airavata.credential.util.Utility;
 import org.apache.airavata.credential.util.notifier.impl.EmailNotificationMessage;
 import org.apache.airavata.credential.util.notifier.impl.EmailNotifier;
 import org.apache.airavata.credential.util.notifier.impl.EmailNotifierConfiguration;
-import org.apache.airavata.credential.repository.CredentialReader;
-import org.apache.airavata.credential.repository.CredentialStoreException;
-import org.apache.airavata.credential.repository.CredentialReaderImpl;
-import org.apache.airavata.credential.util.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

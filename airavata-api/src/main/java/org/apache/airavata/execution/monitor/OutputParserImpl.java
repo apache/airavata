@@ -21,7 +21,6 @@ package org.apache.airavata.execution.monitor;
 
 import java.util.Scanner;
 import org.apache.airavata.compute.util.CommandOutput;
-import org.apache.airavata.execution.monitor.Constants;
 
 /**
  * This is parser output implementation

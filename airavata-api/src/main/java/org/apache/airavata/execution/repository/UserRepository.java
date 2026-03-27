@@ -22,12 +22,12 @@ package org.apache.airavata.execution.repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.execution.model.UserEntity;
 import org.apache.airavata.execution.model.UserPK;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
+import org.apache.airavata.model.user.UserProfile;
 
 public class UserRepository extends ExpCatAbstractRepository<UserProfile, UserEntity, UserPK> {
     public UserRepository() {

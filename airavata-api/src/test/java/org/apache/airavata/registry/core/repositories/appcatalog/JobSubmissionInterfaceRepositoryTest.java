@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
-import org.apache.airavata.execution.util.common.TestBase;
-import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.net.URLDecoder;
 import java.util.List;
-import org.apache.airavata.security.util.Authenticator;
 import org.apache.airavata.security.repository.JDBCUserStore;
 import org.apache.airavata.security.repository.LDAPUserStore;
 import org.junit.jupiter.api.Test;

@@ -20,11 +20,11 @@
 package org.apache.airavata.execution.repository;
 
 import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.execution.model.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.execution.model.GatewayUsageReportingPK;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
+import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

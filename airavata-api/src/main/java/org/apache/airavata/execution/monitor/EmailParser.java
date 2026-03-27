@@ -22,7 +22,6 @@ package org.apache.airavata.execution.monitor;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.execution.monitor.JobStatusResult;
 import org.apache.airavata.registry.api.RegistryService;
 
 public interface EmailParser {

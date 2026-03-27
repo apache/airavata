@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

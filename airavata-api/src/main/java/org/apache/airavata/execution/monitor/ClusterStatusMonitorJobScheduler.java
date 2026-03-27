@@ -23,8 +23,8 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.quartz.*;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

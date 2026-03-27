@@ -20,11 +20,10 @@
 package org.apache.airavata.messaging.handler;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.util.DBEventService;
-import org.apache.airavata.messaging.handler.DBEventMessageHandler;
 import org.apache.airavata.messaging.service.MessagingFactory;
 import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.messaging.service.Subscriber;
+import org.apache.airavata.messaging.util.DBEventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

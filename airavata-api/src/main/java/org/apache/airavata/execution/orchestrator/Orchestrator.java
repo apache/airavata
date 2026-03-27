@@ -23,7 +23,6 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.execution.orchestrator.OrchestratorException;
 
 /*
    This is the interface for orchestrator functionality exposed to the out side of the

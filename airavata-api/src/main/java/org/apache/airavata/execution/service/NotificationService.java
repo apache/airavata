@@ -20,10 +20,8 @@
 package org.apache.airavata.execution.service;
 
 import java.util.List;
-import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.execution.handler.RegistryServerHandler;
-import org.apache.airavata.execution.service.RequestContext;
-import org.apache.airavata.execution.service.ServiceException;
+import org.apache.airavata.model.workspace.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

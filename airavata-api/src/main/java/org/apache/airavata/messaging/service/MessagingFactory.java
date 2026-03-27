@@ -21,14 +21,14 @@ package org.apache.airavata.messaging.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.util.DBEventManagerConstants;
-import org.apache.airavata.messaging.util.RabbitMQProperties;
 import org.apache.airavata.messaging.handler.ExperimentConsumer;
 import org.apache.airavata.messaging.handler.MessageConsumer;
 import org.apache.airavata.messaging.handler.ProcessConsumer;
 import org.apache.airavata.messaging.handler.StatusConsumer;
-import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.messaging.util.DBEventManagerConstants;
+import org.apache.airavata.messaging.util.RabbitMQProperties;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;

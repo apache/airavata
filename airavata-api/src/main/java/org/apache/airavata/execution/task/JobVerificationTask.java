@@ -20,15 +20,15 @@
 package org.apache.airavata.execution.task;
 
 import java.util.List;
+import org.apache.airavata.compute.task.JobFactory;
+import org.apache.airavata.compute.task.JobManagerConfiguration;
+import org.apache.airavata.compute.task.RawCommandInfo;
 import org.apache.airavata.compute.util.AgentAdaptor;
 import org.apache.airavata.compute.util.CommandOutput;
 import org.apache.airavata.execution.orchestrator.AiravataTask;
 import org.apache.airavata.execution.orchestrator.TaskContext;
-import org.apache.airavata.compute.task.JobFactory;
-import org.apache.airavata.compute.task.JobManagerConfiguration;
-import org.apache.airavata.compute.task.RawCommandInfo;
-import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.airavata.execution.orchestrator.TaskDef;
+import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;

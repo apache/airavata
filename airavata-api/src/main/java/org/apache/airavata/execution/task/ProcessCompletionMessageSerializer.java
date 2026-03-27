@@ -20,7 +20,6 @@
 package org.apache.airavata.execution.task;
 
 import java.util.Map;
-import org.apache.airavata.execution.task.ProcessCompletionMessage;
 import org.apache.kafka.common.serialization.Serializer;
 
 public class ProcessCompletionMessageSerializer implements Serializer<ProcessCompletionMessage> {

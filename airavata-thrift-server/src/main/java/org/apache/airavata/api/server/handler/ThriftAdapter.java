@@ -21,14 +21,14 @@ package org.apache.airavata.api.server.handler;
 
 import java.util.Map;
 import org.apache.airavata.common.config.Constants;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.AuthorizationException;
-import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.execution.service.RequestContext;
 import org.apache.airavata.execution.service.ServiceAuthorizationException;
 import org.apache.airavata.execution.service.ServiceException;
 import org.apache.airavata.execution.service.ServiceNotFoundException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.security.AuthzToken;
 
 public class ThriftAdapter {
 

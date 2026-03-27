@@ -22,8 +22,6 @@ package org.apache.airavata.execution.orchestrator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.execution.orchestrator.AbstractTask;
-import org.apache.airavata.execution.orchestrator.TaskDef;
 import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
 import org.apache.helix.InstanceType;

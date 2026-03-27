@@ -21,14 +21,12 @@ package org.apache.airavata.credential.repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ApplicationSettings;
 import org.apache.airavata.common.db.DBUtil;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.credential.model.Credential;
 import org.apache.airavata.credential.model.SSHCredential;
-import org.apache.airavata.credential.repository.CredentialStoreException;
-import org.apache.airavata.credential.repository.CredentialWriter;
 import org.apache.airavata.credential.repository.db.CredentialsDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

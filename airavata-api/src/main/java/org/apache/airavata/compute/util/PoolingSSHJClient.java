@@ -36,10 +36,6 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.UserAuthException;
 import net.schmizz.sshj.userauth.method.AuthMethod;
-import org.apache.airavata.compute.util.SCPFileTransferWrapper;
-import org.apache.airavata.compute.util.SFTPClientWrapper;
-import org.apache.airavata.compute.util.SSHClientWrapper;
-import org.apache.airavata.compute.util.SessionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

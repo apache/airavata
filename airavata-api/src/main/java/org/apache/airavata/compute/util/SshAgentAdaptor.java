@@ -24,12 +24,11 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.compute.util.*;
-import org.apache.airavata.storage.util.FileMetadata;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.storageresource.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.storage.util.FileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.security.util;
 
-import org.apache.airavata.security.util.AbstractAuthenticator;
-import org.apache.airavata.security.util.AuthenticationException;
 import org.w3c.dom.Node;
 
 public class TestDBAuthenticator2 extends AbstractAuthenticator {

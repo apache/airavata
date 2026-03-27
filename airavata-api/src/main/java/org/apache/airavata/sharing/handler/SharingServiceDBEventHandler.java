@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.sharing.handler;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessageHandler;
@@ -32,13 +32,13 @@ import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.util.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

@@ -21,12 +21,12 @@ package org.apache.airavata.sharing.repository;
 
 import java.util.HashMap;
 import java.util.List;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.model.PermissionTypeEntity;
 import org.apache.airavata.sharing.model.PermissionTypePK;
-import org.apache.airavata.sharing.util.DBConstants;
 import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
-import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.util.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

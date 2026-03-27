@@ -26,15 +26,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.storage.model.DataReplicaMetadataEntity;
-import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.storage.repository.DataProductRepository;
 import org.apache.airavata.storage.repository.DataReplicaLocationRepository;
-import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.junit.jupiter.api.Test;
 
 public class DataReplicaLocationRepositoryTest extends TestBase {

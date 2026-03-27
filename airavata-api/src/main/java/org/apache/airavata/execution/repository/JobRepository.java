@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.execution.model.JobEntity;
 import org.apache.airavata.execution.model.JobPK;
 import org.apache.airavata.execution.util.DBConstants;
@@ -34,6 +32,8 @@ import org.apache.airavata.execution.util.ExpCatalogUtils;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
+import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.job.JobModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

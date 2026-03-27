@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.execution.orchestrator;
 
-import org.apache.airavata.execution.orchestrator.AdaptorSupport;
-
 /**
  * TODO: Class level comments please
  *

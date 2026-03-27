@@ -20,7 +20,6 @@
 package org.apache.airavata.credential.model;
 
 import java.io.Serializable;
-import org.apache.airavata.credential.model.Credential;
 
 /**
  * An SSH Credential class which is an extension of Airavata Credential

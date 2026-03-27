@@ -20,7 +20,6 @@
 package org.apache.airavata.execution.monitor;
 
 import java.util.Map;
-import org.apache.airavata.execution.monitor.JobStatusResult;
 import org.apache.kafka.common.serialization.Serializer;
 
 public class JobStatusResultSerializer implements Serializer<JobStatusResult> {

@@ -19,10 +19,10 @@
 */
 package org.apache.airavata.execution.util;
 
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.execution.model.workflow.AiravataWorkflowEntity;
 import org.apache.airavata.compute.model.*;
 import org.apache.airavata.execution.model.*;
+import org.apache.airavata.execution.model.workflow.AiravataWorkflowEntity;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.model.GridftpEndpointEntity;
 import org.apache.airavata.storage.model.StoragePreferenceEntity;
