@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.security.profile.iam.admin.services.core.tests;
+package org.apache.airavata.service.profile.iam.admin.services.core.tests;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.security.profile.handlers;
+package org.apache.airavata.service.profile.handlers;
 
 import java.util.List;
 import org.apache.airavata.common.exception.AiravataException;

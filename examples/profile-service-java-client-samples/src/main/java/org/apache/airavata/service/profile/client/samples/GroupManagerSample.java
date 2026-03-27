@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.security.profile.client.samples;
+package org.apache.airavata.service.profile.client.samples;
 
 import java.util.HashMap;
 import java.util.Map;
