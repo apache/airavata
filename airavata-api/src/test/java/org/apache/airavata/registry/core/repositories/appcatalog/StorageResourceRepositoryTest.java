@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.appcatalog;
+package org.apache.airavata.compute.repository;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -31,6 +31,7 @@ import org.apache.airavata.model.data.movement.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.registry.core.repositories.common.TestBase;
+import org.apache.airavata.storage.repository.StorageResourceRepository;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

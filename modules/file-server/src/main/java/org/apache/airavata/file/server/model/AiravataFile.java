@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.file.server.model;
 
-import org.apache.airavata.agents.api.FileMetadata;
+import org.apache.airavata.storage.util.FileMetadata;
 
 public class AiravataFile {
     private String fileName;

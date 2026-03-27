@@ -49,7 +49,7 @@ import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.service.exception.ServiceException;
 import org.apache.airavata.service.exception.ServiceNotFoundException;
-import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
+import org.apache.airavata.compute.service.GroupResourceProfileService;
 import org.apache.airavata.messaging.service.EventPublisher;
 import org.apache.airavata.sharing.service.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Entity;

@@ -23,7 +23,7 @@ import java.util.UUID;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.repository.CredentialReader;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessagingFactory;
 import org.apache.airavata.messaging.service.Publisher;

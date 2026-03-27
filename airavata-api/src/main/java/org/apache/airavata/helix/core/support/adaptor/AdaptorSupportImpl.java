@@ -20,11 +20,11 @@
 package org.apache.airavata.helix.core.support.adaptor;
 
 import java.util.Optional;
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.AgentException;
-import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
-import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
+import org.apache.airavata.compute.util.AgentAdaptor;
+import org.apache.airavata.compute.util.AgentException;
+import org.apache.airavata.storage.util.StorageResourceAdaptor;
+import org.apache.airavata.compute.util.SSHJAgentAdaptor;
+import org.apache.airavata.storage.util.SSHJStorageAdaptor;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;

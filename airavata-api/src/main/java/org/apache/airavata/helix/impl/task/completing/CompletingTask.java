@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.impl.task.completing;
 
-import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.compute.util.AgentAdaptor;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.task.api.TaskHelper;

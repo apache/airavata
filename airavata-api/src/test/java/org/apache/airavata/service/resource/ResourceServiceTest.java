@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.resource;
+package org.apache.airavata.compute.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,7 +29,7 @@ import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.groupprofile.GroupResourceProfileService;
+import org.apache.airavata.compute.service.GroupResourceProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

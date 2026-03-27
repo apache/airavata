@@ -21,9 +21,13 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.airavataworkflowcatalog.AiravataWorkflowEntity;
-import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.compute.model.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
-import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
+import org.apache.airavata.storage.model.DataProductEntity;
+import org.apache.airavata.storage.model.GridftpEndpointEntity;
+import org.apache.airavata.storage.model.StoragePreferenceEntity;
+import org.apache.airavata.storage.model.StorageResourceEntity;
+import org.apache.airavata.storage.model.UserStoragePreferenceEntity;
 
 public interface QueryConstants {
 
