@@ -29,7 +29,6 @@ import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.db.DBUtil;
-import org.apache.airavata.common.db.DerbyUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.credential.model.SSHCredential;
 import org.apache.airavata.credential.repository.SSHCredentialWriter;
@@ -54,43 +53,23 @@ public class SSHSummaryTest extends DatabaseTestCases {
 
     @BeforeAll
     public static void setUpDatabase() throws Exception {
-        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
-
         waitTillServerStarts();
 
-        /*
-         * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_NAME VARCHAR(256) NOT NULL,\n" +
-         * "        COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,\n" + "        CREDENTIAL BLOB NOT NULL,\n" +
-         * "        PRIVATE_KEY BLOB NOT NULL,\n" + "        NOT_BEFORE VARCHAR(256) NOT NULL,\n" +
-         * "        NOT_AFTER VARCHAR(256) NOT NULL,\n" + "        LIFETIME INTEGER NOT NULL,\n" +
-         * "        REQUESTING_PORTAL_USER_NAME VARCHAR(256) NOT NULL,\n" +
-         * "        REQUESTED_TIME TIMESTAMP DEFAULT '0000-00-00 00:00:00',\n" +
-         * "        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME)\n" + ")";
-         */
-        // Adding description field as per pull request https://github.com/apache/airavata/pull/54
-        String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n"
+        String createTable = "CREATE TABLE IF NOT EXISTS CREDENTIALS\n" + "(\n"
                 + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
                 + "        TOKEN_ID VARCHAR(256) NOT NULL,\n"
-                + // Actual token used to identify the credential
-                "        CREDENTIAL BLOB NOT NULL,\n"
+                + "        CREDENTIAL BLOB NOT NULL,\n"
                 + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n"
                 + "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n"
                 + "        DESCRIPTION VARCHAR(500),\n"
                 + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" + ")";
-
-        String dropTable = "drop table CREDENTIALS";
-
-        try {
-            executeSQL(dropTable);
-        } catch (Exception e) {
-        }
 
         executeSQL(createTable);
     }
 
     @AfterAll
     public static void shutDownDatabase() throws Exception {
-        DerbyUtil.stopDerbyServer();
+        // Testcontainers handles cleanup
     }
 
     @BeforeEach
@@ -113,8 +92,8 @@ public class SSHSummaryTest extends DatabaseTestCases {
     }
 
     private void initializeKeys() throws Exception {
-        KeyStore ks = KeyStore.getInstance("JKS");
-        char[] password = "password".toCharArray();
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        char[] password = "airavata".toCharArray();
 
         String baseDirectory = System.getProperty("credential.module.directory");
 

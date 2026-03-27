@@ -19,12 +19,21 @@
 */
 package org.apache.airavata.execution.util;
 
+import com.github.dozermapper.core.config.BeanContainer;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.thrift.TFieldRequirementType;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class CustomBeanFactoryTest {
+
+    private static BeanContainer beanContainer;
+
+    @BeforeAll
+    static void setUp() {
+        beanContainer = new BeanContainer();
+    }
 
     @Test
     public void testRequiredFieldWithDefault() {
@@ -37,7 +46,7 @@ public class CustomBeanFactoryTest {
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
         UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
-                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), null);
+                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), beanContainer);
         Assertions.assertTrue(fromFactory.isSetAiravataAutoSchedule());
     }
 
@@ -52,7 +61,7 @@ public class CustomBeanFactoryTest {
 
         CustomBeanFactory customBeanFactory = new CustomBeanFactory();
         UserConfigurationDataModel fromFactory = (UserConfigurationDataModel)
-                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), null);
+                customBeanFactory.createBean(null, null, UserConfigurationDataModel.class.getName(), beanContainer);
         Assertions.assertTrue(fromFactory.isSetShareExperimentPublicly());
     }
 }

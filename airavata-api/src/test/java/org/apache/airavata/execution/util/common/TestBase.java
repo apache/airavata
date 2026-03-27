@@ -19,20 +19,26 @@
 */
 package org.apache.airavata.execution.util.common;
 
-import org.apache.airavata.common.db.DBInitConfig;
-import org.apache.airavata.common.db.DBInitializer;
-import org.apache.airavata.common.db.DerbyUtil;
-import org.apache.airavata.common.db.JDBCConfig;
-import org.apache.airavata.execution.util.AppCatalogDBInitConfig;
-import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
-import org.apache.airavata.execution.util.ReplicaCatalogDBInitConfig;
-import org.apache.airavata.execution.util.WorkflowCatalogDBInitConfig;
-import org.junit.jupiter.api.AfterEach;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-public class TestBase {
+@Tag("integration")
+@Testcontainers
+public abstract class TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
 
@@ -43,6 +49,14 @@ public class TestBase {
         WORKFLOW_CATALOG
     }
 
+    @SuppressWarnings("resource")
+    @Container
+    protected static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:11.8")
+            .withDatabaseName("airavata")
+            .withUsername("airavata")
+            .withPassword("airavata")
+            .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
+
     private Database[] databases;
 
     public TestBase(Database... databases) {
@@ -52,47 +66,44 @@ public class TestBase {
         this.databases = databases;
     }
 
+    @BeforeAll
+    static void configureJdbc() {
+        System.setProperty("airavata.jdbc.driver", mariadb.getDriverClassName());
+        System.setProperty("airavata.jdbc.url", mariadb.getJdbcUrl());
+        System.setProperty("airavata.jdbc.user", mariadb.getUsername());
+        System.setProperty("airavata.jdbc.password", mariadb.getPassword());
+        System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
+    }
+
     @BeforeEach
     public void setUp() throws Exception {
-        try {
-            DerbyUtil.startDerbyInServerMode("127.0.0.1", 20000, "airavata", "airavata");
+        truncateAllTables();
+    }
 
-            for (Database database : databases) {
-                logger.info("Creating database " + database.name());
-                DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
-                DBInitializer.initializeDB(getDBInitConfig(database));
+    /**
+     * Truncate all user tables so each test starts with clean data.
+     */
+    private void truncateAllTables() throws SQLException {
+        try (Connection conn = DriverManager.getConnection(
+                mariadb.getJdbcUrl(), mariadb.getUsername(), mariadb.getPassword())) {
+            conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
+
+            DatabaseMetaData meta = conn.getMetaData();
+            List<String> tables = new ArrayList<>();
+            try (ResultSet rs = meta.getTables("airavata", null, "%", new String[] {"TABLE"})) {
+                while (rs.next()) {
+                    tables.add(rs.getString("TABLE_NAME"));
+                }
             }
-        } catch (Exception e) {
-            logger.error("Failed to create the databases", e);
-            throw e;
-        }
-    }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        for (Database database : databases) {
-            System.out.println("Tearing down database " + database.name());
-            DerbyTestUtil.destroyDatabase(getDatabaseJDBCConfig(database));
-        }
-        DerbyUtil.stopDerbyServer();
-    }
+            for (String table : tables) {
+                stmt.execute("TRUNCATE TABLE `" + table + "`");
+            }
 
-    private JDBCConfig getDatabaseJDBCConfig(Database database) {
-        return getDBInitConfig(database).getJDBCConfig();
-    }
-
-    private DBInitConfig getDBInitConfig(Database database) {
-        switch (database) {
-            case APP_CATALOG:
-                return new AppCatalogDBInitConfig().setDbInitScriptPrefix("appcatalog");
-            case EXP_CATALOG:
-                return new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog");
-            case REPLICA_CATALOG:
-                return new ReplicaCatalogDBInitConfig().setDbInitScriptPrefix("replicacatalog");
-            case WORKFLOW_CATALOG:
-                return new WorkflowCatalogDBInitConfig().setDbInitScriptPrefix("airavataworkflowcatalog");
-            default:
-                return null;
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
+            conn.commit();
         }
     }
 }

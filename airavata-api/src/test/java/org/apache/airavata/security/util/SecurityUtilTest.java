@@ -19,7 +19,9 @@
 */
 package org.apache.airavata.security.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
@@ -52,7 +54,7 @@ public class SecurityUtilTest {
         byte[] plaintext = stringToEncrypt.getBytes(StandardCharsets.UTF_8);
         byte[] encrypted = SecurityUtil.encrypt(keyStorePath, "mykey", new TestKeyStoreCallback(), plaintext);
         byte[] decrypted = SecurityUtil.decrypt(keyStorePath, "mykey", new TestKeyStoreCallback(), encrypted);
-        assertEquals(plaintext, decrypted);
+        assertArrayEquals(plaintext, decrypted);
     }
 
     @Test
@@ -71,7 +73,8 @@ public class SecurityUtilTest {
         @Override
         public char[] getSecretKeyPassPhrase(String keyAlias) {
             if (keyAlias.equals("mykey")) {
-                return "airavatasecretkey".toCharArray();
+                // PKCS12 requires key password to match store password
+                return "airavata".toCharArray();
             }
             return null;
         }

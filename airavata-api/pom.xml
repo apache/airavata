@@ -91,22 +91,6 @@ under the License.
       <artifactId>commons-pool2</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbynet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbytools</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
     </dependency>
@@ -191,14 +175,17 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
       <artifactId>mariadb</artifactId>
-      <version>1.20.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>1.20.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -500,8 +487,8 @@ under the License.
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-maven-plugin</artifactId>
         <configuration>
-          <includes>**/entities/**/*.class</includes>
-          <excludes>**/entities/**/XML*.class,**/model/**/*.class,**/entities/**/*PK.class</excludes>
+          <includes>**/entities/**/*.class,**/compute/model/*.class,**/storage/model/*.class,**/execution/model/*.class,**/execution/model/workflow/*.class,**/sharing/model/*.class,**/credential/model/*.class</includes>
+          <excludes>**/entities/**/XML*.class,**/entities/**/*PK.class,**/*PK.class</excludes>
           <addDefaultConstructor>true</addDefaultConstructor>
           <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
           <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
@@ -537,13 +524,17 @@ under the License.
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
           </systemPropertyVariables>
+          <environmentVariables>
+            <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+          </environmentVariables>
+          <argLine>-Dapi.version=1.43</argLine>
           <excludes>
             <exclude>**/DAOBaseTestCase.java</exclude>
             <exclude>**/MappingDAOTest.java</exclude>
           </excludes>
           <!-- Exclude @Tag("integration") tests by default — they require Docker.
-               Run with: mvn test -Dgroups=integration -DexcludedGroups="" -->
-          <excludedGroups>integration</excludedGroups>
+               Run with: mvn test -Dgroups=integration -Dsurefire.excludedGroups="" -->
+          <excludedGroups>${surefire.excludedGroups}</excludedGroups>
         </configuration>
       </plugin>
 
@@ -658,6 +649,7 @@ under the License.
   </build>
 
   <properties>
+    <surefire.excludedGroups>integration</surefire.excludedGroups>
     <docker.api.server.build.directory>${project.build.directory}/api_server_docker_img_build</docker.api.server.build.directory>
     <docker.api.server.image.src.root>src/main/docker</docker.api.server.image.src.root>
     <api.server.dist.name>apache-airavata-api-server-${project.version}</api.server.dist.name>

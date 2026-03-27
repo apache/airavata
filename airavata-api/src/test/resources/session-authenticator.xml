@@ -34,7 +34,7 @@
 
                 <userName>admin</userName>
                 <password>admin</password>
-                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <databaseDriver>org.mariadb.jdbc.Driver</databaseDriver>
                 <sessionTable>Persons</sessionTable>
                 <sessionColumn>sessionId</sessionColumn>
                 <comparingColumn>sessionId</comparingColumn>

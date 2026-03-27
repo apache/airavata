@@ -48,6 +48,7 @@ public class DataProductRepositoryTest extends TestBase {
         super(Database.REPLICA_CATALOG);
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         dataProductRepository = new DataProductRepository();

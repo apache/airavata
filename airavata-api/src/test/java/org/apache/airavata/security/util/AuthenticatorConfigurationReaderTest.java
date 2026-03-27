@@ -57,7 +57,7 @@ public class AuthenticatorConfigurationReaderTest {
                 assertEquals(
                         "jdbc:sql:thin:@//myhost:1521/mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
                 assertEquals(
-                        "org.apache.derby.jdbc.ClientDriver",
+                        "org.mariadb.jdbc.Driver",
                         ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
                 assertEquals("mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
@@ -77,7 +77,7 @@ public class AuthenticatorConfigurationReaderTest {
                 assertEquals(
                         "jdbc:sql:thin:@//myhost:1521/mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
                 assertEquals(
-                        "org.apache.derby.jdbc.ClientDriver",
+                        "org.mariadb.jdbc.Driver",
                         ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
                 assertEquals("mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());

@@ -26,6 +26,7 @@ import org.apache.airavata.compute.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
  */
 public class GroupComputeResourcePreferenceUtilTest {
 
+    @Disabled("Reservations API removed from Thrift model")
     @Test
     public void testGetActiveReservationForQueue() {
 
@@ -62,6 +64,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         Assertions.assertNull(result);
     }
 
+    @Disabled("Reservations API removed from Thrift model")
     @Test
     public void testGetActiveReservationForQueueWhenReservationIsExpired() {
 
@@ -80,6 +83,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         Assertions.assertNull(result);
     }
 
+    @Disabled("Reservations API removed from Thrift model")
     @Test
     public void testGetActiveReservationForQueueWhenReservationActiveButWrongQueue() {
 
@@ -98,6 +102,7 @@ public class GroupComputeResourcePreferenceUtilTest {
         Assertions.assertNull(result);
     }
 
+    @Disabled("Reservations API removed from Thrift model")
     @Test
     public void testGetActiveReservationWithRandomOrder() {
 
