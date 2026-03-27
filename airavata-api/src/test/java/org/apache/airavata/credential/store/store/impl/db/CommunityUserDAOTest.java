@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.util.List;
-import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.common.utils.DatabaseTestCases;
-import org.apache.airavata.common.utils.DerbyUtil;
+import org.apache.airavata.common.db.DerbyUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.junit.jupiter.api.*;
 

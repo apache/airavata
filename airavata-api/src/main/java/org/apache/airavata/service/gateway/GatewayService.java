@@ -25,11 +25,11 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.sharing.SharingHelper;
+import org.apache.airavata.sharing.service.SharingHelper;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.EntityType;
 import org.apache.airavata.sharing.registry.models.PermissionType;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

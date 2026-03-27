@@ -21,7 +21,7 @@ package org.apache.airavata.helix.impl.controller;
 
 import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
 import org.apache.helix.InstanceType;

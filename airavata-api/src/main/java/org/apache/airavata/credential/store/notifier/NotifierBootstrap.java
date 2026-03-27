@@ -27,7 +27,7 @@ package org.apache.airavata.credential.store.notifier;
 import java.text.ParseException;
 import java.util.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;

@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.agents.api.AgentUtils;
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.aws.utils.AWSTaskUtil;

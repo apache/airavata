@@ -22,7 +22,7 @@ package org.apache.airavata.monitor.kafka;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;

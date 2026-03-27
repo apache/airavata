@@ -21,7 +21,7 @@ package org.apache.airavata.orchestrator.cpi.impl;
 
 import java.io.IOException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;

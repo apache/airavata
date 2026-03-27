@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;

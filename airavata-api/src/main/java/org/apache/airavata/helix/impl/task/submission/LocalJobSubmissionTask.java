@@ -20,7 +20,7 @@
 package org.apache.airavata.helix.impl.task.submission;
 
 import java.util.UUID;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;

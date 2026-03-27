@@ -23,7 +23,7 @@
 
 <authenticators>
     <authenticator name="sessionAuthenticator" class="org.apache.airavata.services.registry.rest.security.session.SessionAuthenticator"
-                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.SessionDBUserStore">
+                   enabled="true" priority="6" userstore="org.apache.airavata.security.repository.SessionDBUserStore">
         <specificConfigurations>
             <database>
                 <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->

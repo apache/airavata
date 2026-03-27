@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.helix.impl.task.cancel;
 
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;

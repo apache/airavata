@@ -20,7 +20,7 @@
 package org.apache.airavata.file.server;
 
 import java.time.Duration;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.registry.api.RegistryService;

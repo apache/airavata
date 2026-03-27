@@ -24,7 +24,7 @@ import static org.quartz.SimpleScheduleBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.quartz.*;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

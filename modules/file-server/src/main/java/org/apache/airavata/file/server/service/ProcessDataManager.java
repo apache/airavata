@@ -22,7 +22,7 @@ package org.apache.airavata.file.server.service;
 import java.util.UUID;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentUtils;
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
 import org.apache.airavata.helix.impl.task.aws.AWSProcessContextManager;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;

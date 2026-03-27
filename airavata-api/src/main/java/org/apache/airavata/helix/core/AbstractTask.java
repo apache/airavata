@@ -20,15 +20,15 @@
 package org.apache.airavata.helix.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
-import org.apache.airavata.patform.monitoring.CountMonitor;
-import org.apache.airavata.patform.monitoring.GaugeMonitor;
+import org.apache.airavata.common.server.CountMonitor;
+import org.apache.airavata.common.server.GaugeMonitor;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

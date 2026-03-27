@@ -23,7 +23,7 @@ import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.status.ExperimentState;

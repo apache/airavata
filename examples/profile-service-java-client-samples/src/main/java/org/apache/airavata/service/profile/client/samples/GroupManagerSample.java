@@ -21,10 +21,10 @@ package org.apache.airavata.service.profile.client.samples;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.config.Constants;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.client.util.ProfileServiceClientUtil;
+import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.security.profile.client.util.ProfileServiceClientUtil;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

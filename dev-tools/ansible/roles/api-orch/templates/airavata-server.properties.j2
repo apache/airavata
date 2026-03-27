@@ -127,7 +127,7 @@ zookeeper.server.connection={{ zookeeper_connection_url }}
 ########################################################################
 ## API Security Configuration
 ########################################################################
-security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
+security.manager.class=org.apache.airavata.security.service.KeyCloakSecurityManager
 ### TLS related configuration ####
 TLS.enabled={{ tls_enable }}
 TLS.client.timeout=10000
@@ -138,7 +138,7 @@ keystore.password={{ keystore_passwd }}
 {% endif %}
 #### authorization cache related configuration ####
 authz.cache.enabled=true
-authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
+authz.cache.manager.class=org.apache.airavata.security.service.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000
 
 ###########################################################################

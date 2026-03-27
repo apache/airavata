@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;

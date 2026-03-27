@@ -32,7 +32,7 @@ import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.service.context.RequestContext;
 import org.apache.airavata.service.exception.ServiceAuthorizationException;
 import org.apache.airavata.sharing.registry.models.Entity;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

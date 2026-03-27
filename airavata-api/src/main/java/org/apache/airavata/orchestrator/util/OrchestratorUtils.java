@@ -21,11 +21,11 @@ package org.apache.airavata.orchestrator.util;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.util.ThriftUtils;
+import org.apache.airavata.messaging.service.MessageContext;
+import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;

@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection;
 
-import org.apache.airavata.common.utils.ThriftClientPool;
+import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.metascheduler.core.engine.ComputeResourceSelectionPolicy;
 import org.apache.airavata.metascheduler.core.utils.Utils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;

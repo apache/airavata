@@ -22,7 +22,7 @@ package org.apache.airavata.client.samples;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.util.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;

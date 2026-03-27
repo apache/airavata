@@ -20,7 +20,7 @@
 package org.apache.airavata.credential.store.store;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 
 /**

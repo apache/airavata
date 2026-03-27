@@ -21,7 +21,7 @@ package org.apache.airavata.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.airavata.common.utils.DBInitializer;
+import org.apache.airavata.common.db.DBInitializer;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;

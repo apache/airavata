@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import org.apache.airavata.common.db.DBUtil;
+import org.apache.airavata.common.db.DerbyUtil;
+import org.apache.airavata.common.db.JDBCConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

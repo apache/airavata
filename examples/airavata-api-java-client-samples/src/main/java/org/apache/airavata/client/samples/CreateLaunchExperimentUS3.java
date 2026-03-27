@@ -22,7 +22,7 @@ package org.apache.airavata.client.samples;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.util.AiravataClientFactory;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
