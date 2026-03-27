@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.model.util;
+package org.apache.airavata.execution.util;
 
 import java.util.Arrays;
 import java.util.Collections;

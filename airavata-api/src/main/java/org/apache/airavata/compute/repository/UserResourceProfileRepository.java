@@ -30,11 +30,11 @@ import org.apache.airavata.compute.model.UserResourceProfileEntity;
 import org.apache.airavata.compute.model.UserResourceProfilePK;
 import org.apache.airavata.storage.model.UserStoragePreferencePK;
 import org.apache.airavata.storage.repository.UserStoragePreferenceRepository;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.apache.airavata.registry.core.utils.QueryConstants;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.UsrResourceProfile;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.QueryConstants;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
+import org.apache.airavata.execution.util.cpi.UsrResourceProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -39,7 +39,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;

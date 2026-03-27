@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.orchestrator.core;
+package org.apache.airavata.execution.orchestrator;
 
 // import org.apache.airavata.client.tools.DocumentCreatorNew;
 

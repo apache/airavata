@@ -27,8 +27,8 @@ import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.compute.model.*;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.QueryConstants;
 
 public class ResourceJobManagerRepository
         extends AppCatAbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {

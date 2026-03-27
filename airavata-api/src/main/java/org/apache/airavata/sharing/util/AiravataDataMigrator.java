@@ -55,7 +55,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;

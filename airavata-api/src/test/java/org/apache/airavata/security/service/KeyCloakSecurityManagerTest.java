@@ -38,7 +38,7 @@ import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.security.service.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.service.authzcache.AuthzCacheManager;

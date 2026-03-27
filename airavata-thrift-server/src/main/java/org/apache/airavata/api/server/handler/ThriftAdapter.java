@@ -25,10 +25,10 @@ import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.service.context.RequestContext;
-import org.apache.airavata.service.exception.ServiceAuthorizationException;
-import org.apache.airavata.service.exception.ServiceException;
-import org.apache.airavata.service.exception.ServiceNotFoundException;
+import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.execution.service.ServiceAuthorizationException;
+import org.apache.airavata.execution.service.ServiceException;
+import org.apache.airavata.execution.service.ServiceNotFoundException;
 
 public class ThriftAdapter {
 

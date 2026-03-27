@@ -30,12 +30,12 @@ import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.storage.model.StorageInterfaceEntity;
 import org.apache.airavata.storage.model.StorageInterfacePK;
 import org.apache.airavata.storage.model.StorageResourceEntity;
-import org.apache.airavata.registry.core.utils.AppCatalogUtils;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.apache.airavata.registry.core.utils.QueryConstants;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.StorageResource;
+import org.apache.airavata.execution.util.AppCatalogUtils;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.QueryConstants;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
+import org.apache.airavata.execution.util.cpi.StorageResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

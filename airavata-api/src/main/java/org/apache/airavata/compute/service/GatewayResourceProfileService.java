@@ -30,9 +30,9 @@ import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvis
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.service.context.RequestContext;
-import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
+import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.execution.service.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

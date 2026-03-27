@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.expcatalog;
+package org.apache.airavata.execution.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,8 +27,8 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.junit.jupiter.api.Test;
 
 public class GatewayRepositoryTest extends TestBase {

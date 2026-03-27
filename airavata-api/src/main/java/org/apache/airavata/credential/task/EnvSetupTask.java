@@ -20,10 +20,10 @@
 package org.apache.airavata.credential.task;
 
 import org.apache.airavata.compute.util.AgentAdaptor;
-import org.apache.airavata.helix.impl.task.AiravataTask;
-import org.apache.airavata.helix.impl.task.TaskContext;
-import org.apache.airavata.helix.task.api.TaskHelper;
-import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.execution.orchestrator.AiravataTask;
+import org.apache.airavata.execution.orchestrator.TaskContext;
+import org.apache.airavata.execution.orchestrator.TaskHelper;
+import org.apache.airavata.execution.orchestrator.TaskDef;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.common.server.CountMonitor;
 import org.apache.helix.task.TaskResult;

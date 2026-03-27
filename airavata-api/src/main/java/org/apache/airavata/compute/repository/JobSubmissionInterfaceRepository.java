@@ -23,7 +23,7 @@ import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.compute.model.JobSubmissionInterfaceEntity;
 import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.ObjectMapperSingleton;
 
 public class JobSubmissionInterfaceRepository
         extends AppCatAbstractRepository<

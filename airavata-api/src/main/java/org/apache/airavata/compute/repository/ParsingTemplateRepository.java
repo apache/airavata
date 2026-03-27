@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 import org.apache.airavata.compute.model.ParsingTemplateEntity;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.QueryConstants;
 
 public class ParsingTemplateRepository
         extends AppCatAbstractRepository<ParsingTemplate, ParsingTemplateEntity, String> {

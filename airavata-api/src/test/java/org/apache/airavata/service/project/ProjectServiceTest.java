@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.service.project;
+package org.apache.airavata.execution.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,10 +25,10 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.service.context.RequestContext;
-import org.apache.airavata.service.exception.ServiceAuthorizationException;
-import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
+import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.execution.service.ServiceAuthorizationException;
+import org.apache.airavata.execution.service.ServiceException;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

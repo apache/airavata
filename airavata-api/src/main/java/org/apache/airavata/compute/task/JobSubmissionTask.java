@@ -30,7 +30,7 @@ import org.apache.airavata.compute.util.JobSubmissionOutput;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.execution.orchestrator.AiravataTask;
 import org.apache.airavata.compute.task.GroovyMapData;
 import org.apache.airavata.compute.task.JobFactory;
 import org.apache.airavata.compute.task.JobManagerConfiguration;

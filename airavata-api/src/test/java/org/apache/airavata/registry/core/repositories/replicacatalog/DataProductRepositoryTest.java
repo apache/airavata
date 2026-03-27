@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.replicacatalog;
+package org.apache.airavata.execution.util.replicacatalog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,9 +32,9 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.storage.model.DataProductMetadataEntity;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
+import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.storage.repository.DataProductRepository;
-import org.apache.airavata.registry.cpi.ReplicaCatalogException;
+import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.junit.jupiter.api.Test;
 
 public class DataProductRepositoryTest extends TestBase {

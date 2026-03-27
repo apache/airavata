@@ -34,8 +34,8 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

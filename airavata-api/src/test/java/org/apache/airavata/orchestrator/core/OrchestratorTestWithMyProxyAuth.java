@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.orchestrator.core;
+package org.apache.airavata.execution.orchestrator;
 
 public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
     //    private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);

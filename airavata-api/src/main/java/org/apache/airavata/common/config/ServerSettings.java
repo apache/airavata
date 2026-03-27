@@ -274,13 +274,13 @@ public class ServerSettings extends ApplicationSettings {
     public static String getComputeResourceSelectionPolicyClass() throws ApplicationSettingsException {
         return getSetting(
                 COMPUTE_RESOURCE_SELECTION_POLICY_CLASS,
-                "org.apache.airavata.metascheduler.process.scheduling.engine.cr.selection.MultipleComputeResourcePolicy");
+                "org.apache.airavata.execution.scheduler.MultipleComputeResourcePolicy");
     }
 
     public static String getReSchedulerPolicyClass() throws ApplicationSettingsException {
         return getSetting(
                 COMPUTE_RESOURCE_RESCHEDULER_CLASS,
-                "org.apache.airavata.metascheduler.process.scheduling.engine.rescheduler.ExponentialBackOffReScheduler");
+                "org.apache.airavata.execution.scheduler.ExponentialBackOffReScheduler");
     }
 
     public static String getMetaschedulerGateway() throws ApplicationSettingsException {

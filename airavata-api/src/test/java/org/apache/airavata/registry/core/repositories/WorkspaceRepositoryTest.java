@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories;
+package org.apache.airavata.execution.util;
 
 public class WorkspaceRepositoryTest {
     //    private final static Logger logger = LoggerFactory.getLogger(WorkspaceRepositoryTest.class);

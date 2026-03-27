@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.expcatalog;
+package org.apache.airavata.execution.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,10 +34,10 @@ import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.entities.expcatalog.JobPK;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.execution.model.JobPK;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

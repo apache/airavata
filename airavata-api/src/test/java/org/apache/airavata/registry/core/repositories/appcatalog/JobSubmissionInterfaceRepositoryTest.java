@@ -24,8 +24,8 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

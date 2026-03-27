@@ -40,8 +40,8 @@ import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
 import org.apache.airavata.compute.model.GroupResourceProfileEntity;
 import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.QueryConstants;
 
 /**
  * Created by skariyat on 2/8/18.

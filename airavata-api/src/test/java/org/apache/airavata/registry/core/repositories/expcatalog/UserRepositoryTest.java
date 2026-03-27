@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.expcatalog;
+package org.apache.airavata.execution.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,9 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.registry.core.entities.expcatalog.UserPK;
-import org.apache.airavata.registry.core.repositories.common.TestBase;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.execution.model.UserPK;
+import org.apache.airavata.execution.util.common.TestBase;
+import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

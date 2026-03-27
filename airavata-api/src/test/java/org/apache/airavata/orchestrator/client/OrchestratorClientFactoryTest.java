@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.orchestrator.client;
+package org.apache.airavata.execution.orchestrator;
 
 // import org.apache.airavata.client.AiravataAPIFactory;
 // import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;

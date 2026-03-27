@@ -29,7 +29,7 @@ import org.apache.airavata.storage.util.FileMetadata;
 import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.file.server.model.AiravataDirectory;
 import org.apache.airavata.file.server.model.AiravataFile;
-import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.execution.orchestrator.AdaptorSupport;
 import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

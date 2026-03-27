@@ -24,7 +24,7 @@ import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.compute.repository.AppCatAbstractRepository;
 import org.apache.airavata.storage.model.DataMovementInterfaceEntity;
 import org.apache.airavata.storage.model.DataMovementInterfacePK;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.ObjectMapperSingleton;
 
 public class DataMovementRepository
         extends AppCatAbstractRepository<DataMovementInterface, DataMovementInterfaceEntity, DataMovementInterfacePK> {

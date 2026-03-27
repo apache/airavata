@@ -22,9 +22,9 @@ package org.apache.airavata.compute.service;
 import java.util.List;
 import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
-import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
-import org.apache.airavata.service.context.RequestContext;
-import org.apache.airavata.service.exception.ServiceException;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
+import org.apache.airavata.execution.service.RequestContext;
+import org.apache.airavata.execution.service.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

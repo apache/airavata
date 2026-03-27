@@ -29,10 +29,10 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentRepository;
-import org.apache.airavata.registry.core.repositories.expcatalog.GatewayRepository;
-import org.apache.airavata.registry.core.repositories.expcatalog.ProjectRepository;
-import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
+import org.apache.airavata.execution.repository.ExperimentRepository;
+import org.apache.airavata.execution.repository.GatewayRepository;
+import org.apache.airavata.execution.repository.ProjectRepository;
+import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

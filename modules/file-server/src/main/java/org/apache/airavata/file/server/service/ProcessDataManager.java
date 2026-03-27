@@ -26,7 +26,7 @@ import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.compute.util.SSHJAgentAdaptor;
 import org.apache.airavata.compute.task.aws.AWSProcessContextManager;
 import org.apache.airavata.storage.task.OutputDataStagingTask;
-import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.execution.orchestrator.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.experiment.ExperimentModel;

@@ -21,7 +21,7 @@ package org.apache.airavata.compute.task.aws;
 
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.compute.util.AgentUtils;
-import org.apache.airavata.helix.impl.task.TaskContext;
+import org.apache.airavata.execution.orchestrator.TaskContext;
 import org.apache.airavata.compute.task.aws.AWSProcessContextManager;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;

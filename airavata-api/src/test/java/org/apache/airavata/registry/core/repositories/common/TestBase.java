@@ -17,16 +17,16 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.registry.core.repositories.common;
+package org.apache.airavata.execution.util.common;
 
 import org.apache.airavata.common.db.DBInitConfig;
 import org.apache.airavata.common.db.DBInitializer;
 import org.apache.airavata.common.db.DerbyUtil;
 import org.apache.airavata.common.db.JDBCConfig;
-import org.apache.airavata.registry.core.utils.AppCatalogDBInitConfig;
-import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
-import org.apache.airavata.registry.core.utils.ReplicaCatalogDBInitConfig;
-import org.apache.airavata.registry.core.utils.WorkflowCatalogDBInitConfig;
+import org.apache.airavata.execution.util.AppCatalogDBInitConfig;
+import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
+import org.apache.airavata.execution.util.ReplicaCatalogDBInitConfig;
+import org.apache.airavata.execution.util.WorkflowCatalogDBInitConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
