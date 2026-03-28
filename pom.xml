@@ -76,6 +76,7 @@ under the License.
         <module>modules/research-framework/research-service</module>
         <module>airavata-rest-server</module>
         <module>airavata-grpc-server</module>
+        <module>airavata-server</module>
     </modules>
 
     <properties>
