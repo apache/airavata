@@ -74,7 +74,9 @@ under the License.
         <module>modules/file-server</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework/research-service</module>
-        <module>modules/restproxy</module>
+        <module>airavata-rest-server</module>
+        <module>airavata-grpc-server</module>
+        <module>airavata-server</module>
     </modules>
 
     <properties>
@@ -251,11 +253,6 @@ under the License.
                 <groupId>org.apache.helix</groupId>
                 <artifactId>helix-core</artifactId>
                 <version>1.4.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.openjpa</groupId>
-                <artifactId>openjpa</artifactId>
-                <version>4.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shiro</groupId>
@@ -759,11 +756,6 @@ under the License.
                     <groupId>com.google.code.maven-replacer-plugin</groupId>
                     <artifactId>replacer</artifactId>
                     <version>1.5.3</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.openjpa</groupId>
-                    <artifactId>openjpa-maven-plugin</artifactId>
-                    <version>4.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>

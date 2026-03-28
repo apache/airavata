@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import org.apache.airavata.research.service.dto.CreateProjectRequest;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
-import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;

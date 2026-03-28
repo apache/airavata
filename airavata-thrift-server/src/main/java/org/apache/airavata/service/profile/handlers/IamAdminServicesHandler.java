@@ -50,7 +50,9 @@ import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_serv
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);

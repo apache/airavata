@@ -32,8 +32,8 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the COMPUTE_RESOURCE_RESERVATION database table.
@@ -73,7 +73,7 @@ public class ComputeResourceReservationEntity implements Serializable {
                 nullable = false,
                 updatable = false)
     })
-    @ForeignKey(deleteAction = ForeignKeyAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public ComputeResourceReservationEntity() {}

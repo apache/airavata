@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.airavata.agent.ServerMessage;
-import org.apache.airavata.agent.connection.service.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
 import org.apache.airavata.agent.connection.service.models.ExperimentStorageResponse;
 import org.apache.airavata.agent.connection.service.models.FileInfo;

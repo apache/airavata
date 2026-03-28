@@ -93,7 +93,11 @@ import org.apache.airavata.storage.service.DataProductService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
+@Component
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     private Publisher statusPublisher;
@@ -155,6 +159,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         this(new RegistryServerHandler(), new SharingRegistryServerHandler(), new CredentialStoreServerHandler());
     }
 
+    @PostConstruct
     public void initialize() {
         try {
             initSharingRegistry();

@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.handlers.SessionHandler;
-import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

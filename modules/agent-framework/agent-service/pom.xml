@@ -31,10 +31,6 @@ under the License.
   <artifactId>agent-service</artifactId>
   <name>Airavata Agent Service</name>
 
-  <properties>
-    <agent.service.dist.name>apache-airavata-agent-service-${project.version}</agent.service.dist.name>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.mariadb.jdbc</groupId>
@@ -165,35 +161,10 @@ under the License.
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>agent-service-distribution-package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <finalName>${agent.service.dist.name}</finalName>
-              <descriptors>
-                <descriptor>src/main/assembly/agent-service-bin-assembly.xml</descriptor>
-              </descriptors>
-              <attach>false</attach>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>io.github.ascopes</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>

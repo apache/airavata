@@ -1,0 +1,4 @@
+airavata:
+  thrift:
+    port: 8930
+    min-threads: 50

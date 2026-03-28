@@ -47,7 +47,9 @@ import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);

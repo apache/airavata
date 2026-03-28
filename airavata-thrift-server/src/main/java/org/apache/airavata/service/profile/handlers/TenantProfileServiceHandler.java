@@ -45,10 +45,12 @@ import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstant
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by goshenoy on 3/6/17.
  */
+@Component
 public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);

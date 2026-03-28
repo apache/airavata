@@ -23,7 +23,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.apache.airavata.agent.connection.service.UserContext;
+import org.apache.airavata.agent.connection.service.config.AgentProperties;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.agent.connection.service.config.ClusterApplicationConfig;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
@@ -55,19 +56,15 @@ public class AgentManagementHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagementHandler.class);
     private final AiravataService airavataService;
     private final ClusterApplicationConfig clusterApplicationConfig;
-
-    @Value("${airavata.storageResourceId}")
-    private String storageResourceId;
-
-    @Value("${airavata.storagePath}")
-    private String storagePath;
+    private final AgentProperties agentProperties;
 
     @Value("${grpc.server.host}")
     private String grpcHost;
 
-    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig) {
+    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig, AgentProperties agentProperties) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
+        this.agentProperties = agentProperties;
     }
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
@@ -216,7 +213,7 @@ public class AgentManagementHandler {
         String projectDir = projectName.replace(" ", "_");
         String projectId = airavataService.getProjectId(airavataClient, projectName);
         AuthzToken authzToken = UserContext.authzToken();
-        String userName = UserContext.username();
+        String userName = UserContext.userId();
         String gatewayId = UserContext.gatewayId();
         String appInterfaceId = clusterApplicationConfig.getApplicationInterfaceId();
         ExperimentModel experimentModel = new ExperimentModel();
@@ -247,10 +244,10 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
         userConfigurationDataModel.setInputStorageResourceId(
-                StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : storageResourceId);
+                StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : agentProperties.getStorageResourceId());
         userConfigurationDataModel.setOutputStorageResourceId(
-                StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : storageResourceId);
-        String experimentDataDir = Paths.get(storagePath, gatewayId, userName, projectDir, experimentName)
+                StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : agentProperties.getStorageResourceId());
+        String experimentDataDir = Paths.get(agentProperties.getStoragePath(), gatewayId, userName, projectDir, experimentName)
                 .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
         userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());

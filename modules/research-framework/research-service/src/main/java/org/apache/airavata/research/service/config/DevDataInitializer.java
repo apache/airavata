@@ -30,7 +30,6 @@ import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.apache.airavata.research.service.model.repo.ResourceRepository;
 import org.apache.airavata.research.service.model.repo.TagRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -42,15 +41,17 @@ public class DevDataInitializer implements CommandLineRunner {
     private final ProjectRepository projectRepository;
     private final ResourceRepository resourceRepository;
     private final TagRepository tagRepository;
-
-    @Value("${airavata.research-hub.dev-user}")
-    private String devUserEmail;
+    private final ResearchProperties researchProperties;
 
     public DevDataInitializer(
-            ProjectRepository projectRepository, ResourceRepository resourceRepository, TagRepository tagRepository) {
+            ProjectRepository projectRepository,
+            ResourceRepository resourceRepository,
+            TagRepository tagRepository,
+            ResearchProperties researchProperties) {
         this.projectRepository = projectRepository;
         this.resourceRepository = resourceRepository;
         this.tagRepository = tagRepository;
+        this.researchProperties = researchProperties;
     }
 
     private void createProject(

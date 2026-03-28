@@ -1,0 +1,14 @@
+server:
+  port: 18889
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    doc-expansion: none
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: data-catalog-portal

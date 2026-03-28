@@ -111,8 +111,8 @@ under the License.
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.openjpa</groupId>
-      <artifactId>openjpa</artifactId>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.validator</groupId>
@@ -331,6 +331,18 @@ under the License.
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <!-- Spring (optional, for @ConditionalOnServer and config properties) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <optional>true</optional>
+    </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>ec2</artifactId>
@@ -487,35 +499,6 @@ under the License.
         </configuration>
       </plugin>
 
-      <!--  Enhance OpenJPA Entities  -->
-      <plugin>
-        <groupId>org.apache.openjpa</groupId>
-        <artifactId>openjpa-maven-plugin</artifactId>
-        <configuration>
-          <includes>**/entities/**/*.class,**/compute/model/*.class,**/storage/model/*.class,**/execution/model/*.class,**/execution/model/workflow/*.class,**/sharing/model/*.class,**/credential/model/*.class</includes>
-          <excludes>**/entities/**/XML*.class,**/entities/**/*PK.class,**/*PK.class</excludes>
-          <addDefaultConstructor>true</addDefaultConstructor>
-          <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-          <persistenceXmlFile>${project.basedir}/src/main/resources/META-INF/persistence.xml</persistenceXmlFile>
-        </configuration>
-        <executions>
-          <execution>
-            <id>enhancer</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>enhance</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>4.1.1</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
       <!-- Run Tests  -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -541,29 +524,6 @@ under the License.
                Run with: mvn test -Dgroups=integration -Dsurefire.excludedGroups="" -->
           <excludedGroups>${surefire.excludedGroups}</excludedGroups>
         </configuration>
-      </plugin>
-
-      <!-- Package distribution (tarball) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>api-server-distribution-package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <tarLongFileMode>posix</tarLongFileMode>
-              <finalName>${api.server.dist.name}</finalName>
-              <descriptors>
-                <descriptor>src/main/assembly/api-server-bin-assembly.xml</descriptor>
-              </descriptors>
-              <attach>false</attach>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- Copy runtime dependencies for classpath mode (Tiltfile) -->

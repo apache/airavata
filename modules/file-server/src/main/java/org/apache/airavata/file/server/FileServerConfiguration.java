@@ -39,10 +39,10 @@ public class FileServerConfiguration {
         return AdaptorSupportImpl.getInstance();
     }
 
-    @Value("${airavata.server.host:localhost}")
+    @Value("${airavata.thrift.host:localhost}")
     private String airavataServerHost;
 
-    @Value("${airavata.server.port:8930}")
+    @Value("${airavata.thrift.port:8930}")
     private int airavataServerPort;
 
     @Bean
