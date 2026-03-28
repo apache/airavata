@@ -26,9 +26,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
 import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -258,52 +257,28 @@ public class SSHAccountManager {
     private static Map<ConfigParam, String> resolveProvisionerConfig(
             String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig)
             throws InvalidSetupException {
-        CredentialStoreService.Client credentialStoreServiceClient = null;
-        try {
-            credentialStoreServiceClient = getCredentialStoreClient();
-            // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
-            Map<ConfigParam, String> resolvedConfig = new HashMap<>();
-            for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
-                if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
-                    try {
-                        PasswordCredential password =
-                                credentialStoreServiceClient.getPasswordCredential(configEntry.getValue(), gatewayId);
-                        if (password == null) {
-                            throw new InvalidSetupException("Password credential doesn't exist for config param ["
-                                    + configEntry.getKey().getName() + "] for token [" + configEntry.getValue()
-                                    + "] for provisioner [" + provisionerName + "].");
-                        }
-                        resolvedConfig.put(configEntry.getKey(), password.getPassword());
-                    } catch (TException e) {
-                        throw new RuntimeException("Failed to get password needed to configure " + provisionerName, e);
+        CredentialStoreService.Iface credentialStoreHandler = getCredentialStoreHandler();
+        // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
+        Map<ConfigParam, String> resolvedConfig = new HashMap<>();
+        for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
+            if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
+                try {
+                    PasswordCredential password =
+                            credentialStoreHandler.getPasswordCredential(configEntry.getValue(), gatewayId);
+                    if (password == null) {
+                        throw new InvalidSetupException("Password credential doesn't exist for config param ["
+                                + configEntry.getKey().getName() + "] for token [" + configEntry.getValue()
+                                + "] for provisioner [" + provisionerName + "].");
                     }
-                } else {
-                    resolvedConfig.put(configEntry.getKey(), configEntry.getValue());
+                    resolvedConfig.put(configEntry.getKey(), password.getPassword());
+                } catch (TException e) {
+                    throw new RuntimeException("Failed to get password needed to configure " + provisionerName, e);
                 }
-            }
-            return resolvedConfig;
-        } finally {
-            if (credentialStoreServiceClient != null) {
-                if (credentialStoreServiceClient
-                        .getInputProtocol()
-                        .getTransport()
-                        .isOpen()) {
-                    credentialStoreServiceClient
-                            .getInputProtocol()
-                            .getTransport()
-                            .close();
-                }
-                if (credentialStoreServiceClient
-                        .getOutputProtocol()
-                        .getTransport()
-                        .isOpen()) {
-                    credentialStoreServiceClient
-                            .getOutputProtocol()
-                            .getTransport()
-                            .close();
-                }
+            } else {
+                resolvedConfig.put(configEntry.getKey(), configEntry.getValue());
             }
         }
+        return resolvedConfig;
     }
 
     private static Map<ConfigParam, String> convertConfigParams(
@@ -335,14 +310,11 @@ public class SSHAccountManager {
         }
     }
 
-    private static CredentialStoreService.Client getCredentialStoreClient() {
-
+    private static CredentialStoreService.Iface getCredentialStoreHandler() {
         try {
-            String credServerHost = ServerSettings.getCredentialStoreServerHost();
-            int credServerPort = Integer.valueOf(ServerSettings.getCredentialStoreServerPort());
-            return CredentialStoreClientFactory.createAiravataCSClient(credServerHost, credServerPort);
-        } catch (CredentialStoreException | ApplicationSettingsException e) {
-            throw new RuntimeException("Failed to create credential store service client", e);
+            return new CredentialStoreServerHandler();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create CredentialStoreServerHandler", e);
         }
     }
 }

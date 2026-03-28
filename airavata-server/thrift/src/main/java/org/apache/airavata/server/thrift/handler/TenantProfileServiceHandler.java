@@ -22,11 +22,8 @@ package org.apache.airavata.server.thrift.handler;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.config.Constants;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
 import org.apache.airavata.messaging.util.DBEventPublisherUtils;
 import org.apache.airavata.messaging.util.DBEventService;
 import org.apache.airavata.model.credential.store.PasswordCredential;
@@ -243,33 +240,21 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     // admin passwords are stored in credential store in the super portal gateway and need to be
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway)
-            throws TException, ApplicationSettingsException {
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-        try {
-            String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            PasswordCredential adminPasswordCredential =
-                    csClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
-            adminPasswordCredential.setGatewayId(gateway.getGatewayId());
-            String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
-            gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-        } finally {
-            if (csClient.getInputProtocol().getTransport().isOpen()) {
-                csClient.getInputProtocol().getTransport().close();
-            }
-            if (csClient.getOutputProtocol().getTransport().isOpen()) {
-                csClient.getOutputProtocol().getTransport().close();
-            }
-        }
+            throws TException {
+        CredentialStoreService.Iface csHandler = getCredentialStoreHandler();
+        String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        PasswordCredential adminPasswordCredential =
+                csHandler.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
+        adminPasswordCredential.setGatewayId(gateway.getGatewayId());
+        String newAdminPasswordCredentialToken = csHandler.addPasswordCredential(adminPasswordCredential);
+        gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
     }
 
-    private CredentialStoreService.Client getCredentialStoreServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+    private CredentialStoreService.Iface getCredentialStoreHandler() throws TException {
         try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
+            return new CredentialStoreServerHandler();
+        } catch (Exception e) {
+            throw new TException("Unable to create CredentialStoreServerHandler...", e);
         }
     }
 }

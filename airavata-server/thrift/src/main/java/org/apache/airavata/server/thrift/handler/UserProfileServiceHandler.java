@@ -21,8 +21,6 @@ package org.apache.airavata.server.thrift.handler;
 
 import java.util.List;
 import org.apache.airavata.common.config.Constants;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.messaging.util.DBEventPublisherUtils;
 import org.apache.airavata.messaging.util.DBEventService;
@@ -32,7 +30,6 @@ import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.security.service.AiravataSecurityManager;
 import org.apache.airavata.security.service.SecurityManagerFactory;
@@ -40,7 +37,6 @@ import org.apache.airavata.security.service.UserInfo;
 import org.apache.airavata.security.service.interceptor.SecurityCheck;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
@@ -169,7 +165,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 AuthzToken serviceAccountAuthzToken =
                         securityManager.getUserManagementServiceAccountAuthzToken(gatewayId);
-                IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+                IamAdminServices.Iface iamAdminServicesClient = getIamAdminServicesClient();
                 iamAdminServicesClient.updateUserProfile(serviceAccountAuthzToken, userProfile);
             } catch (AiravataSecurityException | TException e) {
                 throw new RuntimeException("Failed to update user profile in IAM service", e);
@@ -250,16 +246,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
-        } catch (IamAdminServicesException | ApplicationSettingsException e) {
-            logger.error("Failed to create IAM Admin Services client", e);
-            UserProfileServiceException ex =
-                    new UserProfileServiceException("Failed to create IAM Admin Services client");
-            throw ex;
-        }
+    private IamAdminServices.Iface getIamAdminServicesClient() {
+        return new IamAdminServicesHandler();
     }
 }

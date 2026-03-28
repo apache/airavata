@@ -33,9 +33,8 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
 import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -57,13 +56,10 @@ import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.security.service.AiravataSecurityManager;
 import org.apache.airavata.security.service.SecurityManagerFactory;
 import org.apache.airavata.security.util.AiravataSecurityException;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.Entity;
@@ -97,8 +93,8 @@ public class AiravataDataMigrator {
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
-        CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
-        IamAdminServices.Client iamAdminServiceClient = getIamAdminServiceClient();
+        CredentialStoreService.Iface credentialStoreServiceClient = getCredentialStoreServiceClient();
+        TenantManagementKeycloakImpl keycloakClient = new TenantManagementKeycloakImpl();
 
         String query = "SELECT * FROM GATEWAY" + gatewayWhereClause;
         Statement statement = expCatConnection.createStatement();
@@ -253,11 +249,11 @@ public class AiravataDataMigrator {
             AuthzToken authzToken_of_management_user = getManagementUsersAccessToken(domain.getDomainId());
             List<UserProfile> missingUsers = getUsersToMigrate(
                     sharingRegistryServerHandler,
-                    iamAdminServiceClient,
+                    keycloakClient,
                     authzToken_of_management_user,
                     null,
                     domain.getDomainId());
-            migrateKeycloakUsersToGateway(iamAdminServiceClient, authzToken_of_management_user, missingUsers);
+            migrateKeycloakUsersToGateway(keycloakClient, authzToken_of_management_user, missingUsers);
             addUsersToGroups(
                     sharingRegistryServerHandler,
                     missingUsers,
@@ -508,14 +504,15 @@ public class AiravataDataMigrator {
 
     private static List<UserProfile> getUsersToMigrate(
             SharingRegistryServerHandler sharingRegistryServerHandler,
-            IamAdminServices.Client adminServiceClient,
+            TenantManagementKeycloakImpl keycloakClient,
             AuthzToken authzToken,
             String search,
             String domainId)
             throws TException {
 
+        String gatewayId = authzToken.getClaimsMap().get(org.apache.airavata.common.config.Constants.GATEWAY_ID);
         List<UserProfile> missingUsers = new ArrayList<>();
-        List<UserProfile> keycloakUsers = adminServiceClient.getUsers(authzToken, 0, -1, search);
+        List<UserProfile> keycloakUsers = keycloakClient.getUsers(authzToken.getAccessToken(), gatewayId, 0, -1, search);
 
         for (UserProfile profile : keycloakUsers) {
             if (profile.getState().equals(Status.ACTIVE)
@@ -527,12 +524,13 @@ public class AiravataDataMigrator {
     }
 
     private static boolean migrateKeycloakUsersToGateway(
-            IamAdminServices.Client adminServiceClient, AuthzToken authzToken, List<UserProfile> missingUsers)
+            TenantManagementKeycloakImpl keycloakClient, AuthzToken authzToken, List<UserProfile> missingUsers)
             throws TException {
 
+        String gatewayId = authzToken.getClaimsMap().get(org.apache.airavata.common.config.Constants.GATEWAY_ID);
         boolean allUsersUpdated = true;
         for (UserProfile profile : missingUsers) {
-            allUsersUpdated &= adminServiceClient.enableUser(authzToken, profile.getUserId());
+            allUsersUpdated &= keycloakClient.enableUserAccount(authzToken.getAccessToken(), gatewayId, profile.getUserId());
         }
         return allUsersUpdated;
     }
@@ -663,7 +661,7 @@ public class AiravataDataMigrator {
     private static String getAdminOwnerUser(
             Domain domain,
             SharingRegistryServerHandler sharingRegistryServerHandler,
-            CredentialStoreService.Client credentialStoreServiceClient,
+            CredentialStoreService.Iface credentialStoreServiceClient,
             RegistryService.Client registryServiceClient)
             throws TException {
         GatewayResourceProfile gatewayResourceProfile = null;
@@ -733,7 +731,7 @@ public class AiravataDataMigrator {
 
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
 
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        CredentialStoreService.Iface csClient = getCredentialStoreServiceClient();
         return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 
@@ -902,14 +900,11 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static CredentialStoreService.Client getCredentialStoreServiceClient()
-            throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+    private static CredentialStoreService.Iface getCredentialStoreServiceClient() throws TException {
         try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
+            return new CredentialStoreServerHandler();
+        } catch (Exception e) {
+            throw new TException("Unable to create CredentialStoreServerHandler...", e);
         }
     }
 
@@ -923,15 +918,6 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static IamAdminServices.Client getIamAdminServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-        final String serverHost = ServerSettings.getProfileServiceServerHost();
-        try {
-            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
-        } catch (IamAdminServicesException e) {
-            throw new TException("Unable to create i am admin service client...", e);
-        }
-    }
 
     private static AuthzToken getManagementUsersAccessToken(String tenantId) throws TException {
         try {

@@ -19,11 +19,8 @@
 */
 package org.apache.airavata.compute.util;
 
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
 import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.registry.api.RegistryService;
 
@@ -33,13 +30,11 @@ public class AgentUtils {
         return Utils.getRegistryHandler();
     }
 
-    public static CredentialStoreService.Client getCredentialClient() throws AgentException {
+    public static CredentialStoreService.Iface getCredentialClient() throws AgentException {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-            final String serverHost = ServerSettings.getCredentialStoreServerHost();
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException | ApplicationSettingsException e) {
-            throw new AgentException("Unable to create credential client...", e);
+            return new CredentialStoreServerHandler();
+        } catch (Exception e) {
+            throw new AgentException("Unable to create CredentialStoreServerHandler...", e);
         }
     }
 }

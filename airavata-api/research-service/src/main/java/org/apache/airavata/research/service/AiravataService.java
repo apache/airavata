@@ -19,16 +19,11 @@
 */
 package org.apache.airavata.research.service;
 
-import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.common.security.UserContext;
-import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
-import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
-import org.apache.thrift.TException;
+import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,38 +31,22 @@ public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    @Value("${airavata.user-profile.server.url:airavata.host}")
-    private String profileServerUrl;
-
-    @Value("${airavata.user-profile.server.port:8962}")
-    private int profileServerPort;
-
-    public UserProfileService.Client userProfileClient() {
-        try {
-            LOGGER.info("User profile client initialized");
-            return ProfileServiceClientFactory.createUserProfileServiceClient(profileServerUrl, profileServerPort);
-        } catch (UserProfileServiceException e) {
-            LOGGER.error("Error while creating user profile client", e);
-            throw new RuntimeException(e);
-        }
-    }
+    private final UserProfileRepository userProfileRepository = new UserProfileRepository();
 
     public UserProfile getUserProfile(String userId) {
-        try {
-            return userProfileClient().getUserProfileById(UserContext.authzToken(), userId, UserContext.gatewayId());
-        } catch (TException e) {
-            LOGGER.error("Error while getting user profile with the id: {}", userId, e);
-            throw new RuntimeException("Error while getting user profile with the id: " + userId, e);
+        UserProfile profile = userProfileRepository.getUserProfileByIdAndGateWay(userId, UserContext.gatewayId());
+        if (profile == null) {
+            throw new RuntimeException("User profile not found for id: " + userId);
         }
+        return profile;
     }
 
-    public UserProfile getUserProfile(AuthzToken authzToken, String userId, String gatewayId) {
-        try {
-            return userProfileClient().getUserProfileById(authzToken, userId, gatewayId);
-        } catch (TException e) {
-            LOGGER.error("Error while getting user profile with the id: {} in the gateway: {}", userId, gatewayId, e);
+    public UserProfile getUserProfile(String authzToken, String userId, String gatewayId) {
+        UserProfile profile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
+        if (profile == null) {
             throw new RuntimeException(
-                    "Error while getting user profile with the id: " + userId + " in the gateway: " + gatewayId, e);
+                    "User profile not found for id: " + userId + " in gateway: " + gatewayId);
         }
+        return profile;
     }
 }
