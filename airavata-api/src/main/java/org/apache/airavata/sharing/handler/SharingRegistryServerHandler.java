@@ -35,7 +35,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SharingRegistryServerHandler implements SharingRegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandler.class);
 

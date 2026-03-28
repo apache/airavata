@@ -78,7 +78,9 @@ import org.apache.airavata.storage.repository.StorageResourceRepository;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RegistryServerHandler implements RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
 
