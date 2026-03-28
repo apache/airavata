@@ -30,11 +30,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1/files")
 public class FileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
@@ -43,7 +43,6 @@ public class FileController {
     private AirvataFileService fileService;
 
     @GetMapping("/list/{live}/{processId}")
-    @ResponseBody
     public Object listFilesRoot(@PathVariable String live, @PathVariable String processId) throws Exception {
         String relPath = "/";
         try {
@@ -55,7 +54,6 @@ public class FileController {
     }
 
     @GetMapping("/list/{live}/{processId}/{*subPath}")
-    @ResponseBody
     public Object listFiles(@PathVariable String live, @PathVariable String processId, @PathVariable String subPath)
             throws Exception {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
@@ -73,7 +71,6 @@ public class FileController {
     }
 
     @GetMapping("/download/{live}/{processId}/{*subPath}")
-    @ResponseBody
     public ResponseEntity downloadFile(
             @PathVariable String live, @PathVariable String processId, @PathVariable String subPath) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
@@ -92,7 +89,6 @@ public class FileController {
     }
 
     @PostMapping("/upload/{live}/{processId}/{*subPath}")
-    @ResponseBody
     public ResponseEntity uploadFile(
             @PathVariable String live,
             @PathVariable String processId,
