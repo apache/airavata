@@ -31,14 +31,13 @@ import java.util.regex.Pattern;
 import org.apache.airavata.common.config.Constants;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+
 import org.apache.airavata.security.service.authzcache.*;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
@@ -104,7 +103,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private static final String INTERMEDIATE_OUTPUTS_METHODS =
             "/airavata/fetchIntermediateOutputs|/airavata/getIntermediateOutputProcessStatus";
     private final HashMap<String, String> rolePermissionConfig = new HashMap<>();
-    private RegistryService.Client registryServiceClient = null;
+    private RegistryService.Iface registryServiceClient = null;
     private SharingRegistryService.Iface sharingRegistryServiceClient = null;
 
     public KeyCloakSecurityManager() throws AiravataSecurityException, ApplicationSettingsException {
@@ -386,19 +385,11 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     }
 
     private void closeServiceClients() {
-        if (registryServiceClient != null) {
-            ThriftUtils.close(registryServiceClient);
-        }
+        // No-op: handler is in-process, no transport to close
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
+    private RegistryService.Iface getRegistryServiceClient() {
+        return new RegistryServerHandler();
     }
 
     private static class GatewayGroupMembership {

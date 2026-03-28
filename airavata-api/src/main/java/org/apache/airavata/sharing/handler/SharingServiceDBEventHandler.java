@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.handler;
 
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.ThriftUtils;
@@ -35,10 +34,8 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.apache.airavata.sharing.registry.models.Entity;
 import org.apache.airavata.sharing.registry.models.PermissionType;
-import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.util.ThriftDataModelConversion;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -51,13 +48,11 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
 
-    private final SharingRegistryService.Client sharingRegistryClient;
+    private final SharingRegistryService.Iface sharingRegistryClient;
 
-    SharingServiceDBEventHandler() throws ApplicationSettingsException, SharingRegistryException {
-        log.info("Starting sharing registry client.....");
-        sharingRegistryClient = SharingRegistryServiceClientFactory.createSharingRegistryClient(
-                ServerSettings.getSetting("sharing.registry.server.host"),
-                Integer.parseInt(ServerSettings.getSetting("sharing.registry.server.port")));
+    SharingServiceDBEventHandler() throws ApplicationSettingsException, TException {
+        log.info("Initializing sharing registry handler.....");
+        sharingRegistryClient = new SharingRegistryServerHandler();
     }
 
     @Override

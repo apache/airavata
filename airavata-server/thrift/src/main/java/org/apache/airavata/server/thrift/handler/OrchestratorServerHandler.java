@@ -38,7 +38,7 @@ import org.apache.airavata.execution.orchestrator.SimpleOrchestratorImpl;
 import org.apache.airavata.execution.scheduler.ProcessScheduler;
 import org.apache.airavata.execution.scheduler.ProcessSchedulerImpl;
 import org.apache.airavata.execution.util.ExperimentModelUtil;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.messaging.service.*;
 import org.apache.airavata.messaging.util.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -63,7 +63,6 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.RegistryService.Client;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
@@ -141,7 +140,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      */
     public boolean launchExperiment(String experimentId, String gatewayId) throws TException {
         ExperimentModel experiment = null;
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
             // TODO deprecate this approach as we are replacing gfac
             String experimentNodePath = getExperimentNodePath(experimentId);
@@ -308,9 +307,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new TException("Experiment '" + experimentId + "' launch failed.", e);
         } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
         return true;
     }
@@ -325,7 +322,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      * @throws TException
      */
     public boolean validateExperiment(String experimentId) throws TException, LaunchValidationException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
             ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
             return orchestrator.validateExperiment(experimentModel).isValidationState();
@@ -333,16 +330,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             log.error(experimentId, "Error while validating experiment", e);
             throw new TException(e);
         } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
     }
 
     @Override
     public boolean validateProcess(String experimentId, List<ProcessModel> processes)
             throws LaunchValidationException, TException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
             ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
             for (ProcessModel processModel : processes) {
@@ -366,9 +361,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             log.error(experimentId, "Error while validating process", e);
             throw new TException(e);
         } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
     }
 
@@ -381,7 +374,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      * @throws TException
      */
     public boolean terminateExperiment(String experimentId, String gatewayId) throws TException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         log.info(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
         try {
             return validateStatesAndCancel(registryClient, experimentId, gatewayId);
@@ -389,28 +382,24 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             log.error("expId : " + experimentId + " :- Error while cancelling experiment", e);
             return false;
         } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
     }
 
     public void fetchIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames)
             throws TException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
             submitIntermediateOutputsProcess(registryClient, experimentId, gatewayId, outputNames);
         } catch (Exception e) {
             log.error("expId : " + experimentId + " :- Error while fetching intermediate", e);
         } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
     }
 
     private void submitIntermediateOutputsProcess(
-            Client registryClient, String experimentId, String gatewayId, List<String> outputNames) throws Exception {
+            RegistryService.Iface registryClient, String experimentId, String gatewayId, List<String> outputNames) throws Exception {
 
         ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
         ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
@@ -506,7 +495,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     @Override
     public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
             ProcessStatus processStatus = registryClient.getProcessStatus(processId);
 
@@ -547,14 +536,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             log.error(processId, "Error while launching process ", e);
             throw new TException(e);
         } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
     }
 
     private ApplicationDeploymentDescription getAppDeployment(
-            RegistryService.Client registryClient, ProcessModel processModel, String applicationId)
+            RegistryService.Iface registryClient, ProcessModel processModel, String applicationId)
             throws OrchestratorException, ClassNotFoundException, ApplicationSettingsException, InstantiationException,
                     IllegalAccessException, TException {
         String selectedModuleId = getModuleId(registryClient, applicationId);
@@ -562,7 +549,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private ApplicationDeploymentDescription getAppDeploymentForModule(
-            RegistryService.Client registryClient, ProcessModel processModel, String selectedModuleId)
+            RegistryService.Iface registryClient, ProcessModel processModel, String selectedModuleId)
             throws ClassNotFoundException, ApplicationSettingsException, InstantiationException, IllegalAccessException,
                     TException {
 
@@ -587,7 +574,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         return deploymentMap.get(ComputeResourceDescription);
     }
 
-    private String getModuleId(RegistryService.Client registryClient, String applicationId)
+    private String getModuleId(RegistryService.Iface registryClient, String applicationId)
             throws OrchestratorException, TException {
         ApplicationInterfaceDescription applicationInterface = registryClient.getApplicationInterface(applicationId);
         List<String> applicationModules = applicationInterface.getApplicationModules();
@@ -600,7 +587,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private boolean validateStatesAndCancel(
-            RegistryService.Client registryClient, String experimentId, String gatewayId) throws Exception {
+            RegistryService.Iface registryClient, String experimentId, String gatewayId) throws Exception {
         ExperimentStatus experimentStatus = registryClient.getExperimentStatus(experimentId);
         switch (experimentStatus.getState()) {
             case COMPLETED:
@@ -700,7 +687,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
 
         private boolean launchSingleAppExperiment() throws TException, AiravataException {
-            final RegistryService.Client registryClient = getRegistryServiceClient();
+            final RegistryService.Iface registryClient = getRegistryServiceClient();
             try {
                 List<String> processIds = registryClient.getProcessIds(experimentId);
                 for (String processId : processIds) {
@@ -727,10 +714,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 publisher.publish(messageContext);
                 throw new TException(e);
-            } finally {
-                if (registryClient != null) {
-                    ThriftUtils.close(registryClient);
-                }
             }
             return true;
         }
@@ -841,7 +824,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             status.setState(ExperimentState.SCHEDULED);
                             status.setReason("Job submission failed,  requeued to resubmit");
                             List<QueueStatusModel> queueStatusModels = new ArrayList<>();
-                            final RegistryService.Client registryClient = getRegistryServiceClient();
+                            final RegistryService.Iface registryClient = getRegistryServiceClient();
                             ExperimentModel experimentModel =
                                     registryClient.getExperiment(processIdentity.getExperimentId());
                             UserConfigurationDataModel userConfigurationDataModel =
@@ -969,7 +952,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     private void launchExperiment(MessageContext messageContext) {
         ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
             ThriftUtils.createThriftFromBytes(bytes, expEvent);
@@ -1004,20 +987,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         } finally {
             experimentSubscriber.sendAck(messageContext.getDeliveryTag());
             MDC.clear();
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
+            // No-op: handler is in-process, no transport to close
         }
     }
 
-    private RegistryService.Client getRegistryServiceClient() {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    private RegistryService.Iface getRegistryServiceClient() {
+        return new RegistryServerHandler();
     }
 
     private void startCurator() throws ApplicationSettingsException {
@@ -1043,7 +1018,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     private void launchQueuedExperiment(String experimentId) throws TException, Exception {
         ExperimentModel experiment = null;
-        final RegistryService.Client registryClient = getRegistryServiceClient();
+        final RegistryService.Iface registryClient = getRegistryServiceClient();
         // TODO deprecate this approach as we are replacing gfac
         experiment = registryClient.getExperiment(experimentId);
         if (experiment == null) {
@@ -1081,7 +1056,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private void createAndValidateTasks(
-            ExperimentModel experiment, RegistryService.Client registryClient, boolean recreateTaskDag)
+            ExperimentModel experiment, RegistryService.Iface registryClient, boolean recreateTaskDag)
             throws Exception {
         if (experiment.getUserConfigurationData().isAiravataAutoSchedule()) {
             List<ProcessModel> processModels = registryClient.getProcessList(experiment.getExperimentId());

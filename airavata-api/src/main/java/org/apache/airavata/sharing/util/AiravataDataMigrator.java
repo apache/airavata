@@ -30,12 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
@@ -55,7 +54,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+
 import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.security.service.AiravataSecurityManager;
 import org.apache.airavata.security.service.SecurityManagerFactory;
@@ -223,7 +222,7 @@ public class AiravataDataMigrator {
 
         // Creating the gateway groups
         List<Domain> domainList = sharingRegistryServerHandler.getDomains(0, -1);
-        final RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        final RegistryService.Iface registryServiceClient = getRegistryServiceClient();
         for (Domain domain : domainList) {
             // If we're only running migration for gatewayId, then skip other gateways
             if (gatewayId != null && !gatewayId.equals(domain.getDomainId())) {
@@ -614,7 +613,7 @@ public class AiravataDataMigrator {
             Domain domain,
             String ownerId,
             SharingRegistryServerHandler sharingRegistryServerHandler,
-            RegistryService.Client registryServiceClient)
+            RegistryService.Iface registryServiceClient)
             throws TException, ApplicationSettingsException {
         GatewayGroups gatewayGroups = new GatewayGroups();
         gatewayGroups.setGatewayId(domain.getDomainId());
@@ -662,7 +661,7 @@ public class AiravataDataMigrator {
             Domain domain,
             SharingRegistryServerHandler sharingRegistryServerHandler,
             CredentialStoreService.Iface credentialStoreServiceClient,
-            RegistryService.Client registryServiceClient)
+            RegistryService.Iface registryServiceClient)
             throws TException {
         GatewayResourceProfile gatewayResourceProfile = null;
         try {
@@ -767,7 +766,7 @@ public class AiravataDataMigrator {
     private static boolean needsGroupResourceProfileMigration(
             String gatewayId,
             String domainOwnerId,
-            RegistryService.Client registryServiceClient,
+            RegistryService.Iface registryServiceClient,
             SharingRegistryServerHandler sharingRegistryServerHandler)
             throws TException {
         // Return true if GatewayResourceProfile has at least one ComputeResourcePreference and there is no
@@ -790,7 +789,7 @@ public class AiravataDataMigrator {
     }
 
     private static GroupResourceProfile migrateGatewayResourceProfileToGroupResourceProfile(
-            String gatewayId, RegistryService.Client registryServiceClient) throws TException {
+            String gatewayId, RegistryService.Iface registryServiceClient) throws TException {
 
         GroupResourceProfile groupResourceProfile = new GroupResourceProfile();
         groupResourceProfile.setGatewayId(gatewayId);
@@ -873,7 +872,7 @@ public class AiravataDataMigrator {
     }
 
     private static ComputeResourcePolicy createDefaultComputeResourcePolicy(
-            String groupResourceProfileId, String computeResourceId, RegistryService.Client registryServiceClient)
+            String groupResourceProfileId, String computeResourceId, RegistryService.Iface registryServiceClient)
             throws TException {
         ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
         computeResourcePolicy.setComputeResourceId(computeResourceId);
@@ -908,14 +907,8 @@ public class AiravataDataMigrator {
         }
     }
 
-    private static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
+    private static RegistryService.Iface getRegistryServiceClient() {
+        return new RegistryServerHandler();
     }
 
 

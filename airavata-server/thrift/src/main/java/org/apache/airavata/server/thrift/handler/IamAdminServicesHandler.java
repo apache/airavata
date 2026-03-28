@@ -27,7 +27,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.messaging.util.DBEventPublisherUtils;
 import org.apache.airavata.messaging.util.DBEventService;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -39,7 +39,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+
 import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.security.service.interceptor.SecurityCheck;
@@ -346,14 +346,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
-        }
+    private RegistryService.Iface getRegistryServiceClient() {
+        return new RegistryServerHandler();
     }
 
     private CredentialStoreService.Iface getCredentialStoreHandler() throws TException {

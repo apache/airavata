@@ -35,18 +35,17 @@ import mockit.Mocked;
 import org.apache.airavata.common.config.Constants;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.security.service.authzcache.AuthzCacheIndex;
 import org.apache.airavata.security.service.authzcache.AuthzCacheManager;
 import org.apache.airavata.security.service.authzcache.AuthzCacheManagerFactory;
 import org.apache.airavata.security.service.authzcache.AuthzCachedStatus;
 import org.apache.airavata.security.util.AiravataSecurityException;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,16 +60,10 @@ public class KeyCloakSecurityManagerTest {
     private ServerSettings mockServerSettings;
 
     @Mocked
-    private RegistryServiceClientFactory mockRegistryServiceClientFactory;
+    private RegistryServerHandler mockRegistryServiceClient;
 
     @Mocked
-    private RegistryService.Client mockRegistryServiceClient;
-
-    @Mocked
-    private SharingRegistryServiceClientFactory mockSharingRegistryServiceClientFactory;
-
-    @Mocked
-    private SharingRegistryService.Client mockSharingRegistryServiceClient;
+    private SharingRegistryServerHandler mockSharingRegistryServiceClient;
 
     @Mocked
     private AuthzCacheManagerFactory mockAuthzCacheManagerFactory;
@@ -84,18 +77,6 @@ public class KeyCloakSecurityManagerTest {
             {
                 mockServerSettings.isTLSEnabled();
                 result = true;
-                mockServerSettings.getRegistryServerHost();
-                result = "localhost";
-                minTimes = 0;
-                mockServerSettings.getRegistryServerPort();
-                result = "8970";
-                minTimes = 0;
-                mockServerSettings.getSharingRegistryHost();
-                result = "localhost";
-                minTimes = 0;
-                mockServerSettings.getSharingRegistryPort();
-                result = "7878";
-                minTimes = 0;
                 mockServerSettings.getRemoteIDPServiceUrl();
                 result = "https://iam.server/auth";
                 minTimes = 0;

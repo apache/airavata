@@ -24,11 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -38,7 +36,6 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResou
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +69,7 @@ public class SSHAccountManager {
     private static SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
             throws InvalidSetupException {
         // get compute resource preferences for the gateway and hostname
-        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        RegistryService.Iface registryServiceClient = getRegistryServiceClient();
         ComputeResourcePreference computeResourcePreference = null;
         try {
             computeResourcePreference =
@@ -82,13 +79,6 @@ public class SSHAccountManager {
                     "Failed to get ComputeResourcePreference for [" + gatewayId + "] and [" + computeResourceId + "]: "
                             + e.getMessage(),
                     e);
-        } finally {
-            if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getInputProtocol().getTransport().close();
-            }
-            if (registryServiceClient.getOutputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getOutputProtocol().getTransport().close();
-            }
         }
 
         // get the account provisioner and config values for the preferences
@@ -121,7 +111,7 @@ public class SSHAccountManager {
             throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
-        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        RegistryService.Iface registryServiceClient = getRegistryServiceClient();
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
@@ -143,13 +133,6 @@ public class SSHAccountManager {
                     "Failed to retrieve compute resource information for [" + gatewayId + "] and " + "["
                             + computeResourceId + "]: " + e.getMessage(),
                     e);
-        } finally {
-            if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getInputProtocol().getTransport().close();
-            }
-            if (registryServiceClient.getOutputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getOutputProtocol().getTransport().close();
-            }
         }
 
         if (sshJobSubmission == null) {
@@ -299,15 +282,8 @@ public class SSHAccountManager {
         return result;
     }
 
-    private static RegistryService.Client getRegistryServiceClient() {
-
-        try {
-            String registryServerHost = ServerSettings.getRegistryServerHost();
-            int registryServerPort = Integer.valueOf(ServerSettings.getRegistryServerPort());
-            return RegistryServiceClientFactory.createRegistryClient(registryServerHost, registryServerPort);
-        } catch (ApplicationSettingsException | RegistryServiceException e) {
-            throw new RuntimeException("Failed to create registry service client", e);
-        }
+    private static RegistryService.Iface getRegistryServiceClient() {
+        return new RegistryServerHandler();
     }
 
     private static CredentialStoreService.Iface getCredentialStoreHandler() {
