@@ -20,8 +20,8 @@
 package org.apache.airavata.security.profile.commons.utils;
 
 import java.net.URI;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

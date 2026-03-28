@@ -22,6 +22,10 @@ package org.apache.airavata.integration;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.airavata.common.db.DBInitializer;
+import org.apache.airavata.execution.repository.ExperimentRepository;
+import org.apache.airavata.execution.repository.GatewayRepository;
+import org.apache.airavata.execution.repository.ProjectRepository;
+import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -29,10 +33,6 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentRepository;
-import org.apache.airavata.registry.core.repositories.expcatalog.GatewayRepository;
-import org.apache.airavata.registry.core.repositories.expcatalog.ProjectRepository;
-import org.apache.airavata.registry.core.utils.ExpCatalogDBInitConfig;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,14 +66,7 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
 
     @BeforeAll
     static void setUpAll() throws Exception {
-        // Route ExpCatalogJDBCConfig to the Testcontainers instance.
-        // ApplicationSettings.getSettingImpl checks System.getProperties() first.
-        System.setProperty("airavata.jdbc.url", getJdbcUrl());
-        System.setProperty("airavata.jdbc.user", getUsername());
-        System.setProperty("airavata.jdbc.password", getPassword());
-        System.setProperty("airavata.jdbc.driver", getJdbcDriver());
-        System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
-
+        // System properties are already set by SharedMariaDB (via AbstractIntegrationTest)
         ExpCatalogDBInitConfig config = new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog");
         DBInitializer.initializeDB(config);
 
@@ -97,14 +90,7 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         logger.info("Test DB initialized. gatewayId={}, projectId={}", gatewayId, projectId);
     }
 
-    @AfterAll
-    static void tearDownAll() {
-        System.clearProperty("airavata.jdbc.url");
-        System.clearProperty("airavata.jdbc.user");
-        System.clearProperty("airavata.jdbc.password");
-        System.clearProperty("airavata.jdbc.driver");
-        System.clearProperty("airavata.jdbc.validationQuery");
-    }
+    // No @AfterAll teardown needed — SharedMariaDB owns the system properties for the entire test run
 
     // --- Helper ---
 
@@ -116,6 +102,7 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         experiment.setUserName("integration-user");
         experiment.setExperimentName(name);
         experiment.setGatewayInstanceId("gw-instance-1");
+        experiment.setUserConfigurationData(new UserConfigurationDataModel());
         return experiment;
     }
 

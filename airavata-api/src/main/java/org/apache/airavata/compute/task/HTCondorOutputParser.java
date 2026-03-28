@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.airavata.compute.task.OutputParser;
-import org.apache.airavata.compute.task.JobUtil;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;

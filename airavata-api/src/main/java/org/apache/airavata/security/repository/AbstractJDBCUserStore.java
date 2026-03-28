@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.security.repository;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.security.util.UserStore;
 import org.apache.airavata.security.util.UserStoreException;
 import org.slf4j.Logger;

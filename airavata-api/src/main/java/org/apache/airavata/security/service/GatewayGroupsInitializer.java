@@ -19,22 +19,22 @@
 */
 package org.apache.airavata.security.service;
 
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.util.CredentialStoreClientFactory;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

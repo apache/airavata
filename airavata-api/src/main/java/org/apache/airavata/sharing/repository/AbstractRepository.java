@@ -25,11 +25,11 @@ import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.util.Committer;
 import org.apache.airavata.sharing.util.DBConstants;
 import org.apache.airavata.sharing.util.JPAUtils;
 import org.apache.airavata.sharing.util.ObjectMapperSingleton;
-import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -29,7 +29,7 @@
                 <jdbcUrl>jdbc:derby://airavata.localhost:20000/airavata;create=true</jdbcUrl>
                 <userName>admin</userName>
                 <password>admin</password>
-                <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>
+                <databaseDriver>org.mariadb.jdbc.Driver</databaseDriver>
                 <userTableName>AIRAVATA_USER</userTableName>
                 <userNameColumnName>USERID</userNameColumnName>
                 <passwordColumnName>PASSWORD</passwordColumnName>

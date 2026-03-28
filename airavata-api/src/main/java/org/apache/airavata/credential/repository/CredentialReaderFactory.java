@@ -19,9 +19,8 @@
 */
 package org.apache.airavata.credential.repository;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.db.DBUtil;
-import org.apache.airavata.credential.repository.CredentialReaderImpl;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 /**
  * Factory class to create credential store readers.

@@ -21,18 +21,26 @@ package org.apache.airavata.orchestrator.server;
 
 import java.text.MessageFormat;
 import java.util.*;
+import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.config.ZkConstants;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.MDCConstants;
 import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.common.config.ZkConstants;
+import org.apache.airavata.execution.orchestrator.HostScheduler;
+import org.apache.airavata.execution.orchestrator.OrchestratorConstants;
+import org.apache.airavata.execution.orchestrator.OrchestratorException;
+import org.apache.airavata.execution.orchestrator.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.execution.orchestrator.OrchestratorServerUtils;
+import org.apache.airavata.execution.orchestrator.SimpleOrchestratorImpl;
+import org.apache.airavata.execution.scheduler.ProcessScheduler;
+import org.apache.airavata.execution.scheduler.ProcessSchedulerImpl;
+import org.apache.airavata.execution.util.ExperimentModelUtil;
+import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.messaging.service.*;
 import org.apache.airavata.messaging.util.*;
-import org.apache.airavata.metascheduler.core.api.ProcessScheduler;
-import org.apache.airavata.metascheduler.process.scheduling.api.ProcessSchedulerImpl;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -53,17 +61,9 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.schedule.HostScheduler;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
-import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.RegistryService.Client;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
@@ -275,7 +275,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     status.setReason("Compute resources are not ready");
                     status.setTimeOfStateChange(
                             AiravataUtils.getCurrentTimestamp().getTime());
-                    OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+                    OrchestratorServerUtils.updateAndPublishExperimentStatus(
+                            experimentId, status, publisher, gatewayId);
                     log.info("expId: {}, Scheduled experiment ", experimentId);
                 }
             } else if (executionType == ExperimentType.WORKFLOW) {
@@ -295,7 +296,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Validation failed: " + launchValidationException.getErrorMessage());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+            OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new TException(
                     "Experiment '" + experimentId + "' launch failed. Experiment failed to validate: "
                             + launchValidationException.getErrorMessage(),
@@ -304,7 +305,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
             status.setReason("Unexpected error occurred: " + e.getMessage());
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+            OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
             throw new TException("Experiment '" + experimentId + "' launch failed.", e);
         } finally {
             if (registryClient != null) {
@@ -654,7 +655,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     status.setReason("Experiment cancel request processed");
                     status.setTimeOfStateChange(
                             AiravataUtils.getCurrentTimestamp().getTime());
-                    OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+                    OrchestratorServerUtils.updateAndPublishExperimentStatus(
+                            experimentId, status, publisher, gatewayId);
                     log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
                 }
                 return true;
@@ -707,12 +709,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 //				ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
                 //				status.setReason("submitted all processes");
                 //				status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                //				OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status);
+                //				OrchestratorServerUtils.updageAndPublishExperimentStatus(experimentId, status);
                 //				log.info("expId: {}, Launched experiment ", experimentId);
             } catch (Exception e) {
                 ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
                 status.setReason("Error while updating task status");
-                OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+                OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                 log.error(
                         "expId: " + experimentId
                                 + ", Error while updating task status, hence updated experiment status to "
@@ -756,7 +758,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             processIdentity.getProcessId(),
                             processStatusChangeEvent.getState().name());
                     try {
-                        ProcessModel process = OrchestratorUtils.getProcess(processIdentity.getProcessId());
+                        ProcessModel process = OrchestratorServerUtils.getProcess(processIdentity.getProcessId());
                         boolean isIntermediateOutputFetchingProcess =
                                 process.getTasks().stream().anyMatch(t -> t.getTaskType() == TaskTypes.OUTPUT_FETCHING);
                         if (isIntermediateOutputFetchingProcess) {
@@ -773,7 +775,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         case STARTED:
                             try {
                                 ExperimentStatus stat =
-                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
+                                        OrchestratorServerUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELING);
                                     status.setReason("Process started but experiment cancelling is triggered");
@@ -798,7 +800,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         case COMPLETED:
                             try {
                                 ExperimentStatus stat =
-                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
+                                        OrchestratorServerUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELED);
                                     status.setReason("Process competed but experiment cancelling is triggered");
@@ -813,7 +815,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         case FAILED:
                             try {
                                 ExperimentStatus stat =
-                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
+                                        OrchestratorServerUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELED);
                                     status.setReason("Process failed but experiment cancelling is triggered");
@@ -868,7 +870,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         case DEQUEUING:
                             try {
                                 ExperimentStatus stat =
-                                        OrchestratorUtils.getExperimentStatus(processIdentity.getExperimentId());
+                                        OrchestratorServerUtils.getExperimentStatus(processIdentity.getExperimentId());
                                 if (stat.getState() == ExperimentState.CANCELING) {
                                     status.setState(ExperimentState.CANCELING);
                                     status.setReason("Process started but experiment cancelling is triggered");
@@ -887,7 +889,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     if (status.getState() != null) {
                         status.setTimeOfStateChange(
                                 AiravataUtils.getCurrentTimestamp().getTime());
-                        OrchestratorUtils.updateAndPublishExperimentStatus(
+                        OrchestratorServerUtils.updateAndPublishExperimentStatus(
                                 processIdentity.getExperimentId(), status, publisher, processIdentity.getGatewayId());
                         log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to "
                                 + status.getState());
@@ -1033,7 +1035,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
         status.setReason("submitted all processes");
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+        OrchestratorServerUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
         log.info("expId: {}, Launched experiment ", experimentId);
         OrchestratorServerThreadPoolExecutor.getCachedThreadPool()
                 .execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));

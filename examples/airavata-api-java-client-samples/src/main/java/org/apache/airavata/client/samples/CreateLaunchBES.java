@@ -39,7 +39,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.execution.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;

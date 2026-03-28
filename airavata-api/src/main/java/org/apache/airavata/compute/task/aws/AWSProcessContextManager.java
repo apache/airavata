@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.compute.util.AgentException;
 import org.apache.airavata.compute.util.AgentUtils;
-import org.apache.airavata.helix.impl.task.TaskContext;
+import org.apache.airavata.execution.orchestrator.TaskContext;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TException;

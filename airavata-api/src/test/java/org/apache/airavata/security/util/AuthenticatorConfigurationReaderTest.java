@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.net.URLDecoder;
 import java.util.List;
-import org.apache.airavata.security.util.Authenticator;
 import org.apache.airavata.security.repository.JDBCUserStore;
 import org.apache.airavata.security.repository.LDAPUserStore;
 import org.junit.jupiter.api.Test;
@@ -57,9 +56,7 @@ public class AuthenticatorConfigurationReaderTest {
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
                         "jdbc:sql:thin:@//myhost:1521/mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
-                assertEquals(
-                        "org.apache.derby.jdbc.ClientDriver",
-                        ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
+                assertEquals("org.mariadb.jdbc.Driver", ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
                 assertEquals("mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
@@ -77,9 +74,7 @@ public class AuthenticatorConfigurationReaderTest {
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
                         "jdbc:sql:thin:@//myhost:1521/mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
-                assertEquals(
-                        "org.apache.derby.jdbc.ClientDriver",
-                        ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
+                assertEquals("org.mariadb.jdbc.Driver", ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
                 assertEquals("mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());

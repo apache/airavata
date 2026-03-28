@@ -21,7 +21,6 @@ package org.apache.airavata.messaging.handler;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.messaging.handler.DBEventManagerMessagingFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

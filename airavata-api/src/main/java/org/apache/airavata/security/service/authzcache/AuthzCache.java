@@ -21,8 +21,8 @@ package org.apache.airavata.security.service.authzcache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

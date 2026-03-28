@@ -26,6 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
+import org.apache.airavata.compute.model.ComputeResourceReservationEntity;
+import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
+import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
+import org.apache.airavata.compute.model.GroupResourceProfileEntity;
+import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
+import org.apache.airavata.execution.util.DBConstants;
+import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
@@ -34,14 +42,6 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourcePr
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ResourceType;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
-import org.apache.airavata.compute.model.ComputeResourceReservationEntity;
-import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
-import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
-import org.apache.airavata.compute.model.GroupResourceProfileEntity;
-import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.QueryConstants;
 
 /**
  * Created by skariyat on 2/8/18.

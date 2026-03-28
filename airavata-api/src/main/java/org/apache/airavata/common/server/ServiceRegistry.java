@@ -22,7 +22,6 @@ package org.apache.airavata.common.server;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import org.apache.airavata.common.server.IServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

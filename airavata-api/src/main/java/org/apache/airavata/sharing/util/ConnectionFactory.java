@@ -22,8 +22,8 @@ package org.apache.airavata.sharing.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

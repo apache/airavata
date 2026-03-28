@@ -21,8 +21,6 @@ package org.apache.airavata.credential.model;
 
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.apache.airavata.credential.model.AuditInfo;
-import org.apache.airavata.credential.model.CommunityUser;
 
 /**
  * Audit information related to community credential.

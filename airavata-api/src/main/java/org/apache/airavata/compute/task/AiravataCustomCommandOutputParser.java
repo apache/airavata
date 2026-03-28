@@ -20,7 +20,6 @@
 package org.apache.airavata.compute.task;
 
 import java.util.Map;
-import org.apache.airavata.compute.task.OutputParser;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

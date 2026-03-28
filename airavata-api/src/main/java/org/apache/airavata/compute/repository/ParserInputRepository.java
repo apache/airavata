@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.apache.airavata.compute.model.ParserInputEntity;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.execution.util.cpi.AppCatalogException;
+import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

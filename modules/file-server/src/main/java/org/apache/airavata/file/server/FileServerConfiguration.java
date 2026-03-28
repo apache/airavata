@@ -21,8 +21,8 @@ package org.apache.airavata.file.server;
 
 import java.time.Duration;
 import org.apache.airavata.common.util.ThriftClientPool;
-import org.apache.airavata.helix.core.support.adaptor.AdaptorSupportImpl;
-import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.execution.orchestrator.AdaptorSupport;
+import org.apache.airavata.execution.orchestrator.AdaptorSupportImpl;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;

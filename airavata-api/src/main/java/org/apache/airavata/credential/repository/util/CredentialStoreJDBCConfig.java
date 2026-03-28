@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.credential.repository.util;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.db.JDBCConfig;
 import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.common.db.JDBCConfig;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 public class CredentialStoreJDBCConfig implements JDBCConfig {
 

@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.sharing.model.SharingEntity;
 import org.apache.airavata.sharing.model.SharingPK;
-import org.apache.airavata.sharing.util.DBConstants;
 import org.apache.airavata.sharing.registry.models.Sharing;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.SharingType;
+import org.apache.airavata.sharing.util.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

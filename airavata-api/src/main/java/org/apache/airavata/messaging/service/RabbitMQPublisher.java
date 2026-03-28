@@ -29,8 +29,6 @@ import java.io.IOException;
 import java.util.function.Function;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.messaging.service.MessageContext;
-import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.messaging.util.RabbitMQProperties;
 import org.apache.airavata.model.messaging.event.Message;
 import org.apache.thrift.TException;

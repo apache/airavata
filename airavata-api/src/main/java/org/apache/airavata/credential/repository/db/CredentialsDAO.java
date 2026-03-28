@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
-import org.apache.airavata.security.util.SecurityUtil;
 import org.apache.airavata.credential.model.Credential;
 import org.apache.airavata.credential.model.CredentialOwnerType;
 import org.apache.airavata.credential.repository.CredentialStoreException;
+import org.apache.airavata.security.util.SecurityUtil;
 
 /**
  * Data access class for credential store.

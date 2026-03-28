@@ -21,10 +21,9 @@ package org.apache.airavata.compute.task;
 
 import java.util.UUID;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.helix.impl.task.TaskContext;
-import org.apache.airavata.compute.task.GroovyMapData;
-import org.apache.airavata.helix.task.api.TaskHelper;
-import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.execution.orchestrator.TaskContext;
+import org.apache.airavata.execution.orchestrator.TaskDef;
+import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.helix.task.TaskResult;
 

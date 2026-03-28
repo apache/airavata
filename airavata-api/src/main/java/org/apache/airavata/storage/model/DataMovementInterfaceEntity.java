@@ -22,8 +22,8 @@ package org.apache.airavata.storage.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.compute.model.ComputeResourceEntity;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
 
 /**
  * The persistent class for the data_movement_interface database table.

@@ -19,9 +19,6 @@
 */
 package org.apache.airavata.security.util;
 
-import org.apache.airavata.security.util.AbstractDatabaseAuthenticator;
-import org.apache.airavata.security.util.AuthenticationException;
-
 public class TestDBAuthenticator1 extends AbstractDatabaseAuthenticator {
 
     public TestDBAuthenticator1() {

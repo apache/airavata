@@ -21,10 +21,11 @@ package org.apache.airavata.security.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.airavata.common.utils.DatabaseTestCases;
-import org.apache.airavata.common.db.DerbyUtil;
 import org.apache.airavata.security.util.UserStore;
 import org.junit.jupiter.api.*;
 import org.w3c.dom.Document;
@@ -35,44 +36,21 @@ import org.w3c.dom.NodeList;
  */
 public class JDBCUserStoreTest extends DatabaseTestCases {
 
-    /**
-     * <specificConfigurations>
-     * <database>
-     * <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
-     * <jdbcUrl>jdbc:h2:src/test/resources/testdb/test</jdbcUrl>
-     * <userName>sa</userName>
-     * <password>sa</password>
-     * <databaseDriver>org.h2.Driver</databaseDriver>
-     * <userTableName>AIRAVATA_USER</userTableName>
-     * <userNameColumnName>USERID</userNameColumnName>
-     * <passwordColumnName>PASSWORD</passwordColumnName>
-     * </database>
-     * </specificConfigurations>
-     * @throws Exception
-     */
     @BeforeAll
     public static void setUpDatabase() throws Exception {
-        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
-
         waitTillServerStarts();
 
-        String dropTable = "drop table AIRAVATA_USER";
-
-        try {
-            executeSQL(dropTable);
-        } catch (Exception e) {
-        }
-
-        String createTable = "create table AIRAVATA_USER ( USERID varchar(255), PASSWORD varchar(255) )";
+        String createTable = "CREATE TABLE IF NOT EXISTS AIRAVATA_USER ( USERID varchar(255), PASSWORD varchar(255) )";
         executeSQL(createTable);
 
+        executeSQL("DELETE FROM AIRAVATA_USER");
         String insertSQL = "INSERT INTO AIRAVATA_USER VALUES('amilaj', 'secret')";
         executeSQL(insertSQL);
     }
 
     @AfterAll
     public static void shutDownDatabase() throws Exception {
-        DerbyUtil.stopDerbyServer();
+        // Testcontainers handles cleanup
     }
 
     @BeforeEach
@@ -81,9 +59,21 @@ public class JDBCUserStoreTest extends DatabaseTestCases {
     @Test
     public void testAuthenticate() throws Exception {
 
+        // Build config XML dynamically with Testcontainers JDBC URL
+        String xml = "<authenticators>"
+                + "<authenticator><specificConfigurations><database>"
+                + "<jdbcUrl>" + getJDBCUrl() + "</jdbcUrl>"
+                + "<userName>" + getUserName() + "</userName>"
+                + "<password>" + getPassword() + "</password>"
+                + "<databaseDriver>" + getDriver() + "</databaseDriver>"
+                + "<userTableName>AIRAVATA_USER</userTableName>"
+                + "<userNameColumnName>USERID</userNameColumnName>"
+                + "<passwordColumnName>PASSWORD</passwordColumnName>"
+                + "</database></specificConfigurations></authenticator></authenticators>";
+
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(this.getClass().getClassLoader().getResourceAsStream("jdbc-authenticator.xml"));
+        Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         doc.getDocumentElement().normalize();
 
         NodeList configurations = doc.getElementsByTagName("specificConfigurations");

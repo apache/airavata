@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 import org.apache.airavata.sharing.model.SharingEntity;
 import org.apache.airavata.sharing.model.UserGroupEntity;
 import org.apache.airavata.sharing.model.UserGroupPK;
-import org.apache.airavata.sharing.util.DBConstants;
 import org.apache.airavata.sharing.registry.models.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.SharingType;
 import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.util.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

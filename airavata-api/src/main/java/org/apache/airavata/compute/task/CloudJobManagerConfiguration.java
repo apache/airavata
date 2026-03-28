@@ -20,10 +20,6 @@
 package org.apache.airavata.compute.task;
 
 import java.io.File;
-import org.apache.airavata.compute.task.JobManagerConfiguration;
-import org.apache.airavata.compute.task.OutputParser;
-import org.apache.airavata.compute.task.RawCommandInfo;
-import org.apache.airavata.compute.task.AiravataCustomCommandOutputParser;
 import org.apache.commons.io.FilenameUtils;
 
 /**

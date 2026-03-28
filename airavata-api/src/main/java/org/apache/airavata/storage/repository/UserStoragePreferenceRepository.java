@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.storage.repository;
 
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.compute.repository.AppCatAbstractRepository;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.storage.model.UserStoragePreferenceEntity;
 import org.apache.airavata.storage.model.UserStoragePreferencePK;
 

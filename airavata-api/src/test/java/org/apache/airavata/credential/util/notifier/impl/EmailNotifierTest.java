@@ -32,7 +32,7 @@ public class EmailNotifierTest {
     @BeforeEach
     public void setUp() throws Exception {}
 
-    // Test is disabled. Need to fill in parameters to send mails
+    @org.junit.jupiter.api.Disabled("Requires external SMTP server")
     @Test
     public void xtestNotifyMessage() throws Exception {
 

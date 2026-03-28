@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.credential.model;
 
-import org.apache.airavata.credential.model.SSHCredential;
-
 /**
  * User name password credentials.
  */

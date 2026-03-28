@@ -26,20 +26,20 @@ import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.db.DBInitializer;
 import org.apache.airavata.common.db.DBUtil;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.model.CommunityUser;
 import org.apache.airavata.credential.model.Credential;
 import org.apache.airavata.credential.model.CredentialOwnerType;
-import org.apache.airavata.credential.repository.CredentialStoreException;
 import org.apache.airavata.credential.repository.CertificateCredentialWriter;
 import org.apache.airavata.credential.repository.CredentialReaderImpl;
+import org.apache.airavata.credential.repository.CredentialStoreException;
 import org.apache.airavata.credential.repository.SSHCredentialWriter;
 import org.apache.airavata.credential.repository.util.CredentialStoreDBInitConfig;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.util.TokenGenerator;
 import org.apache.airavata.credential.util.Utility;
 import org.apache.airavata.model.credential.store.*;
@@ -187,9 +187,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
             if (credential instanceof org.apache.airavata.credential.model.SSHCredential
-                    && !(credential
-                            instanceof
-                            org.apache.airavata.credential.model.PasswordCredential)) {
+                    && !(credential instanceof org.apache.airavata.credential.model.PasswordCredential)) {
                 org.apache.airavata.credential.model.SSHCredential credential1 =
                         (org.apache.airavata.credential.model.SSHCredential) credential;
                 SSHCredential sshCredential = new SSHCredential();
@@ -225,15 +223,12 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
             if (isSSHCredential(credential)) {
-                return convertToCredentialSummary(
-                        (org.apache.airavata.credential.model.SSHCredential) credential);
+                return convertToCredentialSummary((org.apache.airavata.credential.model.SSHCredential) credential);
             } else if (isCertificateCredential(credential)) {
                 return convertToCredentialSummary(
-                        (org.apache.airavata.credential.model.CertificateCredential)
-                                credential);
+                        (org.apache.airavata.credential.model.CertificateCredential) credential);
             } else if (isPasswordCredential(credential)) {
-                return convertToCredentialSummary(
-                        (org.apache.airavata.credential.model.PasswordCredential) credential);
+                return convertToCredentialSummary((org.apache.airavata.credential.model.PasswordCredential) credential);
             }
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException(
                     "Unrecognized type of credential for token: " + tokenId);
@@ -261,16 +256,13 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             } else if (type.equals(SummaryType.CERT)) {
                 return credentials.stream()
                         .filter(this::isCertificateCredential)
-                        .map(cred ->
-                                (org.apache.airavata.credential.model.CertificateCredential)
-                                        cred)
+                        .map(cred -> (org.apache.airavata.credential.model.CertificateCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else if (type.equals(SummaryType.PASSWD)) {
                 return credentials.stream()
                         .filter(this::isPasswordCredential)
-                        .map(cred ->
-                                (org.apache.airavata.credential.model.PasswordCredential) cred)
+                        .map(cred -> (org.apache.airavata.credential.model.PasswordCredential) cred)
                         .map(cred -> convertToCredentialSummary(cred))
                         .collect(Collectors.toList());
             } else {
@@ -297,8 +289,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         return cred instanceof org.apache.airavata.credential.model.PasswordCredential;
     }
 
-    private CredentialSummary convertToCredentialSummary(
-            org.apache.airavata.credential.model.SSHCredential cred) {
+    private CredentialSummary convertToCredentialSummary(org.apache.airavata.credential.model.SSHCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.SSH);
         credentialSummary.setUsername(cred.getPortalUserName());
@@ -325,8 +316,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         return credentialSummary;
     }
 
-    private CredentialSummary convertToCredentialSummary(
-            org.apache.airavata.credential.model.PasswordCredential cred) {
+    private CredentialSummary convertToCredentialSummary(org.apache.airavata.credential.model.PasswordCredential cred) {
         CredentialSummary credentialSummary = new CredentialSummary();
         credentialSummary.setType(SummaryType.PASSWD);
         credentialSummary.setUsername(cred.getPortalUserName());
@@ -342,11 +332,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential
-                    instanceof org.apache.airavata.credential.model.CertificateCredential) {
+            if (credential instanceof org.apache.airavata.credential.model.CertificateCredential) {
                 org.apache.airavata.credential.model.CertificateCredential credential1 =
-                        (org.apache.airavata.credential.model.CertificateCredential)
-                                credential;
+                        (org.apache.airavata.credential.model.CertificateCredential) credential;
                 CertificateCredential certificateCredential = new CertificateCredential();
                 org.apache.airavata.model.credential.store.CommunityUser communityUser =
                         new org.apache.airavata.model.credential.store.CommunityUser();
@@ -387,8 +375,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
-            if (credential
-                    instanceof org.apache.airavata.credential.model.PasswordCredential) {
+            if (credential instanceof org.apache.airavata.credential.model.PasswordCredential) {
                 org.apache.airavata.credential.model.PasswordCredential credential1 =
                         (org.apache.airavata.credential.model.PasswordCredential) credential;
                 PasswordCredential pwdCredential = new PasswordCredential();
@@ -429,10 +416,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 if (allCredentials != null && !allCredentials.isEmpty()) {
                     for (Credential credential : allCredentials) {
                         if (credential instanceof org.apache.airavata.credential.model.SSHCredential
-                                && !(credential
-                                        instanceof
-                                        org.apache.airavata.credential.model
-                                                .PasswordCredential)
+                                && !(credential instanceof org.apache.airavata.credential.model.PasswordCredential)
                                 && credential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
                             org.apache.airavata.credential.model.SSHCredential sshCredential =
                                     (org.apache.airavata.credential.model.SSHCredential) credential;
@@ -472,10 +456,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 if (allCredentials != null && !allCredentials.isEmpty()) {
                     for (Credential credential : allCredentials) {
                         if (credential instanceof org.apache.airavata.credential.model.SSHCredential
-                                && !(credential
-                                        instanceof
-                                        org.apache.airavata.credential.model
-                                                .PasswordCredential)) {
+                                && !(credential instanceof org.apache.airavata.credential.model.PasswordCredential)) {
                             org.apache.airavata.credential.model.SSHCredential sshCredential =
                                     (org.apache.airavata.credential.model.SSHCredential) credential;
                             String portalUserName = sshCredential.getPortalUserName();
@@ -484,11 +465,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                                 if (portalUserName.equals(userId)
                                         && gateway.equals(gatewayId)
                                         && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER) {
-                                    org.apache.airavata.credential.model.SSHCredential
-                                            sshCredentialKey =
-                                                    (org.apache.airavata.credential.model
-                                                                    .SSHCredential)
-                                                            credential;
+                                    org.apache.airavata.credential.model.SSHCredential sshCredentialKey =
+                                            (org.apache.airavata.credential.model.SSHCredential) credential;
                                     CredentialSummary sshCredentialSummary = new CredentialSummary();
                                     sshCredentialSummary.setType(SummaryType.SSH);
                                     sshCredentialSummary.setToken(sshCredentialKey.getToken());
@@ -524,12 +502,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
             if (allCredentials != null && !allCredentials.isEmpty()) {
                 for (Credential credential : allCredentials) {
-                    if (credential
-                            instanceof
-                            org.apache.airavata.credential.model.PasswordCredential) {
+                    if (credential instanceof org.apache.airavata.credential.model.PasswordCredential) {
                         org.apache.airavata.credential.model.PasswordCredential pwdCredential =
-                                (org.apache.airavata.credential.model.PasswordCredential)
-                                        credential;
+                                (org.apache.airavata.credential.model.PasswordCredential) credential;
                         pwdCredMap.put(
                                 pwdCredential.getToken(),
                                 pwdCredential.getDescription() == null ? "" : pwdCredential.getDescription());

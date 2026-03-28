@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.messaging.util.RabbitMQProperties;
-import org.apache.airavata.messaging.service.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

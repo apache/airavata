@@ -26,11 +26,22 @@ import org.apache.airavata.common.db.JDBCConfig;
 public class JPAUtils {
     private static final String PERSISTENCE_UNIT_NAME = "profile_service";
     private static final JDBCConfig JDBC_CONFIG = new ProfileServiceJDBCConfig();
-    private static final EntityManagerFactory factory =
-            org.apache.airavata.common.db.JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static volatile EntityManagerFactory factory;
+
+    private static EntityManagerFactory getFactory() {
+        if (factory == null) {
+            synchronized (JPAUtils.class) {
+                if (factory == null) {
+                    factory = org.apache.airavata.common.db.JPAUtils.getEntityManagerFactory(
+                            PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+                }
+            }
+        }
+        return factory;
+    }
 
     public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+        return getFactory().createEntityManager();
     }
 
     public static <R> R execute(Committer<EntityManager, R> committer) {

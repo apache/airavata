@@ -21,11 +21,11 @@ package org.apache.airavata.security.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.airavata.common.utils.DatabaseTestCases;
-import org.apache.airavata.common.db.DerbyUtil;
 import org.junit.jupiter.api.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -37,27 +37,19 @@ public class SessionDBUserStoreTest extends DatabaseTestCases {
 
     @BeforeAll
     public static void setUpDatabase() throws Exception {
-        DerbyUtil.startDerbyInServerMode(getHostAddress(), getPort(), getUserName(), getPassword());
-
         waitTillServerStarts();
 
-        String dropTable = "drop table Persons";
-
-        try {
-            executeSQL(dropTable);
-        } catch (Exception e) {
-        }
-
-        String createTable = "create table Persons ( sessionId varchar(255) )";
+        String createTable = "CREATE TABLE IF NOT EXISTS Persons ( sessionId varchar(255) )";
         executeSQL(createTable);
 
+        executeSQL("DELETE FROM Persons");
         String insertSQL = "INSERT INTO Persons VALUES('1234')";
         executeSQL(insertSQL);
     }
 
     @AfterAll
     public static void shutDownDatabase() throws Exception {
-        DerbyUtil.stopDerbyServer();
+        // Testcontainers handles cleanup
     }
 
     @BeforeEach
@@ -68,13 +60,22 @@ public class SessionDBUserStoreTest extends DatabaseTestCases {
 
     private SessionDBUserStore sessionDBUserStore = new SessionDBUserStore();
 
-    private InputStream configurationFileStream =
-            this.getClass().getClassLoader().getResourceAsStream("session-authenticator.xml");
-
     private void loadConfigurations() throws Exception {
+        // Build config XML dynamically with Testcontainers JDBC URL
+        String xml = "<authenticators>"
+                + "<authenticator><specificConfigurations><database>"
+                + "<jdbcUrl>" + getJDBCUrl() + "</jdbcUrl>"
+                + "<userName>" + getUserName() + "</userName>"
+                + "<password>" + getPassword() + "</password>"
+                + "<databaseDriver>" + getDriver() + "</databaseDriver>"
+                + "<sessionTable>Persons</sessionTable>"
+                + "<sessionColumn>sessionId</sessionColumn>"
+                + "<comparingColumn>sessionId</comparingColumn>"
+                + "</database></specificConfigurations></authenticator></authenticators>";
+
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(configurationFileStream);
+        Document doc = dBuilder.parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         doc.getDocumentElement().normalize();
 
         NodeList specificConfigurations = doc.getElementsByTagName("specificConfigurations");

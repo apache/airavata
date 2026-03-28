@@ -1,0 +1,238 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.execution.service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntitySearchField;
+import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.sharing.service.SharingHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class ProjectService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
+
+    private final RegistryServerHandler registryHandler;
+    private final SharingRegistryServerHandler sharingHandler;
+
+    public ProjectService(RegistryServerHandler registryHandler, SharingRegistryServerHandler sharingHandler) {
+        this.registryHandler = registryHandler;
+        this.sharingHandler = sharingHandler;
+    }
+
+    public String createProject(RequestContext ctx, String gatewayId, Project project) throws ServiceException {
+        try {
+            String projectId = registryHandler.createProject(gatewayId, project);
+
+            if (SharingHelper.isSharingEnabled()) {
+                try {
+                    Entity entity = new Entity();
+                    entity.setEntityId(projectId);
+                    final String domainId = project.getGatewayId();
+                    entity.setDomainId(domainId);
+                    entity.setEntityTypeId(domainId + ":" + "PROJECT");
+                    entity.setOwnerId(project.getOwner() + "@" + domainId);
+                    entity.setName(project.getName());
+                    entity.setDescription(project.getDescription());
+                    sharingHandler.createEntity(entity);
+                } catch (Exception ex) {
+                    logger.error("Rolling back project creation Proj ID : {}", projectId, ex);
+                    registryHandler.deleteProject(projectId);
+                    throw new ServiceException("Failed to create entry for project in Sharing Registry", ex);
+                }
+            }
+
+            logger.debug("Created project with id {} for gateway {}", projectId, gatewayId);
+            return projectId;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while creating the project: " + e.getMessage(), e);
+        }
+    }
+
+    public void updateProject(RequestContext ctx, String projectId, Project updatedProject) throws ServiceException {
+        try {
+            Project existingProject = registryHandler.getProject(projectId);
+            if (existingProject == null) {
+                throw new ServiceNotFoundException("Project " + projectId + " does not exist");
+            }
+
+            if (!ctx.getUserId().equals(existingProject.getOwner())
+                    || !ctx.getGatewayId().equals(existingProject.getGatewayId())) {
+                if (SharingHelper.isSharingEnabled()) {
+                    String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+                    if (!sharingHandler.userHasAccess(
+                            ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to update this resource");
+                    }
+                } else {
+                    throw new ServiceAuthorizationException("User does not have permission to update this resource");
+                }
+            }
+
+            if (!updatedProject.getOwner().equals(existingProject.getOwner())) {
+                throw new ServiceException("Owner of a project cannot be changed");
+            }
+            if (!updatedProject.getGatewayId().equals(existingProject.getGatewayId())) {
+                throw new ServiceException("Gateway ID of a project cannot be changed");
+            }
+
+            registryHandler.updateProject(projectId, updatedProject);
+            logger.debug("Updated project with id {}", projectId);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while updating the project: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean deleteProject(RequestContext ctx, String projectId) throws ServiceException {
+        try {
+            Project existingProject = registryHandler.getProject(projectId);
+            if (existingProject == null) {
+                throw new ServiceNotFoundException("Project " + projectId + " does not exist");
+            }
+
+            if (!ctx.getUserId().equals(existingProject.getOwner())
+                    || !ctx.getGatewayId().equals(existingProject.getGatewayId())) {
+                if (SharingHelper.isSharingEnabled()) {
+                    String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+                    if (!sharingHandler.userHasAccess(
+                            ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":WRITE")) {
+                        throw new ServiceAuthorizationException(
+                                "User does not have permission to delete this resource");
+                    }
+                } else {
+                    throw new ServiceAuthorizationException("User does not have permission to delete this resource");
+                }
+            }
+
+            boolean ret = registryHandler.deleteProject(projectId);
+            logger.debug("Deleted project with id {}", projectId);
+            return ret;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while deleting the project: " + e.getMessage(), e);
+        }
+    }
+
+    public Project getProject(RequestContext ctx, String projectId) throws ServiceException {
+        try {
+            Project project = registryHandler.getProject(projectId);
+            if (project == null) {
+                throw new ServiceNotFoundException("Project " + projectId + " does not exist");
+            }
+
+            if (ctx.getUserId().equals(project.getOwner()) && ctx.getGatewayId().equals(project.getGatewayId())) {
+                return project;
+            }
+
+            if (SharingHelper.isSharingEnabled()) {
+                String qualifiedUserId = ctx.getUserId() + "@" + ctx.getGatewayId();
+                if (!sharingHandler.userHasAccess(
+                        ctx.getGatewayId(), qualifiedUserId, projectId, ctx.getGatewayId() + ":READ")) {
+                    throw new ServiceAuthorizationException("User does not have permission to access this resource");
+                }
+                return project;
+            }
+
+            return null;
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving the project: " + e.getMessage(), e);
+        }
+    }
+
+    public List<Project> getUserProjects(RequestContext ctx, String gatewayId, String userName, int limit, int offset)
+            throws ServiceException {
+        try {
+            if (SharingHelper.isSharingEnabled()) {
+                List<String> accessibleProjectIds = new ArrayList<>();
+                List<SearchCriteria> filters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":PROJECT");
+                filters.add(searchCriteria);
+                sharingHandler
+                        .searchEntities(gatewayId, userName + "@" + gatewayId, filters, 0, -1)
+                        .forEach(p -> accessibleProjectIds.add(p.getEntityId()));
+
+                if (accessibleProjectIds.isEmpty()) {
+                    return Collections.emptyList();
+                }
+                return registryHandler.searchProjects(
+                        gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
+            } else {
+                return registryHandler.getUserProjects(gatewayId, userName, limit, offset);
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Error while retrieving projects: " + e.getMessage(), e);
+        }
+    }
+
+    public List<Project> searchProjects(
+            RequestContext ctx,
+            String gatewayId,
+            String userName,
+            Map<ProjectSearchFields, String> filters,
+            int limit,
+            int offset)
+            throws ServiceException {
+        try {
+            List<String> accessibleProjIds = new ArrayList<>();
+
+            if (SharingHelper.isSharingEnabled()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":PROJECT");
+                sharingFilters.add(searchCriteria);
+                sharingHandler
+                        .searchEntities(gatewayId, userName + "@" + gatewayId, sharingFilters, 0, Integer.MAX_VALUE)
+                        .forEach(e -> accessibleProjIds.add(e.getEntityId()));
+
+                if (accessibleProjIds.isEmpty()) {
+                    return Collections.emptyList();
+                }
+            }
+
+            return registryHandler.searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
+        } catch (Exception e) {
+            throw new ServiceException("Error while searching projects: " + e.getMessage(), e);
+        }
+    }
+}

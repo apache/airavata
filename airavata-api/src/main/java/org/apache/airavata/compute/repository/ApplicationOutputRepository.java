@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.compute.model.ApplicationOutputEntity;
 import org.apache.airavata.compute.model.ApplicationOutputPK;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 
 public class ApplicationOutputRepository
         extends AppCatAbstractRepository<OutputDataObjectType, ApplicationOutputEntity, ApplicationOutputPK> {
