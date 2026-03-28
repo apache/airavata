@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.research.service.enums.SessionStatusEnum;
-import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.airavata.research.service.config.ResearchProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -53,29 +53,25 @@ public class ResearchHubHandler {
     private final ProjectHandler projectHandler;
     private final SessionHandler sessionHandler;
     private final ProjectRepository projectRepository;
-
-    @Value("${airavata.research-hub.url}")
-    private String csHubUrl;
-
-    @Value("${airavata.research-hub.adminApiKey}")
-    private String adminApiKey;
-
-    @Value("${airavata.research-hub.limit}")
-    private int maxRHubSessions;
+    private final ResearchProperties researchProperties;
 
     public ResearchHubHandler(
-            ProjectHandler projectHandler, SessionHandler sessionHandler, ProjectRepository projectRepository) {
+            ProjectHandler projectHandler,
+            SessionHandler sessionHandler,
+            ProjectRepository projectRepository,
+            ResearchProperties researchProperties) {
         this.projectHandler = projectHandler;
         this.sessionHandler = sessionHandler;
         this.projectRepository = projectRepository;
+        this.researchProperties = researchProperties;
     }
 
     public boolean stopSession(String sessionId) {
         String userId = UserContext.userId();
-        String url = String.format(SERVERS_API_URL, csHubUrl, userId, sessionId);
+        String url = String.format(SERVERS_API_URL, researchProperties.getHubUrl(), userId, sessionId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "token " + adminApiKey);
+        headers.set("Authorization", "token " + researchProperties.getAdminApiKey());
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
         ResponseEntity<Void> response = new RestTemplate().exchange(url, HttpMethod.DELETE, request, Void.class);
@@ -90,10 +86,10 @@ public class ResearchHubHandler {
 
     public boolean deleteSession(String sessionId) {
         String userId = UserContext.userId();
-        String url = String.format(SERVERS_API_URL, csHubUrl, userId, sessionId);
+        String url = String.format(SERVERS_API_URL, researchProperties.getHubUrl(), userId, sessionId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "token " + adminApiKey);
+        headers.set("Authorization", "token " + researchProperties.getAdminApiKey());
 
         Map<String, Object> body = new HashMap<>();
         body.put("remove", true);
@@ -113,7 +109,7 @@ public class ResearchHubHandler {
     public String spinRHubSession(String projectId, String sessionName) {
         String userId = UserContext.userId();
         int alreadyCreated = sessionHandler.countSessionsByUserIdAndStatus(userId, SessionStatusEnum.CREATED);
-        if (alreadyCreated >= maxRHubSessions) {
+        if (alreadyCreated >= researchProperties.getLimit()) {
             throw new RuntimeException(
                     "Max number of active sessions (10) has already been reached. Please terminate or delete a session to continue.");
         }
@@ -126,7 +122,7 @@ public class ResearchHubHandler {
 
         String baseSpawnUrl = String.format(
                 RH_SPAWN_URL,
-                csHubUrl,
+                researchProperties.getHubUrl(),
                 UserContext.userId(),
                 session.getId(),
                 project.getRepositoryResource().getRepositoryUrl());
@@ -153,7 +149,7 @@ public class ResearchHubHandler {
         // TODO restrict this execution for owner
         Session session = sessionHandler.findSession(sessionId);
 
-        String sessionUrl = String.format(RH_SESSION_URL, csHubUrl, UserContext.userId(), session.getId());
+        String sessionUrl = String.format(RH_SESSION_URL, researchProperties.getHubUrl(), UserContext.userId(), session.getId());
         LOGGER.debug("Generated the session url: {} for the user: {}", sessionUrl, UserContext.userId());
         return sessionUrl;
     }

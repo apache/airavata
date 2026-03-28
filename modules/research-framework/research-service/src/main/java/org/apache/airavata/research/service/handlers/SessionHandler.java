@@ -23,7 +23,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.research.service.enums.SessionStatusEnum;
-import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.apache.airavata.research.service.model.repo.SessionRepository;

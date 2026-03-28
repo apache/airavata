@@ -34,7 +34,7 @@ import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
-import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
 import org.apache.airavata.research.service.model.entity.ResourceStar;
