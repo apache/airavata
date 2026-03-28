@@ -69,7 +69,7 @@ public class AgentManagementHandler {
 
     public AgentTerminateResponse terminateExperiment(String experimentId) {
         try {
-            Airavata.Client airavata = airavataService.airavata();
+            Airavata.Iface airavata = airavataService.airavata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
             airavata.terminateExperiment(
                     UserContext.authzToken(), experiment.getExperimentId(), experiment.getGatewayId());
@@ -82,7 +82,7 @@ public class AgentManagementHandler {
 
     public ExperimentModel getExperiment(String experimentId) {
         try {
-            Airavata.Client airavata = airavataService.airavata();
+            Airavata.Iface airavata = airavataService.airavata();
             ExperimentModel experiment = airavata.getExperiment(UserContext.authzToken(), experimentId);
             GroupResourceProfile groupResourceProfile = airavata.getGroupResourceProfile(
                     UserContext.authzToken(),
@@ -206,7 +206,7 @@ public class AgentManagementHandler {
 
     private ExperimentModel generateExperiment(AgentLaunchRequest req, String agentId, String envName)
             throws TException {
-        Airavata.Client airavataClient = airavataService.airavata();
+        Airavata.Iface airavataClient = airavataService.airavata();
 
         String experimentName = req.getExperimentName();
         String projectName = req.getProjectName() != null ? req.getProjectName() : "Default Project";

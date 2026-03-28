@@ -21,49 +21,39 @@ package org.apache.airavata.agent.connection.service.services;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.common.util.AiravataClientFactory;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.experiment.ExperimentSearchFields;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    @Value("${airavata.server.url:airavata.host}")
-    private String serverUrl;
+    private final Airavata.Iface airavataHandler;
 
-    @Value("${airavata.server.port:8930}")
-    private int port;
-
-    @Value("${airavata.server.secure:false}")
-    private boolean secure;
-
-    public Airavata.Client airavata() {
-        try {
-            return AiravataClientFactory.createAiravataClient(serverUrl, port, secure);
-        } catch (AiravataClientException e) {
-            LOGGER.error("Error while creating Airavata client", e);
-            throw new RuntimeException("Error while creating Airavata client", e);
-        }
+    public AiravataService(Airavata.Iface airavataHandler) {
+        this.airavataHandler = airavataHandler;
     }
 
-    public String getProjectId(Airavata.Client airavataClient, String projectName) throws TException {
+    public Airavata.Iface airavata() {
+        return airavataHandler;
+    }
+
+    public String getProjectId(Airavata.Iface airavataClient, String projectName) throws TException {
         int limit = 10;
         int offset = 0;
 
@@ -88,7 +78,7 @@ public class AiravataService {
     }
 
     public GroupComputeResourcePreference extractGroupComputeResourcePreference(
-            Airavata.Client airavataClient, String group, String remoteCluster) throws TException {
+            Airavata.Iface airavataClient, String group, String remoteCluster) throws TException {
         List<GroupResourceProfile> groupResourceList =
                 airavataClient.getGroupResourceList(UserContext.authzToken(), UserContext.gatewayId());
         String groupProfileName = StringUtils.isNotBlank(group) ? group : "Default";
@@ -102,7 +92,7 @@ public class AiravataService {
                         + groupProfileName + " group resource profile for the user: " + UserContext.userId()));
     }
 
-    public List<String> getUserExperimentIDs(Airavata.Client airavataClient) throws TException {
+    public List<String> getUserExperimentIDs(Airavata.Iface airavataClient) throws TException {
         int limit = 100;
         Map<ExperimentSearchFields, String> filters =
                 Map.of(ExperimentSearchFields.PROJECT_ID, getProjectId(airavataClient, "Default Project"));

@@ -19,13 +19,8 @@
 */
 package org.apache.airavata.file.server;
 
-import java.time.Duration;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.execution.orchestrator.AdaptorSupport;
 import org.apache.airavata.execution.orchestrator.AdaptorSupportImpl;
-import org.apache.airavata.registry.api.RegistryService;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -37,27 +32,5 @@ public class FileServerConfiguration {
     @Bean
     public AdaptorSupport adaptorSupport() {
         return AdaptorSupportImpl.getInstance();
-    }
-
-    @Value("${airavata.thrift.host:localhost}")
-    private String airavataServerHost;
-
-    @Value("${airavata.thrift.port:8930}")
-    private int airavataServerPort;
-
-    @Bean
-    public ThriftClientPool<RegistryService.Client> registryClientPool() {
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(100);
-        poolConfig.setMinIdle(5);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-
-        return new ThriftClientPool<>(
-                RegistryService.Client::new, poolConfig, airavataServerHost, airavataServerPort, "RegistryService");
     }
 }
