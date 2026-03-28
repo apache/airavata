@@ -55,7 +55,6 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
         messageProducer = new MessageProducer();
     }
 
-
     @Override
     public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
         try {
@@ -73,7 +72,7 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
-        
+
         try {
             List<JobModel> jobs = registryHandler.getJobs("jobId", jobStatusResult.getJobId());
             if (!jobs.isEmpty()) {
@@ -87,13 +86,13 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
                         jobStatusResult.getJobId(),
                         jobStatusResult.getJobName(),
                         jobs.size());
-                
+
                 return false;
             }
             JobModel jobModel = jobs.get(0);
             String processId = jobModel.getProcessId();
             String experimentId = registryHandler.getProcess(processId).getExperimentId();
-            
+
             if (experimentId != null && processId != null) {
                 return true;
             }
@@ -101,7 +100,7 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
             return false;
         } catch (Exception e) {
             logger.error("Error validating job status {}", jobStatusResult.getJobId(), e);
-            
+
             return false;
         }
     }
@@ -124,7 +123,7 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
 
         while (!Thread.currentThread().isInterrupted()) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            
+
             consumerRecords.forEach(record -> {
                 try {
                     process(record.key(), record.value());
@@ -132,7 +131,7 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
                     logger.error("Error while processing message {}", record.value(), e);
                 }
             });
-            
+
             consumer.commitAsync();
         }
     }

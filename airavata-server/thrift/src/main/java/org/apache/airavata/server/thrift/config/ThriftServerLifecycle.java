@@ -69,11 +69,13 @@ public class ThriftServerLifecycle implements SmartLifecycle {
             options.minWorkerThreads = minThreads;
             server = new TThreadPoolServer(options.processor(processor));
 
-            Thread serveThread = new Thread(() -> {
-                logger.info("Airavata Thrift Server starting on port {}", port);
-                server.serve();
-                logger.info("Airavata Thrift Server stopped");
-            }, "airavata-thrift-server");
+            Thread serveThread = new Thread(
+                    () -> {
+                        logger.info("Airavata Thrift Server starting on port {}", port);
+                        server.serve();
+                        logger.info("Airavata Thrift Server stopped");
+                    },
+                    "airavata-thrift-server");
             serveThread.setDaemon(true);
             serveThread.start();
 

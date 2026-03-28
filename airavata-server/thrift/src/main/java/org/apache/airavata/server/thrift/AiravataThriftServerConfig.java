@@ -25,11 +25,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnServer("thrift")
-@ComponentScan(basePackages = {
-    "org.apache.airavata.server.thrift",
-    "org.apache.airavata.credential.handler",
-    "org.apache.airavata.execution.handler",
-    "org.apache.airavata.sharing.handler"
-})
-public class AiravataThriftServerConfig {
-}
+@ComponentScan(
+        basePackages = {
+            "org.apache.airavata.server.thrift",
+            "org.apache.airavata.credential.handler",
+            "org.apache.airavata.execution.handler",
+            "org.apache.airavata.sharing.handler"
+        })
+public class AiravataThriftServerConfig {}

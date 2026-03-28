@@ -29,6 +29,7 @@ import org.apache.airavata.common.logging.MDCConstants;
 import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.common.util.ThriftUtils;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.execution.orchestrator.HostScheduler;
 import org.apache.airavata.execution.orchestrator.OrchestratorConstants;
 import org.apache.airavata.execution.orchestrator.OrchestratorException;
@@ -38,7 +39,6 @@ import org.apache.airavata.execution.orchestrator.SimpleOrchestratorImpl;
 import org.apache.airavata.execution.scheduler.ProcessScheduler;
 import org.apache.airavata.execution.scheduler.ProcessSchedulerImpl;
 import org.apache.airavata.execution.util.ExperimentModelUtil;
-import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.messaging.service.*;
 import org.apache.airavata.messaging.util.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -399,7 +399,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private void submitIntermediateOutputsProcess(
-            RegistryService.Iface registryClient, String experimentId, String gatewayId, List<String> outputNames) throws Exception {
+            RegistryService.Iface registryClient, String experimentId, String gatewayId, List<String> outputNames)
+            throws Exception {
 
         ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
         ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
@@ -586,8 +587,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         return selectedModuleId;
     }
 
-    private boolean validateStatesAndCancel(
-            RegistryService.Iface registryClient, String experimentId, String gatewayId) throws Exception {
+    private boolean validateStatesAndCancel(RegistryService.Iface registryClient, String experimentId, String gatewayId)
+            throws Exception {
         ExperimentStatus experimentStatus = registryClient.getExperimentStatus(experimentId);
         switch (experimentStatus.getState()) {
             case COMPLETED:

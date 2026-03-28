@@ -849,8 +849,8 @@ public class TaskContext {
                 this.userProfile = getUserProfileRepository()
                         .getUserProfileByIdAndGateWay(getProcessModel().getUserName(), getGatewayId());
                 if (this.userProfile == null) {
-                    throw new Exception("User profile not found for user " + getProcessModel().getUserName()
-                            + " in gateway " + getGatewayId());
+                    throw new Exception("User profile not found for user "
+                            + getProcessModel().getUserName() + " in gateway " + getGatewayId());
                 }
             } catch (Exception e) {
                 logger.error("Failed to fetch the user profile for user id {}", processModel.getUserName(), e);

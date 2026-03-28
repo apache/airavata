@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.agent.*;
 import org.apache.airavata.agent.AsyncCommand;
-import org.apache.airavata.agent.connection.service.models.*;
 import org.apache.airavata.agent.connection.service.config.AgentProperties;
+import org.apache.airavata.agent.connection.service.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -475,8 +475,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                                 .setLocalBindHost(tunnelRequest.getLocalBindHost())
                                 .setTunnelServerHost(agentProperties.getTunnel().getServerHost())
                                 .setTunnelServerPort(agentProperties.getTunnel().getServerPort())
-                                .setTunnelServerApiUrl(agentProperties.getTunnel().getServerApiUrl())
-                                .setTunnelServerToken(agentProperties.getTunnel().getServerToken())
+                                .setTunnelServerApiUrl(
+                                        agentProperties.getTunnel().getServerApiUrl())
+                                .setTunnelServerToken(
+                                        agentProperties.getTunnel().getServerToken())
                                 .build())
                         .build());
             } catch (Exception e) {

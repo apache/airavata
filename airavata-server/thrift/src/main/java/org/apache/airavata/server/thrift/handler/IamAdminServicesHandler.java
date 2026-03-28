@@ -39,7 +39,6 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-
 import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.security.service.interceptor.SecurityCheck;

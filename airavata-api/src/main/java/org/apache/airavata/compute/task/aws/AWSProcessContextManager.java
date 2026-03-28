@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.compute.util.AgentException;
 import org.apache.airavata.compute.util.AgentUtils;
 import org.apache.airavata.execution.orchestrator.TaskContext;
 import org.apache.airavata.model.process.ProcessModel;

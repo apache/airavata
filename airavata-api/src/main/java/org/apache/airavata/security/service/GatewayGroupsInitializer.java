@@ -27,7 +27,6 @@ import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.registry.api.RegistryService;
-
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
@@ -146,9 +145,7 @@ public class GatewayGroupsInitializer {
     }
 
     private String getAdminOwnerUsername(
-            RegistryService.Iface registryClient,
-            CredentialStoreService.Iface credentialStoreClient,
-            String gatewayId)
+            RegistryService.Iface registryClient, CredentialStoreService.Iface credentialStoreClient, String gatewayId)
             throws TException {
 
         GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);

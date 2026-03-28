@@ -21,11 +21,12 @@ package org.apache.airavata.agent.connection.service.services;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.experiment.ExperimentSearchFields;
@@ -35,8 +36,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class AiravataService {
@@ -73,8 +72,7 @@ public class AiravataService {
             offset += limit;
         }
 
-        throw new RuntimeException(
-                "Could not find project: " + projectName + " for the user: " + UserContext.userId());
+        throw new RuntimeException("Could not find project: " + projectName + " for the user: " + UserContext.userId());
     }
 
     public GroupComputeResourcePreference extractGroupComputeResourcePreference(

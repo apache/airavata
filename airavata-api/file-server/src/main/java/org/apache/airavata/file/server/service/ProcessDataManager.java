@@ -44,10 +44,7 @@ public class ProcessDataManager extends OutputDataStagingTask {
     private ProcessModel process;
     ExperimentModel experiment;
 
-    public ProcessDataManager(
-            RegistryService.Iface registryClient,
-            String processId,
-            AdaptorSupport adaptorSupport)
+    public ProcessDataManager(RegistryService.Iface registryClient, String processId, AdaptorSupport adaptorSupport)
             throws Exception {
 
         this.adaptorSupport = adaptorSupport;

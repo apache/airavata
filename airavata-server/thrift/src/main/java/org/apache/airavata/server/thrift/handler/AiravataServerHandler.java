@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.server.thrift.handler;
 
+import jakarta.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.BiFunction;
 import org.apache.airavata.api.Airavata;
@@ -94,8 +95,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class AiravataServerHandler implements Airavata.Iface {

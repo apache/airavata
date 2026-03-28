@@ -80,8 +80,8 @@ public class OrchestratorUtils {
 
     public static GroupComputeResourcePreference getGroupComputeResourcePreference(ProcessModel model)
             throws TException {
-        return getRegistryHandler().getGroupComputeResourcePreference(
-                model.getComputeResourceId(), model.getGroupResourceProfileId());
+        return getRegistryHandler()
+                .getGroupComputeResourcePreference(model.getComputeResourceId(), model.getGroupResourceProfileId());
     }
 
     public static String getApplicationInterfaceName(ProcessModel model) throws TException, OrchestratorException {
@@ -202,7 +202,8 @@ public class OrchestratorUtils {
             throws OrchestratorException {
         try {
             String resourceHostId = processModel.getComputeResourceId();
-            ComputeResourceDescription resourceDescription = getRegistryHandler().getComputeResource(resourceHostId);
+            ComputeResourceDescription resourceDescription =
+                    getRegistryHandler().getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
             if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
                 Collections.sort(
@@ -221,7 +222,8 @@ public class OrchestratorUtils {
             throws OrchestratorException {
         try {
             String resourceHostId = processModel.getComputeResourceId();
-            ComputeResourceDescription resourceDescription = getRegistryHandler().getComputeResource(resourceHostId);
+            ComputeResourceDescription resourceDescription =
+                    getRegistryHandler().getComputeResource(resourceHostId);
             List<DataMovementInterface> dataMovementInterfaces = resourceDescription.getDataMovementInterfaces();
             if (dataMovementInterfaces != null && !dataMovementInterfaces.isEmpty()) {
                 Collections.sort(

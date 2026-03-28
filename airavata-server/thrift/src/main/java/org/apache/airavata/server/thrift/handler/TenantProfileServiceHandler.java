@@ -239,8 +239,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     // admin passwords are stored in credential store in the super portal gateway and need to be
     // copied to a credential that is stored in the requested/newly created gateway
-    private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway)
-            throws TException {
+    private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway) throws TException {
         CredentialStoreService.Iface csHandler = getCredentialStoreHandler();
         String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         PasswordCredential adminPasswordCredential =

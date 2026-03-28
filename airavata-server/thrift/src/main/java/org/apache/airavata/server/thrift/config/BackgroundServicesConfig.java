@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.server.thrift.config;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.db.DBInitConfig;
@@ -32,8 +33,6 @@ import org.apache.airavata.security.profile.user.core.utils.UserProfileCatalogDB
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
-
-import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class BackgroundServicesConfig {

@@ -24,15 +24,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.common.security.UserContext;
+import org.apache.airavata.research.service.config.ResearchProperties;
+import org.apache.airavata.research.service.enums.SessionStatusEnum;
 import org.apache.airavata.research.service.model.entity.DatasetResource;
 import org.apache.airavata.research.service.model.entity.Project;
 import org.apache.airavata.research.service.model.entity.Session;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.research.service.config.ResearchProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -149,7 +149,8 @@ public class ResearchHubHandler {
         // TODO restrict this execution for owner
         Session session = sessionHandler.findSession(sessionId);
 
-        String sessionUrl = String.format(RH_SESSION_URL, researchProperties.getHubUrl(), UserContext.userId(), session.getId());
+        String sessionUrl =
+                String.format(RH_SESSION_URL, researchProperties.getHubUrl(), UserContext.userId(), session.getId());
         LOGGER.debug("Generated the session url: {} for the user: {}", sessionUrl, UserContext.userId());
         return sessionUrl;
     }

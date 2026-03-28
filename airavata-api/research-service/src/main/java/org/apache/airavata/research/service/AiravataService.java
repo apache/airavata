@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.research.service;
 
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.common.security.UserContext;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +44,7 @@ public class AiravataService {
     public UserProfile getUserProfile(String authzToken, String userId, String gatewayId) {
         UserProfile profile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
         if (profile == null) {
-            throw new RuntimeException(
-                    "User profile not found for id: " + userId + " in gateway: " + gatewayId);
+            throw new RuntimeException("User profile not found for id: " + userId + " in gateway: " + gatewayId);
         }
         return profile;
     }

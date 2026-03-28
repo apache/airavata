@@ -27,14 +27,13 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
+import java.util.HashMap;
+import java.util.Map;
 import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor;
 import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.model.security.AuthzToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @GrpcGlobalServerInterceptor
 public class GrpcAuthInterceptor implements ServerInterceptor {
@@ -49,9 +48,7 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            ServerCallHandler<ReqT, RespT> next) {
+            ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
 
         String authHeader = headers.get(AUTHORIZATION_KEY);
         String accessToken = null;

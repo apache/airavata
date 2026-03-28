@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.airavata.agent.connection.service.config.AgentProperties;
-import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.agent.connection.service.config.ClusterApplicationConfig;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchRequest;
 import org.apache.airavata.agent.connection.service.models.AgentLaunchResponse;
 import org.apache.airavata.agent.connection.service.models.AgentTerminateResponse;
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
@@ -61,7 +61,10 @@ public class AgentManagementHandler {
     @Value("${grpc.server.host}")
     private String grpcHost;
 
-    public AgentManagementHandler(AiravataService airavataService, ClusterApplicationConfig clusterApplicationConfig, AgentProperties agentProperties) {
+    public AgentManagementHandler(
+            AiravataService airavataService,
+            ClusterApplicationConfig clusterApplicationConfig,
+            AgentProperties agentProperties) {
         this.airavataService = airavataService;
         this.clusterApplicationConfig = clusterApplicationConfig;
         this.agentProperties = agentProperties;
@@ -244,10 +247,15 @@ public class AgentManagementHandler {
         userConfigurationDataModel.setAiravataAutoSchedule(false);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
         userConfigurationDataModel.setInputStorageResourceId(
-                StringUtils.isNotBlank(req.getInputStorageId()) ? req.getInputStorageId() : agentProperties.getStorageResourceId());
+                StringUtils.isNotBlank(req.getInputStorageId())
+                        ? req.getInputStorageId()
+                        : agentProperties.getStorageResourceId());
         userConfigurationDataModel.setOutputStorageResourceId(
-                StringUtils.isNotBlank(req.getOutputStorageId()) ? req.getInputStorageId() : agentProperties.getStorageResourceId());
-        String experimentDataDir = Paths.get(agentProperties.getStoragePath(), gatewayId, userName, projectDir, experimentName)
+                StringUtils.isNotBlank(req.getOutputStorageId())
+                        ? req.getInputStorageId()
+                        : agentProperties.getStorageResourceId());
+        String experimentDataDir = Paths.get(
+                        agentProperties.getStoragePath(), gatewayId, userName, projectDir, experimentName)
                 .toString();
         userConfigurationDataModel.setExperimentDataDir(experimentDataDir);
         userConfigurationDataModel.setGroupResourceProfileId(groupCompResourcePref.getGroupResourceProfileId());

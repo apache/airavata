@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.handler;
 
+import jakarta.annotation.PostConstruct;
 import java.util.*;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.AiravataUtils;
@@ -79,7 +80,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class RegistryServerHandler implements RegistryService.Iface {

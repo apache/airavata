@@ -54,7 +54,6 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
-
 import org.apache.airavata.security.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.security.service.AiravataSecurityManager;
 import org.apache.airavata.security.service.SecurityManagerFactory;
@@ -511,7 +510,8 @@ public class AiravataDataMigrator {
 
         String gatewayId = authzToken.getClaimsMap().get(org.apache.airavata.common.config.Constants.GATEWAY_ID);
         List<UserProfile> missingUsers = new ArrayList<>();
-        List<UserProfile> keycloakUsers = keycloakClient.getUsers(authzToken.getAccessToken(), gatewayId, 0, -1, search);
+        List<UserProfile> keycloakUsers =
+                keycloakClient.getUsers(authzToken.getAccessToken(), gatewayId, 0, -1, search);
 
         for (UserProfile profile : keycloakUsers) {
             if (profile.getState().equals(Status.ACTIVE)
@@ -529,7 +529,8 @@ public class AiravataDataMigrator {
         String gatewayId = authzToken.getClaimsMap().get(org.apache.airavata.common.config.Constants.GATEWAY_ID);
         boolean allUsersUpdated = true;
         for (UserProfile profile : missingUsers) {
-            allUsersUpdated &= keycloakClient.enableUserAccount(authzToken.getAccessToken(), gatewayId, profile.getUserId());
+            allUsersUpdated &=
+                    keycloakClient.enableUserAccount(authzToken.getAccessToken(), gatewayId, profile.getUserId());
         }
         return allUsersUpdated;
     }
@@ -910,7 +911,6 @@ public class AiravataDataMigrator {
     private static RegistryService.Iface getRegistryServiceClient() {
         return new RegistryServerHandler();
     }
-
 
     private static AuthzToken getManagementUsersAccessToken(String tenantId) throws TException {
         try {

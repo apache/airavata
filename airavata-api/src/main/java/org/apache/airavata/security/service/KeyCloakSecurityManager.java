@@ -37,7 +37,6 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
-
 import org.apache.airavata.security.service.authzcache.*;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;

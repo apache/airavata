@@ -27,9 +27,5 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @ConditionalOnServer("grpc")
-@Import({
-    AgentServiceConfig.class,
-    ResearchServiceConfig.class
-})
-public class AiravataGrpcServerConfig {
-}
+@Import({AgentServiceConfig.class, ResearchServiceConfig.class})
+public class AiravataGrpcServerConfig {}

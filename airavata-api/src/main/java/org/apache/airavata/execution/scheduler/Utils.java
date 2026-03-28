@@ -65,8 +65,7 @@ public class Utils {
             ProcessState processState, String processId, String experimentId, String gatewayId)
             throws RegistryServiceException, TException, AiravataException {
         ProcessStatus processStatus = new ProcessStatus(processState);
-        processStatus.setTimeOfStateChange(
-                AiravataUtils.getCurrentTimestamp().getTime());
+        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
         getRegistryHandler().addProcessStatus(processStatus, processId);
         ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
@@ -84,8 +83,7 @@ public class Utils {
             ProcessState processState, String processId, String experimentId, String gatewayId)
             throws RegistryServiceException, TException, AiravataException {
         ProcessStatus processStatus = new ProcessStatus(processState);
-        processStatus.setTimeOfStateChange(
-                AiravataUtils.getCurrentTimestamp().getTime());
+        processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 
         getRegistryHandler().updateProcessStatus(processStatus, processId);
         ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);

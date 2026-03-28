@@ -45,7 +45,6 @@ import org.apache.airavata.security.service.authzcache.AuthzCachedStatus;
 import org.apache.airavata.security.util.AiravataSecurityException;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.UserGroup;
-import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

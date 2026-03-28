@@ -37,11 +37,9 @@ public class DataAnalyzerImpl implements DataAnalyzer {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        
 
         try {
             LOGGER.debug("Executing Data Analyzer ....... ");
-            
 
             // TODO: handle multiple gateways
             String gateway = ServerSettings.getDataAnalyzingEnabledGateways();
@@ -77,6 +75,6 @@ public class DataAnalyzerImpl implements DataAnalyzer {
         } catch (Exception ex) {
             String msg = "Error occurred while executing data analyzer" + ex.getMessage();
             LOGGER.error(msg, ex);
-            }
+        }
     }
 }

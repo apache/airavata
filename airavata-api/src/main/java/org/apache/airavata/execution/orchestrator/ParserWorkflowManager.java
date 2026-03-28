@@ -114,8 +114,7 @@ public class ParserWorkflowManager implements IServer {
 
     private boolean process(ProcessCompletionMessage completionMessage) {
 
-        RegistryService.Iface registryHandler =
-                wfManager.getRegistryHandler();
+        RegistryService.Iface registryHandler = wfManager.getRegistryHandler();
 
         try {
             ProcessModel processModel;
@@ -356,8 +355,7 @@ public class ParserWorkflowManager implements IServer {
     }
 
     private String processExpression(String expression, ProcessCompletionMessage completionMessage) throws Exception {
-        RegistryService.Iface registryHandler =
-                wfManager.getRegistryHandler();
+        RegistryService.Iface registryHandler = wfManager.getRegistryHandler();
 
         try {
             if (expression != null) {

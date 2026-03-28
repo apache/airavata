@@ -78,7 +78,7 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
 
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
-            }
+        }
 
         return Optional.empty();
     }

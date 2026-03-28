@@ -38,7 +38,7 @@ public class ProcessScannerImpl implements ProcessScanner {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             LOGGER.debug("Executing Process scanner ....... ");
-            
+
             ProcessState state = ProcessState.QUEUED;
             List<ProcessModel> processModelList = registryHandler.getProcessListInState(state);
 

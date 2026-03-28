@@ -30,12 +30,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.execution.util.ExperimentModelUtil;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -284,7 +281,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             return processModels;
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
-            }
+        }
     }
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
@@ -326,7 +323,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
-            }
+        }
     }
 
     public String createAndSaveIntermediateOutputFetchingTasks(
@@ -343,7 +340,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
-            }
+        }
     }
 
     private String getTaskDag(List<String> taskIdList) {
@@ -426,7 +423,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
                         } catch (Exception e) {
                             throw new AiravataException("Error while serializing data staging sub task model", e);
-            }
+                        }
                         break;
                     default:
                         // nothing to do
@@ -467,30 +464,30 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                                 || processOutput.getValue().trim().isEmpty()) {
                             processOutput.setValue(appName + ".stderr");
                         }
-                            createOutputDataSatagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        case URI:
-                        case URI_COLLECTION:
-                            createOutputDataSatagingTasks(
-                                    registryClient,
-                                    processModel,
-                                    gatewayId,
-                                    dataStagingTaskIds,
-                                    processOutput,
-                                    resourceType);
-                            break;
-                        default:
-                            // nothing to do
-                            break;
-                    }
+                        createOutputDataSatagingTasks(
+                                registryClient,
+                                processModel,
+                                gatewayId,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    case URI:
+                    case URI_COLLECTION:
+                        createOutputDataSatagingTasks(
+                                registryClient,
+                                processModel,
+                                gatewayId,
+                                dataStagingTaskIds,
+                                processOutput,
+                                resourceType);
+                        break;
+                    default:
+                        // nothing to do
+                        break;
                 }
             }
+        }
 
         try {
             if (isArchive(registryClient, processModel)) {

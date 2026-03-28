@@ -122,7 +122,7 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             return allProcessesScheduled;
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);
-            }
+        }
 
         return false;
     }

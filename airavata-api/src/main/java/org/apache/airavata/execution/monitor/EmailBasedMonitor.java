@@ -34,7 +34,6 @@ import java.util.*;
 import org.apache.airavata.common.config.ApplicationSettings;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.IServer;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
@@ -72,7 +71,6 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
         populateAddressAndParserMap(resourceConfigs);
     }
 
-
     @Override
     public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
         try {
@@ -90,7 +88,7 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
-        
+
         try {
             List<JobModel> jobs = registryHandler.getJobs("jobId", jobStatusResult.getJobId());
             if (!jobs.isEmpty()) {
@@ -104,13 +102,13 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
                         jobStatusResult.getJobId(),
                         jobStatusResult.getJobName(),
                         jobs.size());
-                
+
                 return false;
             }
             JobModel jobModel = jobs.get(0);
             String processId = jobModel.getProcessId();
             String experimentId = registryHandler.getProcess(processId).getExperimentId();
-            
+
             if (experimentId != null && processId != null) {
                 log.info(
                         "Job {} owned by process {} of experiment {}",
@@ -123,7 +121,7 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
             return false;
         } catch (Exception e) {
             log.error("Error validating job status {}", jobStatusResult.getJobId(), e);
-            
+
             return false;
         }
     }
