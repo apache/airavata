@@ -28,6 +28,7 @@ import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
@@ -79,6 +80,7 @@ public class TaskErrorRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
 
@@ -87,6 +89,7 @@ public class TaskErrorRepositoryTest extends TestBase {
 
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+        taskModel.setLastUpdateTime(System.currentTimeMillis());
         taskModel.setParentProcessId(processId);
 
         String taskId = taskRepository.addTask(taskModel, processId);

@@ -40,7 +40,9 @@ public abstract class AbstractIntegrationTest {
     protected static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:11")
             .withDatabaseName("airavata_test")
             .withUsername("airavata")
-            .withPassword("airavata");
+            .withPassword("airavata")
+            .withCommand("--lower-case-table-names=1", "--sql-mode=")
+            .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
 
     protected static String getJdbcUrl() {
         return mariadb.getJdbcUrl();

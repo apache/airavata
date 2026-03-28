@@ -82,6 +82,7 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
         experimentModel.setGatewayInstanceId("gateway-instance-id");
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
@@ -167,6 +168,7 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
         experimentModel.setGatewayInstanceId("gateway-instance-id");
 
         InputDataObjectType input1 = new InputDataObjectType();
@@ -259,6 +261,7 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name/forward-slash//a");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId.startsWith("name_forward-slash__a"));
@@ -270,6 +273,7 @@ public class ExperimentRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name\\backward-slash\\\\a");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
 
         experimentId = experimentRepository.addExperiment(experimentModel);
         assertTrue(experimentId.startsWith("name_backward-slash__a"));

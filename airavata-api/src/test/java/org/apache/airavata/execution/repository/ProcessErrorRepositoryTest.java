@@ -28,6 +28,7 @@ import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
@@ -75,6 +76,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
 

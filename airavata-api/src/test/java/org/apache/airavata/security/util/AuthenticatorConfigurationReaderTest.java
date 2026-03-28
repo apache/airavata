@@ -56,9 +56,7 @@ public class AuthenticatorConfigurationReaderTest {
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
                         "jdbc:sql:thin:@//myhost:1521/mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseURL());
-                assertEquals(
-                        "org.mariadb.jdbc.Driver",
-                        ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
+                assertEquals("org.mariadb.jdbc.Driver", ((TestDBAuthenticator1) authenticator).getDatabaseDriver());
                 assertEquals("mysql1", ((TestDBAuthenticator1) authenticator).getDatabaseUserName());
                 assertEquals("secret1", ((TestDBAuthenticator1) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());
@@ -76,9 +74,7 @@ public class AuthenticatorConfigurationReaderTest {
                 assertTrue(authenticator.isEnabled());
                 assertEquals(
                         "jdbc:sql:thin:@//myhost:1521/mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseURL());
-                assertEquals(
-                        "org.mariadb.jdbc.Driver",
-                        ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
+                assertEquals("org.mariadb.jdbc.Driver", ((TestDBAuthenticator3) authenticator).getDatabaseDriver());
                 assertEquals("mysql3", ((TestDBAuthenticator3) authenticator).getDatabaseUserName());
                 assertEquals("secret3", ((TestDBAuthenticator3) authenticator).getDatabasePassword());
                 assertNotNull(authenticator.getUserStore());

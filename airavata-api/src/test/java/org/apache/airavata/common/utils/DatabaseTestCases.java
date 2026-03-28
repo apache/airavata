@@ -20,6 +20,8 @@
 package org.apache.airavata.common.utils;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import org.apache.airavata.common.db.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,8 @@ public class DatabaseTestCases {
         mariadb = new MariaDBContainer<>("mariadb:11")
                 .withDatabaseName("airavata")
                 .withUsername("airavata")
-                .withPassword("airavata");
+                .withPassword("airavata")
+                .withCommand("--lower-case-table-names=1");
         mariadb.start();
 
         hostAddress = mariadb.getHost();
@@ -85,8 +88,10 @@ public class DatabaseTestCases {
     }
 
     public static void executeSQL(String sql) throws Exception {
-        DBUtil dbUtil = new DBUtil(getJDBCUrl(), getUserName(), getPassword(), getDriver());
-        dbUtil.executeSQL(sql);
+        try (Connection conn = DriverManager.getConnection(getJDBCUrl(), getUserName(), getPassword());
+                Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        }
     }
 
     public DBUtil getDbUtil() throws Exception {

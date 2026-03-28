@@ -27,6 +27,7 @@ import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
@@ -77,6 +78,7 @@ public class ProcessRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
 
@@ -85,6 +87,7 @@ public class ProcessRepositoryTest extends TestBase {
         TaskModel task = new TaskModel();
         task.setTaskId("task-id");
         task.setTaskType(TaskTypes.ENV_SETUP);
+        task.setLastUpdateTime(System.currentTimeMillis());
         processModel.addToTasks(task);
 
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
@@ -103,6 +106,7 @@ public class ProcessRepositoryTest extends TestBase {
 
         TaskModel jobSubmissionTask = new TaskModel();
         jobSubmissionTask.setTaskType(TaskTypes.JOB_SUBMISSION);
+        jobSubmissionTask.setLastUpdateTime(System.currentTimeMillis());
         jobSubmissionTask.setTaskId("job-task-id");
         JobModel job = new JobModel();
         job.setProcessId(processId);

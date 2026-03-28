@@ -116,6 +116,7 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         experiment.setUserName("integration-user");
         experiment.setExperimentName(name);
         experiment.setGatewayInstanceId("gw-instance-1");
+        experiment.setUserConfigurationData(new UserConfigurationDataModel());
         return experiment;
     }
 

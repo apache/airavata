@@ -29,7 +29,6 @@ import mockit.Verifications;
 import org.apache.airavata.base.api.BaseAPI;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;

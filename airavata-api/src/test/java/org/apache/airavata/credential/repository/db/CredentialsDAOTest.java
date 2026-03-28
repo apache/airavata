@@ -61,15 +61,15 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     public static void setUpDatabase() throws Exception {
         waitTillServerStarts();
 
-        String createTable = "CREATE TABLE IF NOT EXISTS CREDENTIALS\n" + "(\n"
-                + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
-                + "        TOKEN_ID VARCHAR(256) NOT NULL,\n"
-                + "        CREDENTIAL BLOB NOT NULL,\n"
-                + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n"
-                + "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n"
-                + "        DESCRIPTION VARCHAR(500),\n"
-                + "        CREDENTIAL_OWNER_TYPE VARCHAR(10) DEFAULT 'GATEWAY' NOT NULL,\n"
-                + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" + ")";
+        String createTable = "CREATE TABLE IF NOT EXISTS CREDENTIALS ("
+                + "GATEWAY_ID VARCHAR(256) NOT NULL, "
+                + "TOKEN_ID VARCHAR(256) NOT NULL, "
+                + "CREDENTIAL BLOB NOT NULL, "
+                + "PORTAL_USER_ID VARCHAR(256) NOT NULL, "
+                + "TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                + "DESCRIPTION VARCHAR(500), "
+                + "CREDENTIAL_OWNER_TYPE VARCHAR(10) DEFAULT 'GATEWAY' NOT NULL, "
+                + "PRIMARY KEY (GATEWAY_ID, TOKEN_ID))";
 
         executeSQL(createTable);
     }
@@ -90,7 +90,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Connection connection = getConnection();
 
         try {
-            DBUtil.truncate("credentials", connection);
+            DBUtil.truncate("CREDENTIALS", connection);
         } finally {
             connection.close();
         }

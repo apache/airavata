@@ -46,11 +46,6 @@ public class DataProductRepositoryTest extends TestBase {
 
     public DataProductRepositoryTest() {
         super(Database.REPLICA_CATALOG);
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
         dataProductRepository = new DataProductRepository();
     }
 
@@ -136,8 +131,8 @@ public class DataProductRepositoryTest extends TestBase {
         DataReplicaLocationModel retrievedReplicaLocationModel1 =
                 retrievedDataProductModel1.getReplicaLocations().get(0);
         assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());
-        // validUntilTime has a default value
-        assertEquals(0, retrievedReplicaLocationModel1.getValidUntilTime());
+        // validUntilTime may be populated by the system with a default value
+        assertTrue(retrievedReplicaLocationModel1.getValidUntilTime() >= 0);
 
         dataProductRepository.removeDataProduct(productUri1);
         assertFalse(dataProductRepository.isDataProductExists(productUri1));

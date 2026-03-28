@@ -29,7 +29,6 @@ import org.apache.airavata.execution.service.RequestContext;
 import org.apache.airavata.execution.service.ServiceException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.storage.service.DataProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

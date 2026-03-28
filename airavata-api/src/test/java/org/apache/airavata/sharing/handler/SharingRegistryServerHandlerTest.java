@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
 import org.apache.thrift.TException;

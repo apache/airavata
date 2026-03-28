@@ -29,6 +29,7 @@ import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -80,6 +81,7 @@ public class TaskRepositoryTest extends TestBase {
         experimentModel.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experimentModel.setUserName("user");
         experimentModel.setExperimentName("name");
+        experimentModel.setUserConfigurationData(new UserConfigurationDataModel());
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
 
@@ -88,6 +90,7 @@ public class TaskRepositoryTest extends TestBase {
 
         TaskModel taskModel = new TaskModel();
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
+        taskModel.setLastUpdateTime(System.currentTimeMillis());
         taskModel.setParentProcessId(processId);
         taskModel.setSubTaskModel("subtask model".getBytes(StandardCharsets.UTF_8));
 
@@ -100,6 +103,7 @@ public class TaskRepositoryTest extends TestBase {
         assertTrue(processRepository.getProcess(processId).getTasks().size() == 1);
 
         taskModel.setTaskType(TaskTypes.MONITORING);
+        taskModel.setLastUpdateTime(System.currentTimeMillis());
         taskRepository.updateTask(taskModel, taskId);
         TaskModel retrievedTask = taskRepository.getTask(taskId);
         assertEquals(TaskTypes.MONITORING, retrievedTask.getTaskType());

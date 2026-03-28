@@ -22,7 +22,6 @@ package org.apache.airavata.compute.util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.apache.airavata.compute.util.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourceReservation;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.junit.jupiter.api.Assertions;

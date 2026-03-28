@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.execution.util.cpi.RegistryException;
@@ -43,12 +42,9 @@ public class GatewayRepositoryTest extends TestBase {
 
     @Test
     public void gatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
-        // Verify that default Gateway is already created
-        List<Gateway> defaultGatewayList = gatewayRepository.getAllGateways();
-        assertEquals(1, defaultGatewayList.size());
-        assertEquals(
-                ServerSettings.getDefaultUserGateway(),
-                defaultGatewayList.get(0).getGatewayId());
+        // After truncation, no gateways should exist
+        List<Gateway> initialGatewayList = gatewayRepository.getAllGateways();
+        assertEquals(0, initialGatewayList.size());
 
         Gateway gateway = new Gateway();
         gateway.setGatewayId(testGatewayId);
@@ -70,8 +66,7 @@ public class GatewayRepositoryTest extends TestBase {
         assertEquals(gateway.getOauthClientId(), retrievedGateway.getOauthClientId());
         assertEquals(gateway.getOauthClientSecret(), retrievedGateway.getOauthClientSecret());
 
-        assertEquals(
-                2, gatewayRepository.getAllGateways().size(), "should be 2 gateways (1 default plus 1 just added)");
+        assertEquals(1, gatewayRepository.getAllGateways().size(), "should be 1 gateway (the one just added)");
 
         gatewayRepository.removeGateway(gatewayId);
         assertFalse(gatewayRepository.isGatewayExist(gatewayId));

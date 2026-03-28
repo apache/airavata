@@ -38,13 +38,12 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
     @BeforeAll
     public static void setUpDatabase() throws Exception {
         waitTillServerStarts();
-        String createTable = "CREATE TABLE IF NOT EXISTS COMMUNITY_USER\n" + "                (\n"
-                + "                        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
-                + "                        COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,\n"
-                + "                        TOKEN_ID VARCHAR(256) NOT NULL,\n"
-                + "                        COMMUNITY_USER_EMAIL VARCHAR(256) NOT NULL,\n"
-                + "                        PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID)\n"
-                + "                )";
+        String createTable = "CREATE TABLE IF NOT EXISTS COMMUNITY_USER ("
+                + "GATEWAY_ID VARCHAR(256) NOT NULL, "
+                + "COMMUNITY_USER_NAME VARCHAR(256) NOT NULL, "
+                + "TOKEN_ID VARCHAR(256) NOT NULL, "
+                + "COMMUNITY_USER_EMAIL VARCHAR(256) NOT NULL, "
+                + "PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID))";
         executeSQL(createTable);
     }
 
@@ -58,7 +57,7 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
         communityUserDAO = new CommunityUserDAO();
         Connection connection = getDbUtil().getConnection();
         try {
-            DBUtil.truncate("community_user", connection);
+            DBUtil.truncate("COMMUNITY_USER", connection);
         } finally {
             connection.close();
         }

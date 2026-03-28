@@ -55,6 +55,7 @@ public abstract class TestBase {
             .withDatabaseName("airavata")
             .withUsername("airavata")
             .withPassword("airavata")
+            .withCommand("--lower-case-table-names=1", "--sql-mode=")
             .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
 
     private Database[] databases;
@@ -84,8 +85,8 @@ public abstract class TestBase {
      * Truncate all user tables so each test starts with clean data.
      */
     private void truncateAllTables() throws SQLException {
-        try (Connection conn = DriverManager.getConnection(
-                mariadb.getJdbcUrl(), mariadb.getUsername(), mariadb.getPassword())) {
+        try (Connection conn =
+                DriverManager.getConnection(mariadb.getJdbcUrl(), mariadb.getUsername(), mariadb.getPassword())) {
             conn.setAutoCommit(false);
             Statement stmt = conn.createStatement();
             stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
