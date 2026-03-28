@@ -85,7 +85,7 @@ public class TaskContext {
     private static final Logger logger = LoggerFactory.getLogger(TaskContext.class);
 
     private Publisher statusPublisher;
-    private RegistryService.Client registryClient;
+    private RegistryService.Iface registryClient;
     private UserProfileService.Client profileClient;
 
     private String processId;
@@ -829,11 +829,11 @@ public class TaskContext {
         }
     }
 
-    public void setRegistryClient(RegistryService.Client registryClient) {
+    public void setRegistryClient(RegistryService.Iface registryClient) {
         this.registryClient = registryClient;
     }
 
-    public RegistryService.Client getRegistryClient() {
+    public RegistryService.Iface getRegistryClient() {
         return registryClient;
     }
 
@@ -1005,7 +1005,7 @@ public class TaskContext {
         private final String processId;
         private final String gatewayId;
         private final String taskId;
-        private RegistryService.Client registryClient;
+        private RegistryService.Iface registryClient;
         private UserProfileService.Client profileClient;
         private ProcessModel processModel;
         private ExperimentModel experimentModel;
@@ -1030,7 +1030,7 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setRegistryClient(RegistryService.Client registryClient) {
+        public TaskContextBuilder setRegistryClient(RegistryService.Iface registryClient) {
             this.registryClient = registryClient;
             return this;
         }

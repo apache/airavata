@@ -766,7 +766,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                                     "Not updating experiment status because process is an intermediate output fetching one");
                             return;
                         }
-                    } catch (ApplicationSettingsException e) {
+                    } catch (TException e) {
                         throw new RuntimeException("Error getting process " + processIdentity.getProcessId(), e);
                     }
                     switch (processStatusChangeEvent.getState()) {
@@ -783,8 +783,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                                     status.setState(ExperimentState.EXECUTING);
                                     status.setReason("process  started");
                                 }
-                            } catch (ApplicationSettingsException e) {
-                                throw new RuntimeException("Error ", e);
+                            } catch (TException e) {
+                                throw new RuntimeException("Error getting experiment status", e);
                             }
                             break;
                         //						case PRE_PROCESSING:
@@ -808,8 +808,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                                     status.setState(ExperimentState.COMPLETED);
                                     status.setReason("process  completed");
                                 }
-                            } catch (ApplicationSettingsException e) {
-                                throw new RuntimeException("Error ", e);
+                            } catch (TException e) {
+                                throw new RuntimeException("Error getting experiment status", e);
                             }
                             break;
                         case FAILED:
@@ -823,8 +823,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                                     status.setState(ExperimentState.FAILED);
                                     status.setReason("process  failed");
                                 }
-                            } catch (ApplicationSettingsException e) {
-                                throw new RuntimeException("Unable to create registry client...", e);
+                            } catch (TException e) {
+                                throw new RuntimeException("Error getting experiment status", e);
                             }
                             break;
                         case CANCELED:

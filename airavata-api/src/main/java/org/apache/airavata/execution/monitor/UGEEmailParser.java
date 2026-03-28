@@ -43,7 +43,7 @@ public class UGEEmailParser implements EmailParser {
     public static final String ABORTED = "Aborted";
 
     @Override
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+    public JobStatusResult parseEmail(Message message, RegistryService.Iface registryClient)
             throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
 

@@ -79,10 +79,17 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class RegistryServerHandler implements RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
+
+    @PostConstruct
+    public void registerAsGlobalHandler() {
+        org.apache.airavata.execution.scheduler.Utils.setRegistryHandler(this);
+        logger.info("RegistryServerHandler registered as global registry handler");
+    }
 
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();

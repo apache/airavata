@@ -108,8 +108,7 @@ public class PostWorkflowManager implements IServer {
             return false;
         }
 
-        RegistryService.Client registryClient =
-                wfManager.getRegistryClientPool().getResource();
+        RegistryService.Iface registryHandler = wfManager.getRegistryHandler();
 
         var jobId = jobStatusResult.getJobId();
         var jobName = jobStatusResult.getJobName();
@@ -118,7 +117,7 @@ public class PostWorkflowManager implements IServer {
         logger.info("processing JobStatusUpdate<{}> from {}: {}", jobId, publisherId, jobStatusResult);
 
         try {
-            List<JobModel> jobs = registryClient.getJobs("jobId", jobId);
+            List<JobModel> jobs = registryHandler.getJobs("jobId", jobId);
             logger.info("Found {} jobs in registry with id={}", jobs.size(), jobId);
             if (!jobs.isEmpty()) {
                 jobs = jobs.stream()
@@ -128,16 +127,14 @@ public class PostWorkflowManager implements IServer {
             }
             if (jobs.size() != 1) {
                 logger.error("Found {} job(s) in registry with id={} and name={}", jobs.size(), jobId, jobName);
-                wfManager.getRegistryClientPool().returnResource(registryClient);
                 return false;
             }
             JobModel jobModel = jobs.get(0);
-            ProcessModel processModel = registryClient.getProcess(jobModel.getProcessId());
-            ExperimentModel experimentModel = registryClient.getExperiment(processModel.getExperimentId());
-            ProcessStatus processStatus = registryClient.getProcessStatus(processModel.getProcessId());
+            ProcessModel processModel = registryHandler.getProcess(jobModel.getProcessId());
+            ExperimentModel experimentModel = registryHandler.getExperiment(processModel.getExperimentId());
+            ProcessStatus processStatus = registryHandler.getProcessStatus(processModel.getProcessId());
 
             var processState = processStatus.getState();
-            wfManager.getRegistryClientPool().returnResource(registryClient);
 
             if (experimentModel != null) {
                 jobModel.getJobStatuses()
@@ -205,7 +202,6 @@ public class PostWorkflowManager implements IServer {
                     jobStatusResult.getJobId(),
                     jobStatusResult.getState().name(),
                     e);
-            wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             return false;
         }
     }
@@ -213,20 +209,19 @@ public class PostWorkflowManager implements IServer {
     private void executePostWorkflow(String processId, String gateway, boolean forceRun) throws Exception {
 
         postwfCounter.inc();
-        RegistryService.Client registryClient =
-                wfManager.getRegistryClientPool().getResource();
+        RegistryService.Iface registryHandler = wfManager.getRegistryHandler();
 
         ProcessModel processModel;
         ExperimentModel experimentModel;
         HelixTaskFactory taskFactory;
         try {
-            processModel = registryClient.getProcess(processId);
+            processModel = registryHandler.getProcess(processId);
             var experimentId = processModel.getExperimentId();
             var crId = processModel.getComputeResourceId();
             var grpId = processModel.getGroupResourceProfileId();
 
-            experimentModel = registryClient.getExperiment(experimentId);
-            ResourceType resourceType = registryClient
+            experimentModel = registryHandler.getExperiment(experimentId);
+            ResourceType resourceType = registryHandler
                     .getGroupComputeResourcePreference(crId, grpId)
                     .getResourceType();
 
@@ -236,8 +231,6 @@ public class PostWorkflowManager implements IServer {
         } catch (Exception e) {
             logger.error("Failed to fetch experiment/process from registry for pid={}", processId, e);
             throw new Exception("Failed to fetch experiment/process from registry for pid=" + processId, e);
-        } finally {
-            wfManager.getRegistryClientPool().returnResource(registryClient);
         }
 
         String taskDag = processModel.getTaskDag();
@@ -414,16 +407,10 @@ public class PostWorkflowManager implements IServer {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            RegistryService.Client registryClient =
-                    wfManager.getRegistryClientPool().getResource();
-
             try {
-                registryClient.addJobStatus(jobStatus, taskId, jobId);
-                wfManager.getRegistryClientPool().returnResource(registryClient);
-
+                wfManager.getRegistryHandler().addJobStatus(jobStatus, taskId, jobId);
             } catch (Exception e) {
                 logger.error("Failed to add job status " + jobId, e);
-                wfManager.getRegistryClientPool().returnBrokenResource(registryClient);
             }
 
             JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);

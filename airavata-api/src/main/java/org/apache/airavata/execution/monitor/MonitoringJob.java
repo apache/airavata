@@ -48,11 +48,10 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        RegistryService.Client client = null;
         try {
             LOGGER.debug("Executing ComputeResources Monitoring Job....... ");
 
-            client = this.registryClientPool.getResource();
+            RegistryService.Iface client = this.registryHandler;
 
             JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
             String metaSchedulerGateway = jobDataMap.getString(Constants.METASCHEDULER_GATEWAY);
@@ -70,19 +69,11 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
         } catch (Exception ex) {
             String msg = "Error occurred while executing job" + ex.getMessage();
             LOGGER.error(msg, ex);
-            if (client != null) {
-                registryClientPool.returnBrokenResource(client);
-            }
-            client = null;
-        } finally {
-            if (client != null) {
-                registryClientPool.returnResource(client);
-            }
         }
     }
 
     private void executeComputeResourceMonitoring(
-            RegistryService.Client client,
+            RegistryService.Iface client,
             String metaSchedulerGateway,
             String username,
             String metaSchedulerGRP,
@@ -115,7 +106,7 @@ public class MonitoringJob extends ComputeResourceMonitor implements Job {
     }
 
     private void updateComputeResource(
-            RegistryService.Client client,
+            RegistryService.Iface client,
             AdaptorSupport adaptorSupport,
             String gatewayId,
             String username,

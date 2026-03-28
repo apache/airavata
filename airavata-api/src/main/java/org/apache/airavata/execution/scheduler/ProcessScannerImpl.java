@@ -21,7 +21,6 @@ package org.apache.airavata.execution.scheduler;
 
 import java.util.List;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.api.RegistryService;
@@ -33,16 +32,15 @@ import org.slf4j.LoggerFactory;
 public class ProcessScannerImpl implements ProcessScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessScannerImpl.class);
 
-    protected static ThriftClientPool<RegistryService.Client> registryClientPool = Utils.getRegistryServiceClientPool();
+    protected static RegistryService.Iface registryHandler = Utils.getRegistryHandler();
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        RegistryService.Client client = null;
         try {
             LOGGER.debug("Executing Process scanner ....... ");
-            client = this.registryClientPool.getResource();
+            
             ProcessState state = ProcessState.QUEUED;
-            List<ProcessModel> processModelList = client.getProcessListInState(state);
+            List<ProcessModel> processModelList = registryHandler.getProcessListInState(state);
 
             String reSchedulerPolicyClass = ServerSettings.getReSchedulerPolicyClass();
             ReScheduler reScheduler =
@@ -53,7 +51,7 @@ public class ProcessScannerImpl implements ProcessScanner {
             }
 
             ProcessState ReQueuedState = ProcessState.REQUEUED;
-            List<ProcessModel> reQueuedProcessModels = client.getProcessListInState(ReQueuedState);
+            List<ProcessModel> reQueuedProcessModels = registryHandler.getProcessListInState(ReQueuedState);
 
             for (ProcessModel processModel : reQueuedProcessModels) {
                 reScheduler.reschedule(processModel, ReQueuedState);
@@ -62,14 +60,6 @@ public class ProcessScannerImpl implements ProcessScanner {
         } catch (Exception ex) {
             String msg = "Error occurred while executing job" + ex.getMessage();
             LOGGER.error(msg, ex);
-            if (client != null) {
-                this.registryClientPool.returnBrokenResource(client);
-            }
-            client = null;
-        } finally {
-            if (client != null) {
-                this.registryClientPool.returnResource(client);
-            }
         }
     }
 }

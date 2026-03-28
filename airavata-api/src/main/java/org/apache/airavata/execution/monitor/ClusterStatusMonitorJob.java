@@ -55,7 +55,7 @@ public class ClusterStatusMonitorJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             String superTenantGatewayId = ServerSettings.getSuperTenantGatewayId();
-            RegistryService.Client registryClient = getRegistryClient();
+            RegistryService.Iface registryClient = getRegistryClient();
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
             List<ComputeResourcePreference> computeResourcePreferences = null;
             try {
@@ -225,13 +225,8 @@ public class ClusterStatusMonitorJob implements Job {
         }
     }
 
-    private static RegistryService.Client getRegistryClient() throws TTransportException, ApplicationSettingsException {
-        TTransport transport = new TSocket(
-                ServerSettings.getRegistryServerHost(), Integer.parseInt(ServerSettings.getRegistryServerPort()));
-        transport.open();
-        TProtocol protocol = new TBinaryProtocol(transport);
-        RegistryService.Client registryClient = new RegistryService.Client(protocol);
-        return registryClient;
+    private static RegistryService.Iface getRegistryClient() {
+        return org.apache.airavata.execution.scheduler.Utils.getRegistryHandler();
     }
 
     private static CredentialStoreService.Client getCredentialStoreClient()

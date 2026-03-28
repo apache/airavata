@@ -48,21 +48,15 @@ public class AWSProcessContextManager {
     private static final String AWS_PUBLIC_IP = "AWS_PUBLIC_IP";
     private static final String AWS_JOB_ID = "AWS_JOB_ID";
 
-    private final RegistryService.Client registryClient;
+    private final RegistryService.Iface registryClient;
     private final TaskContext taskContext;
     private final String processId;
 
     public AWSProcessContextManager(TaskContext taskContext) {
-        try {
-            this.registryClient = AgentUtils.getRegistryServiceClient();
-            this.taskContext = taskContext;
-            this.processId = taskContext.getProcessId();
-            LOGGER.info("Initialized AWSProcessContextManager for process {}", processId);
-
-        } catch (AgentException e) {
-            LOGGER.error("Failed to initialize AWSProcessContextManager", e);
-            throw new RuntimeException("Failed to initialize AWSProcessContextManager", e);
-        }
+        this.registryClient = AgentUtils.getRegistryServiceClient();
+        this.taskContext = taskContext;
+        this.processId = taskContext.getProcessId();
+        LOGGER.info("Initialized AWSProcessContextManager for process {}", processId);
     }
 
     public String getInstanceId() throws IOException {

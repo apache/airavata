@@ -19,12 +19,9 @@
 */
 package org.apache.airavata.execution.handler;
 
-import java.time.Duration;
 import java.util.List;
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessageHandler;
@@ -39,8 +36,6 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,28 +46,11 @@ import org.slf4j.LoggerFactory;
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
-    private final ThriftClientPool<RegistryService.Client> registryClientPool;
+    private final RegistryService.Iface registryHandler;
     private DBEventPublisherUtils dbEventPublisherUtils = new DBEventPublisherUtils(DBEventService.REGISTRY);
 
-    public RegistryServiceDBEventHandler() throws ApplicationSettingsException, RegistryServiceException {
-
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(5);
-        poolConfig.setMinIdle(1);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-
-        registryClientPool = new ThriftClientPool<>(
-                tProtocol -> new RegistryService.Client(tProtocol),
-                poolConfig,
-                ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()),
-                "RegistryService");
+    public RegistryServiceDBEventHandler() {
+        this.registryHandler = org.apache.airavata.execution.scheduler.Utils.getRegistryHandler();
     }
 
     @Override
@@ -92,7 +70,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                     dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
             logger.info("RegistryService, Replicated Entity: " + publisherContext.getEntityType());
 
-            RegistryService.Client registryClient = registryClientPool.getResource();
+            RegistryService.Iface registryClient = registryHandler;
             // this try-block is mainly for catching DuplicateEntryException
             try {
                 // check type of entity-type
@@ -190,13 +168,12 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
                     }
                 }
-                registryClientPool.returnResource(registryClient);
+                
             } catch (DuplicateEntryException ex) {
                 // log this exception and proceed (do nothing)
                 // this exception is thrown mostly when messages are re-consumed, hence ignore
                 logger.warn("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
             } catch (Exception ex) {
-                registryClientPool.returnBrokenResource(registryClient);
                 throw ex;
             }
             // send ack for received message
@@ -215,7 +192,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
         }
     }
 
-    private Project createDefaultProject(RegistryService.Client registryClient, UserProfile userProfile)
+    private Project createDefaultProject(RegistryService.Iface registryClient, UserProfile userProfile)
             throws TException {
         // Just retrieve the first project to see if the user has any projects
         List<Project> projects =

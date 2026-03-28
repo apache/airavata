@@ -24,22 +24,13 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.credential.util.CredentialStoreClientFactory;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 
 public class AgentUtils {
 
-    // TODO this is inefficient. Try to use a connection pool
-    public static RegistryService.Client getRegistryServiceClient() throws AgentException {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
-            throw new AgentException("Unable to create registry client...", e);
-        }
+    public static RegistryService.Iface getRegistryServiceClient() {
+        return Utils.getRegistryHandler();
     }
 
     public static CredentialStoreService.Client getCredentialClient() throws AgentException {

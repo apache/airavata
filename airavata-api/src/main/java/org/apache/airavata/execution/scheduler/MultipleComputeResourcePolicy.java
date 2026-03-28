@@ -43,7 +43,7 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
 
     @Override
     public Optional<ComputationalResourceSchedulingModel> selectComputeResource(String processId) {
-        RegistryService.Client registryClient = super.registryClientPool.getResource();
+        RegistryService.Iface registryClient = super.registryHandler;
         try {
 
             ProcessModel processModel = registryClient.getProcess(processId);
@@ -78,13 +78,7 @@ public class MultipleComputeResourcePolicy extends ComputeResourceSelectionPolic
 
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling Process with Id {}", processId, exception);
-            this.registryClientPool.returnBrokenResource(registryClient);
-            registryClient = null;
-        } finally {
-            if (registryClient != null) {
-                this.registryClientPool.returnResource(registryClient);
             }
-        }
 
         return Optional.empty();
     }

@@ -26,10 +26,8 @@ import java.util.Properties;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -45,7 +43,7 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
     private final RealtimeJobStatusParser parser;
     private final String publisherId;
     private final String brokerTopic;
-    private final ThriftClientPool<RegistryService.Client> registryClientPool;
+    private final RegistryService.Iface registryHandler;
     private final MessageProducer messageProducer;
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
 
@@ -53,28 +51,10 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
         parser = new RealtimeJobStatusParser();
         publisherId = ServerSettings.getSetting("job.monitor.realtime.publisher.id");
         brokerTopic = ServerSettings.getSetting("realtime.monitor.broker.topic");
-        registryClientPool = createRegistryClientPool();
+        registryHandler = org.apache.airavata.execution.scheduler.Utils.getRegistryHandler();
         messageProducer = new MessageProducer();
     }
 
-    private static ThriftClientPool<RegistryService.Client> createRegistryClientPool()
-            throws ApplicationSettingsException {
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(100);
-        poolConfig.setMinIdle(5);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-        return new ThriftClientPool<>(
-                RegistryService.Client::new,
-                poolConfig,
-                ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()),
-                "RegistryService");
-    }
 
     @Override
     public void submitJobStatus(JobStatusResult jobStatusResult) throws MonitoringException {
@@ -93,9 +73,9 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
-        RegistryService.Client registryClient = registryClientPool.getResource();
+        
         try {
-            List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
+            List<JobModel> jobs = registryHandler.getJobs("jobId", jobStatusResult.getJobId());
             if (!jobs.isEmpty()) {
                 jobs = jobs.stream()
                         .filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName()))
@@ -107,13 +87,13 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
                         jobStatusResult.getJobId(),
                         jobStatusResult.getJobName(),
                         jobs.size());
-                registryClientPool.returnResource(registryClient);
+                
                 return false;
             }
             JobModel jobModel = jobs.get(0);
             String processId = jobModel.getProcessId();
-            String experimentId = registryClient.getProcess(processId).getExperimentId();
-            registryClientPool.returnResource(registryClient);
+            String experimentId = registryHandler.getProcess(processId).getExperimentId();
+            
             if (experimentId != null && processId != null) {
                 return true;
             }
@@ -121,7 +101,7 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
             return false;
         } catch (Exception e) {
             logger.error("Error validating job status {}", jobStatusResult.getJobId(), e);
-            registryClientPool.returnBrokenResource(registryClient);
+            
             return false;
         }
     }
@@ -144,22 +124,22 @@ public class RealtimeMonitor implements AbstractMonitor, IServer {
 
         while (!Thread.currentThread().isInterrupted()) {
             final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            RegistryService.Client registryClient = registryClientPool.getResource();
+            
             consumerRecords.forEach(record -> {
                 try {
-                    process(record.key(), record.value(), registryClient);
+                    process(record.key(), record.value());
                 } catch (Exception e) {
                     logger.error("Error while processing message {}", record.value(), e);
                 }
             });
-            registryClientPool.returnResource(registryClient);
+            
             consumer.commitAsync();
         }
     }
 
-    private void process(String key, String value, RegistryService.Client registryClient) throws MonitoringException {
+    private void process(String key, String value) throws MonitoringException {
         logger.info("received post from {} on {}: {}->{}", publisherId, brokerTopic, key, value);
-        JobStatusResult statusResult = parser.parse(value, publisherId, registryClient);
+        JobStatusResult statusResult = parser.parse(value, publisherId, registryHandler);
         if (statusResult != null) {
             logger.info("Submitting message to job monitor queue");
             submitJobStatus(statusResult);

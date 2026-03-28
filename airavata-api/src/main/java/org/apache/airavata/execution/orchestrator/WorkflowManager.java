@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.orchestrator;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessagingFactory;
 import org.apache.airavata.messaging.service.Publisher;
@@ -39,7 +37,6 @@ import org.apache.airavata.model.process.ProcessWorkflow;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.helix.manager.zk.ZKHelixAdmin;
 import org.apache.helix.zookeeper.api.client.RealmAwareZkClient.RealmMode;
 import org.slf4j.Logger;
@@ -51,7 +48,7 @@ public class WorkflowManager {
 
     private Publisher statusPublisher;
     private List<WorkflowOperator> workflowOperators = new ArrayList<>();
-    private ThriftClientPool<RegistryService.Client> registryClientPool;
+    private RegistryService.Iface registryHandler;
     private String workflowManagerName;
     private ZKHelixAdmin zkHelixAdmin;
     private boolean loadBalanceClusters;
@@ -64,7 +61,7 @@ public class WorkflowManager {
     }
 
     public void initComponents() throws Exception {
-        initRegistryClientPool();
+        initRegistryHandler();
         initHelixAdmin();
         initWorkflowOperators();
         initStatusPublisher();
@@ -101,25 +98,8 @@ public class WorkflowManager {
                 .build();
     }
 
-    private void initRegistryClientPool() throws ApplicationSettingsException {
-
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(100);
-        poolConfig.setMinIdle(5);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        // must set timeBetweenEvictionRunsMillis since eviction doesn't run unless that is positive
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-
-        this.registryClientPool = new ThriftClientPool<>(
-                RegistryService.Client::new,
-                poolConfig,
-                ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()),
-                "RegistryService");
+    private void initRegistryHandler() {
+        this.registryHandler = org.apache.airavata.execution.scheduler.Utils.getRegistryHandler();
     }
 
     public Publisher getStatusPublisher() {
@@ -134,8 +114,8 @@ public class WorkflowManager {
         return workflowOperators.get(currentOperator);
     }
 
-    public ThriftClientPool<RegistryService.Client> getRegistryClientPool() {
-        return registryClientPool;
+    public RegistryService.Iface getRegistryHandler() {
+        return registryHandler;
     }
 
     public void publishProcessStatus(String processId, String experimentId, String gatewayId, ProcessState state)
@@ -145,15 +125,10 @@ public class WorkflowManager {
         status.setState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
 
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
-
         try {
-            registryClient.updateProcessStatus(status, processId);
-            getRegistryClientPool().returnResource(registryClient);
-
+            registryHandler.updateProcessStatus(status, processId);
         } catch (Exception e) {
             logger.error("Failed to update process status " + processId, e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
         }
 
         ProcessIdentifier identifier = new ProcessIdentifier(processId, experimentId, gatewayId);
@@ -172,22 +147,18 @@ public class WorkflowManager {
     }
 
     public void registerWorkflowForProcess(String processId, String workflowName, String workflowType) {
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
         try {
             ProcessWorkflow processWorkflow = new ProcessWorkflow();
             processWorkflow.setProcessId(processId);
             processWorkflow.setWorkflowId(workflowName);
             processWorkflow.setType(workflowType);
             processWorkflow.setCreationTime(System.currentTimeMillis());
-            registryClient.addProcessWorkflow(processWorkflow);
-            getRegistryClientPool().returnResource(registryClient);
-
+            registryHandler.addProcessWorkflow(processWorkflow);
         } catch (Exception e) {
             logger.error(
                     "Failed to save workflow " + workflowName + " of process " + processId
                             + ". This will affect cancellation tasks",
                     e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
         }
     }
 }
