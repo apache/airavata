@@ -331,6 +331,18 @@ under the License.
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <!-- Spring (optional, for @ConditionalOnServer and config properties) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <optional>true</optional>
+    </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>ec2</artifactId>
