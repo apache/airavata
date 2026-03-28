@@ -33,14 +33,13 @@ import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Tag("integration")
-@Testcontainers
 public abstract class TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
+
+    protected static final MariaDBContainer<?> mariadb = SharedMariaDB.getInstance();
 
     public enum Database {
         APP_CATALOG,
@@ -48,15 +47,6 @@ public abstract class TestBase {
         REPLICA_CATALOG,
         WORKFLOW_CATALOG
     }
-
-    @SuppressWarnings("resource")
-    @Container
-    protected static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:11.8")
-            .withDatabaseName("airavata")
-            .withUsername("airavata")
-            .withPassword("airavata")
-            .withCommand("--lower-case-table-names=1", "--sql-mode=")
-            .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
 
     private Database[] databases;
 
@@ -69,11 +59,7 @@ public abstract class TestBase {
 
     @BeforeAll
     static void configureJdbc() {
-        System.setProperty("airavata.jdbc.driver", mariadb.getDriverClassName());
-        System.setProperty("airavata.jdbc.url", mariadb.getJdbcUrl());
-        System.setProperty("airavata.jdbc.user", mariadb.getUsername());
-        System.setProperty("airavata.jdbc.password", mariadb.getPassword());
-        System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
+        // System properties are already set by SharedMariaDB static initializer
     }
 
     @BeforeEach

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.execution.util.common.SharedMariaDB;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
 import org.apache.thrift.TException;
@@ -32,30 +33,15 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Tag("integration")
-@Testcontainers
 public class SharingRegistryServerHandlerTest {
     private static final Logger logger = LoggerFactory.getLogger(SharingRegistryServerHandlerTest.class);
 
-    @SuppressWarnings("resource")
-    @Container
-    private static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:11.8")
-            .withDatabaseName("airavata")
-            .withUsername("airavata")
-            .withPassword("airavata")
-            .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
-
     @BeforeAll
     static void configureJdbc() {
-        System.setProperty("airavata.jdbc.driver", mariadb.getDriverClassName());
-        System.setProperty("airavata.jdbc.url", mariadb.getJdbcUrl());
-        System.setProperty("airavata.jdbc.user", mariadb.getUsername());
-        System.setProperty("airavata.jdbc.password", mariadb.getPassword());
-        System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
+        // Ensure singleton container is started; system properties set by SharedMariaDB
+        SharedMariaDB.getInstance();
     }
 
     @Test

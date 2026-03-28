@@ -27,10 +27,20 @@ import org.apache.airavata.common.db.JPAUtils;
 public class ExpCatalogJPAUtils {
     public static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
     private static final JDBCConfig JDBC_CONFIG = new ExpCatalogJDBCConfig();
-    private static final EntityManagerFactory factory =
-            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static volatile EntityManagerFactory factory;
+
+    private static EntityManagerFactory getFactory() {
+        if (factory == null) {
+            synchronized (ExpCatalogJPAUtils.class) {
+                if (factory == null) {
+                    factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+                }
+            }
+        }
+        return factory;
+    }
 
     public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+        return getFactory().createEntityManager();
     }
 }

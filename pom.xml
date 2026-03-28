@@ -152,6 +152,11 @@ under the License.
                 <version>5.9.3</version>
             </dependency>
             <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>1.12.2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
                 <version>1.50</version>
@@ -165,6 +170,18 @@ under the License.
                 <version>1.21.1</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- Byte Buddy — override Mockito's transitive version for Java 25 compatibility -->
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.18.7</version>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy-agent</artifactId>
+                <version>1.18.7</version>
             </dependency>
 
             <!-- Apache Commons -->
@@ -632,7 +649,8 @@ under the License.
                     <skipTests>${skipTests}</skipTests>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
                     <excludes>
                         <exclude>**/IT.java</exclude>
                         <exclude>**/*TestWithMyProxyAuth.java</exclude>

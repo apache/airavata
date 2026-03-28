@@ -23,19 +23,20 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import org.apache.airavata.common.db.DBUtil;
+import org.apache.airavata.execution.util.common.SharedMariaDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MariaDBContainer;
 
 /**
- * Base class for database tests using Testcontainers MariaDB.
+ * Base class for database tests using a singleton Testcontainers MariaDB.
  * Provides a real MariaDB instance via Docker for integration testing.
  */
 public class DatabaseTestCases {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseTestCases.class);
 
-    private static final MariaDBContainer<?> mariadb;
+    private static final MariaDBContainer<?> mariadb = SharedMariaDB.getInstance();
 
     protected static String hostAddress;
     protected static int port;
@@ -44,13 +45,6 @@ public class DatabaseTestCases {
     protected static String driver = "org.mariadb.jdbc.Driver";
 
     static {
-        mariadb = new MariaDBContainer<>("mariadb:11")
-                .withDatabaseName("airavata")
-                .withUsername("airavata")
-                .withPassword("airavata")
-                .withCommand("--lower-case-table-names=1");
-        mariadb.start();
-
         hostAddress = mariadb.getHost();
         port = mariadb.getFirstMappedPort();
         userName = mariadb.getUsername();

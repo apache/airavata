@@ -66,14 +66,7 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
 
     @BeforeAll
     static void setUpAll() throws Exception {
-        // Point SharingRegistryJDBCConfig at the Testcontainers MariaDB instance.
-        // ApplicationSettings.getSettingImpl checks System.getProperties() first.
-        System.setProperty("airavata.jdbc.url", getJdbcUrl());
-        System.setProperty("airavata.jdbc.user", getUsername());
-        System.setProperty("airavata.jdbc.password", getPassword());
-        System.setProperty("airavata.jdbc.driver", getJdbcDriver());
-        System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
-
+        // System properties are already set by SharedMariaDB (via AbstractIntegrationTest)
         SharingRegistryDBInitConfig config = new SharingRegistryDBInitConfig();
         config.setDBInitScriptPrefix("sharing-registry");
         handler = new SharingRegistryServerHandler(config);
@@ -111,15 +104,7 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
         entityTypeId4 = createEntityType("Application-Deployment", "app deployment type");
     }
 
-    @AfterAll
-    static void tearDownAll() {
-        // Remove system property overrides so other tests are not affected
-        System.clearProperty("airavata.jdbc.url");
-        System.clearProperty("airavata.jdbc.user");
-        System.clearProperty("airavata.jdbc.password");
-        System.clearProperty("airavata.jdbc.driver");
-        System.clearProperty("airavata.jdbc.validationQuery");
-    }
+    // No @AfterAll teardown needed — SharedMariaDB owns the system properties for the entire test run
 
     // --- Helpers ---
 

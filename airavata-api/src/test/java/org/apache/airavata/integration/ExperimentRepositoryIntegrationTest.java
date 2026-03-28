@@ -66,14 +66,7 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
 
     @BeforeAll
     static void setUpAll() throws Exception {
-        // Route ExpCatalogJDBCConfig to the Testcontainers instance.
-        // ApplicationSettings.getSettingImpl checks System.getProperties() first.
-        System.setProperty("airavata.jdbc.url", getJdbcUrl());
-        System.setProperty("airavata.jdbc.user", getUsername());
-        System.setProperty("airavata.jdbc.password", getPassword());
-        System.setProperty("airavata.jdbc.driver", getJdbcDriver());
-        System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
-
+        // System properties are already set by SharedMariaDB (via AbstractIntegrationTest)
         ExpCatalogDBInitConfig config = new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog");
         DBInitializer.initializeDB(config);
 
@@ -97,14 +90,7 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
         logger.info("Test DB initialized. gatewayId={}, projectId={}", gatewayId, projectId);
     }
 
-    @AfterAll
-    static void tearDownAll() {
-        System.clearProperty("airavata.jdbc.url");
-        System.clearProperty("airavata.jdbc.user");
-        System.clearProperty("airavata.jdbc.password");
-        System.clearProperty("airavata.jdbc.driver");
-        System.clearProperty("airavata.jdbc.validationQuery");
-    }
+    // No @AfterAll teardown needed — SharedMariaDB owns the system properties for the entire test run
 
     // --- Helper ---
 

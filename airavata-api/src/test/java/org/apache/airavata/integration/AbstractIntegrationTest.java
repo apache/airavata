@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.integration;
 
+import org.apache.airavata.execution.util.common.SharedMariaDB;
 import org.junit.jupiter.api.Tag;
 import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Base class for integration tests. Uses Testcontainers MariaDB.
+ * Base class for integration tests. Uses a singleton Testcontainers MariaDB.
  *
  * <p>Tag: "integration" — can be filtered in CI with {@code -Dgroups=integration} or excluded
  * with {@code -DexcludedGroups=integration}.
@@ -33,16 +32,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * <p>Usage: {@code mvn test -pl airavata-api -Dgroups=integration -DexcludedGroups=""}
  */
 @Tag("integration")
-@Testcontainers
 public abstract class AbstractIntegrationTest {
 
-    @Container
-    protected static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:11")
-            .withDatabaseName("airavata_test")
-            .withUsername("airavata")
-            .withPassword("airavata")
-            .withCommand("--lower-case-table-names=1", "--sql-mode=")
-            .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
+    protected static final MariaDBContainer<?> mariadb = SharedMariaDB.getInstance();
 
     protected static String getJdbcUrl() {
         return mariadb.getJdbcUrl();

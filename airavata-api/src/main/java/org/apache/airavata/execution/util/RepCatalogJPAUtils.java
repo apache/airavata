@@ -30,10 +30,20 @@ public class RepCatalogJPAUtils {
     // persistence context in airavata-registry-core
     public static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data_new";
     private static final JDBCConfig JDBC_CONFIG = new ReplicaCatalogJDBCConfig();
-    private static final EntityManagerFactory factory =
-            JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+    private static volatile EntityManagerFactory factory;
+
+    private static EntityManagerFactory getFactory() {
+        if (factory == null) {
+            synchronized (RepCatalogJPAUtils.class) {
+                if (factory == null) {
+                    factory = JPAUtils.getEntityManagerFactory(PERSISTENCE_UNIT_NAME, JDBC_CONFIG);
+                }
+            }
+        }
+        return factory;
+    }
 
     public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
+        return getFactory().createEntityManager();
     }
 }
