@@ -71,9 +71,9 @@ under the License.
         <module>airavata-api</module>
         <module>airavata-thrift-server</module>
         <module>integration-tests</module>
-        <module>modules/file-server</module>
-        <module>modules/agent-framework/agent-service</module>
-        <module>modules/research-framework/research-service</module>
+        <module>airavata-api/file-server</module>
+        <module>airavata-api/agent-service</module>
+        <module>airavata-api/research-service</module>
         <module>airavata-rest-server</module>
         <module>airavata-grpc-server</module>
         <module>airavata-server</module>
