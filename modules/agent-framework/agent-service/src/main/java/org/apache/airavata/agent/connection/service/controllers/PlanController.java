@@ -22,7 +22,7 @@ package org.apache.airavata.agent.connection.service.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import org.apache.airavata.agent.connection.service.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.agent.connection.service.db.entity.Plan;
 import org.apache.airavata.agent.connection.service.handlers.PlanHandler;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class PlanController {
 
             Plan plan = new Plan();
             plan.setId(planId);
-            plan.setUserId(UserContext.username());
+            plan.setUserId(UserContext.userId());
             plan.setGatewayId(UserContext.gatewayId());
             plan.setData(dataAsString);
 
@@ -75,7 +75,7 @@ public class PlanController {
 
     @GetMapping("/user")
     public ResponseEntity<List<Plan>> getPlansByUserId() {
-        List<Plan> plans = planHandler.getAllPlansByUserId(UserContext.username(), UserContext.gatewayId());
+        List<Plan> plans = planHandler.getAllPlansByUserId(UserContext.userId(), UserContext.gatewayId());
         return ResponseEntity.ok(plans);
     }
 

@@ -30,14 +30,16 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.airavata.agent.*;
 import org.apache.airavata.agent.AsyncCommand;
 import org.apache.airavata.agent.connection.service.models.*;
+import org.apache.airavata.agent.connection.service.config.AgentProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 @GrpcService
 public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentCommunicationServiceImplBase {
 
     private static final Logger logger = LoggerFactory.getLogger(AgentConnectionHandler.class);
+
+    private final AgentProperties agentProperties;
 
     // <streamId, StreamObserver>
     private final Map<String, StreamObserver<ServerMessage>> ACTIVE_STREAMS = new ConcurrentHashMap<>();
@@ -57,17 +59,9 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
     private final Map<String, PythonExecutionResponse> PYTHON_EXECUTION_RESPONSE_CACHE = new ConcurrentHashMap<>();
     private final Map<String, TunnelCreationResponse> TUNNEL_CREATION_RESPONSE_CACHE = new ConcurrentHashMap<>();
 
-    @Value("${airavata.tunnel.serverHost}")
-    private String tunnelServerHost;
-
-    @Value("${airavata.tunnel.serverPort}")
-    private int tunnelServerPort;
-
-    @Value("${airavata.tunnel.serverApiUrl}")
-    private String tunnelServerApiUrl;
-
-    @Value("${airavata.tunnel.serverToken}")
-    private String tunnelServerToken;
+    public AgentConnectionHandler(AgentProperties agentProperties) {
+        this.agentProperties = agentProperties;
+    }
 
     // response handling
     public AgentInfoResponse isAgentUp(String agentId) {
@@ -479,10 +473,10 @@ public class AgentConnectionHandler extends AgentCommunicationServiceGrpc.AgentC
                                 .setExecutionId(executionId)
                                 .setLocalPort(tunnelRequest.getLocalPort())
                                 .setLocalBindHost(tunnelRequest.getLocalBindHost())
-                                .setTunnelServerHost(tunnelServerHost)
-                                .setTunnelServerPort(tunnelServerPort)
-                                .setTunnelServerApiUrl(tunnelServerApiUrl)
-                                .setTunnelServerToken(tunnelServerToken)
+                                .setTunnelServerHost(agentProperties.getTunnel().getServerHost())
+                                .setTunnelServerPort(agentProperties.getTunnel().getServerPort())
+                                .setTunnelServerApiUrl(agentProperties.getTunnel().getServerApiUrl())
+                                .setTunnelServerToken(agentProperties.getTunnel().getServerToken())
                                 .build())
                         .build());
             } catch (Exception e) {

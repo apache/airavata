@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.airavata.agent.connection.service.UserContext;
+import org.apache.airavata.common.security.UserContext;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.common.util.AiravataClientFactory;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
@@ -69,7 +69,7 @@ public class AiravataService {
 
         while (true) {
             List<Project> userProjects = airavataClient.getUserProjects(
-                    UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), limit, offset);
+                    UserContext.authzToken(), UserContext.gatewayId(), UserContext.userId(), limit, offset);
             Optional<Project> defaultProject = userProjects.stream()
                     .filter(project -> projectName.equals(project.getName()))
                     .findFirst();
@@ -84,7 +84,7 @@ public class AiravataService {
         }
 
         throw new RuntimeException(
-                "Could not find project: " + projectName + " for the user: " + UserContext.username());
+                "Could not find project: " + projectName + " for the user: " + UserContext.userId());
     }
 
     public GroupComputeResourcePreference extractGroupComputeResourcePreference(
@@ -99,7 +99,7 @@ public class AiravataService {
                         .filter(preference -> preference.getComputeResourceId().startsWith(remoteCluster)))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Could not find a matching Compute Resource Preference in the "
-                        + groupProfileName + " group resource profile for the user: " + UserContext.username()));
+                        + groupProfileName + " group resource profile for the user: " + UserContext.userId()));
     }
 
     public List<String> getUserExperimentIDs(Airavata.Client airavataClient) throws TException {
@@ -113,7 +113,7 @@ public class AiravataService {
                         return airavataClient.searchExperiments(
                                 UserContext.authzToken(),
                                 UserContext.gatewayId(),
-                                UserContext.username(),
+                                UserContext.userId(),
                                 filters,
                                 limit,
                                 offset);
