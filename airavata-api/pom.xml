@@ -450,7 +450,7 @@ under the License.
                   <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg value="${project.basedir}/../airavata-thrift-server/src/main/thrift/stubs_java.thrift" />
+                  <arg value="${project.basedir}/../airavata-server/thrift/src/main/thrift/stubs_java.thrift" />
                 </exec>
               </target>
             </configuration>

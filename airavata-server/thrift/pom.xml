@@ -25,32 +25,31 @@ under the License.
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
         <version>0.21-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>airavata-server</artifactId>
-    <name>Airavata Server</name>
-    <description>Unified launcher for all Airavata server modules</description>
+    <artifactId>airavata-server-thrift</artifactId>
+    <packaging>jar</packaging>
+    <name>Airavata Server - Thrift</name>
 
     <dependencies>
-        <!-- Server modules -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-rest</artifactId>
+            <artifactId>airavata-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-grpc</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-thrift</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
-
-        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -61,37 +60,22 @@ under the License.
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/server-bin-assembly.xml</descriptor>
-                    </descriptors>
-                    <finalName>airavata-server-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>create-distribution</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

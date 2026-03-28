@@ -25,35 +25,64 @@ under the License.
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
         <version>0.21-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>airavata-server</artifactId>
-    <name>Airavata Server</name>
-    <description>Unified launcher for all Airavata server modules</description>
+    <artifactId>airavata-server-grpc</artifactId>
+    <name>Airavata Server - gRPC</name>
 
     <dependencies>
-        <!-- Server modules -->
+        <!-- Project modules -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-rest</artifactId>
+            <artifactId>airavata-api</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>agent-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-grpc</artifactId>
+            <artifactId>research-service</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- gRPC -->
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-thrift</artifactId>
-            <version>${project.version}</version>
+            <groupId>net.devh</groupId>
+            <artifactId>grpc-server-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -63,35 +92,30 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/server-bin-assembly.xml</descriptor>
-                    </descriptors>
-                    <finalName>airavata-server-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
+                    <release>17</release>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>create-distribution</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

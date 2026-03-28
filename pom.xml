@@ -69,13 +69,13 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
-        <module>airavata-thrift-server</module>
+        <module>airavata-server/thrift</module>
         <module>integration-tests</module>
         <module>airavata-api/file-server</module>
         <module>airavata-api/agent-service</module>
         <module>airavata-api/research-service</module>
-        <module>airavata-rest-server</module>
-        <module>airavata-grpc-server</module>
+        <module>airavata-server/rest</module>
+        <module>airavata-server/grpc</module>
         <module>airavata-server</module>
     </modules>
 

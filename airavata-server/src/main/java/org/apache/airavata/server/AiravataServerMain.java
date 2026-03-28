@@ -19,9 +19,9 @@
 package org.apache.airavata.server;
 
 import org.apache.airavata.common.config.AiravataServerProperties;
-import org.apache.airavata.grpc.server.AiravataGrpcServerConfig;
-import org.apache.airavata.rest.server.AiravataRestServerConfig;
-import org.apache.airavata.thrift.server.AiravataThriftServerConfig;
+import org.apache.airavata.server.grpc.AiravataGrpcServerConfig;
+import org.apache.airavata.server.rest.AiravataRestServerConfig;
+import org.apache.airavata.server.thrift.AiravataThriftServerConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
