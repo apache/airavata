@@ -17,20 +17,16 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.restproxy;
+package org.apache.airavata.rest.server;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.apache.airavata.agent.connection.service.config.AgentServiceConfig;
+import org.apache.airavata.common.config.ConditionalOnServer;
+import org.apache.airavata.file.server.config.FileServerConfig;
+import org.apache.airavata.research.service.config.ResearchServiceConfig;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-@Component
-@ConfigurationProperties
-public class RestProxyConfiguration {
-
-    @Value("${restproxy.broker.url:airavata.host:9092}")
-    private String brokerUrl;
-
-    public String getBrokerUrl() {
-        return brokerUrl;
-    }
-}
+@Configuration
+@ConditionalOnServer("rest")
+@Import({ResearchServiceConfig.class, AgentServiceConfig.class, FileServerConfig.class})
+public class AiravataRestServerConfig {}

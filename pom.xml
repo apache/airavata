@@ -74,7 +74,7 @@ under the License.
         <module>modules/file-server</module>
         <module>modules/agent-framework/agent-service</module>
         <module>modules/research-framework/research-service</module>
-        <module>modules/restproxy</module>
+        <module>airavata-rest-server</module>
     </modules>
 
     <properties>

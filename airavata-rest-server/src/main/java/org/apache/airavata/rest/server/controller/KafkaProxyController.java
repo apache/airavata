@@ -17,42 +17,50 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.restproxy.controller;
+package org.apache.airavata.rest.server.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.Properties;
-import org.apache.airavata.restproxy.RestProxyConfiguration;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class ProxyController {
-    private static final Logger log = LoggerFactory.getLogger(ProxyController.class);
+@RequestMapping("/api/v1/kafka")
+public class KafkaProxyController {
+
+    private static final Logger log = LoggerFactory.getLogger(KafkaProxyController.class);
 
     private KafkaProducer<String, String> producer;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RestProxyConfiguration restProxyConfiguration;
 
-    public ProxyController(RestProxyConfiguration restProxyConfiguration) {
-        this.restProxyConfiguration = restProxyConfiguration;
-    }
+    @Value("${airavata.kafka.broker-url:localhost:9092}")
+    private String brokerUrl;
 
     @PostConstruct
     public void init() {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, restProxyConfiguration.getBrokerUrl());
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, "RestProxyProducer");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, "AiravataKafkaProxy");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producer = new KafkaProducer<>(props);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (producer != null) {
+            producer.close();
+        }
     }
 
     @PostMapping(value = "/topics/{topic}", consumes = "application/vnd.kafka.json.v2+json")
@@ -64,16 +72,19 @@ public class ProxyController {
             }
             for (JsonNode record : root.get("records")) {
                 JsonNode valueNode = record.get("value");
-                if (valueNode == null) continue;
+                if (valueNode == null) {
+                    continue;
+                }
                 String valueStr = objectMapper.writeValueAsString(valueNode);
                 log.info("Received message for topic {}: {}", topic, valueStr);
                 var kafkaRecord = new ProducerRecord<String, String>(topic, valueStr);
                 producer.send(kafkaRecord).get();
-                log.info("RestProxyProducer posted to topic {}: {}", topic, valueStr);
+                log.info("Posted to topic {}: {}", topic, valueStr);
                 producer.flush();
             }
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            log.error("Failed to post to Kafka topic {}", topic, e);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
