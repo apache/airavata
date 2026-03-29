@@ -19,18 +19,17 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessEntity;
 import org.apache.airavata.execution.model.TaskEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -45,6 +44,16 @@ public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, St
 
     public TaskRepository() {
         super(TaskModel.class, TaskEntity.class);
+    }
+
+    @Override
+    protected TaskModel toModel(TaskEntity entity) {
+        return ExecutionMapper.INSTANCE.taskToModel(entity);
+    }
+
+    @Override
+    protected TaskEntity toEntity(TaskModel model) {
+        return ExecutionMapper.INSTANCE.taskToEntity(model);
     }
 
     protected String saveTaskModelData(TaskModel taskModel) throws RegistryException {
@@ -75,9 +84,7 @@ public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, St
         }
 
         taskModel.setLastUpdateTime(System.currentTimeMillis());
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
+        TaskEntity taskEntity = ExecutionMapper.INSTANCE.taskToEntity(taskModel);
 
         populateParentIds(taskEntity);
 

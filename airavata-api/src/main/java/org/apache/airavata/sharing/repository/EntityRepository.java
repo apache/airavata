@@ -20,6 +20,7 @@
 package org.apache.airavata.sharing.repository;
 
 import java.util.*;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.EntityEntity;
 import org.apache.airavata.sharing.model.EntityPK;
 import org.apache.airavata.sharing.registry.models.*;
@@ -29,6 +30,16 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
 
     public EntityRepository() {
         super(Entity.class, EntityEntity.class);
+    }
+
+    @Override
+    protected Entity toModel(EntityEntity entity) {
+        return SharingMapper.INSTANCE.entityToModel(entity);
+    }
+
+    @Override
+    protected EntityEntity toEntity(Entity model) {
+        return SharingMapper.INSTANCE.entityToEntity(model);
     }
 
     public List<Entity> getChildEntities(String domainId, String parentId) throws SharingRegistryException {

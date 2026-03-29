@@ -21,6 +21,7 @@ package org.apache.airavata.storage.repository;
 
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.UserStoragePreferenceEntity;
 import org.apache.airavata.storage.model.UserStoragePreferencePK;
 
@@ -29,5 +30,15 @@ public class UserStoragePreferenceRepository
 
     public UserStoragePreferenceRepository() {
         super(UserStoragePreference.class, UserStoragePreferenceEntity.class);
+    }
+
+    @Override
+    protected UserStoragePreference toModel(UserStoragePreferenceEntity entity) {
+        return StorageMapper.INSTANCE.userStoragePrefToModel(entity);
+    }
+
+    @Override
+    protected UserStoragePreferenceEntity toEntity(UserStoragePreference model) {
+        return StorageMapper.INSTANCE.userStoragePrefToEntity(model);
     }
 }

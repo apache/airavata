@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExperimentErrorEntity;
 import org.apache.airavata.execution.model.ExperimentErrorPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -40,9 +39,18 @@ public class ExperimentErrorRepository
         super(ErrorModel.class, ExperimentErrorEntity.class);
     }
 
+    @Override
+    protected ErrorModel toModel(ExperimentErrorEntity entity) {
+        return ExecutionMapper.INSTANCE.experimentErrorToModel(entity);
+    }
+
+    @Override
+    protected ExperimentErrorEntity toEntity(ErrorModel model) {
+        return ExecutionMapper.INSTANCE.experimentErrorToEntity(model);
+    }
+
     protected String saveExperimentError(ErrorModel error, String experimentId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ExperimentErrorEntity experimentErrorEntity = mapper.map(error, ExperimentErrorEntity.class);
+        ExperimentErrorEntity experimentErrorEntity = ExecutionMapper.INSTANCE.experimentErrorToEntity(error);
 
         if (experimentErrorEntity.getExperimentId() == null) {
             logger.debug("Setting the ExperimentErrorEntity's ExperimentId");

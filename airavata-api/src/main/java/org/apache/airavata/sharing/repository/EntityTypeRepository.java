@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.sharing.repository;
 
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.EntityTypeEntity;
 import org.apache.airavata.sharing.model.EntityTypePK;
 import org.apache.airavata.sharing.registry.models.EntityType;
@@ -30,5 +31,15 @@ public class EntityTypeRepository extends AbstractRepository<EntityType, EntityT
 
     public EntityTypeRepository() {
         super(EntityType.class, EntityTypeEntity.class);
+    }
+
+    @Override
+    protected EntityType toModel(EntityTypeEntity entity) {
+        return SharingMapper.INSTANCE.entityTypeToModel(entity);
+    }
+
+    @Override
+    protected EntityTypeEntity toEntity(EntityType model) {
+        return SharingMapper.INSTANCE.entityTypeToEntity(model);
     }
 }

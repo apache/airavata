@@ -19,20 +19,19 @@
 */
 package org.apache.airavata.storage.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.AppCatalogUtils;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.StorageResource;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.StorageInterfaceEntity;
 import org.apache.airavata.storage.model.StorageInterfacePK;
 import org.apache.airavata.storage.model.StorageResourceEntity;
@@ -50,6 +49,16 @@ public class StorageResourceRepository
 
     public StorageResourceRepository() {
         super(StorageResourceDescription.class, StorageResourceEntity.class);
+    }
+
+    @Override
+    protected StorageResourceDescription toModel(StorageResourceEntity entity) {
+        return StorageMapper.INSTANCE.storageResourceToModel(entity);
+    }
+
+    @Override
+    protected StorageResourceEntity toEntity(StorageResourceDescription model) {
+        return StorageMapper.INSTANCE.storageResourceToEntity(model);
     }
 
     @Override
@@ -193,8 +202,8 @@ public class StorageResourceRepository
     }
 
     public String addDataMovementInterface(DataMovementInterface dataMovementInterface) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        StorageInterfaceEntity storageInterfaceEntity = mapper.map(dataMovementInterface, StorageInterfaceEntity.class);
+        StorageInterfaceEntity storageInterfaceEntity =
+                StorageMapper.INSTANCE.storageInterfaceToEntity(dataMovementInterface);
         execute(entityManager -> entityManager.merge(storageInterfaceEntity));
         return dataMovementInterface.getDataMovementInterfaceId();
     }

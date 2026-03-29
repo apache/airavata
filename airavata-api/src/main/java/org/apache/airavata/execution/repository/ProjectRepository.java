@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProjectEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.Constants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
@@ -43,6 +42,16 @@ public class ProjectRepository extends AbstractRepository<Project, ProjectEntity
         super(Project.class, ProjectEntity.class);
     }
 
+    @Override
+    protected Project toModel(ProjectEntity entity) {
+        return ExecutionMapper.INSTANCE.projectToModel(entity);
+    }
+
+    @Override
+    protected ProjectEntity toEntity(Project model) {
+        return ExecutionMapper.INSTANCE.projectToEntity(model);
+    }
+
     protected String saveProjectData(Project project, String gatewayId) throws RegistryException {
         ProjectEntity projectEntity = saveProject(project, gatewayId);
         return projectEntity.getProjectID();
@@ -53,9 +62,7 @@ public class ProjectRepository extends AbstractRepository<Project, ProjectEntity
             logger.debug("Setting the Project's ProjectId");
             project.setProjectID(AiravataUtils.getId(project.getName()));
         }
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ProjectEntity projectEntity = mapper.map(project, ProjectEntity.class);
+        ProjectEntity projectEntity = ExecutionMapper.INSTANCE.projectToEntity(project);
 
         if (project.getGatewayId() == null) {
             logger.debug("Setting the Project's GatewayId");

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExperimentSummaryEntity;
 import org.apache.airavata.execution.model.JobEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
@@ -46,6 +47,16 @@ public class ExperimentSummaryRepository
 
     public ExperimentSummaryRepository() {
         super(ExperimentSummaryModel.class, ExperimentSummaryEntity.class);
+    }
+
+    @Override
+    protected ExperimentSummaryModel toModel(ExperimentSummaryEntity entity) {
+        return ExecutionMapper.INSTANCE.experimentSummaryToModel(entity);
+    }
+
+    @Override
+    protected ExperimentSummaryEntity toEntity(ExperimentSummaryModel model) {
+        return ExecutionMapper.INSTANCE.experimentSummaryToEntity(model);
     }
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(

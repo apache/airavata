@@ -19,16 +19,15 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.NotificationEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.workspace.Notification;
@@ -42,14 +41,23 @@ public class NotificationRepository extends AbstractRepository<Notification, Not
         super(Notification.class, NotificationEntity.class);
     }
 
+    @Override
+    protected Notification toModel(NotificationEntity entity) {
+        return ExecutionMapper.INSTANCE.notificationToModel(entity);
+    }
+
+    @Override
+    protected NotificationEntity toEntity(Notification model) {
+        return ExecutionMapper.INSTANCE.notificationToEntity(model);
+    }
+
     protected String saveNotificationData(Notification notification) throws RegistryException {
         NotificationEntity notificationEntity = saveNotification(notification);
         return notificationEntity.getNotificationId();
     }
 
     protected NotificationEntity saveNotification(Notification notification) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        NotificationEntity notificationEntity = mapper.map(notification, NotificationEntity.class);
+        NotificationEntity notificationEntity = ExecutionMapper.INSTANCE.notificationToEntity(notification);
 
         if (notificationEntity.getCreationTime() != null) {
             logger.debug("Setting the Notification's creation time");

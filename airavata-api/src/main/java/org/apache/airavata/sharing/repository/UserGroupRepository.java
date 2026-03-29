@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.SharingEntity;
 import org.apache.airavata.sharing.model.UserGroupEntity;
 import org.apache.airavata.sharing.model.UserGroupPK;
@@ -40,6 +41,16 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
 
     public UserGroupRepository() {
         super(UserGroup.class, UserGroupEntity.class);
+    }
+
+    @Override
+    protected UserGroup toModel(UserGroupEntity entity) {
+        return SharingMapper.INSTANCE.userGroupToModel(entity);
+    }
+
+    @Override
+    protected UserGroupEntity toEntity(UserGroup model) {
+        return SharingMapper.INSTANCE.userGroupToEntity(model);
     }
 
     public List<UserGroup> getAccessibleGroups(String domainId, String entityId, String permissionTypeId)

@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.*;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessOutputEntity;
 import org.apache.airavata.execution.model.ProcessOutputPK;
 import org.apache.airavata.execution.util.AbstractRepository;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
@@ -39,12 +38,21 @@ public class ProcessOutputRepository
         super(OutputDataObjectType.class, ProcessOutputEntity.class);
     }
 
+    @Override
+    protected OutputDataObjectType toModel(ProcessOutputEntity entity) {
+        return ExecutionMapper.INSTANCE.processOutputToModel(entity);
+    }
+
+    @Override
+    protected ProcessOutputEntity toEntity(OutputDataObjectType model) {
+        return ExecutionMapper.INSTANCE.processOutputToEntity(model);
+    }
+
     protected void saveProcessOutput(List<OutputDataObjectType> processOutputs, String processId)
             throws RegistryException {
 
         for (OutputDataObjectType output : processOutputs) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            ProcessOutputEntity processOutputEntity = mapper.map(output, ProcessOutputEntity.class);
+            ProcessOutputEntity processOutputEntity = ExecutionMapper.INSTANCE.processOutputToEntity(output);
 
             if (processOutputEntity.getProcessId() == null) {
                 logger.debug("Setting the ProcessOutputEntity's ProcesstId");

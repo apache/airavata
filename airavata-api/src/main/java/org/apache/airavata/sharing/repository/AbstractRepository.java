@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.repository;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -30,20 +29,23 @@ import org.apache.airavata.common.db.EntityManagerFactoryHolder;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.util.Committer;
 import org.apache.airavata.sharing.util.DBConstants;
-import org.apache.airavata.sharing.util.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
-    private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 
     public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
+
+    /** Convert a JPA entity to the Thrift/model object. */
+    protected abstract T toModel(E entity);
+
+    /** Convert a Thrift/model object to a JPA entity. */
+    protected abstract E toEntity(T model);
 
     public T create(T t) throws SharingRegistryException {
         return update(t);
@@ -55,10 +57,9 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T update(T t) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E entity = mapper.map(t, dbEntityGenericClass);
+        E entity = toEntity(t);
         E persistedCopy = execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        return toModel(persistedCopy);
     }
 
     // FIXME do a bulk update
@@ -83,12 +84,10 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) throws SharingRegistryException {
-        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
         return execute(entityManager -> {
             E entity = entityManager.find(dbEntityGenericClass, id);
             if (entity == null) return null;
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            return mapper.map(entity, thriftGenericClass);
+            return toModel(entity);
         });
     }
 
@@ -126,9 +125,8 @@ public abstract class AbstractRepository<T, E, Id> {
             }
             return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> gatewayList.add(toModel((E) rs)));
         return gatewayList;
     }
 
@@ -142,9 +140,8 @@ public abstract class AbstractRepository<T, E, Id> {
             }
             return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> gatewayList.add(toModel((E) rs)));
         return gatewayList;
     }
 

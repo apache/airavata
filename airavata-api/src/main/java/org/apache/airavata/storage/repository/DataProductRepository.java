@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.storage.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
@@ -27,12 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.DataProductInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +44,16 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
 
     public DataProductRepository() {
         super(DataProductModel.class, DataProductEntity.class);
+    }
+
+    @Override
+    protected DataProductModel toModel(DataProductEntity entity) {
+        return StorageMapper.INSTANCE.dataProductToModel(entity);
+    }
+
+    @Override
+    protected DataProductEntity toEntity(DataProductModel model) {
+        return StorageMapper.INSTANCE.dataProductToEntity(model);
     }
 
     @Override
@@ -78,8 +87,7 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
         }
 
         String productUri = dataProductModel.getProductUri();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        DataProductEntity dataProductEntity = mapper.map(dataProductModel, DataProductEntity.class);
+        DataProductEntity dataProductEntity = StorageMapper.INSTANCE.dataProductToEntity(dataProductModel);
 
         if (dataProductEntity.getOwnerName() == null || dataProductEntity.getGatewayId() == null) {
             logger.error("Owner name and/or gateway ID is empty");

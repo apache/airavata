@@ -20,6 +20,7 @@
 package org.apache.airavata.sharing.repository;
 
 import java.util.*;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.GroupMembershipEntity;
 import org.apache.airavata.sharing.model.GroupMembershipPK;
 import org.apache.airavata.sharing.model.UserGroupEntity;
@@ -31,6 +32,16 @@ public class GroupMembershipRepository
 
     public GroupMembershipRepository() {
         super(GroupMembership.class, GroupMembershipEntity.class);
+    }
+
+    @Override
+    protected GroupMembership toModel(GroupMembershipEntity entity) {
+        return SharingMapper.INSTANCE.groupMembershipToModel(entity);
+    }
+
+    @Override
+    protected GroupMembershipEntity toEntity(GroupMembership model) {
+        return SharingMapper.INSTANCE.groupMembershipToEntity(model);
     }
 
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {

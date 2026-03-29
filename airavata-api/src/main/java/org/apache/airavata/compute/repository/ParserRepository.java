@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ParserEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.parser.Parser;
@@ -41,11 +40,20 @@ public class ParserRepository extends AbstractRepository<Parser, ParserEntity, S
         super(Parser.class, ParserEntity.class);
     }
 
+    @Override
+    protected Parser toModel(ParserEntity entity) {
+        return ComputeMapper.INSTANCE.parserToModel(entity);
+    }
+
+    @Override
+    protected ParserEntity toEntity(Parser model) {
+        return ComputeMapper.INSTANCE.parserToEntity(model);
+    }
+
     public Parser saveParser(Parser parser) throws AppCatalogException {
 
         try {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            ParserEntity parserEntity = mapper.map(parser, ParserEntity.class);
+            ParserEntity parserEntity = ComputeMapper.INSTANCE.parserToEntity(parser);
 
             if (parser.getInputFiles() != null) {
                 parserEntity.getInputFiles().forEach(input -> {
@@ -62,7 +70,7 @@ public class ParserRepository extends AbstractRepository<Parser, ParserEntity, S
             }
 
             ParserEntity savedParserEntity = execute(entityManager -> entityManager.merge(parserEntity));
-            return mapper.map(savedParserEntity, Parser.class);
+            return ComputeMapper.INSTANCE.parserToModel(savedParserEntity);
         } catch (Exception e) {
             logger.error("Failed to save parser with id " + parser.getId(), e);
             throw new AppCatalogException("Failed to save parser with id " + parser.getId(), e);

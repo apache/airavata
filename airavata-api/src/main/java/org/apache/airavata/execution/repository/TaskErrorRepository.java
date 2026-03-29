@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.TaskErrorEntity;
 import org.apache.airavata.execution.model.TaskErrorPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.task.TaskModel;
@@ -39,9 +38,18 @@ public class TaskErrorRepository extends AbstractRepository<ErrorModel, TaskErro
         super(ErrorModel.class, TaskErrorEntity.class);
     }
 
+    @Override
+    protected ErrorModel toModel(TaskErrorEntity entity) {
+        return ExecutionMapper.INSTANCE.taskErrorToModel(entity);
+    }
+
+    @Override
+    protected TaskErrorEntity toEntity(ErrorModel model) {
+        return ExecutionMapper.INSTANCE.taskErrorToEntity(model);
+    }
+
     protected String saveTaskError(ErrorModel error, String taskId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        TaskErrorEntity taskErrorEntity = mapper.map(error, TaskErrorEntity.class);
+        TaskErrorEntity taskErrorEntity = ExecutionMapper.INSTANCE.taskErrorToEntity(error);
 
         if (taskErrorEntity.getTaskId() == null) {
             logger.debug("Setting the TaskErrorEntity's TaskId");

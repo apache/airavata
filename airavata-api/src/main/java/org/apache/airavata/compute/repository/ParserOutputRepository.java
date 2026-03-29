@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ParserOutputEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
@@ -32,6 +33,16 @@ public class ParserOutputRepository extends AbstractRepository<ParserOutput, Par
 
     public ParserOutputRepository() {
         super(ParserOutput.class, ParserOutputEntity.class);
+    }
+
+    @Override
+    protected ParserOutput toModel(ParserOutputEntity entity) {
+        return ComputeMapper.INSTANCE.parserOutputToModel(entity);
+    }
+
+    @Override
+    protected ParserOutputEntity toEntity(ParserOutput model) {
+        return ComputeMapper.INSTANCE.parserOutputToEntity(model);
     }
 
     public ParserOutput getParserOutput(String outputId) throws AppCatalogException {

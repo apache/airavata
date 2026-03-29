@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.*;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessErrorEntity;
 import org.apache.airavata.execution.model.ProcessErrorPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -39,9 +38,18 @@ public class ProcessErrorRepository extends AbstractRepository<ErrorModel, Proce
         super(ErrorModel.class, ProcessErrorEntity.class);
     }
 
+    @Override
+    protected ErrorModel toModel(ProcessErrorEntity entity) {
+        return ExecutionMapper.INSTANCE.processErrorToModel(entity);
+    }
+
+    @Override
+    protected ProcessErrorEntity toEntity(ErrorModel model) {
+        return ExecutionMapper.INSTANCE.processErrorToEntity(model);
+    }
+
     protected String saveProcessError(ErrorModel error, String processId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ProcessErrorEntity processErrorEntity = mapper.map(error, ProcessErrorEntity.class);
+        ProcessErrorEntity processErrorEntity = ExecutionMapper.INSTANCE.processErrorToEntity(error);
 
         if (processErrorEntity.getProcessId() == null) {
             logger.debug("Setting the ProcessErrorEntity's ProcessId");

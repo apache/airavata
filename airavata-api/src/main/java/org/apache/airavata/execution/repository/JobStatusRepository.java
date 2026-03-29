@@ -19,15 +19,14 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.JobPK;
 import org.apache.airavata.execution.model.JobStatusEntity;
 import org.apache.airavata.execution.model.JobStatusPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.job.JobModel;
@@ -43,9 +42,18 @@ public class JobStatusRepository extends AbstractRepository<JobStatus, JobStatus
         super(JobStatus.class, JobStatusEntity.class);
     }
 
+    @Override
+    protected JobStatus toModel(JobStatusEntity entity) {
+        return ExecutionMapper.INSTANCE.jobStatusToModel(entity);
+    }
+
+    @Override
+    protected JobStatusEntity toEntity(JobStatus model) {
+        return ExecutionMapper.INSTANCE.jobStatusToEntity(model);
+    }
+
     protected String saveJobStatus(JobStatus jobStatus, JobPK jobPK) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        JobStatusEntity jobStatusEntity = mapper.map(jobStatus, JobStatusEntity.class);
+        JobStatusEntity jobStatusEntity = ExecutionMapper.INSTANCE.jobStatusToEntity(jobStatus);
 
         if (jobStatusEntity.getJobId() == null) {
             logger.debug("Setting the JobStatusEntity's JobId");

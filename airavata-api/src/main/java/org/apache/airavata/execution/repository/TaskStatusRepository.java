@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.TaskStatusEntity;
 import org.apache.airavata.execution.model.TaskStatusPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -41,9 +40,18 @@ public class TaskStatusRepository extends AbstractRepository<TaskStatus, TaskSta
         super(TaskStatus.class, TaskStatusEntity.class);
     }
 
+    @Override
+    protected TaskStatus toModel(TaskStatusEntity entity) {
+        return ExecutionMapper.INSTANCE.taskStatusToModel(entity);
+    }
+
+    @Override
+    protected TaskStatusEntity toEntity(TaskStatus model) {
+        return ExecutionMapper.INSTANCE.taskStatusToEntity(model);
+    }
+
     protected String saveTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        TaskStatusEntity taskStatusEntity = mapper.map(taskStatus, TaskStatusEntity.class);
+        TaskStatusEntity taskStatusEntity = ExecutionMapper.INSTANCE.taskStatusToEntity(taskStatus);
 
         if (taskStatusEntity.getTaskId() == null) {
             logger.debug("Setting the TaskStatusEntity's TaskId");

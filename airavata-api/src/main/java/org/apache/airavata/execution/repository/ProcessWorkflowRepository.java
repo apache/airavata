@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.Collections;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessWorkflowEntity;
 import org.apache.airavata.execution.model.ProcessWorkflowPK;
 import org.apache.airavata.execution.util.AbstractRepository;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.process.ProcessWorkflow;
@@ -41,12 +40,22 @@ public class ProcessWorkflowRepository
         super(ProcessWorkflow.class, ProcessWorkflowEntity.class);
     }
 
+    @Override
+    protected ProcessWorkflow toModel(ProcessWorkflowEntity entity) {
+        return ExecutionMapper.INSTANCE.processWorkflowToModel(entity);
+    }
+
+    @Override
+    protected ProcessWorkflowEntity toEntity(ProcessWorkflow model) {
+        return ExecutionMapper.INSTANCE.processWorkflowToEntity(model);
+    }
+
     protected void saveProcessWorkflow(List<ProcessWorkflow> processWorkflows, String processId)
             throws RegistryException {
 
         for (ProcessWorkflow processWorkflow : processWorkflows) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            ProcessWorkflowEntity processWorkflowEntity = mapper.map(processWorkflow, ProcessWorkflowEntity.class);
+            ProcessWorkflowEntity processWorkflowEntity =
+                    ExecutionMapper.INSTANCE.processWorkflowToEntity(processWorkflow);
 
             if (processWorkflowEntity.getProcessId() == null) {
                 logger.debug("Setting the ProcessWorkflowEntity's ProcessId");

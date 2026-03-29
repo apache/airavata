@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.ComputeResourceReservationEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
@@ -52,6 +53,16 @@ public class GroupResourceProfileRepository
 
     public GroupResourceProfileRepository() {
         super(GroupResourceProfile.class, GroupResourceProfileEntity.class);
+    }
+
+    @Override
+    protected GroupResourceProfile toModel(GroupResourceProfileEntity entity) {
+        return ComputeMapper.INSTANCE.groupResourceProfileToModel(entity);
+    }
+
+    @Override
+    protected GroupResourceProfileEntity toEntity(GroupResourceProfile model) {
+        return ComputeMapper.INSTANCE.groupResourceProfileToEntity(model);
     }
 
     public String addGroupResourceProfile(GroupResourceProfile groupResourceProfile) {

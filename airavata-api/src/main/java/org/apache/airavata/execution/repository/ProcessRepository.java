@@ -19,19 +19,18 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExperimentEntity;
 import org.apache.airavata.execution.model.ProcessEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -49,6 +48,16 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
 
     public ProcessRepository() {
         super(ProcessModel.class, ProcessEntity.class);
+    }
+
+    @Override
+    protected ProcessModel toModel(ProcessEntity entity) {
+        return ExecutionMapper.INSTANCE.processToModel(entity);
+    }
+
+    @Override
+    protected ProcessEntity toEntity(ProcessModel model) {
+        return ExecutionMapper.INSTANCE.processToEntity(model);
     }
 
     protected String saveProcessModelData(ProcessModel processModel) throws RegistryException {
@@ -79,9 +88,7 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
             processModel.setCreationTime(System.currentTimeMillis());
         }
         processModel.setLastUpdateTime(System.currentTimeMillis());
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ProcessEntity processEntity = mapper.map(processModel, ProcessEntity.class);
+        ProcessEntity processEntity = ExecutionMapper.INSTANCE.processToEntity(processModel);
 
         populateParentIds(processEntity);
 

@@ -22,6 +22,7 @@ package org.apache.airavata.execution.repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.UserEntity;
 import org.apache.airavata.execution.model.UserPK;
 import org.apache.airavata.execution.util.AbstractRepository;
@@ -33,6 +34,16 @@ import org.apache.airavata.model.user.UserProfile;
 public class UserRepository extends AbstractRepository<UserProfile, UserEntity, UserPK> {
     public UserRepository() {
         super(UserProfile.class, UserEntity.class);
+    }
+
+    @Override
+    protected UserProfile toModel(UserEntity entity) {
+        return ExecutionMapper.INSTANCE.userToModel(entity);
+    }
+
+    @Override
+    protected UserEntity toEntity(UserProfile model) {
+        return ExecutionMapper.INSTANCE.userToEntity(model);
     }
 
     public UserProfile addUser(UserProfile user) throws RegistryException {

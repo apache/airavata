@@ -101,14 +101,8 @@ under the License.
       <artifactId>commons-cli</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.dozermapper</groupId>
-      <artifactId>dozer-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
@@ -408,6 +402,21 @@ under the License.
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- MapStruct annotation processor -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>1.6.3</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
       </plugin>
 
       <!-- Enforce version convergence -->

@@ -23,6 +23,7 @@ import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.*;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
@@ -36,6 +37,16 @@ public class ResourceJobManagerRepository
 
     public ResourceJobManagerRepository() {
         super(ResourceJobManager.class, ResourceJobManagerEntity.class);
+    }
+
+    @Override
+    protected ResourceJobManager toModel(ResourceJobManagerEntity entity) {
+        return ComputeMapper.INSTANCE.resourceJobManagerToModel(entity);
+    }
+
+    @Override
+    protected ResourceJobManagerEntity toEntity(ResourceJobManager model) {
+        return ComputeMapper.INSTANCE.resourceJobManagerToEntity(model);
     }
 
     public void createJobManagerCommand(

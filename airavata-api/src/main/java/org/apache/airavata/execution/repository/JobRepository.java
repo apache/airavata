@@ -19,18 +19,17 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.JobEntity;
 import org.apache.airavata.execution.model.JobPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -43,6 +42,16 @@ public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK
 
     public JobRepository() {
         super(JobModel.class, JobEntity.class);
+    }
+
+    @Override
+    protected JobModel toModel(JobEntity entity) {
+        return ExecutionMapper.INSTANCE.jobToModel(entity);
+    }
+
+    @Override
+    protected JobEntity toEntity(JobModel model) {
+        return ExecutionMapper.INSTANCE.jobToEntity(model);
     }
 
     protected String saveJobModelData(JobModel jobModel, JobPK jobPK) throws RegistryException {
@@ -69,9 +78,7 @@ public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK
             logger.debug("Setting creation time to current time if does not exist");
             jobModel.setCreationTime(System.currentTimeMillis());
         }
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        JobEntity jobEntity = mapper.map(jobModel, JobEntity.class);
+        JobEntity jobEntity = ExecutionMapper.INSTANCE.jobToEntity(jobModel);
 
         populateParentIds(jobEntity);
 

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.GatewayGroupsEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
@@ -26,5 +27,15 @@ import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 public class GatewayGroupsRepository extends AbstractRepository<GatewayGroups, GatewayGroupsEntity, String> {
     public GatewayGroupsRepository() {
         super(GatewayGroups.class, GatewayGroupsEntity.class);
+    }
+
+    @Override
+    protected GatewayGroups toModel(GatewayGroupsEntity entity) {
+        return ComputeMapper.INSTANCE.gatewayGroupsToModel(entity);
+    }
+
+    @Override
+    protected GatewayGroupsEntity toEntity(GatewayGroups model) {
+        return ComputeMapper.INSTANCE.gatewayGroupsToEntity(model);
     }
 }

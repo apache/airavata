@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.SharingEntity;
 import org.apache.airavata.sharing.model.UserEntity;
 import org.apache.airavata.sharing.model.UserPK;
@@ -39,6 +40,16 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
 
     public UserRepository() {
         super(User.class, UserEntity.class);
+    }
+
+    @Override
+    protected User toModel(UserEntity entity) {
+        return SharingMapper.INSTANCE.userToModel(entity);
+    }
+
+    @Override
+    protected UserEntity toEntity(User model) {
+        return SharingMapper.INSTANCE.userToEntity(model);
     }
 
     public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId)

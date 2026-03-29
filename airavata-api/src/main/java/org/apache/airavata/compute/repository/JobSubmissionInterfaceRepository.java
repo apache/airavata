@@ -19,11 +19,10 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.JobSubmissionInterfaceEntity;
 import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
 import org.apache.airavata.execution.util.AbstractRepository;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 
 public class JobSubmissionInterfaceRepository
@@ -33,10 +32,19 @@ public class JobSubmissionInterfaceRepository
         super(JobSubmissionInterface.class, JobSubmissionInterfaceEntity.class);
     }
 
+    @Override
+    protected JobSubmissionInterface toModel(JobSubmissionInterfaceEntity entity) {
+        return ComputeMapper.INSTANCE.jobSubmissionInterfaceToModel(entity);
+    }
+
+    @Override
+    protected JobSubmissionInterfaceEntity toEntity(JobSubmissionInterface model) {
+        return ComputeMapper.INSTANCE.jobSubmissionInterfaceToEntity(model);
+    }
+
     public String addJobSubmission(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         JobSubmissionInterfaceEntity jobSubmissionInterfaceEntity =
-                mapper.map(jobSubmissionInterface, JobSubmissionInterfaceEntity.class);
+                ComputeMapper.INSTANCE.jobSubmissionInterfaceToEntity(jobSubmissionInterface);
         jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId);
         execute(entityManager -> entityManager.merge(jobSubmissionInterfaceEntity));
 

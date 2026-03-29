@@ -21,6 +21,7 @@ package org.apache.airavata.compute.repository;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ComputeResourcePreferenceEntity;
 import org.apache.airavata.compute.model.ComputeResourcePreferencePK;
 import org.apache.airavata.compute.model.SSHAccountProvisionerConfiguration;
@@ -33,6 +34,16 @@ public class ComputeResourcePrefRepository
 
     public ComputeResourcePrefRepository() {
         super(ComputeResourcePreference.class, ComputeResourcePreferenceEntity.class);
+    }
+
+    @Override
+    protected ComputeResourcePreference toModel(ComputeResourcePreferenceEntity entity) {
+        return ComputeMapper.INSTANCE.computeResourcePrefToModel(entity);
+    }
+
+    @Override
+    protected ComputeResourcePreferenceEntity toEntity(ComputeResourcePreference model) {
+        return ComputeMapper.INSTANCE.computeResourcePrefToEntity(model);
     }
 
     public Map<String, String> getsshAccountProvisionerConfig(String gatewayId, String hostId) {

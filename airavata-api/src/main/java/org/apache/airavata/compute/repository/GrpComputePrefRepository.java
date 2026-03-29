@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
@@ -39,6 +40,16 @@ public class GrpComputePrefRepository
 
     public GrpComputePrefRepository() {
         super(GroupComputeResourcePreference.class, GroupComputeResourcePrefEntity.class);
+    }
+
+    @Override
+    protected GroupComputeResourcePreference toModel(GroupComputeResourcePrefEntity entity) {
+        return ComputeMapper.INSTANCE.groupComputePrefToModel(entity);
+    }
+
+    @Override
+    protected GroupComputeResourcePrefEntity toEntity(GroupComputeResourcePreference model) {
+        return ComputeMapper.INSTANCE.groupComputePrefToEntity(model);
     }
 
     @Override

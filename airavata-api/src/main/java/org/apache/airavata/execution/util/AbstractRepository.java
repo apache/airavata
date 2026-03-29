@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.util;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
@@ -33,13 +32,17 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
-    private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 
     public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
+
+    /** Convert a JPA entity to the Thrift/model object. */
+    protected abstract T toModel(E entity);
+
+    /** Convert a Thrift/model object to a JPA entity. */
+    protected abstract E toEntity(T model);
 
     public T create(T t) {
         return update(t);
@@ -50,16 +53,13 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     protected E mapToEntity(T t) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(t, dbEntityGenericClass);
+        return toEntity(t);
     }
 
     protected T mergeEntity(E entity) {
-        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
         return execute(entityManager -> {
             E persistedCopy = entityManager.merge(entity);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            return mapper.map(persistedCopy, thriftGenericClass);
+            return toModel(persistedCopy);
         });
     }
 
@@ -75,8 +75,6 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) {
-        // Dozer mapping runs inside the session so lazy proxies resolve. We use setFlushMode(MANUAL)
-        // to prevent cascade-persist on eagerly-loaded parent/child graphs during Dozer traversal.
         EntityManager entityManager = getEntityManager();
         try {
             entityManager.getTransaction().begin();
@@ -87,8 +85,7 @@ public abstract class AbstractRepository<T, E, Id> {
                 return null;
             }
             initializeEntity(entity);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            T result = mapper.map(entity, thriftGenericClass);
+            T result = toModel(entity);
             entityManager.getTransaction().rollback(); // read-only, no flush needed
             return result;
         } catch (Exception e) {
@@ -104,7 +101,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     /**
-     * Hook for subclasses to force-initialize lazy collections before Dozer mapping.
+     * Hook for subclasses to force-initialize lazy collections before mapping.
      * Hibernate 6 may not eagerly initialize {@code @ElementCollection} maps on entities
      * loaded via association fetching, even when {@code FetchType.EAGER} is declared.
      * Override this method to call {@link Hibernate#initialize} on such collections.
@@ -114,13 +111,11 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query, int offset) {
-        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
         return execute(entityManager -> {
             List resultSet =
                     entityManager.createQuery(query).setFirstResult(offset).getResultList();
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             List<T> gatewayList = new ArrayList<>();
-            resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+            resultSet.stream().forEach(rs -> gatewayList.add(toModel((E) rs)));
             return gatewayList;
         });
     }
@@ -128,7 +123,6 @@ public abstract class AbstractRepository<T, E, Id> {
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
 
-        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
         return execute(entityManager -> {
             Query jpaQuery = entityManager.createQuery(query);
 
@@ -141,9 +135,8 @@ public abstract class AbstractRepository<T, E, Id> {
             List<E> resultSet =
                     jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
             resultSet.forEach(this::initializeEntity);
-            Mapper mapper = ObjectMapperSingleton.getInstance();
             List<T> list = new ArrayList<>();
-            resultSet.forEach(rs -> list.add(mapper.map(rs, thriftGenericClass)));
+            resultSet.forEach(rs -> list.add(toModel(rs)));
             return list;
         });
     }

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.BatchQueueEntity;
 import org.apache.airavata.compute.model.BatchQueuePK;
 import org.apache.airavata.execution.util.AbstractRepository;
@@ -28,5 +29,15 @@ public class BatchQueueRepository extends AbstractRepository<BatchQueue, BatchQu
 
     public BatchQueueRepository() {
         super(BatchQueue.class, BatchQueueEntity.class);
+    }
+
+    @Override
+    protected BatchQueue toModel(BatchQueueEntity entity) {
+        return ComputeMapper.INSTANCE.batchQueueToModel(entity);
+    }
+
+    @Override
+    protected BatchQueueEntity toEntity(BatchQueue model) {
+        return ComputeMapper.INSTANCE.batchQueueToEntity(model);
     }
 }

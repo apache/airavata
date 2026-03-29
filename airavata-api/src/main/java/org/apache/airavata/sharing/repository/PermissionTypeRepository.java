@@ -22,6 +22,7 @@ package org.apache.airavata.sharing.repository;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.PermissionTypeEntity;
 import org.apache.airavata.sharing.model.PermissionTypePK;
 import org.apache.airavata.sharing.registry.models.PermissionType;
@@ -36,6 +37,16 @@ public class PermissionTypeRepository
 
     public PermissionTypeRepository() {
         super(PermissionType.class, PermissionTypeEntity.class);
+    }
+
+    @Override
+    protected PermissionType toModel(PermissionTypeEntity entity) {
+        return SharingMapper.INSTANCE.permissionTypeToModel(entity);
+    }
+
+    @Override
+    protected PermissionTypeEntity toEntity(PermissionType model) {
+        return SharingMapper.INSTANCE.permissionTypeToEntity(model);
     }
 
     public String getOwnerPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {

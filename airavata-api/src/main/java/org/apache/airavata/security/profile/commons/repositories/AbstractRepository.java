@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.security.profile.commons.repositories;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
@@ -27,30 +26,32 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.db.EntityManagerFactoryHolder;
 import org.apache.airavata.security.profile.commons.utils.Committer;
-import org.apache.airavata.security.profile.commons.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
-    private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 
     public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
+
+    /** Convert a JPA entity to the Thrift/model object. */
+    protected abstract T toModel(E entity);
+
+    /** Convert a Thrift/model object to a JPA entity. */
+    protected abstract E toEntity(T model);
 
     public T create(T t) {
         return update(t);
     }
 
     public T update(T t) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E entity = mapper.map(t, dbEntityGenericClass);
+        E entity = toEntity(t);
         E persistedCopy = execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        return toModel(persistedCopy);
     }
 
     public boolean delete(Id id) {
@@ -64,16 +65,15 @@ public abstract class AbstractRepository<T, E, Id> {
 
     public T get(Id id) {
         E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, thriftGenericClass);
+        if (entity == null) return null;
+        return toModel(entity);
     }
 
     public List<T> select(String query) {
         List resultSet =
                 (List) execute(entityManager -> entityManager.createQuery(query).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> resultList.add(toModel((E) rs)));
         return resultList;
     }
 
@@ -83,9 +83,8 @@ public abstract class AbstractRepository<T, E, Id> {
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> resultList.add(toModel((E) rs)));
         return resultList;
     }
 
@@ -100,9 +99,8 @@ public abstract class AbstractRepository<T, E, Id> {
 
             return jpaQuery.setFirstResult(offset).setMaxResults(limit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> resultList.add(toModel((E) rs)));
         return resultList;
     }
 
@@ -117,9 +115,8 @@ public abstract class AbstractRepository<T, E, Id> {
 
             return jpaQuery.getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> resultList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> resultList.add(toModel((E) rs)));
         return resultList;
     }
 

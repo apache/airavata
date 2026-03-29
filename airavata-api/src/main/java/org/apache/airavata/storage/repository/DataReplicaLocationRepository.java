@@ -19,16 +19,15 @@
 */
 package org.apache.airavata.storage.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.execution.util.AbstractRepository;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.model.DataReplicaLocationEntity;
 import org.slf4j.Logger;
@@ -41,6 +40,16 @@ public class DataReplicaLocationRepository
 
     public DataReplicaLocationRepository() {
         super(DataReplicaLocationModel.class, DataReplicaLocationEntity.class);
+    }
+
+    @Override
+    protected DataReplicaLocationModel toModel(DataReplicaLocationEntity entity) {
+        return StorageMapper.INSTANCE.dataReplicaToModel(entity);
+    }
+
+    @Override
+    protected DataReplicaLocationEntity toEntity(DataReplicaLocationModel model) {
+        return StorageMapper.INSTANCE.dataReplicaToEntity(model);
     }
 
     @Override
@@ -68,9 +77,8 @@ public class DataReplicaLocationRepository
 
         String replicaId = dataReplicaLocationModel.getReplicaId();
         dataReplicaLocationModel.setReplicaId(replicaId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataReplicaLocationEntity dataReplicaLocationEntity =
-                mapper.map(dataReplicaLocationModel, DataReplicaLocationEntity.class);
+                StorageMapper.INSTANCE.dataReplicaToEntity(dataReplicaLocationModel);
 
         if (!isExists(replicaId)) {
             logger.debug("Checking if the Data Replica Location already exists");

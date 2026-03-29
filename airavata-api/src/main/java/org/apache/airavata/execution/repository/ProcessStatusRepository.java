@@ -19,17 +19,16 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessStatusEntity;
 import org.apache.airavata.execution.model.ProcessStatusPK;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.process.ProcessModel;
@@ -45,6 +44,16 @@ public class ProcessStatusRepository extends AbstractRepository<ProcessStatus, P
         super(ProcessStatus.class, ProcessStatusEntity.class);
     }
 
+    @Override
+    protected ProcessStatus toModel(ProcessStatusEntity entity) {
+        return ExecutionMapper.INSTANCE.processStatusToModel(entity);
+    }
+
+    @Override
+    protected ProcessStatusEntity toEntity(ProcessStatus model) {
+        return ExecutionMapper.INSTANCE.processStatusToEntity(model);
+    }
+
     protected String saveProcessStatus(ProcessStatus processStatus, String processId) throws RegistryException {
         if (processStatus.getStatusId() == null) {
 
@@ -56,9 +65,7 @@ public class ProcessStatusRepository extends AbstractRepository<ProcessStatus, P
                 processStatus.setStatusId(currentProcessStatus.getStatusId());
             }
         }
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ProcessStatusEntity processStatusEntity = mapper.map(processStatus, ProcessStatusEntity.class);
+        ProcessStatusEntity processStatusEntity = ExecutionMapper.INSTANCE.processStatusToEntity(processStatus);
 
         if (processStatusEntity.getProcessId() == null) {
             logger.debug("Setting the ProcessStatusEntity's ProcessId");
