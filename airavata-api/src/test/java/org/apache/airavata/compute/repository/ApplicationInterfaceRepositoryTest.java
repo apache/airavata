@@ -37,9 +37,12 @@ import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Execution(ExecutionMode.SAME_THREAD)
 public class ApplicationInterfaceRepositoryTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepositoryTest.class);

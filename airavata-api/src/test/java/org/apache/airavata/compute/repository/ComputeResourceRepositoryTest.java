@@ -28,7 +28,6 @@ import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -336,7 +335,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
     }
 
-    @Disabled("FK constraint: job_manager_command FK prevents cascading delete of resource_job_manager")
     @Test
     public void deleteResourceJobManagerTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();

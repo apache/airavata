@@ -1169,14 +1169,15 @@ under the License.
                             <systemPropertyVariables>
                                 <surefire.groups>integration</surefire.groups>
                             </systemPropertyVariables>
-                            <!-- Integration tests run in parallel — per-test transaction rollback provides isolation -->
+                            <forkCount>1C</forkCount>
+                            <!-- Integration tests run fully parallel — per-test transaction rollback provides isolation -->
                             <properties>
                                 <configurationParameters>
                                     junit.jupiter.execution.parallel.enabled = true
-                                    junit.jupiter.execution.parallel.mode.default = same_thread
+                                    junit.jupiter.execution.parallel.mode.default = concurrent
                                     junit.jupiter.execution.parallel.mode.classes.default = concurrent
                                     junit.jupiter.execution.parallel.config.strategy = dynamic
-                                    junit.jupiter.execution.parallel.config.dynamic.factor = 1
+                                    junit.jupiter.execution.parallel.config.dynamic.factor = 2
                                 </configurationParameters>
                             </properties>
                         </configuration>

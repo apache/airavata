@@ -27,6 +27,8 @@ import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Execution(ExecutionMode.SAME_THREAD)
 public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SharingServiceIntegrationTest.class);

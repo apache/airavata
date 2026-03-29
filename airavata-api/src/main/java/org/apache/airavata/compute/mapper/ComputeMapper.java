@@ -105,8 +105,12 @@ public interface ComputeMapper {
     BatchQueueEntity batchQueueToEntity(BatchQueue model);
 
     // --- ResourceJobManager ---
+    @Mapping(target = "jobManagerCommands", ignore = true)
+    @Mapping(target = "parallelismPrefix", ignore = true)
     ResourceJobManager resourceJobManagerToModel(ResourceJobManagerEntity entity);
 
+    @Mapping(target = "jobManagerCommands", ignore = true)
+    @Mapping(target = "parallelismCommands", ignore = true)
     ResourceJobManagerEntity resourceJobManagerToEntity(ResourceJobManager model);
 
     // --- JobSubmissionInterface ---
