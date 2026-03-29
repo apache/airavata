@@ -84,6 +84,13 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) throws SharingRegistryException {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            testEM.clear();
+            E entity = testEM.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            return toModel(entity);
+        }
         return execute(entityManager -> {
             E entity = entityManager.find(dbEntityGenericClass, id);
             if (entity == null) return null;
@@ -146,6 +153,17 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            try {
+                R r = committer.commit(testEM);
+                testEM.flush();
+                return r;
+            } catch (Exception e) {
+                throw new SharingRegistryException("Failed to execute in test transaction: " + e.getMessage());
+            }
+        }
+
         EntityManager entityManager = EntityManagerFactoryHolder.createEntityManager();
         try {
             entityManager.getTransaction().begin();

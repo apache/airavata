@@ -41,7 +41,7 @@ public class JobSubmissionInterfaceRepositoryTest extends TestBase {
     private String computeResourceId;
 
     public JobSubmissionInterfaceRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         jobSubmissionInterfaceRepository = new JobSubmissionInterfaceRepository();
         computeResourceRepository = new ComputeResourceRepository();
     }

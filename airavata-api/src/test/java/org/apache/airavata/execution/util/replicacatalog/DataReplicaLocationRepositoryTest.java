@@ -43,7 +43,7 @@ public class DataReplicaLocationRepositoryTest extends TestBase {
     private String gatewayId = "testGateway";
 
     public DataReplicaLocationRepositoryTest() {
-        super(Database.REPLICA_CATALOG);
+        super();
         dataProductRepository = new DataProductRepository();
         dataReplicaLocationRepository = new DataReplicaLocationRepository();
     }

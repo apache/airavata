@@ -40,7 +40,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
     private ComputeResourceRepository computeResourceRepository;
 
     public ComputeResourceRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
     }
 

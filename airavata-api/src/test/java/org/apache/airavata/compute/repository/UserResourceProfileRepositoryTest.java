@@ -42,7 +42,7 @@ public class UserResourceProfileRepositoryTest extends TestBase {
     private String gatewayId = "testGateway";
 
     public UserResourceProfileRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         userResourceProfileRepository = new UserResourceProfileRepository();
     }
 

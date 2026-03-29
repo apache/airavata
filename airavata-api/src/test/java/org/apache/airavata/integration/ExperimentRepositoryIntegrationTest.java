@@ -21,11 +21,10 @@ package org.apache.airavata.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.airavata.common.db.DBInitializer;
 import org.apache.airavata.execution.repository.ExperimentRepository;
 import org.apache.airavata.execution.repository.GatewayRepository;
 import org.apache.airavata.execution.repository.ProjectRepository;
-import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
+import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -51,24 +50,22 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Run with: {@code mvn test -pl airavata-api -Dgroups=integration -DexcludedGroups=""}
  */
-@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest {
+public class ExperimentRepositoryIntegrationTest extends TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentRepositoryIntegrationTest.class);
 
-    private static GatewayRepository gatewayRepository;
-    private static ProjectRepository projectRepository;
-    private static ExperimentRepository experimentRepository;
+    private GatewayRepository gatewayRepository;
+    private ProjectRepository projectRepository;
+    private ExperimentRepository experimentRepository;
 
-    private static String gatewayId;
-    private static String projectId;
+    private String gatewayId;
+    private String projectId;
 
-    @BeforeAll
-    static void setUpAll() throws Exception {
-        // System properties are already set by SharedMariaDB (via AbstractIntegrationTest)
-        ExpCatalogDBInitConfig config = new ExpCatalogDBInitConfig().setDbInitScriptPrefix("expcatalog");
-        DBInitializer.initializeDB(config);
+    @BeforeEach
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
 
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
@@ -89,8 +86,6 @@ public class ExperimentRepositoryIntegrationTest extends AbstractIntegrationTest
 
         logger.info("Test DB initialized. gatewayId={}, projectId={}", gatewayId, projectId);
     }
-
-    // No @AfterAll teardown needed — SharedMariaDB owns the system properties for the entire test run
 
     // --- Helper ---
 

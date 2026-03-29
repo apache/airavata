@@ -75,6 +75,15 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            testEM.clear();
+            E entity = testEM.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            initializeEntity(entity);
+            return toModel(entity);
+        }
+
         EntityManager entityManager = getEntityManager();
         try {
             entityManager.getTransaction().begin();
@@ -161,6 +170,17 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            try {
+                R r = committer.commit(testEM);
+                testEM.flush();
+                return r;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to execute in test transaction", e);
+            }
+        }
+
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -191,6 +211,16 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public void executeWithNativeQuery(String query, String... params) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            Query nativeQuery = testEM.createNativeQuery(query);
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter((i + 1), params[i]);
+            }
+            nativeQuery.executeUpdate();
+            return;
+        }
+
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -220,6 +250,15 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List selectWithNativeQuery(String query, String... params) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            Query nativeQuery = testEM.createNativeQuery(query);
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter((i + 1), params[i]);
+            }
+            return nativeQuery.getResultList();
+        }
+
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -247,6 +286,10 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     protected EntityManager getEntityManager() {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            return testEM;
+        }
         return EntityManagerFactoryHolder.createEntityManager();
     }
 }

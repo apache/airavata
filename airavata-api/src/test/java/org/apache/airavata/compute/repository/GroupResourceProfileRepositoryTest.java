@@ -55,7 +55,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     private final String QUEUE2_NAME = "queue2";
 
     public GroupResourceProfileRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
         groupResourceProfileRepository = new GroupResourceProfileRepository();
     }

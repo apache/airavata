@@ -50,7 +50,7 @@ public class TaskErrorRepositoryTest extends TestBase {
     TaskErrorRepository taskErrorRepository;
 
     public TaskErrorRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

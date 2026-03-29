@@ -50,7 +50,7 @@ public class ApplicationInterfaceRepositoryTest extends TestBase {
     private String gatewayId = "testGateway";
 
     public ApplicationInterfaceRepositoryTest() {
-        super(TestBase.Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
         applicationInterfaceRepository = new ApplicationInterfaceRepository();
         applicationDeploymentRepository = new ApplicationDeploymentRepository();

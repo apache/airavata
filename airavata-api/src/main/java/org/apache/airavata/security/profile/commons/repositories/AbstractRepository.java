@@ -64,6 +64,13 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            testEM.clear();
+            E entity = testEM.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            return toModel(entity);
+        }
         E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
         if (entity == null) return null;
         return toModel(entity);
@@ -121,6 +128,17 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            try {
+                R r = committer.commit(testEM);
+                testEM.flush();
+                return r;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to execute in test transaction", e);
+            }
+        }
+
         EntityManager entityManager = EntityManagerFactoryHolder.createEntityManager();
         try {
             entityManager.getTransaction().begin();

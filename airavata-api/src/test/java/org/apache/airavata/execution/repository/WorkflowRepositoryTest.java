@@ -55,7 +55,7 @@ public class WorkflowRepositoryTest extends TestBase {
     private String SAMPLE_HANDLER_OUTPUT_NAME = "handler_output";
 
     public WorkflowRepositoryTest() {
-        super(Database.WORKFLOW_CATALOG);
+        super();
     }
 
     @BeforeEach

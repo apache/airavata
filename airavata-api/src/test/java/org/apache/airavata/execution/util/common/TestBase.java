@@ -19,14 +19,9 @@
 */
 package org.apache.airavata.execution.util.common;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.EntityManager;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -39,24 +34,10 @@ public abstract class TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
 
+    private EntityManager testEntityManager;
+
     protected static MariaDBContainer<?> mariadb() {
         return SharedMariaDB.getInstance();
-    }
-
-    public enum Database {
-        APP_CATALOG,
-        EXP_CATALOG,
-        REPLICA_CATALOG,
-        WORKFLOW_CATALOG
-    }
-
-    private Database[] databases;
-
-    public TestBase(Database... databases) {
-        if (databases == null) {
-            throw new IllegalArgumentException("Databases can not be null");
-        }
-        this.databases = databases;
     }
 
     @BeforeAll
@@ -66,33 +47,22 @@ public abstract class TestBase {
 
     @BeforeEach
     public void setUp() throws Exception {
-        truncateAllTables();
+        testEntityManager = EntityManagerFactoryHolder.createEntityManager();
+        testEntityManager.getTransaction().begin();
+        EntityManagerFactoryHolder.setTestEntityManager(testEntityManager);
     }
 
-    /**
-     * Truncate all user tables so each test starts with clean data.
-     */
-    private void truncateAllTables() throws SQLException {
-        try (Connection conn = DriverManager.getConnection(
-                mariadb().getJdbcUrl(), mariadb().getUsername(), mariadb().getPassword())) {
-            conn.setAutoCommit(false);
-            Statement stmt = conn.createStatement();
-            stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
-
-            DatabaseMetaData meta = conn.getMetaData();
-            List<String> tables = new ArrayList<>();
-            try (ResultSet rs = meta.getTables("airavata", null, "%", new String[] {"TABLE"})) {
-                while (rs.next()) {
-                    tables.add(rs.getString("TABLE_NAME"));
-                }
+    @AfterEach
+    public void tearDown() {
+        EntityManager em = EntityManagerFactoryHolder.getTestEntityManager();
+        if (em != null) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
-
-            for (String table : tables) {
-                stmt.execute("TRUNCATE TABLE `" + table + "`");
+            if (em.isOpen()) {
+                em.close();
             }
-
-            stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
-            conn.commit();
         }
+        EntityManagerFactoryHolder.clearTestEntityManager();
     }
 }

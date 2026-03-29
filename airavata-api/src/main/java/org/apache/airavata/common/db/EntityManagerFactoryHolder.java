@@ -29,6 +29,7 @@ import jakarta.persistence.EntityManagerFactory;
  */
 public class EntityManagerFactoryHolder {
     private static volatile EntityManagerFactory factory;
+    private static final ThreadLocal<EntityManager> testEntityManager = new ThreadLocal<>();
 
     public static void setFactory(EntityManagerFactory emf) {
         factory = emf;
@@ -43,5 +44,17 @@ public class EntityManagerFactoryHolder {
 
     public static EntityManager createEntityManager() {
         return getFactory().createEntityManager();
+    }
+
+    public static void setTestEntityManager(EntityManager em) {
+        testEntityManager.set(em);
+    }
+
+    public static EntityManager getTestEntityManager() {
+        return testEntityManager.get();
+    }
+
+    public static void clearTestEntityManager() {
+        testEntityManager.remove();
     }
 }

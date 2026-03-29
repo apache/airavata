@@ -49,7 +49,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     private String gatewayId = "testGateway";
 
     public ApplicationDeploymentRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
         applicationInterfaceRepository = new ApplicationInterfaceRepository();
         applicationDeploymentRepository = new ApplicationDeploymentRepository();

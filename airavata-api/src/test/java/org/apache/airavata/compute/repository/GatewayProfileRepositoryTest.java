@@ -48,7 +48,7 @@ public class GatewayProfileRepositoryTest extends TestBase {
     private GwyResourceProfileRepository gwyResourceProfileRepository;
 
     public GatewayProfileRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         gwyResourceProfileRepository = new GwyResourceProfileRepository();
     }
 
