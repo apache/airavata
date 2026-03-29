@@ -23,6 +23,8 @@ import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
@@ -43,6 +45,23 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
 
     public DataProductRepository() {
         super(DataProductModel.class, DataProductEntity.class);
+    }
+
+    @Override
+    protected void initializeEntity(DataProductEntity entity) {
+        // Replace Hibernate PersistentCollection wrappers with plain Java collections
+        // to prevent LazyInitializationException when Dozer accesses elements via get()
+        if (entity.getProductMetadata() != null) {
+            entity.setProductMetadata(new HashMap<>(entity.getProductMetadata()));
+        }
+        if (entity.getReplicaLocations() != null) {
+            entity.getReplicaLocations().forEach(replica -> {
+                if (replica.getReplicaMetadata() != null) {
+                    replica.setReplicaMetadata(new HashMap<>(replica.getReplicaMetadata()));
+                }
+            });
+            entity.setReplicaLocations(new ArrayList<>(entity.getReplicaLocations()));
+        }
     }
 
     protected String saveDataProductModelData(DataProductModel dataProductModel) throws ReplicaCatalogException {

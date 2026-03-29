@@ -26,11 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.compute.model.BatchQueuePK;
 import org.apache.airavata.compute.model.CloudJobSubmissionEntity;
 import org.apache.airavata.compute.model.ComputeResourceEntity;
 import org.apache.airavata.compute.model.ComputeResourceFileSystemEntity;
-import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
 import org.apache.airavata.compute.model.LocalSubmissionEntity;
 import org.apache.airavata.compute.model.ResourceJobManagerEntity;
 import org.apache.airavata.compute.model.SshJobSubmissionEntity;
@@ -60,7 +58,6 @@ import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.storage.model.DataMovementInterfacePK;
 import org.apache.airavata.storage.model.GridftpDataMovementEntity;
 import org.apache.airavata.storage.model.GridftpEndpointEntity;
 import org.apache.airavata.storage.model.LocalDataMovementEntity;
@@ -567,27 +564,41 @@ public class ComputeResourceRepository
     @Override
     public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
             throws AppCatalogException {
-        JobSubmissionInterfacePK jobSubmissionInterfacePK = new JobSubmissionInterfacePK();
-        jobSubmissionInterfacePK.setComputeResourceId(computeResourceId);
-        jobSubmissionInterfacePK.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        (new JobSubmissionInterfaceRepository()).delete(jobSubmissionInterfacePK);
+        execute(entityManager -> {
+            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
+            if (parent != null && parent.getJobSubmissionInterfaces() != null) {
+                parent.getJobSubmissionInterfaces()
+                        .removeIf(e -> jobSubmissionInterfaceId.equals(e.getJobSubmissionInterfaceId()));
+                entityManager.merge(parent);
+            }
+            return null;
+        });
     }
 
     @Override
     public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)
             throws AppCatalogException {
-        DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
-        dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterfaceId);
-        dataMovementInterfacePK.setComputeResourceId(computeResourceId);
-        (new DataMovementRepository()).delete(dataMovementInterfacePK);
+        execute(entityManager -> {
+            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
+            if (parent != null && parent.getDataMovementInterfaces() != null) {
+                parent.getDataMovementInterfaces()
+                        .removeIf(e -> dataMovementInterfaceId.equals(e.getDataMovementInterfaceId()));
+                entityManager.merge(parent);
+            }
+            return null;
+        });
     }
 
     @Override
     public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
-        BatchQueuePK batchQueuePK = new BatchQueuePK();
-        batchQueuePK.setQueueName(queueName);
-        batchQueuePK.setComputeResourceId(computeResourceId);
-        (new BatchQueueRepository()).delete(batchQueuePK);
+        execute(entityManager -> {
+            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
+            if (parent != null && parent.getBatchQueues() != null) {
+                parent.getBatchQueues().removeIf(e -> queueName.equals(e.getQueueName()));
+                entityManager.merge(parent);
+            }
+            return null;
+        });
     }
 
     @Override

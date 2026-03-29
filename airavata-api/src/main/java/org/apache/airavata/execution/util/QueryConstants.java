@@ -188,7 +188,7 @@ public interface QueryConstants {
     String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP "
             + "WHERE DP.gatewayId LIKE :"
             + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" + DBConstants.DataProduct.OWNER_NAME
-            + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
+            + " AND DP.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
 
     String GET_WORKFLOW_FOR_EXPERIMENT_ID = "SELECT W FROM " + AiravataWorkflowEntity.class.getSimpleName() + " W "
             + "WHERE W.experimentId LIKE :" + DBConstants.Workflow.EXPERIMENT_ID;

@@ -43,6 +43,15 @@ public class DataReplicaLocationRepository
         super(DataReplicaLocationModel.class, DataReplicaLocationEntity.class);
     }
 
+    @Override
+    protected void initializeEntity(DataReplicaLocationEntity entity) {
+        // Replace Hibernate PersistentMap with plain HashMap to prevent
+        // LazyInitializationException when Dozer accesses map entries
+        if (entity.getReplicaMetadata() != null) {
+            entity.setReplicaMetadata(new java.util.HashMap<>(entity.getReplicaMetadata()));
+        }
+    }
+
     private String saveDataReplicaLocationModelData(DataReplicaLocationModel dataReplicaLocationModel)
             throws ReplicaCatalogException {
         DataReplicaLocationEntity dataReplicaLocationEntity = saveDataReplicaLocation(dataReplicaLocationModel);

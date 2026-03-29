@@ -75,28 +75,61 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) {
-        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
-        return execute(entityManager -> {
+        // Dozer mapping runs inside the session so lazy proxies resolve. We use setFlushMode(MANUAL)
+        // to prevent cascade-persist on eagerly-loaded parent/child graphs during Dozer traversal.
+        EntityManager entityManager = getEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.unwrap(org.hibernate.Session.class).setHibernateFlushMode(org.hibernate.FlushMode.MANUAL);
             E entity = entityManager.find(dbEntityGenericClass, id);
-            if (entity == null) return null;
+            if (entity == null) {
+                entityManager.getTransaction().rollback();
+                return null;
+            }
+            initializeEntity(entity);
             Mapper mapper = ObjectMapperSingleton.getInstance();
-            return mapper.map(entity, thriftGenericClass);
-        });
+            T result = mapper.map(entity, thriftGenericClass);
+            entityManager.getTransaction().rollback(); // read-only, no flush needed
+            return result;
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw new RuntimeException("Failed to get entity", e);
+        } finally {
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+    }
+
+    /**
+     * Hook for subclasses to force-initialize lazy collections before Dozer mapping.
+     * Hibernate 6 may not eagerly initialize {@code @ElementCollection} maps on entities
+     * loaded via association fetching, even when {@code FetchType.EAGER} is declared.
+     * Override this method to call {@link Hibernate#initialize} on such collections.
+     */
+    protected void initializeEntity(E entity) {
+        // default: no-op
     }
 
     public List<T> select(String query, int offset) {
-        List resultSet = (List) execute(entityManager ->
-                entityManager.createQuery(query).setFirstResult(offset).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
+        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
+        return execute(entityManager -> {
+            List resultSet =
+                    entityManager.createQuery(query).setFirstResult(offset).getResultList();
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            List<T> gatewayList = new ArrayList<>();
+            resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+            return gatewayList;
+        });
     }
 
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
 
-        List resultSet = (List) execute(entityManager -> {
+        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
+        return execute(entityManager -> {
             Query jpaQuery = entityManager.createQuery(query);
 
             for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
@@ -104,12 +137,15 @@ public abstract class AbstractRepository<T, E, Id> {
                 jpaQuery.setParameter(entry.getKey(), entry.getValue());
             }
 
-            return jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+            @SuppressWarnings("unchecked")
+            List<E> resultSet =
+                    jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+            resultSet.forEach(this::initializeEntity);
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            List<T> list = new ArrayList<>();
+            resultSet.forEach(rs -> list.add(mapper.map(rs, thriftGenericClass)));
+            return list;
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
     }
 
     public boolean isExists(Id id) {
@@ -140,8 +176,12 @@ public abstract class AbstractRepository<T, E, Id> {
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {
+            // Use MANUAL flush to prevent Hibernate from auto-flushing cascade-persist
+            // on eagerly-loaded entity graphs. Explicit flush() before commit handles writes.
+            entityManager.unwrap(org.hibernate.Session.class).setHibernateFlushMode(org.hibernate.FlushMode.MANUAL);
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
+            entityManager.flush();
             entityManager.getTransaction().commit();
             return r;
         } catch (Exception e) {

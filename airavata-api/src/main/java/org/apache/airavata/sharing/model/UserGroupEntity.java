@@ -132,7 +132,7 @@ public class UserGroupEntity {
 
     @OneToMany(
             targetEntity = GroupAdminEntity.class,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.DETACH},
             mappedBy = "userGroup",
             fetch = FetchType.EAGER)
     public List<GroupAdminEntity> getGroupAdmins() {
