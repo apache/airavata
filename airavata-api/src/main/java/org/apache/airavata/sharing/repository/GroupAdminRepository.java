@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.sharing.repository;
 
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.GroupAdminEntity;
 import org.apache.airavata.sharing.model.GroupAdminPK;
 import org.apache.airavata.sharing.registry.models.GroupAdmin;
@@ -31,5 +32,15 @@ public class GroupAdminRepository extends AbstractRepository<GroupAdmin, GroupAd
 
     public GroupAdminRepository() {
         super(GroupAdmin.class, GroupAdminEntity.class);
+    }
+
+    @Override
+    protected GroupAdmin toModel(GroupAdminEntity entity) {
+        return SharingMapper.INSTANCE.groupAdminToModel(entity);
+    }
+
+    @Override
+    protected GroupAdminEntity toEntity(GroupAdmin model) {
+        return SharingMapper.INSTANCE.groupAdminToEntity(model);
     }
 }

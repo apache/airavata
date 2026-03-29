@@ -47,7 +47,7 @@ public class StorageResourceRepositoryTest extends TestBase {
     private StorageResourceRepository storageResourceRepository;
 
     public StorageResourceRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         storageResourceRepository = new StorageResourceRepository();
     }
 

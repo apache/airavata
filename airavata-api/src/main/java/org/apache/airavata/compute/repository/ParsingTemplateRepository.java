@@ -22,16 +22,27 @@ package org.apache.airavata.compute.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ParsingTemplateEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 
-public class ParsingTemplateRepository
-        extends AppCatAbstractRepository<ParsingTemplate, ParsingTemplateEntity, String> {
+public class ParsingTemplateRepository extends AbstractRepository<ParsingTemplate, ParsingTemplateEntity, String> {
 
     public ParsingTemplateRepository() {
         super(ParsingTemplate.class, ParsingTemplateEntity.class);
+    }
+
+    @Override
+    protected ParsingTemplate toModel(ParsingTemplateEntity entity) {
+        return ComputeMapper.INSTANCE.parsingTemplateToModel(entity);
+    }
+
+    @Override
+    protected ParsingTemplateEntity toEntity(ParsingTemplate model) {
+        return ComputeMapper.INSTANCE.parsingTemplateToEntity(model);
     }
 
     public List<ParsingTemplate> getParsingTemplatesForApplication(String applicationInterfaceId) {

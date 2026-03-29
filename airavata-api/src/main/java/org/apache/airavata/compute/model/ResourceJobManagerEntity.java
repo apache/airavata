@@ -22,6 +22,8 @@ package org.apache.airavata.compute.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 
@@ -52,6 +54,12 @@ public class ResourceJobManagerEntity implements Serializable {
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    @OneToMany(mappedBy = "resourceJobManager", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobManagerCommandEntity> jobManagerCommands = new ArrayList<>();
+
+    @OneToMany(mappedBy = "resourceJobManager", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParallelismCommandEntity> parallelismCommands = new ArrayList<>();
 
     public ResourceJobManagerEntity() {}
 
@@ -101,5 +109,21 @@ public class ResourceJobManagerEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public List<JobManagerCommandEntity> getJobManagerCommands() {
+        return jobManagerCommands;
+    }
+
+    public void setJobManagerCommands(List<JobManagerCommandEntity> jobManagerCommands) {
+        this.jobManagerCommands = jobManagerCommands;
+    }
+
+    public List<ParallelismCommandEntity> getParallelismCommands() {
+        return parallelismCommands;
+    }
+
+    public void setParallelismCommands(List<ParallelismCommandEntity> parallelismCommands) {
+        this.parallelismCommands = parallelismCommands;
     }
 }

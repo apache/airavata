@@ -17,6 +17,9 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+    properties:
+      hibernate:
+        duplicate_identifier_column_check: false
   servlet:
     multipart:
       max-file-size: 200MB

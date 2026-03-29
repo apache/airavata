@@ -19,32 +19,41 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.QueueStatusEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QueueStatusRepository extends ExpCatAbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
+public class QueueStatusRepository extends AbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepository.class);
 
     public QueueStatusRepository() {
         super(QueueStatusModel.class, QueueStatusEntity.class);
     }
 
+    @Override
+    protected QueueStatusModel toModel(QueueStatusEntity entity) {
+        return ExecutionMapper.INSTANCE.queueStatusToModel(entity);
+    }
+
+    @Override
+    protected QueueStatusEntity toEntity(QueueStatusModel model) {
+        return ExecutionMapper.INSTANCE.queueStatusToEntity(model);
+    }
+
     public boolean createQueueStatuses(List<QueueStatusModel> queueStatusModels) throws RegistryException {
 
         for (QueueStatusModel queueStatusModel : queueStatusModels) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            QueueStatusEntity queueStatusEntity = mapper.map(queueStatusModel, QueueStatusEntity.class);
+            QueueStatusEntity queueStatusEntity = ExecutionMapper.INSTANCE.queueStatusToEntity(queueStatusModel);
             execute(entityManager -> entityManager.merge(queueStatusEntity));
         }
 

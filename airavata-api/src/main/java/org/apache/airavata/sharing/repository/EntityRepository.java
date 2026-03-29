@@ -20,16 +20,26 @@
 package org.apache.airavata.sharing.repository;
 
 import java.util.*;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.EntityEntity;
 import org.apache.airavata.sharing.model.EntityPK;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.DBConstants;
-import org.apache.airavata.sharing.util.SharingRegistryJDBCConfig;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
 
     public EntityRepository() {
         super(Entity.class, EntityEntity.class);
+    }
+
+    @Override
+    protected Entity toModel(EntityEntity entity) {
+        return SharingMapper.INSTANCE.entityToModel(entity);
+    }
+
+    @Override
+    protected EntityEntity toEntity(Entity model) {
+        return SharingMapper.INSTANCE.entityToEntity(model);
     }
 
     public List<Entity> getChildEntities(String domainId, String parentId) throws SharingRegistryException {
@@ -70,21 +80,14 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                             + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "') AND ";
                 }
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)) {
-                if (new SharingRegistryJDBCConfig().getDriver().contains("derby")) {
-                    query += "E.FULL_TEXT LIKE '%" + searchCriteria.getValue() + "%' AND ";
-                } else {
-                    // FULL TEXT Search with Query Expansion
-                    String queryTerms = "";
-                    for (String word : searchCriteria
-                            .getValue()
-                            .trim()
-                            .replaceAll(" +", " ")
-                            .split(" ")) {
-                        queryTerms += queryTerms + " +" + word;
-                    }
-                    queryTerms = queryTerms.trim();
-                    query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms + "' IN BOOLEAN MODE) AND ";
+                // FULL TEXT Search with Query Expansion (MariaDB)
+                String queryTerms = "";
+                for (String word :
+                        searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
+                    queryTerms += queryTerms + " +" + word;
                 }
+                queryTerms = queryTerms.trim();
+                query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms + "' IN BOOLEAN MODE) AND ";
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)) {
                 if (searchCriteria.getSearchCondition() != null
                         && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {

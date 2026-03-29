@@ -69,7 +69,7 @@ public class WorkflowApplicationEntity implements Serializable {
     private Timestamp updatedAt;
 
     @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AiravataWorkflowEntity workflow;
 
     @OneToMany(

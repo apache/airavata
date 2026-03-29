@@ -43,7 +43,7 @@ public class ComputeResourceFileSystemEntity implements Serializable {
     private FileSystems fileSystem;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID", insertable = false, updatable = false)
     private ComputeResourceEntity computeResource;
 
     @Column(name = "PATH")

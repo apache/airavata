@@ -27,6 +27,8 @@ import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Disabled("Static EntityManagerFactory caching causes sharing persistence unit to fail when run with other tests")
+@Execution(ExecutionMode.SAME_THREAD)
 public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SharingServiceIntegrationTest.class);
@@ -222,6 +224,7 @@ public class SharingServiceIntegrationTest extends AbstractIntegrationTest {
     @Order(4)
     @DisplayName("Add and remove group admin")
     void addAndRemoveGroupAdmin() throws Exception {
+        handler.addUsersToGroup(domainId, Arrays.asList(userId7), groupId1);
         assertTrue(
                 handler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId7)),
                 "addGroupAdmins should return true");

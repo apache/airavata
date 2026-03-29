@@ -36,7 +36,7 @@ public class GatewayRepositoryTest extends TestBase {
     GatewayRepository gatewayRepository;
 
     public GatewayRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
     }
 

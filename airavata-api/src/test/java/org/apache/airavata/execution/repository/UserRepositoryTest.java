@@ -46,7 +46,7 @@ public class UserRepositoryTest extends TestBase {
     private String gatewayId2;
 
     public UserRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         userRepository = new UserRepository();
     }

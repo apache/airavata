@@ -50,7 +50,7 @@ public class TaskStatusRepositoryTest extends TestBase {
     TaskStatusRepository taskStatusRepository;
 
     public TaskStatusRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

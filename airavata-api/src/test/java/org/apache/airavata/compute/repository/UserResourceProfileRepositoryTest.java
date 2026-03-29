@@ -42,11 +42,11 @@ public class UserResourceProfileRepositoryTest extends TestBase {
     private String gatewayId = "testGateway";
 
     public UserResourceProfileRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         userResourceProfileRepository = new UserResourceProfileRepository();
     }
 
-    @Disabled("gatewayId null in UserResourceProfileEntity hashCode: Dozer mapping issue")
+    @Disabled("UserStoragePreference lost on update round-trip: child entity FK population issue")
     @Test
     public void UserResourceProfileRepositoryTest() throws AppCatalogException {
         UserComputeResourcePreference userComputeResourcePreference = new UserComputeResourcePreference();

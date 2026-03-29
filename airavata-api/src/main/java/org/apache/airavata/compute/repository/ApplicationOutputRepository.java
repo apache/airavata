@@ -19,14 +19,26 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ApplicationOutputEntity;
 import org.apache.airavata.compute.model.ApplicationOutputPK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 
 public class ApplicationOutputRepository
-        extends AppCatAbstractRepository<OutputDataObjectType, ApplicationOutputEntity, ApplicationOutputPK> {
+        extends AbstractRepository<OutputDataObjectType, ApplicationOutputEntity, ApplicationOutputPK> {
 
     public ApplicationOutputRepository() {
         super(OutputDataObjectType.class, ApplicationOutputEntity.class);
+    }
+
+    @Override
+    protected OutputDataObjectType toModel(ApplicationOutputEntity entity) {
+        return ComputeMapper.INSTANCE.appOutputToModel(entity);
+    }
+
+    @Override
+    protected ApplicationOutputEntity toEntity(OutputDataObjectType model) {
+        return ComputeMapper.INSTANCE.appOutputToEntity(model);
     }
 }

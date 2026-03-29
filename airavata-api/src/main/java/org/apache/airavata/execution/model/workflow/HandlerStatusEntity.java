@@ -37,6 +37,9 @@ public class HandlerStatusEntity implements Serializable {
     @Column(name = "HANDLER_ID")
     private String handlerId;
 
+    @Column(name = "WORKFLOW_ID")
+    private String workflowId;
+
     @Column(name = "STATE")
     private String state;
 
@@ -48,8 +51,8 @@ public class HandlerStatusEntity implements Serializable {
 
     @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", nullable = false, updatable = false),
-        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", nullable = false, updatable = false)
+        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", insertable = false, updatable = false),
+        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     })
     private WorkflowHandlerEntity handler;
 

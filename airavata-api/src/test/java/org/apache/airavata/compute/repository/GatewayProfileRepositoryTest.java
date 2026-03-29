@@ -48,11 +48,11 @@ public class GatewayProfileRepositoryTest extends TestBase {
     private GwyResourceProfileRepository gwyResourceProfileRepository;
 
     public GatewayProfileRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         gwyResourceProfileRepository = new GwyResourceProfileRepository();
     }
 
-    @Disabled("getAllGatewayResourceProfiles returns 0: query or data population issue")
+    @Disabled("No default gateway profile seeded in test DB: getAllGatewayProfiles returns 0")
     @Test
     public void gatewayProfileRepositorytest() throws AppCatalogException, ApplicationSettingsException {
 

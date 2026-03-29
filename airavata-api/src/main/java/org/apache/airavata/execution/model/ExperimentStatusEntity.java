@@ -53,7 +53,7 @@ public class ExperimentStatusEntity implements Serializable {
     private String reason;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", insertable = false, updatable = false)
     private ExperimentEntity experiment;
 
     public ExperimentStatusEntity() {}

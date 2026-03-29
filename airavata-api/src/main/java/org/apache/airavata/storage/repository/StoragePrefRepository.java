@@ -19,15 +19,26 @@
 */
 package org.apache.airavata.storage.repository;
 
-import org.apache.airavata.compute.repository.AppCatAbstractRepository;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.StoragePreferenceEntity;
 import org.apache.airavata.storage.model.StoragePreferencePK;
 
 public class StoragePrefRepository
-        extends AppCatAbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK> {
+        extends AbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK> {
 
     public StoragePrefRepository() {
         super(StoragePreference.class, StoragePreferenceEntity.class);
+    }
+
+    @Override
+    protected StoragePreference toModel(StoragePreferenceEntity entity) {
+        return StorageMapper.INSTANCE.storagePrefToModel(entity);
+    }
+
+    @Override
+    protected StoragePreferenceEntity toEntity(StoragePreference model) {
+        return StorageMapper.INSTANCE.storagePrefToEntity(model);
     }
 }

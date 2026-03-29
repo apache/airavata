@@ -28,6 +28,7 @@ import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.security.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.security.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.security.profile.commons.utils.QueryConstants;
+import org.apache.airavata.security.profile.mapper.ProfileMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,16 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
 
     public TenantProfileRepository(Class<Gateway> thriftGenericClass, Class<GatewayEntity> dbEntityGenericClass) {
         super(thriftGenericClass, dbEntityGenericClass);
+    }
+
+    @Override
+    protected Gateway toModel(GatewayEntity entity) {
+        return ProfileMapper.INSTANCE.gatewayToModel(entity);
+    }
+
+    @Override
+    protected GatewayEntity toEntity(Gateway model) {
+        return ProfileMapper.INSTANCE.gatewayToEntity(model);
     }
 
     public Gateway getGateway(String airavataInternalGatewayId) throws Exception {

@@ -34,7 +34,7 @@ public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
     private String computeResourceId;
 
     @Column(name = "CREATION_TIME")
@@ -89,6 +89,7 @@ public class ComputeResourceEntity implements Serializable {
     @OneToMany(
             targetEntity = BatchQueueEntity.class,
             cascade = CascadeType.ALL,
+            orphanRemoval = true,
             mappedBy = "computeResource",
             fetch = FetchType.EAGER)
     private List<BatchQueueEntity> batchQueues;
@@ -96,6 +97,7 @@ public class ComputeResourceEntity implements Serializable {
     @OneToMany(
             targetEntity = JobSubmissionInterfaceEntity.class,
             cascade = CascadeType.ALL,
+            orphanRemoval = true,
             mappedBy = "computeResource",
             fetch = FetchType.EAGER)
     private List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces;
@@ -103,6 +105,7 @@ public class ComputeResourceEntity implements Serializable {
     @OneToMany(
             targetEntity = DataMovementInterfaceEntity.class,
             cascade = CascadeType.ALL,
+            orphanRemoval = true,
             mappedBy = "computeResource",
             fetch = FetchType.EAGER)
     private List<DataMovementInterfaceEntity> dataMovementInterfaces;

@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExperimentStatusEntity;
 import org.apache.airavata.execution.model.ExperimentStatusPK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.status.ExperimentState;
@@ -35,11 +35,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExperimentStatusRepository
-        extends ExpCatAbstractRepository<ExperimentStatus, ExperimentStatusEntity, ExperimentStatusPK> {
+        extends AbstractRepository<ExperimentStatus, ExperimentStatusEntity, ExperimentStatusPK> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusRepository.class);
 
     public ExperimentStatusRepository() {
         super(ExperimentStatus.class, ExperimentStatusEntity.class);
+    }
+
+    @Override
+    protected ExperimentStatus toModel(ExperimentStatusEntity entity) {
+        return ExecutionMapper.INSTANCE.experimentStatusToModel(entity);
+    }
+
+    @Override
+    protected ExperimentStatusEntity toEntity(ExperimentStatus model) {
+        return ExecutionMapper.INSTANCE.experimentStatusToEntity(model);
     }
 
     protected String saveExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
@@ -55,9 +65,8 @@ public class ExperimentStatusRepository
                 experimentStatus.setStatusId(currentExperimentStatus.getStatusId());
             }
         }
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ExperimentStatusEntity experimentStatusEntity = mapper.map(experimentStatus, ExperimentStatusEntity.class);
+        ExperimentStatusEntity experimentStatusEntity =
+                ExecutionMapper.INSTANCE.experimentStatusToEntity(experimentStatus);
 
         if (experimentStatusEntity.getExperimentId() == null) {
             logger.debug("Setting the ExperimentStatusEntity's ExperimentId");

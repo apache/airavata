@@ -34,13 +34,10 @@ import java.util.*;
 import org.apache.airavata.common.config.ApplicationSettings;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -50,7 +47,7 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
     private IServer.ServerStatus status = IServer.ServerStatus.STOPPED;
-    private final ThriftClientPool<RegistryService.Client> registryClientPool;
+    private final RegistryService.Iface registryHandler;
     private final MessageProducer messageProducer;
 
     private static final String IMAPS = "imaps";
@@ -68,29 +65,10 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
     private String publisherId;
 
     public EmailBasedMonitor() throws Exception {
-        this.registryClientPool = createRegistryClientPool();
+        this.registryHandler = org.apache.airavata.execution.scheduler.Utils.getRegistryHandler();
         this.messageProducer = new MessageProducer();
         init();
         populateAddressAndParserMap(resourceConfigs);
-    }
-
-    private static ThriftClientPool<RegistryService.Client> createRegistryClientPool()
-            throws ApplicationSettingsException {
-        GenericObjectPoolConfig<RegistryService.Client> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal(100);
-        poolConfig.setMinIdle(5);
-        poolConfig.setBlockWhenExhausted(true);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestWhileIdle(true);
-        poolConfig.setTimeBetweenEvictionRuns(Duration.ofMinutes(5));
-        poolConfig.setNumTestsPerEvictionRun(10);
-        poolConfig.setMaxWait(Duration.ofSeconds(3));
-        return new ThriftClientPool<>(
-                RegistryService.Client::new,
-                poolConfig,
-                ServerSettings.getRegistryServerHost(),
-                Integer.parseInt(ServerSettings.getRegistryServerPort()),
-                "RegistryService");
     }
 
     @Override
@@ -110,9 +88,9 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
     }
 
     private boolean validateJobStatus(JobStatusResult jobStatusResult) {
-        RegistryService.Client registryClient = registryClientPool.getResource();
+
         try {
-            List<JobModel> jobs = registryClient.getJobs("jobId", jobStatusResult.getJobId());
+            List<JobModel> jobs = registryHandler.getJobs("jobId", jobStatusResult.getJobId());
             if (!jobs.isEmpty()) {
                 jobs = jobs.stream()
                         .filter(jm -> jm.getJobName().equals(jobStatusResult.getJobName()))
@@ -124,13 +102,13 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
                         jobStatusResult.getJobId(),
                         jobStatusResult.getJobName(),
                         jobs.size());
-                registryClientPool.returnResource(registryClient);
+
                 return false;
             }
             JobModel jobModel = jobs.get(0);
             String processId = jobModel.getProcessId();
-            String experimentId = registryClient.getProcess(processId).getExperimentId();
-            registryClientPool.returnResource(registryClient);
+            String experimentId = registryHandler.getProcess(processId).getExperimentId();
+
             if (experimentId != null && processId != null) {
                 log.info(
                         "Job {} owned by process {} of experiment {}",
@@ -143,7 +121,7 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
             return false;
         } catch (Exception e) {
             log.error("Error validating job status {}", jobStatusResult.getJobId(), e);
-            registryClientPool.returnBrokenResource(registryClient);
+
             return false;
         }
     }
@@ -232,22 +210,13 @@ public class EmailBasedMonitor implements AbstractMonitor, IServer {
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString()
                     + " for email monitoring -->  " + addressStr);
         }
-        RegistryService.Client regClient = registryClientPool.getResource();
-
-        try {
-            JobStatusResult jobStatusResult = emailParser.parseEmail(message, regClient);
-            jobStatusResult.setPublisherName(publisherId);
-            var jobId = jobStatusResult.getJobId();
-            var jobName = jobStatusResult.getJobName();
-            var jobStatus = jobStatusResult.getState().getValue();
-            log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
-            return jobStatusResult;
-        } catch (Exception e) {
-            registryClientPool.returnBrokenResource(regClient);
-            throw e;
-        } finally {
-            registryClientPool.returnResource(regClient);
-        }
+        JobStatusResult jobStatusResult = emailParser.parseEmail(message, registryHandler);
+        jobStatusResult.setPublisherName(publisherId);
+        var jobId = jobStatusResult.getJobId();
+        var jobName = jobStatusResult.getJobName();
+        var jobStatus = jobStatusResult.getState().getValue();
+        log.info("Parsed Job Status: From=[{}], Id={}, Name={}, State={}", publisherId, jobId, jobName, jobStatus);
+        return jobStatusResult;
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {

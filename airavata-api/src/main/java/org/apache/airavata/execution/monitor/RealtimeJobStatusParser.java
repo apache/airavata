@@ -34,7 +34,7 @@ public class RealtimeJobStatusParser {
 
     private static final Logger logger = LoggerFactory.getLogger(RealtimeJobStatusParser.class);
 
-    private String getJobIdIdByJobNameWithRetry(String jobName, String taskId, RegistryService.Client registryClient)
+    private String getJobIdIdByJobNameWithRetry(String jobName, String taskId, RegistryService.Iface registryClient)
             throws Exception {
         for (int i = 0; i < 3; i++) {
 
@@ -58,7 +58,7 @@ public class RealtimeJobStatusParser {
         return null;
     }
 
-    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService.Client registryClient) {
+    public JobStatusResult parse(String rawMessage, String publisherId, RegistryService.Iface registryClient) {
 
         try {
             Map asMap = new Gson().fromJson(rawMessage, Map.class);

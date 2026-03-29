@@ -42,7 +42,7 @@ public class ProjectUserEntity implements Serializable {
     public ProjectUserEntity() {}
 
     @ManyToOne(targetEntity = UserEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME")
+    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME", insertable = false, updatable = false)
     private UserEntity user;
 
     public String getProjectID() {

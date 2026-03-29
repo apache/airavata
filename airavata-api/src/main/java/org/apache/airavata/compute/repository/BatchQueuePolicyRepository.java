@@ -19,16 +19,28 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.BatchQueueResourcePolicyEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 
 /**
  * Created by skariyat on 2/10/18.
  */
 public class BatchQueuePolicyRepository
-        extends AppCatAbstractRepository<BatchQueueResourcePolicy, BatchQueueResourcePolicyEntity, String> {
+        extends AbstractRepository<BatchQueueResourcePolicy, BatchQueueResourcePolicyEntity, String> {
 
     public BatchQueuePolicyRepository() {
         super(BatchQueueResourcePolicy.class, BatchQueueResourcePolicyEntity.class);
+    }
+
+    @Override
+    protected BatchQueueResourcePolicy toModel(BatchQueueResourcePolicyEntity entity) {
+        return ComputeMapper.INSTANCE.batchQueuePolicyToModel(entity);
+    }
+
+    @Override
+    protected BatchQueueResourcePolicyEntity toEntity(BatchQueueResourcePolicy model) {
+        return ComputeMapper.INSTANCE.batchQueuePolicyToEntity(model);
     }
 }

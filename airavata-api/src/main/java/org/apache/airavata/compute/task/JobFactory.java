@@ -43,7 +43,7 @@ public class JobFactory {
     }
 
     public static ResourceJobManager getResourceJobManager(
-            RegistryService.Client registryClient,
+            RegistryService.Iface registryClient,
             JobSubmissionProtocol submissionProtocol,
             JobSubmissionInterface jobSubmissionInterface)
             throws Exception {
@@ -83,7 +83,7 @@ public class JobFactory {
                 + jobSubmissionInterface.getJobSubmissionInterfaceId());
     }
 
-    public static LOCALSubmission getLocalJobSubmission(RegistryService.Client registryClient, String submissionId)
+    public static LOCALSubmission getLocalJobSubmission(RegistryService.Iface registryClient, String submissionId)
             throws AppCatalogException {
         try {
             return registryClient.getLocalJobSubmission(submissionId);
@@ -93,7 +93,7 @@ public class JobFactory {
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(RegistryService.Client registryClient, String submissionId)
+    public static SSHJobSubmission getSSHJobSubmission(RegistryService.Iface registryClient, String submissionId)
             throws AppCatalogException {
         try {
             return registryClient.getSSHJobSubmission(submissionId);

@@ -74,7 +74,10 @@ public class UserComputeResourcePreferenceEntity {
     private boolean validated;
 
     @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumns({@JoinColumn(name = "USER_ID"), @JoinColumn(name = "GATEWAY_ID")})
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
+    })
     private UserResourceProfileEntity userResourceProfile;
 
     public UserComputeResourcePreferenceEntity() {}

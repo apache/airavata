@@ -19,17 +19,17 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.execution.model.GatewayUsageReportingPK;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.workspace.GatewayUsageReportingCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GatewayUsageReportingCommandRepository
-        extends ExpCatAbstractRepository<
+        extends AbstractRepository<
                 GatewayUsageReportingCommand, GatewayUsageReportingCommandEntity, GatewayUsageReportingPK> {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepository.class);
@@ -38,11 +38,20 @@ public class GatewayUsageReportingCommandRepository
         super(GatewayUsageReportingCommand.class, GatewayUsageReportingCommandEntity.class);
     }
 
+    @Override
+    protected GatewayUsageReportingCommand toModel(GatewayUsageReportingCommandEntity entity) {
+        return ExecutionMapper.INSTANCE.gatewayUsageReportingCommandToModel(entity);
+    }
+
+    @Override
+    protected GatewayUsageReportingCommandEntity toEntity(GatewayUsageReportingCommand model) {
+        return ExecutionMapper.INSTANCE.gatewayUsageReportingCommandToEntity(model);
+    }
+
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryException {
         String gatewayId = command.getGatewayId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayUsageReportingCommandEntity reportingEntity =
-                mapper.map(command, GatewayUsageReportingCommandEntity.class);
+                ExecutionMapper.INSTANCE.gatewayUsageReportingCommandToEntity(command);
         execute(entityManager -> entityManager.merge(reportingEntity));
         logger.info("Added gateway usage reporting command for gateway {} to the database", command.getGatewayId());
     }

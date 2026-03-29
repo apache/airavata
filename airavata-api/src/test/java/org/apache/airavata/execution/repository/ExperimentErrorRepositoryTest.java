@@ -45,7 +45,7 @@ public class ExperimentErrorRepositoryTest extends TestBase {
     ExperimentErrorRepository experimentErrorRepository;
 
     public ExperimentErrorRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

@@ -31,7 +31,7 @@ public class AppCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public JDBCConfig getJDBCConfig() {
-        return new AppCatalogJDBCConfig();
+        return null;
     }
 
     @Override

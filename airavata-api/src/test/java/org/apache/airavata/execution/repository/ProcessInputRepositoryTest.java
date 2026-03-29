@@ -49,7 +49,7 @@ public class ProcessInputRepositoryTest extends TestBase {
     ProcessInputRepository processInputRepository;
 
     public ProcessInputRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

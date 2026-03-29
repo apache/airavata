@@ -49,7 +49,7 @@ public class ApplicationStatusEntity implements Serializable {
     private Timestamp updatedAt;
 
     @ManyToOne(targetEntity = WorkflowApplicationEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "APPLICATION_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "APPLICATION_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private WorkflowApplicationEntity application;
 
     public ApplicationStatusEntity() {}

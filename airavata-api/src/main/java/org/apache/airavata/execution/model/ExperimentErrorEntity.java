@@ -59,7 +59,7 @@ public class ExperimentErrorEntity implements Serializable {
     private String rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", insertable = false, updatable = false)
     private ExperimentEntity experiment;
 
     public ExperimentErrorEntity() {}

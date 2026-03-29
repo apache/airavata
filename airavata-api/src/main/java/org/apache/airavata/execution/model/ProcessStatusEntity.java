@@ -53,7 +53,7 @@ public class ProcessStatusEntity implements Serializable {
     private String reason;
 
     @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, updatable = false)
     private ProcessEntity process;
 
     public ProcessStatusEntity() {}

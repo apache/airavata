@@ -26,12 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.ComputeResourceReservationEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
 import org.apache.airavata.compute.model.GroupResourceProfileEntity;
 import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
@@ -47,10 +49,20 @@ import org.apache.airavata.model.commons.airavata_commonsConstants;
  * Created by skariyat on 2/8/18.
  */
 public class GroupResourceProfileRepository
-        extends AppCatAbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, String> {
+        extends AbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, String> {
 
     public GroupResourceProfileRepository() {
         super(GroupResourceProfile.class, GroupResourceProfileEntity.class);
+    }
+
+    @Override
+    protected GroupResourceProfile toModel(GroupResourceProfileEntity entity) {
+        return ComputeMapper.INSTANCE.groupResourceProfileToModel(entity);
+    }
+
+    @Override
+    protected GroupResourceProfileEntity toEntity(GroupResourceProfile model) {
+        return ComputeMapper.INSTANCE.groupResourceProfileToEntity(model);
     }
 
     public String addGroupResourceProfile(GroupResourceProfile groupResourceProfile) {

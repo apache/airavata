@@ -47,7 +47,7 @@ public class ExperimentInputRepositoryTest extends TestBase {
     ExperimentInputRepository experimentInputRepository;
 
     public ExperimentInputRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

@@ -49,7 +49,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
     private String gatewayId = "testGateway";
 
     public ApplicationDeploymentRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
         applicationInterfaceRepository = new ApplicationInterfaceRepository();
         applicationDeploymentRepository = new ApplicationDeploymentRepository();
@@ -122,7 +122,15 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         expectedCopy.sort(c);
         List<T> actualCopy = new ArrayList<>(actual);
         actualCopy.sort(c);
-        return EqualsBuilder.reflectionEquals(expectedCopy, actualCopy);
+        if (expectedCopy.size() != actualCopy.size()) {
+            return false;
+        }
+        for (int i = 0; i < expectedCopy.size(); i++) {
+            if (!EqualsBuilder.reflectionEquals(expectedCopy.get(i), actualCopy.get(i), "__isset_bitfield")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private ApplicationDeploymentDescription prepareSampleDeployment(
@@ -174,7 +182,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         return deployment;
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Schema gap: SetEnvPaths.envPathOrder not stored in entity, deep comparison fails on round-trip")
     @Test
     public void createAppDeploymentTest() throws AppCatalogException {
 
@@ -203,7 +211,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Schema gap: SetEnvPaths.envPathOrder not stored in entity, deep comparison fails on round-trip")
     @Test
     public void updateAppDeploymentTest() throws AppCatalogException {
         String applicationModule = addSampleApplicationModule("1");
@@ -244,7 +252,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertTrue(deepCompareDeployment(deployment, updatedDeployment));
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Schema gap: SetEnvPaths.envPathOrder not stored in entity, deep comparison fails on round-trip")
     @Test
     public void listAllDeployments() throws AppCatalogException {
 
@@ -273,7 +281,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Schema gap: SetEnvPaths.envPathOrder not stored in entity, deep comparison fails on round-trip")
     @Test
     public void filterApplicationDeploymentsTest() throws AppCatalogException {
 
@@ -355,7 +363,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertNull(applicationInterfaceRepository.getApplicationInterface(deployment.getAppDeploymentId()));
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Schema gap: SetEnvPaths.envPathOrder not stored in entity, deep comparison fails on round-trip")
     @Test
     public void accessibleDeploymentTest() throws AppCatalogException {
         String applicationModule1 = addSampleApplicationModule("1");

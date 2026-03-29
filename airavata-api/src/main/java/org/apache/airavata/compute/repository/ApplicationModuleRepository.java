@@ -19,13 +19,25 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ApplicationModuleEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 
 public class ApplicationModuleRepository
-        extends AppCatAbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {
+        extends AbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {
 
     public ApplicationModuleRepository() {
         super(ApplicationModule.class, ApplicationModuleEntity.class);
+    }
+
+    @Override
+    protected ApplicationModule toModel(ApplicationModuleEntity entity) {
+        return ComputeMapper.INSTANCE.appModuleToModel(entity);
+    }
+
+    @Override
+    protected ApplicationModuleEntity toEntity(ApplicationModule model) {
+        return ComputeMapper.INSTANCE.appModuleToEntity(model);
     }
 }

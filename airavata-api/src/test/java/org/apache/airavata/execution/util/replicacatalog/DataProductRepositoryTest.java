@@ -45,7 +45,7 @@ public class DataProductRepositoryTest extends TestBase {
     private String productName = "testProduct";
 
     public DataProductRepositoryTest() {
-        super(Database.REPLICA_CATALOG);
+        super();
         dataProductRepository = new DataProductRepository();
     }
 

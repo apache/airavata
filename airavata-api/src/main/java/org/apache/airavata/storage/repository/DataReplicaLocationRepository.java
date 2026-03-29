@@ -19,26 +19,46 @@
 */
 package org.apache.airavata.storage.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.storage.mapper.StorageMapper;
+import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.model.DataReplicaLocationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataReplicaLocationRepository
-        extends RepCatAbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String>
+        extends AbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String>
         implements DataReplicaLocationInterface {
     private static final Logger logger = LoggerFactory.getLogger(DataReplicaLocationRepository.class);
 
     public DataReplicaLocationRepository() {
         super(DataReplicaLocationModel.class, DataReplicaLocationEntity.class);
+    }
+
+    @Override
+    protected DataReplicaLocationModel toModel(DataReplicaLocationEntity entity) {
+        return StorageMapper.INSTANCE.dataReplicaToModel(entity);
+    }
+
+    @Override
+    protected DataReplicaLocationEntity toEntity(DataReplicaLocationModel model) {
+        return StorageMapper.INSTANCE.dataReplicaToEntity(model);
+    }
+
+    @Override
+    protected void initializeEntity(DataReplicaLocationEntity entity) {
+        // Replace Hibernate PersistentMap with plain HashMap to prevent
+        // LazyInitializationException when Dozer accesses map entries
+        if (entity.getReplicaMetadata() != null) {
+            entity.setReplicaMetadata(new java.util.HashMap<>(entity.getReplicaMetadata()));
+        }
     }
 
     private String saveDataReplicaLocationModelData(DataReplicaLocationModel dataReplicaLocationModel)
@@ -57,9 +77,8 @@ public class DataReplicaLocationRepository
 
         String replicaId = dataReplicaLocationModel.getReplicaId();
         dataReplicaLocationModel.setReplicaId(replicaId);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataReplicaLocationEntity dataReplicaLocationEntity =
-                mapper.map(dataReplicaLocationModel, DataReplicaLocationEntity.class);
+                StorageMapper.INSTANCE.dataReplicaToEntity(dataReplicaLocationModel);
 
         if (!isExists(replicaId)) {
             logger.debug("Checking if the Data Replica Location already exists");
@@ -68,7 +87,16 @@ public class DataReplicaLocationRepository
 
         dataReplicaLocationEntity.setLastModifiedTime(new Timestamp(System.currentTimeMillis()));
 
-        return execute(entityManager -> entityManager.merge(dataReplicaLocationEntity));
+        return execute(entityManager -> {
+            // Hibernate 6 requires @ManyToOne references to be set (not just the FK column)
+            if (dataReplicaLocationEntity.getDataProduct() == null
+                    && dataReplicaLocationEntity.getProductUri() != null) {
+                DataProductEntity dataProductRef =
+                        entityManager.getReference(DataProductEntity.class, dataReplicaLocationEntity.getProductUri());
+                dataReplicaLocationEntity.setDataProduct(dataProductRef);
+            }
+            return entityManager.merge(dataReplicaLocationEntity);
+        });
     }
 
     @Override

@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExperimentInputEntity;
 import org.apache.airavata.execution.model.ExperimentInputPK;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -31,19 +31,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExperimentInputRepository
-        extends ExpCatAbstractRepository<InputDataObjectType, ExperimentInputEntity, ExperimentInputPK> {
+        extends AbstractRepository<InputDataObjectType, ExperimentInputEntity, ExperimentInputPK> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentInputRepository.class);
 
     public ExperimentInputRepository() {
         super(InputDataObjectType.class, ExperimentInputEntity.class);
     }
 
+    @Override
+    protected InputDataObjectType toModel(ExperimentInputEntity entity) {
+        return ExecutionMapper.INSTANCE.experimentInputToModel(entity);
+    }
+
+    @Override
+    protected ExperimentInputEntity toEntity(InputDataObjectType model) {
+        return ExecutionMapper.INSTANCE.experimentInputToEntity(model);
+    }
+
     protected void saveExperimentInput(List<InputDataObjectType> experimentInputs, String experimentId)
             throws RegistryException {
 
         for (InputDataObjectType input : experimentInputs) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            ExperimentInputEntity experimentInputEntity = mapper.map(input, ExperimentInputEntity.class);
+            ExperimentInputEntity experimentInputEntity = ExecutionMapper.INSTANCE.experimentInputToEntity(input);
 
             if (experimentInputEntity.getExperimentId() == null) {
                 logger.debug("Setting the ExperimentInputEntity's ExperimentId");

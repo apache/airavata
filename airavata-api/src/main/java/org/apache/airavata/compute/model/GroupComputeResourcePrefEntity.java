@@ -80,7 +80,7 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
     private String resourceSpecificCredentialStoreToken;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 

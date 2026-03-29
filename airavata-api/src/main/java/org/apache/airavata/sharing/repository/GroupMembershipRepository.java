@@ -20,9 +20,9 @@
 package org.apache.airavata.sharing.repository;
 
 import java.util.*;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.GroupMembershipEntity;
 import org.apache.airavata.sharing.model.GroupMembershipPK;
-import org.apache.airavata.sharing.model.UserEntity;
 import org.apache.airavata.sharing.model.UserGroupEntity;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.DBConstants;
@@ -34,8 +34,18 @@ public class GroupMembershipRepository
         super(GroupMembership.class, GroupMembershipEntity.class);
     }
 
+    @Override
+    protected GroupMembership toModel(GroupMembershipEntity entity) {
+        return SharingMapper.INSTANCE.groupMembershipToModel(entity);
+    }
+
+    @Override
+    protected GroupMembershipEntity toEntity(GroupMembership model) {
+        return SharingMapper.INSTANCE.groupMembershipToEntity(model);
+    }
+
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
-        String queryString = "SELECT DISTINCT U FROM " + UserEntity.class.getSimpleName() + " U, "
+        String queryString = "SELECT DISTINCT U FROM " + "SharingUserEntity" + " U, "
                 + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.CHILD_ID + " = U." + DBConstants.UserTable.USER_ID
                 + " AND " + "GM."

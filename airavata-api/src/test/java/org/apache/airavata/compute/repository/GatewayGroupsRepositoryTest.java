@@ -37,7 +37,7 @@ public class GatewayGroupsRepositoryTest extends TestBase {
     private static final Logger logger = LoggerFactory.getLogger(GatewayProfileRepositoryTest.class);
 
     public GatewayGroupsRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         gatewayGroupsRepository = new GatewayGroupsRepository();
     }
 

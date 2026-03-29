@@ -19,16 +19,28 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ComputeResourcePolicyEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 
 /**
  * Created by skariyat on 2/10/18.
  */
 public class ComputeResourcePolicyRepository
-        extends AppCatAbstractRepository<ComputeResourcePolicy, ComputeResourcePolicyEntity, String> {
+        extends AbstractRepository<ComputeResourcePolicy, ComputeResourcePolicyEntity, String> {
 
     public ComputeResourcePolicyRepository() {
         super(ComputeResourcePolicy.class, ComputeResourcePolicyEntity.class);
+    }
+
+    @Override
+    protected ComputeResourcePolicy toModel(ComputeResourcePolicyEntity entity) {
+        return ComputeMapper.INSTANCE.computeResourcePolicyToModel(entity);
+    }
+
+    @Override
+    protected ComputeResourcePolicyEntity toEntity(ComputeResourcePolicy model) {
+        return ComputeMapper.INSTANCE.computeResourcePolicyToEntity(model);
     }
 }

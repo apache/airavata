@@ -19,15 +19,15 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.AppModuleMappingEntity;
 import org.apache.airavata.compute.model.ApplicationInterfaceEntity;
 import org.apache.airavata.compute.model.ApplicationModuleEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.ApplicationInterface;
@@ -40,12 +40,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApplicationInterfaceRepository
-        extends AppCatAbstractRepository<ApplicationInterfaceDescription, ApplicationInterfaceEntity, String>
+        extends AbstractRepository<ApplicationInterfaceDescription, ApplicationInterfaceEntity, String>
         implements ApplicationInterface {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepository.class);
 
     public ApplicationInterfaceRepository() {
         super(ApplicationInterfaceDescription.class, ApplicationInterfaceEntity.class);
+    }
+
+    @Override
+    protected ApplicationInterfaceDescription toModel(ApplicationInterfaceEntity entity) {
+        return ComputeMapper.INSTANCE.appInterfaceToModel(entity);
+    }
+
+    @Override
+    protected ApplicationInterfaceEntity toEntity(ApplicationInterfaceDescription model) {
+        return ComputeMapper.INSTANCE.appInterfaceToEntity(model);
     }
 
     protected String saveApplicationInterfaceDescriptorData(
@@ -71,9 +81,8 @@ public class ApplicationInterfaceRepository
         }
 
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationInterfaceEntity applicationInterfaceEntity =
-                mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
+                ComputeMapper.INSTANCE.appInterfaceToEntity(applicationInterfaceDescription);
 
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Interface");
@@ -120,8 +129,7 @@ public class ApplicationInterfaceRepository
         }
 
         String applicationModuleId = applicationModule.getAppModuleId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
+        ApplicationModuleEntity applicationModuleEntity = ComputeMapper.INSTANCE.appModuleToEntity(applicationModule);
 
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Module");
@@ -152,12 +160,11 @@ public class ApplicationInterfaceRepository
 
     @Override
     public void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModule applicationModule = getApplicationModule(moduleId);
         ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(interfaceId);
-        ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
+        ApplicationModuleEntity applicationModuleEntity = ComputeMapper.INSTANCE.appModuleToEntity(applicationModule);
         ApplicationInterfaceEntity applicationInterfaceEntity =
-                mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
+                ComputeMapper.INSTANCE.appInterfaceToEntity(applicationInterfaceDescription);
         AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
         appModuleMappingEntity.setModuleId(moduleId);
         appModuleMappingEntity.setInterfaceId(interfaceId);

@@ -19,25 +19,30 @@
 */
 package org.apache.airavata.execution.util;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
-    private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 
     public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
+
+    /** Convert a JPA entity to the Thrift/model object. */
+    protected abstract T toModel(E entity);
+
+    /** Convert a Thrift/model object to a JPA entity. */
+    protected abstract E toEntity(T model);
 
     public T create(T t) {
         return update(t);
@@ -48,45 +53,86 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     protected E mapToEntity(T t) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(t, dbEntityGenericClass);
+        return toEntity(t);
     }
 
     protected T mergeEntity(E entity) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E persistedCopy = execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        return execute(entityManager -> {
+            E persistedCopy = entityManager.merge(entity);
+            return toModel(persistedCopy);
+        });
     }
 
     public boolean delete(Id id) {
-        execute(entityManager -> {
+        return execute(entityManager -> {
             E entity = entityManager.find(dbEntityGenericClass, id);
-            entityManager.remove(entity);
-            return entity;
+            if (entity != null) {
+                entityManager.remove(entity);
+                return true;
+            }
+            return false;
         });
-        return true;
     }
 
     public T get(Id id) {
-        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
-        if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, thriftGenericClass);
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            testEM.clear();
+            E entity = testEM.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            initializeEntity(entity);
+            return toModel(entity);
+        }
+
+        EntityManager entityManager = getEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.unwrap(org.hibernate.Session.class).setHibernateFlushMode(org.hibernate.FlushMode.MANUAL);
+            E entity = entityManager.find(dbEntityGenericClass, id);
+            if (entity == null) {
+                entityManager.getTransaction().rollback();
+                return null;
+            }
+            initializeEntity(entity);
+            T result = toModel(entity);
+            entityManager.getTransaction().rollback(); // read-only, no flush needed
+            return result;
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw new RuntimeException("Failed to get entity", e);
+        } finally {
+            if (entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+    }
+
+    /**
+     * Hook for subclasses to force-initialize lazy collections before mapping.
+     * Hibernate 6 may not eagerly initialize {@code @ElementCollection} maps on entities
+     * loaded via association fetching, even when {@code FetchType.EAGER} is declared.
+     * Override this method to call {@link Hibernate#initialize} on such collections.
+     */
+    protected void initializeEntity(E entity) {
+        // default: no-op
     }
 
     public List<T> select(String query, int offset) {
-        List resultSet = (List) execute(entityManager ->
-                entityManager.createQuery(query).setFirstResult(offset).getResultList());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
+        return execute(entityManager -> {
+            List resultSet =
+                    entityManager.createQuery(query).setFirstResult(offset).getResultList();
+            List<T> gatewayList = new ArrayList<>();
+            resultSet.stream().forEach(rs -> gatewayList.add(toModel((E) rs)));
+            return gatewayList;
+        });
     }
 
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS : limit;
 
-        List resultSet = (List) execute(entityManager -> {
+        return execute(entityManager -> {
             Query jpaQuery = entityManager.createQuery(query);
 
             for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
@@ -94,12 +140,14 @@ public abstract class AbstractRepository<T, E, Id> {
                 jpaQuery.setParameter(entry.getKey(), entry.getValue());
             }
 
-            return jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+            @SuppressWarnings("unchecked")
+            List<E> resultSet =
+                    jpaQuery.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+            resultSet.forEach(this::initializeEntity);
+            List<T> list = new ArrayList<>();
+            resultSet.forEach(rs -> list.add(toModel(rs)));
+            return list;
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
     }
 
     public boolean isExists(Id id) {
@@ -122,6 +170,17 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            try {
+                R r = committer.commit(testEM);
+                testEM.flush();
+                return r;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to execute in test transaction", e);
+            }
+        }
+
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -130,8 +189,12 @@ public abstract class AbstractRepository<T, E, Id> {
             throw new RuntimeException("Failed to get EntityManager", e);
         }
         try {
+            // Use MANUAL flush to prevent Hibernate from auto-flushing cascade-persist
+            // on eagerly-loaded entity graphs. Explicit flush() before commit handles writes.
+            entityManager.unwrap(org.hibernate.Session.class).setHibernateFlushMode(org.hibernate.FlushMode.MANUAL);
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
+            entityManager.flush();
             entityManager.getTransaction().commit();
             return r;
         } catch (Exception e) {
@@ -148,6 +211,16 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public void executeWithNativeQuery(String query, String... params) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            Query nativeQuery = testEM.createNativeQuery(query);
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter((i + 1), params[i]);
+            }
+            nativeQuery.executeUpdate();
+            return;
+        }
+
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -177,6 +250,15 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List selectWithNativeQuery(String query, String... params) {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            Query nativeQuery = testEM.createNativeQuery(query);
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter((i + 1), params[i]);
+            }
+            return nativeQuery.getResultList();
+        }
+
         EntityManager entityManager = null;
         try {
             entityManager = getEntityManager();
@@ -203,5 +285,11 @@ public abstract class AbstractRepository<T, E, Id> {
         }
     }
 
-    protected abstract EntityManager getEntityManager();
+    protected EntityManager getEntityManager() {
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            return testEM;
+        }
+        return EntityManagerFactoryHolder.createEntityManager();
+    }
 }

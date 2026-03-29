@@ -22,8 +22,6 @@ package org.apache.airavata.compute.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the application_input database table.
@@ -82,8 +80,7 @@ public class ApplicationInputEntity implements Serializable {
     private String overrideFilename;
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
-    @JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "INTERFACE_ID", insertable = false, updatable = false)
     private ApplicationInterfaceEntity applicationInterface;
 
     public ApplicationInputEntity() {}

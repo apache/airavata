@@ -61,7 +61,6 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
@@ -69,9 +68,7 @@ import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.security.service.AiravataSecurityManager;
-import org.apache.airavata.security.service.SecurityManagerFactory;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,8 +82,8 @@ public class TaskContext {
     private static final Logger logger = LoggerFactory.getLogger(TaskContext.class);
 
     private Publisher statusPublisher;
-    private RegistryService.Client registryClient;
-    private UserProfileService.Client profileClient;
+    private RegistryService.Iface registryClient;
+    private UserProfileRepository userProfileRepository;
 
     private String processId;
     private String gatewayId;
@@ -829,30 +826,32 @@ public class TaskContext {
         }
     }
 
-    public void setRegistryClient(RegistryService.Client registryClient) {
+    public void setRegistryClient(RegistryService.Iface registryClient) {
         this.registryClient = registryClient;
     }
 
-    public RegistryService.Client getRegistryClient() {
+    public RegistryService.Iface getRegistryClient() {
         return registryClient;
     }
 
-    public UserProfileService.Client getProfileClient() {
-        return profileClient;
+    public UserProfileRepository getUserProfileRepository() {
+        return userProfileRepository;
     }
 
-    public void setProfileClient(UserProfileService.Client profileClient) {
-        this.profileClient = profileClient;
+    public void setUserProfileRepository(UserProfileRepository userProfileRepository) {
+        this.userProfileRepository = userProfileRepository;
     }
 
     public UserProfile getUserProfile() throws TaskOnFailException {
 
         if (this.userProfile == null) {
             try {
-                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
-                AuthzToken authzToken = securityManager.getUserManagementServiceAccountAuthzToken(getGatewayId());
-                this.userProfile = getProfileClient()
-                        .getUserProfileById(authzToken, getProcessModel().getUserName(), getGatewayId());
+                this.userProfile = getUserProfileRepository()
+                        .getUserProfileByIdAndGateWay(getProcessModel().getUserName(), getGatewayId());
+                if (this.userProfile == null) {
+                    throw new Exception("User profile not found for user "
+                            + getProcessModel().getUserName() + " in gateway " + getGatewayId());
+                }
             } catch (Exception e) {
                 logger.error("Failed to fetch the user profile for user id {}", processModel.getUserName(), e);
                 throw new TaskOnFailException(
@@ -1005,8 +1004,8 @@ public class TaskContext {
         private final String processId;
         private final String gatewayId;
         private final String taskId;
-        private RegistryService.Client registryClient;
-        private UserProfileService.Client profileClient;
+        private RegistryService.Iface registryClient;
+        private UserProfileRepository userProfileRepository;
         private ProcessModel processModel;
         private ExperimentModel experimentModel;
 
@@ -1030,13 +1029,13 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setRegistryClient(RegistryService.Client registryClient) {
+        public TaskContextBuilder setRegistryClient(RegistryService.Iface registryClient) {
             this.registryClient = registryClient;
             return this;
         }
 
-        public TaskContextBuilder setProfileClient(UserProfileService.Client profileClient) {
-            this.profileClient = profileClient;
+        public TaskContextBuilder setUserProfileRepository(UserProfileRepository userProfileRepository) {
+            this.userProfileRepository = userProfileRepository;
             return this;
         }
 
@@ -1053,7 +1052,7 @@ public class TaskContext {
             ctx.setRegistryClient(registryClient);
             ctx.setProcessModel(processModel);
             ctx.setExperimentModel(experimentModel);
-            ctx.setProfileClient(profileClient);
+            ctx.setUserProfileRepository(userProfileRepository);
             return ctx;
         }
 

@@ -37,6 +37,9 @@ public class HandlerInputEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "WORKFLOW_ID")
+    private String workflowId;
+
     @Lob
     @Column(name = "VALUE")
     private String value;
@@ -77,8 +80,8 @@ public class HandlerInputEntity implements Serializable {
 
     @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", nullable = false, updatable = false),
-        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", nullable = false, updatable = false)
+        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", insertable = false, updatable = false),
+        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     })
     private WorkflowHandlerEntity handler;
 

@@ -55,7 +55,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
     private final String QUEUE2_NAME = "queue2";
 
     public GroupResourceProfileRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
         groupResourceProfileRepository = new GroupResourceProfileRepository();
     }
@@ -120,7 +120,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         this.resourceId2 = computeResourceRepository.addComputeResource(cm2);
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("JPA: duplicate entity representation for SlurmGroupComputeResourcePrefEntity during merge")
     @Test
     public void GroupResourceProfileRepositoryTest() throws AppCatalogException {
 
@@ -343,7 +343,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         Assertions.assertEquals(creationTime, creationTimeAfterUpdate, "creationTime should be the same after update");
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testRemovingReservation() throws AppCatalogException {
 
@@ -397,7 +397,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testUpdatingReservation() throws AppCatalogException {
 
@@ -457,7 +457,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testAddingQueueToReservation() throws AppCatalogException {
 
@@ -506,7 +506,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testRemovingQueueFromReservation() throws AppCatalogException {
 

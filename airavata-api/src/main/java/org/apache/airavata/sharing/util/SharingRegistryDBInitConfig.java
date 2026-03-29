@@ -27,7 +27,7 @@ public class SharingRegistryDBInitConfig implements DBInitConfig {
 
     @Override
     public JDBCConfig getJDBCConfig() {
-        return new SharingRegistryJDBCConfig();
+        return null;
     }
 
     @Override

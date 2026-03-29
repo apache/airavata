@@ -59,7 +59,7 @@ public class ProcessErrorEntity implements Serializable {
     private String rootCauseErrorIdList;
 
     @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, updatable = false)
     private ProcessEntity process;
 
     public ProcessErrorEntity() {}

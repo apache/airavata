@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.*;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessInputEntity;
 import org.apache.airavata.execution.model.ProcessInputPK;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
@@ -31,19 +31,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessInputRepository
-        extends ExpCatAbstractRepository<InputDataObjectType, ProcessInputEntity, ProcessInputPK> {
+        extends AbstractRepository<InputDataObjectType, ProcessInputEntity, ProcessInputPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessInputRepository.class);
 
     public ProcessInputRepository() {
         super(InputDataObjectType.class, ProcessInputEntity.class);
     }
 
+    @Override
+    protected InputDataObjectType toModel(ProcessInputEntity entity) {
+        return ExecutionMapper.INSTANCE.processInputToModel(entity);
+    }
+
+    @Override
+    protected ProcessInputEntity toEntity(InputDataObjectType model) {
+        return ExecutionMapper.INSTANCE.processInputToEntity(model);
+    }
+
     protected void saveProcessInput(List<InputDataObjectType> processInputs, String processId)
             throws RegistryException {
 
         for (InputDataObjectType input : processInputs) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            ProcessInputEntity processInputEntity = mapper.map(input, ProcessInputEntity.class);
+            ProcessInputEntity processInputEntity = ExecutionMapper.INSTANCE.processInputToEntity(input);
 
             if (processInputEntity.getProcessId() == null) {
                 logger.debug("Setting the ProcessInputEntity's ProcessId");

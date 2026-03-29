@@ -50,7 +50,7 @@ public class ProcessRepositoryTest extends TestBase {
     ProcessRepository processRepository;
 
     public ProcessRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

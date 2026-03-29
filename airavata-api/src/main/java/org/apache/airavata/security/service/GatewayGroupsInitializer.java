@@ -19,22 +19,17 @@
 */
 package org.apache.airavata.security.service;
 
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.util.ThriftUtils;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.sharing.handler.SharingRegistryServerHandler;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
-import org.apache.airavata.sharing.util.SharingRegistryServiceClientFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,30 +43,31 @@ public class GatewayGroupsInitializer {
 
     public static synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
 
-        SharingRegistryService.Client sharingRegistryClient = createSharingRegistryClient();
-        RegistryService.Client registryClient = createRegistryClient();
-        CredentialStoreService.Client credentialStoreClient = createCredentialStoreClient();
+        SharingRegistryService.Iface sharingRegistryHandler;
+        try {
+            sharingRegistryHandler = new SharingRegistryServerHandler();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create SharingRegistryServerHandler", e);
+        }
+        RegistryService.Iface registryClient = createRegistryClient();
+        CredentialStoreService.Iface credentialStoreHandler = createCredentialStoreHandler();
         try {
             GatewayGroupsInitializer gatewayGroupsInitializer =
-                    new GatewayGroupsInitializer(registryClient, sharingRegistryClient, credentialStoreClient);
+                    new GatewayGroupsInitializer(registryClient, sharingRegistryHandler, credentialStoreHandler);
             return gatewayGroupsInitializer.initialize(gatewayId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
-        } finally {
-            ThriftUtils.close(sharingRegistryClient);
-            ThriftUtils.close(registryClient);
-            ThriftUtils.close(credentialStoreClient);
         }
     }
 
-    private RegistryService.Client registryClient;
-    private SharingRegistryService.Client sharingRegistryClient;
-    private CredentialStoreService.Client credentialStoreClient;
+    private RegistryService.Iface registryClient;
+    private SharingRegistryService.Iface sharingRegistryClient;
+    private CredentialStoreService.Iface credentialStoreClient;
 
     public GatewayGroupsInitializer(
-            RegistryService.Client registryClient,
-            SharingRegistryService.Client sharingRegistryClient,
-            CredentialStoreService.Client credentialStoreClient) {
+            RegistryService.Iface registryClient,
+            SharingRegistryService.Iface sharingRegistryClient,
+            CredentialStoreService.Iface credentialStoreClient) {
 
         this.registryClient = registryClient;
         this.sharingRegistryClient = sharingRegistryClient;
@@ -126,7 +122,7 @@ public class GatewayGroupsInitializer {
     }
 
     private UserGroup createGroup(
-            SharingRegistryService.Client sharingRegistryClient,
+            SharingRegistryService.Iface sharingRegistryClient,
             String gatewayId,
             String ownerId,
             String groupName,
@@ -149,9 +145,7 @@ public class GatewayGroupsInitializer {
     }
 
     private String getAdminOwnerUsername(
-            RegistryService.Client registryClient,
-            CredentialStoreService.Client credentialStoreClient,
-            String gatewayId)
+            RegistryService.Iface registryClient, CredentialStoreService.Iface credentialStoreClient, String gatewayId)
             throws TException {
 
         GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);
@@ -161,33 +155,15 @@ public class GatewayGroupsInitializer {
         return adminUsername;
     }
 
-    private static SharingRegistryService.Client createSharingRegistryClient() {
-        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
-        final String serverHost = ServerSettings.getSharingRegistryHost();
-        try {
-            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
-        } catch (SharingRegistryException e) {
-            throw new RuntimeException("Unable to create sharing registry client...", e);
-        }
+    private static RegistryService.Iface createRegistryClient() {
+        return new RegistryServerHandler();
     }
 
-    private static RegistryService.Client createRegistryClient() {
+    private static CredentialStoreService.Iface createCredentialStoreHandler() {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (ApplicationSettingsException | RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
-    }
-
-    private static CredentialStoreService.Client createCredentialStoreClient() {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-            final String serverHost = ServerSettings.getCredentialStoreServerHost();
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (ApplicationSettingsException | CredentialStoreException e) {
-            throw new RuntimeException("Unable to create credential store client...", e);
+            return new CredentialStoreServerHandler();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to create CredentialStoreServerHandler...", e);
         }
     }
 }

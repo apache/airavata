@@ -27,10 +27,13 @@ import java.util.List;
 import org.apache.airavata.security.repository.JDBCUserStore;
 import org.apache.airavata.security.repository.LDAPUserStore;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * A test class for authenticator configuration reader. Reads the authenticators.xml in resources directory.
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public class AuthenticatorConfigurationReaderTest {
 
     private String configurationFile = URLDecoder.decode(

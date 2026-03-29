@@ -19,25 +19,23 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.compute.model.BatchQueuePK;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.CloudJobSubmissionEntity;
 import org.apache.airavata.compute.model.ComputeResourceEntity;
 import org.apache.airavata.compute.model.ComputeResourceFileSystemEntity;
-import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
 import org.apache.airavata.compute.model.LocalSubmissionEntity;
 import org.apache.airavata.compute.model.ResourceJobManagerEntity;
 import org.apache.airavata.compute.model.SshJobSubmissionEntity;
 import org.apache.airavata.compute.model.UnicoreSubmissionEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.AppCatalogUtils;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.ComputeResource;
@@ -59,7 +57,6 @@ import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SCPDataMovement;
 import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.storage.model.DataMovementInterfacePK;
 import org.apache.airavata.storage.model.GridftpDataMovementEntity;
 import org.apache.airavata.storage.model.GridftpEndpointEntity;
 import org.apache.airavata.storage.model.LocalDataMovementEntity;
@@ -70,13 +67,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ComputeResourceRepository
-        extends AppCatAbstractRepository<ComputeResourceDescription, ComputeResourceEntity, String>
+        extends AbstractRepository<ComputeResourceDescription, ComputeResourceEntity, String>
         implements ComputeResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
 
     public ComputeResourceRepository() {
         super(ComputeResourceDescription.class, ComputeResourceEntity.class);
+    }
+
+    @Override
+    protected ComputeResourceDescription toModel(ComputeResourceEntity entity) {
+        return ComputeMapper.INSTANCE.computeResourceToModel(entity);
+    }
+
+    @Override
+    protected ComputeResourceEntity toEntity(ComputeResourceDescription model) {
+        return ComputeMapper.INSTANCE.computeResourceToEntity(model);
     }
 
     @Override
@@ -99,8 +106,7 @@ public class ComputeResourceRepository
     protected ComputeResourceEntity saveComputeResource(ComputeResourceDescription description)
             throws AppCatalogException {
         String computeResourceId = description.getComputeResourceId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ComputeResourceEntity computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
+        ComputeResourceEntity computeResourceEntity = ComputeMapper.INSTANCE.computeResourceToEntity(description);
         if (computeResourceEntity.getBatchQueues() != null) {
             computeResourceEntity
                     .getBatchQueues()
@@ -246,8 +252,8 @@ public class ComputeResourceRepository
         String submissionId = AppCatalogUtils.getID("SSH");
         sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
         String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
+        SshJobSubmissionEntity sshJobSubmissionEntity =
+                ComputeMapper.INSTANCE.sshJobSubmissionToEntity(sshJobSubmission);
         sshJobSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
         if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
             (new ResourceJobManagerRepository())
@@ -270,8 +276,8 @@ public class ComputeResourceRepository
     }
 
     public void updateSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
+        SshJobSubmissionEntity sshJobSubmissionEntity =
+                ComputeMapper.INSTANCE.sshJobSubmissionToEntity(sshJobSubmission);
         sshJobSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         execute(entityManager -> entityManager.merge(sshJobSubmissionEntity));
     }
@@ -279,17 +285,15 @@ public class ComputeResourceRepository
     @Override
     public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         cloudJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         CloudJobSubmissionEntity cloudJobSubmissionEntity =
-                mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
+                ComputeMapper.INSTANCE.cloudJobSubmissionToEntity(cloudJobSubmission);
         execute(entityManager -> entityManager.merge(cloudJobSubmissionEntity));
         return cloudJobSubmissionEntity.getJobSubmissionInterfaceId();
     }
 
     public void updateCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         CloudJobSubmissionEntity cloudJobSubmissionEntity =
-                mapper.map(cloudJobSubmission, CloudJobSubmissionEntity.class);
+                ComputeMapper.INSTANCE.cloudJobSubmissionToEntity(cloudJobSubmission);
         execute(entityManager -> entityManager.merge(cloudJobSubmissionEntity));
     }
 
@@ -298,9 +302,8 @@ public class ComputeResourceRepository
         ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
         resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
         resourceJobManagerRepository.create(resourceJobManager);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ResourceJobManagerEntity resourceJobManagerEntity =
-                mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
+                ComputeMapper.INSTANCE.resourceJobManagerToEntity(resourceJobManager);
         Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
         if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
             resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
@@ -319,9 +322,8 @@ public class ComputeResourceRepository
         ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
         updatedResourceJobManager.setResourceJobManagerId(resourceJobManagerId);
         ResourceJobManager resourceJobManager = resourceJobManagerRepository.create(updatedResourceJobManager);
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ResourceJobManagerEntity resourceJobManagerEntity =
-                mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
+                ComputeMapper.INSTANCE.resourceJobManagerToEntity(resourceJobManager);
         Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
         if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
             resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
@@ -361,8 +363,7 @@ public class ComputeResourceRepository
     public String addLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
         localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
         String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
+        LocalSubmissionEntity localSubmissionEntity = ComputeMapper.INSTANCE.localSubmissionToEntity(localSubmission);
         localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         localSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
         if (localSubmission.getResourceJobManager().getParallelismPrefix() != null) {
@@ -384,9 +385,7 @@ public class ComputeResourceRepository
     }
 
     public void updateLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
+        LocalSubmissionEntity localSubmissionEntity = ComputeMapper.INSTANCE.localSubmissionToEntity(localSubmission);
         localSubmissionEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         execute(entityManager -> entityManager.merge(localSubmissionEntity));
     }
@@ -399,9 +398,8 @@ public class ComputeResourceRepository
     @Override
     public String addUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
         unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreSubmissionEntity unicoreSubmissionEntity =
-                mapper.map(unicoreJobSubmission, UnicoreSubmissionEntity.class);
+                ComputeMapper.INSTANCE.unicoreSubmissionToEntity(unicoreJobSubmission);
         if (unicoreJobSubmission.getSecurityProtocol() != null) {
             unicoreSubmissionEntity.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol());
         }
@@ -412,30 +410,28 @@ public class ComputeResourceRepository
     @Override
     public String addLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
         localDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("LOCAL"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        LocalDataMovementEntity localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
+        LocalDataMovementEntity localDataMovementEntity =
+                ComputeMapper.INSTANCE.localDataMovementToEntity(localDataMovement);
         execute(entityManager -> entityManager.merge(localDataMovementEntity));
         return localDataMovementEntity.getDataMovementInterfaceId();
     }
 
     public void updateLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        LocalDataMovementEntity localDataMovementEntity = mapper.map(localDataMovement, LocalDataMovementEntity.class);
+        LocalDataMovementEntity localDataMovementEntity =
+                ComputeMapper.INSTANCE.localDataMovementToEntity(localDataMovement);
         execute(entityManager -> entityManager.merge(localDataMovementEntity));
     }
 
     @Override
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         scpDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
+        ScpDataMovementEntity scpDataMovementEntity = ComputeMapper.INSTANCE.scpDataMovementToEntity(scpDataMovement);
         execute(entityManager -> entityManager.merge(scpDataMovementEntity));
         return scpDataMovementEntity.getDataMovementInterfaceId();
     }
 
     public void updateScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ScpDataMovementEntity scpDataMovementEntity = mapper.map(scpDataMovement, ScpDataMovementEntity.class);
+        ScpDataMovementEntity scpDataMovementEntity = ComputeMapper.INSTANCE.scpDataMovementToEntity(scpDataMovement);
         scpDataMovementEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
         execute(entityManager -> entityManager.merge(scpDataMovementEntity));
     }
@@ -443,9 +439,8 @@ public class ComputeResourceRepository
     @Override
     public String addUnicoreDataMovement(UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
         unicoreDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("UNICORE"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UnicoreDatamovementEntity unicoreDatamovementEntity =
-                mapper.map(unicoreDataMovement, UnicoreDatamovementEntity.class);
+                ComputeMapper.INSTANCE.unicoreDataMovementToEntity(unicoreDataMovement);
         execute(entityManager -> entityManager.merge(unicoreDatamovementEntity));
         return unicoreDatamovementEntity.getDataMovementInterfaceId();
     }
@@ -459,9 +454,8 @@ public class ComputeResourceRepository
     @Override
     public String addGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         gridFTPDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("GRIDFTP"));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         GridftpDataMovementEntity gridftpDataMovementEntity =
-                mapper.map(gridFTPDataMovement, GridftpDataMovementEntity.class);
+                ComputeMapper.INSTANCE.gridFtpDataMovementToEntity(gridFTPDataMovement);
         execute(entityManager -> entityManager.merge(gridftpDataMovementEntity));
         List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoints();
         if (gridFTPEndPoint != null && !gridFTPEndPoint.isEmpty()) {
@@ -481,8 +475,7 @@ public class ComputeResourceRepository
         SshJobSubmissionEntity entity =
                 execute(entityManager -> entityManager.find(SshJobSubmissionEntity.class, submissionId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        SSHJobSubmission sshJobSubmission = mapper.map(entity, SSHJobSubmission.class);
+        SSHJobSubmission sshJobSubmission = ComputeMapper.INSTANCE.sshJobSubmissionToModel(entity);
         sshJobSubmission
                 .getResourceJobManager()
                 .setParallelismPrefix((new ResourceJobManagerRepository()
@@ -501,8 +494,7 @@ public class ComputeResourceRepository
         UnicoreSubmissionEntity entity =
                 execute(entityManager -> entityManager.find(UnicoreSubmissionEntity.class, submissionId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, UnicoreJobSubmission.class);
+        return ComputeMapper.INSTANCE.unicoreSubmissionToModel(entity);
     }
 
     @Override
@@ -510,8 +502,7 @@ public class ComputeResourceRepository
         UnicoreDatamovementEntity entity =
                 execute(entityManager -> entityManager.find(UnicoreDatamovementEntity.class, dataMovementId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, UnicoreDataMovement.class);
+        return ComputeMapper.INSTANCE.unicoreDataMovementToModel(entity);
     }
 
     @Override
@@ -519,8 +510,7 @@ public class ComputeResourceRepository
         CloudJobSubmissionEntity entity =
                 execute(entityManager -> entityManager.find(CloudJobSubmissionEntity.class, submissionId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, CloudJobSubmission.class);
+        return ComputeMapper.INSTANCE.cloudJobSubmissionToModel(entity);
     }
 
     @Override
@@ -528,8 +518,7 @@ public class ComputeResourceRepository
         ScpDataMovementEntity entity =
                 execute(entityManager -> entityManager.find(ScpDataMovementEntity.class, dataMoveId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, SCPDataMovement.class);
+        return ComputeMapper.INSTANCE.scpDataMovementToModel(entity);
     }
 
     @Override
@@ -552,12 +541,10 @@ public class ComputeResourceRepository
 
         List<GridftpEndpointEntity> endpointEntities = resultSet;
 
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-
         List<String> endpoints = endpointEntities.stream()
                 .map(GridftpEndpointEntity::getEndpoint)
                 .collect(Collectors.toList());
-        GridFTPDataMovement dataMovement = mapper.map(entity, GridFTPDataMovement.class);
+        GridFTPDataMovement dataMovement = ComputeMapper.INSTANCE.gridFtpDataMovementToModel(entity);
         dataMovement.setGridFTPEndPoints(endpoints);
 
         return dataMovement;
@@ -566,27 +553,41 @@ public class ComputeResourceRepository
     @Override
     public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
             throws AppCatalogException {
-        JobSubmissionInterfacePK jobSubmissionInterfacePK = new JobSubmissionInterfacePK();
-        jobSubmissionInterfacePK.setComputeResourceId(computeResourceId);
-        jobSubmissionInterfacePK.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        (new JobSubmissionInterfaceRepository()).delete(jobSubmissionInterfacePK);
+        execute(entityManager -> {
+            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
+            if (parent != null && parent.getJobSubmissionInterfaces() != null) {
+                parent.getJobSubmissionInterfaces()
+                        .removeIf(e -> jobSubmissionInterfaceId.equals(e.getJobSubmissionInterfaceId()));
+                entityManager.merge(parent);
+            }
+            return null;
+        });
     }
 
     @Override
     public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)
             throws AppCatalogException {
-        DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
-        dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterfaceId);
-        dataMovementInterfacePK.setComputeResourceId(computeResourceId);
-        (new DataMovementRepository()).delete(dataMovementInterfacePK);
+        execute(entityManager -> {
+            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
+            if (parent != null && parent.getDataMovementInterfaces() != null) {
+                parent.getDataMovementInterfaces()
+                        .removeIf(e -> dataMovementInterfaceId.equals(e.getDataMovementInterfaceId()));
+                entityManager.merge(parent);
+            }
+            return null;
+        });
     }
 
     @Override
     public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
-        BatchQueuePK batchQueuePK = new BatchQueuePK();
-        batchQueuePK.setQueueName(queueName);
-        batchQueuePK.setComputeResourceId(computeResourceId);
-        (new BatchQueueRepository()).delete(batchQueuePK);
+        execute(entityManager -> {
+            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
+            if (parent != null && parent.getBatchQueues() != null) {
+                parent.getBatchQueues().removeIf(e -> queueName.equals(e.getQueueName()));
+                entityManager.merge(parent);
+            }
+            return null;
+        });
     }
 
     @Override
@@ -594,8 +595,7 @@ public class ComputeResourceRepository
         LocalSubmissionEntity entity =
                 execute(entityManager -> entityManager.find(LocalSubmissionEntity.class, submissionId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        LOCALSubmission localSubmission = mapper.map(entity, LOCALSubmission.class);
+        LOCALSubmission localSubmission = ComputeMapper.INSTANCE.localSubmissionToModel(entity);
         localSubmission
                 .getResourceJobManager()
                 .setParallelismPrefix((new ResourceJobManagerRepository()
@@ -614,7 +614,6 @@ public class ComputeResourceRepository
         LocalDataMovementEntity entity =
                 execute(entityManager -> entityManager.find(LocalDataMovementEntity.class, datamovementId));
         if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, LOCALDataMovement.class);
+        return ComputeMapper.INSTANCE.localDataMovementToModel(entity);
     }
 }

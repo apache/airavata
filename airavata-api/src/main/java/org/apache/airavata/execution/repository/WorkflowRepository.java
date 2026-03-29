@@ -19,13 +19,14 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.workflow.AiravataWorkflowEntity;
 import org.apache.airavata.execution.util.*;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.WorkflowCatalog;
 import org.apache.airavata.execution.util.cpi.WorkflowCatalogException;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -33,12 +34,22 @@ import org.apache.airavata.model.workflow.AiravataWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWorkflow, AiravataWorkflowEntity, String>
+public class WorkflowRepository extends AbstractRepository<AiravataWorkflow, AiravataWorkflowEntity, String>
         implements WorkflowCatalog {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowRepository.class);
 
     public WorkflowRepository() {
         super(AiravataWorkflow.class, AiravataWorkflowEntity.class);
+    }
+
+    @Override
+    protected AiravataWorkflow toModel(AiravataWorkflowEntity entity) {
+        return ExecutionMapper.INSTANCE.workflowToModel(entity);
+    }
+
+    @Override
+    protected AiravataWorkflowEntity toEntity(AiravataWorkflow model) {
+        return ExecutionMapper.INSTANCE.workflowToEntity(model);
     }
 
     protected String saveWorkflowModelData(AiravataWorkflow workflowModel, String experimentId)
@@ -73,8 +84,7 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWo
         }
 
         String workflowId = workflowModel.getId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        AiravataWorkflowEntity workflowEntity = mapper.map(workflowModel, AiravataWorkflowEntity.class);
+        AiravataWorkflowEntity workflowEntity = ExecutionMapper.INSTANCE.workflowToEntity(workflowModel);
 
         if (workflowEntity.getStatuses() != null) {
             logger.debug(

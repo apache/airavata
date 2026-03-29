@@ -19,15 +19,15 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.*;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.GwyResourceProfile;
@@ -40,13 +40,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GwyResourceProfileRepository
-        extends AppCatAbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String>
-        implements GwyResourceProfile {
+        extends AbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String> implements GwyResourceProfile {
 
     private static final Logger logger = LoggerFactory.getLogger(GwyResourceProfileRepository.class);
 
     public GwyResourceProfileRepository() {
         super(GatewayResourceProfile.class, GatewayProfileEntity.class);
+    }
+
+    @Override
+    protected GatewayResourceProfile toModel(GatewayProfileEntity entity) {
+        return ComputeMapper.INSTANCE.gatewayProfileToModel(entity);
+    }
+
+    @Override
+    protected GatewayProfileEntity toEntity(GatewayResourceProfile model) {
+        return ComputeMapper.INSTANCE.gatewayProfileToEntity(model);
     }
 
     @Override
@@ -63,8 +72,8 @@ public class GwyResourceProfileRepository
 
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         String gatewayId = gatewayResourceProfile.getGatewayID();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        GatewayProfileEntity gatewayProfileEntity = mapper.map(gatewayResourceProfile, GatewayProfileEntity.class);
+        GatewayProfileEntity gatewayProfileEntity =
+                ComputeMapper.INSTANCE.gatewayProfileToEntity(gatewayResourceProfile);
         // Explicitly set gatewayId since Dozer mapping does not handle gatewayID -> gatewayId conversion
         gatewayProfileEntity.setGatewayId(gatewayId);
         if (get(gatewayId) != null) {
@@ -88,7 +97,7 @@ public class GwyResourceProfileRepository
                 if (preference.getSshAccountProvisionerConfig() != null
                         && !preference.getSshAccountProvisionerConfig().isEmpty()) {
                     ComputeResourcePreferenceEntity computeResourcePreferenceEntity =
-                            mapper.map(preference, ComputeResourcePreferenceEntity.class);
+                            ComputeMapper.INSTANCE.computeResourcePrefToEntity(preference);
                     computeResourcePreferenceEntity.setGatewayId(gatewayId);
                     List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
                     for (String sshAccountProvisionerConfigName :

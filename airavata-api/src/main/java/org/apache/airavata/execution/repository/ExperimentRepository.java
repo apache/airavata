@@ -19,15 +19,15 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ComputationalResourceSchedulingEntity;
 import org.apache.airavata.execution.model.ExperimentEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.execution.util.cpi.ResultOrderType;
@@ -38,11 +38,21 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentModel, ExperimentEntity, String> {
+public class ExperimentRepository extends AbstractRepository<ExperimentModel, ExperimentEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
 
     public ExperimentRepository() {
         super(ExperimentModel.class, ExperimentEntity.class);
+    }
+
+    @Override
+    protected ExperimentModel toModel(ExperimentEntity entity) {
+        return ExecutionMapper.INSTANCE.experimentToModel(entity);
+    }
+
+    @Override
+    protected ExperimentEntity toEntity(ExperimentModel model) {
+        return ExecutionMapper.INSTANCE.experimentToEntity(model);
     }
 
     protected String saveExperimentModelData(ExperimentModel experimentModel) throws RegistryException {
@@ -71,9 +81,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Populating creation time if it doesn't already exist");
             experimentModel.setCreationTime(System.currentTimeMillis());
         }
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ExperimentEntity experimentEntity = mapper.map(experimentModel, ExperimentEntity.class);
+        ExperimentEntity experimentEntity = ExecutionMapper.INSTANCE.experimentToEntity(experimentModel);
 
         if (experimentEntity.getUserConfigurationData() != null) {
             logger.debug("Populating the Primary Key of UserConfigurationData object for the Experiment");

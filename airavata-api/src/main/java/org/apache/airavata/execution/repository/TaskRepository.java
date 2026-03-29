@@ -19,16 +19,17 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
+import org.apache.airavata.execution.model.ProcessEntity;
 import org.apache.airavata.execution.model.TaskEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
@@ -36,13 +37,23 @@ import org.apache.airavata.model.task.TaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEntity, String> {
+public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(TaskRepository.class);
 
     private final JobRepository jobRepository = new JobRepository();
 
     public TaskRepository() {
         super(TaskModel.class, TaskEntity.class);
+    }
+
+    @Override
+    protected TaskModel toModel(TaskEntity entity) {
+        return ExecutionMapper.INSTANCE.taskToModel(entity);
+    }
+
+    @Override
+    protected TaskEntity toEntity(TaskModel model) {
+        return ExecutionMapper.INSTANCE.taskToEntity(model);
     }
 
     protected String saveTaskModelData(TaskModel taskModel) throws RegistryException {
@@ -73,13 +84,19 @@ public class TaskRepository extends ExpCatAbstractRepository<TaskModel, TaskEnti
         }
 
         taskModel.setLastUpdateTime(System.currentTimeMillis());
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        TaskEntity taskEntity = mapper.map(taskModel, TaskEntity.class);
+        TaskEntity taskEntity = ExecutionMapper.INSTANCE.taskToEntity(taskModel);
 
         populateParentIds(taskEntity);
 
-        return execute(entityManager -> entityManager.merge(taskEntity));
+        return execute(entityManager -> {
+            // Hibernate 6 requires @ManyToOne references to be set (not just the FK column)
+            if (taskEntity.getProcess() == null && taskEntity.getParentProcessId() != null) {
+                ProcessEntity processRef =
+                        entityManager.getReference(ProcessEntity.class, taskEntity.getParentProcessId());
+                taskEntity.setProcess(processRef);
+            }
+            return entityManager.merge(taskEntity);
+        });
     }
 
     protected void populateParentIds(TaskEntity taskEntity) {

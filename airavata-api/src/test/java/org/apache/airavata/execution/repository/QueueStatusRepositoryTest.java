@@ -37,7 +37,7 @@ public class QueueStatusRepositoryTest extends TestBase {
     private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepositoryTest.class);
 
     public QueueStatusRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         queueStatusRepository = new QueueStatusRepository();
     }
 

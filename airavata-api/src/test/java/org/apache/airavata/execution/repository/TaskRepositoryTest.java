@@ -52,7 +52,7 @@ public class TaskRepositoryTest extends TestBase {
     TaskRepository taskRepository;
 
     public TaskRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

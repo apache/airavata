@@ -47,7 +47,7 @@ public class ProcessErrorRepositoryTest extends TestBase {
     ProcessErrorRepository processErrorRepository;
 
     public ProcessErrorRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();

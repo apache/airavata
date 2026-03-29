@@ -23,7 +23,9 @@ import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.*;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
@@ -31,10 +33,20 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 
 public class ResourceJobManagerRepository
-        extends AppCatAbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {
+        extends AbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {
 
     public ResourceJobManagerRepository() {
         super(ResourceJobManager.class, ResourceJobManagerEntity.class);
+    }
+
+    @Override
+    protected ResourceJobManager toModel(ResourceJobManagerEntity entity) {
+        return ComputeMapper.INSTANCE.resourceJobManagerToModel(entity);
+    }
+
+    @Override
+    protected ResourceJobManagerEntity toEntity(ResourceJobManager model) {
+        return ComputeMapper.INSTANCE.resourceJobManagerToEntity(model);
     }
 
     public void createJobManagerCommand(

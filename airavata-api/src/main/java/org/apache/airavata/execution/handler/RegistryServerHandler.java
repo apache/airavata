@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.handler;
 
+import jakarta.annotation.PostConstruct;
 import java.util.*;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.util.AiravataUtils;
@@ -83,6 +84,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class RegistryServerHandler implements RegistryService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
+
+    @PostConstruct
+    public void registerAsGlobalHandler() {
+        org.apache.airavata.execution.scheduler.Utils.setRegistryHandler(this);
+        logger.info("RegistryServerHandler registered as global registry handler");
+    }
 
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();

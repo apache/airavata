@@ -19,12 +19,12 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ApplicationDeploymentEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.ApplicationDeployment;
@@ -35,12 +35,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApplicationDeploymentRepository
-        extends AppCatAbstractRepository<ApplicationDeploymentDescription, ApplicationDeploymentEntity, String>
+        extends AbstractRepository<ApplicationDeploymentDescription, ApplicationDeploymentEntity, String>
         implements ApplicationDeployment {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepository.class);
 
     public ApplicationDeploymentRepository() {
         super(ApplicationDeploymentDescription.class, ApplicationDeploymentEntity.class);
+    }
+
+    @Override
+    protected ApplicationDeploymentDescription toModel(ApplicationDeploymentEntity entity) {
+        return ComputeMapper.INSTANCE.appDeploymentToModel(entity);
+    }
+
+    @Override
+    protected ApplicationDeploymentEntity toEntity(ApplicationDeploymentDescription model) {
+        return ComputeMapper.INSTANCE.appDeploymentToEntity(model);
     }
 
     protected String saveApplicationDeploymentDescriptorData(
@@ -66,9 +76,8 @@ public class ApplicationDeploymentRepository
         }
 
         String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationDeploymentEntity applicationDeploymentEntity =
-                mapper.map(applicationDeploymentDescription, ApplicationDeploymentEntity.class);
+                ComputeMapper.INSTANCE.appDeploymentToEntity(applicationDeploymentDescription);
 
         if (gatewayId != null) {
             logger.debug("Setting the gateway ID of the Application Deployment");

@@ -28,7 +28,6 @@ import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class ComputeResourceRepositoryTest extends TestBase {
     private ComputeResourceRepository computeResourceRepository;
 
     public ComputeResourceRepositoryTest() {
-        super(Database.APP_CATALOG);
+        super();
         computeResourceRepository = new ComputeResourceRepository();
     }
 
@@ -158,7 +157,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertFalse(searchedInterfaceResult.isPresent());
     }
 
-    @Disabled("FK constraint or Dozer mapping issue in compute resource operations")
     @Test
     public void listComputeResourcesTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -253,7 +251,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("FK constraint or Dozer mapping issue in compute resource operations")
     @Test
     public void updateComputeResourceTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -301,7 +298,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(deepCompareComputeResourceDescription(savedComputeResource, updatedComputeResource));
     }
 
-    @Disabled("FK constraint or Dozer mapping issue in compute resource operations")
     @Test
     public void addComputeResourceTest() throws AppCatalogException {
 
@@ -339,7 +335,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(resourceJobManager, savedJobManager, "__isset_bitfield"));
     }
 
-    @Disabled("FK constraint or Dozer mapping issue in compute resource operations")
     @Test
     public void deleteResourceJobManagerTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -428,7 +423,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(localDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
-    @Disabled("FK constraint or Dozer mapping issue in compute resource operations")
     @Test
     public void addUnicoreDataMovementTest() throws AppCatalogException {
         UnicoreDataMovement unicoreDataMovement = prepareUnicoreDataMovement();

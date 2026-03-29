@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
@@ -41,19 +40,19 @@ import org.slf4j.LoggerFactory;
 public class ProcessSchedulerImpl implements ProcessScheduler {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessSchedulerImpl.class);
 
-    private ThriftClientPool<RegistryService.Client> registryClientPool;
+    private RegistryService.Iface registryHandler;
 
     public ProcessSchedulerImpl() {
         try {
-            registryClientPool = Utils.getRegistryServiceClientPool();
+            registryHandler = Utils.getRegistryHandler();
         } catch (Exception e) {
-            LOGGER.error("Error occurred while fetching registry client pool", e);
+            LOGGER.error("Error occurred while fetching registry handler", e);
         }
     }
 
     @Override
     public boolean canLaunch(String experimentId) {
-        final RegistryService.Client registryClient = this.registryClientPool.getResource();
+        final RegistryService.Iface registryClient = this.registryHandler;
         try {
             List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
 
@@ -123,8 +122,6 @@ public class ProcessSchedulerImpl implements ProcessScheduler {
             return allProcessesScheduled;
         } catch (Exception exception) {
             LOGGER.error(" Exception occurred while scheduling experiment with Id {}", experimentId, exception);
-        } finally {
-            this.registryClientPool.returnResource(registryClient);
         }
 
         return false;

@@ -24,12 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.handler.CredentialStoreServerHandler;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.credential.util.CredentialStoreClientFactory;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.handler.RegistryServerHandler;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -39,7 +36,6 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResou
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +69,7 @@ public class SSHAccountManager {
     private static SSHAccountProvisioner getSshAccountProvisioner(String gatewayId, String computeResourceId)
             throws InvalidSetupException {
         // get compute resource preferences for the gateway and hostname
-        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        RegistryService.Iface registryServiceClient = getRegistryServiceClient();
         ComputeResourcePreference computeResourcePreference = null;
         try {
             computeResourcePreference =
@@ -83,13 +79,6 @@ public class SSHAccountManager {
                     "Failed to get ComputeResourcePreference for [" + gatewayId + "] and [" + computeResourceId + "]: "
                             + e.getMessage(),
                     e);
-        } finally {
-            if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getInputProtocol().getTransport().close();
-            }
-            if (registryServiceClient.getOutputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getOutputProtocol().getTransport().close();
-            }
         }
 
         // get the account provisioner and config values for the preferences
@@ -122,7 +111,7 @@ public class SSHAccountManager {
             throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
-        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        RegistryService.Iface registryServiceClient = getRegistryServiceClient();
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
         SSHJobSubmission sshJobSubmission = null;
@@ -144,13 +133,6 @@ public class SSHAccountManager {
                     "Failed to retrieve compute resource information for [" + gatewayId + "] and " + "["
                             + computeResourceId + "]: " + e.getMessage(),
                     e);
-        } finally {
-            if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getInputProtocol().getTransport().close();
-            }
-            if (registryServiceClient.getOutputProtocol().getTransport().isOpen()) {
-                registryServiceClient.getOutputProtocol().getTransport().close();
-            }
         }
 
         if (sshJobSubmission == null) {
@@ -258,52 +240,28 @@ public class SSHAccountManager {
     private static Map<ConfigParam, String> resolveProvisionerConfig(
             String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig)
             throws InvalidSetupException {
-        CredentialStoreService.Client credentialStoreServiceClient = null;
-        try {
-            credentialStoreServiceClient = getCredentialStoreClient();
-            // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
-            Map<ConfigParam, String> resolvedConfig = new HashMap<>();
-            for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
-                if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
-                    try {
-                        PasswordCredential password =
-                                credentialStoreServiceClient.getPasswordCredential(configEntry.getValue(), gatewayId);
-                        if (password == null) {
-                            throw new InvalidSetupException("Password credential doesn't exist for config param ["
-                                    + configEntry.getKey().getName() + "] for token [" + configEntry.getValue()
-                                    + "] for provisioner [" + provisionerName + "].");
-                        }
-                        resolvedConfig.put(configEntry.getKey(), password.getPassword());
-                    } catch (TException e) {
-                        throw new RuntimeException("Failed to get password needed to configure " + provisionerName, e);
+        CredentialStoreService.Iface credentialStoreHandler = getCredentialStoreHandler();
+        // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
+        Map<ConfigParam, String> resolvedConfig = new HashMap<>();
+        for (Map.Entry<ConfigParam, String> configEntry : provisionerConfig.entrySet()) {
+            if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
+                try {
+                    PasswordCredential password =
+                            credentialStoreHandler.getPasswordCredential(configEntry.getValue(), gatewayId);
+                    if (password == null) {
+                        throw new InvalidSetupException("Password credential doesn't exist for config param ["
+                                + configEntry.getKey().getName() + "] for token [" + configEntry.getValue()
+                                + "] for provisioner [" + provisionerName + "].");
                     }
-                } else {
-                    resolvedConfig.put(configEntry.getKey(), configEntry.getValue());
+                    resolvedConfig.put(configEntry.getKey(), password.getPassword());
+                } catch (TException e) {
+                    throw new RuntimeException("Failed to get password needed to configure " + provisionerName, e);
                 }
-            }
-            return resolvedConfig;
-        } finally {
-            if (credentialStoreServiceClient != null) {
-                if (credentialStoreServiceClient
-                        .getInputProtocol()
-                        .getTransport()
-                        .isOpen()) {
-                    credentialStoreServiceClient
-                            .getInputProtocol()
-                            .getTransport()
-                            .close();
-                }
-                if (credentialStoreServiceClient
-                        .getOutputProtocol()
-                        .getTransport()
-                        .isOpen()) {
-                    credentialStoreServiceClient
-                            .getOutputProtocol()
-                            .getTransport()
-                            .close();
-                }
+            } else {
+                resolvedConfig.put(configEntry.getKey(), configEntry.getValue());
             }
         }
+        return resolvedConfig;
     }
 
     private static Map<ConfigParam, String> convertConfigParams(
@@ -324,25 +282,15 @@ public class SSHAccountManager {
         return result;
     }
 
-    private static RegistryService.Client getRegistryServiceClient() {
-
-        try {
-            String registryServerHost = ServerSettings.getRegistryServerHost();
-            int registryServerPort = Integer.valueOf(ServerSettings.getRegistryServerPort());
-            return RegistryServiceClientFactory.createRegistryClient(registryServerHost, registryServerPort);
-        } catch (ApplicationSettingsException | RegistryServiceException e) {
-            throw new RuntimeException("Failed to create registry service client", e);
-        }
+    private static RegistryService.Iface getRegistryServiceClient() {
+        return new RegistryServerHandler();
     }
 
-    private static CredentialStoreService.Client getCredentialStoreClient() {
-
+    private static CredentialStoreService.Iface getCredentialStoreHandler() {
         try {
-            String credServerHost = ServerSettings.getCredentialStoreServerHost();
-            int credServerPort = Integer.valueOf(ServerSettings.getCredentialStoreServerPort());
-            return CredentialStoreClientFactory.createAiravataCSClient(credServerHost, credServerPort);
-        } catch (CredentialStoreException | ApplicationSettingsException e) {
-            throw new RuntimeException("Failed to create credential store service client", e);
+            return new CredentialStoreServerHandler();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create CredentialStoreServerHandler", e);
         }
     }
 }

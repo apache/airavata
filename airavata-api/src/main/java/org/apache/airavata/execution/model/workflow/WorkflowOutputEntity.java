@@ -68,7 +68,7 @@ public class WorkflowOutputEntity implements Serializable {
     private String searchQuery;
 
     @ManyToOne(targetEntity = WorkflowEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "TEMPLATE_ID")
+    @JoinColumn(name = "TEMPLATE_ID", insertable = false, updatable = false)
     private WorkflowEntity workflow;
 
     public WorkflowOutputEntity() {}

@@ -21,8 +21,6 @@ package org.apache.airavata.compute.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the module_load_cmd database table.
@@ -45,8 +43,7 @@ public class ModuleLoadCmdEntity implements Serializable {
     private int commandOrder;
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "APP_DEPLOYMENT_ID")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "APP_DEPLOYMENT_ID", insertable = false, updatable = false)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public ModuleLoadCmdEntity() {}

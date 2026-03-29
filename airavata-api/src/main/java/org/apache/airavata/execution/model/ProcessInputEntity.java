@@ -83,7 +83,7 @@ public class ProcessInputEntity implements Serializable {
     private String overrideFilename;
 
     @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, updatable = false)
     private ProcessEntity process;
 
     public ProcessInputEntity() {}

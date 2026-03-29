@@ -25,11 +25,8 @@ import org.apache.airavata.execution.util.common.TestBase;
 import org.apache.airavata.execution.util.cpi.WorkflowCatalogException;
 import org.apache.airavata.model.workflow.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-// TODO: fix derby initialization script so that this test can be re-enabled
-@Disabled
 public class WorkflowRepositoryTest extends TestBase {
 
     private WorkflowRepository workflowRepository;
@@ -58,7 +55,7 @@ public class WorkflowRepositoryTest extends TestBase {
     private String SAMPLE_HANDLER_OUTPUT_NAME = "handler_output";
 
     public WorkflowRepositoryTest() {
-        super(Database.WORKFLOW_CATALOG);
+        super();
     }
 
     @BeforeEach

@@ -19,14 +19,14 @@
 */
 package org.apache.airavata.compute.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.UserComputeResourcePreferencePK;
 import org.apache.airavata.compute.model.UserResourceProfileEntity;
 import org.apache.airavata.compute.model.UserResourceProfilePK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.execution.util.cpi.UsrResourceProfile;
@@ -39,12 +39,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UserResourceProfileRepository
-        extends AppCatAbstractRepository<UserResourceProfile, UserResourceProfileEntity, UserResourceProfilePK>
+        extends AbstractRepository<UserResourceProfile, UserResourceProfileEntity, UserResourceProfilePK>
         implements UsrResourceProfile {
     private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileRepository.class);
 
     public UserResourceProfileRepository() {
         super(UserResourceProfile.class, UserResourceProfileEntity.class);
+    }
+
+    @Override
+    protected UserResourceProfile toModel(UserResourceProfileEntity entity) {
+        return ComputeMapper.INSTANCE.userResourceProfileToModel(entity);
+    }
+
+    @Override
+    protected UserResourceProfileEntity toEntity(UserResourceProfile model) {
+        return ComputeMapper.INSTANCE.userResourceProfileToEntity(model);
     }
 
     protected String saveUserResourceProfileData(UserResourceProfile userResourceProfile) throws AppCatalogException {
@@ -56,9 +66,8 @@ public class UserResourceProfileRepository
             throws AppCatalogException {
         String userId = userResourceProfile.getUserId();
         String gatewayId = userResourceProfile.getGatewayID();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         UserResourceProfileEntity userResourceProfileEntity =
-                mapper.map(userResourceProfile, UserResourceProfileEntity.class);
+                ComputeMapper.INSTANCE.userResourceProfileToEntity(userResourceProfile);
 
         if (userResourceProfileEntity.getUserComputeResourcePreferences() != null) {
             logger.debug(

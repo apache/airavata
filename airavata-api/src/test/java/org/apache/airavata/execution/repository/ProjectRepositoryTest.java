@@ -43,7 +43,7 @@ public class ProjectRepositoryTest extends TestBase {
     ProjectRepository projectRepository;
 
     public ProjectRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
     }

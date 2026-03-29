@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.monitor;
 
-import org.apache.airavata.common.util.ThriftClientPool;
 import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
@@ -29,10 +28,10 @@ import org.apache.airavata.registry.api.RegistryService;
 
 public abstract class ComputeResourceMonitor {
 
-    protected ThriftClientPool<RegistryService.Client> registryClientPool;
+    protected RegistryService.Iface registryHandler;
 
     public ComputeResourceMonitor() {
-        this.registryClientPool = Utils.getRegistryServiceClientPool();
+        this.registryHandler = Utils.getRegistryHandler();
     }
 
     private boolean isValid(String str) {
@@ -40,28 +39,18 @@ public abstract class ComputeResourceMonitor {
     }
 
     public UserResourceProfile getUserResourceProfile(String username, String gatewayId) throws Exception {
-        RegistryService.Client client = this.registryClientPool.getResource();
-        try {
-            if (client.isUserResourceProfileExists(username, gatewayId)) {
-                return client.getUserResourceProfile(username, gatewayId);
-            }
-            return null;
-        } finally {
-            this.registryClientPool.returnResource(client);
+        if (registryHandler.isUserResourceProfileExists(username, gatewayId)) {
+            return registryHandler.getUserResourceProfile(username, gatewayId);
         }
+        return null;
     }
 
     private UserComputeResourcePreference getUserComputeResourcePreference(
             String gatewayId, String username, String computeResourceId) throws Exception {
-        RegistryService.Client client = this.registryClientPool.getResource();
-        try {
-            if (client.isUserComputeResourcePreferenceExists(username, gatewayId, computeResourceId)) {
-                return client.getUserComputeResourcePreference(username, gatewayId, computeResourceId);
-            }
-            return null;
-        } finally {
-            this.registryClientPool.returnResource(client);
+        if (registryHandler.isUserComputeResourcePreferenceExists(username, gatewayId, computeResourceId)) {
+            return registryHandler.getUserComputeResourcePreference(username, gatewayId, computeResourceId);
         }
+        return null;
     }
 
     public String getComputeResourceCredentialToken(
@@ -94,27 +83,17 @@ public abstract class ComputeResourceMonitor {
 
     public GroupComputeResourcePreference getGroupComputeResourcePreference(
             String computeResourcId, String groupResourceProfileId) throws Exception {
-        RegistryService.Client client = this.registryClientPool.getResource();
-        try {
-            if (client.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
-                return client.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);
-            }
-            return null;
-        } finally {
-            this.registryClientPool.returnResource(client);
+        if (registryHandler.isGroupComputeResourcePreferenceExists(computeResourcId, groupResourceProfileId)) {
+            return registryHandler.getGroupComputeResourcePreference(computeResourcId, groupResourceProfileId);
         }
+        return null;
     }
 
     public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws Exception {
-        RegistryService.Client client = this.registryClientPool.getResource();
-        try {
-            if (client.isGroupResourceProfileExists(groupResourceProfileId)) {
-                return client.getGroupResourceProfile(groupResourceProfileId);
-            }
-            return null;
-        } finally {
-            this.registryClientPool.returnResource(client);
+        if (registryHandler.isGroupResourceProfileExists(groupResourceProfileId)) {
+            return registryHandler.getGroupResourceProfile(groupResourceProfileId);
         }
+        return null;
     }
 
     public String getComputeResourceLoginUserName(

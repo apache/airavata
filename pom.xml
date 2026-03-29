@@ -69,19 +69,19 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
-        <module>airavata-thrift-server</module>
-        <module>integration-tests</module>
-        <module>modules/file-server</module>
-        <module>modules/agent-framework/agent-service</module>
-        <module>modules/research-framework/research-service</module>
-        <module>airavata-rest-server</module>
-        <module>airavata-grpc-server</module>
+        <module>airavata-api/file-server</module>
+        <module>airavata-api/agent-service</module>
+        <module>airavata-api/research-service</module>
+        <module>airavata-server/thrift</module>
+        <module>airavata-server/rest</module>
+        <module>airavata-server/grpc</module>
         <module>airavata-server</module>
     </modules>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skipTests>false</skipTests>
+        <surefire.excludedGroups>integration | runtime</surefire.excludedGroups>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     </properties>
 
@@ -105,6 +105,11 @@ under the License.
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-1.2-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -646,14 +651,28 @@ under the License.
                     <skipTests>${skipTests}</skipTests>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <forkCount>1</forkCount>
+                    <forkCount>1C</forkCount>
                     <reuseForks>true</reuseForks>
+                    <!-- Fail on first error for fast feedback during development -->
+                    <skipAfterFailureCount>1</skipAfterFailureCount>
                     <excludes>
                         <exclude>**/IT.java</exclude>
                         <exclude>**/*TestWithMyProxyAuth.java</exclude>
                         <exclude>**/*TestWithSSHAuth.java</exclude>
                         <exclude>**/*TestWithEC2Auth.java</exclude>
                     </excludes>
+                    <!-- Exclude @Tag("integration") tests by default — they require Docker -->
+                    <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                    <!-- JUnit 5 parallel execution for unit tests -->
+                    <properties>
+                        <configurationParameters>
+                            junit.jupiter.execution.parallel.enabled = true
+                            junit.jupiter.execution.parallel.mode.default = concurrent
+                            junit.jupiter.execution.parallel.mode.classes.default = concurrent
+                            junit.jupiter.execution.parallel.config.strategy = dynamic
+                            junit.jupiter.execution.parallel.config.dynamic.factor = 1
+                        </configurationParameters>
+                    </properties>
                 </configuration>
             </plugin>
             <plugin>
@@ -713,7 +732,7 @@ under the License.
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.2</version>
+                    <version>3.5.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1131,4 +1150,40 @@ under the License.
             </roles>
         </developer>
     </developers>
+
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <properties>
+                <surefire.excludedGroups></surefire.excludedGroups>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>integration</groups>
+                            <excludedGroups></excludedGroups>
+                            <!-- Pass groups to system property for SharedMariaDBLauncherSessionListener -->
+                            <systemPropertyVariables>
+                                <surefire.groups>integration</surefire.groups>
+                            </systemPropertyVariables>
+                            <forkCount>1C</forkCount>
+                            <!-- Integration tests run fully parallel — per-test transaction rollback provides isolation -->
+                            <properties>
+                                <configurationParameters>
+                                    junit.jupiter.execution.parallel.enabled = true
+                                    junit.jupiter.execution.parallel.mode.default = concurrent
+                                    junit.jupiter.execution.parallel.mode.classes.default = concurrent
+                                    junit.jupiter.execution.parallel.config.strategy = dynamic
+                                    junit.jupiter.execution.parallel.config.dynamic.factor = 2
+                                </configurationParameters>
+                            </properties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

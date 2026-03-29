@@ -21,9 +21,7 @@ package org.apache.airavata.execution.orchestrator;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.ValidationResults;
@@ -32,7 +30,6 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +37,10 @@ import org.slf4j.LoggerFactory;
 public class BatchQueueValidator implements JobMetadataValidator {
     private static final Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
-    private RegistryService.Client registryClient;
+    private final RegistryService.Iface registryHandler;
 
-    public BatchQueueValidator() throws TException, ApplicationSettingsException {
-        this.registryClient = getRegistryServiceClient();
+    public BatchQueueValidator() {
+        this.registryHandler = Utils.getRegistryHandler();
     }
 
     public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
@@ -78,12 +75,12 @@ public class BatchQueueValidator implements JobMetadataValidator {
         } else {
             ComputeResourceDescription computeResource;
             if (processModel == null) {
-                computeResource = registryClient.getComputeResource(experiment
+                computeResource = registryHandler.getComputeResource(experiment
                         .getUserConfigurationData()
                         .getComputationalResourceScheduling()
                         .getResourceHostId());
             } else {
-                computeResource = registryClient.getComputeResource(
+                computeResource = registryHandler.getComputeResource(
                         processModel.getProcessResourceSchedule().getResourceHostId());
             }
 
@@ -223,15 +220,5 @@ public class BatchQueueValidator implements JobMetadataValidator {
             }
         }
         return validatorResultList;
-    }
-
-    private RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
     }
 }

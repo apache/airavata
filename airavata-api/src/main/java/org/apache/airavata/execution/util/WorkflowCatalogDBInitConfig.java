@@ -28,7 +28,7 @@ public class WorkflowCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public JDBCConfig getJDBCConfig() {
-        return new WorkflowCatalogJDBCConfig();
+        return null;
     }
 
     @Override

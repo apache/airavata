@@ -19,12 +19,9 @@
 */
 package org.apache.airavata.execution.orchestrator;
 
-import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.common.util.ThriftUtils;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
@@ -32,7 +29,6 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +38,9 @@ public class OrchestratorServerUtils {
 
     public static void updateAndPublishExperimentStatus(
             String experimentId, ExperimentStatus status, Publisher publisher, String gatewayId) throws TException {
-        RegistryService.Client registryClient = null;
         try {
-            registryClient = getRegistryServiceClient();
-            registryClient.updateExperimentStatus(status, experimentId);
+            RegistryService.Iface registryHandler = Utils.getRegistryHandler();
+            registryHandler.updateExperimentStatus(status, experimentId);
             ExperimentStatusChangeEvent event =
                     new ExperimentStatusChangeEvent(status.getState(), experimentId, gatewayId);
             String messageId = AiravataUtils.getId("EXPERIMENT");
@@ -55,45 +50,14 @@ public class OrchestratorServerUtils {
         } catch (AiravataException e) {
             log.error(
                     "expId : " + experimentId + " Error while publishing experiment status to " + status.toString(), e);
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
         }
     }
 
-    public static ExperimentStatus getExperimentStatus(String experimentId)
-            throws TException, ApplicationSettingsException {
-        RegistryService.Client registryClient = null;
-        try {
-            registryClient = getRegistryServiceClient();
-            return registryClient.getExperimentStatus(experimentId);
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
-        }
+    public static ExperimentStatus getExperimentStatus(String experimentId) throws TException {
+        return Utils.getRegistryHandler().getExperimentStatus(experimentId);
     }
 
-    public static ProcessModel getProcess(String processId) throws TException, ApplicationSettingsException {
-        RegistryService.Client registryClient = null;
-        try {
-            registryClient = getRegistryServiceClient();
-            return registryClient.getProcess(processId);
-        } finally {
-            if (registryClient != null) {
-                ThriftUtils.close(registryClient);
-            }
-        }
-    }
-
-    private static RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    public static ProcessModel getProcess(String processId) throws TException {
+        return Utils.getRegistryHandler().getProcess(processId);
     }
 }

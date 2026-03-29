@@ -34,7 +34,7 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public JDBCConfig getJDBCConfig() {
-        return new ExpCatalogJDBCConfig();
+        return null;
     }
 
     @Override

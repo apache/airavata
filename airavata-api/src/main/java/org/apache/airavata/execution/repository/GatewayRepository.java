@@ -19,27 +19,37 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.GatewayEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.workspace.Gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GatewayRepository extends ExpCatAbstractRepository<Gateway, GatewayEntity, String> {
+public class GatewayRepository extends AbstractRepository<Gateway, GatewayEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepository.class);
 
     public GatewayRepository() {
         super(Gateway.class, GatewayEntity.class);
+    }
+
+    @Override
+    protected Gateway toModel(GatewayEntity entity) {
+        return ExecutionMapper.INSTANCE.gatewayToModel(entity);
+    }
+
+    @Override
+    protected GatewayEntity toEntity(Gateway model) {
+        return ExecutionMapper.INSTANCE.gatewayToEntity(model);
     }
 
     protected String saveGatewayData(Gateway gateway) throws RegistryException {
@@ -49,8 +59,7 @@ public class GatewayRepository extends ExpCatAbstractRepository<Gateway, Gateway
 
     protected GatewayEntity saveGateway(Gateway gateway) throws RegistryException {
         String gatewayId = gateway.getGatewayId();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        GatewayEntity gatewayEntity = mapper.map(gateway, GatewayEntity.class);
+        GatewayEntity gatewayEntity = ExecutionMapper.INSTANCE.gatewayToEntity(gateway);
 
         if (!isGatewayExist(gatewayId)) {
             logger.debug("Checking if the Gateway already exists");

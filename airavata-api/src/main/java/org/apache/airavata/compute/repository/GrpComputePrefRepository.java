@@ -19,10 +19,12 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
 import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
@@ -33,11 +35,21 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeRes
  * Created by skariyat on 2/10/18.
  */
 public class GrpComputePrefRepository
-        extends AppCatAbstractRepository<
+        extends AbstractRepository<
                 GroupComputeResourcePreference, GroupComputeResourcePrefEntity, GroupComputeResourcePrefPK> {
 
     public GrpComputePrefRepository() {
         super(GroupComputeResourcePreference.class, GroupComputeResourcePrefEntity.class);
+    }
+
+    @Override
+    protected GroupComputeResourcePreference toModel(GroupComputeResourcePrefEntity entity) {
+        return ComputeMapper.INSTANCE.groupComputePrefToModel(entity);
+    }
+
+    @Override
+    protected GroupComputeResourcePrefEntity toEntity(GroupComputeResourcePreference model) {
+        return ComputeMapper.INSTANCE.groupComputePrefToEntity(model);
     }
 
     @Override

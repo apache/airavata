@@ -24,6 +24,9 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.execution.util.common.SharedMariaDB;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.MariaDBContainer;
@@ -32,41 +35,32 @@ import org.testcontainers.containers.MariaDBContainer;
  * Base class for database tests using a singleton Testcontainers MariaDB.
  * Provides a real MariaDB instance via Docker for integration testing.
  */
+@Tag("integration")
+@Execution(ExecutionMode.SAME_THREAD)
 public class DatabaseTestCases {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseTestCases.class);
 
-    private static final MariaDBContainer<?> mariadb = SharedMariaDB.getInstance();
-
-    protected static String hostAddress;
-    protected static int port;
-    protected static String userName;
-    protected static String password;
     protected static String driver = "org.mariadb.jdbc.Driver";
 
-    static {
-        hostAddress = mariadb.getHost();
-        port = mariadb.getFirstMappedPort();
-        userName = mariadb.getUsername();
-        password = mariadb.getPassword();
-
-        logger.info("Test MariaDB started at {}:{}", hostAddress, port);
+    private static MariaDBContainer<?> mariadb() {
+        return SharedMariaDB.getInstance();
     }
 
     public static String getHostAddress() {
-        return hostAddress;
+        return mariadb().getHost();
     }
 
     public static int getPort() {
-        return port;
+        return mariadb().getFirstMappedPort();
     }
 
     public static String getUserName() {
-        return userName;
+        return mariadb().getUsername();
     }
 
     public static String getPassword() {
-        return password;
+        return mariadb().getPassword();
     }
 
     public static String getDriver() {
@@ -74,7 +68,7 @@ public class DatabaseTestCases {
     }
 
     public static String getJDBCUrl() {
-        return mariadb.getJdbcUrl();
+        return mariadb().getJdbcUrl();
     }
 
     public static void waitTillServerStarts() {

@@ -38,7 +38,7 @@ public class NotificationRepositoryTest extends TestBase {
     NotificationRepository notificationRepository;
 
     public NotificationRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         notificationRepository = new NotificationRepository();
     }
 

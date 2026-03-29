@@ -19,11 +19,11 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExperimentOutputEntity;
 import org.apache.airavata.execution.model.ExperimentOutputPK;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -31,19 +31,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExperimentOutputRepository
-        extends ExpCatAbstractRepository<OutputDataObjectType, ExperimentOutputEntity, ExperimentOutputPK> {
+        extends AbstractRepository<OutputDataObjectType, ExperimentOutputEntity, ExperimentOutputPK> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentOutputRepository.class);
 
     public ExperimentOutputRepository() {
         super(OutputDataObjectType.class, ExperimentOutputEntity.class);
     }
 
+    @Override
+    protected OutputDataObjectType toModel(ExperimentOutputEntity entity) {
+        return ExecutionMapper.INSTANCE.experimentOutputToModel(entity);
+    }
+
+    @Override
+    protected ExperimentOutputEntity toEntity(OutputDataObjectType model) {
+        return ExecutionMapper.INSTANCE.experimentOutputToEntity(model);
+    }
+
     protected void saveExperimentOutput(List<OutputDataObjectType> experimentOutputs, String experimentId)
             throws RegistryException {
 
         for (OutputDataObjectType output : experimentOutputs) {
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            ExperimentOutputEntity experimentOutputEntity = mapper.map(output, ExperimentOutputEntity.class);
+            ExperimentOutputEntity experimentOutputEntity = ExecutionMapper.INSTANCE.experimentOutputToEntity(output);
 
             if (experimentOutputEntity.getExperimentId() == null) {
                 logger.debug("Setting the ExperimentOutputEntity's ExperimentId");

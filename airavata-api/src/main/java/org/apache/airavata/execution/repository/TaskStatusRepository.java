@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.execution.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
+import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.TaskStatusEntity;
 import org.apache.airavata.execution.model.TaskStatusPK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -33,16 +33,25 @@ import org.apache.airavata.model.task.TaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaskStatusRepository extends ExpCatAbstractRepository<TaskStatus, TaskStatusEntity, TaskStatusPK> {
+public class TaskStatusRepository extends AbstractRepository<TaskStatus, TaskStatusEntity, TaskStatusPK> {
     private static final Logger logger = LoggerFactory.getLogger(TaskStatusRepository.class);
 
     public TaskStatusRepository() {
         super(TaskStatus.class, TaskStatusEntity.class);
     }
 
+    @Override
+    protected TaskStatus toModel(TaskStatusEntity entity) {
+        return ExecutionMapper.INSTANCE.taskStatusToModel(entity);
+    }
+
+    @Override
+    protected TaskStatusEntity toEntity(TaskStatus model) {
+        return ExecutionMapper.INSTANCE.taskStatusToEntity(model);
+    }
+
     protected String saveTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        TaskStatusEntity taskStatusEntity = mapper.map(taskStatus, TaskStatusEntity.class);
+        TaskStatusEntity taskStatusEntity = ExecutionMapper.INSTANCE.taskStatusToEntity(taskStatus);
 
         if (taskStatusEntity.getTaskId() == null) {
             logger.debug("Setting the TaskStatusEntity's TaskId");

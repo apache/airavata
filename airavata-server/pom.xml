@@ -36,17 +36,17 @@ under the License.
         <!-- Server modules -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-rest-server</artifactId>
+            <artifactId>airavata-server-rest</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-grpc-server</artifactId>
+            <artifactId>airavata-server-grpc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-thrift-server</artifactId>
+            <artifactId>airavata-server-thrift</artifactId>
             <version>${project.version}</version>
         </dependency>
 

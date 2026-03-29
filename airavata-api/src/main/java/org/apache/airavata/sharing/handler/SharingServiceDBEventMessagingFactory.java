@@ -32,7 +32,7 @@ import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.DBEventSubscriber;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class SharingServiceDBEventMessagingFactory {
         return dbEventPublisher;
     }
 
-    public static Subscriber getDBEventSubscriber() throws AiravataException, SharingRegistryException {
+    public static Subscriber getDBEventSubscriber() throws AiravataException, TException {
         if (null == sharingServiceDBEventSubscriber) {
             synchronized (SharingServiceDBEventMessagingFactory.class) {
                 if (null == sharingServiceDBEventSubscriber) {

@@ -101,14 +101,8 @@ under the License.
       <artifactId>commons-cli</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.dozermapper</groupId>
-      <artifactId>dozer-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
@@ -410,6 +404,21 @@ under the License.
         </executions>
       </plugin>
 
+      <!-- MapStruct annotation processor -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>1.6.3</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
       <!-- Enforce version convergence -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -450,7 +459,7 @@ under the License.
                   <arg value="java:beans,jakarta_annotations=undated" />
                   <arg value="-out" />
                   <arg value="${project.build.directory}/generated-sources/thrift" />
-                  <arg value="${project.basedir}/../airavata-thrift-server/src/main/thrift/stubs_java.thrift" />
+                  <arg value="${project.basedir}/../airavata-server/thrift/src/main/thrift/stubs_java.thrift" />
                 </exec>
               </target>
             </configuration>
@@ -505,10 +514,6 @@ under the License.
         <artifactId>maven-surefire-plugin</artifactId>
         <inherited>true</inherited>
         <configuration>
-          <failIfNoTests>false</failIfNoTests>
-          <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-          <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
-          <!--  -->
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
           </systemPropertyVariables>
@@ -520,9 +525,6 @@ under the License.
             <exclude>**/DAOBaseTestCase.java</exclude>
             <exclude>**/MappingDAOTest.java</exclude>
           </excludes>
-          <!-- Exclude @Tag("integration") tests by default — they require Docker.
-               Run with: mvn test -Dgroups=integration -Dsurefire.excludedGroups="" -->
-          <excludedGroups>${surefire.excludedGroups}</excludedGroups>
         </configuration>
       </plugin>
 
@@ -614,7 +616,6 @@ under the License.
   </build>
 
   <properties>
-    <surefire.excludedGroups>integration</surefire.excludedGroups>
     <docker.api.server.build.directory>${project.build.directory}/api_server_docker_img_build</docker.api.server.build.directory>
     <docker.api.server.image.src.root>src/main/docker</docker.api.server.image.src.root>
     <api.server.dist.name>apache-airavata-api-server-${project.version}</api.server.dist.name>

@@ -45,7 +45,7 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
     private String groupResourceProfileId;
 
     @Column(name = "QUEUE_NAME")
@@ -61,7 +61,7 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     private Integer maxAllowedWalltime;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 

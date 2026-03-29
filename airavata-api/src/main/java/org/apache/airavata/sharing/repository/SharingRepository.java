@@ -23,6 +23,7 @@ import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.SharingEntity;
 import org.apache.airavata.sharing.model.SharingPK;
 import org.apache.airavata.sharing.registry.models.Sharing;
@@ -37,6 +38,16 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
 
     public SharingRepository() {
         super(Sharing.class, SharingEntity.class);
+    }
+
+    @Override
+    protected Sharing toModel(SharingEntity entity) {
+        return SharingMapper.INSTANCE.sharingToModel(entity);
+    }
+
+    @Override
+    protected SharingEntity toEntity(Sharing model) {
+        return SharingMapper.INSTANCE.sharingToEntity(model);
     }
 
     public List<Sharing> getIndirectSharedChildren(String domainId, String parentId, String permissionTypeId)

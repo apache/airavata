@@ -43,13 +43,13 @@ public class ComputeResourcePolicyEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_POLICY_ID")
+    @Column(name = "RESOURCE_POLICY_ID", insertable = false, updatable = false)
     private String resourcePolicyId;
 
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID", insertable = false, updatable = false)
     private String groupResourceProfileId;
 
     // TODO: Store COMPUTE_RESOURCE_ID and QUEUE_NAME in table so it can FK to BATCH_QUEUE
@@ -61,7 +61,7 @@ public class ComputeResourcePolicyEntity implements Serializable {
     private List<String> allowedBatchQueues;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class)
-    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, updatable = false)
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", nullable = false, insertable = false, updatable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupResourceProfileEntity groupResourceProfile;
 

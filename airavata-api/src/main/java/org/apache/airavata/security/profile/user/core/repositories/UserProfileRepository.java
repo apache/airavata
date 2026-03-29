@@ -19,16 +19,14 @@
 */
 package org.apache.airavata.security.profile.user.core.repositories;
 
-import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.security.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.security.profile.commons.user.entities.UserProfileEntity;
-import org.apache.airavata.security.profile.commons.utils.JPAUtils;
-import org.apache.airavata.security.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.security.profile.commons.utils.QueryConstants;
+import org.apache.airavata.security.profile.mapper.ProfileMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +35,16 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
     public UserProfileRepository() {
         super(UserProfile.class, UserProfileEntity.class);
+    }
+
+    @Override
+    protected UserProfile toModel(UserProfileEntity entity) {
+        return ProfileMapper.INSTANCE.userProfileToModel(entity);
+    }
+
+    @Override
+    protected UserProfileEntity toEntity(UserProfile model) {
+        return ProfileMapper.INSTANCE.userProfileToEntity(model);
     }
 
     @Override
@@ -92,21 +100,19 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
     }
 
     public UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
-
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        UserProfileEntity entity = mapper.map(userProfile, UserProfileEntity.class);
-        UserProfileEntity persistedCopy = JPAUtils.execute(entityManager -> {
+        UserProfileEntity entity = ProfileMapper.INSTANCE.userProfileToEntity(userProfile);
+        UserProfileEntity persistedCopy = execute(entityManager -> {
             UserProfileEntity result = entityManager.merge(entity);
             if (postUpdateAction != null) {
                 postUpdateAction.run();
             }
             return result;
         });
-        return mapper.map(persistedCopy, UserProfile.class);
+        return ProfileMapper.INSTANCE.userProfileToModel(persistedCopy);
     }
 
     //    public static void main(String args[]) {
-    //        Mapper mapper = ObjectMapperSingleton.getInstance();
+    //
     //        UserProfile up = new UserProfile();
     //        up.setAiravataInternalUserId("asd");
     //        up.setComments("asd");

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.sharing.repository;
 
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.DomainEntity;
 import org.apache.airavata.sharing.registry.models.Domain;
 import org.slf4j.Logger;
@@ -29,5 +30,15 @@ public class DomainRepository extends AbstractRepository<Domain, DomainEntity, S
 
     public DomainRepository() {
         super(Domain.class, DomainEntity.class);
+    }
+
+    @Override
+    protected Domain toModel(DomainEntity entity) {
+        return SharingMapper.INSTANCE.domainToModel(entity);
+    }
+
+    @Override
+    protected DomainEntity toEntity(Domain model) {
+        return SharingMapper.INSTANCE.domainToEntity(model);
     }
 }

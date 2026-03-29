@@ -19,15 +19,27 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.UserComputeResourcePreferenceEntity;
 import org.apache.airavata.compute.model.UserComputeResourcePreferencePK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 
 public class UserComputeResourcePreferenceRepository
-        extends AppCatAbstractRepository<
+        extends AbstractRepository<
                 UserComputeResourcePreference, UserComputeResourcePreferenceEntity, UserComputeResourcePreferencePK> {
 
     public UserComputeResourcePreferenceRepository() {
         super(UserComputeResourcePreference.class, UserComputeResourcePreferenceEntity.class);
+    }
+
+    @Override
+    protected UserComputeResourcePreference toModel(UserComputeResourcePreferenceEntity entity) {
+        return ComputeMapper.INSTANCE.userComputeResourcePrefToModel(entity);
+    }
+
+    @Override
+    protected UserComputeResourcePreferenceEntity toEntity(UserComputeResourcePreference model) {
+        return ComputeMapper.INSTANCE.userComputeResourcePrefToEntity(model);
     }
 }

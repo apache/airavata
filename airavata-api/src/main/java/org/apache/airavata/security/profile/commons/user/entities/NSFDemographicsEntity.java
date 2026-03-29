@@ -33,7 +33,7 @@ public class NSFDemographicsEntity {
     private UserProfileEntity userProfile;
 
     @Id
-    @Column(name = "AIRAVATA_INTERNAL_USER_ID")
+    @Column(name = "AIRAVATA_INTERNAL_USER_ID", insertable = false, updatable = false)
     public String getAiravataInternalUserId() {
         return airavataInternalUserId;
     }

@@ -55,7 +55,7 @@ public class HTCondorEmailParser implements EmailParser {
      * Returns : JobStatusResult
      * Purpose : Responsible for parsing the email to access an HTCondor job status
      */
-    public JobStatusResult parseEmail(Message message, RegistryService.Client registryClient)
+    public JobStatusResult parseEmail(Message message, RegistryService.Iface registryClient)
             throws MessagingException, AiravataException {
         // Job Status Results
         JobStatusResult jobStatusResult = new JobStatusResult();

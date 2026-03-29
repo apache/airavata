@@ -28,8 +28,6 @@ import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the grp_ssh_acc_prov_config database table.
@@ -58,13 +56,13 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
 
     @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
     @JoinColumns({
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false),
+        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", insertable = false, updatable = false),
         @JoinColumn(
                 name = "GROUP_RESOURCE_PROFILE_ID",
                 referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
-                nullable = false)
+                insertable = false,
+                updatable = false)
     })
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public GroupSSHAccountProvisionerConfig() {}

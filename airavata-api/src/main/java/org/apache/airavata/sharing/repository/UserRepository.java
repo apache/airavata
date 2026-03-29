@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.airavata.sharing.mapper.SharingMapper;
 import org.apache.airavata.sharing.model.SharingEntity;
 import org.apache.airavata.sharing.model.UserEntity;
 import org.apache.airavata.sharing.model.UserPK;
@@ -39,6 +40,16 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
 
     public UserRepository() {
         super(User.class, UserEntity.class);
+    }
+
+    @Override
+    protected User toModel(UserEntity entity) {
+        return SharingMapper.INSTANCE.userToModel(entity);
+    }
+
+    @Override
+    protected UserEntity toEntity(User model) {
+        return SharingMapper.INSTANCE.userToEntity(model);
     }
 
     public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId)
@@ -65,8 +76,8 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
             String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes)
             throws SharingRegistryException {
         Map<String, Object> queryParameters = new HashMap<>();
-        String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, "
-                + SharingEntity.class.getSimpleName() + " s";
+        String query =
+                "SELECT DISTINCT u from " + "SharingUserEntity" + " u, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "u." + DBConstants.UserTable.USER_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "u." + DBConstants.UserTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";

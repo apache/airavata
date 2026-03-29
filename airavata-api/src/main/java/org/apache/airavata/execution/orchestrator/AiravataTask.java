@@ -28,9 +28,8 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
+import org.apache.airavata.execution.scheduler.Utils;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessagingFactory;
 import org.apache.airavata.messaging.service.Publisher;
@@ -45,10 +44,7 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.security.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
-import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
@@ -524,7 +520,7 @@ public abstract class AiravataTask extends AbstractTask {
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(
                             getProcessId(), getGatewayId(), getTaskId())
                     .setRegistryClient(getRegistryServiceClient())
-                    .setProfileClient(getUserProfileClient())
+                    .setUserProfileRepository(getUserProfileRepository())
                     .setExperimentModel(getExperimentModel())
                     .setProcessModel(getProcessModel());
 
@@ -646,31 +642,11 @@ public abstract class AiravataTask extends AbstractTask {
         this.autoSchedule = autoSchedule;
     }
 
-    // TODO this is inefficient. Try to use a connection pool
-    public static RegistryService.Client getRegistryServiceClient() {
-        final String serverHost;
-        final int serverPort;
-        try {
-            serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            serverHost = ServerSettings.getRegistryServerHost();
-        } catch (ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to get registry server host or port...", e);
-        }
-        try {
-            logger.info("Connecting to registry server on {}:{}", serverHost, serverPort);
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
+    public static RegistryService.Iface getRegistryServiceClient() {
+        return Utils.getRegistryHandler();
     }
 
-    public static UserProfileService.Client getUserProfileClient() {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
-        } catch (UserProfileServiceException | ApplicationSettingsException e) {
-            throw new RuntimeException("Unable to create profile service client...", e);
-        }
+    public static UserProfileRepository getUserProfileRepository() {
+        return new UserProfileRepository();
     }
 }

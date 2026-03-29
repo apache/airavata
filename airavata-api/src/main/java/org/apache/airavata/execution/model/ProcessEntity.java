@@ -37,7 +37,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "PROCESS_ID")
     private String processId;
 
-    @Column(name = "EXPERIMENT_ID")
+    @Column(name = "EXPERIMENT_ID", insertable = false, updatable = false)
     private String experimentId;
 
     @Column(name = "CREATION_TIME")

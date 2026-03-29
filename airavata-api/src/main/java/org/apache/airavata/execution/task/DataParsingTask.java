@@ -47,7 +47,6 @@ import org.apache.airavata.execution.orchestrator.TaskDef;
 import org.apache.airavata.execution.orchestrator.TaskHelper;
 import org.apache.airavata.execution.orchestrator.TaskOnFailException;
 import org.apache.airavata.execution.orchestrator.TaskParam;
-import org.apache.airavata.execution.util.RegistryServiceClientFactory;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.parser.Parser;
@@ -61,7 +60,6 @@ import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.storage.util.StorageResourceAdaptor;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
@@ -482,14 +480,8 @@ public class DataParsingTask extends AbstractTask {
         }
     }
 
-    private static RegistryService.Client getRegistryServiceClient() throws TaskOnFailException {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-            final String serverHost = ServerSettings.getRegistryServerHost();
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException | ApplicationSettingsException e) {
-            throw new TaskOnFailException("Unable to create registry client...", false, e);
-        }
+    private static RegistryService.Iface getRegistryServiceClient() {
+        return org.apache.airavata.execution.scheduler.Utils.getRegistryHandler();
     }
 
     public String getParserId() {

@@ -31,7 +31,6 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,14 +45,13 @@ public class ExperimentStatusRepositoryTest extends TestBase {
     ExperimentStatusRepository experimentStatusRepository;
 
     public ExperimentStatusRepositoryTest() {
-        super(Database.EXP_CATALOG);
+        super();
         gatewayRepository = new GatewayRepository();
         projectRepository = new ProjectRepository();
         experimentRepository = new ExperimentRepository();
         experimentStatusRepository = new ExperimentStatusRepository();
     }
 
-    @Disabled("getExperimentStatus returns CREATED instead of EXECUTING: status update logic issue")
     @Test
     public void ExperimentStatusRepositoryTest() throws RegistryException {
         Gateway gateway = new Gateway();

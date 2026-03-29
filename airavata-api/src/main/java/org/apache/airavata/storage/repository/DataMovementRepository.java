@@ -19,24 +19,32 @@
 */
 package org.apache.airavata.storage.repository;
 
-import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.compute.repository.AppCatAbstractRepository;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.DataMovementInterfaceEntity;
 import org.apache.airavata.storage.model.DataMovementInterfacePK;
 
 public class DataMovementRepository
-        extends AppCatAbstractRepository<DataMovementInterface, DataMovementInterfaceEntity, DataMovementInterfacePK> {
+        extends AbstractRepository<DataMovementInterface, DataMovementInterfaceEntity, DataMovementInterfacePK> {
 
     public DataMovementRepository() {
         super(DataMovementInterface.class, DataMovementInterfaceEntity.class);
     }
 
+    @Override
+    protected DataMovementInterface toModel(DataMovementInterfaceEntity entity) {
+        return StorageMapper.INSTANCE.dataMovementToModel(entity);
+    }
+
+    @Override
+    protected DataMovementInterfaceEntity toEntity(DataMovementInterface model) {
+        return StorageMapper.INSTANCE.dataMovementToEntity(model);
+    }
+
     public String addDataMovementProtocol(String resourceId, DataMovementInterface dataMovementInterface) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         DataMovementInterfaceEntity dataMovementInterfaceEntity =
-                mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
+                StorageMapper.INSTANCE.dataMovementToEntity(dataMovementInterface);
         dataMovementInterfaceEntity.setComputeResourceId(resourceId);
         execute(entityManager -> entityManager.merge(dataMovementInterfaceEntity));
         return dataMovementInterfaceEntity.getDataMovementInterfaceId();

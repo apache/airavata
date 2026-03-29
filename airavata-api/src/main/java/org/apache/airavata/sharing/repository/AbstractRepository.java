@@ -19,30 +19,33 @@
 */
 package org.apache.airavata.sharing.repository;
 
-import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.util.Committer;
 import org.apache.airavata.sharing.util.DBConstants;
-import org.apache.airavata.sharing.util.JPAUtils;
-import org.apache.airavata.sharing.util.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRepository<T, E, Id> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRepository.class);
 
-    private Class<T> thriftGenericClass;
     private Class<E> dbEntityGenericClass;
 
     public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
-        this.thriftGenericClass = thriftGenericClass;
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
+
+    /** Convert a JPA entity to the Thrift/model object. */
+    protected abstract T toModel(E entity);
+
+    /** Convert a Thrift/model object to a JPA entity. */
+    protected abstract E toEntity(T model);
 
     public T create(T t) throws SharingRegistryException {
         return update(t);
@@ -54,10 +57,9 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T update(T t) throws SharingRegistryException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E entity = mapper.map(t, dbEntityGenericClass);
+        E entity = toEntity(t);
         E persistedCopy = execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        return toModel(persistedCopy);
     }
 
     // FIXME do a bulk update
@@ -82,10 +84,18 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) throws SharingRegistryException {
-        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        if (entity == null) return null;
-        return mapper.map(entity, thriftGenericClass);
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            testEM.clear();
+            E entity = testEM.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            return toModel(entity);
+        }
+        return execute(entityManager -> {
+            E entity = entityManager.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            return toModel(entity);
+        });
     }
 
     public boolean isExists(Id id) throws SharingRegistryException {
@@ -99,7 +109,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
-        String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
+        String query = "SELECT DISTINCT p from " + getEntityName() + " as p";
         ArrayList<String> parameters = new ArrayList<>();
         int parameterCount = 1;
         if (filters != null && filters.size() != 0) {
@@ -122,9 +132,8 @@ public abstract class AbstractRepository<T, E, Id> {
             }
             return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> gatewayList.add(toModel((E) rs)));
         return gatewayList;
     }
 
@@ -138,14 +147,24 @@ public abstract class AbstractRepository<T, E, Id> {
             }
             return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
         });
-        Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
+        resultSet.stream().forEach(rs -> gatewayList.add(toModel((E) rs)));
         return gatewayList;
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
-        EntityManager entityManager = JPAUtils.getEntityManager();
+        EntityManager testEM = EntityManagerFactoryHolder.getTestEntityManager();
+        if (testEM != null && testEM.isOpen()) {
+            try {
+                R r = committer.commit(testEM);
+                testEM.flush();
+                return r;
+            } catch (Exception e) {
+                throw new SharingRegistryException("Failed to execute in test transaction: " + e.getMessage());
+            }
+        }
+
+        EntityManager entityManager = EntityManagerFactoryHolder.createEntityManager();
         try {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
@@ -159,5 +178,17 @@ public abstract class AbstractRepository<T, E, Id> {
                 entityManager.close();
             }
         }
+    }
+
+    /**
+     * Returns the JPA entity name, respecting any explicit {@code @Entity(name = "...")} annotation.
+     * Falls back to the simple class name when no explicit name is set.
+     */
+    private String getEntityName() {
+        Entity annotation = dbEntityGenericClass.getAnnotation(Entity.class);
+        if (annotation != null && !annotation.name().isEmpty()) {
+            return annotation.name();
+        }
+        return dbEntityGenericClass.getSimpleName();
     }
 }

@@ -40,7 +40,7 @@ public class SFTPDeleteDirTest {
     private SshServer sshd;
     private int port;
     private Path sftpRootDir;
-    private int sftpPort = 52122;
+    private int sftpPort; // assigned dynamically by SshServer
 
     private String privateKey = "-----BEGIN OPENSSH PRIVATE KEY-----\n"
             + "b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABCHHZONdz\n"
@@ -97,7 +97,7 @@ public class SFTPDeleteDirTest {
 
         sshd = SshServer.setUpDefaultServer();
         sshd.setHost("localhost");
-        sshd.setPort(sftpPort);
+        sshd.setPort(0); // OS-assigned port
 
         // Host key (for the server itself, unrelated to client auth)
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
@@ -117,6 +117,7 @@ public class SFTPDeleteDirTest {
 
         sshd.start();
         port = sshd.getPort();
+        sftpPort = port;
     }
 
     @AfterEach

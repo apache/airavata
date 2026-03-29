@@ -23,7 +23,7 @@ import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Entity
+@Entity(name = "SharingUserEntity")
 @Table(name = "SHARING_USER", schema = "") // USER is a reserved term in derby
 @IdClass(UserPK.class)
 public class UserEntity {

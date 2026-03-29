@@ -19,18 +19,30 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ParserOutputEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.parser.ParserOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParserOutputRepository extends AppCatAbstractRepository<ParserOutput, ParserOutputEntity, String> {
+public class ParserOutputRepository extends AbstractRepository<ParserOutput, ParserOutputEntity, String> {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserInputRepository.class);
 
     public ParserOutputRepository() {
         super(ParserOutput.class, ParserOutputEntity.class);
+    }
+
+    @Override
+    protected ParserOutput toModel(ParserOutputEntity entity) {
+        return ComputeMapper.INSTANCE.parserOutputToModel(entity);
+    }
+
+    @Override
+    protected ParserOutputEntity toEntity(ParserOutput model) {
+        return ComputeMapper.INSTANCE.parserOutputToEntity(model);
     }
 
     public ParserOutput getParserOutput(String outputId) throws AppCatalogException {

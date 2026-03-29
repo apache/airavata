@@ -19,22 +19,24 @@
 */
 package org.apache.airavata.storage.repository;
 
-import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
-import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.DataProductInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
+import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String>
+public class DataProductRepository extends AbstractRepository<DataProductModel, DataProductEntity, String>
         implements DataProductInterface {
     private static final Logger logger = LoggerFactory.getLogger(DataProductRepository.class);
     private static final DataReplicaLocationRepository dataReplicaLocationRepository =
@@ -42,6 +44,33 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
 
     public DataProductRepository() {
         super(DataProductModel.class, DataProductEntity.class);
+    }
+
+    @Override
+    protected DataProductModel toModel(DataProductEntity entity) {
+        return StorageMapper.INSTANCE.dataProductToModel(entity);
+    }
+
+    @Override
+    protected DataProductEntity toEntity(DataProductModel model) {
+        return StorageMapper.INSTANCE.dataProductToEntity(model);
+    }
+
+    @Override
+    protected void initializeEntity(DataProductEntity entity) {
+        // Replace Hibernate PersistentCollection wrappers with plain Java collections
+        // to prevent LazyInitializationException when Dozer accesses elements via get()
+        if (entity.getProductMetadata() != null) {
+            entity.setProductMetadata(new HashMap<>(entity.getProductMetadata()));
+        }
+        if (entity.getReplicaLocations() != null) {
+            entity.getReplicaLocations().forEach(replica -> {
+                if (replica.getReplicaMetadata() != null) {
+                    replica.setReplicaMetadata(new HashMap<>(replica.getReplicaMetadata()));
+                }
+            });
+            entity.setReplicaLocations(new ArrayList<>(entity.getReplicaLocations()));
+        }
     }
 
     protected String saveDataProductModelData(DataProductModel dataProductModel) throws ReplicaCatalogException {
@@ -58,8 +87,7 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         }
 
         String productUri = dataProductModel.getProductUri();
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        DataProductEntity dataProductEntity = mapper.map(dataProductModel, DataProductEntity.class);
+        DataProductEntity dataProductEntity = StorageMapper.INSTANCE.dataProductToEntity(dataProductModel);
 
         if (dataProductEntity.getOwnerName() == null || dataProductEntity.getGatewayId() == null) {
             logger.error("Owner name and/or gateway ID is empty");
@@ -101,7 +129,15 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
 
         dataProductEntity.setLastModifiedTime(currentTime);
 
-        return execute(entityManager -> entityManager.merge(dataProductEntity));
+        return execute(entityManager -> {
+            // Hibernate 6 requires @ManyToOne references to be set (not just the FK column)
+            if (dataProductEntity.getReplicaLocations() != null) {
+                dataProductEntity
+                        .getReplicaLocations()
+                        .forEach(replicaLocation -> replicaLocation.setDataProduct(dataProductEntity));
+            }
+            return entityManager.merge(dataProductEntity);
+        });
     }
 
     @Override
