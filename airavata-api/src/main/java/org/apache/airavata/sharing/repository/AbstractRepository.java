@@ -83,10 +83,13 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) throws SharingRegistryException {
-        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        if (entity == null) return null;
-        return mapper.map(entity, thriftGenericClass);
+        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
+        return execute(entityManager -> {
+            E entity = entityManager.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            return mapper.map(entity, thriftGenericClass);
+        });
     }
 
     public boolean isExists(Id id) throws SharingRegistryException {

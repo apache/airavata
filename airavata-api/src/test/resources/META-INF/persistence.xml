@@ -167,6 +167,10 @@
     <class>org.apache.airavata.sharing.model.UserGroupEntity</class>
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+    <properties>
+      <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+    </properties>
   </persistence-unit>
 
 </persistence>

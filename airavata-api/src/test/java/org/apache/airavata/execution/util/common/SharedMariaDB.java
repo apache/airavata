@@ -63,6 +63,7 @@ public class SharedMariaDB {
             props.put("jakarta.persistence.jdbc.driver", INSTANCE.getDriverClassName());
             props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
             props.put("hibernate.hbm2ddl.auto", "update");
+            props.put("hibernate.enable_lazy_load_no_trans", "true");
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("airavata", props);
             EntityManagerFactoryHolder.setFactory(emf);
         } catch (Exception e) {

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
+import org.apache.airavata.execution.model.ProcessEntity;
 import org.apache.airavata.execution.model.TaskEntity;
 import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
@@ -80,7 +81,15 @@ public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, St
 
         populateParentIds(taskEntity);
 
-        return execute(entityManager -> entityManager.merge(taskEntity));
+        return execute(entityManager -> {
+            // Hibernate 6 requires @ManyToOne references to be set (not just the FK column)
+            if (taskEntity.getProcess() == null && taskEntity.getParentProcessId() != null) {
+                ProcessEntity processRef =
+                        entityManager.getReference(ProcessEntity.class, taskEntity.getParentProcessId());
+                taskEntity.setProcess(processRef);
+            }
+            return entityManager.merge(taskEntity);
+        });
     }
 
     protected void populateParentIds(TaskEntity taskEntity) {

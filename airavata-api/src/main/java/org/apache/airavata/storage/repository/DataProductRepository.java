@@ -102,7 +102,15 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
 
         dataProductEntity.setLastModifiedTime(currentTime);
 
-        return execute(entityManager -> entityManager.merge(dataProductEntity));
+        return execute(entityManager -> {
+            // Hibernate 6 requires @ManyToOne references to be set (not just the FK column)
+            if (dataProductEntity.getReplicaLocations() != null) {
+                dataProductEntity
+                        .getReplicaLocations()
+                        .forEach(replicaLocation -> replicaLocation.setDataProduct(dataProductEntity));
+            }
+            return entityManager.merge(dataProductEntity);
+        });
     }
 
     @Override

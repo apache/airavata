@@ -1,0 +1,15 @@
+# SimExR Configuration File
+# Copy this file to config.yaml and update with your actual values
+
+openai:
+  # Replace with your actual OpenAI API key
+  # Get your API key from: https://platform.openai.com/account/api-keys
+  api_key: "YOUR_OPENAI_API_KEY_HERE"
+
+database:
+  # Path to the SQLite database file
+  path: "mcp.db"
+
+media:
+  # Root directory for storing simulation results and media files
+  root: "results_media"

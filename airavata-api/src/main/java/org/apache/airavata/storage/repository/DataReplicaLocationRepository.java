@@ -29,6 +29,7 @@ import org.apache.airavata.execution.util.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.model.DataReplicaLocationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,16 @@ public class DataReplicaLocationRepository
 
         dataReplicaLocationEntity.setLastModifiedTime(new Timestamp(System.currentTimeMillis()));
 
-        return execute(entityManager -> entityManager.merge(dataReplicaLocationEntity));
+        return execute(entityManager -> {
+            // Hibernate 6 requires @ManyToOne references to be set (not just the FK column)
+            if (dataReplicaLocationEntity.getDataProduct() == null
+                    && dataReplicaLocationEntity.getProductUri() != null) {
+                DataProductEntity dataProductRef =
+                        entityManager.getReference(DataProductEntity.class, dataReplicaLocationEntity.getProductUri());
+                dataReplicaLocationEntity.setDataProduct(dataProductRef);
+            }
+            return entityManager.merge(dataReplicaLocationEntity);
+        });
     }
 
     @Override

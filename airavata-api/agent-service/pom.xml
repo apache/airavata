@@ -171,7 +171,7 @@ under the License.
         <configuration>
           <protocVersion>4.30.1</protocVersion>
           <sourceDirectories>
-            <sourceDirectory>${project.basedir}/proto</sourceDirectory>
+            <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
           </sourceDirectories>
           <binaryMavenPlugins>
             <binaryMavenPlugin>

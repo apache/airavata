@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.db.EntityManagerFactoryHolder;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,25 +55,33 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     protected T mergeEntity(E entity) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        E persistedCopy = execute(entityManager -> entityManager.merge(entity));
-        return mapper.map(persistedCopy, thriftGenericClass);
+        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
+        return execute(entityManager -> {
+            E persistedCopy = entityManager.merge(entity);
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            return mapper.map(persistedCopy, thriftGenericClass);
+        });
     }
 
     public boolean delete(Id id) {
-        execute(entityManager -> {
+        return execute(entityManager -> {
             E entity = entityManager.find(dbEntityGenericClass, id);
-            entityManager.remove(entity);
-            return entity;
+            if (entity != null) {
+                entityManager.remove(entity);
+                return true;
+            }
+            return false;
         });
-        return true;
     }
 
     public T get(Id id) {
-        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
-        if (entity == null) return null;
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, thriftGenericClass);
+        // Dozer mapping must happen inside the transaction to avoid LazyInitializationException
+        return execute(entityManager -> {
+            E entity = entityManager.find(dbEntityGenericClass, id);
+            if (entity == null) return null;
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            return mapper.map(entity, thriftGenericClass);
+        });
     }
 
     public List<T> select(String query, int offset) {
