@@ -34,16 +34,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
-@Execution(ExecutionMode.SAME_THREAD)
 public class SFTPDeleteDirTest {
 
     private SshServer sshd;
     private int port;
     private Path sftpRootDir;
-    private int sftpPort = 52122;
+    private int sftpPort; // assigned dynamically by SshServer
 
     private String privateKey = "-----BEGIN OPENSSH PRIVATE KEY-----\n"
             + "b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABCHHZONdz\n"
@@ -100,7 +97,7 @@ public class SFTPDeleteDirTest {
 
         sshd = SshServer.setUpDefaultServer();
         sshd.setHost("localhost");
-        sshd.setPort(sftpPort);
+        sshd.setPort(0); // OS-assigned port
 
         // Host key (for the server itself, unrelated to client auth)
         sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
@@ -120,6 +117,7 @@ public class SFTPDeleteDirTest {
 
         sshd.start();
         port = sshd.getPort();
+        sftpPort = port;
     }
 
     @AfterEach

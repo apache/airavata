@@ -24,16 +24,13 @@ import com.github.dozermapper.core.Mapper;
 
 public class ObjectMapperSingleton {
 
-    private static Mapper mapper;
+    private static final Mapper mapper = DozerBeanMapperBuilder.create()
+            .withMappingFiles("dozer_mapping.xml")
+            .build();
 
     private ObjectMapperSingleton() {}
 
     public static Mapper getInstance() {
-        if (mapper == null) {
-            mapper = DozerBeanMapperBuilder.create()
-                    .withMappingFiles("dozer_mapping.xml")
-                    .build();
-        }
         return mapper;
     }
 }
