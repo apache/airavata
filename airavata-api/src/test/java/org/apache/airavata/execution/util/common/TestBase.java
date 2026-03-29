@@ -39,7 +39,9 @@ public abstract class TestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
 
-    protected static final MariaDBContainer<?> mariadb = SharedMariaDB.getInstance();
+    protected static MariaDBContainer<?> mariadb() {
+        return SharedMariaDB.getInstance();
+    }
 
     public enum Database {
         APP_CATALOG,
@@ -71,8 +73,8 @@ public abstract class TestBase {
      * Truncate all user tables so each test starts with clean data.
      */
     private void truncateAllTables() throws SQLException {
-        try (Connection conn =
-                DriverManager.getConnection(mariadb.getJdbcUrl(), mariadb.getUsername(), mariadb.getPassword())) {
+        try (Connection conn = DriverManager.getConnection(
+                mariadb().getJdbcUrl(), mariadb().getUsername(), mariadb().getPassword())) {
             conn.setAutoCommit(false);
             Statement stmt = conn.createStatement();
             stmt.execute("SET FOREIGN_KEY_CHECKS = 0");

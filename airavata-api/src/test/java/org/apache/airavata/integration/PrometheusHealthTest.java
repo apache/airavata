@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * Verifies that the Prometheus metrics endpoint served by {@code MonitoringServer}
  * is reachable and returns valid Prometheus text format output.
  */
-@Tag("integration")
+@Tag("runtime")
 class PrometheusHealthTest {
 
     private static final String HOST = System.getProperty("airavata.monitoring.host", "localhost");

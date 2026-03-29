@@ -36,7 +36,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Verifies JDBC connectivity to the Airavata database and the presence of
  * core tables required for experiment and resource management.
  */
-@Tag("integration")
+@Tag("runtime")
 class DatabaseHealthTest {
 
     private static final String HOST = System.getProperty("airavata.db.host", "localhost");

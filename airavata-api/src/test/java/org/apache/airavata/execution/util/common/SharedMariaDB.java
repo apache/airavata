@@ -29,12 +29,21 @@ import org.testcontainers.containers.MariaDBContainer;
 /**
  * Singleton Testcontainer for MariaDB shared across all test classes in the module.
  * Eliminates the overhead of starting multiple containers per test run.
+ *
+ * <p>Uses lazy initialization so that merely loading this class (e.g. during
+ * JUnit parallel class scanning) does not trigger a Docker connection attempt.
  */
 public class SharedMariaDB {
 
-    private static final MariaDBContainer<?> INSTANCE;
+    private static volatile MariaDBContainer<?> INSTANCE;
+    private static volatile boolean initialized = false;
 
-    static {
+    private static synchronized void ensureStarted() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+
         INSTANCE = new MariaDBContainer<>("mariadb:11.8")
                 .withDatabaseName("airavata")
                 .withUsername("airavata")
@@ -67,13 +76,14 @@ public class SharedMariaDB {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("airavata", props);
             EntityManagerFactoryHolder.setFactory(emf);
         } catch (Exception e) {
-            // Log but don't fail - EMF creation may fail due to entity mapping issues
-            // that are being addressed. Non-integration tests don't need the EMF.
-            System.err.println("WARNING: Failed to create EntityManagerFactory: " + e.getMessage());
+            System.err.println("FATAL: Failed to create EntityManagerFactory: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create EntityManagerFactory", e);
         }
     }
 
     public static MariaDBContainer<?> getInstance() {
+        ensureStarted();
         return INSTANCE;
     }
 }

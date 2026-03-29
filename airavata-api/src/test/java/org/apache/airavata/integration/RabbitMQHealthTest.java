@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Verifies AMQP connectivity to RabbitMQ and that the core Airavata exchanges
  * are already declared (passive declare — does not create them).
  */
-@Tag("integration")
+@Tag("runtime")
 class RabbitMQHealthTest {
 
     private static final String HOST = System.getProperty("airavata.rabbitmq.host", "localhost");

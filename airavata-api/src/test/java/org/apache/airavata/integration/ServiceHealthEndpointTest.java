@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
  *
  * <p>Every service that is UP must report a positive uptimeMs.
  */
-@Tag("integration")
+@Tag("runtime")
 class ServiceHealthEndpointTest {
 
     private static final String HOST = System.getProperty("airavata.monitoring.host", "localhost");

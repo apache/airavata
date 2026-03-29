@@ -50,7 +50,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * getAPIVersion(). Each service is tested independently; a failure in one
  * does not prevent the others from running.
  */
-@Tag("integration")
+@Tag("runtime")
 class ThriftServiceHealthTest {
 
     private static final String HOST = System.getProperty("airavata.thrift.host", "localhost");

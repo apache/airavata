@@ -50,7 +50,7 @@ local_resource(
 # --- Integration Tests (manual trigger) ---
 local_resource(
     'integration-tests',
-    cmd='mvn test -pl integration-tests -Dgroups=integration -am -q',
+    cmd='mvn test -pl airavata-api -Dgroups=runtime -Dsurefire.excludedGroups="" -am -q',
     resource_deps=['airavata-server'],
     auto_init=False,
     trigger_mode=TRIGGER_MODE_MANUAL,

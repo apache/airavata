@@ -34,18 +34,20 @@ import org.testcontainers.containers.MariaDBContainer;
 @Tag("integration")
 public abstract class AbstractIntegrationTest {
 
-    protected static final MariaDBContainer<?> mariadb = SharedMariaDB.getInstance();
+    protected static MariaDBContainer<?> mariadb() {
+        return SharedMariaDB.getInstance();
+    }
 
     protected static String getJdbcUrl() {
-        return mariadb.getJdbcUrl();
+        return mariadb().getJdbcUrl();
     }
 
     protected static String getUsername() {
-        return mariadb.getUsername();
+        return mariadb().getUsername();
     }
 
     protected static String getPassword() {
-        return mariadb.getPassword();
+        return mariadb().getPassword();
     }
 
     protected static String getJdbcDriver() {

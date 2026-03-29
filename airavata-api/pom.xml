@@ -505,10 +505,6 @@ under the License.
         <artifactId>maven-surefire-plugin</artifactId>
         <inherited>true</inherited>
         <configuration>
-          <failIfNoTests>false</failIfNoTests>
-          <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-          <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
-          <!--  -->
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
           </systemPropertyVariables>
@@ -520,9 +516,6 @@ under the License.
             <exclude>**/DAOBaseTestCase.java</exclude>
             <exclude>**/MappingDAOTest.java</exclude>
           </excludes>
-          <!-- Exclude @Tag("integration") tests by default — they require Docker.
-               Run with: mvn test -Dgroups=integration -Dsurefire.excludedGroups="" -->
-          <excludedGroups>${surefire.excludedGroups}</excludedGroups>
         </configuration>
       </plugin>
 
@@ -614,7 +607,6 @@ under the License.
   </build>
 
   <properties>
-    <surefire.excludedGroups>integration</surefire.excludedGroups>
     <docker.api.server.build.directory>${project.build.directory}/api_server_docker_img_build</docker.api.server.build.directory>
     <docker.api.server.image.src.root>src/main/docker</docker.api.server.image.src.root>
     <api.server.dist.name>apache-airavata-api-server-${project.version}</api.server.dist.name>

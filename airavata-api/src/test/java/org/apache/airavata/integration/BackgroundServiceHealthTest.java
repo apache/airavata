@@ -44,7 +44,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * the health response. Services are expected to match the labels used in
  * {@code AiravataServer#startBackgroundServices()}.
  */
-@Tag("integration")
+@Tag("runtime")
 class BackgroundServiceHealthTest {
 
     private static final String HOST = System.getProperty("airavata.monitoring.host", "localhost");

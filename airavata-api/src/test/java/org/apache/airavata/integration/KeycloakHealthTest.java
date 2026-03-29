@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * Verifies that Keycloak is reachable, the OIDC discovery document is valid,
  * and that a client-credentials token can be obtained for the test client.
  */
-@Tag("integration")
+@Tag("runtime")
 class KeycloakHealthTest {
 
     private static final String BASE_URL = System.getProperty("airavata.keycloak.url", "http://localhost:18080");

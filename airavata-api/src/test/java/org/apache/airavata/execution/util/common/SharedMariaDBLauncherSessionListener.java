@@ -23,9 +23,11 @@ import org.junit.platform.launcher.LauncherSession;
 import org.junit.platform.launcher.LauncherSessionListener;
 
 /**
- * Starts the singleton MariaDB container before any tests are discovered or executed.
- * This ensures system properties (JDBC URL, etc.) are set before any static initializers
- * in production code (e.g., EntityManagerFactoryHolder) cache the EntityManagerFactory.
+ * Starts the singleton MariaDB container before any tests are discovered or executed,
+ * but only when integration tests are actually being run (i.e. the "integration" group
+ * is included via {@code -Dgroups=integration}).
+ *
+ * <p>This avoids starting Docker when running only unit tests ({@code mvn test}).
  *
  * <p>Registered via META-INF/services/org.junit.platform.launcher.LauncherSessionListener.
  */
@@ -33,6 +35,10 @@ public class SharedMariaDBLauncherSessionListener implements LauncherSessionList
 
     @Override
     public void launcherSessionOpened(LauncherSession session) {
-        SharedMariaDB.getInstance();
+        String groups = System.getProperty("groups", "");
+        String surefireGroups = System.getProperty("surefire.groups", "");
+        if (groups.contains("integration") || surefireGroups.contains("integration")) {
+            SharedMariaDB.getInstance();
+        }
     }
 }

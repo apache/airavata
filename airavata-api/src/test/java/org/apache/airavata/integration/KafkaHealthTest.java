@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Verifies that the Kafka cluster is reachable and has at least one broker node.
  */
-@Tag("integration")
+@Tag("runtime")
 class KafkaHealthTest {
 
     private static final String BOOTSTRAP_SERVERS =
