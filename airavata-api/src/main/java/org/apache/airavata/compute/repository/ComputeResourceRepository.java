@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.Query;
 import java.util.HashMap;
@@ -37,6 +35,7 @@ import org.apache.airavata.compute.model.LocalSubmissionEntity;
 import org.apache.airavata.compute.model.ResourceJobManagerEntity;
 import org.apache.airavata.compute.model.SshJobSubmissionEntity;
 import org.apache.airavata.compute.model.UnicoreSubmissionEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.AppCatalogUtils;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;

@@ -19,10 +19,9 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import org.apache.airavata.compute.model.BatchQueueEntity;
 import org.apache.airavata.compute.model.BatchQueuePK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 
 public class BatchQueueRepository extends AbstractRepository<BatchQueue, BatchQueueEntity, BatchQueuePK> {

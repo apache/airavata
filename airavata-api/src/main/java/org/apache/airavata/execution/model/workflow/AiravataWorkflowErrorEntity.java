@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -56,7 +55,8 @@ public class AiravataWorkflowErrorEntity implements Serializable {
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     private String rootCauseErrorIdList;
 
-    @Transient
+    @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AiravataWorkflowEntity workflow;
 
     public AiravataWorkflowErrorEntity() {}

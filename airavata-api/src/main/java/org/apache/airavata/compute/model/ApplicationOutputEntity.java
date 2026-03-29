@@ -19,12 +19,9 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the application_output database table.
@@ -74,7 +71,8 @@ public class ApplicationOutputEntity implements Serializable {
     @Column(name = "METADATA", length = 4096)
     private String metaData;
 
-    @Transient
+    @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
+    @JoinColumn(name = "INTERFACE_ID", insertable = false, updatable = false)
     private ApplicationInterfaceEntity applicationInterface;
 
     public ApplicationOutputEntity() {}

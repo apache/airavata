@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.compute.model.*;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;
@@ -42,8 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GwyResourceProfileRepository
-        extends AbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String>
-        implements GwyResourceProfile {
+        extends AbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String> implements GwyResourceProfile {
 
     private static final Logger logger = LoggerFactory.getLogger(GwyResourceProfileRepository.class);
 

@@ -19,18 +19,16 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.compute.model.ParsingTemplateEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.model.appcatalog.parser.ParsingTemplate;
 
-public class ParsingTemplateRepository
-        extends AbstractRepository<ParsingTemplate, ParsingTemplateEntity, String> {
+public class ParsingTemplateRepository extends AbstractRepository<ParsingTemplate, ParsingTemplateEntity, String> {
 
     public ParsingTemplateRepository() {
         super(ParsingTemplate.class, ParsingTemplateEntity.class);

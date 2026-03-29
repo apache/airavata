@@ -19,11 +19,8 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the app_environment database table.
@@ -48,7 +45,8 @@ public class AppEnvironmentEntity implements Serializable {
     @Column(name = "ENV_ORDER")
     private int envPathOrder;
 
-    @Transient
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class)
+    @JoinColumn(name = "DEPLOYMENT_ID", insertable = false, updatable = false)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public AppEnvironmentEntity() {}

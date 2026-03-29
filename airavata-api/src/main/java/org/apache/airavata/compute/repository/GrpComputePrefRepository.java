@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
 import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;

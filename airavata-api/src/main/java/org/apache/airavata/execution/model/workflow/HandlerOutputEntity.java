@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
@@ -37,6 +36,9 @@ public class HandlerOutputEntity implements Serializable {
     @Id
     @Column(name = "NAME")
     private String name;
+
+    @Column(name = "WORKFLOW_ID")
+    private String workflowId;
 
     @Lob
     @Column(name = "VALUE")
@@ -70,7 +72,11 @@ public class HandlerOutputEntity implements Serializable {
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
-    @Transient
+    @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", insertable = false, updatable = false),
+        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
+    })
     private WorkflowHandlerEntity handler;
 
     public HandlerOutputEntity() {}

@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -38,6 +37,9 @@ public class HandlerStatusEntity implements Serializable {
     @Column(name = "HANDLER_ID")
     private String handlerId;
 
+    @Column(name = "WORKFLOW_ID")
+    private String workflowId;
+
     @Column(name = "STATE")
     private String state;
 
@@ -47,7 +49,11 @@ public class HandlerStatusEntity implements Serializable {
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @Transient
+    @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", insertable = false, updatable = false),
+        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
+    })
     private WorkflowHandlerEntity handler;
 
     public HandlerStatusEntity() {}

@@ -19,10 +19,9 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import org.apache.airavata.compute.model.ApplicationOutputEntity;
 import org.apache.airavata.compute.model.ApplicationOutputPK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 
 public class ApplicationOutputRepository

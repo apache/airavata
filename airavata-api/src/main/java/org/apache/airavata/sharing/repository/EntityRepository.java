@@ -71,11 +71,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)) {
                 // FULL TEXT Search with Query Expansion (MariaDB)
                 String queryTerms = "";
-                for (String word : searchCriteria
-                        .getValue()
-                        .trim()
-                        .replaceAll(" +", " ")
-                        .split(" ")) {
+                for (String word :
+                        searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
                     queryTerms += queryTerms + " +" + word;
                 }
                 queryTerms = queryTerms.trim();

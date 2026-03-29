@@ -22,7 +22,6 @@ package org.apache.airavata.sharing.repository;
 import java.util.*;
 import org.apache.airavata.sharing.model.GroupMembershipEntity;
 import org.apache.airavata.sharing.model.GroupMembershipPK;
-import org.apache.airavata.sharing.model.UserEntity;
 import org.apache.airavata.sharing.model.UserGroupEntity;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.util.DBConstants;

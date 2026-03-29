@@ -19,11 +19,8 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the library_apend_path database table.
@@ -46,7 +43,8 @@ public class LibraryPrependPathEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @Transient
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "DEPLOYMENT_ID", insertable = false, updatable = false)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public LibraryPrependPathEntity() {}

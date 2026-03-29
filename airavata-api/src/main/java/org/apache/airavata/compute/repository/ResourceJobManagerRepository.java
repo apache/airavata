@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.compute.model.*;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;

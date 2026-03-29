@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.execution.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import jakarta.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -31,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.execution.model.ExperimentSummaryEntity;
 import org.apache.airavata.execution.model.JobEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.execution.util.cpi.ResultOrderType;

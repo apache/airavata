@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -68,7 +67,8 @@ public class WorkflowOutputEntity implements Serializable {
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
-    @Transient
+    @ManyToOne(targetEntity = WorkflowEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "TEMPLATE_ID", insertable = false, updatable = false)
     private WorkflowEntity workflow;
 
     public WorkflowOutputEntity() {}

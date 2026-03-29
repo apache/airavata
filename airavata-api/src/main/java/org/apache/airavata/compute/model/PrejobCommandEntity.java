@@ -19,11 +19,8 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the prejob_command database table.
@@ -45,7 +42,8 @@ public class PrejobCommandEntity implements Serializable {
     @Column(name = "COMMAND_ORDER")
     private int commandOrder;
 
-    @Transient
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "APPDEPLOYMENT_ID", insertable = false, updatable = false)
     private ApplicationDeploymentEntity applicationDeployment;
 
     public PrejobCommandEntity() {}

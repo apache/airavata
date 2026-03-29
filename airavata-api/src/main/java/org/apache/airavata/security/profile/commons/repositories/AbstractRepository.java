@@ -69,8 +69,8 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query) {
-        List resultSet = (List) execute(
-                entityManager -> entityManager.createQuery(query).getResultList());
+        List resultSet =
+                (List) execute(entityManager -> entityManager.createQuery(query).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> resultList = new ArrayList<>();
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));

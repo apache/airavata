@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.sharing.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +63,11 @@ public class GroupAdminEntity {
         this.adminId = adminId;
     }
 
-    @Transient
+    @ManyToOne(targetEntity = UserGroupEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumns({
+        @JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "DOMAIN_ID", referencedColumnName = "DOMAIN_ID", insertable = false, updatable = false)
+    })
     public UserGroupEntity getUserGroup() {
         return userGroup;
     }

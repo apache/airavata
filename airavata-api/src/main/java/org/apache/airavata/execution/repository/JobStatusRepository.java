@@ -19,14 +19,13 @@
 */
 package org.apache.airavata.execution.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.airavata.execution.model.JobPK;
 import org.apache.airavata.execution.model.JobStatusEntity;
 import org.apache.airavata.execution.model.JobStatusPK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ExpCatalogUtils;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;

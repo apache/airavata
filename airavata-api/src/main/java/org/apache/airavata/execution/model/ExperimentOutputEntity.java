@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
@@ -76,7 +75,8 @@ public class ExperimentOutputEntity implements Serializable {
     @Column(name = "METADATA", length = 4096)
     private String metaData;
 
-    @Transient
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", insertable = false, updatable = false)
     private ExperimentEntity experiment;
 
     public ExperimentOutputEntity() {}

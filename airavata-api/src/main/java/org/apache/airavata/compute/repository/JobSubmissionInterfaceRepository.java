@@ -19,17 +19,15 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.compute.model.JobSubmissionInterfaceEntity;
 import org.apache.airavata.compute.model.JobSubmissionInterfacePK;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 
 public class JobSubmissionInterfaceRepository
-        extends AbstractRepository<
-                JobSubmissionInterface, JobSubmissionInterfaceEntity, JobSubmissionInterfacePK> {
+        extends AbstractRepository<JobSubmissionInterface, JobSubmissionInterfaceEntity, JobSubmissionInterfacePK> {
 
     public JobSubmissionInterfaceRepository() {
         super(JobSubmissionInterface.class, JobSubmissionInterfaceEntity.class);

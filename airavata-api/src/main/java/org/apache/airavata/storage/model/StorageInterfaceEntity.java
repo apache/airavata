@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.storage.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -55,7 +54,8 @@ public class StorageInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    @Transient
+    @ManyToOne(targetEntity = StorageResourceEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "STORAGE_RESOURCE_ID", insertable = false, updatable = false)
     private StorageResourceEntity storageResource;
 
     public StorageInterfaceEntity() {}

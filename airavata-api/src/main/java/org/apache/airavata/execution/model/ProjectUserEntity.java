@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -42,7 +41,8 @@ public class ProjectUserEntity implements Serializable {
 
     public ProjectUserEntity() {}
 
-    @Transient
+    @ManyToOne(targetEntity = UserEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME", insertable = false, updatable = false)
     private UserEntity user;
 
     public String getProjectID() {

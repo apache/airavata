@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -50,7 +49,8 @@ public class WorkflowHandlerEntity implements Serializable {
     @Column(name = "UPDATED_AT")
     private Timestamp updatedAt;
 
-    @Transient
+    @ManyToOne(targetEntity = AiravataWorkflowEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private AiravataWorkflowEntity workflow;
 
     @OneToMany(

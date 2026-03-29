@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.execution.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -28,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.airavata.execution.model.NotificationEntity;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.QueryConstants;

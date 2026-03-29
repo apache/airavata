@@ -19,12 +19,11 @@
 */
 package org.apache.airavata.storage.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.execution.util.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.execution.util.cpi.ReplicaCatalogException;

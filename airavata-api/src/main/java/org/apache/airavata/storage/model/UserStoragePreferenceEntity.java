@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.storage.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import org.apache.airavata.compute.model.UserResourceProfileEntity;
 
@@ -53,7 +52,11 @@ public class UserStoragePreferenceEntity {
     @Column(name = "LOGIN_USERNAME")
     private String loginUserName;
 
-    @Transient
+    @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
+    })
     private UserResourceProfileEntity userResourceProfile;
 
     public UserStoragePreferenceEntity() {}

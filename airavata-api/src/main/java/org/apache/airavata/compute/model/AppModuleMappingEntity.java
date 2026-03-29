@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -41,10 +40,12 @@ public class AppModuleMappingEntity implements Serializable {
     @Column(name = "MODULE_ID")
     private String moduleId;
 
-    @Transient
+    @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
+    @JoinColumn(name = "INTERFACE_ID", insertable = false, updatable = false)
     private ApplicationInterfaceEntity applicationInterface;
 
-    @Transient
+    @ManyToOne(targetEntity = ApplicationModuleEntity.class)
+    @JoinColumn(name = "MODULE_ID", insertable = false, updatable = false)
     private ApplicationModuleEntity applicationModule;
 
     public AppModuleMappingEntity() {}

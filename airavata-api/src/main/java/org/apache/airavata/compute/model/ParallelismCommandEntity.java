@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
@@ -45,7 +44,8 @@ public class ParallelismCommandEntity implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
-    @Transient
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, updatable = false)
     private ResourceJobManagerEntity resourceJobManager;
 
     public ParallelismCommandEntity() {}

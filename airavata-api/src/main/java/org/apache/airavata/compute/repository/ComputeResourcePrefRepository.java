@@ -19,13 +19,12 @@
 */
 package org.apache.airavata.compute.repository;
 
-import org.apache.airavata.execution.util.AbstractRepository;
-
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.compute.model.ComputeResourcePreferenceEntity;
 import org.apache.airavata.compute.model.ComputeResourcePreferencePK;
 import org.apache.airavata.compute.model.SSHAccountProvisionerConfiguration;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 
 public class ComputeResourcePrefRepository

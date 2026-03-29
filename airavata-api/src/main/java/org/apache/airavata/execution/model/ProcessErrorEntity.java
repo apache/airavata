@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.execution.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -59,7 +58,8 @@ public class ProcessErrorEntity implements Serializable {
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     private String rootCauseErrorIdList;
 
-    @Transient
+    @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", insertable = false, updatable = false)
     private ProcessEntity process;
 
     public ProcessErrorEntity() {}

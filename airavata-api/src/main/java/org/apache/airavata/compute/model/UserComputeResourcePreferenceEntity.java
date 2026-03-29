@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 
@@ -74,7 +73,11 @@ public class UserComputeResourcePreferenceEntity {
     @Column(name = "VALIDATED")
     private boolean validated;
 
-    @Transient
+    @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID", insertable = false, updatable = false),
+        @JoinColumn(name = "GATEWAY_ID", insertable = false, updatable = false)
+    })
     private UserResourceProfileEntity userResourceProfile;
 
     public UserComputeResourcePreferenceEntity() {}

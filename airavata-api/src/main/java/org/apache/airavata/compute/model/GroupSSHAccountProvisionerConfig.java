@@ -19,7 +19,6 @@
 */
 package org.apache.airavata.compute.model;
 
-import jakarta.persistence.Transient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -29,8 +28,6 @@ import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * The persistent class for the grp_ssh_acc_prov_config database table.
@@ -57,7 +54,15 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
     @Column(name = "CONFIG_VALUE")
     private String configValue;
 
-    @Transient
+    @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
+    @JoinColumns({
+        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", insertable = false, updatable = false),
+        @JoinColumn(
+                name = "GROUP_RESOURCE_PROFILE_ID",
+                referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
+                insertable = false,
+                updatable = false)
+    })
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public GroupSSHAccountProvisionerConfig() {}
