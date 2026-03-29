@@ -648,6 +648,8 @@ under the License.
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <forkCount>1</forkCount>
                     <reuseForks>true</reuseForks>
+                    <!-- Fail on first error for fast feedback during development -->
+                    <skipAfterFailureCount>1</skipAfterFailureCount>
                     <excludes>
                         <exclude>**/IT.java</exclude>
                         <exclude>**/*TestWithMyProxyAuth.java</exclude>
