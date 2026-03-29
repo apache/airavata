@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.execution.model.TaskErrorEntity;
@@ -31,7 +33,7 @@ import org.apache.airavata.model.task.TaskModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaskErrorRepository extends ExpCatAbstractRepository<ErrorModel, TaskErrorEntity, TaskErrorPK> {
+public class TaskErrorRepository extends AbstractRepository<ErrorModel, TaskErrorEntity, TaskErrorPK> {
     private static final Logger logger = LoggerFactory.getLogger(TaskErrorRepository.class);
 
     public TaskErrorRepository() {

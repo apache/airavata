@@ -19,12 +19,14 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import org.apache.airavata.compute.model.UserComputeResourcePreferenceEntity;
 import org.apache.airavata.compute.model.UserComputeResourcePreferencePK;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 
 public class UserComputeResourcePreferenceRepository
-        extends AppCatAbstractRepository<
+        extends AbstractRepository<
                 UserComputeResourcePreference, UserComputeResourcePreferenceEntity, UserComputeResourcePreferencePK> {
 
     public UserComputeResourcePreferenceRepository() {

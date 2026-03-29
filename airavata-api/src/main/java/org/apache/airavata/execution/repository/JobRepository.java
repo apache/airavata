@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +39,7 @@ import org.apache.airavata.model.job.JobModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JobRepository extends ExpCatAbstractRepository<JobModel, JobEntity, JobPK> {
+public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK> {
     private static final Logger logger = LoggerFactory.getLogger(JobRepository.class);
 
     public JobRepository() {

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GatewayRepository extends ExpCatAbstractRepository<Gateway, GatewayEntity, String> {
+public class GatewayRepository extends AbstractRepository<Gateway, GatewayEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepository.class);
 
     public GatewayRepository() {

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.*;
 import org.apache.airavata.execution.model.ProcessErrorEntity;
@@ -31,7 +33,7 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessErrorRepository extends ExpCatAbstractRepository<ErrorModel, ProcessErrorEntity, ProcessErrorPK> {
+public class ProcessErrorRepository extends AbstractRepository<ErrorModel, ProcessErrorEntity, ProcessErrorPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessErrorRepository.class);
 
     public ProcessErrorRepository() {

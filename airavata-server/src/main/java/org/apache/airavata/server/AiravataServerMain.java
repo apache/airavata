@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"org.apache.airavata.server", "org.apache.airavata.common.db"})
 @EnableConfigurationProperties(AiravataServerProperties.class)
 @Import({AiravataRestServerConfig.class, AiravataGrpcServerConfig.class, AiravataThriftServerConfig.class})
 public class AiravataServerMain {

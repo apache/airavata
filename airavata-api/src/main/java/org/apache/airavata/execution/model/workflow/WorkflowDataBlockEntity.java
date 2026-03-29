@@ -33,7 +33,7 @@ public class WorkflowDataBlockEntity implements Serializable {
     @Column(name = "ID")
     private String id;
 
-    @Column(name = "WORKFLOW_ID")
+    @Column(name = "WORKFLOW_ID", insertable = false, updatable = false)
     private String workflowId;
 
     @Column(name = "VALUE")

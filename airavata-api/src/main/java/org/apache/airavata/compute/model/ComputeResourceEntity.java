@@ -34,7 +34,7 @@ public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
     private String computeResourceId;
 
     @Column(name = "CREATION_TIME")

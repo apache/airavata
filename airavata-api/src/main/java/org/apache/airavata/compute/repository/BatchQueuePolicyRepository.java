@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import org.apache.airavata.compute.model.BatchQueueResourcePolicyEntity;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 
@@ -26,7 +28,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResou
  * Created by skariyat on 2/10/18.
  */
 public class BatchQueuePolicyRepository
-        extends AppCatAbstractRepository<BatchQueueResourcePolicy, BatchQueueResourcePolicyEntity, String> {
+        extends AbstractRepository<BatchQueueResourcePolicy, BatchQueueResourcePolicyEntity, String> {
 
     public BatchQueuePolicyRepository() {
         super(BatchQueueResourcePolicy.class, BatchQueueResourcePolicyEntity.class);

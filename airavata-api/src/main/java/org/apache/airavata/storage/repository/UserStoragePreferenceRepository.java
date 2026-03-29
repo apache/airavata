@@ -19,13 +19,13 @@
 */
 package org.apache.airavata.storage.repository;
 
-import org.apache.airavata.compute.repository.AppCatAbstractRepository;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.storage.model.UserStoragePreferenceEntity;
 import org.apache.airavata.storage.model.UserStoragePreferencePK;
 
 public class UserStoragePreferenceRepository
-        extends AppCatAbstractRepository<UserStoragePreference, UserStoragePreferenceEntity, UserStoragePreferencePK> {
+        extends AbstractRepository<UserStoragePreference, UserStoragePreferenceEntity, UserStoragePreferencePK> {
 
     public UserStoragePreferenceRepository() {
         super(UserStoragePreference.class, UserStoragePreferenceEntity.class);

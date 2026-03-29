@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.hibernate.annotations.OnDelete;
@@ -45,9 +46,7 @@ public class LibraryPrependPathEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DEPLOYMENT_ID")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Transient
     private ApplicationDeploymentEntity applicationDeployment;
 
     public LibraryPrependPathEntity() {}

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +35,7 @@ import org.apache.airavata.model.status.QueueStatusModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QueueStatusRepository extends ExpCatAbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
+public class QueueStatusRepository extends AbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepository.class);
 
     public QueueStatusRepository() {

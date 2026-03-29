@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 
 @Entity
@@ -69,8 +70,7 @@ public class UserEntity {
         this.password = password;
     }
 
-    @ManyToOne(targetEntity = GatewayEntity.class)
-    @JoinColumn(name = "GATEWAY_ID")
+    @Transient
     public GatewayEntity getGateway() {
         return gateway;
     }

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -73,8 +74,7 @@ public class ComputationalResourceSchedulingEntity implements Serializable {
     @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
     private String overrideAllocationProjectNumber;
 
-    @ManyToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    @Transient
     private UserConfigurationDataEntity userConfigurationData;
 
     public ComputationalResourceSchedulingEntity() {}

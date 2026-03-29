@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import jakarta.persistence.Query;
 import java.util.HashMap;
@@ -70,7 +72,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ComputeResourceRepository
-        extends AppCatAbstractRepository<ComputeResourceDescription, ComputeResourceEntity, String>
+        extends AbstractRepository<ComputeResourceDescription, ComputeResourceEntity, String>
         implements ComputeResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.sql.Timestamp;
 
@@ -41,8 +42,7 @@ public class ProcessWorkflowEntity {
     @Column(name = "TYPE")
     private String type;
 
-    @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @Transient
     private ProcessEntity process;
 
     public String getProcessId() {

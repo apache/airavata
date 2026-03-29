@@ -23,7 +23,7 @@ import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.compute.repository.AppCatAbstractRepository;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.AppCatalogUtils;
 import org.apache.airavata.execution.util.DBConstants;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * Created by skariyat on 3/12/18.
  */
 public class StorageResourceRepository
-        extends AppCatAbstractRepository<StorageResourceDescription, StorageResourceEntity, String>
+        extends AbstractRepository<StorageResourceDescription, StorageResourceEntity, String>
         implements StorageResource {
 
     private static final Logger logger = LoggerFactory.getLogger(StorageResourceRepository.class);

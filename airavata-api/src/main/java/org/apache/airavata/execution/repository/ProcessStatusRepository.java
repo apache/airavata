@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -38,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessStatusRepository
-        extends ExpCatAbstractRepository<ProcessStatus, ProcessStatusEntity, ProcessStatusPK> {
+        extends AbstractRepository<ProcessStatus, ProcessStatusEntity, ProcessStatusPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessStatusRepository.class);
 
     public ProcessStatusRepository() {

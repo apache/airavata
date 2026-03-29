@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import org.apache.airavata.execution.model.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.execution.model.GatewayUsageReportingPK;
@@ -29,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GatewayUsageReportingCommandRepository
-        extends ExpCatAbstractRepository<
+        extends AbstractRepository<
                 GatewayUsageReportingCommand, GatewayUsageReportingCommandEntity, GatewayUsageReportingPK> {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepository.class);

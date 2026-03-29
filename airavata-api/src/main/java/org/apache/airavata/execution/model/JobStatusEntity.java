@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -56,11 +57,7 @@ public class JobStatusEntity implements Serializable {
     @Column(name = "REASON")
     private String reason;
 
-    @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumns({
-        @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID"),
-        @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID")
-    })
+    @Transient
     private JobEntity job;
 
     public JobStatusEntity() {}

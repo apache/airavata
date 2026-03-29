@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
@@ -44,8 +45,7 @@ public class JobManagerCommandEntity implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
+    @Transient
     private ResourceJobManagerEntity resourceJobManager;
 
     public JobManagerCommandEntity() {}

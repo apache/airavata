@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import jakarta.persistence.Query;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +33,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 
 public class ResourceJobManagerRepository
-        extends AppCatAbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {
+        extends AbstractRepository<ResourceJobManager, ResourceJobManagerEntity, String> {
 
     public ResourceJobManagerRepository() {
         super(ResourceJobManager.class, ResourceJobManagerEntity.class);

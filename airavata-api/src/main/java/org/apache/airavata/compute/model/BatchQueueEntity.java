@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -57,8 +58,7 @@ public class BatchQueueEntity implements Serializable {
     @Column(name = "QUEUE_DESCRIPTION")
     private String queueDescription;
 
-    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    @Transient
     private ComputeResourceEntity computeResource;
 
     @Column(name = "CPU_PER_NODE")

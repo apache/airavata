@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -52,8 +53,7 @@ public class ProcessStatusEntity implements Serializable {
     @Column(name = "REASON")
     private String reason;
 
-    @ManyToOne(targetEntity = ProcessEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false, updatable = false)
+    @Transient
     private ProcessEntity process;
 
     public ProcessStatusEntity() {}

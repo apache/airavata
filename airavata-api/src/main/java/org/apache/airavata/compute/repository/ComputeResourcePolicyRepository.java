@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import org.apache.airavata.compute.model.ComputeResourcePolicyEntity;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 
@@ -26,7 +28,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResource
  * Created by skariyat on 2/10/18.
  */
 public class ComputeResourcePolicyRepository
-        extends AppCatAbstractRepository<ComputeResourcePolicy, ComputeResourcePolicyEntity, String> {
+        extends AbstractRepository<ComputeResourcePolicy, ComputeResourcePolicyEntity, String> {
 
     public ComputeResourcePolicyRepository() {
         super(ComputeResourcePolicy.class, ComputeResourcePolicyEntity.class);

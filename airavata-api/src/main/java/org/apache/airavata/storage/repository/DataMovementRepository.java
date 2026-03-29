@@ -20,14 +20,14 @@
 package org.apache.airavata.storage.repository;
 
 import com.github.dozermapper.core.Mapper;
-import org.apache.airavata.compute.repository.AppCatAbstractRepository;
+import org.apache.airavata.execution.util.AbstractRepository;
 import org.apache.airavata.execution.util.ObjectMapperSingleton;
 import org.apache.airavata.model.data.movement.DataMovementInterface;
 import org.apache.airavata.storage.model.DataMovementInterfaceEntity;
 import org.apache.airavata.storage.model.DataMovementInterfacePK;
 
 public class DataMovementRepository
-        extends AppCatAbstractRepository<DataMovementInterface, DataMovementInterfaceEntity, DataMovementInterfacePK> {
+        extends AbstractRepository<DataMovementInterface, DataMovementInterfaceEntity, DataMovementInterfacePK> {
 
     public DataMovementRepository() {
         super(DataMovementInterface.class, DataMovementInterfaceEntity.class);

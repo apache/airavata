@@ -17,35 +17,31 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.security.profile.user.core.utils;
+package org.apache.airavata.common.db;
 
-import org.apache.airavata.common.db.JDBCConfig;
-import org.apache.airavata.security.profile.commons.utils.Utils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
-public class UserProfileCatalogJDBCConfig implements JDBCConfig {
+/**
+ * Static holder for the single application-wide {@link EntityManagerFactory}.
+ * Set once at startup by {@code EntityManagerFactoryRegistrar} (Spring) or
+ * manually in tests.
+ */
+public class EntityManagerFactoryHolder {
+    private static volatile EntityManagerFactory factory;
 
-    @Override
-    public String getURL() {
-        return Utils.getJDBCURL();
+    public static void setFactory(EntityManagerFactory emf) {
+        factory = emf;
     }
 
-    @Override
-    public String getDriver() {
-        return Utils.getJDBCDriver();
+    public static EntityManagerFactory getFactory() {
+        if (factory == null) {
+            throw new IllegalStateException("EntityManagerFactory not initialized");
+        }
+        return factory;
     }
 
-    @Override
-    public String getUser() {
-        return Utils.getJDBCUser();
-    }
-
-    @Override
-    public String getPassword() {
-        return Utils.getJDBCPassword();
-    }
-
-    @Override
-    public String getValidationQuery() {
-        return Utils.getValidationQuery();
+    public static EntityManager createEntityManager() {
+        return getFactory().createEntityManager();
     }
 }

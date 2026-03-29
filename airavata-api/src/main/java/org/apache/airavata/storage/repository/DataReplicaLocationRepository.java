@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.storage.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.List;
@@ -33,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataReplicaLocationRepository
-        extends RepCatAbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String>
+        extends AbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String>
         implements DataReplicaLocationInterface {
     private static final Logger logger = LoggerFactory.getLogger(DataReplicaLocationRepository.class);
 

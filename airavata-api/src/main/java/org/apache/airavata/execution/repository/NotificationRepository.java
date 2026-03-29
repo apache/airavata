@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -34,7 +36,7 @@ import org.apache.airavata.model.workspace.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotificationRepository extends ExpCatAbstractRepository<Notification, NotificationEntity, String> {
+public class NotificationRepository extends AbstractRepository<Notification, NotificationEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(NotificationRepository.class);
 
     public NotificationRepository() {

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.List;
 import org.apache.airavata.execution.model.ExperimentErrorEntity;
@@ -32,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExperimentErrorRepository
-        extends ExpCatAbstractRepository<ErrorModel, ExperimentErrorEntity, ExperimentErrorPK> {
+        extends AbstractRepository<ErrorModel, ExperimentErrorEntity, ExperimentErrorPK> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentErrorRepository.class);
 
     public ExperimentErrorRepository() {

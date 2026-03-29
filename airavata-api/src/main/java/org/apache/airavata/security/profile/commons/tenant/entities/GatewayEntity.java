@@ -24,7 +24,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Entity
+@Entity(name = "TenantGatewayEntity")
 @Table(name = "TENANT_GATEWAY")
 public class GatewayEntity {
     private static final Logger logger = LoggerFactory.getLogger(GatewayEntity.class);

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
@@ -81,9 +82,7 @@ public class ApplicationInputEntity implements Serializable {
     @Column(name = "OVERRIDE_FILENAME")
     private String overrideFilename;
 
-    @ManyToOne(targetEntity = ApplicationInterfaceEntity.class)
-    @JoinColumn(name = "INTERFACE_ID", nullable = false, updatable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Transient
     private ApplicationInterfaceEntity applicationInterface;
 
     public ApplicationInputEntity() {}

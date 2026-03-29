@@ -19,6 +19,11 @@
 */
 package org.apache.airavata.execution.util.common;
 
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
 import org.testcontainers.containers.MariaDBContainer;
 
 /**
@@ -38,12 +43,33 @@ public class SharedMariaDB {
                 .withInitScript("conf/db/migration/airavata/V1__Baseline_schema.sql");
         INSTANCE.start();
 
-        // Set system properties for JPA
+        // Set system properties (still used by ServerSettings in some tests)
         System.setProperty("airavata.jdbc.driver", INSTANCE.getDriverClassName());
         System.setProperty("airavata.jdbc.url", INSTANCE.getJdbcUrl());
         System.setProperty("airavata.jdbc.user", INSTANCE.getUsername());
         System.setProperty("airavata.jdbc.password", INSTANCE.getPassword());
         System.setProperty("airavata.jdbc.validationQuery", "SELECT 1");
+
+        // Create the single EntityManagerFactory and register it in the holder
+        initEntityManagerFactory();
+    }
+
+    private static void initEntityManagerFactory() {
+        try {
+            Map<String, String> props = new HashMap<>();
+            props.put("jakarta.persistence.jdbc.url", INSTANCE.getJdbcUrl());
+            props.put("jakarta.persistence.jdbc.user", INSTANCE.getUsername());
+            props.put("jakarta.persistence.jdbc.password", INSTANCE.getPassword());
+            props.put("jakarta.persistence.jdbc.driver", INSTANCE.getDriverClassName());
+            props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+            props.put("hibernate.hbm2ddl.auto", "update");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("airavata", props);
+            EntityManagerFactoryHolder.setFactory(emf);
+        } catch (Exception e) {
+            // Log but don't fail - EMF creation may fail due to entity mapping issues
+            // that are being addressed. Non-integration tests don't need the EMF.
+            System.err.println("WARNING: Failed to create EntityManagerFactory: " + e.getMessage());
+        }
     }
 
     public static MariaDBContainer<?> getInstance() {

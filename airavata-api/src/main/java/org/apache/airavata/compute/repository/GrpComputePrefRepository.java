@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
@@ -33,7 +35,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.SlurmComputeRes
  * Created by skariyat on 2/10/18.
  */
 public class GrpComputePrefRepository
-        extends AppCatAbstractRepository<
+        extends AbstractRepository<
                 GroupComputeResourcePreference, GroupComputeResourcePrefEntity, GroupComputeResourcePrefPK> {
 
     public GrpComputePrefRepository() {

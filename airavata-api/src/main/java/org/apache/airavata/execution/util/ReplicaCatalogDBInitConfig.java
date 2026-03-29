@@ -29,7 +29,7 @@ public class ReplicaCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public JDBCConfig getJDBCConfig() {
-        return new ReplicaCatalogJDBCConfig();
+        return null;
     }
 
     @Override

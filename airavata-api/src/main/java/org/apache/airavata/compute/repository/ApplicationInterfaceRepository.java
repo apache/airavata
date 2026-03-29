@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
@@ -40,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApplicationInterfaceRepository
-        extends AppCatAbstractRepository<ApplicationInterfaceDescription, ApplicationInterfaceEntity, String>
+        extends AbstractRepository<ApplicationInterfaceDescription, ApplicationInterfaceEntity, String>
         implements ApplicationInterface {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepository.class);
 

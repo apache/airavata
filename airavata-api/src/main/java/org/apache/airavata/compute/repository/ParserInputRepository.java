@@ -19,13 +19,15 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import org.apache.airavata.compute.model.ParserInputEntity;
 import org.apache.airavata.execution.util.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.parser.ParserInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParserInputRepository extends AppCatAbstractRepository<ParserInput, ParserInputEntity, String> {
+public class ParserInputRepository extends AbstractRepository<ParserInput, ParserInputEntity, String> {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserInputRepository.class);
 

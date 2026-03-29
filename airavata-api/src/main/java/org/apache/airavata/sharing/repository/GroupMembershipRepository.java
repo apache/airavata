@@ -35,7 +35,7 @@ public class GroupMembershipRepository
     }
 
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
-        String queryString = "SELECT DISTINCT U FROM " + UserEntity.class.getSimpleName() + " U, "
+        String queryString = "SELECT DISTINCT U FROM " + "SharingUserEntity" + " U, "
                 + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.CHILD_ID + " = U." + DBConstants.UserTable.USER_ID
                 + " AND " + "GM."

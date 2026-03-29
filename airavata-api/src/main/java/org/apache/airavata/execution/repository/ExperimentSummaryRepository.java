@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import jakarta.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExperimentSummaryRepository
-        extends ExpCatAbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
+        extends AbstractRepository<ExperimentSummaryModel, ExperimentSummaryEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentSummaryRepository.class);
     private static final int ACCESSIBLE_EXPERIMENT_IDS_BATCH_SIZE = 10000;
 

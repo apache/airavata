@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
@@ -69,8 +70,7 @@ public class WorkflowInputEntity implements Serializable {
     @Column(name = "USER_FRIENDLY_DESC")
     private String userFriendlyDescription;
 
-    @ManyToOne(targetEntity = WorkflowEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "TEMPLATE_ID")
+    @Transient
     private WorkflowEntity workflow;
 
     public WorkflowInputEntity() {}

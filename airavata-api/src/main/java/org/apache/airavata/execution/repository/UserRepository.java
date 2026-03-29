@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +31,7 @@ import org.apache.airavata.execution.util.QueryConstants;
 import org.apache.airavata.execution.util.cpi.RegistryException;
 import org.apache.airavata.model.user.UserProfile;
 
-public class UserRepository extends ExpCatAbstractRepository<UserProfile, UserEntity, UserPK> {
+public class UserRepository extends AbstractRepository<UserProfile, UserEntity, UserPK> {
     public UserRepository() {
         super(UserProfile.class, UserEntity.class);
     }

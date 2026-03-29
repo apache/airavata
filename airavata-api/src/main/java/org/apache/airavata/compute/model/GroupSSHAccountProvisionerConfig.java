@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -56,15 +57,7 @@ public class GroupSSHAccountProvisionerConfig implements Serializable {
     @Column(name = "CONFIG_VALUE")
     private String configValue;
 
-    @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class)
-    @JoinColumns({
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false),
-        @JoinColumn(
-                name = "GROUP_RESOURCE_PROFILE_ID",
-                referencedColumnName = "GROUP_RESOURCE_PROFILE_ID",
-                nullable = false)
-    })
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Transient
     private GroupComputeResourcePrefEntity groupComputeResourcePref;
 
     public GroupSSHAccountProvisionerConfig() {}

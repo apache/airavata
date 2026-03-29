@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -33,7 +35,7 @@ import org.apache.airavata.model.workflow.AiravataWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorkflowRepository extends WorkflowCatAbstractRepository<AiravataWorkflow, AiravataWorkflowEntity, String>
+public class WorkflowRepository extends AbstractRepository<AiravataWorkflow, AiravataWorkflowEntity, String>
         implements WorkflowCatalog {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowRepository.class);
 

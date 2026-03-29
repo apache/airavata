@@ -25,6 +25,7 @@ import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,5 +204,7 @@ public abstract class AbstractRepository<T, E, Id> {
         }
     }
 
-    protected abstract EntityManager getEntityManager();
+    protected EntityManager getEntityManager() {
+        return EntityManagerFactoryHolder.createEntityManager();
+    }
 }

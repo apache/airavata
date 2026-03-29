@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.execution.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.*;
 import org.apache.airavata.execution.model.ProcessOutputEntity;
@@ -31,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessOutputRepository
-        extends ExpCatAbstractRepository<OutputDataObjectType, ProcessOutputEntity, ProcessOutputPK> {
+        extends AbstractRepository<OutputDataObjectType, ProcessOutputEntity, ProcessOutputPK> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessOutputRepository.class);
 
     public ProcessOutputRepository() {

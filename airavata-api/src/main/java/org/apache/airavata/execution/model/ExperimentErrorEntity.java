@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -58,8 +59,7 @@ public class ExperimentErrorEntity implements Serializable {
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     private String rootCauseErrorIdList;
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    @Transient
     private ExperimentEntity experiment;
 
     public ExperimentErrorEntity() {}

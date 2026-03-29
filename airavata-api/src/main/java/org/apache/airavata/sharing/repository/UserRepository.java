@@ -65,7 +65,7 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
             String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes)
             throws SharingRegistryException {
         Map<String, Object> queryParameters = new HashMap<>();
-        String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, "
+        String query = "SELECT DISTINCT u from " + "SharingUserEntity" + " u, "
                 + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "u." + DBConstants.UserTable.USER_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";

@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.storage.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -46,8 +47,7 @@ public class GridftpEndpointEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Transient
     private GridftpDataMovementEntity gridftpDataMovement;
 
     public GridftpEndpointEntity() {}

@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +49,7 @@ import org.apache.airavata.model.commons.airavata_commonsConstants;
  * Created by skariyat on 2/8/18.
  */
 public class GroupResourceProfileRepository
-        extends AppCatAbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, String> {
+        extends AbstractRepository<GroupResourceProfile, GroupResourceProfileEntity, String> {
 
     public GroupResourceProfileRepository() {
         super(GroupResourceProfile.class, GroupResourceProfileEntity.class);

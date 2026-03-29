@@ -25,7 +25,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
 /**
  * Starts the singleton MariaDB container before any tests are discovered or executed.
  * This ensures system properties (JDBC URL, etc.) are set before any static initializers
- * in production code (e.g., AppCatalogJPAUtils) cache the EntityManagerFactory.
+ * in production code (e.g., EntityManagerFactoryHolder) cache the EntityManagerFactory.
  *
  * <p>Registered via META-INF/services/org.junit.platform.launcher.LauncherSessionListener.
  */

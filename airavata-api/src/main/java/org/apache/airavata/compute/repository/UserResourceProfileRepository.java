@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.sql.Timestamp;
 import java.util.*;
@@ -39,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UserResourceProfileRepository
-        extends AppCatAbstractRepository<UserResourceProfile, UserResourceProfileEntity, UserResourceProfilePK>
+        extends AbstractRepository<UserResourceProfile, UserResourceProfileEntity, UserResourceProfilePK>
         implements UsrResourceProfile {
     private static final Logger logger = LoggerFactory.getLogger(UserResourceProfileRepository.class);
 

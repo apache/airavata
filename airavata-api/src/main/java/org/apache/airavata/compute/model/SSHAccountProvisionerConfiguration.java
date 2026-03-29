@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.compute.model;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 
 /**
@@ -44,11 +45,7 @@ public class SSHAccountProvisionerConfiguration {
     @Column(name = "CONFIG_VALUE")
     private String configValue;
 
-    @ManyToOne(targetEntity = ComputeResourcePreferenceEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumns({
-        @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", nullable = false),
-        @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false)
-    })
+    @Transient
     private ComputeResourcePreferenceEntity computeResourcePreference;
 
     public SSHAccountProvisionerConfiguration() {}

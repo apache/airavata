@@ -20,11 +20,13 @@
 package org.apache.airavata.security.profile.commons.repositories;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.security.profile.commons.utils.JPAUtils;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
+import org.apache.airavata.security.profile.commons.utils.Committer;
 import org.apache.airavata.security.profile.commons.utils.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +49,12 @@ public abstract class AbstractRepository<T, E, Id> {
     public T update(T t) {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         E entity = mapper.map(t, dbEntityGenericClass);
-        E persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
+        E persistedCopy = execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
     }
 
     public boolean delete(Id id) {
-        JPAUtils.execute(entityManager -> {
+        execute(entityManager -> {
             E entity = entityManager.find(dbEntityGenericClass, id);
             entityManager.remove(entity);
             return entity;
@@ -61,13 +63,13 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) {
-        E entity = JPAUtils.execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
+        E entity = execute(entityManager -> entityManager.find(dbEntityGenericClass, id));
         Mapper mapper = ObjectMapperSingleton.getInstance();
         return mapper.map(entity, thriftGenericClass);
     }
 
     public List<T> select(String query) {
-        List resultSet = (List) JPAUtils.execute(
+        List resultSet = (List) execute(
                 entityManager -> entityManager.createQuery(query).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> resultList = new ArrayList<>();
@@ -76,7 +78,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query, int limit, int offset) {
-        List resultSet = (List) JPAUtils.execute(entityManager -> entityManager
+        List resultSet = (List) execute(entityManager -> entityManager
                 .createQuery(query)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
@@ -88,7 +90,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
-        List resultSet = (List) JPAUtils.execute(entityManager -> {
+        List resultSet = (List) execute(entityManager -> {
             Query jpaQuery = entityManager.createQuery(query);
 
             for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
@@ -105,7 +107,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(String query, Map<String, Object> queryParams) {
-        List resultSet = (List) JPAUtils.execute(entityManager -> {
+        List resultSet = (List) execute(entityManager -> {
             Query jpaQuery = entityManager.createQuery(query);
 
             for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
@@ -119,5 +121,22 @@ public abstract class AbstractRepository<T, E, Id> {
         List<T> resultList = new ArrayList<>();
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
         return resultList;
+    }
+
+    public <R> R execute(Committer<EntityManager, R> committer) {
+        EntityManager entityManager = EntityManagerFactoryHolder.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            R r = committer.commit(entityManager);
+            entityManager.getTransaction().commit();
+            return r;
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                }
+                entityManager.close();
+            }
+        }
     }
 }

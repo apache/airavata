@@ -26,7 +26,7 @@ public class UserProfileCatalogDBInitConfig implements DBInitConfig {
 
     @Override
     public JDBCConfig getJDBCConfig() {
-        return new UserProfileCatalogJDBCConfig();
+        return null;
     }
 
     @Override

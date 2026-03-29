@@ -20,15 +20,16 @@
 package org.apache.airavata.sharing.repository;
 
 import com.github.dozermapper.core.Mapper;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.common.db.EntityManagerFactoryHolder;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.util.Committer;
 import org.apache.airavata.sharing.util.DBConstants;
-import org.apache.airavata.sharing.util.JPAUtils;
 import org.apache.airavata.sharing.util.ObjectMapperSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
-        String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
+        String query = "SELECT DISTINCT p from " + getEntityName() + " as p";
         ArrayList<String> parameters = new ArrayList<>();
         int parameterCount = 1;
         if (filters != null && filters.size() != 0) {
@@ -145,7 +146,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
-        EntityManager entityManager = JPAUtils.getEntityManager();
+        EntityManager entityManager = EntityManagerFactoryHolder.createEntityManager();
         try {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
@@ -159,5 +160,17 @@ public abstract class AbstractRepository<T, E, Id> {
                 entityManager.close();
             }
         }
+    }
+
+    /**
+     * Returns the JPA entity name, respecting any explicit {@code @Entity(name = "...")} annotation.
+     * Falls back to the simple class name when no explicit name is set.
+     */
+    private String getEntityName() {
+        Entity annotation = dbEntityGenericClass.getAnnotation(Entity.class);
+        if (annotation != null && !annotation.name().isEmpty()) {
+            return annotation.name();
+        }
+        return dbEntityGenericClass.getSimpleName();
     }
 }

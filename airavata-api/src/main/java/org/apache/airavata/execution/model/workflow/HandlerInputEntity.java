@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.execution.model.workflow;
 
+import jakarta.persistence.Transient;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import org.apache.airavata.model.application.io.DataType;
@@ -75,11 +76,7 @@ public class HandlerInputEntity implements Serializable {
     @Column(name = "IS_READ_ONLY")
     private boolean isReadOnly;
 
-    @ManyToOne(targetEntity = WorkflowHandlerEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumns({
-        @JoinColumn(name = "HANDLER_ID", referencedColumnName = "ID", nullable = false, updatable = false),
-        @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", nullable = false, updatable = false)
-    })
+    @Transient
     private WorkflowHandlerEntity handler;
 
     public HandlerInputEntity() {}

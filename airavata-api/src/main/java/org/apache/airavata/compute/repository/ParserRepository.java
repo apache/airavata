@@ -19,6 +19,8 @@
 */
 package org.apache.airavata.compute.repository;
 
+import org.apache.airavata.execution.util.AbstractRepository;
+
 import com.github.dozermapper.core.Mapper;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,7 @@ import org.apache.airavata.model.appcatalog.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParserRepository extends AppCatAbstractRepository<Parser, ParserEntity, String> {
+public class ParserRepository extends AbstractRepository<Parser, ParserEntity, String> {
 
     private static final Logger logger = LoggerFactory.getLogger(ParserRepository.class);
 
