@@ -56,6 +56,7 @@ import org.apache.airavata.storage.model.LocalDataMovementEntity;
 import org.apache.airavata.storage.model.ScpDataMovementEntity;
 import org.apache.airavata.storage.model.UnicoreDatamovementEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -70,8 +71,10 @@ public interface ComputeMapper {
     ComputeResourceEntity computeResourceToEntity(ComputeResourceDescription model);
 
     // --- ApplicationDeploymentDescription ---
+    @Mapping(source = "defaultWallTime", target = "defaultWalltime")
     ApplicationDeploymentDescription appDeploymentToModel(ApplicationDeploymentEntity entity);
 
+    @Mapping(source = "defaultWalltime", target = "defaultWallTime")
     ApplicationDeploymentEntity appDeploymentToEntity(ApplicationDeploymentDescription model);
 
     // --- ApplicationInterfaceDescription ---
@@ -95,8 +98,10 @@ public interface ComputeMapper {
     ApplicationOutputEntity appOutputToEntity(OutputDataObjectType model);
 
     // --- BatchQueue ---
+    @Mapping(source = "maxRuntime", target = "maxRunTime")
     BatchQueue batchQueueToModel(BatchQueueEntity entity);
 
+    @Mapping(source = "maxRunTime", target = "maxRuntime")
     BatchQueueEntity batchQueueToEntity(BatchQueue model);
 
     // --- ResourceJobManager ---
@@ -110,8 +115,10 @@ public interface ComputeMapper {
     JobSubmissionInterfaceEntity jobSubmissionInterfaceToEntity(JobSubmissionInterface model);
 
     // --- GatewayResourceProfile / GatewayProfileEntity ---
+    @Mapping(source = "gatewayId", target = "gatewayID")
     GatewayResourceProfile gatewayProfileToModel(GatewayProfileEntity entity);
 
+    @Mapping(source = "gatewayID", target = "gatewayId")
     GatewayProfileEntity gatewayProfileToEntity(GatewayResourceProfile model);
 
     // --- ComputeResourcePreference ---
@@ -140,8 +147,10 @@ public interface ComputeMapper {
     BatchQueueResourcePolicyEntity batchQueuePolicyToEntity(BatchQueueResourcePolicy model);
 
     // --- UserResourceProfile ---
+    @Mapping(source = "gatewayId", target = "gatewayID")
     UserResourceProfile userResourceProfileToModel(UserResourceProfileEntity entity);
 
+    @Mapping(source = "gatewayID", target = "gatewayId")
     UserResourceProfileEntity userResourceProfileToEntity(UserResourceProfile model);
 
     // --- UserComputeResourcePreference ---
@@ -207,8 +216,10 @@ public interface ComputeMapper {
     ScpDataMovementEntity scpDataMovementToEntity(SCPDataMovement model);
 
     // UnicoreDataMovement
+    @Mapping(source = "unicoreEndpointUrl", target = "unicoreEndPointURL")
     UnicoreDataMovement unicoreDataMovementToModel(UnicoreDatamovementEntity entity);
 
+    @Mapping(source = "unicoreEndPointURL", target = "unicoreEndpointUrl")
     UnicoreDatamovementEntity unicoreDataMovementToEntity(UnicoreDataMovement model);
 
     // GridFTPDataMovement

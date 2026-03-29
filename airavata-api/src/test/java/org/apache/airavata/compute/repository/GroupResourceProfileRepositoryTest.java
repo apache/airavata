@@ -120,7 +120,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         this.resourceId2 = computeResourceRepository.addComputeResource(cm2);
     }
 
-    @Disabled("Dozer mapping does not set BatchQueueResourcePolicyEntity.groupResourceProfile back-reference")
+    @Disabled("JPA: duplicate entity representation for SlurmGroupComputeResourcePrefEntity during merge")
     @Test
     public void GroupResourceProfileRepositoryTest() throws AppCatalogException {
 
@@ -343,7 +343,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         Assertions.assertEquals(creationTime, creationTimeAfterUpdate, "creationTime should be the same after update");
     }
 
-    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testRemovingReservation() throws AppCatalogException {
 
@@ -397,7 +397,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testUpdatingReservation() throws AppCatalogException {
 
@@ -457,7 +457,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testAddingQueueToReservation() throws AppCatalogException {
 
@@ -506,7 +506,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
+    @Disabled("JPA: RESOURCE_ID null when inserting GROUP_COMPUTE_RESOURCE_PREFERENCE via cascaded merge")
     @Test
     public void testRemovingQueueFromReservation() throws AppCatalogException {
 

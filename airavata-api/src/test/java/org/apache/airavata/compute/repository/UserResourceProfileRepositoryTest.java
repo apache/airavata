@@ -46,7 +46,7 @@ public class UserResourceProfileRepositoryTest extends TestBase {
         userResourceProfileRepository = new UserResourceProfileRepository();
     }
 
-    @Disabled("Dozer mapping leaves GATEWAY_ID null in UserResourceProfileEntity")
+    @Disabled("UserStoragePreference lost on update round-trip: child entity FK population issue")
     @Test
     public void UserResourceProfileRepositoryTest() throws AppCatalogException {
         UserComputeResourcePreference userComputeResourcePreference = new UserComputeResourcePreference();

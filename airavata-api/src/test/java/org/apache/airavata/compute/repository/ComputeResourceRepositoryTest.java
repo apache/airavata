@@ -158,7 +158,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertFalse(searchedInterfaceResult.isPresent());
     }
 
-    @Disabled("Dozer mapping: deepCompareComputeResourceDescription fails on round-trip")
     @Test
     public void listComputeResourcesTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -253,7 +252,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("Dozer mapping: deepCompareComputeResourceDescription fails on round-trip")
     @Test
     public void updateComputeResourceTest() throws AppCatalogException {
         ResourceJobManager resourceJobManager = prepareResourceJobManager();
@@ -301,7 +299,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(deepCompareComputeResourceDescription(savedComputeResource, updatedComputeResource));
     }
 
-    @Disabled("Dozer mapping: deepCompareComputeResourceDescription fails on round-trip")
     @Test
     public void addComputeResourceTest() throws AppCatalogException {
 
@@ -428,7 +425,6 @@ public class ComputeResourceRepositoryTest extends TestBase {
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(localDataMovement, savedDataMovement, "__isset_bitfield"));
     }
 
-    @Disabled("Dozer mapping: reflectionEquals fails on UnicoreDataMovement round-trip")
     @Test
     public void addUnicoreDataMovementTest() throws AppCatalogException {
         UnicoreDataMovement unicoreDataMovement = prepareUnicoreDataMovement();

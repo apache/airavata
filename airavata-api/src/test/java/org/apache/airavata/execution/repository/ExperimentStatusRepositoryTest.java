@@ -31,7 +31,6 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +52,6 @@ public class ExperimentStatusRepositoryTest extends TestBase {
         experimentStatusRepository = new ExperimentStatusRepository();
     }
 
-    @Disabled(
-            "getExperimentStatus returns CREATED instead of EXECUTING when run with full suite (test isolation issue)")
     @Test
     public void ExperimentStatusRepositoryTest() throws RegistryException {
         Gateway gateway = new Gateway();
