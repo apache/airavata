@@ -53,7 +53,7 @@ public class ExperimentStatusRepositoryTest extends TestBase {
         experimentStatusRepository = new ExperimentStatusRepository();
     }
 
-    @Disabled("getExperimentStatus returns CREATED instead of EXECUTING: status update logic issue")
+    @Disabled("getExperimentStatus returns CREATED instead of EXECUTING when run with full suite (test isolation issue)")
     @Test
     public void ExperimentStatusRepositoryTest() throws RegistryException {
         Gateway gateway = new Gateway();

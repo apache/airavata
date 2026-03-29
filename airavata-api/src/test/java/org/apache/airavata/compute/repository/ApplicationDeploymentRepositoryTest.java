@@ -174,7 +174,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         return deployment;
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Dozer mapping does not preserve all deployment fields (deep comparison fails)")
     @Test
     public void createAppDeploymentTest() throws AppCatalogException {
 
@@ -203,7 +203,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertEquals("compHostName1" + "_" + applicationModule, deploymentId);
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Dozer mapping does not preserve all deployment fields (deep comparison fails)")
     @Test
     public void updateAppDeploymentTest() throws AppCatalogException {
         String applicationModule = addSampleApplicationModule("1");
@@ -244,7 +244,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertTrue(deepCompareDeployment(deployment, updatedDeployment));
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Dozer mapping does not preserve all deployment fields (deep comparison fails)")
     @Test
     public void listAllDeployments() throws AppCatalogException {
 
@@ -273,7 +273,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Dozer mapping does not preserve all deployment fields (deep comparison fails)")
     @Test
     public void filterApplicationDeploymentsTest() throws AppCatalogException {
 
@@ -355,7 +355,7 @@ public class ApplicationDeploymentRepositoryTest extends TestBase {
         Assertions.assertNull(applicationInterfaceRepository.getApplicationInterface(deployment.getAppDeploymentId()));
     }
 
-    @Disabled("Dozer mapping does not preserve all deployment fields")
+    @Disabled("Dozer mapping does not preserve all deployment fields (deep comparison fails)")
     @Test
     public void accessibleDeploymentTest() throws AppCatalogException {
         String applicationModule1 = addSampleApplicationModule("1");

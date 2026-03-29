@@ -120,7 +120,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         this.resourceId2 = computeResourceRepository.addComputeResource(cm2);
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("Dozer mapping does not set BatchQueueResourcePolicyEntity.groupResourceProfile back-reference")
     @Test
     public void GroupResourceProfileRepositoryTest() throws AppCatalogException {
 
@@ -343,7 +343,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         Assertions.assertEquals(creationTime, creationTimeAfterUpdate, "creationTime should be the same after update");
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
     @Test
     public void testRemovingReservation() throws AppCatalogException {
 
@@ -397,7 +397,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
     @Test
     public void testUpdatingReservation() throws AppCatalogException {
 
@@ -457,7 +457,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
     @Test
     public void testAddingQueueToReservation() throws AppCatalogException {
 
@@ -506,7 +506,7 @@ public class GroupResourceProfileRepositoryTest extends TestBase {
         }
     }
 
-    @Disabled("RESOURCE_ID null: Dozer mapping issue for GroupComputeResourcePreference")
+    @Disabled("Dozer mapping does not set GroupComputeResourcePreference.groupResourceProfileId")
     @Test
     public void testRemovingQueueFromReservation() throws AppCatalogException {
 

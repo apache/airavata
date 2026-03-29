@@ -61,7 +61,7 @@ public class ExperimentSummaryRepositoryTest extends TestBase {
         experimentSummaryRepository = new ExperimentSummaryRepository();
     }
 
-    @Disabled("EXPERIMENT_SUMMARY table not populated by addExperiment: missing trigger or sync logic")
+    @Disabled("EXPERIMENT_SUMMARY view/table not populated by addExperiment: needs trigger or manual sync")
     @Test
     public void ExperimentSummaryRepositoryTest() throws RegistryException {
         Gateway gateway = new Gateway();
