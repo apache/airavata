@@ -1,21 +1,22 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 package org.apache.airavata.credential.repository.db;
 
 import java.security.Key;
@@ -43,8 +44,13 @@ public class MigrateCredentialEncryption {
         char[] keystorePass = args[5].toCharArray();
 
         KeyStorePasswordCallback cb = new KeyStorePasswordCallback() {
-            public char[] getStorePassword() { return keystorePass; }
-            public char[] getSecretKeyPassPhrase(String alias) { return keystorePass; }
+            public char[] getStorePassword() {
+                return keystorePass;
+            }
+
+            public char[] getSecretKeyPassPhrase(String alias) {
+                return keystorePass;
+            }
         };
 
         Key key = SecurityUtil.getSymmetricKey(keystorePath, keyAlias, cb);
@@ -54,10 +60,10 @@ public class MigrateCredentialEncryption {
 
             int migrated = 0, skipped = 0;
 
-            try (PreparedStatement select = conn.prepareStatement(
-                         "SELECT GATEWAY_ID, TOKEN_ID, CREDENTIAL FROM CREDENTIALS");
-                 PreparedStatement update = conn.prepareStatement(
-                         "UPDATE CREDENTIALS SET CREDENTIAL = ? WHERE GATEWAY_ID = ? AND TOKEN_ID = ?")) {
+            try (PreparedStatement select =
+                            conn.prepareStatement("SELECT GATEWAY_ID, TOKEN_ID, CREDENTIAL FROM CREDENTIALS");
+                    PreparedStatement update = conn.prepareStatement(
+                            "UPDATE CREDENTIALS SET CREDENTIAL = ? WHERE GATEWAY_ID = ? AND TOKEN_ID = ?")) {
 
                 ResultSet rs = select.executeQuery();
                 while (rs.next()) {
