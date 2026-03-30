@@ -1,4 +1,0 @@
-grpc:
-  server:
-    port: 19900
-    max-inbound-message-size: 20971520
