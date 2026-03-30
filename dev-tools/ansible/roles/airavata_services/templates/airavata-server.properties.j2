@@ -25,15 +25,6 @@
 ###########################################################################
 
 ###########################################################################
-# Database Configuration
-###########################################################################
-airavata.jdbc.driver={{ airavata_jdbc_driver | default('org.mariadb.jdbc.Driver') }}
-airavata.jdbc.url={{ airavata_jdbc_url }}
-airavata.jdbc.user={{ airavata_jdbc_user }}
-airavata.jdbc.password={{ airavata_jdbc_password }}
-airavata.jdbc.validationQuery=SELECT 1
-
-###########################################################################
 #  Generic Server Configurations
 ###########################################################################
 enable.sharing={{ enable_sharing }}
@@ -118,9 +109,6 @@ iam.server.super.admin.password={{ iam_admin_password }}
 helix.cluster.name={{ helix_cluster_name }}
 helix.controller.name={{ helix_controller_name }}
 helix.participant.name={{ helix_participant_name }}
-participant.monitoring.enabled={{ participant_monitoring_enabled }}
-participant.monitoring.host={{ participant_monitoring_host }}
-participant.monitoring.port={{ participant_monitoring_port }}
 
 ###########################################################################
 # Job Monitor related properties
@@ -157,23 +145,14 @@ thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_remo
 # Pre-workflow Configuration
 ###########################################################################
 pre.workflow.manager.loadbalance.clusters={{ pre_workflow_manager_loadbalance_clusters }}
-pre.workflow.manager.monitoring.enabled={{ pre_workflow_manager_monitoring_enabled }}
-pre.workflow.manager.monitoring.host={{ pre_workflow_manager_monitoring_host }}
-pre.workflow.manager.monitoring.port={{ pre_wm_monitoring_port }}
 pre.workflow.manager.name={{ pre_workflow_manager_name }}
 
 ###########################################################################
 # Post-workflow Configuration
 ###########################################################################
 post.workflow.manager.loadbalance.clusters={{ post_workflow_manager_loadbalance_clusters }}
-post.workflow.manager.monitoring.enabled={{ post_workflow_manager_monitoring_enabled }}
-post.workflow.manager.monitoring.host={{ post_workflow_manager_monitoring_host }}
-post.workflow.manager.monitoring.port={{ post_wm_monitoring_port }}
 post.workflow.manager.name={{ post_workflow_manager_name }}
 parser.workflow.manager.name={{ parser_workflow_manager_name | default('ParserWorkflowManager') }}
-parser.workflow.manager.monitoring.enabled={{ parser_workflow_manager_monitoring_enabled | default('false') }}
-parser.workflow.manager.monitoring.host={{ parser_workflow_manager_monitoring_host | default('localhost') }}
-parser.workflow.manager.monitoring.port={{ parser_workflow_manager_monitoring_port | default('9095') }}
 
 ###########################################################################
 # Parser-workflow Configuration

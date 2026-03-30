@@ -37,16 +37,6 @@ monitoring_port: 9097
 # Service hosts
 api_server_host: "airavata.localhost"
 
-# Monitoring hosts
-participant_monitoring_host: "airavata.localhost"
-pre_workflow_manager_monitoring_host: "airavata.localhost"
-post_workflow_manager_monitoring_host: "airavata.localhost"
-
-# Monitoring ports (workflow managers)
-participant_monitoring_port: 9096
-pre_wm_monitoring_port: 9093
-post_wm_monitoring_port: 9094
-
 # All services run on Airavata server (no separate server hosts needed)
 
 # Airavata Server (replaces separate service configurations)
@@ -58,9 +48,6 @@ default_registry_user: "default-admin"
 default_registry_gateway: "default"
 default_registry_oauth_client_id: "pga"
 super_tenant_gatewayId: "default"
-
-# JDBC driver (unified)
-airavata_jdbc_driver: "org.mariadb.jdbc.Driver"
 
 # Security configuration
 security_manager_class: "org.apache.airavata.security.service.KeyCloakSecurityManager"
@@ -95,7 +82,6 @@ embedded_zk: false
 helix_cluster_name: "AiravataCluster"
 helix_controller_name: "AiravataController"
 helix_participant_name: "AiravataParticipant"
-participant_monitoring_enabled: true
 
 # Job monitor configuration
 enable_realtime_monitor: true
@@ -119,12 +105,10 @@ archive_logs_on_stop: true
 
 # Pre-workflow manager configuration
 pre_workflow_manager_loadbalance_clusters: false
-pre_workflow_manager_monitoring_enabled: true
 pre_workflow_manager_name: "AiravataPreWM"
 
 # Post-workflow manager configuration
 post_workflow_manager_loadbalance_clusters: false
-post_workflow_manager_monitoring_enabled: true
 post_workflow_manager_name: "AiravataPostWM"
 
 # Parser-workflow configuration

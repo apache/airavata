@@ -24,7 +24,6 @@ import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.CountMonitor;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.common.server.MonitoringServer;
 import org.apache.airavata.execution.task.*;
 import org.apache.airavata.execution.task.ParsingTaskInput;
 import org.apache.airavata.execution.task.ParsingTaskInputs;
@@ -66,15 +65,6 @@ public class ParserWorkflowManager implements IServer {
     }
 
     public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("parser.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("parser.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("parser.workflow.manager.monitoring.port"));
-            new Thread(monitoringServer, "monitoring-server").start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
 
         ParserWorkflowManager manager = new ParserWorkflowManager();
         manager.run();
