@@ -23,44 +23,30 @@
 
 # Service distribution names
 airavata_version: "0.21-SNAPSHOT"
-api_server_dist_name: "apache-airavata-api-server-{{ airavata_version }}"
-agent_service_dist_name: "apache-airavata-agent-service-{{ airavata_version }}"
-research_service_dist_name: "apache-airavata-research-service-{{ airavata_version }}"
-file_server_dist_name: "apache-airavata-file-server-{{ airavata_version }}"
-restproxy_dist_name: "apache-airavata-restproxy-{{ airavata_version }}"
+airavata_server_dist_name: "airavata-server-{{ airavata_version }}"
 
 # Service directories
-api_server_dir: "{{ deployment_dir }}/{{ api_server_dist_name }}"
-agent_service_dir: "{{ deployment_dir }}/{{ agent_service_dist_name }}"
-research_service_dir: "{{ deployment_dir }}/{{ research_service_dist_name }}"
-file_server_dir: "{{ deployment_dir }}/{{ file_server_dist_name }}"
-restproxy_dir: "{{ deployment_dir }}/{{ restproxy_dist_name }}"
+airavata_server_dir: "{{ deployment_dir }}/airavata-server-{{ airavata_version }}"
 
 # Service ports
-api_server_port: 8930
-agent_service_port: 18880
-agent_service_server_port: 18880
-research_service_port: 18899
-research_service_server_port: 18899
-file_server_port: 8050
-restproxy_port: 8082
+thrift_port: 8930
+rest_port: 18889
+grpc_port: 19900
+monitoring_port: 9097
 
 # Service hosts
 api_server_host: "airavata.localhost"
-agent_service_server_address: "airavata.localhost"
-research_service_server_address: "airavata.localhost"
-
-# Monitoring ports
-api_server_monitoring_port: 9097
-participant_monitoring_port: 9096
-pre_wm_monitoring_port: 9093
-post_wm_monitoring_port: 9094
 
 # Monitoring hosts
 api_server_monitoring_host: "airavata.localhost"
 participant_monitoring_host: "airavata.localhost"
 pre_workflow_manager_monitoring_host: "airavata.localhost"
 post_workflow_manager_monitoring_host: "airavata.localhost"
+
+# Monitoring ports (workflow managers)
+participant_monitoring_port: 9096
+pre_wm_monitoring_port: 9093
+post_wm_monitoring_port: 9094
 
 # All services run on Airavata server (no separate server hosts needed)
 

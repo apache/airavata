@@ -18,80 +18,20 @@
 # under the License.
 #
 
-- name: Start Airavata Airavata Server
-  shell: '{{ api_server_dir }}/bin/airavata-server.sh -d start'
+- name: Start Airavata Server
+  shell: '{{ airavata_server_dir }}/bin/airavata.sh start'
   args:
-    chdir: '{{ api_server_dir }}'
+    chdir: '{{ airavata_server_dir }}'
   tags:
     - start
-    - api-server
+    - airavata-server
 
-- name: Wait for Airavata Airavata Server to be ready
+- name: Wait for Airavata Server to be ready
   wait_for:
-    port: '{{ api_server_port }}'
+    port: '{{ thrift_port }}'
     host: '{{ api_server_host }}'
     delay: 5
     timeout: 60
   tags:
     - start
-    - api-server
-
-- name: Start Agent Service
-  shell: '{{ agent_service_dir }}/bin/agent-service.sh -d start'
-  args:
-    chdir: '{{ agent_service_dir }}'
-  tags:
-    - start
-    - agent-service
-
-- name: Wait for Agent Service to start
-  wait_for:
-    timeout: 30
-  tags:
-    - start
-    - agent-service
-
-- name: Start Research Service
-  shell: '{{ research_service_dir }}/bin/research-service.sh -d start'
-  args:
-    chdir: '{{ research_service_dir }}'
-  tags:
-    - start
-    - research-service
-
-- name: Wait for Research Service to start
-  wait_for:
-    timeout: 30
-  tags:
-    - start
-    - research-service
-
-- name: Start File Server
-  shell: '{{ file_server_dir }}/bin/file-service.sh -d start'
-  args:
-    chdir: '{{ file_server_dir }}'
-  tags:
-    - start
-    - file-server
-
-- name: Wait for File Server to start
-  wait_for:
-    timeout: 30
-  tags:
-    - start
-    - file-server
-
-- name: Start REST Proxy
-  shell: '{{ restproxy_dir }}/bin/restproxy.sh -d start'
-  args:
-    chdir: '{{ restproxy_dir }}'
-  tags:
-    - start
-    - restproxy
-
-- name: Wait for REST Proxy to start
-  wait_for:
-    timeout: 30
-  tags:
-    - start
-    - restproxy
+    - airavata-server
