@@ -500,57 +500,6 @@ under the License.
         </executions>
       </plugin>
 
-      <!-- Package distribution (docker) preparation -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-api-server-resources</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${docker.api.server.build.directory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${docker.api.server.image.src.root}</directory>
-                  <filtering>false</filtering>
-                </resource>
-                <resource>
-                  <directory>${session.executionRootDirectory}/dev-tools/deployment-scripts</directory>
-                  <filtering>false</filtering>
-                </resource>
-                <resource>
-                  <directory>${session.executionRootDirectory}/distribution</directory>
-                  <includes>
-                    <include>${api.server.dist.name}.tar.gz</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!--   Package Distribution (Docker)   -->
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>0.46.0</version>
-        <configuration>
-          <verbose>true</verbose>
-          <images>
-            <image>
-              <name>airavata/api-server</name>
-              <build>
-                <dockerFile>${docker.api.server.build.directory}/Dockerfile</dockerFile>
-              </build>
-            </image>
-          </images>
-        </configuration>
-      </plugin>
-
     </plugins>
 
     <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
@@ -569,10 +518,5 @@ under the License.
     </testResources>
   </build>
 
-  <properties>
-    <docker.api.server.build.directory>${project.build.directory}/api_server_docker_img_build</docker.api.server.build.directory>
-    <docker.api.server.image.src.root>src/main/docker</docker.api.server.image.src.root>
-    <api.server.dist.name>apache-airavata-api-server-${project.version}</api.server.dist.name>
-  </properties>
 
 </project>
