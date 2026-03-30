@@ -22,9 +22,14 @@ package org.apache.airavata.security.util;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.KeyStore;
+import javax.crypto.AEADBadTagException;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
 import org.junit.jupiter.api.Test;
 
@@ -60,6 +65,39 @@ public class SecurityUtilTest {
     public void testLoadKeyStoreFromFile() throws Exception {
         KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, new TestKeyStoreCallback());
         assertNotNull(ks);
+    }
+
+    @Test
+    public void testFallbackDecryptsLegacyCBC() throws Exception {
+        byte[] plaintext = "legacy data".getBytes(StandardCharsets.UTF_8);
+        Key key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
+        byte[] legacyEncrypted = legacyEncrypt(plaintext, key);
+        byte[] decrypted = SecurityUtil.decryptWithLegacyFallback(legacyEncrypted, key);
+        assertArrayEquals(plaintext, decrypted);
+    }
+
+    @Test
+    public void testFallbackDecryptsNewGCM() throws Exception {
+        byte[] plaintext = "new data".getBytes(StandardCharsets.UTF_8);
+        Key key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
+        byte[] gcmEncrypted = SecurityUtil.encrypt(plaintext, key);
+        byte[] decrypted = SecurityUtil.decryptWithLegacyFallback(gcmEncrypted, key);
+        assertArrayEquals(plaintext, decrypted);
+    }
+
+    @Test
+    public void testGcmDecryptRejectsLegacyData() throws Exception {
+        byte[] plaintext = "legacy data".getBytes(StandardCharsets.UTF_8);
+        Key key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
+        byte[] legacyEncrypted = legacyEncrypt(plaintext, key);
+        assertThrows(AEADBadTagException.class, () -> SecurityUtil.decrypt(legacyEncrypted, key));
+    }
+
+    /** Simulate old AES/CBC encryption with static zero IV. */
+    private static byte[] legacyEncrypt(byte[] data, Key key) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(new byte[16]));
+        return cipher.doFinal(data);
     }
 
     private static class TestKeyStoreCallback implements KeyStorePasswordCallback {
