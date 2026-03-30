@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.apache.airavata.common.db.DBUtil;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
 import org.apache.airavata.credential.model.Credential;
-import org.apache.airavata.credential.model.CredentialOwnerType;
 import org.apache.airavata.credential.repository.CredentialStoreException;
 import org.apache.airavata.security.util.SecurityUtil;
 
@@ -85,7 +84,7 @@ public class CredentialsDAO extends ParentDAO {
             throws CredentialStoreException {
 
         String sql =
-                "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, CREDENTIAL, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION, CREDENTIAL_OWNER_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, CREDENTIAL, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -105,8 +104,6 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setTimestamp(5, timestamp);
 
             preparedStatement.setString(6, credential.getDescription());
-
-            preparedStatement.setString(7, credential.getCredentialOwnerType().toString());
 
             preparedStatement.executeUpdate();
 
@@ -163,7 +160,7 @@ public class CredentialsDAO extends ParentDAO {
             throws CredentialStoreException {
 
         String sql =
-                "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ?, CREDENTIAL_OWNER_TYPE = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
+                "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
         PreparedStatement preparedStatement = null;
 
@@ -177,9 +174,8 @@ public class CredentialsDAO extends ParentDAO {
 
             preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             preparedStatement.setString(4, credential.getDescription());
-            preparedStatement.setString(5, credential.getCredentialOwnerType().toString());
-            preparedStatement.setString(6, gatewayId);
-            preparedStatement.setString(7, credential.getToken());
+            preparedStatement.setString(5, gatewayId);
+            preparedStatement.setString(6, credential.getToken());
 
             preparedStatement.executeUpdate();
 
@@ -231,8 +227,6 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
-                certificateCredential.setCredentialOwnerType(
-                        CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 return certificateCredential;
             }
@@ -396,8 +390,6 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
-                certificateCredential.setCredentialOwnerType(
-                        CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }

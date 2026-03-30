@@ -34,9 +34,6 @@ public abstract class Credential implements Serializable {
     private Date persistedTime;
     private String token;
 
-    @Deprecated
-    private CredentialOwnerType credentialOwnerType = CredentialOwnerType.GATEWAY;
-
     public String getDescription() {
         return description;
     }
@@ -71,11 +68,4 @@ public abstract class Credential implements Serializable {
         return persistedTime;
     }
 
-    public CredentialOwnerType getCredentialOwnerType() {
-        return credentialOwnerType;
-    }
-
-    public void setCredentialOwnerType(CredentialOwnerType credentialOwnerType) {
-        this.credentialOwnerType = credentialOwnerType;
-    }
 }
