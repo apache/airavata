@@ -10,22 +10,18 @@ echo "=== Airavata Setup ==="
 echo "Starting infrastructure services..."
 cd "$ROOT_DIR"
 docker compose up -d
-echo "Waiting for services to be ready..."
-sleep 10
+echo "Waiting for services to be healthy..."
 
-# Verify DB is up
-until docker exec airavata-db mariadb -h127.0.0.1 -uairavata -p123456 -e "SELECT 1" > /dev/null 2>&1; do
-    echo "  Waiting for MariaDB..."
-    sleep 2
+# Wait for all compose healthchecks to pass
+for svc in db rabbitmq zookeeper kafka keycloak; do
+    printf "  %s: " "$svc"
+    until [ "$(docker inspect --format='{{.State.Health.Status}}' "airavata-$svc" 2>/dev/null)" = "healthy" ]; do
+        printf "."
+        sleep 3
+    done
+    echo " ready"
 done
-echo "  MariaDB: ready"
-
-# Verify RabbitMQ is up
-until docker exec airavata-rabbitmq rabbitmqctl status > /dev/null 2>&1; do
-    echo "  Waiting for RabbitMQ..."
-    sleep 2
-done
-echo "  RabbitMQ: ready"
+echo "All infrastructure healthy."
 
 # 2. Generate keystores if missing
 if [ ! -f "$ROOT_DIR/keystores/airavata.p12" ]; then
