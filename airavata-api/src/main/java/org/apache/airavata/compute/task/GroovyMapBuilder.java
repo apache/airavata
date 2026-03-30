@@ -123,13 +123,6 @@ public class GroovyMapBuilder {
                 if (jobSubmissionTaskModel.getWallTime() > 0) {
                     mapData.setMaxWallTime(maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
                     mapData.setWallTimeInSeconds(jobSubmissionTaskModel.getWallTime() * 60);
-                    // TODO fix this
-                    /*if (resourceJobManager != null) {
-                        if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
-                            groovyMap.add(Script.MAX_WALL_TIME,
-                                    GFacUtils.maxWallTimeCalculatorForLSF(jobSubmissionTaskModel.getWallTime()));
-                        }
-                    }*/
                 }
             } catch (TException e) {
                 logger.error("Error while getting job submission sub task model", e);
@@ -164,15 +157,6 @@ public class GroovyMapBuilder {
             if (scheduling.getWallTimeLimit() > 0 && mapData.getMaxWallTime() == null) {
                 mapData.setMaxWallTime(maxWallTimeCalculator(scheduling.getWallTimeLimit()));
                 mapData.setWallTimeInSeconds(scheduling.getWallTimeLimit() * 60);
-
-                // TODO fix this
-                /*
-                if (resourceJobManager != null) {
-                    if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
-                        mapData.setMaxWallTime(maxWallTimeCalculatorForLSF(scheduling.getWallTimeLimit()));
-                    }
-                }
-                */
             }
             if (scheduling.getTotalPhysicalMemory() > 0) {
                 mapData.setUsedMem(scheduling.getTotalPhysicalMemory());

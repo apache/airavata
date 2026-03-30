@@ -145,7 +145,6 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     }
 
     protected void publishErrors(Throwable e) {
-        // TODO Publish through kafka channel with task and workflow id
         e.printStackTrace();
     }
 

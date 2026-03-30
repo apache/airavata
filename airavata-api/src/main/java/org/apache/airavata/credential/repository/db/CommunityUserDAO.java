@@ -135,7 +135,6 @@ public class CommunityUserDAO extends ParentDAO {
 
     public void updateCommunityUser(CommunityUser user) throws CredentialStoreException {
 
-        // TODO
     }
 
     public CommunityUser getCommunityUser(String gatewayName, String communityUserName, Connection connection)
@@ -154,7 +153,7 @@ public class CommunityUserDAO extends ParentDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
+                String email = resultSet.getString("COMMUNITY_USER_EMAIL");
 
                 return new CommunityUser(gatewayName, communityUserName, email);
             }
@@ -191,7 +190,7 @@ public class CommunityUserDAO extends ParentDAO {
 
             if (resultSet.next()) {
                 String communityUserName = resultSet.getString("COMMUNITY_USER_NAME");
-                String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
+                String email = resultSet.getString("COMMUNITY_USER_EMAIL");
 
                 return new CommunityUser(gatewayName, communityUserName, email);
             }
@@ -229,7 +228,7 @@ public class CommunityUserDAO extends ParentDAO {
 
             while (resultSet.next()) {
                 String userName = resultSet.getString("COMMUNITY_USER_NAME");
-                String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
+                String email = resultSet.getString("COMMUNITY_USER_EMAIL");
 
                 userList.add(new CommunityUser(gatewayName, userName, email));
             }

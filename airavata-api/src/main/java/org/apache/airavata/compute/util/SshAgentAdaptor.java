@@ -696,7 +696,6 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 c = in.read();
                 sb.append((char) c);
             } while (c != '\n');
-            // FIXME: Redundant
             if (b == 1) { // error
                 System.out.print(sb.toString());
             }

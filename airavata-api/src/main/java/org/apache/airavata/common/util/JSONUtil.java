@@ -57,7 +57,6 @@ public class JSONUtil {
     }
 
     public static boolean isEqual(JsonObject originalJsonObject, JsonObject newJsonObject) {
-        // TODO - Implement this method
         if (originalJsonObject == null && newJsonObject == null) {
             return true;
         } else if (originalJsonObject == null || newJsonObject == null) {
