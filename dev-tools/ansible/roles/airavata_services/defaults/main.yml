@@ -38,7 +38,6 @@ monitoring_port: 9097
 api_server_host: "airavata.localhost"
 
 # Monitoring hosts
-api_server_monitoring_host: "airavata.localhost"
 participant_monitoring_host: "airavata.localhost"
 pre_workflow_manager_monitoring_host: "airavata.localhost"
 post_workflow_manager_monitoring_host: "airavata.localhost"
@@ -145,9 +144,6 @@ enable_streaming_transfer: false
 # Thrift client pool configuration
 thrift_client_pool_abandoned_removal_enabled: true
 thrift_client_pool_abandoned_removal_logged: false
-
-# DB Event Manager
-db_event_manager_class: "org.apache.airavata.db.event.manager.DBEventManagerRunner"
 
 # Storage configuration
 local_data_location: "/home/{{ deploy_user }}/temp-storage"

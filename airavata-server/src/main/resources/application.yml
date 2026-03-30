@@ -78,8 +78,3 @@ airavata.research:
   dev-user: "airavata@apache.org"
   admin-api-key: "JUPYTER_ADMIN_API_KEY"
   limit: 10
-
-airavata.user-profile:
-  server:
-    url: localhost
-    port: 8930

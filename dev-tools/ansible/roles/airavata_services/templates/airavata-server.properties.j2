@@ -48,12 +48,8 @@ super.tenant.gatewayId={{ super_tenant_gatewayId }}
 ###########################################################################
 #  API Server Configurations
 ###########################################################################
-apiserver.class=org.apache.airavata.api.server.AiravataServer
 apiserver.host={{ api_server_bind_host | default(api_server_host) }}
 apiserver.port={{ api_server_port }}
-api.server.monitoring.enabled={{ api_server_monitoring_enabled }}
-api.server.monitoring.host={{ api_server_monitoring_host }}
-api.server.monitoring.port={{ api_server_monitoring_port }}
 
 job.validators={{ job_validators }}
 enable.validation={{ enable_validation }}
@@ -117,9 +113,6 @@ iam.server.super.admin.password={{ iam_admin_password }}
 ###########################################################################
 # DB Event Manager Runner
 ###########################################################################
-db_event_manager.class={{ db_event_manager_class }}
-
-###########################################################################
 # Job Execution Engine properties
 ###########################################################################
 helix.cluster.name={{ helix_cluster_name }}
@@ -152,6 +145,7 @@ email.based.monitor.password={{ email_based_monitor_password }}
 
 kafka.broker.url={{ kafka_broker_url }}
 local.data.location={{ local_data_location }}
+max.archive.size={{ max_archive_size | default('21474836480') }}
 
 ###########################################################################
 # ThriftClientPool Configuration
@@ -176,11 +170,16 @@ post.workflow.manager.monitoring.enabled={{ post_workflow_manager_monitoring_ena
 post.workflow.manager.monitoring.host={{ post_workflow_manager_monitoring_host }}
 post.workflow.manager.monitoring.port={{ post_wm_monitoring_port }}
 post.workflow.manager.name={{ post_workflow_manager_name }}
+parser.workflow.manager.name={{ parser_workflow_manager_name | default('ParserWorkflowManager') }}
+parser.workflow.manager.monitoring.enabled={{ parser_workflow_manager_monitoring_enabled | default('false') }}
+parser.workflow.manager.monitoring.host={{ parser_workflow_manager_monitoring_host | default('localhost') }}
+parser.workflow.manager.monitoring.port={{ parser_workflow_manager_monitoring_port | default('9095') }}
 
 ###########################################################################
 # Parser-workflow Configuration
 ###########################################################################
 data.parser.delete.container={{ data_parser_delete_container }}
+data.parser.broker.publisher.id={{ data_parser_broker_publisher_id | default('ParsingPublisher') }}
 data.parser.broker.consumer.group={{ data_parser_broker_consumer_group }}
 data.parser.topic={{ data_parser_topic }}
 data.parser.storage.resource.id={{ data_parser_storage_resource_id }}
