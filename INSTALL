@@ -24,8 +24,11 @@ Quick Start
 
         ./scripts/start.sh
 
-   The server starts on port 8930 (Thrift, multiplexed).
-   All Thrift services are available on this single port via TMultiplexedProtocol.
+   The unified server starts on:
+   - Port 8930: Thrift (9 multiplexed services)
+   - Port 18889: REST (Swagger UI at /swagger-ui.html)
+   - Port 19900: gRPC
+   - Port 9097: Monitoring (/health/services)
 
 Build from Source Only (without starting)
 ------------------------------------------

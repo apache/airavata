@@ -55,7 +55,7 @@ Apache Airavata is composed of modular components spanning core services, data m
 
 ## 🔄 How Airavata Works
 
-Airavata is composed of a consolidated JVM server plus three Spring Boot microservices that together facilitate the full lifecycle of computational jobs.
+Airavata runs as a **single unified JVM** (Spring Boot) that hosts Thrift, REST, and gRPC transports plus background workers.
 
 ```mermaid
 graph TB
@@ -67,44 +67,42 @@ graph TB
         KC[Keycloak<br/>:18080]
     end
 
-    subgraph "AiravataServer (single JVM)"
+    subgraph "Unified Airavata Server (single JVM)"
         direction TB
-        MUX["TMultiplexedProcessor :8930<br/>9 Thrift services<br/>(airavata-thrift-server module)"]
+        MUX["Thrift :8930<br/>9 multiplexed services"]
+        REST["REST :18889<br/>Swagger UI + Actuator"]
+        GRPC["gRPC :19900<br/>Agent + Research"]
         SVC["Service Layer<br/>(airavata-api module)"]
-        BG["Background Services<br/>8 IServer workers<br/>(ServiceRegistry)"]
-        MON["MonitoringServer :9097<br/>/metrics  /health/services<br/>/admin/restart"]
-    end
-
-    subgraph "Spring Boot Services"
-        RS[Research Service<br/>:18889 / gRPC :19908]
-        AS[Agent Service<br/>:18880 / gRPC :19900]
-        FS[File Server<br/>:8050]
-        RP[REST Proxy<br/>:8082]
+        BG["Background Services<br/>8 workers"]
+        MON["Monitoring :9097<br/>/metrics /health/services"]
     end
 
     SDK[Python SDK] -->|TMultiplexedProtocol| MUX
-    Portal[Web Portal] -->|REST| RP
+    Portal[Web Portal] -->|REST| REST
     MUX --> SVC
+    REST --> SVC
+    GRPC --> SVC
     SVC --> DB
     SVC --> RMQ
     BG --> ZK
     BG --> KFK
     BG --> RMQ
-    AS --> DB
-    RS --> DB
     SVC -.->|auth| KC
     MON -.->|tracks| BG
 ```
 
-### 1. Airavata Server `(airavata-thrift-server + airavata-api)`
-> Entry point: `org.apache.airavata.api.server.AiravataServer` (in `airavata-thrift-server` module)
-> Started via: `tilt up` or manually with `java -cp ...`
+### 1. Unified Airavata Server `(airavata-server)`
+> Entry point: `org.apache.airavata.server.AiravataServerMain`
+> Started via: `tilt up` or `java -jar airavata-server/target/airavata-server-0.21-SNAPSHOT.jar`
 
-`AiravataServer` is the single JVM that hosts all Thrift services and background workers. On startup it:
+The unified server hosts all transports (Thrift, REST, gRPC), Spring Boot services (Research, Agent, File Server), and background workers in a single JVM. On startup it:
 
-1. Initializes the unified `airavata` database via Flyway
-2. Registers 9 Thrift services on a single `TMultiplexedProcessor` (port **8930**)
-3. Starts background `IServer` workers after the Thrift server is ready
+1. Initializes the unified `airavata` database
+2. Starts the REST server on port **18889** (Swagger UI + Actuator health)
+3. Registers 9 Thrift services on a single `TMultiplexedProcessor` (port **8930**)
+4. Starts gRPC server on port **19900**
+5. Starts background `IServer` workers
+6. Starts monitoring server on port **9097**
 
 #### Architecture: Service Layer + Thrift Transport
 
@@ -192,25 +190,15 @@ graph LR
 ```
 
 
-### 2. Airavata File Server `(apache-airavata-file-server)`
-> Class Name: `org.apache.airavata.file.server.FileServerApplication`
-> Command: `bin/
+### Embedded Spring Boot Services
 
-The Airavata File Server is a lightweight SFTP wrapper running on storage nodes integrated with Airavata. It lets users securely access storage via SFTP, using Airavata authentication tokens as ephemeral passwords.
+The following services are embedded in the unified server (not run separately):
 
-
-### 3. Airavata Agent Service `(apache-airavata-agent-service)` [NEW]
-> Class Name: `org.apache.airavata.agent.connection.service.AgentServiceApplication`
-
-The Airavata Agent Service is the backend for launching **interactive** jobs using Airavata.
-It provide constructs to launch a custom "Agent" on a compute resource, that connects back to the Agent Service through a bi-directional gRPC channel.
-The Airavata Python SDK primarily utilizes the Agent Service (gRPC) and the Airavata API (Thrift) to submit and execute interactive jobs, spawn subprocesses, and create network tunnels to subprocesses, even if they are behind NAT.
-
-
-### 4. Airavata Research Service `(apache-airavata-research-service)` [NEW]
-> Class Name: `org.apache.airavata.research.service.ResearchServiceApplication`
-
-The Airavata Research Service is the backend for the **research catalog** in Airavata. It provides the API to add, list, modify, and publish notebooks, repositories, datasets, and computational models in cybershuttle, and launch interactive remote sessions to utilize them in a research setting.
+| Service | Module | Purpose |
+|---------|--------|---------|
+| **File Server** | `airavata-api/file-server` | SFTP wrapper for secure storage access |
+| **Agent Service** | `airavata-api/agent-service` | Backend for interactive jobs via bidirectional gRPC |
+| **Research Service** | `airavata-api/research-service` | Research catalog API (notebooks, datasets, models) |
 
 
 ## 🏗️ Getting Started
@@ -237,8 +225,7 @@ tilt up
 
 This starts:
 - **Infrastructure**: MariaDB, RabbitMQ, ZooKeeper, Kafka, Keycloak (via `compose.yml`)
-- **Airavata Thrift Server**: All 9 services on port 8930, monitoring on 9097
-- **Spring Boot Services**: Research Service (18889), Agent Service (18880), File Server (8050), REST Proxy (8082)
+- **Unified Airavata Server**: Thrift (:8930), REST (:18889), gRPC (:19900), Monitoring (:9097)
 
 Open the Tilt UI at `http://localhost:10350` to monitor all resources. Integration tests can be triggered manually from the Tilt UI.
 
@@ -247,13 +234,14 @@ Open the Tilt UI at `http://localhost:10350` to monitor all resources. Integrati
 ```bash
 docker compose up -d                          # Infrastructure
 mvn clean package -DskipTests -T4             # Build
-java -cp "airavata-thrift-server/target/classes:airavata-api/target/classes:airavata-api/target/dependency/*" \
-  -Dairavata.config.dir=airavata-api/src/main/resources \
-  org.apache.airavata.api.server.AiravataServer   # Thrift server
-mvn spring-boot:run -pl modules/research-framework/research-service  # Research Service
-mvn spring-boot:run -pl modules/agent-framework/agent-service        # Agent Service
-mvn spring-boot:run -pl modules/file-server                          # File Server
-mvn spring-boot:run -pl modules/restproxy                            # REST Proxy
+java -jar airavata-server/target/airavata-server-0.21-SNAPSHOT.jar  # Start server
+```
+
+Or use the helper scripts:
+
+```bash
+./scripts/setup.sh    # Infrastructure + build
+./scripts/start.sh    # Start server
 ```
 
 ### Health Monitoring
@@ -270,29 +258,29 @@ Spring Boot services expose `/actuator/health` on their respective ports.
 
 ### Configuration
 
-The main configuration file is `airavata-api/src/main/resources/airavata-server.properties`. Key settings:
+The main configuration file is `airavata-server/src/main/resources/application.yml`. Key settings:
 
-* `apiserver.port` — Thrift port (default: `8930`)
-* `airavata.jdbc.url` — JDBC URL for the unified `airavata` database
-* `email.based.monitoring.enabled` — Enable/disable email-based job monitor
-* `api.server.monitoring.enabled` — Enable/disable Prometheus metrics endpoint
+* `airavata.servers` — List of transports to activate: `[thrift, rest, grpc]`
+* `spring.datasource.url` — JDBC URL (default: `jdbc:mariadb://localhost:13306/airavata`)
+* `airavata.thrift.port` — Thrift port (default: `8930`)
+* `server.port` — REST port (default: `18889`)
+* `grpc.server.port` — gRPC port (default: `19900`)
+* `airavata.security.openid-url` — Keycloak realm URL
 
 ### Integration Tests
 
 ```bash
-mvn test -pl integration-tests -Dgroups=integration
+mvn test -pl airavata-api -Dgroups=runtime
 ```
 
-Tests verify: all 9 thrift services, database tables, RabbitMQ exchanges, Kafka broker, Keycloak realm, Prometheus metrics, and the `/health/services` endpoint.
+### Server Ports
 
-### Spring Boot Microservices
-
-| Service | Port | gRPC | Purpose |
-|---|---|---|---|
-| **Research Service** | 18889 | 19908 | Research catalog API |
-| **Agent Service** | 18880 | 19900 | Backend for interactive jobs |
-| **File Server** | 8050 | — | SFTP wrapper for storage nodes |
-| **REST Proxy** | 8082 | — | REST-to-Kafka bridge |
+| Transport | Port | Purpose |
+|-----------|------|---------|
+| Thrift | 8930 | 9 multiplexed services (Python SDK, Thrift clients) |
+| REST | 18889 | Swagger UI, Actuator health, REST APIs |
+| gRPC | 19900 | Agent + Research service gRPC |
+| Monitoring | 9097 | Prometheus metrics, `/health/services` |
 
 
 ## 🤝 Contributing
@@ -312,7 +300,7 @@ We welcome contributions from the community! Here's how you can help:
 
 ### Setting up your IDE
 
-Use `tilt up` to start the full stack, then attach your IDE debugger to the running services. For the Airavata Thrift Server, use remote JVM debug (add `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005` to the `serve_cmd` in the Tiltfile). For Spring Boot services, use `mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=..."` directly.
+Use `tilt up` to start the full stack, then attach your IDE debugger. For remote debugging, add `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005` to the `serve_cmd` in the Tiltfile.
 
 
 ## 💬 Community & Support
