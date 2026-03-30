@@ -73,7 +73,7 @@ graph TB
         REST["REST :18889<br/>Swagger UI + Actuator"]
         GRPC["gRPC :19900<br/>Agent + Research"]
         SVC["Service Layer<br/>(airavata-api module)"]
-        BG["Background Services<br/>8 workers"]
+        BG["Background Services<br/>12 workers"]
         MON["Monitoring :9097<br/>/metrics /health/services"]
     end
 

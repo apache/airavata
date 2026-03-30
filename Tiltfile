@@ -7,7 +7,7 @@ docker_compose('./compose.yml')
 # --- Build ---
 local_resource(
     'build',
-    cmd='mvn install -DskipTests -T4 -am -q',
+    cmd='mvn install -DskipTests -T4 -q',
     deps=[
         'airavata-api/src',
         'airavata-api/pom.xml',
@@ -50,7 +50,7 @@ local_resource(
 # --- Integration Tests (manual trigger) ---
 local_resource(
     'integration-tests',
-    cmd='mvn test -pl airavata-api -Dgroups=runtime -Dsurefire.excludedGroups="" -am -q',
+    cmd='mvn test -pl airavata-api -Dgroups=runtime -Dsurefire.excludedGroups="" -q',
     resource_deps=['airavata-server'],
     auto_init=False,
     trigger_mode=TRIGGER_MODE_MANUAL,

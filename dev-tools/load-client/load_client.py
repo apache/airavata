@@ -28,6 +28,7 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
+# Default to dev environment. Override with env vars for local testing.
 os.environ.setdefault('AUTH_SERVER_URL', "https://auth.dev.cybershuttle.org")
 os.environ.setdefault('API_SERVER_HOSTNAME', "api.dev.cybershuttle.org")
 os.environ.setdefault('GATEWAY_URL', "https://gateway.dev.cybershuttle.org")
