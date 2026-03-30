@@ -414,8 +414,9 @@ public class CredentialsDAO extends ParentDAO {
             try {
                 // decrypt the data first
                 if (encrypt()) {
-                    data = SecurityUtil.decrypt(
-                            this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, data);
+                    var key = SecurityUtil.getSymmetricKey(
+                            this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback);
+                    data = SecurityUtil.decrypt(data, key);
                 }
 
                 objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
@@ -464,8 +465,9 @@ public class CredentialsDAO extends ParentDAO {
         if (encrypt()) {
             byte[] array = byteArrayOutputStream.toByteArray();
             try {
-                return SecurityUtil.encrypt(
-                        this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback, array);
+                var key = SecurityUtil.getSymmetricKey(
+                        this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback);
+                return SecurityUtil.encrypt(array, key);
             } catch (GeneralSecurityException e) {
                 throw new CredentialStoreException("Error encrypting data", e);
             } catch (IOException e) {

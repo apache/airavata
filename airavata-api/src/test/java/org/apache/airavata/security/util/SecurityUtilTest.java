@@ -39,12 +39,10 @@ public class SecurityUtilTest {
 
     @Test
     public void testEncryptString() throws Exception {
-
         String stringToEncrypt = "Test string to encrypt";
-        byte[] encrypted =
-                SecurityUtil.encryptString(keyStorePath, "mykey", new TestKeyStoreCallback(), stringToEncrypt);
-
-        String decrypted = SecurityUtil.decryptString(keyStorePath, "mykey", new TestKeyStoreCallback(), encrypted);
+        var key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
+        byte[] encrypted = SecurityUtil.encrypt(stringToEncrypt.getBytes(StandardCharsets.UTF_8), key);
+        String decrypted = new String(SecurityUtil.decrypt(encrypted, key), StandardCharsets.UTF_8);
         assertEquals(stringToEncrypt, decrypted);
     }
 
@@ -52,8 +50,9 @@ public class SecurityUtilTest {
     public void testEncryptBytes() throws Exception {
         String stringToEncrypt = "Test string to encrypt";
         byte[] plaintext = stringToEncrypt.getBytes(StandardCharsets.UTF_8);
-        byte[] encrypted = SecurityUtil.encrypt(keyStorePath, "mykey", new TestKeyStoreCallback(), plaintext);
-        byte[] decrypted = SecurityUtil.decrypt(keyStorePath, "mykey", new TestKeyStoreCallback(), encrypted);
+        var key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
+        byte[] encrypted = SecurityUtil.encrypt(plaintext, key);
+        byte[] decrypted = SecurityUtil.decrypt(encrypted, key);
         assertArrayEquals(plaintext, decrypted);
     }
 
