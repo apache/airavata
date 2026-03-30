@@ -16,7 +16,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
   servlet:
     multipart:
       max-file-size: 200MB
