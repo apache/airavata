@@ -14,6 +14,12 @@ services:
       - ./airavata-api/src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     ports:
       - "13306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   rabbitmq:
     image: rabbitmq:4.0-management
@@ -27,6 +33,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   zookeeper:
     image: zookeeper:3.9
@@ -37,20 +49,37 @@ services:
       - zk_logs:/datalog
     ports:
       - "2181:2181"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/commands/ruok || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   kafka:
-    image: wurstmeister/kafka:2.13-2.8.1
+    image: apache/kafka:3.9.0
     container_name: airavata-kafka
     restart: unless-stopped
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: airavata-kafka-cluster-id-01
     volumes:
-      - kafka_data:/kafka
+      - kafka_data:/var/lib/kafka/data
     ports:
       - "9092:9092"
-    depends_on:
-      - zookeeper
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   keycloak:
     image: keycloak/keycloak:25.0
@@ -65,6 +94,12 @@ services:
     command: ["start", "--import-realm"]
     ports:
       - "18080:18080"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   # Dev tools (start with: docker compose --profile tools up -d)
 
@@ -76,7 +111,8 @@ services:
     ports:
       - "18088:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:

@@ -38,9 +38,6 @@ credential_store: "{{ db_name }}"
 profile_service: "{{ db_name }}"
 research_catalog: "{{ db_name }}"
 
-# Database driver (unified)
-airavata_jdbc_driver: "org.mariadb.jdbc.Driver"
-
 # Paths
 local_data_location: "/home/{{ deploy_user }}/temp-storage"
 file_server_storage_location: "/home/{{ deploy_user }}/temp-storage"

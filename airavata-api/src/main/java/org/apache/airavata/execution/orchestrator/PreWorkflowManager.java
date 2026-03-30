@@ -30,7 +30,6 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.CountMonitor;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.common.server.MonitoringServer;
 import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.execution.task.CancelCompletingTask;
 import org.apache.airavata.execution.task.CompletingTask;
@@ -313,15 +312,6 @@ public class PreWorkflowManager implements IServer {
     }
 
     public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("pre.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("pre.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("pre.workflow.manager.monitoring.port"));
-            new Thread(monitoringServer, "monitoring-server").start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
 
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
         preWorkflowManager.run();

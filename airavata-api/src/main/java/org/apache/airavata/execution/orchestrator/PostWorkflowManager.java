@@ -25,7 +25,6 @@ import org.apache.airavata.common.config.ServerSettings;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.server.CountMonitor;
 import org.apache.airavata.common.server.IServer;
-import org.apache.airavata.common.server.MonitoringServer;
 import org.apache.airavata.common.util.AiravataUtils;
 import org.apache.airavata.common.util.ThriftUtils;
 import org.apache.airavata.execution.monitor.JobStateValidator;
@@ -68,15 +67,6 @@ public class PostWorkflowManager implements IServer {
     }
 
     public static void main(String[] args) throws Exception {
-
-        if (ServerSettings.getBooleanSetting("post.workflow.manager.monitoring.enabled")) {
-            MonitoringServer monitoringServer = new MonitoringServer(
-                    ServerSettings.getSetting("post.workflow.manager.monitoring.host"),
-                    ServerSettings.getIntSetting("post.workflow.manager.monitoring.port"));
-            new Thread(monitoringServer, "monitoring-server").start();
-
-            Runtime.getRuntime().addShutdownHook(new Thread(monitoringServer::stop));
-        }
 
         PostWorkflowManager postManager = new PostWorkflowManager();
         postManager.run();

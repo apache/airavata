@@ -133,9 +133,7 @@ public class CommunityUserDAO extends ParentDAO {
         }
     }
 
-    public void updateCommunityUser(CommunityUser user) throws CredentialStoreException {
-
-    }
+    public void updateCommunityUser(CommunityUser user) throws CredentialStoreException {}
 
     public CommunityUser getCommunityUser(String gatewayName, String communityUserName, Connection connection)
             throws CredentialStoreException {

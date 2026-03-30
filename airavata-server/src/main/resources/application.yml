@@ -12,19 +12,32 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       pool-name: AiravataPool
+      connection-timeout: 30000
+      initialization-fail-timeout: -1
+      minimum-idle: 2
+      maximum-pool-size: 20
       leak-detection-threshold: 20000
   jpa:
     hibernate:
       ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
   servlet:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
 
-# REST server port (also serves Swagger UI)
+# REST server
 server:
   port: 18889
+  shutdown: graceful
+
+spring.lifecycle:
+  timeout-per-shutdown-phase: 30s
 
 springdoc:
   api-docs:
@@ -45,6 +58,9 @@ management:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 airavata.security:
   openid-url: http://localhost:18080/realms/default

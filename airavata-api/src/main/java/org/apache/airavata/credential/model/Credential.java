@@ -67,5 +67,4 @@ public abstract class Credential implements Serializable {
     public Date getCertificateRequestedTime() {
         return persistedTime;
     }
-
 }

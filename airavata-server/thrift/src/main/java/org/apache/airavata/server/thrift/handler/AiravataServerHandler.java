@@ -97,6 +97,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
+@org.springframework.context.annotation.DependsOn("springSettingsBridge")
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     private Publisher statusPublisher;

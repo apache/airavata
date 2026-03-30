@@ -650,8 +650,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken, String gatewayId)
-            throws TException {
-    }
+            throws TException {}
 
     private class SingleAppExperimentRunner implements Runnable {
 
