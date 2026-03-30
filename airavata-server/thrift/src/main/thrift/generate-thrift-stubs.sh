@@ -20,7 +20,7 @@
 #
 
 # This script will generate/regenerate the thrift code for Airavata Server Skeletons, Client Stubs
-#    and Data Model java beans in java, C++, PHP and Python.
+#    and Data Model java beans in java, C++ and Python.
 
 show_usage() {
 	echo -e "Usage: $0 [Language to generate stubs]"
@@ -78,11 +78,9 @@ setup() {
     PROFILE_SERVICE_THRIFT_FILE="${THRIFTDIR}/service-cpis/profile-service-cpi.thrift"
     AIRAVATA_API_THRIFT_FILE="${THRIFTDIR}/airavata-apis/airavata_api.thrift"
 
-    PHP_THRIFT_FILE="${THRIFTDIR}/stubs_php.thrift"
     JAVA_THRIFT_FILE="${THRIFTDIR}/stubs_java.thrift"
 
     JAVA_SRC_DIR='../airavata-api/src/main/java'
-    PHP_SDK_DIR='../dev-tools/airavata-php-sdk/lib'
     CPP_SDK_DIR='../dev-tools/airavata-cpp-sdk/lib/airavata/'
     PYTHON_SDK_DIR='../dev-tools/airavata-python-sdk/airavata/'
 
@@ -200,33 +198,6 @@ generate_java_stubs() {
     echo "Successfully generated all Java stubs (API, CPI, and service)"
 }
 
-####################################
-# Generate/Update PHP Stubs #
-####################################
-
-generate_php_stubs() {
-
-    #PHP generation directory
-    PHP_GEN_DIR=${BASE_TARGET_DIR}/gen-php
-
-    # As a precaution  remove and previously generated files if exists
-    rm -rf ${PHP_GEN_DIR}
-
-    # Using thrift Java generator, generate the PHP classes based on Airavata API. This
-    #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PHP_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
-
-    # For the generated java classes add the ASF V2 License header
-    ## TODO Write PHP license parser
-
-    # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
-    #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
-    copy_changed_files ${PHP_GEN_DIR} ${PHP_SDK_DIR}
-
-}
 
 ####################################
 # Generate/Update C++ Client Stubs #
@@ -310,20 +281,15 @@ generate_component_java_stubs() {
 for arg in "$@"
 do
     case "$arg" in
-    all)    echo "Generate all stubs (Java, PHP, C++, Python) Stubs"
+    all)    echo "Generate all stubs (Java, C++, Python) Stubs"
             setup
             generate_java_stubs
-            generate_php_stubs
             generate_cpp_stubs
             generate_python_stubs
             ;;
     java)   echo "Generating Java Stubs"
             setup
             generate_java_stubs
-            ;;
-    php)    echo "Generate PHP Stubs"
-            setup
-            generate_php_stubs
             ;;
     cpp)    echo "Generate C++ Stubs"
             setup

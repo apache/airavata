@@ -34,8 +34,6 @@ public class AppDeploymentUtil {
         description.setComputeHostId(computeHost);
         description.setExecutablePath(executablePath);
         description.setAppDeploymentDescription(appDepDescription);
-        // TODO
-        //        description.setModuleLoadCmd(moduleLoadCmd);
         return description;
     }
 

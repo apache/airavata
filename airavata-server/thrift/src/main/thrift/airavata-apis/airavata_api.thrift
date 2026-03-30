@@ -1496,7 +1496,6 @@ service Airavata extends base_api.BaseAPI {
    *   Returns a list of Deployed Resources.
    *
   */
-  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   list<string> getAppModuleDeployedResources(1: required security_model.AuthzToken authzToken, 2: required string appModuleId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
@@ -1709,7 +1708,6 @@ service Airavata extends base_api.BaseAPI {
    *   Deployments of each modules listed within the interfaces will be listed.
    *
   */
-  // FIXME: Deprecated, use getApplicationDeploymentsForAppModuleAndGroupResourceProfile instead
   map<string, string> getAvailableAppInterfaceComputeResources(1: required security_model.AuthzToken authzToken, 2: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,

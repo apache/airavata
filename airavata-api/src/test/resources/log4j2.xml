@@ -39,7 +39,6 @@
     </RollingFile>
   </Appenders>
   <Loggers>
-    <logger name="ch.qos.logback" level="WARN" />
     <logger name="org.apache.helix" level="WARN" />
     <logger name="org.apache.zookeeper" level="ERROR" />
     <logger name="org.apache.airavata" level="INFO" />

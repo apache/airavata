@@ -23,44 +23,29 @@
 
 # Service distribution names
 airavata_version: "0.21-SNAPSHOT"
-api_server_dist_name: "apache-airavata-api-server-{{ airavata_version }}"
-agent_service_dist_name: "apache-airavata-agent-service-{{ airavata_version }}"
-research_service_dist_name: "apache-airavata-research-service-{{ airavata_version }}"
-file_server_dist_name: "apache-airavata-file-server-{{ airavata_version }}"
-restproxy_dist_name: "apache-airavata-restproxy-{{ airavata_version }}"
+airavata_server_dist_name: "airavata-server-{{ airavata_version }}"
 
 # Service directories
-api_server_dir: "{{ deployment_dir }}/{{ api_server_dist_name }}"
-agent_service_dir: "{{ deployment_dir }}/{{ agent_service_dist_name }}"
-research_service_dir: "{{ deployment_dir }}/{{ research_service_dist_name }}"
-file_server_dir: "{{ deployment_dir }}/{{ file_server_dist_name }}"
-restproxy_dir: "{{ deployment_dir }}/{{ restproxy_dist_name }}"
+airavata_server_dir: "{{ deployment_dir }}/airavata-server-{{ airavata_version }}"
 
 # Service ports
-api_server_port: 8930
-agent_service_port: 18880
-agent_service_server_port: 18880
-research_service_port: 18899
-research_service_server_port: 18899
-file_server_port: 8050
-restproxy_port: 8082
+thrift_port: 8930
+rest_port: 18889
+grpc_port: 19900
+monitoring_port: 9097
 
 # Service hosts
 api_server_host: "airavata.localhost"
-agent_service_server_address: "airavata.localhost"
-research_service_server_address: "airavata.localhost"
-
-# Monitoring ports
-api_server_monitoring_port: 9097
-participant_monitoring_port: 9096
-pre_wm_monitoring_port: 9093
-post_wm_monitoring_port: 9094
 
 # Monitoring hosts
-api_server_monitoring_host: "airavata.localhost"
 participant_monitoring_host: "airavata.localhost"
 pre_workflow_manager_monitoring_host: "airavata.localhost"
 post_workflow_manager_monitoring_host: "airavata.localhost"
+
+# Monitoring ports (workflow managers)
+participant_monitoring_port: 9096
+pre_wm_monitoring_port: 9093
+post_wm_monitoring_port: 9094
 
 # All services run on Airavata server (no separate server hosts needed)
 
@@ -160,34 +145,5 @@ enable_streaming_transfer: false
 thrift_client_pool_abandoned_removal_enabled: true
 thrift_client_pool_abandoned_removal_logged: false
 
-# DB Event Manager
-db_event_manager_class: "org.apache.airavata.db.event.manager.DBEventManagerRunner"
-
-# Agent service configuration
-agent_service_grpc_host: "airavata.localhost"  # Override in inventory files (vars.yml or vault.yml) per environment
-agent_service_grpc_port: 19900
-agent_service_grpc_max_inbound_message_size: 10485760
-agent_service_max_file_size: "200MB"
-agent_service_max_request_size: "200MB"
-agent_service_pool_name: "AppCatalogPool"
-agent_service_leak_detection_threshold: 20000
-agent_service_ddl_auto: "create"
-
-# Research service configuration
-research_service_grpc_port: 19908
-research_service_max_file_size: "200MB"
-research_service_max_request_size: "200MB"
-research_service_pool_name: "ResearchCatalogPool"
-research_service_leak_detection_threshold: 20000
-research_service_ddl_auto: "validate"
-
-# File server configuration
-file_server_max_file_size: "12GB"
-file_server_max_request_size: "12GB"
-file_server_file_size_threshold: "2MB"
-
 # Storage configuration
 local_data_location: "/home/{{ deploy_user }}/temp-storage"
-agent_service_storage_resource_id: "default_9c15d8af-3d36-4c3c-a07a-0f3b4bb5b903"
-agent_service_storage_path: "/var/www/portals/gateway-user-data"
-agent_service_application_interface_id: "AiravataAgent_3eeb580b-b0c6-4f7e-8e3d-22c4f84ec3f1"

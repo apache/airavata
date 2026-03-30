@@ -43,12 +43,9 @@ fi
 
 # 3. Build
 echo "Building Airavata..."
-cd "$ROOT_DIR/airavata-api"
-mvn package -DskipTests -q 2>&1 | tail -1
+cd "$ROOT_DIR"
+mvn package -DskipTests -T4 -q 2>&1 | tail -1
 echo "  Build complete"
-
-# 4. Build classpath
-mvn dependency:build-classpath -q -Dmdep.outputFile=target/cp.txt 2>/dev/null
 
 echo ""
 echo "=== Setup Complete ==="

@@ -158,7 +158,6 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
     public void updateCommunityUserEmail(String gatewayName, String communityUser, String email)
             throws CredentialStoreException {
-        // TODO
     }
 
     public void removeCredentials(String gatewayName, String tokenId) throws CredentialStoreException {

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.airavata.common.db.DBInitConfig;
 import org.apache.airavata.common.db.DBInitializer;
+import org.apache.airavata.common.db.EntityManagerFactoryRegistrar;
 import org.apache.airavata.credential.repository.util.CredentialStoreDBInitConfig;
 import org.apache.airavata.execution.util.AppCatalogDBInitConfig;
 import org.apache.airavata.execution.util.ExpCatalogDBInitConfig;
@@ -38,6 +39,14 @@ import org.springframework.context.annotation.Configuration;
 public class BackgroundServicesConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(BackgroundServicesConfig.class);
+
+    // Injected to guarantee EntityManagerFactory is registered before DB init runs
+    @SuppressWarnings("unused")
+    private final EntityManagerFactoryRegistrar emfRegistrar;
+
+    public BackgroundServicesConfig(EntityManagerFactoryRegistrar emfRegistrar) {
+        this.emfRegistrar = emfRegistrar;
+    }
 
     private final List<DBInitConfig> dbInitConfigs = Arrays.asList(
             new ExpCatalogDBInitConfig(),

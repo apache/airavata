@@ -44,45 +44,6 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
             jobModel.setTaskId(getTaskId());
             jobModel.setJobId(jobId);
 
-            // TODO fix this
-            /*File jobFile = SubmissionUtil.createJobFile(groovyMapData);
-
-            if (jobFile != null && jobFile.exists()) {
-                jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
-                saveJobModel(jobModel);
-
-                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
-                        getTaskContext().getGatewayId(),
-                        getTaskContext().getComputeResourceId(),
-                        getTaskContext().getJobSubmissionProtocol().name(),
-                        getTaskContext().getComputeResourceCredentialToken(),
-                        getTaskContext().getComputeResourceLoginUserName());
-
-                GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
-                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, groovyMapData.getWorkingDirectory());
-
-                JobStatus jobStatus = new JobStatus();
-                jobStatus.setJobState(JobState.SUBMITTED);
-                jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
-                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                jobModel.setJobStatuses(Arrays.asList(jobStatus));
-
-                saveAndPublishJobStatus(jobModel);
-
-                jobModel.setExitCode(submissionOutput.getExitCode());
-                jobModel.setStdErr(submissionOutput.getStdErr());
-                jobModel.setStdOut(submissionOutput.getStdOut());
-
-                jobStatus.setJobState(JobState.COMPLETE);
-                jobStatus.setReason("Successfully Completed " + getComputeResourceDescription().getHostName());
-                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                jobModel.setJobStatuses(Arrays.asList(jobStatus));
-
-                saveAndPublishJobStatus(jobModel);
-
-                return null;
-            }*/
-
             return null;
         } catch (Exception e) {
             return null;

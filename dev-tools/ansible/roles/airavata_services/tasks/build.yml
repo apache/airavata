@@ -53,7 +53,7 @@
 - name: Check for built distributions
   find:
     paths: "{{ airavata_source_dir }}/distribution"
-    patterns: "apache-airavata-*.tar.gz"
+    patterns: "airavata-server-*.tar.gz"
   register: distribution_files
   tags:
     - build
@@ -61,8 +61,8 @@
 - name: Verify required distribution files exist
   assert:
     that:
-      - distribution_files.matched >= 5
-    fail_msg: "Expected at least 5 distribution files, found {{ distribution_files.matched }}"
+      - distribution_files.matched >= 1
+    fail_msg: "Expected at least 1 distribution file, found {{ distribution_files.matched }}"
     success_msg: "Found {{ distribution_files.matched }} distribution files"
   tags:
     - build

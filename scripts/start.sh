@@ -12,8 +12,11 @@ if ! docker compose ps --status running 2>/dev/null | grep -q airavata-db; then
     exit 1
 fi
 
-# Build classpath
-CP=$(cat airavata-api/target/cp.txt):airavata-api/target/airavata-api-0.21-SNAPSHOT.jar
+JAR="airavata-server/target/airavata-server-0.21-SNAPSHOT.jar"
+if [ ! -f "$JAR" ]; then
+    echo "Server JAR not found. Run ./scripts/setup.sh first."
+    exit 1
+fi
 
 echo "Starting Airavata Server..."
-java -cp "$CP" org.apache.airavata.api.server.AiravataServer "$@"
+java -jar "$JAR" "$@"

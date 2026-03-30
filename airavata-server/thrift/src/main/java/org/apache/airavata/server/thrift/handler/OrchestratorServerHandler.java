@@ -142,7 +142,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         ExperimentModel experiment = null;
         final RegistryService.Iface registryClient = getRegistryServiceClient();
         try {
-            // TODO deprecate this approach as we are replacing gfac
             String experimentNodePath = getExperimentNodePath(experimentId);
             ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
             String experimentCancelNode =
@@ -629,7 +628,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
 
                 orchestrator.cancelExperiment(experimentModel, token);
-                // TODO deprecate this approach as we are replacing gfac
                 String expCancelNodePath = ZKPaths.makePath(
                         ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId),
                         ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
@@ -653,14 +651,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken, String gatewayId)
             throws TException {
-        // FIXME
-        //        try {
-        //            WorkflowEnactmentService.getInstance().
-        //                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(),
-        // getRabbitMQProcessPublisher());
-        //        } catch (Exception e) {
-        //            log.error("Error while launching workflow", e);
-        //        }
     }
 
     private class SingleAppExperimentRunner implements Runnable {
@@ -1020,7 +1010,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     private void launchQueuedExperiment(String experimentId) throws TException, Exception {
         ExperimentModel experiment = null;
         final RegistryService.Iface registryClient = getRegistryServiceClient();
-        // TODO deprecate this approach as we are replacing gfac
         experiment = registryClient.getExperiment(experimentId);
         if (experiment == null) {
             throw new Exception("Error retrieving the Experiment by the given experimentID: " + experimentId);

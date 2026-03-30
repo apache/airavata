@@ -21,70 +21,14 @@
 ---
 - name: Check if Airavata Server binary exists
   stat:
-    path: "{{ api_server_dir }}/bin/airavata-server.sh"
+    path: "{{ airavata_server_dir }}/bin/airavata.sh"
   register: airavata_server_exists
   tags:
     - stop
 
-- name: Stop Airavata Airavata Server if exists
-  shell: "{{ api_server_dir }}/bin/airavata-server.sh -d stop"
+- name: Stop Airavata Server if exists
+  shell: "{{ airavata_server_dir }}/bin/airavata.sh stop"
   when: airavata_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Check if Agent Service binary exists
-  stat:
-    path: "{{ agent_service_dir }}/bin/agent-service.sh"
-  register: agent_service_exists
-  tags:
-    - stop
-
-- name: Stop Agent Service if exists
-  shell: "{{ agent_service_dir }}/bin/agent-service.sh -d stop"
-  when: agent_service_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Check if Research Service binary exists
-  stat:
-    path: "{{ research_service_dir }}/bin/research-service.sh"
-  register: research_service_exists
-  tags:
-    - stop
-
-- name: Stop Research Service if exists
-  shell: "{{ research_service_dir }}/bin/research-service.sh -d stop"
-  when: research_service_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Check if File Server binary exists
-  stat:
-    path: "{{ file_server_dir }}/bin/file-service.sh"
-  register: file_server_exists
-  tags:
-    - stop
-
-- name: Stop File Server if exists
-  shell: "{{ file_server_dir }}/bin/file-service.sh -d stop"
-  when: file_server_exists.stat.exists
-  tags:
-    - stop
-  ignore_errors: yes
-
-- name: Check if REST Proxy binary exists
-  stat:
-    path: "{{ restproxy_dir }}/bin/restproxy.sh"
-  register: restproxy_exists
-  tags:
-    - stop
-
-- name: Stop REST Proxy if exists
-  shell: "{{ restproxy_dir }}/bin/restproxy.sh -d stop"
-  when: restproxy_exists.stat.exists
   tags:
     - stop
   ignore_errors: yes
@@ -98,12 +42,16 @@
 - name: Define Airavata service ports
   set_fact:
     airavata_ports:
-      - port: "{{ api_server_port }}"
-        service: "Airavata Server"
+      - port: "{{ thrift_port }}"
+        service: "Airavata Server (Thrift)"
+      - port: "{{ rest_port }}"
+        service: "Airavata Server (REST)"
+      - port: "{{ grpc_port }}"
+        service: "Airavata Server (gRPC)"
+      - port: "{{ monitoring_port }}"
+        service: "Airavata Server (Monitoring)"
       - port: "{{ participant_monitoring_port }}"
         service: "Participant Monitoring"
-      - port: "{{ api_server_monitoring_port }}"
-        service: "API Server Monitoring"
       - port: "{{ pre_wm_monitoring_port }}"
         service: "Pre-WM Monitoring"
       - port: "{{ post_wm_monitoring_port }}"
@@ -198,7 +146,7 @@
 - name: Define Airavata service log directories
   set_fact:
     airavata_log_dirs:
-      - { service: "Airavata Server", path: "{{ api_server_dir }}/logs" }
+      - { service: "Airavata Server", path: "{{ airavata_server_dir }}/logs" }
   when: archive_logs_on_stop | bool
 
 - name: Check log directories

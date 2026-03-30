@@ -275,7 +275,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    @Deprecated
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName)
             throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
@@ -292,7 +291,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    @Deprecated
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName)
             throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
@@ -309,7 +307,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    @Deprecated
     public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName)
             throws IamAdminServicesException, AuthorizationException, TException {
 

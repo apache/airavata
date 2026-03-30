@@ -15,16 +15,31 @@ spring:
       leak-detection-threshold: 20000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     open-in-view: false
-    properties:
-      hibernate:
-        duplicate_identifier_column_check: false
   servlet:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
 
+# REST server port (also serves Swagger UI)
+server:
+  port: 18889
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+
+# gRPC server
+grpc:
+  server:
+    host: localhost
+    port: 19900
+    max-inbound-message-size: 20971520
+
+# Actuator
 management:
   endpoints:
     web:
@@ -63,8 +78,3 @@ airavata.research:
   dev-user: "airavata@apache.org"
   admin-api-key: "JUPYTER_ADMIN_API_KEY"
   limit: 10
-
-airavata.user-profile:
-  server:
-    url: localhost
-    port: 8930

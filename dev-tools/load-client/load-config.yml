@@ -1,0 +1,19 @@
+# Load testing configuration for Airavata API
+# Each scenario defines an experiment template + concurrency parameters
+
+scenarios:
+  - name: "Echo Test"
+    experiment_name: "LoadTest-Echo"
+    project_name: "Default Project"
+    application_name: "Echo"
+    computation_resource_name: "localhost"
+    queue_name: "normal"
+    node_count: 1
+    cpu_count: 1
+    walltime: 5
+    input_files: {}
+    data_inputs:
+      Input-to-Echo: "Hello from load test"
+    concurrent_users: 5
+    iterations_per_user: 2
+    delay_between_submissions_ms: 500

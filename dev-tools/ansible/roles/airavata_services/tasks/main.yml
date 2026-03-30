@@ -26,20 +26,8 @@
     - deploy
     - stop
 
-- name: Include service deployment tasks
-  include_tasks: deploy_api_server.yml
-
-- name: Include agent service deployment tasks
-  include_tasks: deploy_agent_service.yml
-
-- name: Include research service deployment tasks
-  include_tasks: deploy_research_service.yml
-
-- name: Include file server deployment tasks
-  include_tasks: deploy_file_server.yml
-
-- name: Include REST proxy deployment tasks
-  include_tasks: deploy_restproxy.yml
+- name: Include unified server deployment tasks
+  include_tasks: deploy_airavata_server.yml
 
 - name: Start all Airavata services
   include_tasks: start_services.yml

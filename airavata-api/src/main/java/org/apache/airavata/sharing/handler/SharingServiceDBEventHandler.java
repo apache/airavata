@@ -107,7 +107,6 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 break;
 
                             case READ:
-                                // FIXME: Remove if not required
                                 break;
 
                             case DELETE:
