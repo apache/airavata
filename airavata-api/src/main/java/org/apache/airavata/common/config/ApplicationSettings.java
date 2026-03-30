@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.StringUtil;
@@ -38,6 +39,8 @@ public class ApplicationSettings {
     public static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
 
     public static String ADDITIONAL_SETTINGS_FILES = "external.settings";
+
+    private static final Map<String, String> overrides = new ConcurrentHashMap<>();
 
     protected Properties properties = new Properties();
 
@@ -132,7 +135,10 @@ public class ApplicationSettings {
 
     public String getSettingImpl(String key) throws ApplicationSettingsException {
         String rawValue;
-        if (System.getProperties().containsKey(key)) {
+        if (overrides.containsKey(key)) {
+            rawValue = overrides.get(key);
+
+        } else if (System.getProperties().containsKey(key)) {
             rawValue = System.getProperties().getProperty(key);
 
         } else if (System.getenv().containsKey(key)) {
@@ -205,6 +211,10 @@ public class ApplicationSettings {
 
     public static String getSetting(String key, String defaultValue) {
         return getInstance().getSettingImpl(key, defaultValue);
+    }
+
+    public static void setOverride(String key, String value) {
+        overrides.put(key, value);
     }
 
     public static void setSetting(String key, String value) throws ApplicationSettingsException {
