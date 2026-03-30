@@ -405,28 +405,17 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     }
 
     @Override
-    @Deprecated
     public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
             throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         if (type.equals(SummaryType.SSH)) {
-            Map<String, String> sshKeyMap = new HashMap<>();
             List<CredentialSummary> summaryList = new ArrayList<>();
             try {
                 List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
                 if (allCredentials != null && !allCredentials.isEmpty()) {
                     for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.model.SSHCredential
-                                && !(credential instanceof org.apache.airavata.credential.model.PasswordCredential)) {
-                            org.apache.airavata.credential.model.SSHCredential sshCredential =
-                                    (org.apache.airavata.credential.model.SSHCredential) credential;
-                            CredentialSummary sshCredentialSummary = new CredentialSummary();
-                            sshCredentialSummary.setType(SummaryType.SSH);
-                            sshCredentialSummary.setToken(sshCredential.getToken());
-                            sshCredentialSummary.setUsername(sshCredential.getPortalUserName());
-                            sshCredentialSummary.setGatewayId(sshCredential.getGateway());
-                            sshCredentialSummary.setDescription(sshCredential.getDescription());
-                            sshCredentialSummary.setPublicKey(new String(sshCredential.getPublicKey()));
-                            summaryList.add(sshCredentialSummary);
+                        if (isSSHCredential(credential)) {
+                            summaryList.add(convertToCredentialSummary(
+                                    (org.apache.airavata.credential.model.SSHCredential) credential));
                         }
                     }
                 }
@@ -437,43 +426,26 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             }
             return summaryList;
         } else {
-            log.info("Summay Type" + type.toString() + " not supported for gateway id - " + gatewayId);
-            return null;
+            log.info("Summary type " + type + " not supported for gateway id - " + gatewayId);
+            return Collections.emptyList();
         }
     }
 
     @Override
-    @Deprecated
     public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(
             SummaryType type, String gatewayId, String userId)
             throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         if (type.equals(SummaryType.SSH)) {
-            Map<String, String> sshKeyMap = new HashMap<>();
             List<CredentialSummary> summaryList = new ArrayList<>();
             try {
-                List<Credential> allCredentials = credentialReader.getAllCredentials();
+                List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
                 if (allCredentials != null && !allCredentials.isEmpty()) {
                     for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.model.SSHCredential
-                                && !(credential instanceof org.apache.airavata.credential.model.PasswordCredential)) {
+                        if (isSSHCredential(credential)) {
                             org.apache.airavata.credential.model.SSHCredential sshCredential =
                                     (org.apache.airavata.credential.model.SSHCredential) credential;
-                            String portalUserName = sshCredential.getPortalUserName();
-                            String gateway = sshCredential.getGateway();
-                            if (portalUserName != null && gateway != null) {
-                                if (portalUserName.equals(userId)
-                                        && gateway.equals(gatewayId)) {
-                                    org.apache.airavata.credential.model.SSHCredential sshCredentialKey =
-                                            (org.apache.airavata.credential.model.SSHCredential) credential;
-                                    CredentialSummary sshCredentialSummary = new CredentialSummary();
-                                    sshCredentialSummary.setType(SummaryType.SSH);
-                                    sshCredentialSummary.setToken(sshCredentialKey.getToken());
-                                    sshCredentialSummary.setUsername(sshCredentialKey.getPortalUserName());
-                                    sshCredentialSummary.setGatewayId(sshCredentialKey.getGateway());
-                                    sshCredentialSummary.setDescription(sshCredentialKey.getDescription());
-                                    sshCredentialSummary.setPublicKey(new String(sshCredentialKey.getPublicKey()));
-                                    summaryList.add(sshCredentialSummary);
-                                }
+                            if (userId.equals(sshCredential.getPortalUserName())) {
+                                summaryList.add(convertToCredentialSummary(sshCredential));
                             }
                         }
                     }
@@ -485,14 +457,13 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             }
             return summaryList;
         } else {
-            log.info("Summay Type" + type.toString() + " not supported for user Id - " + userId + " and "
-                    + "gateway id - " + gatewayId);
-            return null;
+            log.info("Summary type " + type + " not supported for user id - " + userId + " and gateway id - "
+                    + gatewayId);
+            return Collections.emptyList();
         }
     }
 
     @Override
-    @Deprecated
     public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId)
             throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         Map<String, String> pwdCredMap = new HashMap<>();
@@ -500,7 +471,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
             if (allCredentials != null && !allCredentials.isEmpty()) {
                 for (Credential credential : allCredentials) {
-                    if (credential instanceof org.apache.airavata.credential.model.PasswordCredential) {
+                    if (isPasswordCredential(credential)) {
                         org.apache.airavata.credential.model.PasswordCredential pwdCredential =
                                 (org.apache.airavata.credential.model.PasswordCredential) credential;
                         pwdCredMap.put(
