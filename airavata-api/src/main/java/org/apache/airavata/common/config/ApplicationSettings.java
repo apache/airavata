@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.util.StringUtil;
@@ -43,8 +42,6 @@ public class ApplicationSettings {
     protected Properties properties = new Properties();
 
     private Exception propertyLoadException;
-
-    private static final String REGULAR_EXPRESSION = "\\$\\{[a-zA-Z.-]*\\}";
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationSettings.class);
 
@@ -131,51 +128,6 @@ public class ApplicationSettings {
         if (propertyLoadException != null) {
             throw new ApplicationSettingsException(propertyLoadException.getMessage(), propertyLoadException);
         }
-    }
-
-    /**
-     * Returns the configuration value relevant for the given key.
-     * If configuration value contains references to other configuration values they will also
-     * be replaced. E.g :- If configuration key reads http://${ip}:${port}/axis2/services/RegistryService?wsdl,
-     * the variables ip and port will get replaced by their appropriated values in the configuration.
-     * @param key The configuration key to read value of
-     * @return The configuration value. For above example caller will get a value like
-     * http://192.2.33.12:8080/axis2/services/RegistryService?wsdl
-     * @throws ApplicationSettingsException If an error occurred while reading configurations.
-     * @deprecated use #getSetting(String) instead
-     */
-    @Deprecated
-    public String getAbsoluteSetting(String key) throws ApplicationSettingsException {
-
-        String configurationValueWithVariables = ApplicationSettings.getSetting(key);
-
-        List<String> variableList = getAllMatches(configurationValueWithVariables, REGULAR_EXPRESSION);
-
-        if (variableList == null || variableList.isEmpty()) {
-            return configurationValueWithVariables;
-        }
-
-        for (String variableIdentifier : variableList) {
-            String variableName = getVariableNameOnly(variableIdentifier);
-            String value = getAbsoluteSetting(variableName);
-
-            configurationValueWithVariables = configurationValueWithVariables.replace(variableIdentifier, value);
-        }
-
-        return configurationValueWithVariables;
-    }
-
-    private static String getVariableNameOnly(String variableWithIdentifiers) {
-        return variableWithIdentifiers.substring(2, (variableWithIdentifiers.length() - 1));
-    }
-
-    private static List<String> getAllMatches(String text, String regex) {
-        List<String> matches = new ArrayList<String>();
-        Matcher m = Pattern.compile("(?=(" + regex + "))").matcher(text);
-        while (m.find()) {
-            matches.add(m.group(1));
-        }
-        return matches;
     }
 
     public String getSettingImpl(String key) throws ApplicationSettingsException {

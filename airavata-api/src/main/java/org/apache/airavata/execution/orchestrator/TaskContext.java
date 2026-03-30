@@ -333,11 +333,8 @@ public class TaskContext {
     /**
      * Returns the default storage preference for the gateway.
      * Prefers gateway-specific storage (ID starting with gatewayId), otherwise uses the first available preference.
-     *
-     * @deprecated Use {@link #getInputGatewayStorageResourcePreference()} for input staging operations
-     *             or {@link #getOutputGatewayStorageResourcePreference()} for output staging operations.
+     * Used as the fallback when no specific input/output storage resource is configured.
      */
-    @Deprecated
     public StoragePreference getGatewayStorageResourcePreference() throws Exception {
         if (this.gatewayStorageResourcePreference == null) {
             try {
