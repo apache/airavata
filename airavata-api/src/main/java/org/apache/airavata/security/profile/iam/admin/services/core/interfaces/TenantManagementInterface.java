@@ -199,7 +199,6 @@ public interface TenantManagementInterface {
      * @return
      * @throws IamAdminServicesException
      */
-    @Deprecated
     boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName)
             throws IamAdminServicesException;
 
@@ -213,7 +212,6 @@ public interface TenantManagementInterface {
      * @return
      * @throws IamAdminServicesException
      */
-    @Deprecated
     boolean removeRoleFromUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName)
             throws IamAdminServicesException;
 
@@ -226,7 +224,6 @@ public interface TenantManagementInterface {
      * @return
      * @throws IamAdminServicesException
      */
-    @Deprecated
     List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName)
             throws IamAdminServicesException;
 }
