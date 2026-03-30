@@ -24,8 +24,10 @@ import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,28 @@ public class SecurityUtil {
         var spec = new GCMParameterSpec(GCM_TAG_BITS, iv);
         cipher.init(Cipher.DECRYPT_MODE, key, spec);
         return cipher.doFinal(encryptedData);
+    }
+
+    /**
+     * Try GCM decryption first; if the auth tag fails, fall back to the legacy
+     * AES/CBC/PKCS5Padding scheme (static zero IV) used before the GCM migration.
+     */
+    public static byte[] decryptWithLegacyFallback(byte[] data, Key key) throws GeneralSecurityException {
+        try {
+            return decrypt(data, key);
+        } catch (AEADBadTagException e) {
+            logger.info("GCM decryption failed, falling back to legacy AES/CBC");
+            return decryptLegacy(data, key);
+        }
+    }
+
+    private static final String LEGACY_CIPHER_NAME = "AES/CBC/PKCS5Padding";
+    private static final int LEGACY_IV_BYTES = 16;
+
+    private static byte[] decryptLegacy(byte[] encrypted, Key key) throws GeneralSecurityException {
+        var cipher = Cipher.getInstance(LEGACY_CIPHER_NAME);
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(new byte[LEGACY_IV_BYTES]));
+        return cipher.doFinal(encrypted);
     }
 
     public static KeyStore loadKeyStore(String keyStoreFilePath, KeyStorePasswordCallback passwordCallback)

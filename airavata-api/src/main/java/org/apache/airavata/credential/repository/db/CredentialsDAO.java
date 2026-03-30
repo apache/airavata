@@ -416,7 +416,7 @@ public class CredentialsDAO extends ParentDAO {
                 if (encrypt()) {
                     var key = SecurityUtil.getSymmetricKey(
                             this.keyStorePath, this.secretKeyAlias, this.keyStorePasswordCallback);
-                    data = SecurityUtil.decrypt(data, key);
+                    data = SecurityUtil.decryptWithLegacyFallback(data, key);
                 }
 
                 objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
