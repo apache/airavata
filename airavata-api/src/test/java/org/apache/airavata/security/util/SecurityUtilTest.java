@@ -22,12 +22,10 @@ package org.apache.airavata.security.util;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyStore;
-import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
@@ -68,29 +66,24 @@ public class SecurityUtilTest {
     }
 
     @Test
-    public void testFallbackDecryptsLegacyCBC() throws Exception {
+    public void testLegacyDecryptRoundTrip() throws Exception {
         byte[] plaintext = "legacy data".getBytes(StandardCharsets.UTF_8);
         Key key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
         byte[] legacyEncrypted = legacyEncrypt(plaintext, key);
-        byte[] decrypted = SecurityUtil.decryptWithLegacyFallback(legacyEncrypted, key);
+        byte[] decrypted = SecurityUtil.decryptLegacy(legacyEncrypted, key);
         assertArrayEquals(plaintext, decrypted);
     }
 
     @Test
-    public void testFallbackDecryptsNewGCM() throws Exception {
-        byte[] plaintext = "new data".getBytes(StandardCharsets.UTF_8);
+    public void testMigrationLegacyToGcm() throws Exception {
+        byte[] plaintext = "migrating credential".getBytes(StandardCharsets.UTF_8);
         Key key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
-        byte[] gcmEncrypted = SecurityUtil.encrypt(plaintext, key);
-        byte[] decrypted = SecurityUtil.decryptWithLegacyFallback(gcmEncrypted, key);
-        assertArrayEquals(plaintext, decrypted);
-    }
-
-    @Test
-    public void testGcmDecryptRejectsLegacyData() throws Exception {
-        byte[] plaintext = "legacy data".getBytes(StandardCharsets.UTF_8);
-        Key key = SecurityUtil.getSymmetricKey(keyStorePath, "mykey", new TestKeyStoreCallback());
+        // decrypt old format, re-encrypt as GCM, verify
         byte[] legacyEncrypted = legacyEncrypt(plaintext, key);
-        assertThrows(AEADBadTagException.class, () -> SecurityUtil.decrypt(legacyEncrypted, key));
+        byte[] decrypted = SecurityUtil.decryptLegacy(legacyEncrypted, key);
+        byte[] gcmEncrypted = SecurityUtil.encrypt(decrypted, key);
+        byte[] result = SecurityUtil.decrypt(gcmEncrypted, key);
+        assertArrayEquals(plaintext, result);
     }
 
     /** Simulate old AES/CBC encryption with static zero IV. */
