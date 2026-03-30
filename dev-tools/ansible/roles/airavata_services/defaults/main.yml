@@ -149,31 +149,5 @@ thrift_client_pool_abandoned_removal_logged: false
 # DB Event Manager
 db_event_manager_class: "org.apache.airavata.db.event.manager.DBEventManagerRunner"
 
-# Agent service configuration
-agent_service_grpc_host: "airavata.localhost"  # Override in inventory files (vars.yml or vault.yml) per environment
-agent_service_grpc_port: 19900
-agent_service_grpc_max_inbound_message_size: 10485760
-agent_service_max_file_size: "200MB"
-agent_service_max_request_size: "200MB"
-agent_service_pool_name: "AppCatalogPool"
-agent_service_leak_detection_threshold: 20000
-agent_service_ddl_auto: "create"
-
-# Research service configuration
-research_service_grpc_port: 19908
-research_service_max_file_size: "200MB"
-research_service_max_request_size: "200MB"
-research_service_pool_name: "ResearchCatalogPool"
-research_service_leak_detection_threshold: 20000
-research_service_ddl_auto: "validate"
-
-# File server configuration
-file_server_max_file_size: "12GB"
-file_server_max_request_size: "12GB"
-file_server_file_size_threshold: "2MB"
-
 # Storage configuration
 local_data_location: "/home/{{ deploy_user }}/temp-storage"
-agent_service_storage_resource_id: "default_9c15d8af-3d36-4c3c-a07a-0f3b4bb5b903"
-agent_service_storage_path: "/var/www/portals/gateway-user-data"
-agent_service_application_interface_id: "AiravataAgent_3eeb580b-b0c6-4f7e-8e3d-22c4f84ec3f1"
