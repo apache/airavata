@@ -73,9 +73,17 @@ public class SecurityUtil {
 
     /**
      * Decrypt using the legacy AES/CBC/PKCS5Padding scheme with a static zero IV.
-     * Used only by the migration script to read old credentials.
+     * <p>
+     * WARNING: This method is intentionally limited to migration of credentials that were
+     * encrypted in the past using AES/CBC with a fixed zero IV. Do NOT use this method
+     * for new code or for decrypting data encrypted with any modern scheme. All new
+     * encryption and decryption should use the AES/GCM helpers in this class instead.
+     * </p>
+     * Used only by the migration script to read old credentials, which should then be
+     * re-encrypted using AES/GCM.
      */
-    public static byte[] decryptLegacy(byte[] encrypted, Key key) throws GeneralSecurityException {
+    @Deprecated
+    static byte[] decryptLegacy(byte[] encrypted, Key key) throws GeneralSecurityException {
         var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(new byte[16]));
         return cipher.doFinal(encrypted);
