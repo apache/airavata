@@ -83,7 +83,7 @@ public class SecurityUtil {
      * re-encrypted using AES/GCM.
      */
     @Deprecated
-    static byte[] decryptLegacy(byte[] encrypted, Key key) throws GeneralSecurityException {
+    public static byte[] decryptLegacy(byte[] encrypted, Key key) throws GeneralSecurityException {
         var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(new byte[16]));
         return cipher.doFinal(encrypted);
