@@ -20,9 +20,12 @@
 package org.apache.airavata.security.util;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import javax.crypto.Cipher;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import org.apache.airavata.common.server.KeyStorePasswordCallback;
 import org.slf4j.Logger;
@@ -35,52 +38,55 @@ public class SecurityUtil {
 
     public static final String PASSWORD_HASH_METHOD_PLAINTEXT = "PLAINTEXT";
     public static final String CHARSET_ENCODING = "UTF-8";
-    public static final String PADDING_MECHANISM = "AES/CBC/PKCS5Padding";
+    public static final String CIPHER_NAME = "AES/GCM/NoPadding";
+    public static final int GCM_IV_BYTES = 12; // 96 bits
+    public static final int GCM_TAG_BITS = 128;
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
 
-    public static byte[] encryptString(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, String value)
-            throws GeneralSecurityException, IOException {
-        return encrypt(keyStorePath, keyAlias, passwordCallback, value.getBytes(CHARSET_ENCODING));
-    }
-
-    public static byte[] encrypt(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] value)
-            throws GeneralSecurityException, IOException {
-
-        Key secretKey = getSymmetricKey(keyStorePath, keyAlias, passwordCallback);
-
-        Cipher cipher = Cipher.getInstance(PADDING_MECHANISM);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
-        return cipher.doFinal(value);
-    }
-
-    private static Key getSymmetricKey(String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
+    public static Key getSymmetricKey(String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback)
             throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException,
                     UnrecoverableKeyException {
         KeyStore ks = SecurityUtil.loadKeyStore(keyStorePath, passwordCallback);
         return ks.getKey(keyAlias, passwordCallback.getSecretKeyPassPhrase(keyAlias));
     }
 
-    public static byte[] decrypt(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] encrypted)
-            throws GeneralSecurityException, IOException {
-
-        Key secretKey = getSymmetricKey(keyStorePath, keyAlias, passwordCallback);
-
-        Cipher cipher = Cipher.getInstance(PADDING_MECHANISM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
-
-        return cipher.doFinal(encrypted);
+    public static byte[] encrypt(byte[] data, Key key) throws GeneralSecurityException {
+        var cipher = Cipher.getInstance(CIPHER_NAME);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        var iv = cipher.getIV();
+        var encryptedData = cipher.doFinal(data);
+        return ByteBuffer.allocate(iv.length + encryptedData.length)
+                .put(iv)
+                .put(encryptedData)
+                .array();
     }
 
-    public static String decryptString(
-            String keyStorePath, String keyAlias, KeyStorePasswordCallback passwordCallback, byte[] encrypted)
-            throws GeneralSecurityException, IOException {
+    public static byte[] decrypt(byte[] tag, Key key) throws GeneralSecurityException {
+        var iv = Arrays.copyOfRange(tag, 0, GCM_IV_BYTES);
+        var encryptedData = Arrays.copyOfRange(tag, GCM_IV_BYTES, tag.length);
+        var cipher = Cipher.getInstance(CIPHER_NAME);
+        var spec = new GCMParameterSpec(GCM_TAG_BITS, iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, spec);
+        return cipher.doFinal(encryptedData);
+    }
 
-        byte[] decrypted = decrypt(keyStorePath, keyAlias, passwordCallback, encrypted);
-        return new String(decrypted, CHARSET_ENCODING);
+    /**
+     * Decrypt using the legacy AES/CBC/PKCS5Padding scheme with a static zero IV.
+     * <p>
+     * WARNING: This method is intentionally limited to migration of credentials that were
+     * encrypted in the past using AES/CBC with a fixed zero IV. Do NOT use this method
+     * for new code or for decrypting data encrypted with any modern scheme. All new
+     * encryption and decryption should use the AES/GCM helpers in this class instead.
+     * </p>
+     * Used only by the migration script to read old credentials, which should then be
+     * re-encrypted using AES/GCM.
+     */
+    @Deprecated
+    public static byte[] decryptLegacy(byte[] encrypted, Key key) throws GeneralSecurityException {
+        var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(new byte[16]));
+        return cipher.doFinal(encrypted);
     }
 
     public static KeyStore loadKeyStore(String keyStoreFilePath, KeyStorePasswordCallback passwordCallback)
