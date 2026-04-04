@@ -118,7 +118,7 @@ This document explains the setup flow and how to configure Airavata components a
 **Purpose**: HAProxy for API server SSL termination
 - Installs HAProxy
 - Configures SSL termination
-- Proxies to API server on port 8930
+- Proxies to API server on port 9090
 - **Runs on**: `airavata_servers`
 - **Condition**: Only runs if `api_server_public_hostname` is defined
 
@@ -127,7 +127,7 @@ This document explains the setup flow and how to configure Airavata components a
 - Builds Airavata from source (Maven)
 - Generates configuration files from templates
 - Deploys services to `deployment_dir`
-- Starts the consolidated `AiravataServer` (all Thrift services + background workers on port 8930) plus the Spring Boot microservices (Agent Service, File Server, Research Service, REST Proxy)
+- Starts the consolidated `AiravataServer` (gRPC + REST via Armeria on port 9090, background workers, embedded Agent Service, File Server, and Research Service)
 - **Runs on**: `airavata_servers` only
 - **Become user**: `{{ user }}` (non-root)
 
@@ -312,16 +312,7 @@ The playbook will automatically skip roles that don't apply to the target host b
 - **DNS**: `keycloak_vhost_servername` must resolve to Keycloak server IP
 
 ### Airavata Server
-- **Port 8930**: API Server (or via HAProxy on 443)
-- **Port 8940**: Orchestrator
-- **Port 8962**: Profile Service
-- **Port 8970**: Registry
-- **Port 8960**: Credential Store
-- **Port 7878**: Sharing Registry
-- **Port 18880**: Agent Service
-- **Port 18899**: Research Service
-- **Port 8050**: File Server
-- **Port 8082**: REST Proxy
+- **Port 9090**: Unified API (gRPC + REST via Armeria, or via HAProxy on 443)
 - **Port 2181**: Zookeeper
 - **Port 9092**: Kafka
 - **Port 5672**: RabbitMQ

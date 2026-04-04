@@ -69,12 +69,14 @@ under the License.
 
     <modules>
         <module>airavata-api</module>
-        <module>airavata-api/file-server</module>
-        <module>airavata-api/agent-service</module>
+        <module>airavata-api/iam-service</module>
+        <module>airavata-api/sharing-service</module>
+        <module>airavata-api/credential-service</module>
+        <module>airavata-api/storage-service</module>
+        <module>airavata-api/compute-service</module>
         <module>airavata-api/research-service</module>
-        <module>airavata-server/thrift</module>
-        <module>airavata-server/rest</module>
-        <module>airavata-server/grpc</module>
+        <module>airavata-api/orchestration-service</module>
+        <module>airavata-api/agent-service</module>
         <module>airavata-server</module>
     </modules>
 
@@ -89,22 +91,6 @@ under the License.
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j2-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -131,27 +117,6 @@ under the License.
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>2.0.16</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>2.25.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>2.25.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j2-impl</artifactId>
-                <version>2.25.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-1.2-api</artifactId>
-                <version>2.25.3</version>
-            </dependency>
-
             <!-- Testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -163,13 +128,6 @@ under the License.
                 <artifactId>junit-platform-launcher</artifactId>
                 <version>1.12.2</version>
             </dependency>
-            <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>1.50</version>
-                <scope>test</scope>
-            </dependency>
-
             <!-- Testcontainers BOM -->
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -194,33 +152,13 @@ under the License.
             <!-- Apache Commons -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>2.12.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>2.13.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-email</artifactId>
-                <version>1.6.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
                 <artifactId>commons-exec</artifactId>
                 <version>1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-cli</groupId>
-                <artifactId>commons-cli</artifactId>
-                <version>1.9.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -259,36 +197,21 @@ under the License.
                 <artifactId>helix-core</artifactId>
                 <version>1.4.3</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-core</artifactId>
-                <version>2.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.directory.api</groupId>
-                <artifactId>api-all</artifactId>
-                <version>2.1.7</version>
-            </dependency>
             <!-- Google Libraries -->
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.10.1</version>
-            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>33.2.1-jre</version>
             </dependency>
             <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>7.0.0</version>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.25.8</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>4.30.1</version>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>3.25.8</version>
             </dependency>
 
             <!-- Jackson -->
@@ -305,14 +228,7 @@ under the License.
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.19.0</version>
-            </dependency>
-
-            <!-- Thrift -->
-            <dependency>
-                <groupId>org.apache.thrift</groupId>
-                <artifactId>libthrift</artifactId>
-                <version>0.22.0</version>
+                <version>2.21</version>
             </dependency>
 
             <!-- Database -->
@@ -338,11 +254,6 @@ under the License.
                 <artifactId>jakarta.activation-api</artifactId>
                 <version>2.1.3</version>
             </dependency>
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.4.0-b180830.0359</version>
-            </dependency>
             <!-- Other Libraries -->
             <dependency>
                 <groupId>com.github.dozermapper</groupId>
@@ -350,34 +261,9 @@ under the License.
                 <version>7.0.0</version>
             </dependency>
             <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-                <version>20250517</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mwiede</groupId>
-                <artifactId>jsch</artifactId>
-                <version>2.27.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.rabbitmq</groupId>
-                <artifactId>amqp-client</artifactId>
-                <version>5.25.0</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient</artifactId>
-                <version>0.16.0</version>
-            </dependency>
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_common</artifactId>
-                <version>0.16.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.quartz-scheduler</groupId>
-                <artifactId>quartz</artifactId>
-                <version>2.5.0</version>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-core</artifactId>
+                <version>1.15.10</version>
             </dependency>
             <dependency>
                 <groupId>com.hierynomus</groupId>
@@ -464,6 +350,11 @@ under the License.
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>3.5.12</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.5.12</version>
             </dependency>
@@ -491,10 +382,20 @@ under the License.
                 <artifactId>grpc-protobuf</artifactId>
                 <version>1.73.0</version>
             </dependency>
+
+            <!-- Armeria -->
             <dependency>
-                <groupId>net.devh</groupId>
-                <artifactId>grpc-server-spring-boot-starter</artifactId>
-                <version>3.1.0.RELEASE</version>
+                <groupId>com.linecorp.armeria</groupId>
+                <artifactId>armeria-bom</artifactId>
+                <version>1.31.3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Google API Protos -->
+            <dependency>
+                <groupId>com.google.api.grpc</groupId>
+                <artifactId>proto-google-common-protos</artifactId>
+                <version>2.52.0</version>
             </dependency>
 
             <!-- OpenAPI -->
@@ -531,6 +432,15 @@ under the License.
                 <groupId>com.googlecode.json-simple</groupId>
                 <artifactId>json-simple</artifactId>
                 <version>1.1</version>
+            </dependency>
+
+            <!-- Jackson BOM — must come before Spring Boot to override its Jackson 2.19.x -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.21.1</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- Spring Boot -->

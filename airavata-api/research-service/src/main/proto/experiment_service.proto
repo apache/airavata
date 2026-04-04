@@ -1,0 +1,323 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.experiment;
+
+option java_package = "org.apache.airavata.api.experiment";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/experiment/experiment.proto";
+import "org/apache/airavata/model/status/status.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+import "org/apache/airavata/model/job/job.proto";
+import "org/apache/airavata/model/scheduling/scheduling.proto";
+
+// ExperimentService provides RPCs for managing experiments.
+service ExperimentService {
+
+  rpc CreateExperiment(CreateExperimentRequest) returns (CreateExperimentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments"
+      body: "experiment"
+    };
+  }
+
+  rpc GetExperiment(GetExperimentRequest) returns (org.apache.airavata.model.experiment.ExperimentModel) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}"
+    };
+  }
+
+  rpc GetExperimentByAdmin(GetExperimentByAdminRequest) returns (org.apache.airavata.model.experiment.ExperimentModel) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}:admin"
+    };
+  }
+
+  rpc UpdateExperiment(UpdateExperimentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/experiments/{experiment_id}"
+      body: "experiment"
+    };
+  }
+
+  rpc DeleteExperiment(DeleteExperimentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/experiments/{experiment_id}"
+    };
+  }
+
+  rpc SearchExperiments(SearchExperimentsRequest) returns (SearchExperimentsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments"
+    };
+  }
+
+  rpc GetExperimentStatus(GetExperimentStatusRequest) returns (org.apache.airavata.model.status.ExperimentStatus) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}/status"
+    };
+  }
+
+  rpc GetExperimentOutputs(GetExperimentOutputsRequest) returns (GetExperimentOutputsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}/outputs"
+    };
+  }
+
+  rpc GetExperimentsInProject(GetExperimentsInProjectRequest) returns (GetExperimentsInProjectResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/projects/{project_id}/experiments"
+    };
+  }
+
+  rpc GetUserExperiments(GetUserExperimentsRequest) returns (GetUserExperimentsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/users/{user_name}/experiments"
+    };
+  }
+
+  rpc GetDetailedExperimentTree(GetDetailedExperimentTreeRequest) returns (org.apache.airavata.model.experiment.ExperimentModel) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}:detailed"
+    };
+  }
+
+  rpc UpdateExperimentConfiguration(UpdateExperimentConfigurationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/experiments/{experiment_id}/configuration"
+      body: "configuration"
+    };
+  }
+
+  rpc UpdateResourceScheduling(UpdateResourceSchedulingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/experiments/{experiment_id}/scheduling"
+      body: "scheduling"
+    };
+  }
+
+  rpc ValidateExperiment(ValidateExperimentRequest) returns (ValidateExperimentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:validate"
+    };
+  }
+
+  rpc LaunchExperiment(LaunchExperimentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:launch"
+    };
+  }
+
+  rpc TerminateExperiment(TerminateExperimentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:terminate"
+    };
+  }
+
+  rpc CloneExperiment(CloneExperimentRequest) returns (CloneExperimentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:clone"
+    };
+  }
+
+  rpc GetJobStatuses(GetJobStatusesRequest) returns (GetJobStatusesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}/job-statuses"
+    };
+  }
+
+  rpc GetJobDetails(GetJobDetailsRequest) returns (GetJobDetailsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}/jobs"
+    };
+  }
+
+  rpc FetchIntermediateOutputs(FetchIntermediateOutputsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:fetch-outputs"
+    };
+  }
+
+  rpc GetIntermediateOutputProcessStatus(GetIntermediateOutputProcessStatusRequest) returns (org.apache.airavata.model.status.ProcessStatus) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}/intermediate-status"
+    };
+  }
+
+  rpc GetExperimentStatistics(GetExperimentStatisticsRequest) returns (org.apache.airavata.model.experiment.ExperimentStatistics) {
+    option (google.api.http) = {
+      get: "/api/v1/experiment-statistics"
+    };
+  }
+}
+
+// Request/Response messages
+
+message CreateExperimentRequest {
+  string gateway_id = 1;
+  org.apache.airavata.model.experiment.ExperimentModel experiment = 2;
+}
+
+message CreateExperimentResponse {
+  string experiment_id = 1;
+}
+
+message GetExperimentRequest {
+  string experiment_id = 1;
+}
+
+message GetExperimentByAdminRequest {
+  string experiment_id = 1;
+}
+
+message UpdateExperimentRequest {
+  string experiment_id = 1;
+  org.apache.airavata.model.experiment.ExperimentModel experiment = 2;
+}
+
+message DeleteExperimentRequest {
+  string experiment_id = 1;
+}
+
+message SearchExperimentsRequest {
+  string gateway_id = 1;
+  string user_name = 2;
+  map<string, string> filters = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message SearchExperimentsResponse {
+  repeated org.apache.airavata.model.experiment.ExperimentSummaryModel experiments = 1;
+}
+
+message GetExperimentStatusRequest {
+  string experiment_id = 1;
+}
+
+message GetExperimentOutputsRequest {
+  string experiment_id = 1;
+}
+
+message GetExperimentOutputsResponse {
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType outputs = 1;
+}
+
+message GetExperimentsInProjectRequest {
+  string project_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetExperimentsInProjectResponse {
+  repeated org.apache.airavata.model.experiment.ExperimentModel experiments = 1;
+}
+
+message GetUserExperimentsRequest {
+  string gateway_id = 1;
+  string user_name = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetUserExperimentsResponse {
+  repeated org.apache.airavata.model.experiment.ExperimentModel experiments = 1;
+}
+
+message GetDetailedExperimentTreeRequest {
+  string experiment_id = 1;
+}
+
+message UpdateExperimentConfigurationRequest {
+  string experiment_id = 1;
+  org.apache.airavata.model.experiment.UserConfigurationDataModel configuration = 2;
+}
+
+message UpdateResourceSchedulingRequest {
+  string experiment_id = 1;
+  org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel scheduling = 2;
+}
+
+message ValidateExperimentRequest {
+  string experiment_id = 1;
+}
+
+message ValidateExperimentResponse {
+  bool is_valid = 1;
+  repeated string validation_errors = 2;
+}
+
+message LaunchExperimentRequest {
+  string experiment_id = 1;
+  string gateway_id = 2;
+}
+
+message TerminateExperimentRequest {
+  string experiment_id = 1;
+  string gateway_id = 2;
+}
+
+message CloneExperimentRequest {
+  string experiment_id = 1;
+  string new_experiment_name = 2;
+  string new_experiment_project_id = 3;
+}
+
+message CloneExperimentResponse {
+  string experiment_id = 1;
+}
+
+message GetJobStatusesRequest {
+  string experiment_id = 1;
+}
+
+message GetJobStatusesResponse {
+  map<string, org.apache.airavata.model.status.JobStatus> job_statuses = 1;
+}
+
+message GetJobDetailsRequest {
+  string experiment_id = 1;
+}
+
+message GetJobDetailsResponse {
+  repeated org.apache.airavata.model.job.JobModel jobs = 1;
+}
+
+message FetchIntermediateOutputsRequest {
+  string experiment_id = 1;
+  repeated string output_names = 2;
+}
+
+message GetIntermediateOutputProcessStatusRequest {
+  string experiment_id = 1;
+}
+
+message GetExperimentStatisticsRequest {
+  string gateway_id = 1;
+  int64 from_time = 2;
+  int64 to_time = 3;
+  string user_name = 4;
+  string application_name = 5;
+  string resource_host_name = 6;
+  int32 limit = 7;
+  int32 offset = 8;
+}

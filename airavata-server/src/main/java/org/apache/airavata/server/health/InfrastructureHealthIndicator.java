@@ -21,7 +21,7 @@ package org.apache.airavata.server.health;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import org.apache.airavata.common.config.ServerSettings;
+import org.apache.airavata.config.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;

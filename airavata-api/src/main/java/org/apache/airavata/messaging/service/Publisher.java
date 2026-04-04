@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.messaging.service;
 
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.exception.AiravataException;
 
 /**
  * This is the basic publisher interface.

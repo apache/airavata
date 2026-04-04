@@ -19,20 +19,18 @@
 */
 package org.apache.airavata.server;
 
-import org.apache.airavata.common.config.AiravataServerProperties;
-import org.apache.airavata.server.grpc.AiravataGrpcServerConfig;
-import org.apache.airavata.server.rest.AiravataRestServerConfig;
-import org.apache.airavata.server.thrift.AiravataThriftServerConfig;
+import org.apache.airavata.config.AiravataServerProperties;
+import org.apache.airavata.server.grpc.AiravataArmeriaConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
-@SpringBootApplication(scanBasePackages = {"org.apache.airavata.server", "org.apache.airavata.common.db"})
+@SpringBootApplication(scanBasePackages = {"org.apache.airavata"})
 @EntityScan("org.apache.airavata")
 @EnableConfigurationProperties(AiravataServerProperties.class)
-@Import({AiravataRestServerConfig.class, AiravataGrpcServerConfig.class, AiravataThriftServerConfig.class})
+@Import(AiravataArmeriaConfig.class)
 public class AiravataServerMain {
     public static void main(String[] args) {
         SpringApplication.run(AiravataServerMain.class, args);

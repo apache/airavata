@@ -284,7 +284,7 @@ ansible-playbook -i inventories/my-env start_services.yml --ask-vault-pass
 ```bash
 # Check ports
 ansible airavata-server -i inventories/my-env -m shell \
-  -a "ss -tuln | grep -E '8930|8940|8962|8970|8960|7878|18880|18899|8050|8082'"
+  -a "ss -tuln | grep -E '9090'"
 
 # Check processes
 ansible airavata-server -i inventories/my-env -m shell \

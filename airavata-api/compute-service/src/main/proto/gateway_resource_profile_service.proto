@@ -1,0 +1,244 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.gatewayprofile;
+
+option java_package = "org.apache.airavata.api.gatewayprofile";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/appcatalog/gatewayprofile/gateway_profile.proto";
+import "org/apache/airavata/model/appcatalog/accountprovisioning/account_provisioning.proto";
+
+// GatewayResourceProfileService provides RPCs for managing gateway resource profiles,
+// compute preferences, storage preferences, and SSH account provisioners.
+service GatewayResourceProfileService {
+
+  // --- Gateway Resource Profiles ---
+
+  rpc RegisterGatewayResourceProfile(RegisterGatewayResourceProfileRequest) returns (RegisterGatewayResourceProfileResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/gateway-profiles"
+      body: "gateway_resource_profile"
+    };
+  }
+
+  rpc GetGatewayResourceProfile(GetGatewayResourceProfileRequest) returns (org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles/{gateway_id}"
+    };
+  }
+
+  rpc UpdateGatewayResourceProfile(UpdateGatewayResourceProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/gateway-profiles/{gateway_id}"
+      body: "gateway_resource_profile"
+    };
+  }
+
+  rpc DeleteGatewayResourceProfile(DeleteGatewayResourceProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/gateway-profiles/{gateway_id}"
+    };
+  }
+
+  rpc GetAllGatewayResourceProfiles(GetAllGatewayResourceProfilesRequest) returns (GetAllGatewayResourceProfilesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles"
+    };
+  }
+
+  // --- Compute Preferences ---
+
+  rpc AddComputePreference(AddComputePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/gateway-profiles/{gateway_id}/compute-preferences"
+      body: "compute_resource_preference"
+    };
+  }
+
+  rpc GetComputePreference(GetComputePreferenceRequest) returns (org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles/{gateway_id}/compute-preferences/{compute_resource_id}"
+    };
+  }
+
+  rpc UpdateComputePreference(UpdateComputePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/gateway-profiles/{gateway_id}/compute-preferences/{compute_resource_id}"
+      body: "compute_resource_preference"
+    };
+  }
+
+  rpc DeleteComputePreference(DeleteComputePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/gateway-profiles/{gateway_id}/compute-preferences/{compute_resource_id}"
+    };
+  }
+
+  rpc GetAllComputePreferences(GetAllComputePreferencesRequest) returns (GetAllComputePreferencesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles/{gateway_id}/compute-preferences"
+    };
+  }
+
+  // --- Storage Preferences ---
+
+  rpc AddStoragePreference(AddStoragePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/gateway-profiles/{gateway_id}/storage-preferences"
+      body: "storage_preference"
+    };
+  }
+
+  rpc GetStoragePreference(GetStoragePreferenceRequest) returns (org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles/{gateway_id}/storage-preferences/{storage_resource_id}"
+    };
+  }
+
+  rpc UpdateStoragePreference(UpdateStoragePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/gateway-profiles/{gateway_id}/storage-preferences/{storage_resource_id}"
+      body: "storage_preference"
+    };
+  }
+
+  rpc DeleteStoragePreference(DeleteStoragePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/gateway-profiles/{gateway_id}/storage-preferences/{storage_resource_id}"
+    };
+  }
+
+  rpc GetAllStoragePreferences(GetAllStoragePreferencesRequest) returns (GetAllStoragePreferencesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles/{gateway_id}/storage-preferences"
+    };
+  }
+
+  // --- SSH Account Provisioners ---
+
+  rpc GetSSHAccountProvisioners(GetSSHAccountProvisionersRequest) returns (GetSSHAccountProvisionersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/ssh-account-provisioners"
+    };
+  }
+}
+
+// --- Gateway Resource Profile Request/Response messages ---
+
+message RegisterGatewayResourceProfileRequest {
+  org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gateway_resource_profile = 1;
+}
+
+message RegisterGatewayResourceProfileResponse {
+  string gateway_id = 1;
+}
+
+message GetGatewayResourceProfileRequest {
+  string gateway_id = 1;
+}
+
+message UpdateGatewayResourceProfileRequest {
+  string gateway_id = 1;
+  org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gateway_resource_profile = 2;
+}
+
+message DeleteGatewayResourceProfileRequest {
+  string gateway_id = 1;
+}
+
+message GetAllGatewayResourceProfilesRequest {}
+
+message GetAllGatewayResourceProfilesResponse {
+  repeated org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gateway_resource_profiles = 1;
+}
+
+// --- Compute Preference Request/Response messages ---
+
+message AddComputePreferenceRequest {
+  string gateway_id = 1;
+  string compute_resource_id = 2;
+  org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference compute_resource_preference = 3;
+}
+
+message GetComputePreferenceRequest {
+  string gateway_id = 1;
+  string compute_resource_id = 2;
+}
+
+message UpdateComputePreferenceRequest {
+  string gateway_id = 1;
+  string compute_resource_id = 2;
+  org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference compute_resource_preference = 3;
+}
+
+message DeleteComputePreferenceRequest {
+  string gateway_id = 1;
+  string compute_resource_id = 2;
+}
+
+message GetAllComputePreferencesRequest {
+  string gateway_id = 1;
+}
+
+message GetAllComputePreferencesResponse {
+  repeated org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference compute_resource_preferences = 1;
+}
+
+// --- Storage Preference Request/Response messages ---
+
+message AddStoragePreferenceRequest {
+  string gateway_id = 1;
+  string storage_resource_id = 2;
+  org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference storage_preference = 3;
+}
+
+message GetStoragePreferenceRequest {
+  string gateway_id = 1;
+  string storage_resource_id = 2;
+}
+
+message UpdateStoragePreferenceRequest {
+  string gateway_id = 1;
+  string storage_resource_id = 2;
+  org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference storage_preference = 3;
+}
+
+message DeleteStoragePreferenceRequest {
+  string gateway_id = 1;
+  string storage_resource_id = 2;
+}
+
+message GetAllStoragePreferencesRequest {
+  string gateway_id = 1;
+}
+
+message GetAllStoragePreferencesResponse {
+  repeated org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference storage_preferences = 1;
+}
+
+// --- SSH Account Provisioner Request/Response messages ---
+
+message GetSSHAccountProvisionersRequest {}
+
+message GetSSHAccountProvisionersResponse {
+  repeated org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner ssh_account_provisioners = 1;
+}

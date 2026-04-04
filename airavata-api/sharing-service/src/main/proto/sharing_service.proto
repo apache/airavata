@@ -1,0 +1,972 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.sharing;
+
+option java_package = "org.apache.airavata.api.sharing";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/sharing/sharing.proto";
+
+// SharingService provides RPCs for managing resource sharing with users and groups,
+// as well as domain, user, group, entity type, permission type, and entity CRUD.
+service SharingService {
+
+  // --- Resource sharing RPCs ---
+
+  rpc ShareResourceWithUsers(ShareResourceWithUsersRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/{resource_id}/users"
+      body: "*"
+    };
+  }
+
+  rpc ShareResourceWithGroups(ShareResourceWithGroupsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/{resource_id}/groups"
+      body: "*"
+    };
+  }
+
+  rpc RevokeFromUsers(RevokeFromUsersRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/{resource_id}/users"
+    };
+  }
+
+  rpc RevokeFromGroups(RevokeFromGroupsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/{resource_id}/groups"
+    };
+  }
+
+  rpc GetAllAccessibleUsers(GetAllAccessibleUsersRequest) returns (GetAllAccessibleUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/{resource_id}/users"
+    };
+  }
+
+  rpc GetAllDirectlyAccessibleUsers(GetAllDirectlyAccessibleUsersRequest) returns (GetAllDirectlyAccessibleUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/{resource_id}/users:direct"
+    };
+  }
+
+  rpc GetAllAccessibleGroups(GetAllAccessibleGroupsRequest) returns (GetAllAccessibleGroupsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/{resource_id}/groups"
+    };
+  }
+
+  rpc GetAllDirectlyAccessibleGroups(GetAllDirectlyAccessibleGroupsRequest) returns (GetAllDirectlyAccessibleGroupsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/{resource_id}/groups:direct"
+    };
+  }
+
+  rpc UserHasAccess(UserHasAccessRequest) returns (UserHasAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/{resource_id}/users/{user_id}:check"
+    };
+  }
+
+  // --- Domain CRUD ---
+
+  rpc CreateDomain(CreateDomainRequest) returns (CreateDomainResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains"
+      body: "*"
+    };
+  }
+
+  rpc UpdateDomain(UpdateDomainRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/sharing/domains/{domain.domain_id}"
+      body: "*"
+    };
+  }
+
+  rpc IsDomainExists(IsDomainExistsRequest) returns (IsDomainExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}:exists"
+    };
+  }
+
+  rpc DeleteDomain(DeleteDomainRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}"
+    };
+  }
+
+  rpc GetDomain(GetDomainRequest) returns (org.apache.airavata.sharing.registry.models.Domain) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}"
+    };
+  }
+
+  rpc GetDomains(GetDomainsRequest) returns (GetDomainsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains"
+    };
+  }
+
+  // --- User CRUD ---
+
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/users"
+      body: "*"
+    };
+  }
+
+  rpc UpdateUser(UpdateUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/sharing/users/{user.user_id}"
+      body: "*"
+    };
+  }
+
+  rpc IsUserExists(IsUserExistsRequest) returns (IsUserExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/users/{user_id}:exists"
+    };
+  }
+
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/users/{user_id}"
+    };
+  }
+
+  rpc GetUser(GetUserRequest) returns (org.apache.airavata.sharing.registry.models.User) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/users/{user_id}"
+    };
+  }
+
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/users"
+    };
+  }
+
+  // --- Group CRUD ---
+
+  rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/groups"
+      body: "*"
+    };
+  }
+
+  rpc UpdateGroup(UpdateGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/sharing/groups/{group.group_id}"
+      body: "*"
+    };
+  }
+
+  rpc IsGroupExists(IsGroupExistsRequest) returns (IsGroupExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}:exists"
+    };
+  }
+
+  rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}"
+    };
+  }
+
+  rpc GetGroup(GetGroupRequest) returns (org.apache.airavata.sharing.registry.models.UserGroup) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}"
+    };
+  }
+
+  rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups"
+    };
+  }
+
+  // --- Group membership ---
+
+  rpc AddUsersToGroup(AddUsersToGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/users"
+      body: "*"
+    };
+  }
+
+  rpc RemoveUsersFromGroup(RemoveUsersFromGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/users"
+    };
+  }
+
+  rpc TransferGroupOwnership(TransferGroupOwnershipRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}:transferOwnership"
+      body: "*"
+    };
+  }
+
+  rpc AddGroupAdmins(AddGroupAdminsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/admins"
+      body: "*"
+    };
+  }
+
+  rpc RemoveGroupAdmins(RemoveGroupAdminsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/admins"
+    };
+  }
+
+  rpc HasAdminAccess(HasAdminAccessRequest) returns (HasAdminAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/admins/{admin_id}:check"
+    };
+  }
+
+  rpc HasOwnerAccess(HasOwnerAccessRequest) returns (HasOwnerAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/owners/{owner_id}:check"
+    };
+  }
+
+  rpc GetGroupMembersOfTypeUser(GetGroupMembersOfTypeUserRequest) returns (GetGroupMembersOfTypeUserResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/members/users"
+    };
+  }
+
+  rpc GetGroupMembersOfTypeGroup(GetGroupMembersOfTypeGroupRequest) returns (GetGroupMembersOfTypeGroupResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/members/groups"
+    };
+  }
+
+  rpc AddChildGroupsToParentGroup(AddChildGroupsToParentGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/children"
+      body: "*"
+    };
+  }
+
+  rpc RemoveChildGroupFromParentGroup(RemoveChildGroupFromParentGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/groups/{group_id}/children/{child_id}"
+    };
+  }
+
+  rpc GetAllMemberGroupsForUser(GetAllMemberGroupsForUserRequest) returns (GetAllMemberGroupsForUserResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/users/{user_id}/groups"
+    };
+  }
+
+  // --- Entity type CRUD ---
+
+  rpc CreateEntityType(CreateEntityTypeRequest) returns (CreateEntityTypeResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/entity-types"
+      body: "*"
+    };
+  }
+
+  rpc UpdateEntityType(UpdateEntityTypeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/sharing/entity-types/{entity_type.entity_type_id}"
+      body: "*"
+    };
+  }
+
+  rpc IsEntityTypeExists(IsEntityTypeExistsRequest) returns (IsEntityTypeExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entity-types/{entity_type_id}:exists"
+    };
+  }
+
+  rpc DeleteEntityType(DeleteEntityTypeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/entity-types/{entity_type_id}"
+    };
+  }
+
+  rpc GetEntityType(GetEntityTypeRequest) returns (org.apache.airavata.sharing.registry.models.EntityType) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entity-types/{entity_type_id}"
+    };
+  }
+
+  rpc GetEntityTypes(GetEntityTypesRequest) returns (GetEntityTypesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entity-types"
+    };
+  }
+
+  // --- Entity CRUD ---
+
+  rpc CreateEntity(CreateEntityRequest) returns (CreateEntityResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/entities"
+      body: "*"
+    };
+  }
+
+  rpc UpdateEntity(UpdateEntityRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/sharing/entities/{entity.entity_id}"
+      body: "*"
+    };
+  }
+
+  rpc IsEntityExists(IsEntityExistsRequest) returns (IsEntityExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}:exists"
+    };
+  }
+
+  rpc DeleteEntity(DeleteEntityRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}"
+    };
+  }
+
+  rpc GetEntity(GetEntityRequest) returns (org.apache.airavata.sharing.registry.models.Entity) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}"
+    };
+  }
+
+  rpc SearchEntities(SearchEntitiesRequest) returns (SearchEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/entities:search"
+      body: "*"
+    };
+  }
+
+  rpc GetListOfSharedUsers(GetListOfSharedUsersRequest) returns (GetListOfSharedUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/shared-users"
+    };
+  }
+
+  rpc GetListOfDirectlySharedUsers(GetListOfDirectlySharedUsersRequest) returns (GetListOfDirectlySharedUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/shared-users:direct"
+    };
+  }
+
+  rpc GetListOfSharedGroups(GetListOfSharedGroupsRequest) returns (GetListOfSharedGroupsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/shared-groups"
+    };
+  }
+
+  rpc GetListOfDirectlySharedGroups(GetListOfDirectlySharedGroupsRequest) returns (GetListOfDirectlySharedGroupsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/shared-groups:direct"
+    };
+  }
+
+  // --- Permission type CRUD ---
+
+  rpc CreatePermissionType(CreatePermissionTypeRequest) returns (CreatePermissionTypeResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/permission-types"
+      body: "*"
+    };
+  }
+
+  rpc UpdatePermissionType(UpdatePermissionTypeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/sharing/permission-types/{permission_type.permission_type_id}"
+      body: "*"
+    };
+  }
+
+  rpc IsPermissionExists(IsPermissionExistsRequest) returns (IsPermissionExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/permission-types/{permission_id}:exists"
+    };
+  }
+
+  rpc DeletePermissionType(DeletePermissionTypeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/sharing/domains/{domain_id}/permission-types/{permission_type_id}"
+    };
+  }
+
+  rpc GetPermissionType(GetPermissionTypeRequest) returns (org.apache.airavata.sharing.registry.models.PermissionType) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/permission-types/{permission_type_id}"
+    };
+  }
+
+  rpc GetPermissionTypes(GetPermissionTypesRequest) returns (GetPermissionTypesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/domains/{domain_id}/permission-types"
+    };
+  }
+
+  // --- Entity sharing (Thrift-compatible aliases using domain_id) ---
+
+  rpc ShareEntityWithUsers(ShareEntityWithUsersRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/users:share"
+      body: "*"
+    };
+  }
+
+  rpc RevokeEntitySharingFromUsers(RevokeEntitySharingFromUsersRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/users:revoke"
+      body: "*"
+    };
+  }
+
+  rpc ShareEntityWithGroups(ShareEntityWithGroupsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/groups:share"
+      body: "*"
+    };
+  }
+
+  rpc RevokeEntitySharingFromGroups(RevokeEntitySharingFromGroupsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/domains/{domain_id}/entities/{entity_id}/groups:revoke"
+      body: "*"
+    };
+  }
+}
+
+// ===========================================================================
+// Request/Response messages — Resource sharing (existing)
+// ===========================================================================
+
+message ShareResourceWithUsersRequest {
+  string resource_id = 1;
+  map<string, string> user_permissions = 2;
+}
+
+message ShareResourceWithGroupsRequest {
+  string resource_id = 1;
+  map<string, string> group_permissions = 2;
+}
+
+message RevokeFromUsersRequest {
+  string resource_id = 1;
+  map<string, string> user_permissions = 2;
+}
+
+message RevokeFromGroupsRequest {
+  string resource_id = 1;
+  map<string, string> group_permissions = 2;
+}
+
+message GetAllAccessibleUsersRequest {
+  string resource_id = 1;
+  string permission_type = 2;
+}
+
+message GetAllAccessibleUsersResponse {
+  repeated string user_ids = 1;
+}
+
+message GetAllDirectlyAccessibleUsersRequest {
+  string resource_id = 1;
+  string permission_type = 2;
+}
+
+message GetAllDirectlyAccessibleUsersResponse {
+  repeated string user_ids = 1;
+}
+
+message GetAllAccessibleGroupsRequest {
+  string resource_id = 1;
+  string permission_type = 2;
+}
+
+message GetAllAccessibleGroupsResponse {
+  repeated string group_ids = 1;
+}
+
+message GetAllDirectlyAccessibleGroupsRequest {
+  string resource_id = 1;
+  string permission_type = 2;
+}
+
+message GetAllDirectlyAccessibleGroupsResponse {
+  repeated string group_ids = 1;
+}
+
+message UserHasAccessRequest {
+  string resource_id = 1;
+  string user_id = 2;
+  string permission_type = 3;
+}
+
+message UserHasAccessResponse {
+  bool has_access = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Domain CRUD
+// ===========================================================================
+
+message CreateDomainRequest {
+  org.apache.airavata.sharing.registry.models.Domain domain = 1;
+}
+
+message CreateDomainResponse {
+  string domain_id = 1;
+}
+
+message UpdateDomainRequest {
+  org.apache.airavata.sharing.registry.models.Domain domain = 1;
+}
+
+message IsDomainExistsRequest {
+  string domain_id = 1;
+}
+
+message IsDomainExistsResponse {
+  bool exists = 1;
+}
+
+message DeleteDomainRequest {
+  string domain_id = 1;
+}
+
+message GetDomainRequest {
+  string domain_id = 1;
+}
+
+message GetDomainsRequest {
+  int32 offset = 1;
+  int32 limit = 2;
+}
+
+message GetDomainsResponse {
+  repeated org.apache.airavata.sharing.registry.models.Domain domains = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — User CRUD
+// ===========================================================================
+
+message CreateUserRequest {
+  org.apache.airavata.sharing.registry.models.User user = 1;
+}
+
+message CreateUserResponse {
+  string user_id = 1;
+}
+
+message UpdateUserRequest {
+  org.apache.airavata.sharing.registry.models.User user = 1;
+}
+
+message IsUserExistsRequest {
+  string domain_id = 1;
+  string user_id = 2;
+}
+
+message IsUserExistsResponse {
+  bool exists = 1;
+}
+
+message DeleteUserRequest {
+  string domain_id = 1;
+  string user_id = 2;
+}
+
+message GetUserRequest {
+  string domain_id = 1;
+  string user_id = 2;
+}
+
+message GetUsersRequest {
+  string domain_id = 1;
+  int32 offset = 2;
+  int32 limit = 3;
+}
+
+message GetUsersResponse {
+  repeated org.apache.airavata.sharing.registry.models.User users = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Group CRUD
+// ===========================================================================
+
+message CreateGroupRequest {
+  org.apache.airavata.sharing.registry.models.UserGroup group = 1;
+}
+
+message CreateGroupResponse {
+  string group_id = 1;
+}
+
+message UpdateGroupRequest {
+  org.apache.airavata.sharing.registry.models.UserGroup group = 1;
+}
+
+message IsGroupExistsRequest {
+  string domain_id = 1;
+  string group_id = 2;
+}
+
+message IsGroupExistsResponse {
+  bool exists = 1;
+}
+
+message DeleteGroupRequest {
+  string domain_id = 1;
+  string group_id = 2;
+}
+
+message GetGroupRequest {
+  string domain_id = 1;
+  string group_id = 2;
+}
+
+message GetGroupsRequest {
+  string domain_id = 1;
+  int32 offset = 2;
+  int32 limit = 3;
+}
+
+message GetGroupsResponse {
+  repeated org.apache.airavata.sharing.registry.models.UserGroup groups = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Group membership
+// ===========================================================================
+
+message AddUsersToGroupRequest {
+  string domain_id = 1;
+  repeated string user_ids = 2;
+  string group_id = 3;
+}
+
+message RemoveUsersFromGroupRequest {
+  string domain_id = 1;
+  repeated string user_ids = 2;
+  string group_id = 3;
+}
+
+message TransferGroupOwnershipRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  string new_owner_id = 3;
+}
+
+message AddGroupAdminsRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  repeated string admin_ids = 3;
+}
+
+message RemoveGroupAdminsRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  repeated string admin_ids = 3;
+}
+
+message HasAdminAccessRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  string admin_id = 3;
+}
+
+message HasAdminAccessResponse {
+  bool has_access = 1;
+}
+
+message HasOwnerAccessRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  string owner_id = 3;
+}
+
+message HasOwnerAccessResponse {
+  bool has_access = 1;
+}
+
+message GetGroupMembersOfTypeUserRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  int32 offset = 3;
+  int32 limit = 4;
+}
+
+message GetGroupMembersOfTypeUserResponse {
+  repeated org.apache.airavata.sharing.registry.models.User users = 1;
+}
+
+message GetGroupMembersOfTypeGroupRequest {
+  string domain_id = 1;
+  string group_id = 2;
+  int32 offset = 3;
+  int32 limit = 4;
+}
+
+message GetGroupMembersOfTypeGroupResponse {
+  repeated org.apache.airavata.sharing.registry.models.UserGroup groups = 1;
+}
+
+message AddChildGroupsToParentGroupRequest {
+  string domain_id = 1;
+  repeated string child_ids = 2;
+  string group_id = 3;
+}
+
+message RemoveChildGroupFromParentGroupRequest {
+  string domain_id = 1;
+  string child_id = 2;
+  string group_id = 3;
+}
+
+message GetAllMemberGroupsForUserRequest {
+  string domain_id = 1;
+  string user_id = 2;
+}
+
+message GetAllMemberGroupsForUserResponse {
+  repeated org.apache.airavata.sharing.registry.models.UserGroup groups = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Entity type CRUD
+// ===========================================================================
+
+message CreateEntityTypeRequest {
+  org.apache.airavata.sharing.registry.models.EntityType entity_type = 1;
+}
+
+message CreateEntityTypeResponse {
+  string entity_type_id = 1;
+}
+
+message UpdateEntityTypeRequest {
+  org.apache.airavata.sharing.registry.models.EntityType entity_type = 1;
+}
+
+message IsEntityTypeExistsRequest {
+  string domain_id = 1;
+  string entity_type_id = 2;
+}
+
+message IsEntityTypeExistsResponse {
+  bool exists = 1;
+}
+
+message DeleteEntityTypeRequest {
+  string domain_id = 1;
+  string entity_type_id = 2;
+}
+
+message GetEntityTypeRequest {
+  string domain_id = 1;
+  string entity_type_id = 2;
+}
+
+message GetEntityTypesRequest {
+  string domain_id = 1;
+  int32 offset = 2;
+  int32 limit = 3;
+}
+
+message GetEntityTypesResponse {
+  repeated org.apache.airavata.sharing.registry.models.EntityType entity_types = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Entity CRUD
+// ===========================================================================
+
+message CreateEntityRequest {
+  org.apache.airavata.sharing.registry.models.Entity entity = 1;
+}
+
+message CreateEntityResponse {
+  string entity_id = 1;
+}
+
+message UpdateEntityRequest {
+  org.apache.airavata.sharing.registry.models.Entity entity = 1;
+}
+
+message IsEntityExistsRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+}
+
+message IsEntityExistsResponse {
+  bool exists = 1;
+}
+
+message DeleteEntityRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+}
+
+message GetEntityRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+}
+
+message SearchEntitiesRequest {
+  string domain_id = 1;
+  string user_id = 2;
+  repeated org.apache.airavata.sharing.registry.models.SearchCriteria filters = 3;
+  int32 offset = 4;
+  int32 limit = 5;
+}
+
+message SearchEntitiesResponse {
+  repeated org.apache.airavata.sharing.registry.models.Entity entities = 1;
+}
+
+message GetListOfSharedUsersRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  string permission_type_id = 3;
+}
+
+message GetListOfSharedUsersResponse {
+  repeated org.apache.airavata.sharing.registry.models.User users = 1;
+}
+
+message GetListOfDirectlySharedUsersRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  string permission_type_id = 3;
+}
+
+message GetListOfDirectlySharedUsersResponse {
+  repeated org.apache.airavata.sharing.registry.models.User users = 1;
+}
+
+message GetListOfSharedGroupsRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  string permission_type_id = 3;
+}
+
+message GetListOfSharedGroupsResponse {
+  repeated org.apache.airavata.sharing.registry.models.UserGroup groups = 1;
+}
+
+message GetListOfDirectlySharedGroupsRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  string permission_type_id = 3;
+}
+
+message GetListOfDirectlySharedGroupsResponse {
+  repeated org.apache.airavata.sharing.registry.models.UserGroup groups = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Permission type CRUD
+// ===========================================================================
+
+message CreatePermissionTypeRequest {
+  org.apache.airavata.sharing.registry.models.PermissionType permission_type = 1;
+}
+
+message CreatePermissionTypeResponse {
+  string permission_type_id = 1;
+}
+
+message UpdatePermissionTypeRequest {
+  org.apache.airavata.sharing.registry.models.PermissionType permission_type = 1;
+}
+
+message IsPermissionExistsRequest {
+  string domain_id = 1;
+  string permission_id = 2;
+}
+
+message IsPermissionExistsResponse {
+  bool exists = 1;
+}
+
+message DeletePermissionTypeRequest {
+  string domain_id = 1;
+  string permission_type_id = 2;
+}
+
+message GetPermissionTypeRequest {
+  string domain_id = 1;
+  string permission_type_id = 2;
+}
+
+message GetPermissionTypesRequest {
+  string domain_id = 1;
+  int32 offset = 2;
+  int32 limit = 3;
+}
+
+message GetPermissionTypesResponse {
+  repeated org.apache.airavata.sharing.registry.models.PermissionType permission_types = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — Entity sharing (Thrift-compatible)
+// ===========================================================================
+
+message ShareEntityWithUsersRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  repeated string user_list = 3;
+  string permission_type_id = 4;
+  bool cascade_permission = 5;
+}
+
+message RevokeEntitySharingFromUsersRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  repeated string user_list = 3;
+  string permission_type_id = 4;
+}
+
+message ShareEntityWithGroupsRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  repeated string group_list = 3;
+  string permission_type_id = 4;
+  bool cascade_permission = 5;
+}
+
+message RevokeEntitySharingFromGroupsRequest {
+  string domain_id = 1;
+  string entity_id = 2;
+  repeated string group_list = 3;
+  string permission_type_id = 4;
+}

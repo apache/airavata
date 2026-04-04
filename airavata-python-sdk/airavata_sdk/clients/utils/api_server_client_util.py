@@ -43,48 +43,51 @@ class APIServerClientUtil(object):
             )
         self.gateway_id = gateway_id
         self.username = username
-        self.api_server_client = APIServerClient()
+        # Auth is now passed via constructor metadata, not per-call
+        self.api_server_client = APIServerClient(
+            access_token=self.token.access_token,
+            claims=self.token.claims_map,
+        )
 
     def get_project_id(self, project_name: str) -> Optional[str]:
-        response = self.api_server_client.get_user_projects(self.token, self.gateway_id, self.username, 10, 0)
-        for project in response:
+        response = self.api_server_client.get_user_projects(self.gateway_id, self.username, 10, 0)
+        for project in response.projects:
             if project.name == project_name and project.owner == self.username:
-                return project.projectID
+                return project.project_id
         return None
 
     def get_execution_id(self, application_name: str):
-        response = self.api_server_client.get_all_application_interfaces(self.token, self.gateway_id)
-        for app in response:
-            if app.applicationName == application_name:
-                return app.applicationInterfaceId
+        response = self.api_server_client.get_all_application_interfaces(self.gateway_id)
+        for app in response.application_interfaces:
+            if app.application_name == application_name:
+                return app.application_interface_id
         return None
 
     def get_resource_host_id(self, resource_name: str):
-        response = self.api_server_client.get_all_compute_resource_names(self.token)
-        for k in response.keys():
-            if response[k] == resource_name:
+        response = self.api_server_client.get_all_compute_resource_names()
+        for k, v in response.compute_resource_names.items():
+            if v == resource_name:
                 return k
         return None
 
     def get_group_resource_profile_id(self, group_resource_profile_name: str):
-        response = self.api_server_client.get_group_resource_list(self.token, self.gateway_id)
-        for x in response:
-            if x.groupResourceProfileName == group_resource_profile_name:
-                return x.groupResourceProfileId
+        response = self.api_server_client.get_group_resource_list()
+        for x in response.group_resource_profiles:
+            if x.group_resource_profile_name == group_resource_profile_name:
+                return x.group_resource_profile_id
         return None
 
     def get_storage_resource_id(self, storage_name: str):
-        response = self.api_server_client.get_all_storage_resource_names(self.token)
-        for k in response.keys():
-            if response[k] == storage_name:
+        response = self.api_server_client.get_all_storage_resource_names()
+        for k, v in response.storage_resource_names.items():
+            if v == storage_name:
                 return k
         return None
 
     def get_queue_names(self, resource_host_id: str):
-        resource = self.api_server_client.get_compute_resource(self.token, resource_host_id)
-        batchqueues = resource.batchQueues
-        assert batchqueues is not None
-        allowed_queue_names = list[str]()
-        for queue in batchqueues:
-            allowed_queue_names.append(queue.queueName)
+        resource = self.api_server_client.get_compute_resource(resource_host_id)
+        batch_queues = resource.batch_queues
+        allowed_queue_names = []
+        for queue in batch_queues:
+            allowed_queue_names.append(queue.queue_name)
         return allowed_queue_names

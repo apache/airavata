@@ -1,0 +1,65 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.iam.config;
+
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import org.aopalliance.intercept.MethodInvocation;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.MethodSignature;
+
+/**
+ * Adapts a Spring AOP {@link ProceedingJoinPoint} to the AOP Alliance
+ * {@link MethodInvocation} interface, so that existing interceptor code
+ * can be reused without modification.
+ */
+class ProceedingJoinPointMethodInvocation implements MethodInvocation {
+
+    private final ProceedingJoinPoint joinPoint;
+
+    ProceedingJoinPointMethodInvocation(ProceedingJoinPoint joinPoint) {
+        this.joinPoint = joinPoint;
+    }
+
+    @Override
+    public Method getMethod() {
+        return ((MethodSignature) joinPoint.getSignature()).getMethod();
+    }
+
+    @Override
+    public Object[] getArguments() {
+        return joinPoint.getArgs();
+    }
+
+    @Override
+    public Object proceed() throws Throwable {
+        return joinPoint.proceed();
+    }
+
+    @Override
+    public Object getThis() {
+        return joinPoint.getThis();
+    }
+
+    @Override
+    public AccessibleObject getStaticPart() {
+        return getMethod();
+    }
+}

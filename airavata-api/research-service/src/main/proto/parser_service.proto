@@ -1,0 +1,156 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.parser;
+
+option java_package = "org.apache.airavata.api.parser";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/appcatalog/parser/parser.proto";
+
+// ParserService provides RPCs for managing parsers and parsing templates.
+service ParserService {
+
+  // --- Parsers ---
+
+  rpc SaveParser(SaveParserRequest) returns (SaveParserResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/parsers"
+      body: "parser"
+    };
+  }
+
+  rpc GetParser(GetParserRequest) returns (org.apache.airavata.model.appcatalog.parser.Parser) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/parsers/{parser_id}"
+    };
+  }
+
+  rpc ListAllParsers(ListAllParsersRequest) returns (ListAllParsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/parsers"
+    };
+  }
+
+  rpc RemoveParser(RemoveParserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/gateways/{gateway_id}/parsers/{parser_id}"
+    };
+  }
+
+  // --- Parsing Templates ---
+
+  rpc SaveParsingTemplate(SaveParsingTemplateRequest) returns (SaveParsingTemplateResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/parsing-templates"
+      body: "parsing_template"
+    };
+  }
+
+  rpc GetParsingTemplate(GetParsingTemplateRequest) returns (org.apache.airavata.model.appcatalog.parser.ParsingTemplate) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/parsing-templates/{template_id}"
+    };
+  }
+
+  rpc GetParsingTemplatesForExperiment(GetParsingTemplatesForExperimentRequest) returns (GetParsingTemplatesForExperimentResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/experiments/{experiment_id}/parsing-templates"
+    };
+  }
+
+  rpc ListAllParsingTemplates(ListAllParsingTemplatesRequest) returns (ListAllParsingTemplatesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/parsing-templates"
+    };
+  }
+
+  rpc RemoveParsingTemplate(RemoveParsingTemplateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/gateways/{gateway_id}/parsing-templates/{template_id}"
+    };
+  }
+}
+
+// --- Parser Request/Response messages ---
+
+message SaveParserRequest {
+  org.apache.airavata.model.appcatalog.parser.Parser parser = 1;
+}
+
+message SaveParserResponse {
+  string parser_id = 1;
+}
+
+message GetParserRequest {
+  string gateway_id = 1;
+  string parser_id = 2;
+}
+
+message ListAllParsersRequest {
+  string gateway_id = 1;
+}
+
+message ListAllParsersResponse {
+  repeated org.apache.airavata.model.appcatalog.parser.Parser parsers = 1;
+}
+
+message RemoveParserRequest {
+  string gateway_id = 1;
+  string parser_id = 2;
+}
+
+// --- Parsing Template Request/Response messages ---
+
+message SaveParsingTemplateRequest {
+  org.apache.airavata.model.appcatalog.parser.ParsingTemplate parsing_template = 1;
+}
+
+message SaveParsingTemplateResponse {
+  string template_id = 1;
+}
+
+message GetParsingTemplateRequest {
+  string gateway_id = 1;
+  string template_id = 2;
+}
+
+message GetParsingTemplatesForExperimentRequest {
+  string gateway_id = 1;
+  string experiment_id = 2;
+}
+
+message GetParsingTemplatesForExperimentResponse {
+  repeated org.apache.airavata.model.appcatalog.parser.ParsingTemplate parsing_templates = 1;
+}
+
+message ListAllParsingTemplatesRequest {
+  string gateway_id = 1;
+}
+
+message ListAllParsingTemplatesResponse {
+  repeated org.apache.airavata.model.appcatalog.parser.ParsingTemplate parsing_templates = 1;
+}
+
+message RemoveParsingTemplateRequest {
+  string gateway_id = 1;
+  string template_id = 2;
+}

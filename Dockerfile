@@ -39,12 +39,8 @@ ENV JAVA_OPTS="-server \
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:9097/health/services || exit 1
 
-# Thrift (multiplexed)
-EXPOSE 8930
-# REST (Swagger UI + Actuator)
-EXPOSE 18889
-# gRPC (Agent + Research)
-EXPOSE 19900
+# Armeria (gRPC + REST + Docs + Actuator)
+EXPOSE 9090
 # Monitoring (Prometheus + health)
 EXPOSE 9097
 

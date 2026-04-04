@@ -15,14 +15,26 @@
 #
 
 import os
+from dataclasses import dataclass, field
+from typing import Optional
 
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
-from airavata.model.security.ttypes import AuthzToken
 from airavata_sdk import Settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+@dataclass
+class AuthzToken:
+    """Plain Python replacement for the Thrift AuthzToken.
+
+    Carries an access token and a claims map. This is transport-agnostic
+    and used by the SDK to pass credentials to gRPC client wrappers.
+    """
+    access_token: str
+    claims_map: dict = field(default_factory=dict)
 
 
 class Authenticator(object):
@@ -32,54 +44,25 @@ class Authenticator(object):
 
     @property
     def TOKEN_URL(self):
-        return f"{Settings.AUTH_SERVER_URL}/realms/{Settings.AUTH_REALM}/protocol/openid-connect/token"
+        return f"{self.settings.AUTH_SERVER_URL}/realms/{self.settings.AUTH_REALM}/protocol/openid-connect/token"
 
     @property
     def USER_INFO_URL(self):
-        return f"{Settings.AUTH_SERVER_URL}/realms/{Settings.AUTH_REALM}/protocol/openid-connect/userinfo"
+        return f"{self.settings.AUTH_SERVER_URL}/realms/{self.settings.AUTH_REALM}/protocol/openid-connect/userinfo"
 
     @property
     def LOGIN_DESKTOP_URI(self):
-        return f"{Settings.AUTH_SERVER_URL}/realms/{Settings.AUTH_REALM}/protocol/openid-connect/auth"
-    
+        return f"{self.settings.AUTH_SERVER_URL}/realms/{self.settings.AUTH_REALM}/protocol/openid-connect/auth"
+
     @property
     def CLIENT_ID(self):
         return "airavata"
-    
+
     @property
     def CLIENT_SECRET(self):
         return "airavata"
 
-    def get_token_and_user_info_password_flow(self, username: str, password: str, gateway_id: str):
-        client_id = self.CLIENT_ID
-        client_secret = self.CLIENT_SECRET
-        token_url = self.TOKEN_URL
-        # userinfo_url = self.keycloak_settings.USER_INFO_URL
-        verify_ssl = self.settings.VERIFY_SSL
-        oauth2_session = OAuth2Session(
-            client=LegacyApplicationClient(client_id=client_id))
-        token = oauth2_session.fetch_token(
-            token_url=token_url,
-            username=username,
-            password=password,
-            client_id=client_id,
-            client_secret=client_secret,
-            verify=verify_ssl,
-        )
-        claimsMap = {
-            "userName": username,
-            "gatewayID": gateway_id
-        }
-        return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
-
-    def get_airavata_authz_token(self, username: str, token: str, gateway_id: str):
-        claimsMap = {
-            "userName": username,
-            "gatewayID": gateway_id
-        }
-        return AuthzToken(accessToken=token, claimsMap=claimsMap)
-
-    def get_authorize_url(self, username: str, password: str, gateway_id: str):
+    def get_token_and_user_info_password_flow(self, username: str, password: str, gateway_id: str) -> AuthzToken:
         client_id = self.CLIENT_ID
         client_secret = self.CLIENT_SECRET
         token_url = self.TOKEN_URL
@@ -94,11 +77,39 @@ class Authenticator(object):
             client_secret=client_secret,
             verify=verify_ssl,
         )
-        claimsMap = {
+        claims_map = {
             "userName": username,
             "gatewayID": gateway_id
         }
-        return AuthzToken(accessToken=token['access_token'], claimsMap=claimsMap)
+        return AuthzToken(access_token=token['access_token'], claims_map=claims_map)
+
+    def get_airavata_authz_token(self, username: str, token: str, gateway_id: str) -> AuthzToken:
+        claims_map = {
+            "userName": username,
+            "gatewayID": gateway_id
+        }
+        return AuthzToken(access_token=token, claims_map=claims_map)
+
+    def get_authorize_url(self, username: str, password: str, gateway_id: str) -> AuthzToken:
+        client_id = self.CLIENT_ID
+        client_secret = self.CLIENT_SECRET
+        token_url = self.TOKEN_URL
+        verify_ssl = self.settings.VERIFY_SSL
+        oauth2_session = OAuth2Session(
+            client=LegacyApplicationClient(client_id=client_id))
+        token = oauth2_session.fetch_token(
+            token_url=token_url,
+            username=username,
+            password=password,
+            client_id=client_id,
+            client_secret=client_secret,
+            verify=verify_ssl,
+        )
+        claims_map = {
+            "userName": username,
+            "gatewayID": gateway_id
+        }
+        return AuthzToken(access_token=token['access_token'], claims_map=claims_map)
 
     def authenticate_with_auth_code(self):
         print("Click on Login URI ", self.LOGIN_DESKTOP_URI)

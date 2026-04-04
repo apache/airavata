@@ -1,0 +1,195 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.groupmanager;
+
+option java_package = "org.apache.airavata.api.groupmanager";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/group/group_manager.proto";
+
+// GroupManagerService provides RPCs for managing user groups.
+service GroupManagerService {
+
+  rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/groups"
+      body: "group"
+    };
+  }
+
+  rpc UpdateGroup(UpdateGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/groups/{group.id}"
+      body: "group"
+    };
+  }
+
+  rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/groups/{group_id}"
+    };
+  }
+
+  rpc GetGroup(GetGroupRequest) returns (org.apache.airavata.model.group.GroupModel) {
+    option (google.api.http) = {
+      get: "/api/v1/groups/{group_id}"
+    };
+  }
+
+  rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/groups"
+    };
+  }
+
+  rpc GetAllGroupsUserBelongs(GetAllGroupsUserBelongsRequest) returns (GetAllGroupsUserBelongsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/groups/user/{user_name}"
+    };
+  }
+
+  rpc AddUsersToGroup(AddUsersToGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/groups/{group_id}/members"
+      body: "*"
+    };
+  }
+
+  rpc RemoveUsersFromGroup(RemoveUsersFromGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/groups/{group_id}/members"
+    };
+  }
+
+  rpc TransferGroupOwnership(TransferGroupOwnershipRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/groups/{group_id}/ownership"
+      body: "*"
+    };
+  }
+
+  rpc AddGroupAdmins(AddGroupAdminsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/groups/{group_id}/admins"
+      body: "*"
+    };
+  }
+
+  rpc RemoveGroupAdmins(RemoveGroupAdminsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/groups/{group_id}/admins"
+    };
+  }
+
+  rpc HasAdminAccess(HasAdminAccessRequest) returns (HasAdminAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/groups/{group_id}/admins/{admin_id}:check"
+    };
+  }
+
+  rpc HasOwnerAccess(HasOwnerAccessRequest) returns (HasOwnerAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/groups/{group_id}/owners/{owner_id}:check"
+    };
+  }
+}
+
+// Request/Response messages
+
+message CreateGroupRequest {
+  org.apache.airavata.model.group.GroupModel group = 1;
+}
+
+message CreateGroupResponse {
+  string group_id = 1;
+}
+
+message UpdateGroupRequest {
+  org.apache.airavata.model.group.GroupModel group = 1;
+}
+
+message DeleteGroupRequest {
+  string group_id = 1;
+  string owner_id = 2;
+}
+
+message GetGroupRequest {
+  string group_id = 1;
+}
+
+message GetGroupsRequest {
+}
+
+message GetGroupsResponse {
+  repeated org.apache.airavata.model.group.GroupModel groups = 1;
+}
+
+message GetAllGroupsUserBelongsRequest {
+  string user_name = 1;
+}
+
+message GetAllGroupsUserBelongsResponse {
+  repeated org.apache.airavata.model.group.GroupModel groups = 1;
+}
+
+message AddUsersToGroupRequest {
+  string group_id = 1;
+  repeated string user_ids = 2;
+}
+
+message RemoveUsersFromGroupRequest {
+  string group_id = 1;
+  repeated string user_ids = 2;
+}
+
+message TransferGroupOwnershipRequest {
+  string group_id = 1;
+  string new_owner_id = 2;
+}
+
+message AddGroupAdminsRequest {
+  string group_id = 1;
+  repeated string admin_ids = 2;
+}
+
+message RemoveGroupAdminsRequest {
+  string group_id = 1;
+  repeated string admin_ids = 2;
+}
+
+message HasAdminAccessRequest {
+  string group_id = 1;
+  string admin_id = 2;
+}
+
+message HasAdminAccessResponse {
+  bool has_access = 1;
+}
+
+message HasOwnerAccessRequest {
+  string group_id = 1;
+  string owner_id = 2;
+}
+
+message HasOwnerAccessResponse {
+  bool has_access = 1;
+}

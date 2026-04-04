@@ -1,0 +1,392 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+syntax = "proto3";
+
+package org.apache.airavata.agent.service;
+
+option java_multiple_files = true;
+option java_package = "org.apache.airavata.agent.service";
+option java_outer_classname = "AgentServiceProto";
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+// --- Agent info ---
+
+message AgentInfoResponse {
+  string agent_id = 1;
+  bool is_agent_up = 2;
+}
+
+// --- Generic execution ack (shared by command, jupyter, python, kernel restart, async) ---
+
+message AgentExecutionAck {
+  string execution_id = 1;
+  string error = 2;
+}
+
+// --- Environment setup ---
+
+message AgentEnvSetupRequest {
+  string agent_id = 1;
+  string env_name = 2;
+  repeated string libraries = 3;
+  repeated string pip = 4;
+}
+
+message AgentEnvSetupResponse {
+  string execution_id = 1;
+  bool setup = 2;
+  string status = 3;
+}
+
+// --- Shell command execution ---
+
+message AgentCommandExecutionRequest {
+  string agent_id = 1;
+  string env_name = 2;
+  string working_dir = 3;
+  repeated string arguments = 4;
+}
+
+message AgentCommandExecutionResponse {
+  string execution_id = 1;
+  bool executed = 2;
+  string response_string = 3;
+}
+
+// --- Async shell command execution ---
+
+message AgentAsyncCommandExecutionRequest {
+  string agent_id = 1;
+  string env_name = 2;
+  string working_dir = 3;
+  repeated string arguments = 4;
+}
+
+message AgentAsyncCommandExecutionResponse {
+  string execution_id = 1;
+  int32 process_id = 2;
+  string error_message = 3;
+}
+
+// --- Async command list ---
+
+message AgentAsyncCommandListRequest {
+  string agent_id = 1;
+}
+
+message AgentAsyncCommand {
+  int32 process_id = 1;
+  repeated string arguments = 2;
+}
+
+message AgentAsyncCommandListResponse {
+  string execution_id = 1;
+  repeated AgentAsyncCommand commands = 2;
+  string error = 3;
+}
+
+// --- Async command terminate ---
+
+message AgentAsyncCommandTerminateRequest {
+  string agent_id = 1;
+  int32 process_id = 2;
+}
+
+message AgentAsyncCommandTerminateResponse {
+  string execution_id = 1;
+  string status = 2;
+}
+
+// --- Jupyter execution ---
+
+message AgentJupyterExecutionRequest {
+  string agent_id = 1;
+  string env_name = 2;
+  string code = 3;
+}
+
+message AgentJupyterExecutionResponse {
+  string execution_id = 1;
+  bool executed = 2;
+  string response_string = 3;
+}
+
+// --- Python execution ---
+
+message AgentPythonExecutionRequest {
+  string agent_id = 1;
+  string env_name = 2;
+  string working_dir = 3;
+  string code = 4;
+}
+
+message AgentPythonExecutionResponse {
+  string execution_id = 1;
+  bool executed = 2;
+  string response_string = 3;
+}
+
+// --- Kernel restart ---
+
+message AgentKernelRestartRequest {
+  string agent_id = 1;
+  string env_name = 2;
+}
+
+message AgentKernelRestartResponse {
+  string execution_id = 1;
+  string status = 2;
+  bool restarted = 3;
+}
+
+// --- Tunnel creation ---
+
+message AgentTunnelCreateRequest {
+  string agent_id = 1;
+  int32 local_port = 2;
+  string local_bind_host = 3;
+}
+
+message AgentTunnelAck {
+  string execution_id = 1;
+  int32 status = 2;
+  string error = 3;
+}
+
+message AgentTunnelCreateResponse {
+  string execution_id = 1;
+  string tunnel_id = 2;
+  int32 proxy_port = 3;
+  string proxy_host = 4;
+  string status = 5;
+}
+
+// --- Tunnel termination ---
+
+message AgentTunnelTerminateRequest {
+  string agent_id = 1;
+  string tunnel_id = 2;
+}
+
+// ============================================================
+// Agent Interaction Service (replaces AgentController)
+// ============================================================
+
+message GetAgentInfoRequest {
+  string agent_id = 1;
+}
+
+message GetExecutionResponseRequest {
+  string execution_id = 1;
+}
+
+service AgentInteractionService {
+  rpc GetAgentInfo(GetAgentInfoRequest) returns (AgentInfoResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/{agent_id}"
+    };
+  }
+
+  rpc SetupTunnel(AgentTunnelCreateRequest) returns (AgentTunnelAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/setup/tunnel"
+      body: "*"
+    };
+  }
+
+  rpc GetTunnelResponse(GetExecutionResponseRequest) returns (AgentTunnelCreateResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/setup/tunnel/{execution_id}"
+    };
+  }
+
+  rpc TerminateTunnel(AgentTunnelTerminateRequest) returns (AgentTunnelAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/terminate/tunnel"
+      body: "*"
+    };
+  }
+
+  rpc SetupEnv(AgentEnvSetupRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/setup/env"
+      body: "*"
+    };
+  }
+
+  rpc GetEnvSetupResponse(GetExecutionResponseRequest) returns (AgentEnvSetupResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/setup/env/{execution_id}"
+    };
+  }
+
+  rpc RestartKernel(AgentKernelRestartRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/setup/restart"
+      body: "*"
+    };
+  }
+
+  rpc GetKernelRestartResponse(GetExecutionResponseRequest) returns (AgentKernelRestartResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/setup/restart/{execution_id}"
+    };
+  }
+
+  rpc ExecuteCommand(AgentCommandExecutionRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/execute/shell"
+      body: "*"
+    };
+  }
+
+  rpc GetCommandResponse(GetExecutionResponseRequest) returns (AgentCommandExecutionResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/execute/shell/{execution_id}"
+    };
+  }
+
+  rpc ExecuteAsyncCommand(AgentAsyncCommandExecutionRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/execute/asyncshell"
+      body: "*"
+    };
+  }
+
+  rpc GetAsyncCommandResponse(GetExecutionResponseRequest) returns (AgentAsyncCommandExecutionResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/execute/asyncshell/{execution_id}"
+    };
+  }
+
+  rpc ListAsyncCommands(AgentAsyncCommandListRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/list/asyncshell"
+      body: "*"
+    };
+  }
+
+  rpc GetAsyncCommandListResponse(GetExecutionResponseRequest) returns (AgentAsyncCommandListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/list/asyncshell/{execution_id}"
+    };
+  }
+
+  rpc TerminateAsyncCommand(AgentAsyncCommandTerminateRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/terminate/asyncshell"
+      body: "*"
+    };
+  }
+
+  rpc GetAsyncCommandTerminateResponse(GetExecutionResponseRequest) returns (AgentAsyncCommandTerminateResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/terminate/asyncshell/{execution_id}"
+    };
+  }
+
+  rpc ExecuteJupyter(AgentJupyterExecutionRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/execute/jupyter"
+      body: "*"
+    };
+  }
+
+  rpc GetJupyterResponse(GetExecutionResponseRequest) returns (AgentJupyterExecutionResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/execute/jupyter/{execution_id}"
+    };
+  }
+
+  rpc ExecutePython(AgentPythonExecutionRequest) returns (AgentExecutionAck) {
+    option (google.api.http) = {
+      post: "/api/v1/agent/execute/python"
+      body: "*"
+    };
+  }
+
+  rpc GetPythonResponse(GetExecutionResponseRequest) returns (AgentPythonExecutionResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/agent/execute/python/{execution_id}"
+    };
+  }
+}
+
+// ============================================================
+// Plan Service (replaces PlanController)
+// ============================================================
+
+message SavePlanRequest {
+  string id = 1;
+  google.protobuf.Struct data = 2;
+}
+
+message UpdatePlanRequest {
+  string plan_id = 1;
+  google.protobuf.Struct data = 2;
+}
+
+message GetPlanRequest {
+  string plan_id = 1;
+}
+
+message GetPlansByUserRequest {}
+
+message GetPlansByUserResponse {
+  repeated PlanMessage plans = 1;
+}
+
+message PlanMessage {
+  string id = 1;
+  string user_id = 2;
+  string gateway_id = 3;
+  string data = 4;
+}
+
+service PlanService {
+  rpc SavePlan(SavePlanRequest) returns (PlanMessage) {
+    option (google.api.http) = {
+      post: "/api/v1/plan"
+      body: "*"
+    };
+  }
+
+  rpc GetPlansByUser(GetPlansByUserRequest) returns (GetPlansByUserResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/plan/user"
+    };
+  }
+
+  rpc GetPlan(GetPlanRequest) returns (PlanMessage) {
+    option (google.api.http) = {
+      get: "/api/v1/plan/{plan_id}"
+    };
+  }
+
+  rpc UpdatePlan(UpdatePlanRequest) returns (PlanMessage) {
+    option (google.api.http) = {
+      put: "/api/v1/plan/{plan_id}"
+      body: "*"
+    };
+  }
+}

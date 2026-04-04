@@ -78,10 +78,10 @@
     - deploy
     - airavata-server
 
-- name: Deploy log4j2.xml
+- name: Deploy logback.xml
   template:
-    src: log4j2.xml.j2
-    dest: "{{ airavata_server_dir }}/conf/log4j2.xml"
+    src: logback.xml.j2
+    dest: "{{ airavata_server_dir }}/conf/logback.xml"
     owner: "{{ deploy_user }}"
     group: "{{ deploy_user }}"
     mode: "0644"

@@ -28,10 +28,10 @@
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
     <!-- profile_service -->
-    <class>org.apache.airavata.security.profile.commons.user.entities.UserProfileEntity</class>
-    <class>org.apache.airavata.security.profile.commons.user.entities.NSFDemographicsEntity</class>
-    <class>org.apache.airavata.security.profile.commons.user.entities.CustomizedDashboardEntity</class>
-    <class>org.apache.airavata.security.profile.commons.tenant.entities.GatewayEntity</class>
+    <class>org.apache.airavata.iam.model.UserProfileEntity</class>
+    <class>org.apache.airavata.iam.model.NSFDemographicsEntity</class>
+    <class>org.apache.airavata.iam.model.CustomizedDashboardEntity</class>
+    <class>org.apache.airavata.iam.model.GatewayEntity</class>
 
     <!-- appcatalog_data_new -->
     <class>org.apache.airavata.storage.model.GridftpDataMovementEntity</class>
@@ -40,7 +40,7 @@
     <class>org.apache.airavata.compute.model.ApplicationModuleEntity</class>
     <class>org.apache.airavata.compute.model.ApplicationDeploymentEntity</class>
     <class>org.apache.airavata.compute.model.ApplicationInterfaceEntity</class>
-    <class>org.apache.airavata.compute.model.GatewayGroupsEntity</class>
+    <class>org.apache.airavata.iam.model.GatewayGroupsEntity</class>
     <class>org.apache.airavata.compute.model.GatewayProfileEntity</class>
     <class>org.apache.airavata.storage.model.StorageResourceEntity</class>
     <class>org.apache.airavata.storage.model.ScpDataMovementEntity</class>
@@ -51,7 +51,6 @@
     <class>org.apache.airavata.compute.model.ComputeResourcePreferenceEntity</class>
     <class>org.apache.airavata.compute.model.JobSubmissionInterfaceEntity</class>
     <class>org.apache.airavata.storage.model.DataMovementInterfaceEntity</class>
-    <class>org.apache.airavata.storage.model.StorageInterfaceEntity</class>
     <class>org.apache.airavata.compute.model.LocalSubmissionEntity</class>
     <class>org.apache.airavata.compute.model.GlobusGkEndpointEntity</class>
     <class>org.apache.airavata.storage.model.UnicoreDatamovementEntity</class>
@@ -103,57 +102,57 @@
     <class>org.apache.airavata.storage.model.DataReplicaMetadataEntity</class>
 
     <!-- workflowcatalog_data_new -->
-    <class>org.apache.airavata.execution.model.workflow.AiravataWorkflowEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.AiravataWorkflowErrorEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.AiravataWorkflowStatusEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.ApplicationErrorEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.ApplicationStatusEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.ComponentStatusEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.EdgeEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.HandlerErrorEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.HandlerInputEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.HandlerOutputEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.HandlerStatusEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.NodeEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.PortEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowApplicationEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowConnectionEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowDataBlockEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowHandlerEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowInputEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowOutputEntity</class>
-    <class>org.apache.airavata.execution.model.workflow.WorkflowStatusEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.AiravataWorkflowEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.AiravataWorkflowErrorEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.AiravataWorkflowStatusEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.ApplicationErrorEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.ApplicationStatusEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.ComponentStatusEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.HandlerErrorEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.HandlerInputEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.HandlerOutputEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.HandlerStatusEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.WorkflowApplicationEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.WorkflowConnectionEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.WorkflowDataBlockEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.WorkflowHandlerEntity</class>
+    <class>org.apache.airavata.orchestration.workflow.WorkflowStatusEntity</class>
+    <class>org.apache.airavata.research.model.EdgeEntity</class>
+    <class>org.apache.airavata.research.model.NodeEntity</class>
+    <class>org.apache.airavata.research.model.PortEntity</class>
+    <class>org.apache.airavata.research.model.WorkflowEntity</class>
+    <class>org.apache.airavata.research.model.WorkflowInputEntity</class>
+    <class>org.apache.airavata.research.model.WorkflowOutputEntity</class>
 
     <!-- experiment_data_new -->
-    <class>org.apache.airavata.execution.model.ExperimentEntity</class>
-    <class>org.apache.airavata.execution.model.ExperimentErrorEntity</class>
-    <class>org.apache.airavata.execution.model.ExperimentInputEntity</class>
-    <class>org.apache.airavata.execution.model.ExperimentOutputEntity</class>
-    <class>org.apache.airavata.execution.model.ExperimentStatusEntity</class>
-    <class>org.apache.airavata.execution.model.ExperimentSummaryEntity</class>
-    <class>org.apache.airavata.execution.model.GatewayEntity</class>
-    <class>org.apache.airavata.execution.model.GatewayWorkerEntity</class>
-    <class>org.apache.airavata.execution.model.GatewayUsageReportingCommandEntity</class>
-    <class>org.apache.airavata.execution.model.JobEntity</class>
-    <class>org.apache.airavata.execution.model.JobStatusEntity</class>
-    <class>org.apache.airavata.execution.model.NotificationEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessErrorEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessInputEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessOutputEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessResourceScheduleEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessStatusEntity</class>
-    <class>org.apache.airavata.execution.model.ProcessWorkflowEntity</class>
-    <class>org.apache.airavata.execution.model.ProjectEntity</class>
-    <class>org.apache.airavata.execution.model.ProjectUserEntity</class>
-    <class>org.apache.airavata.execution.model.QueueStatusEntity</class>
-    <class>org.apache.airavata.execution.model.TaskEntity</class>
-    <class>org.apache.airavata.execution.model.TaskErrorEntity</class>
-    <class>org.apache.airavata.execution.model.TaskStatusEntity</class>
-    <class>org.apache.airavata.execution.model.UserConfigurationDataEntity</class>
-    <class>org.apache.airavata.execution.model.ComputationalResourceSchedulingEntity</class>
-    <class>org.apache.airavata.execution.model.UserEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentErrorEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentInputEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentOutputEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentStatusEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentSummaryEntity</class>
+    <class>org.apache.airavata.iam.model.GatewayEntity</class>
+    <class>org.apache.airavata.orchestration.model.GatewayWorkerEntity</class>
+    <class>org.apache.airavata.iam.model.GatewayUsageReportingCommandEntity</class>
+    <class>org.apache.airavata.orchestration.model.JobEntity</class>
+    <class>org.apache.airavata.orchestration.model.JobStatusEntity</class>
+    <class>org.apache.airavata.research.model.NotificationEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessErrorEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessInputEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessOutputEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessResourceScheduleEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessStatusEntity</class>
+    <class>org.apache.airavata.orchestration.model.ProcessWorkflowEntity</class>
+    <class>org.apache.airavata.research.model.ProjectEntity</class>
+    <class>org.apache.airavata.research.model.ProjectUserEntity</class>
+    <class>org.apache.airavata.iam.model.QueueStatusEntity</class>
+    <class>org.apache.airavata.orchestration.model.TaskEntity</class>
+    <class>org.apache.airavata.orchestration.model.TaskErrorEntity</class>
+    <class>org.apache.airavata.orchestration.model.TaskStatusEntity</class>
+    <class>org.apache.airavata.orchestration.model.UserConfigurationDataEntity</class>
+    <class>org.apache.airavata.orchestration.model.ComputationalResourceSchedulingEntity</class>
+    <class>org.apache.airavata.sharing.model.UserEntity</class>
 
     <!-- airavata-sharing-registry -->
     <class>org.apache.airavata.sharing.model.DomainEntity</class>
