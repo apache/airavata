@@ -21,26 +21,24 @@ package org.apache.airavata.messaging.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.messaging.handler.ExperimentConsumer;
-import org.apache.airavata.messaging.handler.MessageConsumer;
-import org.apache.airavata.messaging.handler.ProcessConsumer;
-import org.apache.airavata.messaging.handler.StatusConsumer;
+import org.apache.airavata.config.ServerSettings;
+import org.apache.airavata.exception.AiravataException;
+import org.apache.airavata.messaging.consumer.MessageConsumer;
 import org.apache.airavata.messaging.util.DBEventManagerConstants;
 import org.apache.airavata.messaging.util.RabbitMQProperties;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.JobIdentifier;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.ProcessIdentifier;
-import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.proto.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.proto.JobIdentifier;
+import org.apache.airavata.model.messaging.event.proto.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.proto.MessageType;
+import org.apache.airavata.model.messaging.event.proto.ProcessIdentifier;
+import org.apache.airavata.model.messaging.event.proto.ProcessStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.proto.TaskOutputChangeEvent;
+import org.apache.airavata.model.messaging.event.proto.TaskStatusChangeEvent;
+import org.springframework.amqp.core.MessageListener;
 
 public class MessagingFactory {
 
-    public static Subscriber getSubscriber(final MessageHandler messageHandler, List<String> routingKeys, Type type)
+    public static Subscriber getSubscriber(MessageListener listener, List<String> routingKeys, Type type)
             throws AiravataException {
         Subscriber subscriber = null;
         RabbitMQProperties rProperties = getProperties();
@@ -48,24 +46,15 @@ public class MessagingFactory {
         switch (type) {
             case EXPERIMENT_LAUNCH:
                 subscriber = getExperimentSubscriber(rProperties);
-                subscriber.listen(
-                        ((connection, channel) -> new ExperimentConsumer(messageHandler, connection, channel)),
-                        rProperties.getQueueName(),
-                        routingKeys);
+                subscriber.listen(listener, rProperties.getQueueName(), routingKeys);
                 break;
             case PROCESS_LAUNCH:
                 subscriber = getProcessSubscriber(rProperties);
-                subscriber.listen(
-                        (connection, channel) -> new ProcessConsumer(messageHandler, connection, channel),
-                        rProperties.getQueueName(),
-                        routingKeys);
+                subscriber.listen(listener, rProperties.getQueueName(), routingKeys);
                 break;
             case STATUS:
                 subscriber = getStatusSubscriber(rProperties);
-                subscriber.listen(
-                        (connection, channel) -> new StatusConsumer(messageHandler, connection, channel),
-                        rProperties.getQueueName(),
-                        routingKeys);
+                subscriber.listen(listener, rProperties.getQueueName(), routingKeys);
                 break;
             default:
                 break;
@@ -84,14 +73,11 @@ public class MessagingFactory {
                 .setQueueName(DBEventManagerConstants.getQueueName(serviceName))
                 .setAutoAck(false);
         Subscriber subscriber = new RabbitMQSubscriber(rProperties);
-        subscriber.listen(
-                ((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
-                rProperties.getQueueName(),
-                new ArrayList<String>() {
-                    {
-                        add(DBEventManagerConstants.getRoutingKey(serviceName));
-                    }
-                });
+        subscriber.listen(new MessageConsumer(messageHandler), rProperties.getQueueName(), new ArrayList<String>() {
+            {
+                add(DBEventManagerConstants.getRoutingKey(serviceName));
+            }
+        });
 
         return subscriber;
     }

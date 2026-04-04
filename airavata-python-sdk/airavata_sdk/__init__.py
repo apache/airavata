@@ -43,26 +43,6 @@ class Settings:
         return str(os.getenv("AUTH_SERVER_URL", "https://auth.cybershuttle.org"))
 
     # ------------------------------------------------------------
-    # Thrift Connection Settings
-    # ------------------------------------------------------------
-
-    @property
-    def THRIFT_CLIENT_POOL_KEEPALIVE(self):
-        return int(os.getenv("THRIFT_CLIENT_POOL_KEEPALIVE", 5))
-
-    @property
-    def VERIFY_SSL(self):
-        return bool(os.getenv("VERIFY_SSL", True))
-
-    @property
-    def THRIFT_CONNECTION_MAX_RETRIES(self):
-        return int(os.getenv("THRIFT_CONNECTION_MAX_RETRIES", 3))
-
-    @property
-    def THRIFT_CONNECTION_RETRY_DELAY(self):
-        return float(os.getenv("THRIFT_CONNECTION_RETRY_DELAY", 1.0))
-
-    # ------------------------------------------------------------
     # API Server Connection Settings
     # ------------------------------------------------------------
 
@@ -72,7 +52,7 @@ class Settings:
 
     @property
     def API_SERVER_PORT(self):
-        return int(os.getenv("API_SERVER_PORT", 8930))
+        return int(os.getenv("API_SERVER_PORT", 9090))
 
     @property
     def API_SERVER_URL(self):
@@ -81,6 +61,10 @@ class Settings:
     @property
     def API_SERVER_SECURE(self):
         return bool(os.getenv("API_SERVER_SECURE", False))
+
+    @property
+    def VERIFY_SSL(self):
+        return bool(os.getenv("VERIFY_SSL", True))
 
     @property
     def MONITOR_STATUS(self):

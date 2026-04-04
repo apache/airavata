@@ -94,7 +94,7 @@ wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/airava
 wget -q https://github.com/cyber-shuttle/binaries/releases/download/1.0.1/kernel.py -O $WORKDIR/kernel.py
 wget -q https://github.com/mamba-org/micromamba-releases/releases/download/2.3.0-1/micromamba-linux-64 -O $WORKDIR/micromamba
 chmod +x $WORKDIR/airavata-agent $WORKDIR/micromamba
-$WORKDIR/airavata-agent --server "$AGENT_SERVER:19900" --agent "$AGENT_ID" --environ "$AGENT_ID" --lib "" --pip "" &
+$WORKDIR/airavata-agent --server "$AGENT_SERVER:9090" --agent "$AGENT_ID" --environ "$AGENT_ID" --lib "" --pip "" &
 AGENT_PID=$!
 trap 'kill -TERM $AGENT_PID' EXIT
 echo "Agent started with PID $AGENT_PID"

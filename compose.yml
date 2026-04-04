@@ -11,7 +11,7 @@ services:
       MYSQL_PASSWORD: 123456
     volumes:
       - db_data:/var/lib/mysql
-      - ./airavata-api/src/main/resources/conf/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./airavata-server/src/main/resources/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     ports:
       - "13306:3306"
     healthcheck:
@@ -82,7 +82,7 @@ services:
       start_period: 30s
 
   keycloak:
-    image: keycloak/keycloak:25.0
+    image: keycloak/keycloak:26.1
     container_name: airavata-keycloak
     restart: unless-stopped
     environment:
@@ -90,8 +90,16 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
       - ./conf/keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json:ro
-      - ./conf/keycloak/keycloak.conf:/opt/keycloak/conf/keycloak.conf:ro
-    command: ["start", "--import-realm"]
+    command:
+      - start-dev
+      - --import-realm
+      - --db=dev-mem
+      - --http-port=18080
+      - --proxy-headers=xforwarded
+      - --hostname-strict=false
+      - --health-enabled=true
+      - --metrics-enabled=true
+      - --log-level=INFO
     ports:
       - "18080:18080"
     healthcheck:

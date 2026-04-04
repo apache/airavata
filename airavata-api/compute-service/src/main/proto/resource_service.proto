@@ -1,0 +1,498 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.resource;
+
+option java_package = "org.apache.airavata.api.resource";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
+import "org/apache/airavata/model/appcatalog/storageresource/storage_resource.proto";
+import "org/apache/airavata/model/data/movement/data_movement.proto";
+
+// ResourceService provides RPCs for managing compute resources, storage resources,
+// job submissions, and data movements.
+service ResourceService {
+
+  // --- Compute Resources ---
+
+  rpc RegisterComputeResource(RegisterComputeResourceRequest) returns (RegisterComputeResourceResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources"
+      body: "compute_resource"
+    };
+  }
+
+  rpc GetComputeResource(GetComputeResourceRequest) returns (org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription) {
+    option (google.api.http) = {
+      get: "/api/v1/compute-resources/{compute_resource_id}"
+    };
+  }
+
+  rpc UpdateComputeResource(UpdateComputeResourceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/compute-resources/{compute_resource_id}"
+      body: "compute_resource"
+    };
+  }
+
+  rpc DeleteComputeResource(DeleteComputeResourceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/compute-resources/{compute_resource_id}"
+    };
+  }
+
+  rpc GetAllComputeResourceNames(GetAllComputeResourceNamesRequest) returns (GetAllComputeResourceNamesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/compute-resources:names"
+    };
+  }
+
+  // --- Storage Resources ---
+
+  rpc RegisterStorageResource(RegisterStorageResourceRequest) returns (RegisterStorageResourceResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/storage-resources"
+      body: "storage_resource"
+    };
+  }
+
+  rpc GetStorageResource(GetStorageResourceRequest) returns (org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription) {
+    option (google.api.http) = {
+      get: "/api/v1/storage-resources/{storage_resource_id}"
+    };
+  }
+
+  rpc UpdateStorageResource(UpdateStorageResourceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/storage-resources/{storage_resource_id}"
+      body: "storage_resource"
+    };
+  }
+
+  rpc DeleteStorageResource(DeleteStorageResourceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/storage-resources/{storage_resource_id}"
+    };
+  }
+
+  rpc GetAllStorageResourceNames(GetAllStorageResourceNamesRequest) returns (GetAllStorageResourceNamesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/storage-resources:names"
+    };
+  }
+
+  // --- Job Submissions ---
+
+  rpc AddLocalSubmission(AddLocalSubmissionRequest) returns (AddLocalSubmissionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/local-submissions"
+      body: "local_submission"
+    };
+  }
+
+  rpc UpdateLocalSubmission(UpdateLocalSubmissionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/local-submissions/{submission_id}"
+      body: "local_submission"
+    };
+  }
+
+  rpc GetLocalJobSubmission(GetLocalJobSubmissionRequest) returns (org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission) {
+    option (google.api.http) = {
+      get: "/api/v1/local-submissions/{submission_id}"
+    };
+  }
+
+  rpc AddSSHJobSubmission(AddSSHJobSubmissionRequest) returns (AddSSHJobSubmissionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/ssh-submissions"
+      body: "ssh_job_submission"
+    };
+  }
+
+  rpc AddSSHForkJobSubmission(AddSSHForkJobSubmissionRequest) returns (AddSSHForkJobSubmissionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/ssh-fork-submissions"
+      body: "ssh_job_submission"
+    };
+  }
+
+  rpc GetSSHJobSubmission(GetSSHJobSubmissionRequest) returns (org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission) {
+    option (google.api.http) = {
+      get: "/api/v1/ssh-submissions/{submission_id}"
+    };
+  }
+
+  rpc UpdateSSHJobSubmission(UpdateSSHJobSubmissionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/ssh-submissions/{submission_id}"
+      body: "ssh_job_submission"
+    };
+  }
+
+  rpc AddCloudJobSubmission(AddCloudJobSubmissionRequest) returns (AddCloudJobSubmissionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/cloud-submissions"
+      body: "cloud_job_submission"
+    };
+  }
+
+  rpc GetCloudJobSubmission(GetCloudJobSubmissionRequest) returns (org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission) {
+    option (google.api.http) = {
+      get: "/api/v1/cloud-submissions/{submission_id}"
+    };
+  }
+
+  rpc UpdateCloudJobSubmission(UpdateCloudJobSubmissionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/cloud-submissions/{submission_id}"
+      body: "cloud_job_submission"
+    };
+  }
+
+  rpc AddUnicoreJobSubmission(AddUnicoreJobSubmissionRequest) returns (AddUnicoreJobSubmissionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/unicore-submissions"
+      body: "unicore_job_submission"
+    };
+  }
+
+  rpc GetUnicoreJobSubmission(GetUnicoreJobSubmissionRequest) returns (org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission) {
+    option (google.api.http) = {
+      get: "/api/v1/unicore-submissions/{submission_id}"
+    };
+  }
+
+  rpc UpdateUnicoreJobSubmission(UpdateUnicoreJobSubmissionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/unicore-submissions/{submission_id}"
+      body: "unicore_job_submission"
+    };
+  }
+
+  rpc DeleteJobSubmissionInterface(DeleteJobSubmissionInterfaceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/compute-resources/{compute_resource_id}/job-submissions/{submission_id}"
+    };
+  }
+
+  // --- Data Movements ---
+
+  rpc AddLocalDataMovement(AddLocalDataMovementRequest) returns (AddLocalDataMovementResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/local-data-movements"
+      body: "local_data_movement"
+    };
+  }
+
+  rpc UpdateLocalDataMovement(UpdateLocalDataMovementRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/local-data-movements/{data_movement_id}"
+      body: "local_data_movement"
+    };
+  }
+
+  rpc GetLocalDataMovement(GetLocalDataMovementRequest) returns (org.apache.airavata.model.data.movement.LOCALDataMovement) {
+    option (google.api.http) = {
+      get: "/api/v1/local-data-movements/{data_movement_id}"
+    };
+  }
+
+  rpc AddSCPDataMovement(AddSCPDataMovementRequest) returns (AddSCPDataMovementResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/scp-data-movements"
+      body: "scp_data_movement"
+    };
+  }
+
+  rpc UpdateSCPDataMovement(UpdateSCPDataMovementRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/scp-data-movements/{data_movement_id}"
+      body: "scp_data_movement"
+    };
+  }
+
+  rpc GetSCPDataMovement(GetSCPDataMovementRequest) returns (org.apache.airavata.model.data.movement.SCPDataMovement) {
+    option (google.api.http) = {
+      get: "/api/v1/scp-data-movements/{data_movement_id}"
+    };
+  }
+
+  rpc AddGridFTPDataMovement(AddGridFTPDataMovementRequest) returns (AddGridFTPDataMovementResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/compute-resources/{compute_resource_id}/gridftp-data-movements"
+      body: "gridftp_data_movement"
+    };
+  }
+
+  rpc UpdateGridFTPDataMovement(UpdateGridFTPDataMovementRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/gridftp-data-movements/{data_movement_id}"
+      body: "gridftp_data_movement"
+    };
+  }
+
+  rpc GetGridFTPDataMovement(GetGridFTPDataMovementRequest) returns (org.apache.airavata.model.data.movement.GridFTPDataMovement) {
+    option (google.api.http) = {
+      get: "/api/v1/gridftp-data-movements/{data_movement_id}"
+    };
+  }
+
+  rpc DeleteDataMovementInterface(DeleteDataMovementInterfaceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/compute-resources/{compute_resource_id}/data-movements/{data_movement_id}"
+    };
+  }
+
+  // --- Batch Queue ---
+
+  rpc DeleteBatchQueue(DeleteBatchQueueRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/compute-resources/{compute_resource_id}/batch-queues/{queue_name}"
+    };
+  }
+}
+
+// --- Compute Resource Request/Response messages ---
+
+message RegisterComputeResourceRequest {
+  org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription compute_resource = 1;
+}
+
+message RegisterComputeResourceResponse {
+  string compute_resource_id = 1;
+}
+
+message GetComputeResourceRequest {
+  string compute_resource_id = 1;
+}
+
+message UpdateComputeResourceRequest {
+  string compute_resource_id = 1;
+  org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription compute_resource = 2;
+}
+
+message DeleteComputeResourceRequest {
+  string compute_resource_id = 1;
+}
+
+message GetAllComputeResourceNamesRequest {}
+
+message GetAllComputeResourceNamesResponse {
+  map<string, string> compute_resource_names = 1;
+}
+
+// --- Storage Resource Request/Response messages ---
+
+message RegisterStorageResourceRequest {
+  org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription storage_resource = 1;
+}
+
+message RegisterStorageResourceResponse {
+  string storage_resource_id = 1;
+}
+
+message GetStorageResourceRequest {
+  string storage_resource_id = 1;
+}
+
+message UpdateStorageResourceRequest {
+  string storage_resource_id = 1;
+  org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription storage_resource = 2;
+}
+
+message DeleteStorageResourceRequest {
+  string storage_resource_id = 1;
+}
+
+message GetAllStorageResourceNamesRequest {}
+
+message GetAllStorageResourceNamesResponse {
+  map<string, string> storage_resource_names = 1;
+}
+
+// --- Job Submission Request/Response messages ---
+
+message AddLocalSubmissionRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission local_submission = 3;
+}
+
+message AddLocalSubmissionResponse {
+  string submission_id = 1;
+}
+
+message UpdateLocalSubmissionRequest {
+  string submission_id = 1;
+  org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission local_submission = 2;
+}
+
+message GetLocalJobSubmissionRequest {
+  string submission_id = 1;
+}
+
+message AddSSHJobSubmissionRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission ssh_job_submission = 3;
+}
+
+message AddSSHJobSubmissionResponse {
+  string submission_id = 1;
+}
+
+message AddSSHForkJobSubmissionRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission ssh_job_submission = 3;
+}
+
+message AddSSHForkJobSubmissionResponse {
+  string submission_id = 1;
+}
+
+message GetSSHJobSubmissionRequest {
+  string submission_id = 1;
+}
+
+message UpdateSSHJobSubmissionRequest {
+  string submission_id = 1;
+  org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission ssh_job_submission = 2;
+}
+
+message AddCloudJobSubmissionRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission cloud_job_submission = 3;
+}
+
+message AddCloudJobSubmissionResponse {
+  string submission_id = 1;
+}
+
+message GetCloudJobSubmissionRequest {
+  string submission_id = 1;
+}
+
+message UpdateCloudJobSubmissionRequest {
+  string submission_id = 1;
+  org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission cloud_job_submission = 2;
+}
+
+message AddUnicoreJobSubmissionRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicore_job_submission = 3;
+}
+
+message AddUnicoreJobSubmissionResponse {
+  string submission_id = 1;
+}
+
+message GetUnicoreJobSubmissionRequest {
+  string submission_id = 1;
+}
+
+message UpdateUnicoreJobSubmissionRequest {
+  string submission_id = 1;
+  org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicore_job_submission = 2;
+}
+
+message DeleteJobSubmissionInterfaceRequest {
+  string compute_resource_id = 1;
+  string submission_id = 2;
+}
+
+// --- Data Movement Request/Response messages ---
+
+message AddLocalDataMovementRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  string dm_type = 3;
+  org.apache.airavata.model.data.movement.LOCALDataMovement local_data_movement = 4;
+}
+
+message AddLocalDataMovementResponse {
+  string data_movement_id = 1;
+}
+
+message UpdateLocalDataMovementRequest {
+  string data_movement_id = 1;
+  org.apache.airavata.model.data.movement.LOCALDataMovement local_data_movement = 2;
+}
+
+message GetLocalDataMovementRequest {
+  string data_movement_id = 1;
+}
+
+message AddSCPDataMovementRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  string dm_type = 3;
+  org.apache.airavata.model.data.movement.SCPDataMovement scp_data_movement = 4;
+}
+
+message AddSCPDataMovementResponse {
+  string data_movement_id = 1;
+}
+
+message UpdateSCPDataMovementRequest {
+  string data_movement_id = 1;
+  org.apache.airavata.model.data.movement.SCPDataMovement scp_data_movement = 2;
+}
+
+message GetSCPDataMovementRequest {
+  string data_movement_id = 1;
+}
+
+message AddGridFTPDataMovementRequest {
+  string compute_resource_id = 1;
+  int32 priority = 2;
+  string dm_type = 3;
+  org.apache.airavata.model.data.movement.GridFTPDataMovement gridftp_data_movement = 4;
+}
+
+message AddGridFTPDataMovementResponse {
+  string data_movement_id = 1;
+}
+
+message UpdateGridFTPDataMovementRequest {
+  string data_movement_id = 1;
+  org.apache.airavata.model.data.movement.GridFTPDataMovement gridftp_data_movement = 2;
+}
+
+message GetGridFTPDataMovementRequest {
+  string data_movement_id = 1;
+}
+
+message DeleteDataMovementInterfaceRequest {
+  string compute_resource_id = 1;
+  string data_movement_id = 2;
+}
+
+// --- Batch Queue Request/Response messages ---
+
+message DeleteBatchQueueRequest {
+  string compute_resource_id = 1;
+  string queue_name = 2;
+}

@@ -1,7 +1,5 @@
 airavata:
   servers:
-    - thrift
-    - rest
     - grpc
 
 spring:
@@ -26,31 +24,16 @@ spring:
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
-  servlet:
-    multipart:
-      max-file-size: 200MB
-      max-request-size: 200MB
+  main:
+    web-application-type: none
 
-# REST server
-server:
-  port: 18889
-  shutdown: graceful
-
-spring.lifecycle:
-  timeout-per-shutdown-phase: 30s
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-
-# gRPC server
-grpc:
-  server:
-    host: localhost
-    port: 19900
-    max-inbound-message-size: 20971520
+# Armeria server
+armeria:
+  ports:
+    - port: 9090
+      protocols:
+        - HTTP
+  max-request-length: 20971520
 
 # Actuator
 management:
@@ -64,17 +47,6 @@ management:
 
 airavata.security:
   openid-url: http://localhost:18080/realms/default
-
-airavata.cors:
-  allowed-origins: http://localhost:5173
-
-airavata.kafka:
-  broker-url: localhost:9092
-
-airavata.thrift:
-  host: localhost
-  port: 8930
-  min-threads: 50
 
 airavata.agent:
   storage-resource-id: localhost_77116e91-f042-4d3a-ab9c-3e7b4ebcd5bd

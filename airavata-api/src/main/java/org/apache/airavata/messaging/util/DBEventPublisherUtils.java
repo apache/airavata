@@ -19,20 +19,19 @@
 */
 package org.apache.airavata.messaging.util;
 
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.util.ThriftUtils;
+import com.google.protobuf.MessageLite;
+import org.apache.airavata.exception.AiravataException;
 import org.apache.airavata.messaging.service.MessageContext;
 import org.apache.airavata.messaging.service.MessagingFactory;
 import org.apache.airavata.messaging.service.Publisher;
-import org.apache.airavata.model.dbevent.CrudType;
-import org.apache.airavata.model.dbevent.DBEventMessage;
-import org.apache.airavata.model.dbevent.DBEventMessageContext;
-import org.apache.airavata.model.dbevent.DBEventPublisher;
-import org.apache.airavata.model.dbevent.DBEventPublisherContext;
-import org.apache.airavata.model.dbevent.DBEventType;
-import org.apache.airavata.model.dbevent.EntityType;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.thrift.TBase;
+import org.apache.airavata.model.dbevent.proto.CrudType;
+import org.apache.airavata.model.dbevent.proto.DBEventMessage;
+import org.apache.airavata.model.dbevent.proto.DBEventMessageContext;
+import org.apache.airavata.model.dbevent.proto.DBEventPublisher;
+import org.apache.airavata.model.dbevent.proto.DBEventPublisherContext;
+import org.apache.airavata.model.dbevent.proto.DBEventType;
+import org.apache.airavata.model.dbevent.proto.EntityType;
+import org.apache.airavata.model.messaging.event.proto.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,7 @@ public class DBEventPublisherUtils {
      * @param crudType
      * @param entityModel
      */
-    public void publish(EntityType entityType, CrudType crudType, TBase entityModel) throws AiravataException {
+    public void publish(EntityType entityType, CrudType crudType, MessageLite entityModel) throws AiravataException {
 
         getDbEventPublisher()
                 .publish(
@@ -89,27 +88,32 @@ public class DBEventPublisherUtils {
      * @return
      * @throws AiravataException
      */
-    private MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, TBase entityModel)
+    private MessageContext getDBEventMessageContext(EntityType entityType, CrudType crudType, MessageLite entityModel)
             throws AiravataException {
         try {
             // set the publisherContext
-            DBEventMessage dbEventMessage = new DBEventMessage();
-            DBEventPublisherContext publisherContext = new DBEventPublisherContext();
-            publisherContext.setCrudType(crudType);
-            publisherContext.setEntityDataModel(ThriftUtils.serializeThriftObject(entityModel));
-            publisherContext.setEntityType(entityType);
+            DBEventPublisherContext publisherContext = DBEventPublisherContext.newBuilder()
+                    .setCrudType(crudType)
+                    .setEntityDataModel(entityModel.toByteString())
+                    .setEntityType(entityType)
+                    .build();
 
             // create dbEventPublisher with publisherContext
-            DBEventPublisher dbEventPublisher = new DBEventPublisher();
-            dbEventPublisher.setPublisherContext(publisherContext);
+            DBEventPublisher dbEventPublisher = DBEventPublisher.newBuilder()
+                    .setPublisherContext(publisherContext)
+                    .build();
 
             // set messageContext to dbEventPublisher
-            DBEventMessageContext dbMessageContext = DBEventMessageContext.publisher(dbEventPublisher);
+            DBEventMessageContext dbMessageContext = DBEventMessageContext.newBuilder()
+                    .setPublisher(dbEventPublisher)
+                    .build();
 
             // set dbEventMessage with messageContext
-            dbEventMessage.setDbEventType(DBEventType.PUBLISHER);
-            dbEventMessage.setPublisherService(this.publisherService.toString());
-            dbEventMessage.setMessageContext(dbMessageContext);
+            DBEventMessage dbEventMessage = DBEventMessage.newBuilder()
+                    .setDbEventType(DBEventType.PUBLISHER)
+                    .setPublisherService(this.publisherService.toString())
+                    .setMessageContext(dbMessageContext)
+                    .build();
 
             // construct and return messageContext
             return new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");

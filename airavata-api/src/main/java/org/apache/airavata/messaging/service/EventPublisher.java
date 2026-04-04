@@ -21,13 +21,13 @@ package org.apache.airavata.messaging.service;
 
 import java.util.List;
 import java.util.UUID;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.util.AiravataUtils;
-import org.apache.airavata.model.messaging.event.ExperimentIntermediateOutputsEvent;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.ExperimentSubmitEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.exception.AiravataException;
+import org.apache.airavata.model.messaging.event.proto.ExperimentIntermediateOutputsEvent;
+import org.apache.airavata.model.messaging.event.proto.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.proto.ExperimentSubmitEvent;
+import org.apache.airavata.model.messaging.event.proto.MessageType;
+import org.apache.airavata.model.status.proto.ExperimentState;
+import org.apache.airavata.util.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,11 @@ public class EventPublisher {
     public void publishExperimentStatus(String experimentId, String gatewayId, ExperimentState state) {
         if (statusPublisher == null) return;
         try {
-            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(state, experimentId, gatewayId);
+            ExperimentStatusChangeEvent event = ExperimentStatusChangeEvent.newBuilder()
+                    .setState(state)
+                    .setExperimentId(experimentId)
+                    .setGatewayId(gatewayId)
+                    .build();
             String messageId = AiravataUtils.getId("EXPERIMENT");
             MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -59,7 +63,10 @@ public class EventPublisher {
     public void publishExperimentLaunch(String experimentId, String gatewayId) {
         if (experimentPublisher == null) return;
         try {
-            ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
+            ExperimentSubmitEvent event = ExperimentSubmitEvent.newBuilder()
+                    .setExperimentId(experimentId)
+                    .setGatewayId(gatewayId)
+                    .build();
             MessageContext messageContext =
                     new MessageContext(event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID(), gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -72,7 +79,10 @@ public class EventPublisher {
     public void publishExperimentCancel(String experimentId, String gatewayId) {
         if (experimentPublisher == null) return;
         try {
-            ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
+            ExperimentSubmitEvent event = ExperimentSubmitEvent.newBuilder()
+                    .setExperimentId(experimentId)
+                    .setGatewayId(gatewayId)
+                    .build();
             MessageContext messageContext = new MessageContext(
                     event, MessageType.EXPERIMENT_CANCEL, "CANCEL.EXP-" + UUID.randomUUID(), gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -85,8 +95,11 @@ public class EventPublisher {
     public void publishIntermediateOutputs(String experimentId, String gatewayId, List<String> outputNames) {
         if (experimentPublisher == null) return;
         try {
-            ExperimentIntermediateOutputsEvent event =
-                    new ExperimentIntermediateOutputsEvent(experimentId, gatewayId, outputNames);
+            ExperimentIntermediateOutputsEvent event = ExperimentIntermediateOutputsEvent.newBuilder()
+                    .setExperimentId(experimentId)
+                    .setGatewayId(gatewayId)
+                    .addAllOutputNames(outputNames)
+                    .build();
             MessageContext messageContext = new MessageContext(
                     event,
                     MessageType.INTERMEDIATE_OUTPUTS,

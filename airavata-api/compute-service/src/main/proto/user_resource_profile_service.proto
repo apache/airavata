@@ -1,0 +1,272 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.userprofile;
+
+option java_package = "org.apache.airavata.api.userprofile";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/appcatalog/userresourceprofile/user_resource_profile.proto";
+import "org/apache/airavata/model/status/status.proto";
+
+// UserResourceProfileService provides RPCs for managing user resource profiles,
+// user compute preferences, user storage preferences, and queue statuses.
+service UserResourceProfileService {
+
+  // --- User Resource Profiles ---
+
+  rpc RegisterUserResourceProfile(RegisterUserResourceProfileRequest) returns (RegisterUserResourceProfileResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/user-resource-profiles"
+      body: "user_resource_profile"
+    };
+  }
+
+  rpc IsUserResourceProfileExists(IsUserResourceProfileExistsRequest) returns (IsUserResourceProfileExistsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles/{user_id}:exists"
+    };
+  }
+
+  rpc GetUserResourceProfile(GetUserResourceProfileRequest) returns (org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles/{user_id}"
+    };
+  }
+
+  rpc UpdateUserResourceProfile(UpdateUserResourceProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/user-resource-profiles/{user_id}"
+      body: "user_resource_profile"
+    };
+  }
+
+  rpc DeleteUserResourceProfile(DeleteUserResourceProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/user-resource-profiles/{user_id}"
+    };
+  }
+
+  rpc GetAllUserResourceProfiles(GetAllUserResourceProfilesRequest) returns (GetAllUserResourceProfilesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles"
+    };
+  }
+
+  // --- User Compute Preferences ---
+
+  rpc AddUserComputePreference(AddUserComputePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/user-resource-profiles/{user_id}/compute-preferences"
+      body: "user_compute_resource_preference"
+    };
+  }
+
+  rpc GetUserComputePreference(GetUserComputePreferenceRequest) returns (org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles/{user_id}/compute-preferences/{compute_resource_id}"
+    };
+  }
+
+  rpc UpdateUserComputePreference(UpdateUserComputePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/user-resource-profiles/{user_id}/compute-preferences/{compute_resource_id}"
+      body: "user_compute_resource_preference"
+    };
+  }
+
+  rpc DeleteUserComputePreference(DeleteUserComputePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/user-resource-profiles/{user_id}/compute-preferences/{compute_resource_id}"
+    };
+  }
+
+  rpc GetAllUserComputePreferences(GetAllUserComputePreferencesRequest) returns (GetAllUserComputePreferencesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles/{user_id}/compute-preferences"
+    };
+  }
+
+  // --- User Storage Preferences ---
+
+  rpc AddUserStoragePreference(AddUserStoragePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/user-resource-profiles/{user_id}/storage-preferences"
+      body: "user_storage_preference"
+    };
+  }
+
+  rpc GetUserStoragePreference(GetUserStoragePreferenceRequest) returns (org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles/{user_id}/storage-preferences/{storage_resource_id}"
+    };
+  }
+
+  rpc UpdateUserStoragePreference(UpdateUserStoragePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/user-resource-profiles/{user_id}/storage-preferences/{storage_resource_id}"
+      body: "user_storage_preference"
+    };
+  }
+
+  rpc DeleteUserStoragePreference(DeleteUserStoragePreferenceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/user-resource-profiles/{user_id}/storage-preferences/{storage_resource_id}"
+    };
+  }
+
+  rpc GetAllUserStoragePreferences(GetAllUserStoragePreferencesRequest) returns (GetAllUserStoragePreferencesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user-resource-profiles/{user_id}/storage-preferences"
+    };
+  }
+
+  // --- Queue Statuses ---
+
+  rpc GetLatestQueueStatuses(GetLatestQueueStatusesRequest) returns (GetLatestQueueStatusesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/queue-statuses"
+    };
+  }
+}
+
+// --- User Resource Profile Request/Response messages ---
+
+message RegisterUserResourceProfileRequest {
+  org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile user_resource_profile = 1;
+}
+
+message RegisterUserResourceProfileResponse {
+  string user_id = 1;
+}
+
+message IsUserResourceProfileExistsRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+}
+
+message IsUserResourceProfileExistsResponse {
+  bool exists = 1;
+}
+
+message GetUserResourceProfileRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+}
+
+message UpdateUserResourceProfileRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile user_resource_profile = 3;
+}
+
+message DeleteUserResourceProfileRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+}
+
+message GetAllUserResourceProfilesRequest {}
+
+message GetAllUserResourceProfilesResponse {
+  repeated org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile user_resource_profiles = 1;
+}
+
+// --- User Compute Preference Request/Response messages ---
+
+message AddUserComputePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string compute_resource_id = 3;
+  org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference user_compute_resource_preference = 4;
+}
+
+message GetUserComputePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string compute_resource_id = 3;
+}
+
+message UpdateUserComputePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string compute_resource_id = 3;
+  org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference user_compute_resource_preference = 4;
+}
+
+message DeleteUserComputePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string compute_resource_id = 3;
+}
+
+message GetAllUserComputePreferencesRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+}
+
+message GetAllUserComputePreferencesResponse {
+  repeated org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference user_compute_resource_preferences = 1;
+}
+
+// --- User Storage Preference Request/Response messages ---
+
+message AddUserStoragePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string storage_resource_id = 3;
+  org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference user_storage_preference = 4;
+}
+
+message GetUserStoragePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string storage_resource_id = 3;
+}
+
+message UpdateUserStoragePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string storage_resource_id = 3;
+  org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference user_storage_preference = 4;
+}
+
+message DeleteUserStoragePreferenceRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+  string storage_resource_id = 3;
+}
+
+message GetAllUserStoragePreferencesRequest {
+  string user_id = 1;
+  string gateway_id = 2;
+}
+
+message GetAllUserStoragePreferencesResponse {
+  repeated org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference user_storage_preferences = 1;
+}
+
+// --- Queue Status Request/Response messages ---
+
+message GetLatestQueueStatusesRequest {}
+
+message GetLatestQueueStatusesResponse {
+  repeated org.apache.airavata.model.status.QueueStatusModel queue_statuses = 1;
+}

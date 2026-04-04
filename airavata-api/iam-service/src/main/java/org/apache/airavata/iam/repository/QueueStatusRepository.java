@@ -1,0 +1,80 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.iam.repository;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.apache.airavata.db.AbstractRepository;
+import org.apache.airavata.db.DBConstants;
+import org.apache.airavata.db.QueryConstants;
+import org.apache.airavata.iam.mapper.GatewayEntityMapper;
+import org.apache.airavata.iam.model.QueueStatusEntity;
+import org.apache.airavata.interfaces.RegistryException;
+import org.apache.airavata.model.status.proto.QueueStatusModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+public class QueueStatusRepository extends AbstractRepository<QueueStatusModel, QueueStatusEntity, String> {
+    private static final Logger logger = LoggerFactory.getLogger(QueueStatusRepository.class);
+
+    public QueueStatusRepository() {
+        super(QueueStatusModel.class, QueueStatusEntity.class);
+    }
+
+    @Override
+    protected QueueStatusModel toModel(QueueStatusEntity entity) {
+        return GatewayEntityMapper.INSTANCE.queueStatusToModel(entity);
+    }
+
+    @Override
+    protected QueueStatusEntity toEntity(QueueStatusModel model) {
+        return GatewayEntityMapper.INSTANCE.queueStatusToEntity(model);
+    }
+
+    public boolean createQueueStatuses(List<QueueStatusModel> queueStatusModels) throws RegistryException {
+
+        for (QueueStatusModel queueStatusModel : queueStatusModels) {
+            QueueStatusEntity queueStatusEntity = GatewayEntityMapper.INSTANCE.queueStatusToEntity(queueStatusModel);
+            execute(entityManager -> entityManager.merge(queueStatusEntity));
+        }
+
+        return true;
+    }
+
+    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
+        List<QueueStatusModel> queueStatusModelList = select(QueryConstants.GET_ALL_QUEUE_STATUS_MODELS, 0);
+        return queueStatusModelList;
+    }
+
+    public Optional<QueueStatusModel> getQueueStatus(String hostName, String queueName) throws RegistryException {
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.QueueStatus.HOST_NAME, hostName);
+        queryParameters.put(DBConstants.QueueStatus.QUEUE_NAME, queueName);
+        List<QueueStatusModel> queueStatusModels = select(QueryConstants.FIND_QUEUE_STATUS, 1, 0, queryParameters);
+        if (queueStatusModels != null && !queueStatusModels.isEmpty()) {
+            return Optional.of(queueStatusModels.get(0));
+        }
+        return Optional.empty();
+    }
+}

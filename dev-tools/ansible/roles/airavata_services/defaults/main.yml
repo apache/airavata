@@ -29,9 +29,8 @@ airavata_server_dist_name: "airavata-server-{{ airavata_version }}"
 airavata_server_dir: "{{ deployment_dir }}/airavata-server-{{ airavata_version }}"
 
 # Service ports
-thrift_port: 8930
-rest_port: 18889
-grpc_port: 19900
+# Armeria serves gRPC + REST (HTTP/JSON transcoding) on a single port
+api_server_port: 9090
 monitoring_port: 9097
 
 # Service hosts
@@ -50,16 +49,16 @@ default_registry_oauth_client_id: "pga"
 super_tenant_gatewayId: "default"
 
 # Security configuration
-security_manager_class: "org.apache.airavata.security.service.KeyCloakSecurityManager"
+security_manager_class: "org.apache.airavata.iam.KeyCloakSecurityManager"
 TLS_enabled: false
 TLS_client_timeout: 10000
-keystore_path: "keystores/airavata.p12"
+keystore_path: "conf/keystores/airavata.p12"
 authz_cache_enabled: true
-authz_cache_manager_class: "org.apache.airavata.security.service.authzcache.DefaultAuthzCacheManager"
+authz_cache_manager_class: "org.apache.airavata.iam.authzcache.DefaultAuthzCacheManager"
 in_memory_cache_size: 1000
 
 # Keystore configuration
-credential_store_keystore_url: "keystores/airavata.sym.p12"
+credential_store_keystore_url: "conf/keystores/airavata.sym.p12"
 credential_store_keystore_alias: "airavata"
 
 # Job notification configuration
@@ -125,9 +124,9 @@ data_analyzer_job_scanning_enable: false
 # Data staging configuration
 enable_streaming_transfer: false
 
-# Thrift client pool configuration
-thrift_client_pool_abandoned_removal_enabled: true
-thrift_client_pool_abandoned_removal_logged: false
+# Connection pool configuration
+connection_pool_abandoned_removal_enabled: true
+connection_pool_abandoned_removal_logged: false
 
 # Storage configuration
 local_data_location: "/home/{{ deploy_user }}/temp-storage"

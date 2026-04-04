@@ -20,8 +20,8 @@
 package org.apache.airavata.messaging.util;
 
 import java.util.List;
-import org.apache.airavata.common.config.ServerSettings;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.config.ServerSettings;
+import org.apache.airavata.exception.ApplicationSettingsException;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

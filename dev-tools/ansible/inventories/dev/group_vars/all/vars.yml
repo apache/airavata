@@ -20,12 +20,8 @@ group: "{{ deploy_user }}"
 user_home: "/home/{{ user }}"
 
 # Service ports
-api_server_port: 8930
-api_server_tls_port: 9930
-agent_service_port: 18880
-research_service_port: 18899
-file_server_port: 8050
-restproxy_port: 8082
+# Armeria serves gRPC + REST (HTTP/JSON transcoding) on a single port
+api_server_port: 9090
 
 # Database name (single database)
 db_name: "airavata"

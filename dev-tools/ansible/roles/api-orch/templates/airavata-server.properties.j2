@@ -149,10 +149,7 @@ iam.server.super.admin.password={{ iam_server_super_admin_password }}
 db_event_manager.class=org.apache.airavata.db.event.manager.DBEventManagerRunner
 
 ###########################################################################
-# ThriftClientPool Configuration
-###########################################################################
-thrift.client.pool.abandoned.removal.enabled={{ thrift_client_pool_abandoned_removal_enabled }}
-thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_removal_logged }}
+# Connection pool configuration (Thrift pool removed — gRPC via Armeria)
 
 ###########################################################################
 # Platform Monitoring Configuration
