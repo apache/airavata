@@ -14,172 +14,177 @@
 #  limitations under the License.
 #
 
+import json
 import logging
-import certifi
-import ssl
-import time
-from typing import Optional, TypeVar
+from typing import Optional
 
-from thrift.protocol import TBinaryProtocol
-from thrift.protocol.TMultiplexedProtocol import TMultiplexedProtocol
-from thrift.transport import TSocket, TSSLSocket, TTransport
+import grpc
 
-from airavata.api import Airavata
-from airavata.api.credential.store import CredentialStoreService
-from airavata.api.sharing import SharingRegistryService
-from airavata.service.profile.groupmanager.cpi import GroupManagerService
-from airavata.service.profile.groupmanager.cpi.constants import GROUP_MANAGER_CPI_NAME
-from airavata.service.profile.iam.admin.services.cpi import IamAdminServices
-from airavata.service.profile.iam.admin.services.cpi.constants import IAM_ADMIN_SERVICES_CPI_NAME
-from airavata.service.profile.tenant.cpi import TenantProfileService
-from airavata.service.profile.tenant.cpi.constants import TENANT_PROFILE_CPI_NAME
-from airavata.service.profile.user.cpi import UserProfileService
-from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
 from airavata_sdk import Settings
 
 log = logging.getLogger(__name__)
 
 settings = Settings()
 
-T = TypeVar(
-  'T',
-  Airavata.Client,
-  SharingRegistryService.Client,
-  GroupManagerService.Client,
-  IamAdminServices.Client,
-  TenantProfileService.Client,
-  UserProfileService.Client,
-  CredentialStoreService.Client,
-)
 
-class ThriftClient:
-  host: str
-  port: int
-  secure: bool
-  service_name: Optional[str]
-  transport: TTransport.TTransportBase
-  max_retries: int
-  retry_delay: float
+class GrpcChannel:
+    """Manages a gRPC channel with optional TLS."""
 
-  def __init__(self, klass, host: str, port: int, secure: bool = False, service_name: Optional[str] = None, 
-               max_retries: Optional[int] = None, retry_delay: Optional[float] = None):
-    self.host = host
-    self.port = port
-    self.secure = secure
-    self.service_name = service_name
-    self.max_retries = max_retries or settings.THRIFT_CONNECTION_MAX_RETRIES
-    self.retry_delay = retry_delay or settings.THRIFT_CONNECTION_RETRY_DELAY
+    def __init__(self, host: str, port: int, secure: bool = False):
+        self.target = f"{host}:{port}"
+        if secure:
+            self.channel = grpc.secure_channel(self.target, grpc.ssl_channel_credentials())
+        else:
+            self.channel = grpc.insecure_channel(self.target)
+        log.debug(f"[AV] Created gRPC channel to {self.target} (secure={secure})")
 
-    # create and validate transport
-    self.transport = self._create_transport()
-    protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-    if self.service_name:
-      protocol = TMultiplexedProtocol(protocol, self.service_name)
-    self.client = klass(protocol)
-
-    self._validate_transport()
-
-  def _create_transport(self):
-    """Create transport with enhanced SSL configuration"""
-    if self.secure:
-      transport = TSSLSocket.TSSLSocket(
-        self.host,
-        self.port,
-        cert_reqs=ssl.CERT_REQUIRED,
-        ca_certs=certifi.where(),
-        socket_keepalive=True,
-      )
-    else:
-      transport = TSocket.TSocket(
-        self.host, 
-        self.port, 
-        socket_keepalive=True,
-      )
-    return TTransport.TBufferedTransport(transport)
-
-  def _validate_transport(self):
-    """Open transport with retry logic to handle connection issues"""
-    for attempt in range(self.max_retries):
-      try:
-        log.debug(f"[AV] Attempting to connect to {self.host}:{self.port} (attempt {attempt + 1}/{self.max_retries})")
-        if self.transport.isOpen():
-          self.transport.close()
-        self.transport.open()
-        try:
-          version = self.client.getAPIVersion() # type: ignore
-          log.debug(f"[AV] Connected to {self.host}:{self.port}, API version={version}")
-        except AttributeError:
-          log.debug(f"[AV] Connected to {self.host}:{self.port} (service has no getAPIVersion)")
-        break
-      except Exception as e:
-        log.debug(f"[AV] Connection attempt {attempt + 1} failed: {repr(e)}")
-        time.sleep(self.retry_delay * (attempt + 1))
-    else:
-      error_msg = f"[AV] Failed to connect to {self.host}:{self.port} after {self.max_retries} attempts"
-      log.error(error_msg)
-      raise Exception(error_msg)
+    def close(self):
+        self.channel.close()
 
 
-  def close(self):
-    if self.transport:
-      try:
-        self.transport.close()
-      except Exception as e:
-        log.warning(f"Error closing transport: {str(e)}")
-    
+class AuthMetadataPlugin(grpc.AuthMetadataPlugin):
+    """Injects Bearer token into gRPC call metadata."""
+
+    def __init__(self, access_token: str, claims: Optional[dict] = None):
+        self.access_token = access_token
+        self.claims = claims or {}
+
+    def __call__(self, context, callback):
+        metadata = [("authorization", f"Bearer {self.access_token}")]
+        if self.claims:
+            metadata.append(("x-claims", json.dumps(self.claims)))
+        callback(metadata, None)
 
 
-def initialize_api_client_pool(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> Airavata.Client:
-  return ThriftClient(Airavata.Client, host, port, secure, service_name="Airavata").client
+def build_metadata(access_token: Optional[str] = None, claims: Optional[dict] = None) -> list[tuple[str, str]]:
+    """Build gRPC call metadata from token and claims."""
+    metadata = []
+    if access_token:
+        metadata.append(("authorization", f"Bearer {access_token}"))
+    if claims:
+        metadata.append(("x-claims", json.dumps(claims)))
+    return metadata
 
 
-def initialize_group_manager_client(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> GroupManagerService.Client:
-  return ThriftClient(GroupManagerService.Client, host, port, secure, GROUP_MANAGER_CPI_NAME).client
+# ---------------------------------------------------------------------------
+# Stub factory helpers
+# ---------------------------------------------------------------------------
+
+def create_experiment_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import experiment_service_pb2_grpc
+    return experiment_service_pb2_grpc.ExperimentServiceStub(channel)
 
 
-def initialize_iam_admin_client(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> IamAdminServices.Client:
-  return ThriftClient(IamAdminServices.Client, host, port, secure, IAM_ADMIN_SERVICES_CPI_NAME).client
+def create_project_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import project_service_pb2_grpc
+    return project_service_pb2_grpc.ProjectServiceStub(channel)
 
 
-def initialize_tenant_profile_client(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> TenantProfileService.Client:
-  return ThriftClient(TenantProfileService.Client, host, port, secure, TENANT_PROFILE_CPI_NAME).client
+def create_gateway_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import gateway_service_pb2_grpc
+    return gateway_service_pb2_grpc.GatewayServiceStub(channel)
 
 
-def initialize_user_profile_client(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> UserProfileService.Client:
-  return ThriftClient(UserProfileService.Client, host, port, secure, USER_PROFILE_CPI_NAME).client
+def create_application_catalog_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import application_catalog_service_pb2_grpc
+    return application_catalog_service_pb2_grpc.ApplicationCatalogServiceStub(channel)
 
 
-def initialize_sharing_registry_client(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> SharingRegistryService.Client:
-  return ThriftClient(SharingRegistryService.Client, host, port, secure, service_name="SharingRegistry").client
+def create_resource_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import resource_service_pb2_grpc
+    return resource_service_pb2_grpc.ResourceServiceStub(channel)
 
 
-def initialize_credential_store_client(
-    host=settings.API_SERVER_HOSTNAME,
-    port=settings.API_SERVER_PORT,
-    secure=settings.API_SERVER_SECURE,
-) -> CredentialStoreService.Client:
-  return ThriftClient(CredentialStoreService.Client, host, port, secure, service_name="CredentialStore").client
+def create_credential_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import credential_service_pb2_grpc
+    return credential_service_pb2_grpc.CredentialServiceStub(channel)
+
+
+def create_sharing_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import sharing_service_pb2_grpc
+    return sharing_service_pb2_grpc.SharingServiceStub(channel)
+
+
+def create_notification_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import notification_service_pb2_grpc
+    return notification_service_pb2_grpc.NotificationServiceStub(channel)
+
+
+def create_data_product_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import data_product_service_pb2_grpc
+    return data_product_service_pb2_grpc.DataProductServiceStub(channel)
+
+
+def create_gateway_resource_profile_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import gateway_resource_profile_service_pb2_grpc
+    return gateway_resource_profile_service_pb2_grpc.GatewayResourceProfileServiceStub(channel)
+
+
+def create_user_resource_profile_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import user_resource_profile_service_pb2_grpc
+    return user_resource_profile_service_pb2_grpc.UserResourceProfileServiceStub(channel)
+
+
+def create_group_resource_profile_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import group_resource_profile_service_pb2_grpc
+    return group_resource_profile_service_pb2_grpc.GroupResourceProfileServiceStub(channel)
+
+
+def create_parser_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import parser_service_pb2_grpc
+    return parser_service_pb2_grpc.ParserServiceStub(channel)
+
+
+def create_group_manager_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import group_manager_service_pb2_grpc
+    return group_manager_service_pb2_grpc.GroupManagerServiceStub(channel)
+
+
+def create_iam_admin_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import iam_admin_service_pb2_grpc
+    return iam_admin_service_pb2_grpc.IamAdminServiceStub(channel)
+
+
+def create_user_profile_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import user_profile_service_pb2_grpc
+    return user_profile_service_pb2_grpc.UserProfileServiceStub(channel)
+
+
+def create_agent_interaction_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import agent_service_pb2_grpc
+    return agent_service_pb2_grpc.AgentInteractionServiceStub(channel)
+
+
+def create_plan_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import agent_service_pb2_grpc
+    return agent_service_pb2_grpc.PlanServiceStub(channel)
+
+
+def create_experiment_management_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import experiment_management_service_pb2_grpc
+    return experiment_management_service_pb2_grpc.ExperimentManagementServiceStub(channel)
+
+
+def create_research_hub_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import research_service_pb2_grpc
+    return research_service_pb2_grpc.ResearchHubServiceStub(channel)
+
+
+def create_research_project_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import research_service_pb2_grpc
+    return research_service_pb2_grpc.ResearchProjectServiceStub(channel)
+
+
+def create_research_resource_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import research_service_pb2_grpc
+    return research_service_pb2_grpc.ResearchResourceServiceStub(channel)
+
+
+def create_research_session_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import research_service_pb2_grpc
+    return research_service_pb2_grpc.ResearchSessionServiceStub(channel)
+
+
+def create_user_storage_service_stub(channel: grpc.Channel):
+    from airavata_sdk.generated.services import file_service_pb2_grpc
+    return file_service_pb2_grpc.UserStorageServiceStub(channel)

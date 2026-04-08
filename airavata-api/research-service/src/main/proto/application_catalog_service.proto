@@ -1,0 +1,362 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.appcatalog;
+
+option java_package = "org.apache.airavata.api.appcatalog";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/appcatalog/appdeployment/app_deployment.proto";
+import "org/apache/airavata/model/appcatalog/appinterface/app_interface.proto";
+import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+
+// ApplicationCatalogService provides RPCs for managing application modules,
+// deployments, and interfaces.
+service ApplicationCatalogService {
+
+  // --- Application Modules ---
+
+  rpc RegisterApplicationModule(RegisterApplicationModuleRequest) returns (RegisterApplicationModuleResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/app-modules"
+      body: "application_module"
+    };
+  }
+
+  rpc GetApplicationModule(GetApplicationModuleRequest) returns (org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules/{app_module_id}"
+    };
+  }
+
+  rpc UpdateApplicationModule(UpdateApplicationModuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/app-modules/{app_module_id}"
+      body: "application_module"
+    };
+  }
+
+  rpc DeleteApplicationModule(DeleteApplicationModuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/app-modules/{app_module_id}"
+    };
+  }
+
+  rpc GetAllAppModules(GetAllAppModulesRequest) returns (GetAllAppModulesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules"
+    };
+  }
+
+  rpc GetAccessibleAppModules(GetAccessibleAppModulesRequest) returns (GetAccessibleAppModulesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules:accessible"
+    };
+  }
+
+  // --- Application Deployments ---
+
+  rpc RegisterApplicationDeployment(RegisterApplicationDeploymentRequest) returns (RegisterApplicationDeploymentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/app-deployments"
+      body: "application_deployment"
+    };
+  }
+
+  rpc GetApplicationDeployment(GetApplicationDeploymentRequest) returns (org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments/{app_deployment_id}"
+    };
+  }
+
+  rpc UpdateApplicationDeployment(UpdateApplicationDeploymentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/app-deployments/{app_deployment_id}"
+      body: "application_deployment"
+    };
+  }
+
+  rpc DeleteApplicationDeployment(DeleteApplicationDeploymentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/app-deployments/{app_deployment_id}"
+    };
+  }
+
+  rpc GetAllApplicationDeployments(GetAllApplicationDeploymentsRequest) returns (GetAllApplicationDeploymentsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments"
+    };
+  }
+
+  rpc GetAccessibleApplicationDeployments(GetAccessibleApplicationDeploymentsRequest) returns (GetAccessibleApplicationDeploymentsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments:accessible"
+    };
+  }
+
+  rpc GetAppModuleDeployedResources(GetAppModuleDeployedResourcesRequest) returns (GetAppModuleDeployedResourcesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules/{app_module_id}/deployed-resources"
+    };
+  }
+
+  rpc GetDeploymentsForModuleAndProfile(GetDeploymentsForModuleAndProfileRequest) returns (GetDeploymentsForModuleAndProfileResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules/{app_module_id}/profiles/{group_resource_profile_id}/deployments"
+    };
+  }
+
+  // --- Application Interfaces ---
+
+  rpc RegisterApplicationInterface(RegisterApplicationInterfaceRequest) returns (RegisterApplicationInterfaceResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/app-interfaces"
+      body: "application_interface"
+    };
+  }
+
+  rpc CloneApplicationInterface(CloneApplicationInterfaceRequest) returns (CloneApplicationInterfaceResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/app-interfaces/{app_interface_id}:clone"
+    };
+  }
+
+  rpc GetApplicationInterface(GetApplicationInterfaceRequest) returns (org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces/{app_interface_id}"
+    };
+  }
+
+  rpc UpdateApplicationInterface(UpdateApplicationInterfaceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/app-interfaces/{app_interface_id}"
+      body: "application_interface"
+    };
+  }
+
+  rpc DeleteApplicationInterface(DeleteApplicationInterfaceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/app-interfaces/{app_interface_id}"
+    };
+  }
+
+  rpc GetAllApplicationInterfaceNames(GetAllApplicationInterfaceNamesRequest) returns (GetAllApplicationInterfaceNamesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces:names"
+    };
+  }
+
+  rpc GetAllApplicationInterfaces(GetAllApplicationInterfacesRequest) returns (GetAllApplicationInterfacesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces"
+    };
+  }
+
+  rpc GetApplicationInputs(GetApplicationInputsRequest) returns (GetApplicationInputsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces/{app_interface_id}/inputs"
+    };
+  }
+
+  rpc GetApplicationOutputs(GetApplicationOutputsRequest) returns (GetApplicationOutputsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces/{app_interface_id}/outputs"
+    };
+  }
+
+  rpc GetAvailableComputeResources(GetAvailableComputeResourcesRequest) returns (GetAvailableComputeResourcesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces/{app_interface_id}/compute-resources"
+    };
+  }
+}
+
+// --- Application Module Request/Response messages ---
+
+message RegisterApplicationModuleRequest {
+  string gateway_id = 1;
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_module = 2;
+}
+
+message RegisterApplicationModuleResponse {
+  string app_module_id = 1;
+}
+
+message GetApplicationModuleRequest {
+  string app_module_id = 1;
+}
+
+message UpdateApplicationModuleRequest {
+  string app_module_id = 1;
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_module = 2;
+}
+
+message DeleteApplicationModuleRequest {
+  string app_module_id = 1;
+}
+
+message GetAllAppModulesRequest {
+  string gateway_id = 1;
+}
+
+message GetAllAppModulesResponse {
+  repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_modules = 1;
+}
+
+message GetAccessibleAppModulesRequest {
+  string gateway_id = 1;
+}
+
+message GetAccessibleAppModulesResponse {
+  repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_modules = 1;
+}
+
+// --- Application Deployment Request/Response messages ---
+
+message RegisterApplicationDeploymentRequest {
+  string gateway_id = 1;
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployment = 2;
+}
+
+message RegisterApplicationDeploymentResponse {
+  string app_deployment_id = 1;
+}
+
+message GetApplicationDeploymentRequest {
+  string app_deployment_id = 1;
+}
+
+message UpdateApplicationDeploymentRequest {
+  string app_deployment_id = 1;
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployment = 2;
+}
+
+message DeleteApplicationDeploymentRequest {
+  string app_deployment_id = 1;
+}
+
+message GetAllApplicationDeploymentsRequest {
+  string gateway_id = 1;
+}
+
+message GetAllApplicationDeploymentsResponse {
+  repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployments = 1;
+}
+
+message GetAccessibleApplicationDeploymentsRequest {
+  string gateway_id = 1;
+}
+
+message GetAccessibleApplicationDeploymentsResponse {
+  repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployments = 1;
+}
+
+message GetAppModuleDeployedResourcesRequest {
+  string app_module_id = 1;
+}
+
+message GetAppModuleDeployedResourcesResponse {
+  repeated string compute_resource_ids = 1;
+}
+
+message GetDeploymentsForModuleAndProfileRequest {
+  string app_module_id = 1;
+  string group_resource_profile_id = 2;
+}
+
+message GetDeploymentsForModuleAndProfileResponse {
+  repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployments = 1;
+}
+
+// --- Application Interface Request/Response messages ---
+
+message RegisterApplicationInterfaceRequest {
+  string gateway_id = 1;
+  org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription application_interface = 2;
+}
+
+message RegisterApplicationInterfaceResponse {
+  string app_interface_id = 1;
+}
+
+message CloneApplicationInterfaceRequest {
+  string app_interface_id = 1;
+  string new_application_name = 2;
+  string gateway_id = 3;
+}
+
+message CloneApplicationInterfaceResponse {
+  string app_interface_id = 1;
+}
+
+message GetApplicationInterfaceRequest {
+  string app_interface_id = 1;
+}
+
+message UpdateApplicationInterfaceRequest {
+  string app_interface_id = 1;
+  org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription application_interface = 2;
+}
+
+message DeleteApplicationInterfaceRequest {
+  string app_interface_id = 1;
+}
+
+message GetAllApplicationInterfaceNamesRequest {
+  string gateway_id = 1;
+}
+
+message GetAllApplicationInterfaceNamesResponse {
+  map<string, string> application_interface_names = 1;
+}
+
+message GetAllApplicationInterfacesRequest {
+  string gateway_id = 1;
+}
+
+message GetAllApplicationInterfacesResponse {
+  repeated org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription application_interfaces = 1;
+}
+
+message GetApplicationInputsRequest {
+  string app_interface_id = 1;
+}
+
+message GetApplicationInputsResponse {
+  repeated org.apache.airavata.model.application.io.InputDataObjectType application_inputs = 1;
+}
+
+message GetApplicationOutputsRequest {
+  string app_interface_id = 1;
+}
+
+message GetApplicationOutputsResponse {
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType application_outputs = 1;
+}
+
+message GetAvailableComputeResourcesRequest {
+  string app_interface_id = 1;
+}
+
+message GetAvailableComputeResourcesResponse {
+  map<string, string> compute_resource_names = 1;
+}

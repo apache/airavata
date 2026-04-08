@@ -17,24 +17,18 @@
     under the License.
 -->
 
-# Research Service Application
+# Research Service
 
-This Spring Boot application supports different profiles for running in production vs development mode. In production mode, a security filter enforces authentication. In development mode, the security filter is bypassed for easier local testing.
+The Research Service provides the research catalog API (notebooks, datasets, models). It is embedded in the unified Airavata server and is not run as a standalone application.
 
-## Running in Development Mode
+## Development
 
-### Using Maven
+The research service is started automatically as part of the unified server (`airavata-server`). Use `tilt up` from the repo root to start the full development stack, which includes the research service on port 9090 alongside all other services.
 
-```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-```
+## Profiles
 
-### Using IntelliJ IDEA
+The service supports Spring Boot profiles:
+- **default (production)**: Security filter enforces authentication
+- **dev**: Security filter is bypassed for easier local testing
 
-1. Go to Run > Edit Configurations.
-2. Select your Spring Boot run configuration
-3. In the Program arguments field, add:
-
-```bash
---spring.profiles.active=dev
-```
+When running via the unified server, the active profile is controlled by the server's `application.yml` configuration.

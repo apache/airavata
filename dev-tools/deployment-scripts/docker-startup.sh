@@ -6,7 +6,7 @@ set -e
 export AIRAVATA_CONFIG_DIR=/opt/airavata/vault
 
 echo "🚀 Starting Apache Airavata Server..."
-echo "📋 Single JVM server with all Thrift services multiplexed on port 8930"
+echo "📋 Single JVM server with Armeria (gRPC + REST transcoding) on port 9090"
 echo "📁 Properties file location: /opt/airavata/vault/airavata-server.properties"
 echo "📁 Configuration directory: $AIRAVATA_CONFIG_DIR"
 echo "📊 All logs will be captured and visible via 'docker logs'"
@@ -48,7 +48,7 @@ log "Starting Airavata Server..."
 
 cd ${AIRAVATA_HOME}
 
-# Start unified Airavata server (Thrift 8930, REST 18889, gRPC 19900, Monitoring 9097)
+# Start unified Airavata server (Armeria gRPC + REST on 9090, Monitoring 9097)
 java -jar lib/airavata-server-*.jar &
 AIRAVATA_PID=$!
 
@@ -62,10 +62,8 @@ log "Starting log monitoring..."
 sleep 5
 
 echo "Airavata Server is running!"
-echo "  Thrift:     port 8930"
-echo "  REST:       port 18889"
-echo "  gRPC:       port 19900"
-echo "  Monitoring: port 9097"
+echo "  Armeria (gRPC + REST): port 9090"
+echo "  Monitoring:            port 9097"
 echo ""
 echo "Use 'docker logs -f' to view server logs"
 echo ""

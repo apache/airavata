@@ -20,15 +20,18 @@
 
 syntax = "proto3";
 
-package org.apache.airavata.agent;
+package org.apache.airavata.research;
 
 option java_multiple_files = true;
 option java_package = "org.apache.airavata.research";
 option java_outer_classname = "ResearchServiceProto";
-option go_package = "protos/";
 
-service ResearchService {
-}
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+// ============================================================
+// Shared messages
+// ============================================================
 
 message CreateUserRequest {
   string userName = 1;
@@ -38,3 +41,298 @@ message CreateUserRequest {
   string avatar = 5;
 }
 
+message BoolResponse {
+  bool value = 1;
+}
+
+message JsonResponse {
+  string json = 1;
+}
+
+message JsonListResponse {
+  repeated string items = 1;
+}
+
+// ============================================================
+// Research Project Service (replaces ProjectController)
+// ============================================================
+
+message CreateResearchProjectRequest {
+  string name = 1;
+  string owner_id = 2;
+  string repository_id = 3;
+  repeated string dataset_ids = 4;
+}
+
+message GetProjectsByOwnerRequest {
+  string owner_id = 1;
+}
+
+message DeleteProjectRequest {
+  string project_id = 1;
+}
+
+message GetAllProjectsRequest {}
+
+service ResearchProjectService {
+  rpc GetAllProjects(GetAllProjectsRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/projects/"
+    };
+  }
+
+  rpc GetProjectsByOwner(GetProjectsByOwnerRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/projects/{owner_id}"
+    };
+  }
+
+  rpc CreateProject(CreateResearchProjectRequest) returns (JsonResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/rf/projects/"
+      body: "*"
+    };
+  }
+
+  rpc DeleteProject(DeleteProjectRequest) returns (BoolResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/rf/projects/{project_id}"
+    };
+  }
+}
+
+// ============================================================
+// Resource Service (replaces ResourceController)
+// ============================================================
+
+message CreateResourceRequest {
+  string name = 1;
+  string description = 2;
+  string header_image = 3;
+  repeated string tags = 4;
+  repeated string authors = 5;
+  string privacy = 6;  // PUBLIC or PRIVATE
+}
+
+message ModifyResourceRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string header_image = 4;
+  repeated string tags = 5;
+  repeated string authors = 6;
+  string privacy = 7;
+}
+
+message CreateRepositoryResourceRequest {
+  CreateResourceRequest resource = 1;
+  string github_url = 2;
+}
+
+message ResourceIdRequest {
+  string id = 1;
+}
+
+message GetAllResourcesRequest {
+  int32 page_number = 1;
+  int32 page_size = 2;
+  string name_search = 3;
+  repeated string types = 4;
+  repeated string tags = 5;
+}
+
+message SearchResourceRequest {
+  string type = 1;
+  string name = 2;
+}
+
+message StarResourceRequest {
+  string id = 1;
+}
+
+message GetStarredResourcesRequest {
+  string user_id = 1;
+}
+
+message GetResourceStarCountRequest {
+  string id = 1;
+}
+
+message StarCountResponse {
+  int64 count = 1;
+}
+
+service ResearchResourceService {
+  rpc CreateDataset(google.protobuf.Struct) returns (JsonResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/rf/resources/dataset"
+      body: "*"
+    };
+  }
+
+  rpc CreateNotebook(google.protobuf.Struct) returns (JsonResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/rf/resources/notebook"
+      body: "*"
+    };
+  }
+
+  rpc CreateRepository(CreateRepositoryResourceRequest) returns (JsonResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/rf/resources/repository"
+      body: "*"
+    };
+  }
+
+  rpc ModifyRepository(ModifyResourceRequest) returns (JsonResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/rf/resources/repository"
+      body: "*"
+    };
+  }
+
+  rpc CreateModel(google.protobuf.Struct) returns (JsonResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/rf/resources/model"
+      body: "*"
+    };
+  }
+
+  rpc GetTags(GetAllResourcesRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/public/tags/all"
+    };
+  }
+
+  rpc GetResource(ResourceIdRequest) returns (JsonResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/public/{id}"
+    };
+  }
+
+  rpc DeleteResource(ResourceIdRequest) returns (BoolResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/rf/resources/{id}"
+    };
+  }
+
+  rpc GetAllResources(GetAllResourcesRequest) returns (JsonResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/public"
+    };
+  }
+
+  rpc SearchResources(SearchResourceRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/search"
+    };
+  }
+
+  rpc GetProjectsForResource(ResourceIdRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/public/{id}/projects"
+    };
+  }
+
+  rpc StarResource(StarResourceRequest) returns (BoolResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/rf/resources/{id}/star"
+    };
+  }
+
+  rpc CheckUserStarredResource(StarResourceRequest) returns (BoolResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/{id}/star"
+    };
+  }
+
+  rpc GetResourceStarCount(GetResourceStarCountRequest) returns (StarCountResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/resources/{id}/count"
+    };
+  }
+
+  rpc GetStarredResources(GetStarredResourcesRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/resources/{user_id}/stars"
+    };
+  }
+}
+
+// ============================================================
+// Session Service (replaces SessionController)
+// ============================================================
+
+message GetSessionsRequest {
+  string status = 1;  // optional: CREATED, RUNNING, FINISHED, TERMINATED, ERROR
+}
+
+message UpdateSessionStatusRequest {
+  string session_id = 1;
+  string status = 2;
+}
+
+message DeleteSessionRequest {
+  string session_id = 1;
+}
+
+message DeleteSessionsRequest {
+  repeated string session_ids = 1;
+}
+
+service ResearchSessionService {
+  rpc GetSessions(GetSessionsRequest) returns (JsonListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/sessions/"
+    };
+  }
+
+  rpc UpdateSessionStatus(UpdateSessionStatusRequest) returns (JsonResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/rf/sessions/{session_id}"
+    };
+  }
+
+  rpc DeleteSessions(DeleteSessionsRequest) returns (BoolResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/rf/sessions/delete/{session_ids}"
+    };
+  }
+
+  rpc DeleteSession(DeleteSessionRequest) returns (BoolResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/rf/sessions/{session_id}"
+    };
+  }
+}
+
+// ============================================================
+// Research Hub Service (replaces ResearchHubController)
+// ============================================================
+
+message StartProjectSessionRequest {
+  string project_id = 1;
+  string session_name = 2;
+}
+
+message ResumeSessionRequest {
+  string session_id = 1;
+}
+
+message RedirectResponse {
+  string redirect_url = 1;
+}
+
+service ResearchHubService {
+  rpc StartProjectSession(StartProjectSessionRequest) returns (RedirectResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/hub/start/project/{project_id}"
+    };
+  }
+
+  rpc ResumeSession(ResumeSessionRequest) returns (RedirectResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rf/hub/resume/session/{session_id}"
+    };
+  }
+}

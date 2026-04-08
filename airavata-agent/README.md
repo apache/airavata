@@ -66,7 +66,7 @@ chmod +x airavata-agent
 ### Run the agent
 ```
 ./airavata-agent \
-  --server <connection_server_url>:19900 \
+  --server <connection_server_url>:9090 \
   --agent <agent_id> \
   --environ <environment_id> \
   --lib "python=3.10,pip,<packages>" \
@@ -77,7 +77,7 @@ Replace placeholders with your actual configuration values.
 #### Example:
 ```
 ./airavata-agent
---server loalhost:19900
+--server loalhost:9090
 --agent agent_dd9667fe-78d1-4ffa-a0d2-19074e41dd45
 --environ base
 --lib "python=3.10,pip,mattersim,torchmetrics,numpy"
@@ -108,7 +108,7 @@ go run agent.go <connection_server_url> --agent <agent_id> --environ <env>
 
 #### Example
 ```
-go run agent.go --server localhost:19900 --agent agent1 --environ base
+go run agent.go --server localhost:9090 --agent agent1 --environ base
 ```
 
 ## Build the agent

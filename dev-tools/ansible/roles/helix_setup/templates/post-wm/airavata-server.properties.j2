@@ -52,10 +52,7 @@ prefetch.count=200
 zookeeper.server.connection={{ zookeeper_connection_url }}
 
 ###########################################################################
-# ThriftClientPool Configuration
-###########################################################################
-thrift.client.pool.abandoned.removal.enabled={{ thrift_client_pool_abandoned_removal_enabled }}
-thrift.client.pool.abandoned.removal.logged={{ thrift_client_pool_abandoned_removal_logged }}
+# Connection pool configuration (Thrift pool removed — gRPC via Armeria)
 
 ###########################################################################
 # Platform Monitoring Configuration

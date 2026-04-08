@@ -1,0 +1,114 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.research.repository;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import org.apache.airavata.db.AbstractRepository;
+import org.apache.airavata.db.DBConstants;
+import org.apache.airavata.db.QueryConstants;
+import org.apache.airavata.interfaces.RegistryException;
+import org.apache.airavata.model.workspace.proto.Notification;
+import org.apache.airavata.research.mapper.ResearchMapper;
+import org.apache.airavata.research.model.NotificationEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+public class NotificationRepository extends AbstractRepository<Notification, NotificationEntity, String> {
+    private static final Logger logger = LoggerFactory.getLogger(NotificationRepository.class);
+
+    public NotificationRepository() {
+        super(Notification.class, NotificationEntity.class);
+    }
+
+    @Override
+    protected Notification toModel(NotificationEntity entity) {
+        return ResearchMapper.INSTANCE.notificationToModel(entity);
+    }
+
+    @Override
+    protected NotificationEntity toEntity(Notification model) {
+        return ResearchMapper.INSTANCE.notificationToEntity(model);
+    }
+
+    protected String saveNotificationData(Notification notification) throws RegistryException {
+        NotificationEntity notificationEntity = saveNotification(notification);
+        return notificationEntity.getNotificationId();
+    }
+
+    protected NotificationEntity saveNotification(Notification notification) throws RegistryException {
+        NotificationEntity notificationEntity = ResearchMapper.INSTANCE.notificationToEntity(notification);
+
+        if (notificationEntity.getCreationTime() != null) {
+            logger.debug("Setting the Notification's creation time");
+            notificationEntity.setCreationTime(new Timestamp(notification.getCreationTime()));
+        } else {
+            logger.debug("Setting the Notification's creation time to current time");
+            notificationEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        }
+
+        if (notificationEntity.getPublishedTime() != null) {
+            logger.debug("Setting the Notification's published time");
+            notificationEntity.setPublishedTime(new Timestamp(notification.getPublishedTime()));
+        }
+
+        if (notificationEntity.getExpirationTime() != null) {
+            logger.debug("Setting the Notification's expiration time");
+            notificationEntity.setExpirationTime(new Timestamp(notification.getExpirationTime()));
+        }
+
+        return execute(entityManager -> entityManager.merge(notificationEntity));
+    }
+
+    public String createNotification(Notification notification) throws RegistryException {
+        notification =
+                notification.toBuilder().setNotificationId(getNotificationId()).build();
+        return saveNotificationData(notification);
+    }
+
+    public void updateNotification(Notification notification) throws RegistryException {
+        saveNotificationData(notification);
+    }
+
+    public Notification getNotification(String notificationId) throws RegistryException {
+        return get(notificationId);
+    }
+
+    public List<Notification> getAllGatewayNotifications(String gatewayId) throws RegistryException {
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.Notification.GATEWAY_ID, gatewayId);
+        List<Notification> notificationList =
+                select(QueryConstants.GET_ALL_GATEWAY_NOTIFICATIONS, -1, 0, queryParameters);
+        return notificationList;
+    }
+
+    private String getNotificationId() {
+        return UUID.randomUUID().toString();
+    }
+
+    public void deleteNotification(String notificationId) throws RegistryException {
+        delete(notificationId);
+    }
+}

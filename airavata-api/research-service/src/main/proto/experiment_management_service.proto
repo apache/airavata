@@ -1,0 +1,121 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+syntax = "proto3";
+
+package org.apache.airavata.research.service;
+
+option java_multiple_files = true;
+option java_package = "org.apache.airavata.research.service";
+option java_outer_classname = "ExperimentManagementServiceProto";
+
+import "google/api/annotations.proto";
+
+// --- Experiment launch ---
+
+message AgentLaunchRequest {
+  string experiment_name = 1;
+  string project_name = 2;
+  string remote_cluster = 3;
+  string group = 4;
+  repeated string libraries = 5;
+  repeated string pip = 6;
+  repeated string mounts = 7;
+  string queue = 8;
+  int32 wall_time = 9;
+  int32 cpu_count = 10;
+  int32 node_count = 11;
+  int32 memory = 12;
+  string input_storage_id = 13;
+  string output_storage_id = 14;
+}
+
+message AgentLaunchResponse {
+  string agent_id = 1;
+  string experiment_id = 2;
+  string env_name = 3;
+  string process_id = 4;
+}
+
+message AgentTerminateResponse {
+  string experiment_id = 1;
+  bool terminated = 2;
+}
+
+// --- Experiment Management ---
+
+message GetAgentExperimentRequest {
+  string experiment_id = 1;
+}
+
+message AgentExperimentResponse {
+  string experiment_json = 1;
+}
+
+message LaunchOptimizedExperimentRequest {
+  repeated AgentLaunchRequest requests = 1;
+}
+
+message TerminateAgentExperimentRequest {
+  string experiment_id = 1;
+}
+
+message GetProcessModelRequest {
+  string experiment_id = 1;
+}
+
+message ProcessModelResponse {
+  string process_json = 1;
+  bool found = 2;
+}
+
+service ExperimentManagementService {
+  rpc GetExperiment(GetAgentExperimentRequest) returns (AgentExperimentResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/exp/{experiment_id}"
+    };
+  }
+
+  rpc LaunchExperiment(AgentLaunchRequest) returns (AgentLaunchResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/exp/launch"
+      body: "*"
+    };
+  }
+
+  rpc LaunchOptimizedExperiment(LaunchOptimizedExperimentRequest) returns (AgentLaunchResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/exp/launchoptimize"
+      body: "*"
+    };
+  }
+
+  rpc TerminateExperiment(TerminateAgentExperimentRequest) returns (AgentTerminateResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/exp/terminate/{experiment_id}"
+    };
+  }
+
+  rpc GetProcessModel(GetProcessModelRequest) returns (ProcessModelResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/exp/{experiment_id}/process"
+    };
+  }
+}

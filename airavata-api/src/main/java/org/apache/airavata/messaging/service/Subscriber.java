@@ -19,26 +19,23 @@
 */
 package org.apache.airavata.messaging.service;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Consumer;
 import java.util.List;
-import java.util.function.BiFunction;
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.exception.AiravataException;
+import org.springframework.amqp.core.MessageListener;
 
 /**
  * This is the basic consumer
  */
 public interface Subscriber {
     /**
-     * Start listening for messages, The binding properties are specified in the handler.
-     * Returns and unique id to this Subscriber. This id can be used to stop the listening
-     * @param supplier - return RabbitMQ Consumer
+     * Start listening for messages. Returns a unique id that can be used to stop listening.
+     * @param listener - Spring AMQP MessageListener
+     * @param queueName - queue name (null for auto-generated)
+     * @param routingKeys - routing keys to bind
      * @return string id
      * @throws AiravataException
      */
-    String listen(BiFunction<Connection, Channel, Consumer> supplier, String queueName, List<String> routingKeys)
-            throws AiravataException;
+    String listen(MessageListener listener, String queueName, List<String> routingKeys) throws AiravataException;
 
     void stopListen(final String id) throws AiravataException;
 

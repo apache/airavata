@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.research.service;
 
-import org.apache.airavata.common.security.UserContext;
-import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.security.profile.user.core.repositories.UserProfileRepository;
+import org.apache.airavata.config.UserContext;
+import org.apache.airavata.interfaces.UserProfileProvider;
+import org.apache.airavata.model.user.proto.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,10 +31,14 @@ public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    private final UserProfileRepository userProfileRepository = new UserProfileRepository();
+    private final UserProfileProvider userProfileProvider;
+
+    public AiravataService(UserProfileProvider userProfileProvider) {
+        this.userProfileProvider = userProfileProvider;
+    }
 
     public UserProfile getUserProfile(String userId) {
-        UserProfile profile = userProfileRepository.getUserProfileByIdAndGateWay(userId, UserContext.gatewayId());
+        UserProfile profile = userProfileProvider.getUserProfileByIdAndGateWay(userId, UserContext.gatewayId());
         if (profile == null) {
             throw new RuntimeException("User profile not found for id: " + userId);
         }
@@ -42,7 +46,7 @@ public class AiravataService {
     }
 
     public UserProfile getUserProfile(String authzToken, String userId, String gatewayId) {
-        UserProfile profile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
+        UserProfile profile = userProfileProvider.getUserProfileByIdAndGateWay(userId, gatewayId);
         if (profile == null) {
             throw new RuntimeException("User profile not found for id: " + userId + " in gateway: " + gatewayId);
         }

@@ -28,7 +28,7 @@
 
 - name: Wait for Airavata Server to be ready
   wait_for:
-    port: '{{ thrift_port }}'
+    port: '{{ api_server_port }}'
     host: '{{ api_server_host }}'
     delay: 5
     timeout: 60

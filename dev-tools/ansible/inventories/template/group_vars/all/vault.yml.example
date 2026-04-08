@@ -96,7 +96,7 @@ research_service_datasource_password: "CHANGEME_DB_PASSWORD"
 
 # Agent service Airavata settings
 agent_service_airavata_url: "localhost"
-agent_service_airavata_port: 8930
+agent_service_airavata_port: 9090
 agent_service_airavata_secure: false
 
 # Research service URLs

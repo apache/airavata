@@ -16,7 +16,6 @@
 
 import logging
 
-from airavata.api.error.ttypes import TException
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.tenant_profile_client import TenantProfileClient
 
@@ -24,29 +23,24 @@ logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
-authenticator = Authenticator();
+authenticator = Authenticator()
 token = authenticator.get_token_and_user_info_password_flow("default-admin", "123456", "default")
 
-# load GroupManagerClient with default configuration
-#client = TenantProfileClient()
-
-
-# load client with given configuration file (e.g customized_settings.ini)
-client = TenantProfileClient()
+# load TenantProfileClient with access token
+client = TenantProfileClient(access_token=token)
 
 
 def get_all_gateways():
     try:
-        gws = client.get_all_gateways(token)
+        gws = client.get_all_gateways()
         print("Gateways ", gws)
-    except TException:
+    except Exception:
         logger.exception("Error occurred")
 
 
 def is_gateway_exsist():
     try:
-        gw_exisist = client.is_gateway_exist(token, "default")
+        gw_exisist = client.is_gateway_exist("default")
         print("Gateways ", gw_exisist)
-    except TException:
+    except Exception:
         logger.exception("Error occurred")
-

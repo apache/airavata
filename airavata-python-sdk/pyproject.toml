@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "airavata-python-sdk"
-version = "2.2.7"
+version = "3.0.0"
 description = "Apache Airavata Python SDK"
 readme = "README.md"
 license = "Apache-2.0"
@@ -14,8 +14,9 @@ dependencies = [
   "oauthlib",
   "requests",
   "requests-oauthlib",
-  "thrift",
-  "thrift_connector",
+  "grpcio>=1.60.0",
+  "protobuf>=4.25.0",
+  "googleapis-common-protos>=1.62.0",
   "paramiko",
   "scp",
   "pysftp",
@@ -36,7 +37,7 @@ notebook = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["airavata*"]
+include = ["airavata_sdk*"]
 exclude = ["*.egg-info"]
 
 [tool.setuptools.package-data]

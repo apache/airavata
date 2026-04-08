@@ -1,0 +1,220 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.groupprofile;
+
+option java_package = "org.apache.airavata.api.groupprofile";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/appcatalog/groupresourceprofile/group_resource_profile.proto";
+import "org/apache/airavata/model/appcatalog/gatewaygroups/gateway_groups.proto";
+
+// GroupResourceProfileService provides RPCs for managing group resource profiles,
+// compute preferences, compute resource policies, and batch queue policies.
+service GroupResourceProfileService {
+
+  // --- Group Resource Profiles ---
+
+  rpc CreateGroupResourceProfile(CreateGroupResourceProfileRequest) returns (org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile) {
+    option (google.api.http) = {
+      post: "/api/v1/group-profiles"
+      body: "group_resource_profile"
+    };
+  }
+
+  rpc GetGroupResourceProfile(GetGroupResourceProfileRequest) returns (org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles/{group_resource_profile_id}"
+    };
+  }
+
+  rpc UpdateGroupResourceProfile(UpdateGroupResourceProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/group-profiles/{group_resource_profile_id}"
+      body: "group_resource_profile"
+    };
+  }
+
+  rpc RemoveGroupResourceProfile(RemoveGroupResourceProfileRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/group-profiles/{group_resource_profile_id}"
+    };
+  }
+
+  rpc GetGroupResourceList(GetGroupResourceListRequest) returns (GetGroupResourceListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles"
+    };
+  }
+
+  // --- Group Compute Preferences ---
+
+  rpc GetGroupComputePreference(GetGroupComputePreferenceRequest) returns (org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles/{group_resource_profile_id}/compute-preferences/{compute_resource_id}"
+    };
+  }
+
+  rpc RemoveGroupComputePrefs(RemoveGroupComputePrefsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/group-profiles/{group_resource_profile_id}/compute-preferences/{compute_resource_id}"
+    };
+  }
+
+  rpc GetGroupComputePrefList(GetGroupComputePrefListRequest) returns (GetGroupComputePrefListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles/{group_resource_profile_id}/compute-preferences"
+    };
+  }
+
+  // --- Compute Resource Policies ---
+
+  rpc GetGroupComputeResourcePolicy(GetGroupComputeResourcePolicyRequest) returns (org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy) {
+    option (google.api.http) = {
+      get: "/api/v1/group-compute-policies/{resource_policy_id}"
+    };
+  }
+
+  rpc RemoveGroupComputeResourcePolicy(RemoveGroupComputeResourcePolicyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/group-compute-policies/{resource_policy_id}"
+    };
+  }
+
+  rpc GetGroupComputeResourcePolicyList(GetGroupComputeResourcePolicyListRequest) returns (GetGroupComputeResourcePolicyListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles/{group_resource_profile_id}/compute-policies"
+    };
+  }
+
+  // --- Batch Queue Resource Policies ---
+
+  rpc GetBatchQueueResourcePolicy(GetBatchQueueResourcePolicyRequest) returns (org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy) {
+    option (google.api.http) = {
+      get: "/api/v1/batch-queue-policies/{resource_policy_id}"
+    };
+  }
+
+  rpc RemoveGroupBatchQueueResourcePolicy(RemoveGroupBatchQueueResourcePolicyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/batch-queue-policies/{resource_policy_id}"
+    };
+  }
+
+  rpc GetGroupBatchQueuePolicyList(GetGroupBatchQueuePolicyListRequest) returns (GetGroupBatchQueuePolicyListResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles/{group_resource_profile_id}/batch-queue-policies"
+    };
+  }
+
+  // --- Gateway Groups ---
+
+  rpc GetGatewayGroups(GetGatewayGroupsRequest) returns (org.apache.airavata.model.appcatalog.gatewaygroups.GatewayGroups) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-groups"
+    };
+  }
+}
+
+// --- Group Resource Profile Request/Response messages ---
+
+message CreateGroupResourceProfileRequest {
+  org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile group_resource_profile = 1;
+}
+
+message GetGroupResourceProfileRequest {
+  string group_resource_profile_id = 1;
+}
+
+message UpdateGroupResourceProfileRequest {
+  string group_resource_profile_id = 1;
+  org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile group_resource_profile = 2;
+}
+
+message RemoveGroupResourceProfileRequest {
+  string group_resource_profile_id = 1;
+}
+
+message GetGroupResourceListRequest {}
+
+message GetGroupResourceListResponse {
+  repeated org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile group_resource_profiles = 1;
+}
+
+// --- Group Compute Preference Request/Response messages ---
+
+message GetGroupComputePreferenceRequest {
+  string group_resource_profile_id = 1;
+  string compute_resource_id = 2;
+}
+
+message RemoveGroupComputePrefsRequest {
+  string group_resource_profile_id = 1;
+  string compute_resource_id = 2;
+}
+
+message GetGroupComputePrefListRequest {
+  string group_resource_profile_id = 1;
+}
+
+message GetGroupComputePrefListResponse {
+  repeated org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference group_compute_resource_preferences = 1;
+}
+
+// --- Compute Resource Policy Request/Response messages ---
+
+message GetGroupComputeResourcePolicyRequest {
+  string resource_policy_id = 1;
+}
+
+message RemoveGroupComputeResourcePolicyRequest {
+  string resource_policy_id = 1;
+}
+
+message GetGroupComputeResourcePolicyListRequest {
+  string group_resource_profile_id = 1;
+}
+
+message GetGroupComputeResourcePolicyListResponse {
+  repeated org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy compute_resource_policies = 1;
+}
+
+// --- Batch Queue Resource Policy Request/Response messages ---
+
+message GetBatchQueueResourcePolicyRequest {
+  string resource_policy_id = 1;
+}
+
+message RemoveGroupBatchQueueResourcePolicyRequest {
+  string resource_policy_id = 1;
+}
+
+message GetGroupBatchQueuePolicyListRequest {
+  string group_resource_profile_id = 1;
+}
+
+message GetGroupBatchQueuePolicyListResponse {
+  repeated org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy batch_queue_resource_policies = 1;
+}
+
+// --- Gateway Groups Request/Response messages ---
+
+message GetGatewayGroupsRequest {}

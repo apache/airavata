@@ -42,12 +42,8 @@
 - name: Define Airavata service ports
   set_fact:
     airavata_ports:
-      - port: "{{ thrift_port }}"
-        service: "Airavata Server (Thrift)"
-      - port: "{{ rest_port }}"
-        service: "Airavata Server (REST)"
-      - port: "{{ grpc_port }}"
-        service: "Airavata Server (gRPC)"
+      - port: "{{ api_server_port }}"
+        service: "Airavata Server (Armeria gRPC + REST)"
       - port: "{{ monitoring_port }}"
         service: "Airavata Server (Monitoring)"
       - port: "{{ participant_monitoring_port }}"

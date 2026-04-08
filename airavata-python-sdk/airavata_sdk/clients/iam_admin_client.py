@@ -14,47 +14,158 @@
 #  limitations under the License.
 #
 
-import configparser
+import json
 import logging
 from typing import Optional
 
-from airavata_sdk.transport import utils
+import grpc
+
 from airavata_sdk import Settings
+from airavata_sdk.transport.utils import create_iam_admin_service_stub
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
 
 
-class IAMAdminClient(object):
+class IAMAdminClient:
+    """Client for the Airavata IamAdminService (gRPC)."""
 
-    def __init__(self):
+    def __init__(self, access_token: Optional[str] = None, claims: Optional[dict] = None):
         self.settings = Settings()
-        self.client = utils.initialize_iam_admin_client(
-            self.settings.API_SERVER_HOSTNAME,
-            self.settings.API_SERVER_PORT,
-            self.settings.API_SERVER_SECURE,
+        host = self.settings.API_SERVER_HOSTNAME
+        port = self.settings.API_SERVER_PORT
+        secure = self.settings.API_SERVER_SECURE
+
+        target = f"{host}:{port}"
+        if secure:
+            self.channel = grpc.secure_channel(target, grpc.ssl_channel_credentials())
+        else:
+            self.channel = grpc.insecure_channel(target)
+
+        self._metadata: list[tuple[str, str]] = []
+        if access_token:
+            self._metadata.append(("authorization", f"Bearer {access_token}"))
+        if claims:
+            self._metadata.append(("x-claims", json.dumps(claims)))
+
+        self._stub = create_iam_admin_service_stub(self.channel)
+
+    def close(self):
+        self.channel.close()
+
+    def set_up_gateway(self, gateway):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        return self._stub.SetUpGateway(
+            pb2.SetUpGatewayRequest(gateway=gateway),
+            metadata=self._metadata,
         )
-        # expose the needed functions
-        self.set_up_gateway = self.client.setUpGateway
-        self.is_username_available = self.client.isUsernameAvailable
-        self.register_user = self.client.registerUser
-        self.enable_user = self.client.enableUser
-        self.is_user_enabled = self.client.isUserEnabled
-        self.is_user_exist = self.client.isUserExist
-        self.get_user = self.client.getUser
-        self.get_users = self.client.getUsers
-        self.reset_user_password = self.client.resetUserPassword
-        self.find_users = self.client.findUsers
-        self.update_user_profile = self.client.updateUserProfile
-        self.delete_user = self.client.deleteUser
-        self.add_role_to_user = self.client.addRoleToUser
-        self.remove_role_from_user = self.client.removeRoleFromUser
-        self.get_users_with_role = self.client.getUsersWithRole
+
+    def is_username_available(self, username):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        resp = self._stub.IsUsernameAvailable(
+            pb2.IsUsernameAvailableRequest(username=username),
+            metadata=self._metadata,
+        )
+        return resp.available
+
+    def register_user(self, username, email_address, first_name, last_name, new_password):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.RegisterUser(
+            pb2.RegisterUserRequest(
+                username=username,
+                email_address=email_address,
+                first_name=first_name,
+                last_name=last_name,
+                new_password=new_password,
+            ),
+            metadata=self._metadata,
+        )
+
+    def enable_user(self, username):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.EnableUser(
+            pb2.EnableUserRequest(username=username),
+            metadata=self._metadata,
+        )
+
+    def is_user_enabled(self, username):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        resp = self._stub.IsUserEnabled(
+            pb2.IsUserEnabledRequest(username=username),
+            metadata=self._metadata,
+        )
+        return resp.enabled
+
+    def is_user_exist(self, username):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        resp = self._stub.IsUserExist(
+            pb2.IsUserExistRequest(username=username),
+            metadata=self._metadata,
+        )
+        return resp.exists
+
+    def get_user(self, username):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        return self._stub.GetUser(
+            pb2.GetIamUserRequest(username=username),
+            metadata=self._metadata,
+        )
+
+    def get_users(self, offset=0, limit=20, search=""):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        resp = self._stub.GetUsers(
+            pb2.GetIamUsersRequest(offset=offset, limit=limit, search=search),
+            metadata=self._metadata,
+        )
+        return list(resp.users)
+
+    def reset_user_password(self, username, new_password):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.ResetUserPassword(
+            pb2.ResetUserPasswordRequest(username=username, new_password=new_password),
+            metadata=self._metadata,
+        )
+
+    def find_users(self, email, user_id=""):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        resp = self._stub.FindUsers(
+            pb2.FindUsersRequest(email=email, user_id=user_id),
+            metadata=self._metadata,
+        )
+        return list(resp.users)
+
+    def update_user_profile(self, user_details):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.UpdateUserProfile(
+            pb2.UpdateIamUserProfileRequest(user_details=user_details),
+            metadata=self._metadata,
+        )
+
+    def delete_user(self, username):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.DeleteUser(
+            pb2.DeleteUserRequest(username=username),
+            metadata=self._metadata,
+        )
+
+    def add_role_to_user(self, username, role_name):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.AddRoleToUser(
+            pb2.AddRoleToUserRequest(username=username, role_name=role_name),
+            metadata=self._metadata,
+        )
+
+    def remove_role_from_user(self, username, role_name):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        self._stub.RemoveRoleFromUser(
+            pb2.RemoveRoleFromUserRequest(username=username, role_name=role_name),
+            metadata=self._metadata,
+        )
+
+    def get_users_with_role(self, role_name):
+        from airavata_sdk.generated.services import iam_admin_service_pb2 as pb2
+        resp = self._stub.GetUsersWithRole(
+            pb2.GetUsersWithRoleRequest(role_name=role_name),
+            metadata=self._metadata,
+        )
+        return list(resp.users)

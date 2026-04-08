@@ -66,7 +66,7 @@ zookeeper_connection_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port
 # API Server related variables
 api_server_name: "apiserver-node0"
 api_server_host: "{{ groups['api-orch'][0] }}"
-api_server_port: "8930"
+api_server_port: "9090"
 api_server_public_hostname: "apiprod.scigap.org"
 api_secured: "true"
 tls_enable: "false"
@@ -98,7 +98,7 @@ cred_keystore_passwd: "{{ vault_cred_keystore_passwd }}"
 cred_keystore_alias: "airavata"
 cred_store_server_host: "{{ groups['api-orch'][0] }}"
 cred_store_port: "8960"
-keystores_location: "{{ deployment_dir }}/keystores"
+keystores_location: "{{ deployment_dir }}/conf/keystores"
 
 # Monitoring variables
 monitor_email_address: "scigap03jobs@scigap.org"
@@ -172,8 +172,8 @@ platform_monitor_email_address: "airavataplatformmonitor@gmail.com"
 platform_monitor_email_password: "{{ vault_platform_monitor_email_password }}"
 platform_monitor_target_email_addresses: "dimuthu.upeksha2@gmail.com,dwannipu@iu.edu"
 
-thrift_client_pool_abandoned_removal_enabled: true
-thrift_client_pool_abandoned_removal_logged: false
+connection_pool_abandoned_removal_enabled: true
+connection_pool_abandoned_removal_logged: false
 
 # Variables related to parser framework
 parser_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"

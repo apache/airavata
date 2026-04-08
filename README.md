@@ -55,7 +55,7 @@ Apache Airavata is composed of modular components spanning core services, data m
 
 ## 🔄 How Airavata Works
 
-Airavata runs as a **single unified JVM** (Spring Boot) that hosts Thrift, REST, and gRPC transports plus background workers.
+Airavata runs as a **single unified JVM** (Spring Boot + Armeria) that serves gRPC and REST (HTTP/JSON transcoding) on a single port, plus background workers.
 
 ```mermaid
 graph TB
@@ -69,44 +69,35 @@ graph TB
 
     subgraph "Unified Airavata Server (single JVM)"
         direction TB
-        MUX["Thrift :8930<br/>9 multiplexed services"]
-        REST["REST :18889<br/>Swagger UI + Actuator"]
-        GRPC["gRPC :19900<br/>Agent + Research"]
+        ARMERIA["Armeria :9090<br/>gRPC + REST transcoding"]
         SVC["Service Layer<br/>(airavata-api module)"]
         BG["Background Services<br/>12 workers"]
-        MON["Monitoring :9097<br/>/metrics /health/services"]
     end
 
-    SDK[Python SDK] -->|TMultiplexedProtocol| MUX
-    Portal[Web Portal] -->|REST| REST
-    MUX --> SVC
-    REST --> SVC
-    GRPC --> SVC
+    SDK[Python SDK] -->|gRPC| ARMERIA
+    Portal[Web Portal] -->|REST| ARMERIA
+    ARMERIA --> SVC
     SVC --> DB
     SVC --> RMQ
     BG --> ZK
     BG --> KFK
     BG --> RMQ
     SVC -.->|auth| KC
-    MON -.->|tracks| BG
 ```
 
 ### 1. Unified Airavata Server `(airavata-server)`
 > Entry point: `org.apache.airavata.server.AiravataServerMain`
 > Started via: `tilt up` or `java -jar airavata-server/target/airavata-server-0.21-SNAPSHOT.jar`
 
-The unified server hosts all transports (Thrift, REST, gRPC), Spring Boot services (Research, Agent, File Server), and background workers in a single JVM. On startup it:
+The unified server hosts gRPC and REST (via Armeria HTTP/JSON transcoding) on a single port, Spring Boot services (Research, Agent, File Server), and background workers in a single JVM. On startup it:
 
 1. Initializes the unified `airavata` database
-2. Starts the REST server on port **18889** (Swagger UI + Actuator health)
-3. Registers 9 Thrift services on a single `TMultiplexedProcessor` (port **8930**)
-4. Starts gRPC server on port **19900**
-5. Starts background `IServer` workers
-6. Starts monitoring server on port **9097**
+2. Starts Armeria server on port **9090** (gRPC + REST transcoding + DocService at `/docs`)
+3. Starts background `IServer` workers
 
-#### Architecture: Service Layer + Thrift Transport
+#### Architecture: Service Layer + gRPC Transport
 
-All business logic lives in a transport-agnostic **service layer** (`org.apache.airavata.service.*`). Thrift handlers are thin adapters that delegate to services via `ThriftAdapter`, translating between Thrift types and service exceptions. This decoupling enables future REST/gRPC transports without duplicating logic.
+All business logic lives in a transport-agnostic **service layer** (`org.apache.airavata.service.*`). gRPC service implementations delegate to services. Proto definitions with `google.api.http` annotations provide automatic REST transcoding via Armeria.
 
 | Service | Responsibility |
 |---|---|
@@ -126,20 +117,6 @@ All business logic lives in a transport-agnostic **service layer** (`org.apache.
 | `ParserService` | Parsers and parsing templates |
 
 Shared utilities: `SharingHelper` (sharing operations), `EventPublisher` (messaging), `RequestContext` (transport-agnostic identity).
-
-#### Thrift Services (all on port 8930, multiplexed)
-
-| Service name | Handler | Responsibility |
-|---|---|---|
-| `Airavata` | `AiravataServerHandler` | Public API — delegates to service layer |
-| `RegistryService` | `RegistryServerHandler` | Metadata and definitions for tasks and applications |
-| `CredentialStore` | `CredentialStoreServerHandler` | Secure storage and retrieval of compute credentials |
-| `SharingRegistry` | `SharingRegistryServerHandler` | Sharing and permissioning of Airavata resources |
-| `UserProfile` | `UserProfileServiceHandler` | User profile management |
-| `TenantProfile` | `TenantProfileServiceHandler` | Tenant/gateway management |
-| `IamAdminServices` | `IamAdminServicesHandler` | IAM administration |
-| `GroupManager` | `GroupManagerServiceHandler` | Group and role management |
-| `Orchestrator` | `OrchestratorServerHandler` | Workflow DAG construction and task dispatch |
 
 #### Background Services (IServer lifecycle, same JVM)
 
@@ -177,15 +154,13 @@ stateDiagram-v2
 graph LR
     subgraph "Startup Sequence"
         direction TB
-        A[1. DB Init] --> B[2. Thrift Handlers]
-        B --> C[3. TMultiplexedProcessor :8930]
-        C --> D[4. DBEventManager]
-        D --> E[5. MonitoringServer :9097]
-        E --> F[6. HelixController]
-        F --> G{waitForHelixCluster}
-        G --> H[7. HelixParticipant]
-        H --> I[8. Pre/Post/Parser WF Managers]
-        I --> J[9. Email/Realtime Monitors]
+        A[1. DB Init] --> B[2. Armeria Server :9090]
+        B --> C[3. DBEventManager]
+        C --> D[4. HelixController]
+        D --> E{waitForHelixCluster}
+        E --> F[5. HelixParticipant]
+        F --> G[6. Pre/Post/Parser WF Managers]
+        G --> H[7. Email/Realtime Monitors]
     end
 ```
 
@@ -196,9 +171,19 @@ The following services are embedded in the unified server (not run separately):
 
 | Service | Module | Purpose |
 |---------|--------|---------|
-| **File Server** | `airavata-api/file-server` | SFTP wrapper for secure storage access |
-| **Agent Service** | `airavata-api/agent-service` | Backend for interactive jobs via bidirectional gRPC |
-| **Research Service** | `airavata-api/research-service` | Research catalog API (notebooks, datasets, models) |
+| **Agent Service** | `airavata-api/agent-service` | Agent sidecar lifecycle, bidirectional gRPC for interactive jobs |
+| **Research Service** | `airavata-api/research-service` | Research catalog, application catalog, data products, output parsing |
+
+Additional service modules in `airavata-api/`:
+
+| Module | Purpose |
+|--------|---------|
+| `compute-service` | HPC resource catalog, resource profiles, resource scheduling |
+| `storage-service` | Storage resources, data movement interfaces and protocols |
+| `credential-service` | SSH keys, passwords, credential store |
+| `iam-service` | Identity, access management, gateways, user profiles |
+| `sharing-service` | Permissions, groups, tags, resource discovery |
+| `orchestration-service` | Process/task/job execution, workflow orchestration |
 
 
 ## 🏗️ Getting Started
@@ -225,7 +210,7 @@ tilt up
 
 This starts:
 - **Infrastructure**: MariaDB, RabbitMQ, ZooKeeper, Kafka, Keycloak (via `compose.yml`)
-- **Unified Airavata Server**: Thrift (:8930), REST (:18889), gRPC (:19900), Monitoring (:9097)
+- **Unified Airavata Server**: gRPC + REST on port 9090, API docs at `/docs`
 
 Open the Tilt UI at `http://localhost:10350` to monitor all resources. Integration tests can be triggered manually from the Tilt UI.
 
@@ -240,31 +225,25 @@ java -jar airavata-server/target/airavata-server-0.21-SNAPSHOT.jar  # Start serv
 Or use the helper scripts:
 
 ```bash
-./scripts/setup.sh    # Infrastructure + build
-./scripts/start.sh    # Start server
+./dev-tools/scripts/setup.sh    # Infrastructure + build
+./dev-tools/scripts/start.sh    # Start server
 ```
 
 ### Health Monitoring
 
-The monitoring server on port **9097** exposes:
+The Armeria server on port **9090** exposes:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/metrics` | GET | Prometheus metrics |
-| `/health/services` | GET | JSON status of all background services (UP/DOWN/DISABLED) |
-| `/admin/restart/{name}` | POST | Restart a background service by name |
-
-Spring Boot services expose `/actuator/health` on their respective ports.
+| `/internal/actuator/health` | GET | Health check |
+| `/docs` | GET | Armeria DocService (API documentation) |
 
 ### Configuration
 
 The main configuration file is `airavata-server/src/main/resources/application.yml`. Key settings:
 
-* `airavata.servers` — List of transports to activate: `[thrift, rest, grpc]`
 * `spring.datasource.url` — JDBC URL (default: `jdbc:mariadb://localhost:13306/airavata`)
-* `airavata.thrift.port` — Thrift port (default: `8930`)
-* `server.port` — REST port (default: `18889`)
-* `grpc.server.port` — gRPC port (default: `19900`)
+* `armeria.server.port` — Armeria server port (default: `9090`)
 * `airavata.security.openid-url` — Keycloak realm URL
 
 ### Integration Tests
@@ -277,10 +256,7 @@ mvn test -pl airavata-api -Dgroups=runtime
 
 | Transport | Port | Purpose |
 |-----------|------|---------|
-| Thrift | 8930 | 9 multiplexed services (Python SDK, Thrift clients) |
-| REST | 18889 | Swagger UI, Actuator health, REST APIs |
-| gRPC | 19900 | Agent + Research service gRPC |
-| Monitoring | 9097 | Prometheus metrics, `/health/services` |
+| Armeria | 9090 | gRPC + REST (HTTP/JSON transcoding), DocService at `/docs`, health at `/internal/actuator/health` |
 
 
 ## 🤝 Contributing
