@@ -28,20 +28,6 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Install OS dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential automake bison flex libboost-all-dev libevent-dev libssl-dev libtool pkg-config
-
-      - name: Set up Thrift 0.22.0
-        run: |
-          wget -q https://dlcdn.apache.org/thrift/0.22.0/thrift-0.22.0.tar.gz
-          tar -xzf thrift-0.22.0.tar.gz
-          cd thrift-0.22.0
-          ./configure --without-rs --enable-libs=no --enable-tests=no
-          make -j$(nproc)
-          sudo make install
-
       - name: Build with Maven (skip tests)
         run: mvn -B -DskipTests clean install
 

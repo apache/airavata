@@ -20,7 +20,7 @@ group: "{{ deploy_user }}"
 user_home: "/home/{{ user }}"
 
 # Service ports
-api_server_port: 8930
+api_server_port: 9090
 api_server_tls_port: 9930
 agent_service_port: 18880
 research_service_port: 18899

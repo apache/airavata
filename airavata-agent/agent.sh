@@ -116,4 +116,4 @@ export TMPDIR=$CS_HOME/scratch/tmp
 export PATH=$PWD:$PATH
 
 # run agent
-airavata-agent --server "$SERVER:19900" --agent "$AGENT" --environ "$ENVIRON" --lib "$LIBRARIES" --pip "$PIP"
+airavata-agent --server "$SERVER:9090" --agent "$AGENT" --environ "$ENVIRON" --lib "$LIBRARIES" --pip "$PIP"

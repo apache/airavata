@@ -235,7 +235,6 @@ message JobSubmissionInterface {
 // ip_addresses: IP Addresses of the Resource.
 // resource_description: A user friendly description of the resource.
 // job_submission_interfaces: All available mechanisms to interact with the resource.
-// data_movement_interfaces: Available data movement interfaces.
 // file_systems: Map of file systems type and the path.
 message ComputeResourceDescription {
   string compute_resource_id = 1;
@@ -247,7 +246,7 @@ message ComputeResourceDescription {
   repeated BatchQueue batch_queues = 7;
   map<int32, string> file_systems = 8;
   repeated JobSubmissionInterface job_submission_interfaces = 9;
-  repeated org.apache.airavata.model.data.movement.DataMovementInterface data_movement_interfaces = 10;
+  reserved 10; // was data_movement_interfaces, removed — data movement is now storage-only
   int32 max_memory_per_node = 11;
   bool gateway_usage_reporting = 12;
   string gateway_usage_module_load_command = 13;

@@ -1,0 +1,116 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.api.project;
+
+option java_package = "org.apache.airavata.api.project";
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "org/apache/airavata/model/workspace/workspace.proto";
+
+// ProjectService provides RPCs for managing projects.
+service ProjectService {
+
+  rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/projects"
+      body: "project"
+    };
+  }
+
+  rpc GetProject(GetProjectRequest) returns (org.apache.airavata.model.workspace.Project) {
+    option (google.api.http) = {
+      get: "/api/v1/projects/{project_id}"
+    };
+  }
+
+  rpc UpdateProject(UpdateProjectRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/projects/{project_id}"
+      body: "project"
+    };
+  }
+
+  rpc DeleteProject(DeleteProjectRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/projects/{project_id}"
+    };
+  }
+
+  rpc GetUserProjects(GetUserProjectsRequest) returns (GetUserProjectsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/users/{user_name}/projects"
+    };
+  }
+
+  rpc SearchProjects(SearchProjectsRequest) returns (SearchProjectsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/projects"
+    };
+  }
+}
+
+// Request/Response messages
+
+message CreateProjectRequest {
+  string gateway_id = 1;
+  org.apache.airavata.model.workspace.Project project = 2;
+}
+
+message CreateProjectResponse {
+  string project_id = 1;
+}
+
+message GetProjectRequest {
+  string project_id = 1;
+}
+
+message UpdateProjectRequest {
+  string project_id = 1;
+  org.apache.airavata.model.workspace.Project project = 2;
+}
+
+message DeleteProjectRequest {
+  string project_id = 1;
+}
+
+message GetUserProjectsRequest {
+  string gateway_id = 1;
+  string user_name = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetUserProjectsResponse {
+  repeated org.apache.airavata.model.workspace.Project projects = 1;
+}
+
+message SearchProjectsRequest {
+  string gateway_id = 1;
+  string user_name = 2;
+  map<string, string> filters = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message SearchProjectsResponse {
+  repeated org.apache.airavata.model.workspace.Project projects = 1;
+}

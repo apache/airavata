@@ -102,20 +102,6 @@
   copy: remote_src=True src="{{ mysql_jar.files.0.path }}" dest={{ new_dist_dir.files.0.path }}/lib/
   notify: "restart airavata"
 
-# Temporary workaround for log4j jars (https://issues.apache.org/jira/browse/AIRAVATA-2205)
-- name: register the log4j jars
-  find:
-      paths: "{{ server_deployment_dir }}"
-      patterns: "slf4j-log4j12*.jar,log4j*.jar"
-      file_type: file
-      recurse: yes
-  register: log4j_jars
-
-- name: remove log4j jars
-  file: path={{item.path}} state=absent
-  notify: "restart airavata"
-  with_items: "{{ log4j_jars.files }}"
-
 # This handles the case where nothing needed to be updated but the server isn't running so we want to start it
 - name: start server if not running
   find: paths={{ new_dist_dir.files.0.path }}/bin/ patterns="server_start_*"

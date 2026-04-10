@@ -58,10 +58,9 @@ message User {
   string user_id = 1;
   string domain_id = 2;
   string user_name = 3;
-  string first_name = 4;
-  string last_name = 5;
-  string email = 6;
-  bytes icon = 7;
+  // fields 4-7 removed: profile data (first_name, last_name, email, icon)
+  // now lives exclusively in iam-service UserProfile
+  reserved 4, 5, 6, 7;
   int64 created_time = 8;
   int64 updated_time = 9;
 }

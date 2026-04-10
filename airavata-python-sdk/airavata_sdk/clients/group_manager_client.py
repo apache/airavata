@@ -14,44 +14,137 @@
 #  limitations under the License.
 #
 
+import json
 import logging
+from typing import Optional
 
-from airavata_sdk.transport import utils
+import grpc
+
 from airavata_sdk import Settings
+from airavata_sdk.transport.utils import create_group_manager_service_stub
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-# create formatter and add it to the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-# add the handler to the logger
-logger.addHandler(handler)
 
 
-class GroupManagerClient(object):
+class GroupManagerClient:
+    """Client for the Airavata GroupManagerService (gRPC)."""
 
-    def __init__(self):
+    def __init__(self, access_token: Optional[str] = None, claims: Optional[dict] = None):
         self.settings = Settings()
-        self.client = utils.initialize_group_manager_client(
-            self.settings.API_SERVER_HOSTNAME,
-            self.settings.API_SERVER_PORT,
-            self.settings.API_SERVER_SECURE,
+        host = self.settings.API_SERVER_HOSTNAME
+        port = self.settings.API_SERVER_PORT
+        secure = self.settings.API_SERVER_SECURE
+
+        target = f"{host}:{port}"
+        if secure:
+            self.channel = grpc.secure_channel(target, grpc.ssl_channel_credentials())
+        else:
+            self.channel = grpc.insecure_channel(target)
+
+        self._metadata: list[tuple[str, str]] = []
+        if access_token:
+            self._metadata.append(("authorization", f"Bearer {access_token}"))
+        if claims:
+            self._metadata.append(("x-claims", json.dumps(claims)))
+
+        self._stub = create_group_manager_service_stub(self.channel)
+
+    def close(self):
+        self.channel.close()
+
+    def create_group(self, group):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        resp = self._stub.CreateGroup(
+            pb2.CreateGroupRequest(group=group),
+            metadata=self._metadata,
         )
-        # expose the needed functions
-        self.get_api_version = self.client.getAPIVersion
-        self.create_group = self.client.createGroup
-        self.update_group = self.client.updateGroup
-        self.delete_group = self.client.deleteGroup
-        self.get_group = self.client.getGroup
-        self.get_groups = self.client.getGroups
-        self.get_all_groups_user_belongs = self.client.getAllGroupsUserBelongs
-        self.add_users_to_group = self.client.addUsersToGroup
-        self.remove_users_from_group = self.client.removeUsersFromGroup
-        self.transfer_group_ownership = self.client.transferGroupOwnership
-        self.add_group_admins = self.client.addGroupAdmins
-        self.remove_group_admins = self.client.removeGroupAdmins
-        self.has_admin_access = self.client.hasAdminAccess
-        self.has_owner_access = self.client.hasOwnerAccess
+        return resp.group_id
+
+    def update_group(self, group):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.UpdateGroup(
+            pb2.UpdateGroupRequest(group=group),
+            metadata=self._metadata,
+        )
+
+    def delete_group(self, group_id, owner_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.DeleteGroup(
+            pb2.DeleteGroupRequest(group_id=group_id, owner_id=owner_id),
+            metadata=self._metadata,
+        )
+
+    def get_group(self, group_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        return self._stub.GetGroup(
+            pb2.GetGroupRequest(group_id=group_id),
+            metadata=self._metadata,
+        )
+
+    def get_groups(self):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        resp = self._stub.GetGroups(
+            pb2.GetGroupsRequest(),
+            metadata=self._metadata,
+        )
+        return list(resp.groups)
+
+    def get_all_groups_user_belongs(self, user_name):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        resp = self._stub.GetAllGroupsUserBelongs(
+            pb2.GetAllGroupsUserBelongsRequest(user_name=user_name),
+            metadata=self._metadata,
+        )
+        return list(resp.groups)
+
+    def add_users_to_group(self, user_ids, group_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.AddUsersToGroup(
+            pb2.AddUsersToGroupRequest(group_id=group_id, user_ids=user_ids),
+            metadata=self._metadata,
+        )
+
+    def remove_users_from_group(self, user_ids, group_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.RemoveUsersFromGroup(
+            pb2.RemoveUsersFromGroupRequest(group_id=group_id, user_ids=user_ids),
+            metadata=self._metadata,
+        )
+
+    def transfer_group_ownership(self, group_id, new_owner_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.TransferGroupOwnership(
+            pb2.TransferGroupOwnershipRequest(group_id=group_id, new_owner_id=new_owner_id),
+            metadata=self._metadata,
+        )
+
+    def add_group_admins(self, group_id, admin_ids):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.AddGroupAdmins(
+            pb2.AddGroupAdminsRequest(group_id=group_id, admin_ids=admin_ids),
+            metadata=self._metadata,
+        )
+
+    def remove_group_admins(self, group_id, admin_ids):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        self._stub.RemoveGroupAdmins(
+            pb2.RemoveGroupAdminsRequest(group_id=group_id, admin_ids=admin_ids),
+            metadata=self._metadata,
+        )
+
+    def has_admin_access(self, group_id, admin_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        resp = self._stub.HasAdminAccess(
+            pb2.HasAdminAccessRequest(group_id=group_id, admin_id=admin_id),
+            metadata=self._metadata,
+        )
+        return resp.has_access
+
+    def has_owner_access(self, group_id, owner_id):
+        from airavata_sdk.generated.services import group_manager_service_pb2 as pb2
+        resp = self._stub.HasOwnerAccess(
+            pb2.HasOwnerAccessRequest(group_id=group_id, owner_id=owner_id),
+            metadata=self._metadata,
+        )
+        return resp.has_access

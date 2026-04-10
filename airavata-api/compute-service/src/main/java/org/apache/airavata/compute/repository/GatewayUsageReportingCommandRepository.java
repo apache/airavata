@@ -1,0 +1,88 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.compute.repository;
+
+import org.apache.airavata.compute.mapper.ComputeMapper;
+import org.apache.airavata.compute.model.GatewayUsageReportingCommandEntity;
+import org.apache.airavata.compute.model.GatewayUsageReportingPK;
+import org.apache.airavata.db.AbstractRepository;
+import org.apache.airavata.interfaces.RegistryException;
+import org.apache.airavata.interfaces.UsageReportingProvider;
+import org.apache.airavata.model.workspace.proto.GatewayUsageReportingCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+public class GatewayUsageReportingCommandRepository
+        extends AbstractRepository<
+                GatewayUsageReportingCommand, GatewayUsageReportingCommandEntity, GatewayUsageReportingPK>
+        implements UsageReportingProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(GatewayUsageReportingCommandRepository.class);
+
+    public GatewayUsageReportingCommandRepository() {
+        super(GatewayUsageReportingCommand.class, GatewayUsageReportingCommandEntity.class);
+    }
+
+    @Override
+    protected GatewayUsageReportingCommand toModel(GatewayUsageReportingCommandEntity entity) {
+        return ComputeMapper.INSTANCE.gatewayUsageReportingCommandToModel(entity);
+    }
+
+    @Override
+    protected GatewayUsageReportingCommandEntity toEntity(GatewayUsageReportingCommand model) {
+        return ComputeMapper.INSTANCE.gatewayUsageReportingCommandToEntity(model);
+    }
+
+    public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws RegistryException {
+        String gatewayId = command.getGatewayId();
+        GatewayUsageReportingCommandEntity reportingEntity =
+                ComputeMapper.INSTANCE.gatewayUsageReportingCommandToEntity(command);
+        execute(entityManager -> entityManager.merge(reportingEntity));
+        logger.info("Added gateway usage reporting command for gateway {} to the database", command.getGatewayId());
+    }
+
+    public GatewayUsageReportingCommand getGatewayUsageReportingCommand(String gatewayId, String computeResourceId) {
+        GatewayUsageReportingPK pk = new GatewayUsageReportingPK();
+        pk.setGatewayId(gatewayId);
+        pk.setComputeResourceId(computeResourceId);
+        return get(pk);
+    }
+
+    public boolean isGatewayUsageReportingCommandExists(String gatewayId, String computeResourceId)
+            throws RegistryException {
+        GatewayUsageReportingPK pk = new GatewayUsageReportingPK();
+        pk.setGatewayId(gatewayId);
+        pk.setComputeResourceId(computeResourceId);
+        return isExists(pk);
+    }
+
+    public void removeGatewayUsageReportingCommand(String gatewayId, String computeResourceId)
+            throws RegistryException {
+        if (isGatewayUsageReportingCommandExists(gatewayId, computeResourceId)) {
+            GatewayUsageReportingPK pk = new GatewayUsageReportingPK();
+            pk.setGatewayId(gatewayId);
+            pk.setComputeResourceId(computeResourceId);
+            delete(pk);
+            logger.info("Deleted gateway usage reporting command for gateway {}", gatewayId);
+        }
+    }
+}

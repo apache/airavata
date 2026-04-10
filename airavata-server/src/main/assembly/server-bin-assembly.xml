@@ -29,7 +29,7 @@ under the License.
     <fileSets>
         <!-- launcher script -->
         <fileSet>
-            <directory>src/main/bin</directory>
+            <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>

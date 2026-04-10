@@ -41,14 +41,6 @@
   with_items:
     - git
     - build-essential
-    - automake
-    - bison
-    - flex
-    - libboost-all-dev
-    - libevent-dev
-    - libssl-dev
-    - libtool
-    - pkg-config
   become_user: root
   when: ansible_os_family == "Debian"
 
@@ -84,45 +76,6 @@
     dest: /etc/profile.d/maven.sh
   become: yes
   become_user: root
-
-- name: Check if Thrift is installed
-  command: which thrift
-  register: thrift_check
-  changed_when: false
-  failed_when: false
-  become: no
-
-- name: Download Thrift 0.22.0
-  shell: |
-    cd /tmp && \
-    wget -q --no-check-certificate https://dlcdn.apache.org/thrift/0.22.0/thrift-0.22.0.tar.gz && \
-    tar -xzf thrift-0.22.0.tar.gz
-  args:
-    creates: /tmp/thrift-0.22.0
-  become: yes
-  become_user: root
-  when: thrift_check.rc != 0
-
-- name: Build and install Thrift 0.22.0
-  shell: |
-    cd /tmp/thrift-0.22.0 && \
-    ./configure --without-rs --enable-libs=no --enable-tests=no && \
-    make -j$(nproc) && \
-    make install && \
-    ldconfig
-  become: yes
-  become_user: root
-  when: thrift_check.rc != 0
-
-- name: Verify Thrift installation
-  command: thrift -version
-  register: thrift_version
-  changed_when: false
-  become: no
-
-- name: Display Thrift version
-  debug:
-    msg: "Thrift version: {{ thrift_version.stdout }}"
 
 # Setup airavata source
 - name: Create deployment directory {{ deployment_dir }}

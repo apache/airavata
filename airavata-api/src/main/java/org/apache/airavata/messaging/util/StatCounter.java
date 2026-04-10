@@ -21,7 +21,7 @@ package org.apache.airavata.messaging.util;
 
 import java.io.*;
 import java.util.*;
-import org.apache.airavata.model.messaging.event.Message;
+import org.apache.airavata.model.messaging.event.proto.Message;
 
 public class StatCounter {
     private static StatCounter ourInstance = new StatCounter();

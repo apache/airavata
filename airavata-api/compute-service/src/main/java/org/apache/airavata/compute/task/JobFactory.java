@@ -1,0 +1,164 @@
+/**
+*
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements. See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership. The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License. You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+package org.apache.airavata.compute.task;
+
+import org.apache.airavata.interfaces.AppCatalogException;
+import org.apache.airavata.interfaces.RegistryHandler;
+import org.apache.airavata.model.appcatalog.computeresource.proto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class JobFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(JobFactory.class);
+
+    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
+        return switch (resourceJobManagerType) {
+            case FORK -> "FORK_Groovy.template";
+            case PBS -> "PBS_Groovy.template";
+            case SLURM -> "SLURM_Groovy.template";
+            case UGE -> "UGE_Groovy.template";
+            case LSF -> "LSF_Groovy.template";
+            case CLOUD -> "CLOUD_Groovy.template";
+            case HTCONDOR -> "HTCONDOR_Groovy.template";
+            default -> null;
+        };
+    }
+
+    public static ResourceJobManager getResourceJobManager(
+            RegistryHandler registryClient,
+            JobSubmissionProtocol submissionProtocol,
+            JobSubmissionInterface jobSubmissionInterface)
+            throws Exception {
+        try {
+            if (submissionProtocol == JobSubmissionProtocol.SSH) {
+                SSHJobSubmission sshJobSubmission =
+                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null) {
+                    return sshJobSubmission.getResourceJobManager();
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
+                LOCALSubmission localJobSubmission =
+                        getLocalJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (localJobSubmission != null) {
+                    return localJobSubmission.getResourceJobManager();
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK) {
+                SSHJobSubmission sshJobSubmission =
+                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null) {
+                    return sshJobSubmission.getResourceJobManager();
+                }
+            }
+        } catch (Exception e) {
+            logger.error(
+                    "Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface "
+                            + jobSubmissionInterface.getJobSubmissionInterfaceId(),
+                    e);
+            throw new Exception(
+                    "Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface "
+                            + jobSubmissionInterface.getJobSubmissionInterfaceId(),
+                    e);
+        }
+
+        // If not resource job manager is found, throw an exception to fail fast
+        throw new Exception("No resource job manager for protocol " + submissionProtocol + " and interface "
+                + jobSubmissionInterface.getJobSubmissionInterfaceId());
+    }
+
+    public static LOCALSubmission getLocalJobSubmission(RegistryHandler registryClient, String submissionId)
+            throws AppCatalogException {
+        try {
+            return registryClient.getLocalJobSubmission(submissionId);
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            throw new AppCatalogException(errorMsg, e);
+        }
+    }
+
+    public static SSHJobSubmission getSSHJobSubmission(RegistryHandler registryClient, String submissionId)
+            throws AppCatalogException {
+        try {
+            return registryClient.getSSHJobSubmission(submissionId);
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
+            throw new AppCatalogException(errorMsg, e);
+        }
+    }
+
+    public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager)
+            throws Exception {
+        if (resourceJobManager == null) {
+            throw new Exception("Resource job manager can not be null");
+        }
+
+        String templateFileName = "templates/" + getTemplateFileName(resourceJobManager.getResourceJobManagerType());
+        switch (resourceJobManager.getResourceJobManagerType()) {
+            case PBS:
+                return new PBSJobConfiguration(
+                        templateFileName,
+                        ".pbs",
+                        resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommandsMap(),
+                        new PBSOutputParser());
+            case SLURM:
+                return new SlurmJobConfiguration(
+                        templateFileName,
+                        ".slurm",
+                        resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommandsMap(),
+                        new SlurmOutputParser());
+            case LSF:
+                return new LSFJobConfiguration(
+                        templateFileName,
+                        ".lsf",
+                        resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommandsMap(),
+                        new LSFOutputParser());
+            case UGE:
+                return new UGEJobConfiguration(
+                        templateFileName,
+                        ".pbs",
+                        resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommandsMap(),
+                        new UGEOutputParser());
+            case FORK:
+                return new ForkJobConfiguration(
+                        templateFileName,
+                        ".sh",
+                        resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommandsMap(),
+                        new ForkOutputParser());
+            case HTCONDOR:
+                return new HTCondorJobConfiguration(
+                        templateFileName,
+                        ".submit",
+                        resourceJobManager.getJobManagerBinPath(),
+                        resourceJobManager.getJobManagerCommandsMap(),
+                        new HTCondorOutputParser());
+            case CLOUD:
+                return new CloudJobManagerConfiguration(templateFileName);
+            // We don't have a job configuration manager for CLOUD type
+            default:
+                throw new Exception("Could not find a job manager configuration for job manager type "
+                        + resourceJobManager.getResourceJobManagerType());
+        }
+    }
+}

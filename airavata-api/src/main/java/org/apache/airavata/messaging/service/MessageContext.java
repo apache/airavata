@@ -20,11 +20,10 @@
 package org.apache.airavata.messaging.service;
 
 import java.sql.Timestamp;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.thrift.TBase;
+import org.apache.airavata.model.messaging.event.proto.MessageType;
 
 public class MessageContext {
-    private final TBase event;
+    private final Object event;
     private final MessageType type;
     private final String messageId;
     private final String gatewayId;
@@ -32,14 +31,14 @@ public class MessageContext {
     private long deliveryTag;
     private boolean isRedeliver;
 
-    public MessageContext(TBase event, MessageType type, String messageId, String gatewayId) {
+    public MessageContext(Object event, MessageType type, String messageId, String gatewayId) {
         this.event = event;
         this.type = type;
         this.messageId = messageId;
         this.gatewayId = gatewayId;
     }
 
-    public MessageContext(TBase event, MessageType type, String messageId, String gatewayId, long deliveryTag) {
+    public MessageContext(Object event, MessageType type, String messageId, String gatewayId, long deliveryTag) {
         this.event = event;
         this.type = type;
         this.messageId = messageId;
@@ -47,7 +46,7 @@ public class MessageContext {
         this.deliveryTag = deliveryTag;
     }
 
-    public TBase getEvent() {
+    public Object getEvent() {
         return event;
     }
 
