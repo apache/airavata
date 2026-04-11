@@ -1,0 +1,297 @@
+/* Airavata Portal Keycloak Theme — pixel-matched to portal landing page */
+
+/* ── NUCLEAR: Force all card elements to 480px width ── */
+.pf-v5-c-login__container,
+.pf-v5-c-login__container > *,
+.pf-v5-c-login__header,
+.pf-v5-c-login__main,
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-footer {
+  width: 480px !important;
+  min-width: 480px !important;
+  max-width: 480px !important;
+  box-sizing: border-box !important;
+}
+
+/* ── Background ── */
+html, body, .login-pf, .pf-v5-c-login {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  min-height: 100vh !important;
+}
+
+/* ── Center everything ── */
+.pf-v5-c-login {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem 0 !important;
+}
+
+/* Kill any grid/flex that shifts the container off-center */
+.pf-v5-c-login > * {
+  margin: 0 auto !important;
+}
+
+/* Absolute center the container */
+.pf-v5-c-login__container {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* ── Container: single column, card width ── */
+.pf-v5-c-login__container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: 480px !important;
+  min-width: 480px !important;
+  max-width: 480px !important;
+  grid-template-columns: unset !important;
+  grid-template-rows: unset !important;
+  gap: 0 !important;
+}
+
+/* ── Realm header: INSIDE the card as top section ── */
+.pf-v5-c-login__header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 16px 16px 0 0 !important;
+  text-align: center !important;
+  padding: 1.75rem 2rem 0 !important;
+  margin: 0 !important;
+  grid-area: unset !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+  width: 100% !important;
+  align-self: stretch !important;
+}
+
+#kc-header-wrapper {
+  color: #1a1a2e !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+  font-size: 1.75rem !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Logo above realm name — same as portal landing page */
+#kc-header-wrapper::before {
+  content: '' !important;
+  display: block !important;
+  width: 80px !important;
+  height: 80px !important;
+  margin: 0 auto 0.5rem !important;
+  background: url('../img/logo.png') center/contain no-repeat !important;
+}
+
+/* ── Card body ── */
+.pf-v5-c-login__main {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 0 0 16px 16px !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+  border-top: none !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  align-self: stretch !important;
+  grid-area: unset !important;
+}
+
+/* ── Card header (title) ── */
+.pf-v5-c-login__main-header {
+  padding: 0.25rem 2rem 0 !important;
+  background: transparent !important;
+  text-align: center !important;
+}
+
+.pf-v5-c-login__main-header .pf-v5-c-title,
+#kc-page-title {
+  color: #666 !important;
+  font-weight: 400 !important;
+  font-size: 1rem !important;
+  text-align: center !important;
+  margin-bottom: 1rem !important;
+}
+
+/* ── Card body (form) ── */
+.pf-v5-c-login__main-body {
+  padding: 0 2rem 1rem !important;
+  background: transparent !important;
+}
+
+/* Tight form spacing */
+.pf-v5-c-login__main-body .pf-v5-c-form {
+  gap: 0 !important;
+}
+.pf-v5-c-login__main-body .pf-v5-c-form__group {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+}
+.pf-v5-c-login__main-body .pf-v5-c-form__group:last-child {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ── Labels ── */
+.pf-v5-c-form__label-text, label {
+  color: #333 !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+
+/* ── Inputs ── */
+.pf-v5-c-form-control,
+.pf-v5-c-input-group,
+.pf-v5-c-text-input-group {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+}
+
+.pf-v5-c-form-control:focus-within,
+.pf-v5-c-text-input-group:focus-within,
+.pf-v5-c-input-group:focus-within {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+  color: #333 !important;
+  padding: 0.625rem 0.75rem !important;
+}
+
+/* ── Password toggle ── */
+.pf-v5-c-button.pf-m-control {
+  background: #fff !important;
+  color: #666 !important;
+  border: none !important;
+  border-left: 1px solid #dee2e6 !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.pf-v5-c-button.pf-m-control:hover {
+  background: #f0f0f0 !important;
+  color: #333 !important;
+}
+
+/* ── Primary button ── */
+.pf-v5-c-button.pf-m-primary,
+#kc-login {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.875rem 2.5rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  color: #fff !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+  margin-top: 0.5rem !important;
+}
+
+.pf-v5-c-button.pf-m-primary:hover,
+#kc-login:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+  color: #fff !important;
+}
+
+/* ── Footer (social/IdP) ── */
+.pf-v5-c-login__main-footer {
+  padding: 0.25rem 2rem 1rem !important;
+  background: transparent !important;
+  grid-area: unset !important;
+}
+
+/* Make footer content same width as form body */
+.pf-v5-c-login__main-footer-links-item {
+  padding: 0 !important;
+}
+
+.pf-v5-c-login__main-footer-band {
+  border-top: none !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  background: transparent !important;
+}
+
+.pf-v5-c-login__main-footer-band-item:first-child {
+  color: #999 !important;
+  font-size: 0.85rem !important;
+  text-align: center !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  line-height: 1.2 !important;
+}
+
+/* IdP buttons — muted outlined style */
+.pf-v5-c-login__main-footer-links {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-top: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+
+.pf-v5-c-login__main-footer-links-item {
+  width: 100% !important;
+}
+
+.pf-v5-c-login__main-footer-links-item-link {
+  border-radius: 8px !important;
+  border: 2px solid #667eea !important;
+  background: transparent !important;
+  color: #667eea !important;
+  padding: 0.625rem 1rem !important;
+  width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.4 !important;
+  transition: all 0.15s ease !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+
+.pf-v5-c-login__main-footer-links-item-link img,
+.pf-v5-c-login__main-footer-links-item-link svg {
+  width: 20px !important;
+  height: 20px !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  filter: brightness(0) saturate(100%) invert(40%) sepia(85%) saturate(800%) hue-rotate(210deg) !important;
+}
+
+.pf-v5-c-login__main-footer-links-item-link span {
+  vertical-align: middle !important;
+}
+
+.pf-v5-c-login__main-footer-links-item-link:hover {
+  background: rgba(102, 126, 234, 0.08) !important;
+  border-color: #764ba2 !important;
+  color: #764ba2 !important;
+  text-decoration: none !important;
+}
+
+/* ── Links ── */
+.pf-v5-c-login__main-body a { color: #667eea !important; }
+.pf-v5-c-login__main-body a:hover { color: #764ba2 !important; }
+
+/* ── Alerts ── */
+.pf-v5-c-alert { border-radius: 8px !important; }
+
+/* ── Hide Keycloak footer ── */
+.pf-v5-c-login__footer { display: none !important; }

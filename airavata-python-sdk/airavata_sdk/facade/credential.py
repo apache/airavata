@@ -24,17 +24,19 @@ class CredentialClient:
 
     def generate_and_register_ssh_keys(self, gateway_id, username, description=""):
         pb2 = self._svc("credential_service_pb2")
-        return self._stub.GenerateAndRegisterSSHKeys(
+        response = self._stub.GenerateAndRegisterSSHKeys(
             pb2.GenerateAndRegisterSSHKeysRequest(gateway_id=gateway_id, username=username, description=description),
             metadata=self._metadata,
         )
+        return response.token
 
     def register_pwd_credential(self, gateway_id, password_credential):
         pb2 = self._svc("credential_service_pb2")
-        return self._stub.RegisterPwdCredential(
+        response = self._stub.RegisterPwdCredential(
             pb2.RegisterPwdCredentialRequest(gateway_id=gateway_id, password_credential=password_credential),
             metadata=self._metadata,
         )
+        return response.token
 
     def get_credential_summary(self, token_id, gateway_id):
         pb2 = self._svc("credential_service_pb2")
@@ -45,10 +47,11 @@ class CredentialClient:
 
     def get_all_credential_summaries(self, gateway_id, type):
         pb2 = self._svc("credential_service_pb2")
-        return self._stub.GetAllCredentialSummaries(
+        response = self._stub.GetAllCredentialSummaries(
             pb2.GetAllCredentialSummariesRequest(gateway_id=gateway_id, type=type),
             metadata=self._metadata,
         )
+        return list(response.credential_summaries)
 
     def delete_ssh_pub_key(self, token_id, gateway_id):
         pb2 = self._svc("credential_service_pb2")
@@ -66,21 +69,24 @@ class CredentialClient:
 
     def is_ssh_setup_complete(self, compute_resource_id, gateway_id, username):
         pb2 = self._svc("credential_service_pb2")
-        return self._stub.IsSSHSetupComplete(
+        response = self._stub.IsSSHSetupComplete(
             pb2.IsSSHSetupCompleteRequest(compute_resource_id=compute_resource_id, gateway_id=gateway_id, username=username),
             metadata=self._metadata,
         )
+        return response.is_complete
 
     def setup_ssh_account(self, compute_resource_id, gateway_id, username):
         pb2 = self._svc("credential_service_pb2")
-        return self._stub.SetupSSHAccount(
+        response = self._stub.SetupSSHAccount(
             pb2.SetupSSHAccountRequest(compute_resource_id=compute_resource_id, gateway_id=gateway_id, username=username),
             metadata=self._metadata,
         )
+        return response.success
 
     def does_user_have_ssh_account(self, compute_resource_id, gateway_id, username):
         pb2 = self._svc("credential_service_pb2")
-        return self._stub.DoesUserHaveSSHAccount(
+        response = self._stub.DoesUserHaveSSHAccount(
             pb2.DoesUserHaveSSHAccountRequest(compute_resource_id=compute_resource_id, gateway_id=gateway_id, username=username),
             metadata=self._metadata,
         )
+        return response.has_account

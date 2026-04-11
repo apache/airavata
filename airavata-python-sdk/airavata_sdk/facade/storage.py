@@ -22,10 +22,11 @@ class StorageClient:
 
     def register_storage_resource(self, storage_resource):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.RegisterStorageResource(
+        response = self._resource.RegisterStorageResource(
             pb2.RegisterStorageResourceRequest(storage_resource=storage_resource),
             metadata=self._metadata,
         )
+        return response.storage_resource_id
 
     def get_storage_resource(self, storage_resource_id):
         pb2 = self._svc("resource_service_pb2")
@@ -50,10 +51,11 @@ class StorageClient:
 
     def get_all_storage_resource_names(self):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.GetAllStorageResourceNames(
+        response = self._resource.GetAllStorageResourceNames(
             pb2.GetAllStorageResourceNamesRequest(),
             metadata=self._metadata,
         )
+        return dict(response.storage_resource_names)
 
     # ================================================================
     # Data Movement
@@ -61,10 +63,11 @@ class StorageClient:
 
     def add_local_data_movement(self, compute_resource_id, priority, dm_type, local_data_movement):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddLocalDataMovement(
+        response = self._resource.AddLocalDataMovement(
             pb2.AddLocalDataMovementRequest(compute_resource_id=compute_resource_id, priority=priority, dm_type=dm_type, local_data_movement=local_data_movement),
             metadata=self._metadata,
         )
+        return response.data_movement_id
 
     def update_local_data_movement(self, data_movement_id, local_data_movement):
         pb2 = self._svc("resource_service_pb2")
@@ -82,10 +85,11 @@ class StorageClient:
 
     def add_scp_data_movement(self, compute_resource_id, priority, dm_type, scp_data_movement):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddSCPDataMovement(
+        response = self._resource.AddSCPDataMovement(
             pb2.AddSCPDataMovementRequest(compute_resource_id=compute_resource_id, priority=priority, dm_type=dm_type, scp_data_movement=scp_data_movement),
             metadata=self._metadata,
         )
+        return response.data_movement_id
 
     def update_scp_data_movement(self, data_movement_id, scp_data_movement):
         pb2 = self._svc("resource_service_pb2")
@@ -103,10 +107,11 @@ class StorageClient:
 
     def add_grid_ftp_data_movement(self, compute_resource_id, priority, dm_type, gridftp_data_movement):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddGridFTPDataMovement(
+        response = self._resource.AddGridFTPDataMovement(
             pb2.AddGridFTPDataMovementRequest(compute_resource_id=compute_resource_id, priority=priority, dm_type=dm_type, gridftp_data_movement=gridftp_data_movement),
             metadata=self._metadata,
         )
+        return response.data_movement_id
 
     def update_grid_ftp_data_movement(self, data_movement_id, gridftp_data_movement):
         pb2 = self._svc("resource_service_pb2")

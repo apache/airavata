@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -44,6 +45,12 @@ import org.slf4j.LoggerFactory;
 public class Utility {
 
     protected static Logger log = LoggerFactory.getLogger(Utility.class);
+
+    static {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        }
+    }
 
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
@@ -94,22 +101,10 @@ public class Utility {
             kpg.initialize(2048);
             KeyPair kp = kpg.generateKeyPair();
 
-            // Encode private key in PEM format using BouncyCastle
+            // Encode private key in PEM format (unencrypted — credential store handles encryption at rest)
             StringWriter privateKeyWriter = new StringWriter();
             try (JcaPEMWriter pemWriter = new JcaPEMWriter(privateKeyWriter)) {
-                String passphrase = credential.getPassphrase();
-                if (passphrase != null && !passphrase.isEmpty()) {
-                    org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8EncryptorBuilder encryptorBuilder =
-                            new org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8EncryptorBuilder(
-                                    org.bouncycastle.asn1.nist.NISTObjectIdentifiers.id_aes256_CBC);
-                    encryptorBuilder.setPassword(passphrase.toCharArray());
-                    org.bouncycastle.operator.OutputEncryptor encryptor = encryptorBuilder.build();
-                    org.bouncycastle.pkcs.jcajce.JcaPKCS8EncryptedPrivateKeyInfoBuilder pkcs8Builder =
-                            new org.bouncycastle.pkcs.jcajce.JcaPKCS8EncryptedPrivateKeyInfoBuilder(kp.getPrivate());
-                    pemWriter.writeObject(pkcs8Builder.build(encryptor));
-                } else {
-                    pemWriter.writeObject(new JcaMiscPEMGenerator(kp.getPrivate()));
-                }
+                pemWriter.writeObject(new JcaMiscPEMGenerator(kp.getPrivate()));
             }
             String privateKeyPem = privateKeyWriter.toString();
 

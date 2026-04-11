@@ -29,10 +29,11 @@ class ComputeClient:
 
     def register_compute_resource(self, compute_resource):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.RegisterComputeResource(
+        response = self._resource.RegisterComputeResource(
             pb2.RegisterComputeResourceRequest(compute_resource=compute_resource),
             metadata=self._metadata,
         )
+        return response.compute_resource_id
 
     def get_compute_resource(self, compute_resource_id):
         pb2 = self._svc("resource_service_pb2")
@@ -43,10 +44,11 @@ class ComputeClient:
 
     def get_all_compute_resource_names(self):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.GetAllComputeResourceNames(
+        response = self._resource.GetAllComputeResourceNames(
             pb2.GetAllComputeResourceNamesRequest(),
             metadata=self._metadata,
         )
+        return dict(response.compute_resource_names)
 
     def update_compute_resource(self, compute_resource_id, compute_resource):
         pb2 = self._svc("resource_service_pb2")
@@ -66,10 +68,11 @@ class ComputeClient:
 
     def add_local_submission_details(self, compute_resource_id, priority, local_submission):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddLocalSubmission(
+        response = self._resource.AddLocalSubmission(
             pb2.AddLocalSubmissionRequest(compute_resource_id=compute_resource_id, priority=priority, local_submission=local_submission),
             metadata=self._metadata,
         )
+        return response.submission_id
 
     def update_local_submission_details(self, submission_id, local_submission):
         pb2 = self._svc("resource_service_pb2")
@@ -87,17 +90,19 @@ class ComputeClient:
 
     def add_ssh_job_submission_details(self, compute_resource_id, priority, ssh_job_submission):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddSSHJobSubmission(
+        response = self._resource.AddSSHJobSubmission(
             pb2.AddSSHJobSubmissionRequest(compute_resource_id=compute_resource_id, priority=priority, ssh_job_submission=ssh_job_submission),
             metadata=self._metadata,
         )
+        return response.submission_id
 
     def add_ssh_fork_job_submission_details(self, compute_resource_id, priority, ssh_job_submission):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddSSHForkJobSubmission(
+        response = self._resource.AddSSHForkJobSubmission(
             pb2.AddSSHForkJobSubmissionRequest(compute_resource_id=compute_resource_id, priority=priority, ssh_job_submission=ssh_job_submission),
             metadata=self._metadata,
         )
+        return response.submission_id
 
     def get_ssh_job_submission(self, submission_id):
         pb2 = self._svc("resource_service_pb2")
@@ -108,10 +113,11 @@ class ComputeClient:
 
     def add_unicore_job_submission_details(self, compute_resource_id, priority, unicore_job_submission):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddUnicoreJobSubmission(
+        response = self._resource.AddUnicoreJobSubmission(
             pb2.AddUnicoreJobSubmissionRequest(compute_resource_id=compute_resource_id, priority=priority, unicore_job_submission=unicore_job_submission),
             metadata=self._metadata,
         )
+        return response.submission_id
 
     def get_unicore_job_submission(self, submission_id):
         pb2 = self._svc("resource_service_pb2")
@@ -122,10 +128,11 @@ class ComputeClient:
 
     def add_cloud_job_submission_details(self, compute_resource_id, priority, cloud_job_submission):
         pb2 = self._svc("resource_service_pb2")
-        return self._resource.AddCloudJobSubmission(
+        response = self._resource.AddCloudJobSubmission(
             pb2.AddCloudJobSubmissionRequest(compute_resource_id=compute_resource_id, priority=priority, cloud_job_submission=cloud_job_submission),
             metadata=self._metadata,
         )
+        return response.submission_id
 
     def get_cloud_job_submission(self, submission_id):
         pb2 = self._svc("resource_service_pb2")
@@ -175,10 +182,11 @@ class ComputeClient:
 
     def register_gateway_resource_profile(self, gateway_resource_profile):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
-        return self._gw_profile.RegisterGatewayResourceProfile(
+        response = self._gw_profile.RegisterGatewayResourceProfile(
             pb2.RegisterGatewayResourceProfileRequest(gateway_resource_profile=gateway_resource_profile),
             metadata=self._metadata,
         )
+        return response.gateway_id
 
     def get_gateway_resource_profile(self, gateway_id):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
@@ -231,24 +239,27 @@ class ComputeClient:
 
     def get_all_gateway_compute_resource_preferences(self, gateway_id):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
-        return self._gw_profile.GetAllComputePreferences(
+        response = self._gw_profile.GetAllComputePreferences(
             pb2.GetAllComputePreferencesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.compute_resource_preferences)
 
     def get_all_gateway_storage_preferences(self, gateway_id):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
-        return self._gw_profile.GetAllStoragePreferences(
+        response = self._gw_profile.GetAllStoragePreferences(
             pb2.GetAllStoragePreferencesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.storage_preferences)
 
     def get_all_gateway_resource_profiles(self):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
-        return self._gw_profile.GetAllGatewayResourceProfiles(
+        response = self._gw_profile.GetAllGatewayResourceProfiles(
             pb2.GetAllGatewayResourceProfilesRequest(),
             metadata=self._metadata,
         )
+        return list(response.gateway_resource_profiles)
 
     def update_gateway_compute_resource_preference(self, gateway_id, compute_resource_id, compute_resource_preference):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
@@ -280,10 +291,11 @@ class ComputeClient:
 
     def get_ssh_account_provisioners(self):
         pb2 = self._svc("gateway_resource_profile_service_pb2")
-        return self._gw_profile.GetSSHAccountProvisioners(
+        response = self._gw_profile.GetSSHAccountProvisioners(
             pb2.GetSSHAccountProvisionersRequest(),
             metadata=self._metadata,
         )
+        return list(response.ssh_account_provisioners)
 
     # ================================================================
     # Group Resource Profile Service
@@ -319,10 +331,11 @@ class ComputeClient:
 
     def get_group_resource_list(self):
         pb2 = self._svc("group_resource_profile_service_pb2")
-        return self._grp_profile.GetGroupResourceList(
+        response = self._grp_profile.GetGroupResourceList(
             pb2.GetGroupResourceListRequest(),
             metadata=self._metadata,
         )
+        return list(response.group_resource_profiles)
 
     def remove_group_compute_prefs(self, group_resource_profile_id, compute_resource_id):
         pb2 = self._svc("group_resource_profile_service_pb2")
@@ -368,24 +381,27 @@ class ComputeClient:
 
     def get_group_compute_resource_pref_list(self, group_resource_profile_id):
         pb2 = self._svc("group_resource_profile_service_pb2")
-        return self._grp_profile.GetGroupComputePrefList(
+        response = self._grp_profile.GetGroupComputePrefList(
             pb2.GetGroupComputePrefListRequest(group_resource_profile_id=group_resource_profile_id),
             metadata=self._metadata,
         )
+        return list(response.group_compute_resource_preferences)
 
     def get_group_batch_queue_resource_policy_list(self, group_resource_profile_id):
         pb2 = self._svc("group_resource_profile_service_pb2")
-        return self._grp_profile.GetGroupBatchQueuePolicyList(
+        response = self._grp_profile.GetGroupBatchQueuePolicyList(
             pb2.GetGroupBatchQueuePolicyListRequest(group_resource_profile_id=group_resource_profile_id),
             metadata=self._metadata,
         )
+        return list(response.batch_queue_resource_policies)
 
     def get_group_compute_resource_policy_list(self, group_resource_profile_id):
         pb2 = self._svc("group_resource_profile_service_pb2")
-        return self._grp_profile.GetGroupComputeResourcePolicyList(
+        response = self._grp_profile.GetGroupComputeResourcePolicyList(
             pb2.GetGroupComputeResourcePolicyListRequest(group_resource_profile_id=group_resource_profile_id),
             metadata=self._metadata,
         )
+        return list(response.compute_resource_policies)
 
     def get_gateway_groups(self):
         pb2 = self._svc("group_resource_profile_service_pb2")
@@ -400,17 +416,19 @@ class ComputeClient:
 
     def register_user_resource_profile(self, user_resource_profile):
         pb2 = self._svc("user_resource_profile_service_pb2")
-        return self._user_profile.RegisterUserResourceProfile(
+        response = self._user_profile.RegisterUserResourceProfile(
             pb2.RegisterUserResourceProfileRequest(user_resource_profile=user_resource_profile),
             metadata=self._metadata,
         )
+        return response.user_id
 
     def is_user_resource_profile_exists(self, user_id, gateway_id):
         pb2 = self._svc("user_resource_profile_service_pb2")
-        return self._user_profile.IsUserResourceProfileExists(
+        response = self._user_profile.IsUserResourceProfileExists(
             pb2.IsUserResourceProfileExistsRequest(user_id=user_id, gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return response.exists
 
     def get_user_resource_profile(self, user_id, gateway_id):
         pb2 = self._svc("user_resource_profile_service_pb2")
@@ -463,24 +481,27 @@ class ComputeClient:
 
     def get_all_user_compute_resource_preferences(self, user_id, gateway_id):
         pb2 = self._svc("user_resource_profile_service_pb2")
-        return self._user_profile.GetAllUserComputePreferences(
+        response = self._user_profile.GetAllUserComputePreferences(
             pb2.GetAllUserComputePreferencesRequest(user_id=user_id, gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.user_compute_resource_preferences)
 
     def get_all_user_storage_preferences(self, user_id, gateway_id):
         pb2 = self._svc("user_resource_profile_service_pb2")
-        return self._user_profile.GetAllUserStoragePreferences(
+        response = self._user_profile.GetAllUserStoragePreferences(
             pb2.GetAllUserStoragePreferencesRequest(user_id=user_id, gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.user_storage_preferences)
 
     def get_all_user_resource_profiles(self):
         pb2 = self._svc("user_resource_profile_service_pb2")
-        return self._user_profile.GetAllUserResourceProfiles(
+        response = self._user_profile.GetAllUserResourceProfiles(
             pb2.GetAllUserResourceProfilesRequest(),
             metadata=self._metadata,
         )
+        return list(response.user_resource_profiles)
 
     def update_user_compute_resource_preference(self, user_id, gateway_id, compute_resource_id, user_compute_resource_preference):
         pb2 = self._svc("user_resource_profile_service_pb2")
@@ -512,7 +533,8 @@ class ComputeClient:
 
     def get_latest_queue_statuses(self):
         pb2 = self._svc("user_resource_profile_service_pb2")
-        return self._user_profile.GetLatestQueueStatuses(
+        response = self._user_profile.GetLatestQueueStatuses(
             pb2.GetLatestQueueStatusesRequest(),
             metadata=self._metadata,
         )
+        return list(response.queue_statuses)

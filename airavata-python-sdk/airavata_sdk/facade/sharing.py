@@ -68,38 +68,43 @@ class SharingClient:
 
     def get_all_accessible_users(self, resource_id, permission_type):
         pb2 = self._pb2()
-        return self._sharing.GetAllAccessibleUsers(
+        response = self._sharing.GetAllAccessibleUsers(
             pb2.GetAllAccessibleUsersRequest(resource_id=resource_id, permission_type=permission_type),
             metadata=self._metadata,
         )
+        return list(response.user_ids)
 
     def get_all_directly_accessible_users(self, resource_id, permission_type):
         pb2 = self._pb2()
-        return self._sharing.GetAllDirectlyAccessibleUsers(
+        response = self._sharing.GetAllDirectlyAccessibleUsers(
             pb2.GetAllDirectlyAccessibleUsersRequest(resource_id=resource_id, permission_type=permission_type),
             metadata=self._metadata,
         )
+        return list(response.user_ids)
 
     def get_all_accessible_groups(self, resource_id, permission_type):
         pb2 = self._pb2()
-        return self._sharing.GetAllAccessibleGroups(
+        response = self._sharing.GetAllAccessibleGroups(
             pb2.GetAllAccessibleGroupsRequest(resource_id=resource_id, permission_type=permission_type),
             metadata=self._metadata,
         )
+        return list(response.group_ids)
 
     def get_all_directly_accessible_groups(self, resource_id, permission_type):
         pb2 = self._pb2()
-        return self._sharing.GetAllDirectlyAccessibleGroups(
+        response = self._sharing.GetAllDirectlyAccessibleGroups(
             pb2.GetAllDirectlyAccessibleGroupsRequest(resource_id=resource_id, permission_type=permission_type),
             metadata=self._metadata,
         )
+        return list(response.group_ids)
 
     def user_has_access(self, resource_id, user_id, permission_type):
         pb2 = self._pb2()
-        return self._sharing.UserHasAccess(
+        response = self._sharing.UserHasAccess(
             pb2.UserHasAccessRequest(resource_id=resource_id, user_id=user_id, permission_type=permission_type),
             metadata=self._metadata,
         )
+        return response.has_access
 
     def revoke_from_users(self, resource_id, user_permissions):
         pb2 = self._pb2()

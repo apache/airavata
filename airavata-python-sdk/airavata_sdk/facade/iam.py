@@ -27,24 +27,27 @@ class IamClient:
 
     def is_user_exists(self, gateway_id, user_name):
         pb2 = self._svc("gateway_service_pb2")
-        return self._gateway.IsUserExists(
+        response = self._gateway.IsUserExists(
             pb2.IsUserExistsRequest(gateway_id=gateway_id, user_name=user_name),
             metadata=self._metadata,
         )
+        return response.exists
 
     def add_gateway(self, gateway):
         pb2 = self._svc("gateway_service_pb2")
-        return self._gateway.AddGateway(
+        response = self._gateway.AddGateway(
             pb2.AddGatewayRequest(gateway=gateway),
             metadata=self._metadata,
         )
+        return response.gateway_id
 
     def get_all_users_in_gateway(self, gateway_id):
         pb2 = self._svc("gateway_service_pb2")
-        return self._gateway.GetAllUsersInGateway(
+        response = self._gateway.GetAllUsersInGateway(
             pb2.GetAllUsersInGatewayRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.user_names)
 
     def update_gateway(self, gateway_id, gateway):
         pb2 = self._svc("gateway_service_pb2")
@@ -69,17 +72,19 @@ class IamClient:
 
     def get_all_gateways(self):
         pb2 = self._svc("gateway_service_pb2")
-        return self._gateway.GetAllGateways(
+        response = self._gateway.GetAllGateways(
             pb2.GetAllGatewaysRequest(),
             metadata=self._metadata,
         )
+        return list(response.gateways)
 
     def is_gateway_exist(self, gateway_id):
         pb2 = self._svc("gateway_service_pb2")
-        return self._gateway.IsGatewayExist(
+        response = self._gateway.IsGatewayExist(
             pb2.IsGatewayExistRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return response.exists
 
     # ================================================================
     # IAM Admin Service

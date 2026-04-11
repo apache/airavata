@@ -109,8 +109,10 @@ public interface ResearchMapper extends CommonMapperConversions {
     }
 
     // --- Project ---
+    @Mapping(target = "projectId", source = "projectID")
     Project projectToModel(ProjectEntity entity);
 
+    @Mapping(target = "projectID", source = "projectId")
     ProjectEntity projectToEntity(Project model);
 
     // --- Notification ---

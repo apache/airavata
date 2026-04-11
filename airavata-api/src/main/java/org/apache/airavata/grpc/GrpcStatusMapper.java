@@ -26,9 +26,15 @@ public final class GrpcStatusMapper {
 
     private GrpcStatusMapper() {}
 
+    private static final int MAX_MESSAGE_LENGTH = 1024;
+
     public static StatusRuntimeException toStatusException(Exception e) {
         String className = e.getClass().getSimpleName();
-        String message = e.getMessage() != null ? e.getMessage() : className;
+        String fullMessage = e.getMessage() != null ? e.getMessage() : className;
+        // Truncate to avoid exceeding gRPC metadata size limits
+        String message = fullMessage.length() > MAX_MESSAGE_LENGTH
+                ? fullMessage.substring(0, MAX_MESSAGE_LENGTH) + "... (truncated)"
+                : fullMessage;
 
         Status status =
                 switch (className) {
