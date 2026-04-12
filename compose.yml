@@ -123,7 +123,7 @@ services:
       - "2222:22"
     command: "airavata::1000"
     healthcheck:
-      test: ["CMD-SHELL", "ss -tlnp | grep ':22' || exit 1"]
+      test: ["CMD-SHELL", "cat /proc/1/cmdline | tr '\\0' ' ' | grep -q sshd || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
