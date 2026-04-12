@@ -16,10 +16,13 @@ class AiravataClient:
 
     def __init__(self, host, port, token, gateway_id, secure=False, claims=None):
         target = f"{host}:{port}"
+        options = [
+            ("grpc.max_metadata_size", 64 * 1024),  # 64KB for large error messages
+        ]
         if secure:
-            self._channel = grpc.secure_channel(target, grpc.ssl_channel_credentials())
+            self._channel = grpc.secure_channel(target, grpc.ssl_channel_credentials(), options=options)
         else:
-            self._channel = grpc.insecure_channel(target)
+            self._channel = grpc.insecure_channel(target, options=options)
 
         self._metadata = []
         if token:

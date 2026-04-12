@@ -39,7 +39,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     private static final Logger logger = LoggerFactory.getLogger(AdaptorSupportImpl.class);
 
     private static final String SSHJ_AGENT_ADAPTOR_CLASS = "org.apache.airavata.compute.util.SSHJAgentAdaptor";
-    private static final String SSHJ_STORAGE_ADAPTOR_CLASS = "org.apache.airavata.storage.util.SSHJStorageAdaptor";
+    private static final String SSHJ_STORAGE_ADAPTOR_CLASS = "org.apache.airavata.compute.util.SSHJStorageAdaptor";
 
     private static AdaptorSupportImpl INSTANCE;
 

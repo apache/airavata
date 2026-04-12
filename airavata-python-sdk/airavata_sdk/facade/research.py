@@ -46,10 +46,11 @@ class ResearchClient:
 
     def search_experiments(self, gateway_id, user_name, filters=None, limit=-1, offset=0):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.SearchExperiments(
+        response = self._experiment.SearchExperiments(
             pb2.SearchExperimentsRequest(gateway_id=gateway_id, user_name=user_name, filters=filters or {}, limit=limit, offset=offset),
             metadata=self._metadata,
         )
+        return list(response.experiments)
 
     def get_experiment_statistics(self, gateway_id, from_time, to_time, user_name="", application_name="", resource_host_name="", limit=0, offset=0):
         pb2 = self._svc("experiment_service_pb2")
@@ -64,24 +65,27 @@ class ResearchClient:
 
     def get_experiments_in_project(self, project_id, limit=-1, offset=0):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.GetExperimentsInProject(
+        response = self._experiment.GetExperimentsInProject(
             pb2.GetExperimentsInProjectRequest(project_id=project_id, limit=limit, offset=offset),
             metadata=self._metadata,
         )
+        return list(response.experiments)
 
     def get_user_experiments(self, gateway_id, user_name, limit=-1, offset=0):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.GetUserExperiments(
+        response = self._experiment.GetUserExperiments(
             pb2.GetUserExperimentsRequest(gateway_id=gateway_id, user_name=user_name, limit=limit, offset=offset),
             metadata=self._metadata,
         )
+        return list(response.experiments)
 
     def create_experiment(self, gateway_id, experiment):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.CreateExperiment(
+        response = self._experiment.CreateExperiment(
             pb2.CreateExperimentRequest(gateway_id=gateway_id, experiment=experiment),
             metadata=self._metadata,
         )
+        return response.experiment_id
 
     def delete_experiment(self, experiment_id):
         pb2 = self._svc("experiment_service_pb2")
@@ -155,10 +159,11 @@ class ResearchClient:
 
     def get_experiment_outputs(self, experiment_id):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.GetExperimentOutputs(
+        response = self._experiment.GetExperimentOutputs(
             pb2.GetExperimentOutputsRequest(experiment_id=experiment_id),
             metadata=self._metadata,
         )
+        return list(response.outputs)
 
     def get_intermediate_outputs(self, experiment_id, output_names=None):
         pb2 = self._svc("experiment_service_pb2")
@@ -183,14 +188,15 @@ class ResearchClient:
 
     def get_job_details(self, experiment_id):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.GetJobDetails(
+        response = self._experiment.GetJobDetails(
             pb2.GetJobDetailsRequest(experiment_id=experiment_id),
             metadata=self._metadata,
         )
+        return list(response.jobs)
 
     def clone_experiment(self, experiment_id, new_experiment_name="", new_experiment_project_id=""):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.CloneExperiment(
+        response = self._experiment.CloneExperiment(
             pb2.CloneExperimentRequest(
                 experiment_id=experiment_id,
                 new_experiment_name=new_experiment_name,
@@ -198,10 +204,11 @@ class ResearchClient:
             ),
             metadata=self._metadata,
         )
+        return response.experiment_id
 
     def clone_experiment_by_admin(self, experiment_id, new_experiment_name="", new_experiment_project_id=""):
         pb2 = self._svc("experiment_service_pb2")
-        return self._experiment.CloneExperiment(
+        response = self._experiment.CloneExperiment(
             pb2.CloneExperimentRequest(
                 experiment_id=experiment_id,
                 new_experiment_name=new_experiment_name,
@@ -209,6 +216,7 @@ class ResearchClient:
             ),
             metadata=self._metadata,
         )
+        return response.experiment_id
 
     def terminate_experiment(self, experiment_id, gateway_id):
         pb2 = self._svc("experiment_service_pb2")
@@ -223,10 +231,11 @@ class ResearchClient:
 
     def create_project(self, gateway_id, project):
         pb2 = self._svc("project_service_pb2")
-        return self._project.CreateProject(
+        response = self._project.CreateProject(
             pb2.CreateProjectRequest(gateway_id=gateway_id, project=project),
             metadata=self._metadata,
         )
+        return response.project_id
 
     def update_project(self, project_id, project):
         pb2 = self._svc("project_service_pb2")
@@ -251,17 +260,19 @@ class ResearchClient:
 
     def get_user_projects(self, gateway_id, user_name, limit=-1, offset=0):
         pb2 = self._svc("project_service_pb2")
-        return self._project.GetUserProjects(
+        response = self._project.GetUserProjects(
             pb2.GetUserProjectsRequest(gateway_id=gateway_id, user_name=user_name, limit=limit, offset=offset),
             metadata=self._metadata,
         )
+        return list(response.projects)
 
     def search_projects(self, gateway_id, user_name, filters=None, limit=-1, offset=0):
         pb2 = self._svc("project_service_pb2")
-        return self._project.SearchProjects(
+        response = self._project.SearchProjects(
             pb2.SearchProjectsRequest(gateway_id=gateway_id, user_name=user_name, filters=filters or {}, limit=limit, offset=offset),
             metadata=self._metadata,
         )
+        return list(response.projects)
 
     # ================================================================
     # Application Catalog Service
@@ -269,10 +280,11 @@ class ResearchClient:
 
     def register_application_module(self, gateway_id, application_module):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.RegisterApplicationModule(
+        response = self._app_catalog.RegisterApplicationModule(
             pb2.RegisterApplicationModuleRequest(gateway_id=gateway_id, application_module=application_module),
             metadata=self._metadata,
         )
+        return response.app_module_id
 
     def get_application_module(self, app_module_id):
         pb2 = self._svc("application_catalog_service_pb2")
@@ -290,17 +302,19 @@ class ResearchClient:
 
     def get_all_app_modules(self, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAllAppModules(
+        response = self._app_catalog.GetAllAppModules(
             pb2.GetAllAppModulesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.application_modules)
 
     def get_accessible_app_modules(self, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAccessibleAppModules(
+        response = self._app_catalog.GetAccessibleAppModules(
             pb2.GetAccessibleAppModulesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.application_modules)
 
     def delete_application_module(self, app_module_id):
         pb2 = self._svc("application_catalog_service_pb2")
@@ -311,10 +325,11 @@ class ResearchClient:
 
     def register_application_deployment(self, gateway_id, application_deployment):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.RegisterApplicationDeployment(
+        response = self._app_catalog.RegisterApplicationDeployment(
             pb2.RegisterApplicationDeploymentRequest(gateway_id=gateway_id, application_deployment=application_deployment),
             metadata=self._metadata,
         )
+        return response.app_deployment_id
 
     def get_application_deployment(self, app_deployment_id):
         pb2 = self._svc("application_catalog_service_pb2")
@@ -339,42 +354,47 @@ class ResearchClient:
 
     def get_all_application_deployments(self, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAllApplicationDeployments(
+        response = self._app_catalog.GetAllApplicationDeployments(
             pb2.GetAllApplicationDeploymentsRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.application_deployments)
 
     def get_accessible_application_deployments(self, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAccessibleApplicationDeployments(
+        response = self._app_catalog.GetAccessibleApplicationDeployments(
             pb2.GetAccessibleApplicationDeploymentsRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.application_deployments)
 
     def get_app_module_deployed_resources(self, app_module_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAppModuleDeployedResources(
+        response = self._app_catalog.GetAppModuleDeployedResources(
             pb2.GetAppModuleDeployedResourcesRequest(app_module_id=app_module_id),
             metadata=self._metadata,
         )
+        return list(response.compute_resource_ids)
 
     def get_application_deployments_for_app_module_and_group_resource_profile(self, app_module_id, group_resource_profile_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetDeploymentsForModuleAndProfile(
+        response = self._app_catalog.GetDeploymentsForModuleAndProfile(
             pb2.GetDeploymentsForModuleAndProfileRequest(app_module_id=app_module_id, group_resource_profile_id=group_resource_profile_id),
             metadata=self._metadata,
         )
+        return list(response.application_deployments)
 
     def register_application_interface(self, gateway_id, application_interface):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.RegisterApplicationInterface(
+        response = self._app_catalog.RegisterApplicationInterface(
             pb2.RegisterApplicationInterfaceRequest(gateway_id=gateway_id, application_interface=application_interface),
             metadata=self._metadata,
         )
+        return response.app_interface_id
 
     def clone_application_interface(self, existing_app_interface_id, new_app_module_name, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.CloneApplicationInterface(
+        response = self._app_catalog.CloneApplicationInterface(
             pb2.CloneApplicationInterfaceRequest(
                 existing_app_interface_id=existing_app_interface_id,
                 new_app_module_name=new_app_module_name,
@@ -382,6 +402,7 @@ class ResearchClient:
             ),
             metadata=self._metadata,
         )
+        return response.app_interface_id
 
     def get_application_interface(self, app_interface_id):
         pb2 = self._svc("application_catalog_service_pb2")
@@ -406,38 +427,43 @@ class ResearchClient:
 
     def get_all_application_interface_names(self, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAllApplicationInterfaceNames(
+        response = self._app_catalog.GetAllApplicationInterfaceNames(
             pb2.GetAllApplicationInterfaceNamesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return dict(response.application_interface_names)
 
     def get_all_application_interfaces(self, gateway_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAllApplicationInterfaces(
+        response = self._app_catalog.GetAllApplicationInterfaces(
             pb2.GetAllApplicationInterfacesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.application_interfaces)
 
     def get_application_inputs(self, app_interface_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetApplicationInputs(
+        response = self._app_catalog.GetApplicationInputs(
             pb2.GetApplicationInputsRequest(app_interface_id=app_interface_id),
             metadata=self._metadata,
         )
+        return list(response.application_inputs)
 
     def get_application_outputs(self, app_interface_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetApplicationOutputs(
+        response = self._app_catalog.GetApplicationOutputs(
             pb2.GetApplicationOutputsRequest(app_interface_id=app_interface_id),
             metadata=self._metadata,
         )
+        return list(response.application_outputs)
 
     def get_available_app_interface_compute_resources(self, app_interface_id):
         pb2 = self._svc("application_catalog_service_pb2")
-        return self._app_catalog.GetAvailableComputeResources(
+        response = self._app_catalog.GetAvailableComputeResources(
             pb2.GetAvailableComputeResourcesRequest(app_interface_id=app_interface_id),
             metadata=self._metadata,
         )
+        return dict(response.compute_resource_names)
 
     # ================================================================
     # Parser Service
@@ -452,17 +478,19 @@ class ResearchClient:
 
     def save_parser(self, parser):
         pb2 = self._svc("parser_service_pb2")
-        return self._parser.SaveParser(
+        response = self._parser.SaveParser(
             pb2.SaveParserRequest(parser=parser),
             metadata=self._metadata,
         )
+        return response.parser_id
 
     def list_all_parsers(self, gateway_id):
         pb2 = self._svc("parser_service_pb2")
-        return self._parser.ListAllParsers(
+        response = self._parser.ListAllParsers(
             pb2.ListAllParsersRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.parsers)
 
     def remove_parser(self, parser_id, gateway_id):
         pb2 = self._svc("parser_service_pb2")
@@ -480,17 +508,19 @@ class ResearchClient:
 
     def get_parsing_templates_for_experiment(self, experiment_id, gateway_id):
         pb2 = self._svc("parser_service_pb2")
-        return self._parser.GetParsingTemplatesForExperiment(
+        response = self._parser.GetParsingTemplatesForExperiment(
             pb2.GetParsingTemplatesForExperimentRequest(experiment_id=experiment_id, gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.parsing_templates)
 
     def save_parsing_template(self, parsing_template):
         pb2 = self._svc("parser_service_pb2")
-        return self._parser.SaveParsingTemplate(
+        response = self._parser.SaveParsingTemplate(
             pb2.SaveParsingTemplateRequest(parsing_template=parsing_template),
             metadata=self._metadata,
         )
+        return response.template_id
 
     def remove_parsing_template(self, template_id, gateway_id):
         pb2 = self._svc("parser_service_pb2")
@@ -501,10 +531,11 @@ class ResearchClient:
 
     def list_all_parsing_templates(self, gateway_id):
         pb2 = self._svc("parser_service_pb2")
-        return self._parser.ListAllParsingTemplates(
+        response = self._parser.ListAllParsingTemplates(
             pb2.ListAllParsingTemplatesRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.parsing_templates)
 
     # ================================================================
     # Data Product Service
@@ -512,10 +543,11 @@ class ResearchClient:
 
     def register_data_product(self, data_product):
         pb2 = self._svc("data_product_service_pb2")
-        return self._data_product.RegisterDataProduct(
+        response = self._data_product.RegisterDataProduct(
             pb2.RegisterDataProductRequest(data_product=data_product),
             metadata=self._metadata,
         )
+        return response.product_uri
 
     def get_data_product(self, data_product_uri):
         pb2 = self._svc("data_product_service_pb2")
@@ -526,10 +558,11 @@ class ResearchClient:
 
     def register_replica_location(self, replica_location):
         pb2 = self._svc("data_product_service_pb2")
-        return self._data_product.RegisterReplicaLocation(
+        response = self._data_product.RegisterReplicaLocation(
             pb2.RegisterReplicaLocationRequest(replica_location=replica_location),
             metadata=self._metadata,
         )
+        return response.replica_id
 
     def get_parent_data_product(self, data_product_uri):
         pb2 = self._svc("data_product_service_pb2")
@@ -540,10 +573,11 @@ class ResearchClient:
 
     def get_child_data_products(self, data_product_uri):
         pb2 = self._svc("data_product_service_pb2")
-        return self._data_product.GetChildDataProducts(
+        response = self._data_product.GetChildDataProducts(
             pb2.GetChildDataProductsRequest(data_product_uri=data_product_uri),
             metadata=self._metadata,
         )
+        return list(response.data_products)
 
     def update_data_product(self, product_uri, data_product):
         pb2 = self._svc("data_product_service_pb2")
@@ -586,10 +620,11 @@ class ResearchClient:
 
     def create_notification(self, notification):
         pb2 = self._svc("notification_service_pb2")
-        return self._notification.CreateNotification(
+        response = self._notification.CreateNotification(
             pb2.CreateNotificationRequest(notification=notification),
             metadata=self._metadata,
         )
+        return response.notification_id
 
     def update_notification(self, notification):
         pb2 = self._svc("notification_service_pb2")
@@ -614,10 +649,11 @@ class ResearchClient:
 
     def get_all_notifications(self, gateway_id):
         pb2 = self._svc("notification_service_pb2")
-        return self._notification.GetAllNotifications(
+        response = self._notification.GetAllNotifications(
             pb2.GetAllNotificationsRequest(gateway_id=gateway_id),
             metadata=self._metadata,
         )
+        return list(response.notifications)
 
     # ================================================================
     # Experiment Management Service

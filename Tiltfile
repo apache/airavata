@@ -1,6 +1,15 @@
 # Airavata Development Tiltfile
 # Usage: tilt up
 
+# --- Generate dev SSH keypair for SFTP container (idempotent) ---
+local(
+    'mkdir -p conf/sftp && '
+    'test -f conf/sftp/id_rsa || '
+    'ssh-keygen -t rsa -b 2048 -f conf/sftp/id_rsa -N "" -q && '
+    'echo "Generated dev SSH keypair at conf/sftp/id_rsa"',
+    quiet=True,
+)
+
 # --- Infrastructure (from compose.yml) ---
 docker_compose('./compose.yml')
 
@@ -9,16 +18,10 @@ local_resource(
     'build',
     cmd='mvn install -DskipTests -Dmaven.test.skip=true -T4 -q',
     deps=[
-        'airavata-api/src',
-        'airavata-api/pom.xml',
-        'airavata-api/agent-service/src',
-        'airavata-api/agent-service/pom.xml',
-        'airavata-api/research-service/src',
-        'airavata-api/research-service/pom.xml',
-        'airavata-server/src',
         'airavata-server/pom.xml',
     ],
     ignore=['**/target/**'],
+    trigger_mode=TRIGGER_MODE_AUTO,
     labels=['build'],
 )
 

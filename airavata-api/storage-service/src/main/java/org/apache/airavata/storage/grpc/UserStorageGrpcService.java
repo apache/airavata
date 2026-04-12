@@ -62,17 +62,74 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         this.gatewayStoragePreferenceProvider = gatewayStoragePreferenceProvider;
     }
 
+    private StoragePreference resolveStoragePreference(String storageResourceId) throws Exception {
+        RequestContext ctx = GrpcRequestContext.current();
+        var prefs = gatewayStoragePreferenceProvider.getAllGatewayStoragePreferences(ctx.getGatewayId());
+        if (prefs == null || prefs.isEmpty()) {
+            return null;
+        }
+        String resolvedId = (storageResourceId != null && !storageResourceId.isEmpty())
+                ? storageResourceId : prefs.get(0).getStorageResourceId();
+        for (var pref : prefs) {
+            if (pref.getStorageResourceId().equals(resolvedId)) {
+                return pref;
+            }
+        }
+        return prefs.get(0);
+    }
+
     private StorageResourceAdaptor getStorageAdaptor(String storageResourceId) throws Exception {
         RequestContext ctx = GrpcRequestContext.current();
+        String resolvedId = storageResourceId;
+        String credentialToken = ctx.getAccessToken(); // fallback
+        String loginUser = ctx.getUserId(); // fallback
+
+        // Resolve storage resource, credential, and login user from gateway preferences
+        StoragePreference pref = resolveStoragePreference(storageResourceId);
+        if (pref != null) {
+            if (resolvedId == null || resolvedId.isEmpty()) {
+                resolvedId = pref.getStorageResourceId();
+            }
+            String csToken = pref.getResourceSpecificCredentialStoreToken();
+            if (csToken != null && !csToken.isEmpty()) {
+                credentialToken = csToken;
+            }
+            String prefUser = pref.getLoginUserName();
+            if (prefUser != null && !prefUser.isEmpty()) {
+                loginUser = prefUser;
+            }
+        }
+        if (resolvedId == null || resolvedId.isEmpty()) {
+            throw new IllegalStateException("No storage resource configured for gateway " + ctx.getGatewayId());
+        }
         return adaptorSupport.fetchStorageAdaptor(
-                ctx.getGatewayId(), storageResourceId, DataMovementProtocol.SCP, ctx.getAccessToken(), ctx.getUserId());
+                ctx.getGatewayId(), resolvedId, DataMovementProtocol.SCP, credentialToken, loginUser);
+    }
+
+    /**
+     * Resolve paths like "~/" or "~" to the storage preference's fileSystemRootLocation.
+     * SFTP doesn't support shell tilde expansion.
+     */
+    private String resolvePath(String path, String storageResourceId) throws Exception {
+        if (path == null || path.isEmpty()) {
+            path = "/";
+        }
+        if (path.startsWith("~/") || path.equals("~")) {
+            StoragePreference pref = resolveStoragePreference(storageResourceId);
+            String root = (pref != null && !pref.getFileSystemRootLocation().isEmpty())
+                    ? pref.getFileSystemRootLocation() : "/";
+            if (!root.endsWith("/")) root += "/";
+            String suffix = path.length() > 2 ? path.substring(2) : "";
+            path = root + suffix;
+        }
+        return path;
     }
 
     @Override
     public void uploadFile(UploadFileRequest request, StreamObserver<DataProductModel> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            String remotePath = request.getPath();
+            String remotePath = resolvePath(request.getPath(), request.getStorageResourceId());
 
             FileMetadata metadata = new FileMetadata();
             metadata.setName(request.getName());
@@ -101,7 +158,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void downloadFile(DownloadFileRequest request, StreamObserver<DownloadFileResponse> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            String remotePath = request.getPath();
+            String remotePath = resolvePath(request.getPath(), request.getStorageResourceId());
 
             FileMetadata metadata = adaptor.getFileMetadata(remotePath);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -121,7 +178,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void fileExists(FileExistsRequest request, StreamObserver<FileExistsResponse> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            boolean exists = adaptor.doesFileExist(request.getPath());
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            boolean exists = adaptor.doesFileExist(path);
             observer.onNext(FileExistsResponse.newBuilder().setExists(exists).build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -133,10 +191,11 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void dirExists(DirExistsRequest request, StreamObserver<DirExistsResponse> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
             // Check existence via getFileMetadata — if it's a directory, it exists
             boolean exists = false;
             try {
-                FileMetadata metadata = adaptor.getFileMetadata(request.getPath());
+                FileMetadata metadata = adaptor.getFileMetadata(path);
                 exists = metadata.isDirectory();
             } catch (Exception ignored) {
                 // Path does not exist or is not accessible
@@ -152,7 +211,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void listDir(ListDirRequest request, StreamObserver<ListDirResponse> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            String path = request.getPath();
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
 
             List<String> entries = adaptor.listDirectory(path);
             ListDirResponse.Builder responseBuilder = ListDirResponse.newBuilder();
@@ -179,7 +238,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void deleteFile(DeleteFileRequest request, StreamObserver<Empty> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            adaptor.executeCommand("rm -f " + request.getPath(), "/");
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            adaptor.executeCommand("rm -f " + path, "/");
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -191,7 +251,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void deleteDir(DeleteDirRequest request, StreamObserver<Empty> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            adaptor.deleteDirectory(request.getPath());
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            adaptor.deleteDirectory(path);
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -203,7 +264,9 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void moveFile(MoveFileRequest request, StreamObserver<DataProductModel> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            adaptor.executeCommand("mv " + request.getSourcePath() + " " + request.getDestinationPath(), "/");
+            String src = resolvePath(request.getSourcePath(), request.getStorageResourceId());
+            String dst = resolvePath(request.getDestinationPath(), request.getStorageResourceId());
+            adaptor.executeCommand("mv " + src + " " + dst, "/");
 
             DataProductModel product = DataProductModel.newBuilder()
                     .setProductName(Paths.get(request.getDestinationPath())
@@ -221,7 +284,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void createDir(CreateDirRequest request, StreamObserver<CreateDirResponse> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            adaptor.createDirectory(request.getPath(), true);
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            adaptor.createDirectory(path, true);
             observer.onNext(CreateDirResponse.newBuilder()
                     .setCreatedPath(request.getPath())
                     .build());
@@ -235,7 +299,9 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void createSymlink(CreateSymlinkRequest request, StreamObserver<Empty> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            adaptor.executeCommand("ln -s " + request.getTargetPath() + " " + request.getSourcePath(), "/");
+            String target = resolvePath(request.getTargetPath(), request.getStorageResourceId());
+            String source = resolvePath(request.getSourcePath(), request.getStorageResourceId());
+            adaptor.executeCommand("ln -s " + target + " " + source, "/");
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -247,8 +313,9 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     public void getFileMetadata(GetFileMetadataRequest request, StreamObserver<FileMetadataResponse> observer) {
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
-            FileMetadata meta = adaptor.getFileMetadata(request.getPath());
-            observer.onNext(toFileMetadataResponse(meta, request.getPath()));
+            String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            FileMetadata meta = adaptor.getFileMetadata(path);
+            observer.onNext(toFileMetadataResponse(meta, path));
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));

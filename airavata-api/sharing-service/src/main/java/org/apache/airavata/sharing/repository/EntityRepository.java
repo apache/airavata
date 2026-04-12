@@ -155,10 +155,10 @@ public class EntityRepository extends AbstractRepository<EntityEntity, EntityPK>
             entity.setDescription((String) (rs[6]));
             entity.setBinaryData((byte[]) (rs[7]));
             entity.setFullText((String) (rs[8]));
-            entity.setSharedCount((long) rs[9]);
-            entity.setOriginalEntityCreationTime((long) (rs[10]));
-            entity.setCreatedTime((long) (rs[11]));
-            entity.setUpdatedTime((long) (rs[12]));
+            entity.setSharedCount(rs[9] != null ? ((Number) rs[9]).longValue() : 0L);
+            entity.setOriginalEntityCreationTime(rs[10] != null ? ((Number) rs[10]).longValue() : 0L);
+            entity.setCreatedTime(rs[11] != null ? ((Number) rs[11]).longValue() : 0L);
+            entity.setUpdatedTime(rs[12] != null ? ((Number) rs[12]).longValue() : 0L);
 
             // Removing duplicates. Another option is to change the query to remove duplicates.
             if (!keys.containsKey(entity + domainId + "," + entity.getEntityId())) {
