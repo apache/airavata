@@ -28,12 +28,12 @@ import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
  * The persistent class for the data_movement_interface database table.
  */
 @Entity
-@Table(name = "DATA_MOVEMENT_INTERFACE")
+@Table(name = "STORAGE_INTERFACE")
 @IdClass(DataMovementInterfacePK.class)
 public class DataMovementInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "STORAGE_RESOURCE_ID")
     @Id
     private String resourceId;
 
