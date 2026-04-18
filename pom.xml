@@ -324,7 +324,7 @@ under the License.
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.81</version>
+                <version>1.84</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
