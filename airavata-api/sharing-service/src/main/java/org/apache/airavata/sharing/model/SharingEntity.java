@@ -38,7 +38,7 @@ public class SharingEntity {
     private Long updatedTime;
 
     @Id
-    @Column(name = "PERMISSION_TYPE_ID")
+    @Column(name = "PERMISSION_TYPE_ID", length = 152)
     public String getPermissionTypeId() {
         return permissionTypeId;
     }
@@ -48,7 +48,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "ENTITY_ID")
+    @Column(name = "ENTITY_ID", length = 152)
     public String getEntityId() {
         return entityId;
     }
@@ -58,7 +58,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "GROUP_ID")
+    @Column(name = "GROUP_ID", length = 152)
     public String getGroupId() {
         return groupId;
     }
@@ -68,7 +68,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "INHERITED_PARENT_ID")
+    @Column(name = "INHERITED_PARENT_ID", length = 152)
     public String getInheritedParentId() {
         return inheritedParentId;
     }
@@ -78,7 +78,7 @@ public class SharingEntity {
     }
 
     @Id
-    @Column(name = "DOMAIN_ID")
+    @Column(name = "DOMAIN_ID", length = 152)
     public String getDomainId() {
         return domainId;
     }
