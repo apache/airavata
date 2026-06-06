@@ -24,6 +24,7 @@ import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.cors.CorsServiceBuilder;
 import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.grpc.GrpcService;
+import com.linecorp.armeria.spring.ArmeriaBeanPostProcessor;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 import io.grpc.BindableService;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.apache.airavata.server.file.FileController;
 import org.apache.airavata.server.grpc.config.GrpcAuthInterceptor;
 import org.apache.airavata.server.grpc.config.HttpAuthDecorator;
 import org.apache.airavata.server.kafka.KafkaProxyService;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -57,6 +59,13 @@ import org.springframework.context.annotation.Import;
             "org.apache.airavata.iam.service"
         })
 public class AiravataArmeriaConfig {
+
+    // Static replacement for Armeria's non-static ArmeriaBeanPostProcessorConfiguration
+    // (excluded via spring.autoconfigure.exclude) — avoids the BPP-eligibility warning.
+    @Bean
+    public static ArmeriaBeanPostProcessor armeriaBeanPostProcessor(BeanFactory beanFactory) {
+        return new ArmeriaBeanPostProcessor(beanFactory);
+    }
 
     @Bean
     public ArmeriaServerConfigurator grpcServerConfigurator(
