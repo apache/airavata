@@ -85,7 +85,7 @@ public class SharingService implements SharingFacade, SharingProvider {
 
             return domain.getDomainId();
         } catch (DuplicateEntryException e) {
-            logger.warn("Domain {} already exists, skipping creation", domain.getDomainId());
+            logger.warn("A domain with id={} already exists, skipping recreation", domain.getDomainId());
             return domain.getDomainId();
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
@@ -639,7 +639,7 @@ public class SharingService implements SharingFacade, SharingProvider {
             (new EntityTypeRepository()).create(entityType);
             return entityType.getEntityTypeId();
         } catch (DuplicateEntryException e) {
-            logger.warn("EntityType {} already exists, skipping creation", entityType.getEntityTypeId());
+            logger.warn("An entity type with id={} already exists, skipping recreation", entityType.getEntityTypeId());
             return entityType.getEntityTypeId();
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
@@ -734,7 +734,7 @@ public class SharingService implements SharingFacade, SharingProvider {
             (new PermissionTypeRepository()).create(permissionType);
             return permissionType.getPermissionTypeId();
         } catch (DuplicateEntryException e) {
-            logger.warn("PermissionType {} already exists, skipping creation", permissionType.getPermissionTypeId());
+            logger.warn("A permission type with id={} already exists, skipping recreation", permissionType.getPermissionTypeId());
             return permissionType.getPermissionTypeId();
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
