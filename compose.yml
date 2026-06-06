@@ -220,6 +220,7 @@ services:
         exec java -jar airavata-server.jar
     volumes:
       - ./conf/traefik/certs/rootCA.pem:/certs/rootCA.pem:ro
+      - ./conf:/opt/airavata/conf:ro   # SSH key, credential keystore, TLS read from conf/
     ports:
       - "9090:9090"
     depends_on:

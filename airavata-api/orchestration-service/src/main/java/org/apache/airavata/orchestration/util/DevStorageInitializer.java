@@ -1,6 +1,5 @@
 package org.apache.airavata.orchestration.util;
 
-import jakarta.annotation.PostConstruct;
 import org.apache.airavata.config.ServerSettings;
 import org.apache.airavata.credential.service.CredentialStoreService;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
@@ -15,7 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,7 +30,6 @@ import java.nio.file.Path;
  * Idempotent: checks if the storage resource already exists before creating.
  */
 @Component
-@Order(200) // Run after ExpCatalogDBInitConfig and AppCatalogDBInitConfig
 public class DevStorageInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(DevStorageInitializer.class);
@@ -53,7 +52,8 @@ public class DevStorageInitializer {
     @Autowired
     private CredentialStoreService credentialStoreService;
 
-    @PostConstruct
+    // Run after DBInitConfig.postInit() creates the default gateway (@Order can't sequence @PostConstruct).
+    @EventListener(ApplicationReadyEvent.class)
     public void initialize() {
         try {
             String gatewayId = ServerSettings.getDefaultUserGateway();
