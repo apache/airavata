@@ -1,0 +1,11 @@
+# Traefik dynamic config (file provider): serve the mkcert wildcard cert for
+# *.airavata.localhost as the default certificate on the websecure (:443) entrypoint.
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/airavata.localhost.crt
+        keyFile: /etc/traefik/certs/airavata.localhost.key
+  certificates:
+    - certFile: /etc/traefik/certs/airavata.localhost.crt
+      keyFile: /etc/traefik/certs/airavata.localhost.key

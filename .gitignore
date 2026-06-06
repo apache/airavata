@@ -70,3 +70,6 @@ modules/*/*/distribution/
 
 docs/superpowers/
 .worktrees/
+
+# Dev TLS material (mkcert-generated; never commit)
+conf/traefik/certs/

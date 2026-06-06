@@ -1,5 +1,53 @@
 services:
 
+  # --- In-DinD image registry (server image, registry-in-the-loop) ---
+  registry:
+    image: registry:2
+    container_name: airavata-registry
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5000/v2/ >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # --- Ingress: routes *.airavata.localhost by Host header ---
+  traefik:
+    image: traefik:v3.3
+    container_name: airavata-traefik
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --ping=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./conf/traefik/certs:/etc/traefik/certs:ro
+      - ./conf/traefik/dynamic:/etc/traefik/dynamic:ro
+    networks:
+      default:
+        aliases:
+          - api.airavata.localhost
+          - auth.airavata.localhost
+          - rabbitmq.airavata.localhost
+          - adminer.airavata.localhost
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
   db:
     image: mariadb:11.8
     container_name: airavata-db
@@ -31,15 +79,18 @@ services:
       RABBITMQ_DEFAULT_PASS: airavata
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.airavata.localhost`)
+      - traefik.http.routers.rabbitmq.entrypoints=web,websecure
+      - traefik.http.routers.rabbitmq.tls=true
+      - traefik.http.services.rabbitmq.loadbalancer.server.port=15672
 
   zookeeper:
     image: zookeeper:3.9
@@ -48,8 +99,6 @@ services:
     volumes:
       - zk_data:/data
       - zk_logs:/datalog
-    ports:
-      - "2181:2181"
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8080/commands/ruok || exit 1"]
       interval: 10s
@@ -65,7 +114,7 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
@@ -73,8 +122,6 @@ services:
       CLUSTER_ID: airavata-kafka-cluster-id-01
     volumes:
       - kafka_data:/var/lib/kafka/data
-    ports:
-      - "9092:9092"
     healthcheck:
       test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
       interval: 10s
@@ -103,14 +150,18 @@ services:
       - --metrics-enabled=true
       - --log-level=INFO
       - --spi-theme-default=airavata
-    ports:
-      - "18080:18080"
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 60s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.auth.rule=Host(`auth.airavata.localhost`)
+      - traefik.http.routers.auth.entrypoints=web,websecure
+      - traefik.http.routers.auth.tls=true
+      - traefik.http.services.auth.loadbalancer.server.port=18080
 
   sftp:
     image: atmoz/sftp:latest
@@ -119,8 +170,6 @@ services:
     volumes:
       - ./conf/sftp/id_rsa.pub:/home/airavata/.ssh/keys/id_rsa.pub:ro
       - sftp_data:/home/airavata/storage
-    ports:
-      - "2222:22"
     command: "airavata::1000"
     healthcheck:
       test: ["CMD-SHELL", "cat /proc/1/cmdline | tr '\\0' ' ' | grep -q sshd || exit 1"]
@@ -128,6 +177,73 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  # --- Airavata server (built on host -> image in DinD -> pulled from registry) ---
+  airavata-server:
+    image: localhost:5000/airavata-server:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airavata-server
+    restart: unless-stopped
+    # Connection settings are read by Airavata's ApplicationSettings (resolution order:
+    # system-property > env-var-with-exact-dotted-key > properties file) and by Spring
+    # @Value. SCREAMING_SNAKE env vars do NOT override the dotted keys, so inject -D
+    # system properties via JAVA_TOOL_OPTIONS (auto-read by the JVM, honored by both).
+    environment:
+      JAVA_TOOL_OPTIONS: >-
+        -Dspring.datasource.url=jdbc:mariadb://db:3306/airavata
+        -Dkafka.broker.url=kafka:9092
+        -Dairavata.kafka.broker-url=kafka:9092
+        -Drabbitmq.broker.url=amqp://airavata:airavata@rabbitmq:5672
+        -Dspring.rabbitmq.host=rabbitmq
+        -Dspring.rabbitmq.port=5672
+        -Dspring.rabbitmq.username=airavata
+        -Dspring.rabbitmq.password=airavata
+        -Dzookeeper.server.connection=zookeeper:2181
+        -Dairavata.security.openid-url=https://auth.airavata.localhost/realms/default
+        -Diam.server.url=https://auth.airavata.localhost
+        -Djavax.net.ssl.trustStore=/tmp/airavata-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=changeit
+    # The Keycloak issuer is now https (TLS terminated at Traefik). Trust the mkcert dev
+    # CA by importing it into a writable copy of the JVM truststore before launching, so
+    # the server can fetch JWKS over https. The Dockerfile's JAVA_HOME is unreliable, so
+    # detect the real java home from `command -v java`. `$$` escapes compose substitution.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        JH=$$(dirname $$(dirname $$(readlink -f $$(command -v java))));
+        cp "$$JH/lib/security/cacerts" /tmp/airavata-truststore.p12;
+        keytool -importcert -noprompt -alias airavata-dev-ca -file /certs/rootCA.pem
+        -keystore /tmp/airavata-truststore.p12 -storepass changeit
+        || echo "WARN: mkcert CA import failed; https to keycloak may not validate";
+        exec java -jar airavata-server.jar
+    volumes:
+      - ./conf/traefik/certs/rootCA.pem:/certs/rootCA.pem:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      db: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      zookeeper: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=Host(`api.airavata.localhost`)
+      - traefik.http.routers.api.entrypoints=web,websecure
+      - traefik.http.routers.api.tls=true
+      - traefik.http.services.api.loadbalancer.server.port=9090
+      - traefik.http.services.api.loadbalancer.server.scheme=h2c
+    # Spring Actuator is bridged onto Armeria (armeria-spring-boot3-actuator-autoconfigure),
+    # so /actuator/health reflects DB + messaging health (200 UP only when db, rabbitmq,
+    # kafka, and zookeeper are all reachable; 503 otherwise).
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
 
   # Dev tools (start with: docker compose --profile tools up -d)
 
@@ -141,6 +257,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adminer.rule=Host(`adminer.airavata.localhost`)
+      - traefik.http.routers.adminer.entrypoints=web,websecure
+      - traefik.http.routers.adminer.tls=true
+      - traefik.http.services.adminer.loadbalancer.server.port=8080
 
 volumes:
   db_data:

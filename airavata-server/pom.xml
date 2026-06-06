@@ -108,6 +108,12 @@ under the License.
             <groupId>com.linecorp.armeria</groupId>
             <artifactId>armeria-grpc</artifactId>
         </dependency>
+        <!-- Bridges Spring Boot Actuator endpoints onto the Armeria server so
+             /internal/actuator/health is actually served (version via armeria-bom). -->
+        <dependency>
+            <groupId>com.linecorp.armeria</groupId>
+            <artifactId>armeria-spring-boot3-actuator-autoconfigure</artifactId>
+        </dependency>
 
         <!-- Mapping -->
         <dependency>
