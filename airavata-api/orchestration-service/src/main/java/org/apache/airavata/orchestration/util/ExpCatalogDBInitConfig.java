@@ -90,9 +90,9 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
     private void tryCreate(String label, ThrowingRunnable action) {
         try {
             action.run();
-            logger.info("Created {}", label);
+            logger.info("Ensured {}", label);
         } catch (Exception e) {
-            logger.debug("{} already exists: {}", label, e.getMessage());
+            logger.error("Failed to ensure {}: {}", label, e.getMessage(), e);
         }
     }
 
