@@ -21,6 +21,7 @@ package org.apache.airavata.server.health;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import org.apache.airavata.config.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,19 +44,31 @@ public class InfrastructureHealthIndicator implements HealthIndicator {
         var builder = Health.up();
         boolean allHealthy = true;
 
-        allHealthy &= checkTcp(builder, "rabbitmq", "localhost", 5672);
-        allHealthy &= checkTcp(builder, "zookeeper", "localhost", 2181);
-
+        // RabbitMQ host/port parsed from rabbitmq.broker.url (amqp://user:pass@host:port).
         try {
-            String kafkaUrl = ServerSettings.getSetting("kafka.broker.url", "localhost:9092");
-            String[] parts = kafkaUrl.split(":");
-            allHealthy &= checkTcp(builder, "kafka", parts[0], Integer.parseInt(parts[1]));
+            URI amqp = URI.create(ServerSettings.getSetting("rabbitmq.broker.url", "amqp://localhost:5672"));
+            int port = amqp.getPort() > 0 ? amqp.getPort() : 5672;
+            allHealthy &= checkTcp(builder, "rabbitmq", amqp.getHost(), port);
         } catch (Exception e) {
-            builder.withDetail("kafka", "config error: " + e.getMessage());
+            builder.withDetail("rabbitmq", "config error: " + e.getMessage());
             allHealthy = false;
         }
 
+        allHealthy &= checkHostPort(builder, "zookeeper", "zookeeper.server.connection", "localhost:2181");
+        allHealthy &= checkHostPort(builder, "kafka", "kafka.broker.url", "localhost:9092");
+
         return allHealthy ? builder.build() : builder.down().build();
+    }
+
+    /** Reads a "host:port" setting and checks TCP connectivity. */
+    private boolean checkHostPort(Health.Builder builder, String name, String settingKey, String defaultValue) {
+        try {
+            String[] parts = ServerSettings.getSetting(settingKey, defaultValue).split(":");
+            return checkTcp(builder, name, parts[0], Integer.parseInt(parts[1]));
+        } catch (Exception e) {
+            builder.withDetail(name, "config error: " + e.getMessage());
+            return false;
+        }
     }
 
     private boolean checkTcp(Health.Builder builder, String name, String host, int port) {
