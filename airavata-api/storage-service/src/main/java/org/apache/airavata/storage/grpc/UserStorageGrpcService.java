@@ -69,7 +69,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             return null;
         }
         String resolvedId = (storageResourceId != null && !storageResourceId.isEmpty())
-                ? storageResourceId : prefs.get(0).getStorageResourceId();
+                ? storageResourceId
+                : prefs.get(0).getStorageResourceId();
         for (var pref : prefs) {
             if (pref.getStorageResourceId().equals(resolvedId)) {
                 return pref;
@@ -117,7 +118,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         if (path.startsWith("~/") || path.equals("~")) {
             StoragePreference pref = resolveStoragePreference(storageResourceId);
             String root = (pref != null && !pref.getFileSystemRootLocation().isEmpty())
-                    ? pref.getFileSystemRootLocation() : "/";
+                    ? pref.getFileSystemRootLocation()
+                    : "/";
             if (!root.endsWith("/")) root += "/";
             String suffix = path.length() > 2 ? path.substring(2) : "";
             path = root + suffix;
