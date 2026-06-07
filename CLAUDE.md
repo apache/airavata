@@ -143,6 +143,17 @@ Launched as `IServer` workers in the same JVM:
 - **RabbitMQ** — Experiment/process state changes (`experiment_exchange`, `process_exchange`, `status_exchange`)
 - **Kafka** — Real-time job monitoring (`monitoring-data` topic)
 
+## Logging
+
+Use SLF4J parameterized logging: pass values as `{}` placeholders rather than string concatenation, so the message template stays readable and arguments are only stringified when the level is enabled.
+
+```java
+log.info("Could not find {} credentials for token {} in gateway {}", label, tokenId, gatewayId);  // do this
+log.info("Could not find " + label + " credentials for token " + tokenId + " ...");               // not this
+```
+
+A trailing `Throwable` is logged with its stack trace and takes no placeholder: `log.error("Failed to fetch {}", tokenId, e);`. Exception messages are plain strings (no placeholder mechanism), so build those normally.
+
 ## Test Patterns
 
 - JUnit 5 with `@Tag("integration")` and `@Tag("runtime")` categories
