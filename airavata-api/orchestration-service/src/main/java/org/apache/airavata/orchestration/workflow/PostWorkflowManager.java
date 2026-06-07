@@ -48,8 +48,8 @@ import org.apache.airavata.server.CountMonitor;
 import org.apache.airavata.server.IServer;
 import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.OutPort;
+import org.apache.airavata.task.SubTaskModelDecoder;
 import org.apache.airavata.util.AiravataUtils;
-import org.apache.airavata.util.ThriftUtils;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -261,7 +261,7 @@ public class PostWorkflowManager implements IServer {
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (jobSubmissionFound) {
                         DataStagingTaskModel subTaskModel =
-                                (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
+                                (DataStagingTaskModel) SubTaskModelDecoder.getSubTaskModel(taskModel);
                         assert subTaskModel != null;
                         switch (subTaskModel.getType()) {
                             case OUPUT:
