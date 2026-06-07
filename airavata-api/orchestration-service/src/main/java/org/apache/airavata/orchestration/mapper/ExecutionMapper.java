@@ -20,8 +20,6 @@
 package org.apache.airavata.orchestration.mapper;
 
 import java.sql.Timestamp;
-import org.apache.airavata.compute.model.QueueStatusEntity;
-import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.mapper.CommonMapperConversions;
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
@@ -35,11 +33,9 @@ import org.apache.airavata.model.status.proto.JobState;
 import org.apache.airavata.model.status.proto.JobStatus;
 import org.apache.airavata.model.status.proto.ProcessState;
 import org.apache.airavata.model.status.proto.ProcessStatus;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
 import org.apache.airavata.model.status.proto.TaskState;
 import org.apache.airavata.model.status.proto.TaskStatus;
 import org.apache.airavata.model.task.proto.TaskModel;
-import org.apache.airavata.model.workspace.proto.Gateway;
 import org.apache.airavata.orchestration.model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -392,16 +388,6 @@ public interface ExecutionMapper extends CommonMapperConversions {
     ProcessWorkflow processWorkflowToModel(ProcessWorkflowEntity entity);
 
     ProcessWorkflowEntity processWorkflowToEntity(ProcessWorkflow model);
-
-    // --- QueueStatus ---
-    QueueStatusModel queueStatusToModel(QueueStatusEntity entity);
-
-    QueueStatusEntity queueStatusToEntity(QueueStatusModel model);
-
-    // --- Gateway ---
-    Gateway gatewayToModel(GatewayEntity entity);
-
-    GatewayEntity gatewayToEntity(Gateway model);
 
     // --- UserConfigurationData ---
 
