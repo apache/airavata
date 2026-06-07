@@ -190,7 +190,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void createDomain(CreateDomainRequest request, StreamObserver<CreateDomainResponse> observer) {
         try {
-            var domain = toThriftDomain(request.getDomain());
+            var domain = toDomainEntity(request.getDomain());
             String id = sharingHandler.createDomain(domain);
             observer.onNext(CreateDomainResponse.newBuilder().setDomainId(id).build());
             observer.onCompleted();
@@ -202,7 +202,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void updateDomain(UpdateDomainRequest request, StreamObserver<Empty> observer) {
         try {
-            sharingHandler.updateDomain(toThriftDomain(request.getDomain()));
+            sharingHandler.updateDomain(toDomainEntity(request.getDomain()));
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -266,7 +266,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void createUser(CreateUserRequest request, StreamObserver<CreateUserResponse> observer) {
         try {
-            String id = sharingHandler.createUser(toThriftUser(request.getUser()));
+            String id = sharingHandler.createUser(toUserEntity(request.getUser()));
             observer.onNext(CreateUserResponse.newBuilder().setUserId(id).build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -277,7 +277,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void updateUser(UpdateUserRequest request, StreamObserver<Empty> observer) {
         try {
-            sharingHandler.updatedUser(toThriftUser(request.getUser()));
+            sharingHandler.updatedUser(toUserEntity(request.getUser()));
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -339,7 +339,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void createGroup(CreateGroupRequest request, StreamObserver<CreateGroupResponse> observer) {
         try {
-            String id = sharingHandler.createGroup(toThriftUserGroup(request.getGroup()));
+            String id = sharingHandler.createGroup(toUserGroupEntity(request.getGroup()));
             observer.onNext(CreateGroupResponse.newBuilder().setGroupId(id).build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -350,7 +350,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void updateGroup(UpdateGroupRequest request, StreamObserver<Empty> observer) {
         try {
-            sharingHandler.updateGroup(toThriftUserGroup(request.getGroup()));
+            sharingHandler.updateGroup(toUserGroupEntity(request.getGroup()));
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -568,7 +568,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void createEntityType(CreateEntityTypeRequest request, StreamObserver<CreateEntityTypeResponse> observer) {
         try {
-            String id = sharingHandler.createEntityType(toThriftEntityType(request.getEntityType()));
+            String id = sharingHandler.createEntityType(toEntityTypeEntity(request.getEntityType()));
             observer.onNext(
                     CreateEntityTypeResponse.newBuilder().setEntityTypeId(id).build());
             observer.onCompleted();
@@ -580,7 +580,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void updateEntityType(UpdateEntityTypeRequest request, StreamObserver<Empty> observer) {
         try {
-            sharingHandler.updateEntityType(toThriftEntityType(request.getEntityType()));
+            sharingHandler.updateEntityType(toEntityTypeEntity(request.getEntityType()));
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -645,7 +645,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void createEntity(CreateEntityRequest request, StreamObserver<CreateEntityResponse> observer) {
         try {
-            String id = sharingHandler.createEntity(toThriftEntity(request.getEntity()));
+            String id = sharingHandler.createEntity(toEntityEntity(request.getEntity()));
             observer.onNext(CreateEntityResponse.newBuilder().setEntityId(id).build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -656,7 +656,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void updateEntity(UpdateEntityRequest request, StreamObserver<Empty> observer) {
         try {
-            sharingHandler.updateEntity(toThriftEntity(request.getEntity()));
+            sharingHandler.updateEntity(toEntityEntity(request.getEntity()));
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -788,7 +788,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     public void createPermissionType(
             CreatePermissionTypeRequest request, StreamObserver<CreatePermissionTypeResponse> observer) {
         try {
-            String id = sharingHandler.createPermissionType(toThriftPermissionType(request.getPermissionType()));
+            String id = sharingHandler.createPermissionType(toPermissionTypeEntity(request.getPermissionType()));
             observer.onNext(CreatePermissionTypeResponse.newBuilder()
                     .setPermissionTypeId(id)
                     .build());
@@ -801,7 +801,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     @Override
     public void updatePermissionType(UpdatePermissionTypeRequest request, StreamObserver<Empty> observer) {
         try {
-            sharingHandler.updatePermissionType(toThriftPermissionType(request.getPermissionType()));
+            sharingHandler.updatePermissionType(toPermissionTypeEntity(request.getPermissionType()));
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
@@ -862,7 +862,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     }
 
     // ========================================================================
-    // Entity sharing (Thrift-compatible)
+    // Entity sharing
     // ========================================================================
 
     @Override
@@ -926,7 +926,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     }
 
     // ========================================================================
-    // Proto <-> Thrift conversion helpers
+    // Proto -> entity conversion helpers
     // ========================================================================
 
     private static Map<String, ResourcePermissionType> toResourcePermissionMap(Map<String, String> protoMap) {
@@ -939,7 +939,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     // --- Domain ---
 
-    private static org.apache.airavata.sharing.model.DomainEntity toThriftDomain(
+    private static org.apache.airavata.sharing.model.DomainEntity toDomainEntity(
             org.apache.airavata.sharing.registry.models.proto.Domain proto) {
         var t = new org.apache.airavata.sharing.model.DomainEntity();
         if (!proto.getDomainId().isEmpty()) t.setDomainId(proto.getDomainId());
@@ -965,7 +965,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     // --- User ---
 
-    private static org.apache.airavata.sharing.model.UserEntity toThriftUser(
+    private static org.apache.airavata.sharing.model.UserEntity toUserEntity(
             org.apache.airavata.sharing.registry.models.proto.User proto) {
         var t = new org.apache.airavata.sharing.model.UserEntity();
         if (!proto.getUserId().isEmpty()) t.setUserId(proto.getUserId());
@@ -989,7 +989,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     // --- UserGroup ---
 
-    private static org.apache.airavata.sharing.model.UserGroupEntity toThriftUserGroup(
+    private static org.apache.airavata.sharing.model.UserGroupEntity toUserGroupEntity(
             org.apache.airavata.sharing.registry.models.proto.UserGroup proto) {
         var t = new org.apache.airavata.sharing.model.UserGroupEntity();
         if (!proto.getGroupId().isEmpty()) t.setGroupId(proto.getGroupId());
@@ -1034,7 +1034,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     // --- EntityType ---
 
-    private static org.apache.airavata.sharing.model.EntityTypeEntity toThriftEntityType(
+    private static org.apache.airavata.sharing.model.EntityTypeEntity toEntityTypeEntity(
             org.apache.airavata.sharing.registry.models.proto.EntityType proto) {
         var t = new org.apache.airavata.sharing.model.EntityTypeEntity();
         if (!proto.getEntityTypeId().isEmpty()) t.setEntityTypeId(proto.getEntityTypeId());
@@ -1060,7 +1060,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     // --- Entity ---
 
-    private static org.apache.airavata.sharing.model.EntityEntity toThriftEntity(
+    private static org.apache.airavata.sharing.model.EntityEntity toEntityEntity(
             org.apache.airavata.sharing.registry.models.proto.Entity proto) {
         var t = new org.apache.airavata.sharing.model.EntityEntity();
         if (!proto.getEntityId().isEmpty()) t.setEntityId(proto.getEntityId());
@@ -1102,7 +1102,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     // --- PermissionType ---
 
-    private static org.apache.airavata.sharing.model.PermissionTypeEntity toThriftPermissionType(
+    private static org.apache.airavata.sharing.model.PermissionTypeEntity toPermissionTypeEntity(
             org.apache.airavata.sharing.registry.models.proto.PermissionType proto) {
         var t = new org.apache.airavata.sharing.model.PermissionTypeEntity();
         if (!proto.getPermissionTypeId().isEmpty()) t.setPermissionTypeId(proto.getPermissionTypeId());
