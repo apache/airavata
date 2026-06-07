@@ -36,7 +36,7 @@ import org.apache.airavata.model.group.proto.ResourcePermissionType;
 import org.apache.airavata.model.group.proto.ResourceType;
 import org.apache.airavata.sharing.model.UserEntity;
 import org.apache.airavata.sharing.model.UserGroupEntity;
-import org.apache.airavata.sharing.util.SharingHelper;
+import org.apache.airavata.util.SharingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
