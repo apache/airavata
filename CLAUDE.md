@@ -103,10 +103,6 @@ Go-based remote agent binary. Handles job execution, Jupyter sessions, tunnels o
 
 Python gRPC client. `airavata/` has generated stubs, `airavata_sdk/clients/` has integration wrappers, `airavata_experiments/` has experiment workflow APIs.
 
-### `airavata-jupyterhub`
-
-JupyterHub authenticator and spawner plugins.
-
 ## Architecture Patterns
 
 ### Request Flow
