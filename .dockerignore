@@ -1,7 +1,7 @@
 # The airavata-server image build context is the repo root, but the image only needs
 # the prebuilt fat JAR. Whitelist just that (+ the Dockerfile) so the in-DinD build
-# does not ship the entire tree. (Only root-context builds use this file; the agent /
-# jupyterhub images use their own subdirectory contexts.)
+# does not ship the entire tree. (Only root-context builds use this file; the agent
+# image uses its own subdirectory context.)
 *
 !Dockerfile
 !airavata-server
