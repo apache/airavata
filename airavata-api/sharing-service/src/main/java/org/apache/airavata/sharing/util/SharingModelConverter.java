@@ -25,7 +25,7 @@ import org.apache.airavata.sharing.model.UserEntity;
 /**
  * Converts proto data models to sharing entity types.
  */
-public class ThriftDataModelConversion {
+public class SharingModelConverter {
 
     /**
      * Build UserEntity from proto UserProfile.
