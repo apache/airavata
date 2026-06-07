@@ -28,8 +28,6 @@
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
     <!-- agent-service -->
-    <class>org.apache.airavata.agent.model.AgentExecutionEntity</class>
-    <class>org.apache.airavata.agent.model.AgentExecutionStatusEntity</class>
     <class>org.apache.airavata.agent.model.PlanEntity</class>
 
     <!-- compute-service -->
