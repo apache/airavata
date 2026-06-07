@@ -17,13 +17,13 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.util;
+package org.apache.airavata.task;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.airavata.model.task.proto.*;
 
-public class ThriftUtils {
+public class SubTaskModelDecoder {
 
     public static Object getSubTaskModel(TaskModel taskModel) throws InvalidProtocolBufferException {
         ByteString subTaskBytes = taskModel.getSubTaskModel();

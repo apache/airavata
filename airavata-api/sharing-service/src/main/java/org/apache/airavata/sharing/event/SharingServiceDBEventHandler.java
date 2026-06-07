@@ -32,7 +32,7 @@ import org.apache.airavata.model.workspace.proto.Gateway;
 import org.apache.airavata.model.workspace.proto.Project;
 import org.apache.airavata.sharing.model.*;
 import org.apache.airavata.sharing.service.SharingService;
-import org.apache.airavata.sharing.util.ThriftDataModelConversion;
+import org.apache.airavata.sharing.util.SharingModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                                 .getPublisher()
                                 .getPublisherContext()
                                 .getEntityDataModel());
-                        UserEntity user = ThriftDataModelConversion.getUser(userProfile);
+                        UserEntity user = SharingModelConverter.getUser(userProfile);
 
                         switch (dBEventMessageContext
                                 .getPublisher()

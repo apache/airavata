@@ -68,7 +68,6 @@ import org.apache.airavata.model.status.proto.TaskStatus;
 import org.apache.airavata.model.task.proto.TaskModel;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.apache.airavata.util.AiravataUtils;
-import org.apache.airavata.util.ThriftUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -989,7 +988,7 @@ public class TaskContext {
 
     public Object getSubTaskModel() throws Exception {
         if (subTaskModel == null) {
-            subTaskModel = ThriftUtils.getSubTaskModel(getCurrentTaskModel());
+            subTaskModel = SubTaskModelDecoder.getSubTaskModel(getCurrentTaskModel());
         }
         return subTaskModel;
     }

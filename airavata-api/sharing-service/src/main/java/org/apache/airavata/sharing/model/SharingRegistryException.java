@@ -21,7 +21,7 @@ package org.apache.airavata.sharing.model;
 
 /**
  * Exception thrown by the sharing registry when an operation fails.
- * Replaces the Thrift-generated exception of the same name.
+ * Replaces the legacy generated exception of the same name.
  */
 public class SharingRegistryException extends Exception {
 
