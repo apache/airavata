@@ -496,6 +496,10 @@ under the License.
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <forkCount>1C</forkCount>
                     <reuseForks>true</reuseForks>
+                    <!-- Disable the Testcontainers Ryuk reaper (incompatible with the DinD CI environment) -->
+                    <environmentVariables>
+                        <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+                    </environmentVariables>
                     <!-- Fail on first error for fast feedback during development -->
                     <skipAfterFailureCount>1</skipAfterFailureCount>
                     <excludes>
