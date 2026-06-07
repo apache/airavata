@@ -431,7 +431,7 @@ service SharingService {
     };
   }
 
-  // --- Entity sharing (Thrift-compatible aliases using domain_id) ---
+  // --- Entity sharing (aliases using domain_id) ---
 
   rpc ShareEntityWithUsers(ShareEntityWithUsersRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
@@ -938,7 +938,7 @@ message GetPermissionTypesResponse {
 }
 
 // ===========================================================================
-// Request/Response messages — Entity sharing (Thrift-compatible)
+// Request/Response messages — Entity sharing
 // ===========================================================================
 
 message ShareEntityWithUsersRequest {

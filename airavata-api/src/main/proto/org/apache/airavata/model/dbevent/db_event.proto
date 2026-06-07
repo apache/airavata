@@ -68,7 +68,7 @@ message DBEventSubscriber {
   string subscriber_service = 1;
 }
 
-// Either variable set, depending on event-type (Thrift union → oneof)
+// Either variable set, depending on event-type (variant → oneof)
 message DBEventMessageContext {
   oneof context {
     DBEventPublisher publisher = 1;

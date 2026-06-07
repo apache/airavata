@@ -63,7 +63,7 @@ message AwsComputeResourcePreference {
   string preferred_instance_type = 3;
 }
 
-// Thrift union — represented as a oneof message wrapper
+// Variant — represented as a oneof message wrapper
 message EnvironmentSpecificPreferences {
   oneof preferences {
     SlurmComputeResourcePreference slurm = 1;
