@@ -734,7 +734,9 @@ public class SharingService implements SharingFacade, SharingProvider {
             (new PermissionTypeRepository()).create(permissionType);
             return permissionType.getPermissionTypeId();
         } catch (DuplicateEntryException e) {
-            logger.warn("A permission type with id={} already exists, skipping recreation", permissionType.getPermissionTypeId());
+            logger.warn(
+                    "A permission type with id={} already exists, skipping recreation",
+                    permissionType.getPermissionTypeId());
             return permissionType.getPermissionTypeId();
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);

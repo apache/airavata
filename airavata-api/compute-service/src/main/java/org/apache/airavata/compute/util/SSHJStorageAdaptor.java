@@ -22,18 +22,14 @@ package org.apache.airavata.compute.util;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
-
 import org.apache.airavata.interfaces.AgentException;
 import org.apache.airavata.interfaces.CommandOutput;
 import org.apache.airavata.interfaces.FileMetadata;
@@ -63,9 +59,14 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     @Override
     public void init(String storageResourceId, String gatewayId, String loginUser, String token) throws AgentException {
         try {
-            log.info("Initializing SFTP adaptor: resource={}, gateway={}, user={}", storageResourceId, gatewayId, loginUser);
+            log.info(
+                    "Initializing SFTP adaptor: resource={}, gateway={}, user={}",
+                    storageResourceId,
+                    gatewayId,
+                    loginUser);
 
-            StorageResourceDescription sr = AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
+            StorageResourceDescription sr =
+                    AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
 
             Optional<DataMovementInterface> dmOp = sr.getDataMovementInterfacesList().stream()
                     .filter(iface -> iface.getDataMovementProtocol() == DataMovementProtocol.SCP)
@@ -74,7 +75,8 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
             DataMovementInterface dm = dmOp.orElseThrow(() ->
                     new AgentException("No SCP data movement interface for storage resource " + storageResourceId));
 
-            SCPDataMovement scp = AgentUtils.getRegistryServiceClient().getSCPDataMovement(dm.getDataMovementInterfaceId());
+            SCPDataMovement scp =
+                    AgentUtils.getRegistryServiceClient().getSCPDataMovement(dm.getDataMovementInterfaceId());
 
             SSHCredential cred = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
             if (cred == null) throw new AgentException("No credential for token " + token);
@@ -156,7 +158,8 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     }
 
     @Override
-    public org.apache.airavata.model.appcatalog.storageresource.proto.StorageDirectoryInfo getStorageDirectoryInfo(String location) throws AgentException {
+    public org.apache.airavata.model.appcatalog.storageresource.proto.StorageDirectoryInfo getStorageDirectoryInfo(
+            String location) throws AgentException {
         return org.apache.airavata.model.appcatalog.storageresource.proto.StorageDirectoryInfo.getDefaultInstance();
     }
 
@@ -202,7 +205,8 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
         try (SFTPClient sftp = openSftp()) {
             java.io.File tempFile = java.io.File.createTempFile("airavata-upload-", ".tmp");
             try {
-                java.nio.file.Files.copy(localInStream, tempFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                java.nio.file.Files.copy(
+                        localInStream, tempFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 sftp.put(tempFile.getAbsolutePath(), remoteFile);
             } finally {
                 tempFile.delete();
@@ -222,7 +226,8 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     }
 
     @Override
-    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata) throws AgentException {
+    public void downloadFile(String remoteFile, OutputStream localOutStream, FileMetadata metadata)
+            throws AgentException {
         try (SFTPClient sftp = openSftp()) {
             java.io.File tempFile = java.io.File.createTempFile("airavata-download-", ".tmp");
             try {
@@ -257,7 +262,8 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     }
 
     @Override
-    public org.apache.airavata.model.appcatalog.storageresource.proto.StorageVolumeInfo getStorageVolumeInfo(String location) throws AgentException {
+    public org.apache.airavata.model.appcatalog.storageresource.proto.StorageVolumeInfo getStorageVolumeInfo(
+            String location) throws AgentException {
         return org.apache.airavata.model.appcatalog.storageresource.proto.StorageVolumeInfo.getDefaultInstance();
     }
 

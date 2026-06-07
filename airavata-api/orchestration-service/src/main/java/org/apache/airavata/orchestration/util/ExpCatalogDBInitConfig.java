@@ -67,21 +67,27 @@ public class ExpCatalogDBInitConfig implements DBInitConfig {
 
     private void initializeSharingForGateway(String gatewayId) {
         // Domain
-        tryCreate("sharing domain", () ->
-                sharingFacade.createDomain(gatewayId, "Gateway " + gatewayId, "Sharing domain for " + gatewayId));
+        tryCreate(
+                "sharing domain",
+                () -> sharingFacade.createDomain(gatewayId, "Gateway " + gatewayId, "Sharing domain for " + gatewayId));
 
         // Entity types
-        String[] entityTypes = {"PROJECT", "EXPERIMENT", "FILE", "APPLICATION_DEPLOYMENT", "GROUP_RESOURCE_PROFILE", "CREDENTIAL_TOKEN"};
+        String[] entityTypes = {
+            "PROJECT", "EXPERIMENT", "FILE", "APPLICATION_DEPLOYMENT", "GROUP_RESOURCE_PROFILE", "CREDENTIAL_TOKEN"
+        };
         for (String et : entityTypes) {
-            tryCreate("entity type " + et, () ->
-                    sharingFacade.createEntityType(gatewayId + ":" + et, gatewayId, et, et + " entity type"));
+            tryCreate(
+                    "entity type " + et,
+                    () -> sharingFacade.createEntityType(gatewayId + ":" + et, gatewayId, et, et + " entity type"));
         }
 
         // Permission types
         String[] permTypes = {"READ", "WRITE", "MANAGE_SHARING"};
         for (String pt : permTypes) {
-            tryCreate("permission type " + pt, () ->
-                    sharingFacade.createPermissionType(gatewayId + ":" + pt, gatewayId, pt, pt + " permission type"));
+            tryCreate(
+                    "permission type " + pt,
+                    () -> sharingFacade.createPermissionType(
+                            gatewayId + ":" + pt, gatewayId, pt, pt + " permission type"));
         }
 
         logger.info("Sharing initialized for gateway: {}", gatewayId);

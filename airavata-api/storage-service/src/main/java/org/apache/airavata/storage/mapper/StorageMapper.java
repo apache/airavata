@@ -50,10 +50,13 @@ public interface StorageMapper extends CommonMapperConversions {
         StorageResourceDescription.Builder b = StorageResourceDescription.newBuilder();
         if (entity.getStorageResourceId() != null) b.setStorageResourceId(entity.getStorageResourceId());
         if (entity.getHostName() != null) b.setHostName(entity.getHostName());
-        if (entity.getStorageResourceDescription() != null) b.setStorageResourceDescription(entity.getStorageResourceDescription());
+        if (entity.getStorageResourceDescription() != null)
+            b.setStorageResourceDescription(entity.getStorageResourceDescription());
         b.setEnabled(entity.isEnabled());
-        if (entity.getCreationTime() != null) b.setCreationTime(entity.getCreationTime().getTime());
-        if (entity.getUpdateTime() != null) b.setUpdateTime(entity.getUpdateTime().getTime());
+        if (entity.getCreationTime() != null)
+            b.setCreationTime(entity.getCreationTime().getTime());
+        if (entity.getUpdateTime() != null)
+            b.setUpdateTime(entity.getUpdateTime().getTime());
         if (entity.getDataMovementInterfaces() != null) {
             for (DataMovementInterfaceEntity dm : entity.getDataMovementInterfaces()) {
                 b.addDataMovementInterfaces(dataMovementInterfaceToModel(dm));
