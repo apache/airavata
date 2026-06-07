@@ -23,6 +23,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Map;
+import org.apache.airavata.db.JsonMapConverter;
 import org.apache.airavata.model.data.movement.proto.SecurityProtocol;
 import org.apache.airavata.util.AiravataUtils;
 
