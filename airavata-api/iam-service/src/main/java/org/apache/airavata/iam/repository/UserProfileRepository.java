@@ -19,6 +19,9 @@
 */
 package org.apache.airavata.iam.repository;
 
+import static org.apache.airavata.db.QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID;
+import static org.apache.airavata.db.QueryConstants.FIND_USER_PROFILE_BY_USER_ID;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +59,7 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         Map<String, Object> queryParam = new HashMap<String, Object>();
         queryParam.put(QueryConstants.USER_ID, userId);
         queryParam.put(QueryConstants.GATEWAY_ID, gatewayId);
-        List<UserProfile> resultList = select(QueryConstants.FIND_USER_PROFILE_BY_USER_ID, 1, 0, queryParam);
+        List<UserProfile> resultList = select(FIND_USER_PROFILE_BY_USER_ID, 1, 0, queryParam);
 
         if (resultList != null && resultList.size() > 0) userProfile = resultList.get(0);
 
@@ -70,9 +73,9 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
         List<UserProfile> resultList = null;
         if (limit > 0) {
-            resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, limit, offset, queryParams);
+            resultList = select(FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, limit, offset, queryParams);
         } else {
-            resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, queryParams);
+            resultList = select(FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, queryParams);
         }
 
         return resultList;

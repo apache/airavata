@@ -24,35 +24,8 @@ package org.apache.airavata.iam.util;
  */
 public class QueryConstants {
 
-    // Field name constants
+    // Field name constants used as JPQL parameter keys by UserProfileRepository.
+    // The query strings themselves live in the shared org.apache.airavata.db.QueryConstants.
     public static final String USER_ID = "userId";
     public static final String GATEWAY_ID = "gatewayId";
-    public static final String AIRAVATA_INTERNAL_GATEWAY_ID = "airavataInternalGatewayId";
-    public static final String GATEWAY_APPROVAL_STATUS = "gatewayApprovalStatus";
-    public static final String GATEWAY_NAME = "gatewayName";
-    public static final String GATEWAY_URL = "gatewayUrl";
-    public static final String REQUESTER_USERNAME = "requesterUsername";
-
-    public static final String FIND_USER_PROFILE_BY_USER_ID =
-            "SELECT u FROM UserProfileEntity u " + "where u.userId LIKE :"
-                    + USER_ID + " " + "AND u.gatewayId LIKE :"
-                    + GATEWAY_ID + "";
-
-    public static final String FIND_ALL_USER_PROFILES_BY_GATEWAY_ID =
-            "SELECT u FROM UserProfileEntity u " + "where u.gatewayId LIKE :" + GATEWAY_ID + "";
-
-    public static final String FIND_GATEWAY_BY_INTERNAL_ID = "SELECT g FROM GatewayEntity g "
-            + "where g.airavataInternalGatewayId LIKE :" + AIRAVATA_INTERNAL_GATEWAY_ID;
-
-    public static final String FIND_DUPLICATE_GATEWAY =
-            "SELECT g FROM GatewayEntity g " + "where g.gatewayApprovalStatus IN :"
-                    + GATEWAY_APPROVAL_STATUS + " " + "and (g.gatewayId LIKE :"
-                    + GATEWAY_ID + " " + "     or g.gatewayName LIKE :"
-                    + GATEWAY_NAME + " " + "     or g.gatewayUrl LIKE :"
-                    + GATEWAY_URL + " " + "    )";
-
-    public static final String GET_ALL_GATEWAYS = "SELECT g FROM GatewayEntity g";
-
-    public static final String GET_USER_GATEWAYS =
-            "SELECT g from GatewayEntity g " + "where g.requesterUsername LIKE :" + REQUESTER_USERNAME + "";
 }
