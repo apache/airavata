@@ -21,7 +21,7 @@ package org.apache.airavata.exception;
 
 /**
  * Exception thrown by IAM admin service operations.
- * Replaces the former Thrift-generated exception of the same name.
+ * Replaces the legacy generated exception of the same name.
  */
 public class IamAdminServicesException extends Exception {
 

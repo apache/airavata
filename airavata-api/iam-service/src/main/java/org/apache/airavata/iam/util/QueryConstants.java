@@ -24,7 +24,7 @@ package org.apache.airavata.iam.util;
  */
 public class QueryConstants {
 
-    // Field name constants (formerly derived from Thrift _Fields enums)
+    // Field name constants
     public static final String USER_ID = "userId";
     public static final String GATEWAY_ID = "gatewayId";
     public static final String AIRAVATA_INTERNAL_GATEWAY_ID = "airavataInternalGatewayId";

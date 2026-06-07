@@ -21,7 +21,7 @@ package org.apache.airavata.sharing.model;
 
 /**
  * Exception thrown when attempting to create a duplicate entry.
- * Replaces the Thrift-generated exception of the same name.
+ * Replaces the legacy generated exception of the same name.
  */
 public class DuplicateEntryException extends Exception {
 

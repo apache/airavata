@@ -22,7 +22,7 @@ package org.apache.airavata.iam.util;
 /**
  * Exception thrown for invalid authorization requests such as when a user does
  * not have access to an application or resource.
- * Replaces the former Thrift-generated exception of the same name.
+ * Replaces the legacy generated exception of the same name.
  */
 public class AuthorizationException extends AiravataSecurityException {
 

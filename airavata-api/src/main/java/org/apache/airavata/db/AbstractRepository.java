@@ -33,14 +33,14 @@ public abstract class AbstractRepository<T, E, Id> {
 
     private Class<E> dbEntityGenericClass;
 
-    public AbstractRepository(Class<T> thriftGenericClass, Class<E> dbEntityGenericClass) {
+    public AbstractRepository(Class<T> modelClass, Class<E> dbEntityGenericClass) {
         this.dbEntityGenericClass = dbEntityGenericClass;
     }
 
-    /** Convert a JPA entity to the Thrift/model object. */
+    /** Convert a JPA entity to the model object. */
     protected abstract T toModel(E entity);
 
-    /** Convert a Thrift/model object to a JPA entity. */
+    /** Convert a model object to a JPA entity. */
     protected abstract E toEntity(T model);
 
     public T create(T t) {

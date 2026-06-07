@@ -277,13 +277,13 @@ public class SSHAccountManager {
         return resolvedConfig;
     }
 
-    private Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams)
+    private Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> inputConfigParams)
             throws InvalidSetupException {
         List<ConfigParam> configParams = provisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
         Map<String, ConfigParam> configParamMap =
                 configParams.stream().collect(Collectors.toMap(ConfigParam::getName, Function.identity()));
 
-        Map<ConfigParam, String> result = thriftConfigParams.entrySet().stream()
+        Map<ConfigParam, String> result = inputConfigParams.entrySet().stream()
                 .collect(Collectors.toMap(entry -> configParamMap.get(entry.getKey()), entry -> entry.getValue()));
         for (ConfigParam configParam : configParams) {
             if (!configParam.isOptional() && !result.containsKey(configParam)) {
