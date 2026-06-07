@@ -21,6 +21,8 @@ package org.apache.airavata.credential.service;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.airavata.credential.model.CredentialEntity;
 import org.apache.airavata.credential.model.CredentialPK;
@@ -114,23 +116,12 @@ public class CredentialStoreService implements CredentialProvider {
 
     @Override
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        try {
-            StoredCredential stored = getCredential(gatewayId, tokenId);
-            if (stored != null && stored.getCredentialCase() == StoredCredential.CredentialCase.SSH_CREDENTIAL) {
-                return stored.getSshCredential();
-            } else {
-                log.info("Could not find SSH credentials for token - " + tokenId + " and " + "gateway id - "
-                        + gatewayId);
-                return null;
-            }
-        } catch (Exception e) {
-            log.error(
-                    "Error occurred while retrieving SSH credentialfor token - " + tokenId + " and gateway id - "
-                            + gatewayId,
-                    e);
-            throw new CredentialStoreException("Error occurred while retrieving SSH credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
-        }
+        return getTypedCredential(
+                tokenId,
+                gatewayId,
+                "SSH",
+                StoredCredential.CredentialCase.SSH_CREDENTIAL,
+                StoredCredential::getSshCredential);
     }
 
     public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws CredentialStoreException {
@@ -225,67 +216,30 @@ public class CredentialStoreService implements CredentialProvider {
 
     public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)
             throws CredentialStoreException {
-        try {
-            StoredCredential stored = getCredential(gatewayId, tokenId);
-            if (stored != null
-                    && stored.getCredentialCase() == StoredCredential.CredentialCase.CERTIFICATE_CREDENTIAL) {
-                return stored.getCertificateCredential();
-            } else {
-                log.info("Could not find Certificate credentials for token - " + tokenId + " and " + "gateway id - "
-                        + gatewayId);
-                return null;
-            }
-        } catch (Exception e) {
-            log.error(
-                    "Error occurred while retrieving Certificate credential for token - " + tokenId
-                            + " and gateway id - " + gatewayId,
-                    e);
-            throw new CredentialStoreException("Error occurred while retrieving Certificate credential for token - "
-                    + tokenId + " and gateway id - " + gatewayId);
-        }
+        return getTypedCredential(
+                tokenId,
+                gatewayId,
+                "Certificate",
+                StoredCredential.CredentialCase.CERTIFICATE_CREDENTIAL,
+                StoredCredential::getCertificateCredential);
     }
 
     @Override
     public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        try {
-            StoredCredential stored = getCredential(gatewayId, tokenId);
-            if (stored != null && stored.getCredentialCase() == StoredCredential.CredentialCase.PASSWORD_CREDENTIAL) {
-                return stored.getPasswordCredential();
-            } else {
-                log.info("Could not find PWD credentials for token - " + tokenId + " and " + "gateway id - "
-                        + gatewayId);
-                return null;
-            }
-        } catch (Exception e) {
-            log.error(
-                    "Error occurred while retrieving PWD credentialfor token - " + tokenId + " and gateway id - "
-                            + gatewayId,
-                    e);
-            throw new CredentialStoreException("Error occurred while retrieving PWD credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
-        }
+        return getTypedCredential(
+                tokenId,
+                gatewayId,
+                "PWD",
+                StoredCredential.CredentialCase.PASSWORD_CREDENTIAL,
+                StoredCredential::getPasswordCredential);
     }
 
     public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
             throws CredentialStoreException {
         if (type.equals(SummaryType.SSH)) {
-            List<CredentialSummary> summaryList = new ArrayList<>();
-            try {
-                List<StoredCredential> allCredentials = getAllCredentialsPerGateway(gatewayId);
-                if (allCredentials != null && !allCredentials.isEmpty()) {
-                    for (StoredCredential stored : allCredentials) {
-                        if (stored.getCredentialCase() == StoredCredential.CredentialCase.SSH_CREDENTIAL) {
-                            summaryList.add(convertToCredentialSummary(stored));
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error occurred while retrieving credential Summary", e);
-                throw new CredentialStoreException("Error occurred while retrieving credential Summary");
-            }
-            return summaryList;
+            return collectSshSummaries(gatewayId, ssh -> true);
         } else {
-            log.info("Summary type " + type + " not supported for gateway id - " + gatewayId);
+            log.info("Summary type {} not supported for gateway id - {}", type, gatewayId);
             return Collections.emptyList();
         }
     }
@@ -293,27 +247,9 @@ public class CredentialStoreService implements CredentialProvider {
     public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(
             SummaryType type, String gatewayId, String userId) throws CredentialStoreException {
         if (type.equals(SummaryType.SSH)) {
-            List<CredentialSummary> summaryList = new ArrayList<>();
-            try {
-                List<StoredCredential> allCredentials = getAllCredentialsPerGateway(gatewayId);
-                if (allCredentials != null && !allCredentials.isEmpty()) {
-                    for (StoredCredential stored : allCredentials) {
-                        if (stored.getCredentialCase() == StoredCredential.CredentialCase.SSH_CREDENTIAL) {
-                            var sshCred = stored.getSshCredential();
-                            if (userId.equals(sshCred.getUsername())) {
-                                summaryList.add(convertToCredentialSummary(stored));
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error occurred while retrieving credential Summary", e);
-                throw new CredentialStoreException("Error occurred while retrieving credential Summary");
-            }
-            return summaryList;
+            return collectSshSummaries(gatewayId, ssh -> userId.equals(ssh.getUsername()));
         } else {
-            log.info("Summary type " + type + " not supported for user id - " + userId + " and gateway id - "
-                    + gatewayId);
+            log.info("Summary type {} not supported for user id - {} and gateway id - {}", type, userId, gatewayId);
             return Collections.emptyList();
         }
     }
@@ -340,31 +276,11 @@ public class CredentialStoreService implements CredentialProvider {
 
     @Override
     public boolean deleteSSHCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        try {
-            credentialRepository.deleteById(new CredentialPK(gatewayId, tokenId));
-            return true;
-        } catch (Exception e) {
-            log.error(
-                    "Error occurred while deleting SSH credential for token - " + tokenId + " and gateway id - "
-                            + gatewayId,
-                    e);
-            throw new CredentialStoreException("Error occurred while deleting SSH credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
-        }
+        return deleteCredential(tokenId, gatewayId, "SSH");
     }
 
     public boolean deletePWDCredential(String tokenId, String gatewayId) throws CredentialStoreException {
-        try {
-            credentialRepository.deleteById(new CredentialPK(gatewayId, tokenId));
-            return true;
-        } catch (Exception e) {
-            log.error(
-                    "Error occurred while deleting PWD credential for token - " + tokenId + " and gateway id - "
-                            + gatewayId,
-                    e);
-            throw new CredentialStoreException("Error occurred while deleting PWD credential for token - " + tokenId
-                    + " and gateway id - " + gatewayId);
-        }
+        return deleteCredential(tokenId, gatewayId, "PWD");
     }
 
     // --- Internal data access methods using Spring Data repos ---
@@ -394,6 +310,69 @@ public class CredentialStoreService implements CredentialProvider {
                 .findById(new CredentialPK(gatewayId, tokenId))
                 .map(this::toStoredCredential)
                 .orElse(null);
+    }
+
+    private <T> T getTypedCredential(
+            String tokenId,
+            String gatewayId,
+            String label,
+            StoredCredential.CredentialCase expectedCase,
+            Function<StoredCredential, T> accessor)
+            throws CredentialStoreException {
+        try {
+            StoredCredential stored = getCredential(gatewayId, tokenId);
+            if (stored != null && stored.getCredentialCase() == expectedCase) {
+                return accessor.apply(stored);
+            } else {
+                log.info("Could not find {} credentials for token - {} and gateway id - {}", label, tokenId, gatewayId);
+                return null;
+            }
+        } catch (Exception e) {
+            log.error(
+                    "Error occurred while retrieving {} credential for token - {} and gateway id - {}",
+                    label,
+                    tokenId,
+                    gatewayId,
+                    e);
+            throw new CredentialStoreException("Error occurred while retrieving " + label + " credential for token - "
+                    + tokenId + " and gateway id - " + gatewayId);
+        }
+    }
+
+    private List<CredentialSummary> collectSshSummaries(String gatewayId, Predicate<SSHCredential> filter)
+            throws CredentialStoreException {
+        List<CredentialSummary> summaryList = new ArrayList<>();
+        try {
+            List<StoredCredential> allCredentials = getAllCredentialsPerGateway(gatewayId);
+            if (allCredentials != null && !allCredentials.isEmpty()) {
+                for (StoredCredential stored : allCredentials) {
+                    if (stored.getCredentialCase() == StoredCredential.CredentialCase.SSH_CREDENTIAL
+                            && filter.test(stored.getSshCredential())) {
+                        summaryList.add(convertToCredentialSummary(stored));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while retrieving credential Summary", e);
+            throw new CredentialStoreException("Error occurred while retrieving credential Summary");
+        }
+        return summaryList;
+    }
+
+    private boolean deleteCredential(String tokenId, String gatewayId, String label) throws CredentialStoreException {
+        try {
+            credentialRepository.deleteById(new CredentialPK(gatewayId, tokenId));
+            return true;
+        } catch (Exception e) {
+            log.error(
+                    "Error occurred while deleting {} credential for token - {} and gateway id - {}",
+                    label,
+                    tokenId,
+                    gatewayId,
+                    e);
+            throw new CredentialStoreException("Error occurred while deleting " + label + " credential for token - "
+                    + tokenId + " and gateway id - " + gatewayId);
+        }
     }
 
     private List<StoredCredential> getAllCredentialsPerGateway(String gatewayId) throws CredentialStoreException {
