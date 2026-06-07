@@ -390,9 +390,6 @@ under the License.
           <systemPropertyVariables>
             <credential.module.directory>${basedir}</credential.module.directory>
           </systemPropertyVariables>
-          <environmentVariables>
-            <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
-          </environmentVariables>
           <argLine>-Dapi.version=1.43</argLine>
           <excludes>
             <exclude>**/DAOBaseTestCase.java</exclude>
