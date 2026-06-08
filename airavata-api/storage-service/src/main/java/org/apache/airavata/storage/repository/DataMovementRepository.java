@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.storage.repository;
 
+import java.util.function.Function;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.AppCatalogUtils;
 import org.apache.airavata.interfaces.AppCatalogException;
@@ -61,15 +62,26 @@ public class DataMovementRepository
         return dataMovementInterfaceEntity.getDataMovementInterfaceId();
     }
 
+    private String addMovement(StorageDataMovementEntity entity) throws AppCatalogException {
+        execute(entityManager -> entityManager.merge(entity));
+        return entity.getDataMovementId();
+    }
+
+    private <T> T getMovement(String dataMovementId, Function<StorageDataMovementEntity, T> mapper)
+            throws AppCatalogException {
+        StorageDataMovementEntity entity =
+                execute(entityManager -> entityManager.find(StorageDataMovementEntity.class, dataMovementId));
+        if (entity == null) return null;
+        return mapper.apply(entity);
+    }
+
     // --- LOCALDataMovement CRUD ---
 
     public String addLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
         localDataMovement = localDataMovement.toBuilder()
                 .setDataMovementInterfaceId(AppCatalogUtils.getID("LOCAL"))
                 .build();
-        StorageDataMovementEntity entity = StorageMapper.INSTANCE.localDataMovementToEntity(localDataMovement);
-        execute(entityManager -> entityManager.merge(entity));
-        return entity.getDataMovementId();
+        return addMovement(StorageMapper.INSTANCE.localDataMovementToEntity(localDataMovement));
     }
 
     public void updateLocalDataMovement(LOCALDataMovement localDataMovement) throws AppCatalogException {
@@ -78,10 +90,7 @@ public class DataMovementRepository
     }
 
     public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws AppCatalogException {
-        StorageDataMovementEntity entity =
-                execute(entityManager -> entityManager.find(StorageDataMovementEntity.class, dataMovementId));
-        if (entity == null) return null;
-        return StorageMapper.INSTANCE.localDataMovementToModel(entity);
+        return getMovement(dataMovementId, StorageMapper.INSTANCE::localDataMovementToModel);
     }
 
     // --- SCPDataMovement CRUD ---
@@ -90,9 +99,7 @@ public class DataMovementRepository
         scpDataMovement = scpDataMovement.toBuilder()
                 .setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"))
                 .build();
-        StorageDataMovementEntity entity = StorageMapper.INSTANCE.scpDataMovementToEntity(scpDataMovement);
-        execute(entityManager -> entityManager.merge(entity));
-        return entity.getDataMovementId();
+        return addMovement(StorageMapper.INSTANCE.scpDataMovementToEntity(scpDataMovement));
     }
 
     public void updateScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
@@ -102,10 +109,7 @@ public class DataMovementRepository
     }
 
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws AppCatalogException {
-        StorageDataMovementEntity entity =
-                execute(entityManager -> entityManager.find(StorageDataMovementEntity.class, dataMovementId));
-        if (entity == null) return null;
-        return StorageMapper.INSTANCE.scpDataMovementToModel(entity);
+        return getMovement(dataMovementId, StorageMapper.INSTANCE::scpDataMovementToModel);
     }
 
     // --- UnicoreDataMovement CRUD ---
@@ -114,16 +118,11 @@ public class DataMovementRepository
         unicoreDataMovement = unicoreDataMovement.toBuilder()
                 .setDataMovementInterfaceId(AppCatalogUtils.getID("UNICORE"))
                 .build();
-        StorageDataMovementEntity entity = StorageMapper.INSTANCE.unicoreDataMovementToEntity(unicoreDataMovement);
-        execute(entityManager -> entityManager.merge(entity));
-        return entity.getDataMovementId();
+        return addMovement(StorageMapper.INSTANCE.unicoreDataMovementToEntity(unicoreDataMovement));
     }
 
     public UnicoreDataMovement getUNICOREDataMovement(String dataMovementId) throws AppCatalogException {
-        StorageDataMovementEntity entity =
-                execute(entityManager -> entityManager.find(StorageDataMovementEntity.class, dataMovementId));
-        if (entity == null) return null;
-        return StorageMapper.INSTANCE.unicoreDataMovementToModel(entity);
+        return getMovement(dataMovementId, StorageMapper.INSTANCE::unicoreDataMovementToModel);
     }
 
     // --- GridFTPDataMovement CRUD ---
@@ -132,16 +131,11 @@ public class DataMovementRepository
         gridFTPDataMovement = gridFTPDataMovement.toBuilder()
                 .setDataMovementInterfaceId(AppCatalogUtils.getID("GRIDFTP"))
                 .build();
-        StorageDataMovementEntity entity = StorageMapper.INSTANCE.gridFtpDataMovementToEntity(gridFTPDataMovement);
-        execute(entityManager -> entityManager.merge(entity));
-        return entity.getDataMovementId();
+        return addMovement(StorageMapper.INSTANCE.gridFtpDataMovementToEntity(gridFTPDataMovement));
     }
 
     public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws AppCatalogException {
-        StorageDataMovementEntity entity =
-                execute(entityManager -> entityManager.find(StorageDataMovementEntity.class, dataMovementId));
-        if (entity == null) return null;
-        return StorageMapper.INSTANCE.gridFtpDataMovementToModel(entity);
+        return getMovement(dataMovementId, StorageMapper.INSTANCE::gridFtpDataMovementToModel);
     }
 
     // --- Data movement interface removal ---
