@@ -40,7 +40,7 @@ public class KafkaProxyService {
 
     private final KafkaProducer<String, String> producer;
 
-    public KafkaProxyService(@Value("${airavata.kafka.broker-url:localhost:9092}") String brokerUrl) {
+    public KafkaProxyService(@Value("${kafka.broker.url:localhost:9092}") String brokerUrl) {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
