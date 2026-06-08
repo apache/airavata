@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.airavata.research.model.DatasetResourceEntity;
 import org.apache.airavata.research.model.RepositoryResourceEntity;
 import org.apache.airavata.research.model.ResearchProjectEntity;
-import org.apache.airavata.sharing.model.StateEnum;
+import org.apache.airavata.research.model.StateEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

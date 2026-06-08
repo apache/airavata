@@ -95,7 +95,10 @@
     <class>org.apache.airavata.research.model.RepositoryResourceEntity</class>
     <class>org.apache.airavata.research.model.ResearchIoParamEntity</class>
     <class>org.apache.airavata.research.model.ResearchProjectEntity</class>
+    <class>org.apache.airavata.research.model.ResourceEntity</class>
+    <class>org.apache.airavata.research.model.ResourceStarEntity</class>
     <class>org.apache.airavata.research.model.SessionEntity</class>
+    <class>org.apache.airavata.research.model.TagEntity</class>
 
     <!-- sharing-service -->
     <class>org.apache.airavata.sharing.model.DomainEntity</class>
@@ -104,10 +107,7 @@
     <class>org.apache.airavata.sharing.model.GroupAdminEntity</class>
     <class>org.apache.airavata.sharing.model.GroupMembershipEntity</class>
     <class>org.apache.airavata.sharing.model.PermissionTypeEntity</class>
-    <class>org.apache.airavata.sharing.model.ResourceEntity</class>
-    <class>org.apache.airavata.sharing.model.ResourceStarEntity</class>
     <class>org.apache.airavata.sharing.model.SharingEntity</class>
-    <class>org.apache.airavata.sharing.model.TagEntity</class>
     <class>org.apache.airavata.sharing.model.UserEntity</class>
     <class>org.apache.airavata.sharing.model.UserGroupEntity</class>
 

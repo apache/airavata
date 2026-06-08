@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 import org.apache.airavata.grpc.GrpcStatusMapper;
 import org.apache.airavata.research.*;
 import org.apache.airavata.research.model.DatasetResourceEntity;
+import org.apache.airavata.research.model.PrivacyEnum;
 import org.apache.airavata.research.model.RepositoryResourceEntity;
 import org.apache.airavata.research.model.ResearchProjectEntity;
+import org.apache.airavata.research.model.ResourceEntity;
+import org.apache.airavata.research.model.ResourceTypeEnum;
 import org.apache.airavata.research.service.ResearchProjectService;
 import org.apache.airavata.research.service.ResearchResourceService;
-import org.apache.airavata.sharing.model.PrivacyEnum;
-import org.apache.airavata.sharing.model.ResourceEntity;
-import org.apache.airavata.sharing.model.ResourceTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -145,7 +145,7 @@ public class ResearchResourceGrpcHandler extends ResearchResourceServiceGrpc.Res
     @Override
     public void getTags(GetAllResourcesRequest request, StreamObserver<JsonListResponse> responseObserver) {
         try {
-            List<org.apache.airavata.sharing.model.TagEntity> tags = resourceService.getAllTagsByAlphabeticalOrder();
+            List<org.apache.airavata.research.model.TagEntity> tags = resourceService.getAllTagsByAlphabeticalOrder();
             List<String> jsonList = tags.stream().map(this::writeJson).collect(Collectors.toList());
             responseObserver.onNext(
                     JsonListResponse.newBuilder().addAllItems(jsonList).build());

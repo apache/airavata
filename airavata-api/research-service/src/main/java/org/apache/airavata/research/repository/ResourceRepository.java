@@ -17,12 +17,12 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.repository;
+package org.apache.airavata.research.repository;
 
 import java.util.List;
 import java.util.Optional;
-import org.apache.airavata.sharing.model.ResourceEntity;
-import org.apache.airavata.sharing.model.StateEnum;
+import org.apache.airavata.research.model.ResourceEntity;
+import org.apache.airavata.research.model.StateEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.model;
+package org.apache.airavata.research.model;
 
 public enum ResourceTypeEnum {
     NOTEBOOK("NOTEBOOK"),
