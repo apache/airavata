@@ -101,15 +101,15 @@
     <class>org.apache.airavata.research.model.TagEntity</class>
 
     <!-- iam-service (sharing / access control) -->
-    <class>org.apache.airavata.sharing.model.DomainEntity</class>
-    <class>org.apache.airavata.sharing.model.EntityEntity</class>
-    <class>org.apache.airavata.sharing.model.EntityTypeEntity</class>
-    <class>org.apache.airavata.sharing.model.GroupAdminEntity</class>
-    <class>org.apache.airavata.sharing.model.GroupMembershipEntity</class>
-    <class>org.apache.airavata.sharing.model.PermissionTypeEntity</class>
-    <class>org.apache.airavata.sharing.model.SharingEntity</class>
-    <class>org.apache.airavata.sharing.model.UserEntity</class>
-    <class>org.apache.airavata.sharing.model.UserGroupEntity</class>
+    <class>org.apache.airavata.iam.model.DomainEntity</class>
+    <class>org.apache.airavata.iam.model.EntityEntity</class>
+    <class>org.apache.airavata.iam.model.EntityTypeEntity</class>
+    <class>org.apache.airavata.iam.model.GroupAdminEntity</class>
+    <class>org.apache.airavata.iam.model.GroupMembershipEntity</class>
+    <class>org.apache.airavata.iam.model.PermissionTypeEntity</class>
+    <class>org.apache.airavata.iam.model.SharingEntity</class>
+    <class>org.apache.airavata.iam.model.UserEntity</class>
+    <class>org.apache.airavata.iam.model.UserGroupEntity</class>
 
     <!-- storage-service -->
     <class>org.apache.airavata.storage.model.DataMovementInterfaceEntity</class>
