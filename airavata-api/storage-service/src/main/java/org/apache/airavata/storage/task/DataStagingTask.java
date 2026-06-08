@@ -104,32 +104,7 @@ public abstract class DataStagingTask extends AiravataTask {
      * Use input storage resource if configured. Otherwise, falls back to default gateway storage.
      */
     protected StorageResourceAdaptor getInputStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
-        String storageId = null;
-        try {
-            storageId = getTaskContext().getInputStorageResourceId();
-            logger.info("Fetching input storage adaptor for input storage resource {}", storageId);
-
-            if (getTaskContext().getProcessModel().getInputStorageResourceId() != null
-                    && !getTaskContext()
-                            .getProcessModel()
-                            .getInputStorageResourceId()
-                            .trim()
-                            .isEmpty()) {
-
-                StoragePreference inputStoragePref = getTaskContext().getInputGatewayStorageResourcePreference();
-                return createStorageAdaptorFromPreference(adaptorSupport, storageId, inputStoragePref, "Input");
-            } else {
-                // Fall back to default storage resource configured
-                return getStorageAdaptor(adaptorSupport);
-            }
-        } catch (Exception e) {
-            logger.error(
-                    "Failed to obtain adaptor for input storage resource {} in task {}", storageId, getTaskId(), e);
-            throw new TaskOnFailException(
-                    "Failed to obtain adaptor for input storage resource " + storageId + " in task " + getTaskId(),
-                    false,
-                    e);
-        }
+        return getDirectionalStorageAdaptor(adaptorSupport, true);
     }
 
     /**
@@ -137,29 +112,42 @@ public abstract class DataStagingTask extends AiravataTask {
      * Use output storage resource if configured. Otherwise, falls back to default gateway storage.
      */
     protected StorageResourceAdaptor getOutputStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
+        return getDirectionalStorageAdaptor(adaptorSupport, false);
+    }
+
+    private StorageResourceAdaptor getDirectionalStorageAdaptor(AdaptorSupport adaptorSupport, boolean input)
+            throws TaskOnFailException {
+        String direction = input ? "input" : "output";
+        String label = input ? "Input" : "Output";
         String storageId = null;
         try {
-            storageId = getTaskContext().getOutputStorageResourceId();
-            logger.info("Fetching output storage adaptor for input storage resource {}", storageId);
+            storageId = input
+                    ? getTaskContext().getInputStorageResourceId()
+                    : getTaskContext().getOutputStorageResourceId();
+            logger.info("Fetching {} storage adaptor for {} storage resource {}", direction, direction, storageId);
 
-            if (getTaskContext().getProcessModel().getOutputStorageResourceId() != null
-                    && !getTaskContext()
-                            .getProcessModel()
-                            .getOutputStorageResourceId()
-                            .trim()
-                            .isEmpty()) {
-
-                StoragePreference outputStoragePref = getTaskContext().getOutputGatewayStorageResourcePreference();
-                return createStorageAdaptorFromPreference(adaptorSupport, storageId, outputStoragePref, "Output");
+            String processStorageId = input
+                    ? getTaskContext().getProcessModel().getInputStorageResourceId()
+                    : getTaskContext().getProcessModel().getOutputStorageResourceId();
+            if (processStorageId != null && !processStorageId.trim().isEmpty()) {
+                StoragePreference storagePref = input
+                        ? getTaskContext().getInputGatewayStorageResourcePreference()
+                        : getTaskContext().getOutputGatewayStorageResourcePreference();
+                return createStorageAdaptorFromPreference(adaptorSupport, storageId, storagePref, label);
             } else {
                 // Fall back to default storage resource configured
                 return getStorageAdaptor(adaptorSupport);
             }
         } catch (Exception e) {
             logger.error(
-                    "Failed to obtain adaptor for output storage resource {} in task {}", storageId, getTaskId(), e);
+                    "Failed to obtain adaptor for {} storage resource {} in task {}",
+                    direction,
+                    storageId,
+                    getTaskId(),
+                    e);
             throw new TaskOnFailException(
-                    "Failed to obtain adaptor for output storage resource " + storageId + " in task " + getTaskId(),
+                    "Failed to obtain adaptor for " + direction + " storage resource " + storageId + " in task "
+                            + getTaskId(),
                     false,
                     e);
         }
