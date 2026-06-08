@@ -22,8 +22,6 @@ package org.apache.airavata.research.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import org.apache.airavata.sharing.model.ResourceEntity;
-import org.apache.airavata.sharing.model.ResourceTypeEnum;
 
 @Entity
 @Table(name = "REPOSITORY_RESOURCE")

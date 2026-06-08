@@ -17,18 +17,21 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.model;
+package org.apache.airavata.research.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
-@Table(name = "TAG")
-public class TagEntity {
+@Table(name = "RESOURCE_STAR")
+public class ResourceStarEntity {
 
     @Id
     @GeneratedValue
@@ -36,8 +39,28 @@ public class TagEntity {
     @Column(nullable = false, updatable = false, length = 48)
     private String id;
 
-    @Column(nullable = false)
-    private String value;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "resource_id", nullable = false)
+    private ResourceEntity resource;
+
+    public ResourceEntity getResource() {
+        return resource;
+    }
+
+    public void setResource(ResourceEntity resource) {
+        this.resource = resource;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getId() {
         return id;
@@ -45,13 +68,5 @@ public class TagEntity {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }

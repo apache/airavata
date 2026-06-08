@@ -17,10 +17,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.repository;
+package org.apache.airavata.research.repository;
 
 import java.util.List;
-import org.apache.airavata.sharing.model.TagEntity;
+import org.apache.airavata.research.model.TagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
