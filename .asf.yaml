@@ -1,4 +1,3 @@
-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -18,14 +17,14 @@
 # under the License.
 #
 notifications:
-  commits:              commits@airavata.apache.org
+  commits: commits@airavata.apache.org
   # Send all issue emails (new, closed, comments) to issues@
-  issues:               issues@airavata.apache.org
+  issues: issues@airavata.apache.org
   # Send new/closed PR notifications to dev@
-  pullrequests_status:  custos@airavata.apache.org
+  pullrequests_status: custos@airavata.apache.org
   # Send individual PR comments/reviews to issues@
   pullrequests_comment: issues@airavata.apache.org
-  
+
 github:
   description: "A general purpose Distributed Systems Framework"
   homepage: https://airavata.apache.org/
@@ -40,7 +39,20 @@ github:
     - workflow
     - bigdata
 
+  rulesets:
+    - name: "Default Branch Protection"
+      type: branch
+      branches:
+        includes:
+          - "~DEFAULT_BRANCH"
+          - "release/*"
+          - "rel/*"
+        excludes: []
+      bypass_teams:
+        - root
+      restrict_deletion: true
+      restrict_force_push: true
 features:
-    wiki: false
-    issues: true
-    projects: false
+  wiki: false
+  issues: true
+  projects: false
