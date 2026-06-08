@@ -19,15 +19,12 @@
 */
 package org.apache.airavata.server.grpc.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.server.DecoratingHttpServiceFunction;
 import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.config.Constants;
 import org.apache.airavata.config.UserContext;
@@ -38,29 +35,16 @@ import org.slf4j.LoggerFactory;
 public class HttpAuthDecorator implements DecoratingHttpServiceFunction {
 
     private static final Logger log = LoggerFactory.getLogger(HttpAuthDecorator.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public HttpResponse serve(HttpService delegate, ServiceRequestContext ctx, HttpRequest req) throws Exception {
-        String authHeader = req.headers().get("authorization");
-        String accessToken = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            accessToken = authHeader.substring(7);
-        }
-
+        String accessToken = AuthTokenExtractor.stripBearer(req.headers().get("authorization"));
         if (accessToken == null) {
             return HttpResponse.of(HttpStatus.UNAUTHORIZED);
         }
 
-        Map<String, String> claimsMap = new HashMap<>();
-        String claimsHeader = req.headers().get("x-claims");
-        if (claimsHeader != null && !claimsHeader.isBlank()) {
-            try {
-                claimsMap = objectMapper.readValue(claimsHeader, new TypeReference<Map<String, String>>() {});
-            } catch (Exception e) {
-                log.warn("Failed to parse x-claims header: {}", e.getMessage());
-            }
-        }
+        Map<String, String> claimsMap =
+                AuthTokenExtractor.parseClaims(req.headers().get("x-claims"));
 
         // Fall back to individual headers
         if (!claimsMap.containsKey(Constants.USER_NAME)) {
