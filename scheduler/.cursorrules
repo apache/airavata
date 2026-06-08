@@ -1,0 +1,7 @@
+* All binaries should be built inside the bin/ folder.
+* All hardcoded variables should be defined in a central place and accessed from there directly, so that the amount of work needed to change a config is significantly less.
+* Log files should be written into the logs/ folder.
+* All protobuf and grpc service file definitions should be in the proto/ folder.
+* Always check whether the test cases pass from a cold start -- without having previously built containers, volumes, and pods.
+* A sample experiment file is in tests/sample_experiment.yml. This file should be used with the CLI to test whether the system can actually run experiments. If the experiment works and all results are generated and they can be listed, viewed, and downloaded, and is organized according to the project it was grouped under.
+* Always keep the docs/ and README.md files up to date with the current state of the code. This is a must. Out of sync docs and README is unacceptable.
