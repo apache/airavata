@@ -19,15 +19,12 @@
 */
 package org.apache.airavata.server.grpc.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ForwardingServerCallListener;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.airavata.config.UserContext;
 import org.apache.airavata.model.security.proto.AuthzToken;
@@ -39,7 +36,6 @@ import org.springframework.stereotype.Component;
 public class GrpcAuthInterceptor implements ServerInterceptor {
 
     private static final Logger log = LoggerFactory.getLogger(GrpcAuthInterceptor.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final Metadata.Key<String> AUTHORIZATION_KEY =
             Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
@@ -50,31 +46,14 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
             ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
 
-        String authHeader = headers.get(AUTHORIZATION_KEY);
-        String accessToken = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            accessToken = authHeader.substring(7);
-        }
-
+        String accessToken = AuthTokenExtractor.stripBearer(headers.get(AUTHORIZATION_KEY));
         if (accessToken == null) {
             call.close(Status.UNAUTHENTICATED.withDescription("Missing authorization metadata"), new Metadata());
             return new ServerCall.Listener<>() {};
         }
 
-        Map<String, String> claimsMap = new HashMap<>();
-        String claimsHeader = headers.get(X_CLAIMS_KEY);
-        if (claimsHeader != null && !claimsHeader.isBlank()) {
-            try {
-                claimsMap = objectMapper.readValue(claimsHeader, new TypeReference<Map<String, String>>() {});
-            } catch (Exception e) {
-                log.warn("Failed to parse x-claims metadata: {}", e.getMessage());
-            }
-        }
-
-        AuthzToken authzToken = AuthzToken.newBuilder()
-                .setAccessToken(accessToken)
-                .putAllClaimsMap(claimsMap)
-                .build();
+        Map<String, String> claimsMap = AuthTokenExtractor.parseClaims(headers.get(X_CLAIMS_KEY));
+        AuthzToken authzToken = AuthTokenExtractor.buildAuthzToken(accessToken, claimsMap);
         UserContext.setAuthzToken(authzToken);
 
         ServerCall.Listener<ReqT> delegate = next.startCall(call, headers);
