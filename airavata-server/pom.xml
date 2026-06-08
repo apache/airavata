@@ -80,11 +80,6 @@ under the License.
             <artifactId>iam-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>sharing-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Database driver -->
         <dependency>

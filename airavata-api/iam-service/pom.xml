@@ -31,7 +31,7 @@ under the License.
 
     <artifactId>iam-service</artifactId>
     <name>IAM Service</name>
-    <description>Security, authentication, and user/tenant profile service implementation</description>
+    <description>Identity and access management: authentication, user/tenant profiles, permissions, groups, and resource sharing</description>
 
     <dependencies>
         <dependency>

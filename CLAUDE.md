@@ -80,10 +80,9 @@ Contains all service modules, each with `src/main/{java,proto,resources}`:
 
 | Module | Purpose |
 |--------|---------|
-| `iam-service` | User auth via Keycloak, gateways, user profiles |
+| `iam-service` | User auth via Keycloak, gateways, user profiles; permissions, groups, resource access control (sharing) |
 | `credential-service` | SSH key and password vault |
 | `compute-service` | HPC resource catalog, resource profiles, scheduling |
-| `sharing-service` | Permissions, groups, resource access control |
 | `research-service` | Projects, experiments, app catalog, data products |
 | `storage-service` | Storage registry, file operations |
 | `orchestration-service` | Workflow orchestration, job monitoring (Helix state machine) |

@@ -72,7 +72,6 @@ under the License.
         <module>airavata-api/iam-service</module>
         <module>airavata-api/credential-service</module>
         <module>airavata-api/compute-service</module>
-        <module>airavata-api/sharing-service</module>
         <module>airavata-api/research-service</module>
         <module>airavata-api/storage-service</module>
         <module>airavata-api/orchestration-service</module>
