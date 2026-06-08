@@ -22,7 +22,7 @@ package org.apache.airavata.server.grpc.services;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
-import org.apache.airavata.api.userprofile.*;
+import org.apache.airavata.api.iam.userprofile.*;
 import org.apache.airavata.grpc.GrpcStatusMapper;
 import org.apache.airavata.iam.repository.UserProfileRepository;
 import org.apache.airavata.model.user.proto.UserProfile;

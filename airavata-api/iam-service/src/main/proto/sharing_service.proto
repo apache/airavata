@@ -17,9 +17,9 @@
 
 syntax = "proto3";
 
-package org.apache.airavata.api.sharing;
+package org.apache.airavata.api.iam.sharing;
 
-option java_package = "org.apache.airavata.api.sharing";
+option java_package = "org.apache.airavata.api.iam.sharing";
 option java_multiple_files = true;
 
 import "google/api/annotations.proto";

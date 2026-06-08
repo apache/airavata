@@ -23,7 +23,7 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.airavata.api.groupmanager.*;
+import org.apache.airavata.api.iam.groupmanager.*;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.grpc.GrpcRequestContext;
 import org.apache.airavata.grpc.GrpcStatusMapper;

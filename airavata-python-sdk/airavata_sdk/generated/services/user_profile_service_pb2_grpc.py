@@ -38,37 +38,37 @@ class UserProfileServiceStub(object):
             channel: A grpc.Channel.
         """
         self.AddUserProfile = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/AddUserProfile',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/AddUserProfile',
                 request_serializer=services_dot_user__profile__service__pb2.AddUserProfileRequest.SerializeToString,
                 response_deserializer=services_dot_user__profile__service__pb2.AddUserProfileResponse.FromString,
                 _registered_method=True)
         self.UpdateUserProfile = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/UpdateUserProfile',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/UpdateUserProfile',
                 request_serializer=services_dot_user__profile__service__pb2.UpdateUserProfileRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetUserProfileById = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/GetUserProfileById',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/GetUserProfileById',
                 request_serializer=services_dot_user__profile__service__pb2.GetUserProfileByIdRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_user_dot_user__profile__pb2.UserProfile.FromString,
                 _registered_method=True)
         self.GetUserProfileByName = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/GetUserProfileByName',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/GetUserProfileByName',
                 request_serializer=services_dot_user__profile__service__pb2.GetUserProfileByNameRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_user_dot_user__profile__pb2.UserProfile.FromString,
                 _registered_method=True)
         self.DeleteUserProfile = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/DeleteUserProfile',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/DeleteUserProfile',
                 request_serializer=services_dot_user__profile__service__pb2.DeleteUserProfileRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetAllUserProfilesInGateway = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/GetAllUserProfilesInGateway',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/GetAllUserProfilesInGateway',
                 request_serializer=services_dot_user__profile__service__pb2.GetAllUserProfilesInGatewayRequest.SerializeToString,
                 response_deserializer=services_dot_user__profile__service__pb2.GetAllUserProfilesInGatewayResponse.FromString,
                 _registered_method=True)
         self.DoesUserExist = channel.unary_unary(
-                '/org.apache.airavata.api.userprofile.UserProfileService/DoesUserExist',
+                '/org.apache.airavata.api.iam.userprofile.UserProfileService/DoesUserExist',
                 request_serializer=services_dot_user__profile__service__pb2.DoesUserExistRequest.SerializeToString,
                 response_deserializer=services_dot_user__profile__service__pb2.DoesUserExistResponse.FromString,
                 _registered_method=True)
@@ -160,9 +160,9 @@ def add_UserProfileServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'org.apache.airavata.api.userprofile.UserProfileService', rpc_method_handlers)
+            'org.apache.airavata.api.iam.userprofile.UserProfileService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('org.apache.airavata.api.userprofile.UserProfileService', rpc_method_handlers)
+    server.add_registered_method_handlers('org.apache.airavata.api.iam.userprofile.UserProfileService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -184,7 +184,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/AddUserProfile',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/AddUserProfile',
             services_dot_user__profile__service__pb2.AddUserProfileRequest.SerializeToString,
             services_dot_user__profile__service__pb2.AddUserProfileResponse.FromString,
             options,
@@ -211,7 +211,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/UpdateUserProfile',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/UpdateUserProfile',
             services_dot_user__profile__service__pb2.UpdateUserProfileRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -238,7 +238,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/GetUserProfileById',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/GetUserProfileById',
             services_dot_user__profile__service__pb2.GetUserProfileByIdRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_user_dot_user__profile__pb2.UserProfile.FromString,
             options,
@@ -265,7 +265,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/GetUserProfileByName',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/GetUserProfileByName',
             services_dot_user__profile__service__pb2.GetUserProfileByNameRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_user_dot_user__profile__pb2.UserProfile.FromString,
             options,
@@ -292,7 +292,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/DeleteUserProfile',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/DeleteUserProfile',
             services_dot_user__profile__service__pb2.DeleteUserProfileRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -319,7 +319,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/GetAllUserProfilesInGateway',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/GetAllUserProfilesInGateway',
             services_dot_user__profile__service__pb2.GetAllUserProfilesInGatewayRequest.SerializeToString,
             services_dot_user__profile__service__pb2.GetAllUserProfilesInGatewayResponse.FromString,
             options,
@@ -346,7 +346,7 @@ class UserProfileService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.userprofile.UserProfileService/DoesUserExist',
+            '/org.apache.airavata.api.iam.userprofile.UserProfileService/DoesUserExist',
             services_dot_user__profile__service__pb2.DoesUserExistRequest.SerializeToString,
             services_dot_user__profile__service__pb2.DoesUserExistResponse.FromString,
             options,
