@@ -27,14 +27,14 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from org.apache.airavata.model.user import user_profile_pb2 as org_dot_apache_dot_airavata_dot_model_dot_user_dot_user__profile__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#services/user_profile_service.proto\x12#org.apache.airavata.api.userprofile\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x31org/apache/airavata/model/user/user_profile.proto\"Z\n\x15\x41\x64\x64UserProfileRequest\x12\x41\n\x0cuser_profile\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.user.UserProfile\")\n\x16\x41\x64\x64UserProfileResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"]\n\x18UpdateUserProfileRequest\x12\x41\n\x0cuser_profile\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.user.UserProfile\"@\n\x19GetUserProfileByIdRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\ngateway_id\x18\x02 \x01(\t\"D\n\x1bGetUserProfileByNameRequest\x12\x11\n\tuser_name\x18\x01 \x01(\t\x12\x12\n\ngateway_id\x18\x02 \x01(\t\"+\n\x18\x44\x65leteUserProfileRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"W\n\"GetAllUserProfilesInGatewayRequest\x12\x12\n\ngateway_id\x18\x01 \x01(\t\x12\x0e\n\x06offset\x18\x02 \x01(\x05\x12\r\n\x05limit\x18\x03 \x01(\x05\"i\n#GetAllUserProfilesInGatewayResponse\x12\x42\n\ruser_profiles\x18\x01 \x03(\x0b\x32+.org.apache.airavata.model.user.UserProfile\"=\n\x14\x44oesUserExistRequest\x12\x11\n\tuser_name\x18\x01 \x01(\t\x12\x12\n\ngateway_id\x18\x02 \x01(\t\"\'\n\x15\x44oesUserExistResponse\x12\x0e\n\x06\x65xists\x18\x01 \x01(\x08\x32\xbe\n\n\x12UserProfileService\x12\xb6\x01\n\x0e\x41\x64\x64UserProfile\x12:.org.apache.airavata.api.userprofile.AddUserProfileRequest\x1a;.org.apache.airavata.api.userprofile.AddUserProfileResponse\"+\x82\xd3\xe4\x93\x02%\"\x15/api/v1/user-profiles:\x0cuser_profile\x12\xae\x01\n\x11UpdateUserProfile\x12=.org.apache.airavata.api.userprofile.UpdateUserProfileRequest\x1a\x16.google.protobuf.Empty\"B\x82\xd3\xe4\x93\x02<\x1a,/api/v1/user-profiles/{user_profile.user_id}:\x0cuser_profile\x12\xaa\x01\n\x12GetUserProfileById\x12>.org.apache.airavata.api.userprofile.GetUserProfileByIdRequest\x1a+.org.apache.airavata.model.user.UserProfile\"\'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/user-profiles/{user_id}\x12\xc1\x01\n\x14GetUserProfileByName\x12@.org.apache.airavata.api.userprofile.GetUserProfileByNameRequest\x1a+.org.apache.airavata.model.user.UserProfile\":\x82\xd3\xe4\x93\x02\x34\x12\x32/api/v1/gateways/{gateway_id}/user-profiles:byName\x12\x93\x01\n\x11\x44\x65leteUserProfile\x12=.org.apache.airavata.api.userprofile.DeleteUserProfileRequest\x1a\x16.google.protobuf.Empty\"\'\x82\xd3\xe4\x93\x02!*\x1f/api/v1/user-profiles/{user_id}\x12\xe5\x01\n\x1bGetAllUserProfilesInGateway\x12G.org.apache.airavata.api.userprofile.GetAllUserProfilesInGatewayRequest\x1aH.org.apache.airavata.api.userprofile.GetAllUserProfilesInGatewayResponse\"3\x82\xd3\xe4\x93\x02-\x12+/api/v1/gateways/{gateway_id}/user-profiles\x12\xce\x01\n\rDoesUserExist\x12\x39.org.apache.airavata.api.userprofile.DoesUserExistRequest\x1a:.org.apache.airavata.api.userprofile.DoesUserExistResponse\"F\x82\xd3\xe4\x93\x02@\x12>/api/v1/gateways/{gateway_id}/user-profiles/{user_name}:existsB\'\n#org.apache.airavata.api.userprofileP\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#services/user_profile_service.proto\x12\'org.apache.airavata.api.iam.userprofile\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x31org/apache/airavata/model/user/user_profile.proto\"Z\n\x15\x41\x64\x64UserProfileRequest\x12\x41\n\x0cuser_profile\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.user.UserProfile\")\n\x16\x41\x64\x64UserProfileResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"]\n\x18UpdateUserProfileRequest\x12\x41\n\x0cuser_profile\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.user.UserProfile\"@\n\x19GetUserProfileByIdRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\ngateway_id\x18\x02 \x01(\t\"D\n\x1bGetUserProfileByNameRequest\x12\x11\n\tuser_name\x18\x01 \x01(\t\x12\x12\n\ngateway_id\x18\x02 \x01(\t\"+\n\x18\x44\x65leteUserProfileRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"W\n\"GetAllUserProfilesInGatewayRequest\x12\x12\n\ngateway_id\x18\x01 \x01(\t\x12\x0e\n\x06offset\x18\x02 \x01(\x05\x12\r\n\x05limit\x18\x03 \x01(\x05\"i\n#GetAllUserProfilesInGatewayResponse\x12\x42\n\ruser_profiles\x18\x01 \x03(\x0b\x32+.org.apache.airavata.model.user.UserProfile\"=\n\x14\x44oesUserExistRequest\x12\x11\n\tuser_name\x18\x01 \x01(\t\x12\x12\n\ngateway_id\x18\x02 \x01(\t\"\'\n\x15\x44oesUserExistResponse\x12\x0e\n\x06\x65xists\x18\x01 \x01(\x08\x32\xe6\n\n\x12UserProfileService\x12\xbe\x01\n\x0e\x41\x64\x64UserProfile\x12>.org.apache.airavata.api.iam.userprofile.AddUserProfileRequest\x1a?.org.apache.airavata.api.iam.userprofile.AddUserProfileResponse\"+\x82\xd3\xe4\x93\x02%\"\x15/api/v1/user-profiles:\x0cuser_profile\x12\xb2\x01\n\x11UpdateUserProfile\x12\x41.org.apache.airavata.api.iam.userprofile.UpdateUserProfileRequest\x1a\x16.google.protobuf.Empty\"B\x82\xd3\xe4\x93\x02<\x1a,/api/v1/user-profiles/{user_profile.user_id}:\x0cuser_profile\x12\xae\x01\n\x12GetUserProfileById\x12\x42.org.apache.airavata.api.iam.userprofile.GetUserProfileByIdRequest\x1a+.org.apache.airavata.model.user.UserProfile\"\'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/user-profiles/{user_id}\x12\xc5\x01\n\x14GetUserProfileByName\x12\x44.org.apache.airavata.api.iam.userprofile.GetUserProfileByNameRequest\x1a+.org.apache.airavata.model.user.UserProfile\":\x82\xd3\xe4\x93\x02\x34\x12\x32/api/v1/gateways/{gateway_id}/user-profiles:byName\x12\x97\x01\n\x11\x44\x65leteUserProfile\x12\x41.org.apache.airavata.api.iam.userprofile.DeleteUserProfileRequest\x1a\x16.google.protobuf.Empty\"\'\x82\xd3\xe4\x93\x02!*\x1f/api/v1/user-profiles/{user_id}\x12\xed\x01\n\x1bGetAllUserProfilesInGateway\x12K.org.apache.airavata.api.iam.userprofile.GetAllUserProfilesInGatewayRequest\x1aL.org.apache.airavata.api.iam.userprofile.GetAllUserProfilesInGatewayResponse\"3\x82\xd3\xe4\x93\x02-\x12+/api/v1/gateways/{gateway_id}/user-profiles\x12\xd6\x01\n\rDoesUserExist\x12=.org.apache.airavata.api.iam.userprofile.DoesUserExistRequest\x1a>.org.apache.airavata.api.iam.userprofile.DoesUserExistResponse\"F\x82\xd3\xe4\x93\x02@\x12>/api/v1/gateways/{gateway_id}/user-profiles/{user_name}:existsB+\n\'org.apache.airavata.api.iam.userprofileP\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.user_profile_service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\n#org.apache.airavata.api.userprofileP\001'
+  _globals['DESCRIPTOR']._serialized_options = b'\n\'org.apache.airavata.api.iam.userprofileP\001'
   _globals['_USERPROFILESERVICE'].methods_by_name['AddUserProfile']._loaded_options = None
   _globals['_USERPROFILESERVICE'].methods_by_name['AddUserProfile']._serialized_options = b'\202\323\344\223\002%\"\025/api/v1/user-profiles:\014user_profile'
   _globals['_USERPROFILESERVICE'].methods_by_name['UpdateUserProfile']._loaded_options = None
@@ -49,26 +49,26 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_USERPROFILESERVICE'].methods_by_name['GetAllUserProfilesInGateway']._serialized_options = b'\202\323\344\223\002-\022+/api/v1/gateways/{gateway_id}/user-profiles'
   _globals['_USERPROFILESERVICE'].methods_by_name['DoesUserExist']._loaded_options = None
   _globals['_USERPROFILESERVICE'].methods_by_name['DoesUserExist']._serialized_options = b'\202\323\344\223\002@\022>/api/v1/gateways/{gateway_id}/user-profiles/{user_name}:exists'
-  _globals['_ADDUSERPROFILEREQUEST']._serialized_start=186
-  _globals['_ADDUSERPROFILEREQUEST']._serialized_end=276
-  _globals['_ADDUSERPROFILERESPONSE']._serialized_start=278
-  _globals['_ADDUSERPROFILERESPONSE']._serialized_end=319
-  _globals['_UPDATEUSERPROFILEREQUEST']._serialized_start=321
-  _globals['_UPDATEUSERPROFILEREQUEST']._serialized_end=414
-  _globals['_GETUSERPROFILEBYIDREQUEST']._serialized_start=416
-  _globals['_GETUSERPROFILEBYIDREQUEST']._serialized_end=480
-  _globals['_GETUSERPROFILEBYNAMEREQUEST']._serialized_start=482
-  _globals['_GETUSERPROFILEBYNAMEREQUEST']._serialized_end=550
-  _globals['_DELETEUSERPROFILEREQUEST']._serialized_start=552
-  _globals['_DELETEUSERPROFILEREQUEST']._serialized_end=595
-  _globals['_GETALLUSERPROFILESINGATEWAYREQUEST']._serialized_start=597
-  _globals['_GETALLUSERPROFILESINGATEWAYREQUEST']._serialized_end=684
-  _globals['_GETALLUSERPROFILESINGATEWAYRESPONSE']._serialized_start=686
-  _globals['_GETALLUSERPROFILESINGATEWAYRESPONSE']._serialized_end=791
-  _globals['_DOESUSEREXISTREQUEST']._serialized_start=793
-  _globals['_DOESUSEREXISTREQUEST']._serialized_end=854
-  _globals['_DOESUSEREXISTRESPONSE']._serialized_start=856
-  _globals['_DOESUSEREXISTRESPONSE']._serialized_end=895
-  _globals['_USERPROFILESERVICE']._serialized_start=898
-  _globals['_USERPROFILESERVICE']._serialized_end=2240
+  _globals['_ADDUSERPROFILEREQUEST']._serialized_start=190
+  _globals['_ADDUSERPROFILEREQUEST']._serialized_end=280
+  _globals['_ADDUSERPROFILERESPONSE']._serialized_start=282
+  _globals['_ADDUSERPROFILERESPONSE']._serialized_end=323
+  _globals['_UPDATEUSERPROFILEREQUEST']._serialized_start=325
+  _globals['_UPDATEUSERPROFILEREQUEST']._serialized_end=418
+  _globals['_GETUSERPROFILEBYIDREQUEST']._serialized_start=420
+  _globals['_GETUSERPROFILEBYIDREQUEST']._serialized_end=484
+  _globals['_GETUSERPROFILEBYNAMEREQUEST']._serialized_start=486
+  _globals['_GETUSERPROFILEBYNAMEREQUEST']._serialized_end=554
+  _globals['_DELETEUSERPROFILEREQUEST']._serialized_start=556
+  _globals['_DELETEUSERPROFILEREQUEST']._serialized_end=599
+  _globals['_GETALLUSERPROFILESINGATEWAYREQUEST']._serialized_start=601
+  _globals['_GETALLUSERPROFILESINGATEWAYREQUEST']._serialized_end=688
+  _globals['_GETALLUSERPROFILESINGATEWAYRESPONSE']._serialized_start=690
+  _globals['_GETALLUSERPROFILESINGATEWAYRESPONSE']._serialized_end=795
+  _globals['_DOESUSEREXISTREQUEST']._serialized_start=797
+  _globals['_DOESUSEREXISTREQUEST']._serialized_end=858
+  _globals['_DOESUSEREXISTRESPONSE']._serialized_start=860
+  _globals['_DOESUSEREXISTRESPONSE']._serialized_end=899
+  _globals['_USERPROFILESERVICE']._serialized_start=902
+  _globals['_USERPROFILESERVICE']._serialized_end=2284
 # @@protoc_insertion_point(module_scope)

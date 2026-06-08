@@ -25,7 +25,7 @@ import io.grpc.stub.StreamObserver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.api.sharing.*;
+import org.apache.airavata.api.iam.sharing.*;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.grpc.GrpcRequestContext;
 import org.apache.airavata.grpc.GrpcStatusMapper;

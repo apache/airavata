@@ -39,327 +39,327 @@ class SharingServiceStub(object):
             channel: A grpc.Channel.
         """
         self.ShareResourceWithUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/ShareResourceWithUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/ShareResourceWithUsers',
                 request_serializer=services_dot_sharing__service__pb2.ShareResourceWithUsersRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.ShareResourceWithGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/ShareResourceWithGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/ShareResourceWithGroups',
                 request_serializer=services_dot_sharing__service__pb2.ShareResourceWithGroupsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RevokeFromUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RevokeFromUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RevokeFromUsers',
                 request_serializer=services_dot_sharing__service__pb2.RevokeFromUsersRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RevokeFromGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RevokeFromGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RevokeFromGroups',
                 request_serializer=services_dot_sharing__service__pb2.RevokeFromGroupsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetAllAccessibleUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetAllAccessibleUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetAllAccessibleUsers',
                 request_serializer=services_dot_sharing__service__pb2.GetAllAccessibleUsersRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetAllAccessibleUsersResponse.FromString,
                 _registered_method=True)
         self.GetAllDirectlyAccessibleUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetAllDirectlyAccessibleUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetAllDirectlyAccessibleUsers',
                 request_serializer=services_dot_sharing__service__pb2.GetAllDirectlyAccessibleUsersRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetAllDirectlyAccessibleUsersResponse.FromString,
                 _registered_method=True)
         self.GetAllAccessibleGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetAllAccessibleGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetAllAccessibleGroups',
                 request_serializer=services_dot_sharing__service__pb2.GetAllAccessibleGroupsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetAllAccessibleGroupsResponse.FromString,
                 _registered_method=True)
         self.GetAllDirectlyAccessibleGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetAllDirectlyAccessibleGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetAllDirectlyAccessibleGroups',
                 request_serializer=services_dot_sharing__service__pb2.GetAllDirectlyAccessibleGroupsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetAllDirectlyAccessibleGroupsResponse.FromString,
                 _registered_method=True)
         self.UserHasAccess = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UserHasAccess',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UserHasAccess',
                 request_serializer=services_dot_sharing__service__pb2.UserHasAccessRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.UserHasAccessResponse.FromString,
                 _registered_method=True)
         self.CreateDomain = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/CreateDomain',
+                '/org.apache.airavata.api.iam.sharing.SharingService/CreateDomain',
                 request_serializer=services_dot_sharing__service__pb2.CreateDomainRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.CreateDomainResponse.FromString,
                 _registered_method=True)
         self.UpdateDomain = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UpdateDomain',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UpdateDomain',
                 request_serializer=services_dot_sharing__service__pb2.UpdateDomainRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.IsDomainExists = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/IsDomainExists',
+                '/org.apache.airavata.api.iam.sharing.SharingService/IsDomainExists',
                 request_serializer=services_dot_sharing__service__pb2.IsDomainExistsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.IsDomainExistsResponse.FromString,
                 _registered_method=True)
         self.DeleteDomain = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/DeleteDomain',
+                '/org.apache.airavata.api.iam.sharing.SharingService/DeleteDomain',
                 request_serializer=services_dot_sharing__service__pb2.DeleteDomainRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetDomain = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetDomain',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetDomain',
                 request_serializer=services_dot_sharing__service__pb2.GetDomainRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.Domain.FromString,
                 _registered_method=True)
         self.GetDomains = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetDomains',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetDomains',
                 request_serializer=services_dot_sharing__service__pb2.GetDomainsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetDomainsResponse.FromString,
                 _registered_method=True)
         self.CreateUser = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/CreateUser',
+                '/org.apache.airavata.api.iam.sharing.SharingService/CreateUser',
                 request_serializer=services_dot_sharing__service__pb2.CreateUserRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.CreateUserResponse.FromString,
                 _registered_method=True)
         self.UpdateUser = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UpdateUser',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UpdateUser',
                 request_serializer=services_dot_sharing__service__pb2.UpdateUserRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.IsUserExists = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/IsUserExists',
+                '/org.apache.airavata.api.iam.sharing.SharingService/IsUserExists',
                 request_serializer=services_dot_sharing__service__pb2.IsUserExistsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.IsUserExistsResponse.FromString,
                 _registered_method=True)
         self.DeleteUser = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/DeleteUser',
+                '/org.apache.airavata.api.iam.sharing.SharingService/DeleteUser',
                 request_serializer=services_dot_sharing__service__pb2.DeleteUserRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetUser = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetUser',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetUser',
                 request_serializer=services_dot_sharing__service__pb2.GetUserRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.User.FromString,
                 _registered_method=True)
         self.GetUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetUsers',
                 request_serializer=services_dot_sharing__service__pb2.GetUsersRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetUsersResponse.FromString,
                 _registered_method=True)
         self.CreateGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/CreateGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/CreateGroup',
                 request_serializer=services_dot_sharing__service__pb2.CreateGroupRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.CreateGroupResponse.FromString,
                 _registered_method=True)
         self.UpdateGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UpdateGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UpdateGroup',
                 request_serializer=services_dot_sharing__service__pb2.UpdateGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.IsGroupExists = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/IsGroupExists',
+                '/org.apache.airavata.api.iam.sharing.SharingService/IsGroupExists',
                 request_serializer=services_dot_sharing__service__pb2.IsGroupExistsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.IsGroupExistsResponse.FromString,
                 _registered_method=True)
         self.DeleteGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/DeleteGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/DeleteGroup',
                 request_serializer=services_dot_sharing__service__pb2.DeleteGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetGroup',
                 request_serializer=services_dot_sharing__service__pb2.GetGroupRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.UserGroup.FromString,
                 _registered_method=True)
         self.GetGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetGroups',
                 request_serializer=services_dot_sharing__service__pb2.GetGroupsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetGroupsResponse.FromString,
                 _registered_method=True)
         self.AddUsersToGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/AddUsersToGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/AddUsersToGroup',
                 request_serializer=services_dot_sharing__service__pb2.AddUsersToGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RemoveUsersFromGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RemoveUsersFromGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RemoveUsersFromGroup',
                 request_serializer=services_dot_sharing__service__pb2.RemoveUsersFromGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.TransferGroupOwnership = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/TransferGroupOwnership',
+                '/org.apache.airavata.api.iam.sharing.SharingService/TransferGroupOwnership',
                 request_serializer=services_dot_sharing__service__pb2.TransferGroupOwnershipRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.AddGroupAdmins = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/AddGroupAdmins',
+                '/org.apache.airavata.api.iam.sharing.SharingService/AddGroupAdmins',
                 request_serializer=services_dot_sharing__service__pb2.AddGroupAdminsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RemoveGroupAdmins = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RemoveGroupAdmins',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RemoveGroupAdmins',
                 request_serializer=services_dot_sharing__service__pb2.RemoveGroupAdminsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.HasAdminAccess = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/HasAdminAccess',
+                '/org.apache.airavata.api.iam.sharing.SharingService/HasAdminAccess',
                 request_serializer=services_dot_sharing__service__pb2.HasAdminAccessRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.HasAdminAccessResponse.FromString,
                 _registered_method=True)
         self.HasOwnerAccess = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/HasOwnerAccess',
+                '/org.apache.airavata.api.iam.sharing.SharingService/HasOwnerAccess',
                 request_serializer=services_dot_sharing__service__pb2.HasOwnerAccessRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.HasOwnerAccessResponse.FromString,
                 _registered_method=True)
         self.GetGroupMembersOfTypeUser = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetGroupMembersOfTypeUser',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetGroupMembersOfTypeUser',
                 request_serializer=services_dot_sharing__service__pb2.GetGroupMembersOfTypeUserRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetGroupMembersOfTypeUserResponse.FromString,
                 _registered_method=True)
         self.GetGroupMembersOfTypeGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetGroupMembersOfTypeGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetGroupMembersOfTypeGroup',
                 request_serializer=services_dot_sharing__service__pb2.GetGroupMembersOfTypeGroupRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetGroupMembersOfTypeGroupResponse.FromString,
                 _registered_method=True)
         self.AddChildGroupsToParentGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/AddChildGroupsToParentGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/AddChildGroupsToParentGroup',
                 request_serializer=services_dot_sharing__service__pb2.AddChildGroupsToParentGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RemoveChildGroupFromParentGroup = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RemoveChildGroupFromParentGroup',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RemoveChildGroupFromParentGroup',
                 request_serializer=services_dot_sharing__service__pb2.RemoveChildGroupFromParentGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetAllMemberGroupsForUser = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetAllMemberGroupsForUser',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetAllMemberGroupsForUser',
                 request_serializer=services_dot_sharing__service__pb2.GetAllMemberGroupsForUserRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetAllMemberGroupsForUserResponse.FromString,
                 _registered_method=True)
         self.CreateEntityType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/CreateEntityType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/CreateEntityType',
                 request_serializer=services_dot_sharing__service__pb2.CreateEntityTypeRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.CreateEntityTypeResponse.FromString,
                 _registered_method=True)
         self.UpdateEntityType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UpdateEntityType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UpdateEntityType',
                 request_serializer=services_dot_sharing__service__pb2.UpdateEntityTypeRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.IsEntityTypeExists = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/IsEntityTypeExists',
+                '/org.apache.airavata.api.iam.sharing.SharingService/IsEntityTypeExists',
                 request_serializer=services_dot_sharing__service__pb2.IsEntityTypeExistsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.IsEntityTypeExistsResponse.FromString,
                 _registered_method=True)
         self.DeleteEntityType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/DeleteEntityType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/DeleteEntityType',
                 request_serializer=services_dot_sharing__service__pb2.DeleteEntityTypeRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetEntityType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetEntityType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetEntityType',
                 request_serializer=services_dot_sharing__service__pb2.GetEntityTypeRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.EntityType.FromString,
                 _registered_method=True)
         self.GetEntityTypes = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetEntityTypes',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetEntityTypes',
                 request_serializer=services_dot_sharing__service__pb2.GetEntityTypesRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetEntityTypesResponse.FromString,
                 _registered_method=True)
         self.CreateEntity = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/CreateEntity',
+                '/org.apache.airavata.api.iam.sharing.SharingService/CreateEntity',
                 request_serializer=services_dot_sharing__service__pb2.CreateEntityRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.CreateEntityResponse.FromString,
                 _registered_method=True)
         self.UpdateEntity = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UpdateEntity',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UpdateEntity',
                 request_serializer=services_dot_sharing__service__pb2.UpdateEntityRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.IsEntityExists = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/IsEntityExists',
+                '/org.apache.airavata.api.iam.sharing.SharingService/IsEntityExists',
                 request_serializer=services_dot_sharing__service__pb2.IsEntityExistsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.IsEntityExistsResponse.FromString,
                 _registered_method=True)
         self.DeleteEntity = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/DeleteEntity',
+                '/org.apache.airavata.api.iam.sharing.SharingService/DeleteEntity',
                 request_serializer=services_dot_sharing__service__pb2.DeleteEntityRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetEntity = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetEntity',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetEntity',
                 request_serializer=services_dot_sharing__service__pb2.GetEntityRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.Entity.FromString,
                 _registered_method=True)
         self.SearchEntities = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/SearchEntities',
+                '/org.apache.airavata.api.iam.sharing.SharingService/SearchEntities',
                 request_serializer=services_dot_sharing__service__pb2.SearchEntitiesRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.SearchEntitiesResponse.FromString,
                 _registered_method=True)
         self.GetListOfSharedUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetListOfSharedUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfSharedUsers',
                 request_serializer=services_dot_sharing__service__pb2.GetListOfSharedUsersRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetListOfSharedUsersResponse.FromString,
                 _registered_method=True)
         self.GetListOfDirectlySharedUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetListOfDirectlySharedUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfDirectlySharedUsers',
                 request_serializer=services_dot_sharing__service__pb2.GetListOfDirectlySharedUsersRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetListOfDirectlySharedUsersResponse.FromString,
                 _registered_method=True)
         self.GetListOfSharedGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetListOfSharedGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfSharedGroups',
                 request_serializer=services_dot_sharing__service__pb2.GetListOfSharedGroupsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetListOfSharedGroupsResponse.FromString,
                 _registered_method=True)
         self.GetListOfDirectlySharedGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetListOfDirectlySharedGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfDirectlySharedGroups',
                 request_serializer=services_dot_sharing__service__pb2.GetListOfDirectlySharedGroupsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetListOfDirectlySharedGroupsResponse.FromString,
                 _registered_method=True)
         self.CreatePermissionType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/CreatePermissionType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/CreatePermissionType',
                 request_serializer=services_dot_sharing__service__pb2.CreatePermissionTypeRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.CreatePermissionTypeResponse.FromString,
                 _registered_method=True)
         self.UpdatePermissionType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/UpdatePermissionType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/UpdatePermissionType',
                 request_serializer=services_dot_sharing__service__pb2.UpdatePermissionTypeRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.IsPermissionExists = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/IsPermissionExists',
+                '/org.apache.airavata.api.iam.sharing.SharingService/IsPermissionExists',
                 request_serializer=services_dot_sharing__service__pb2.IsPermissionExistsRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.IsPermissionExistsResponse.FromString,
                 _registered_method=True)
         self.DeletePermissionType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/DeletePermissionType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/DeletePermissionType',
                 request_serializer=services_dot_sharing__service__pb2.DeletePermissionTypeRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetPermissionType = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetPermissionType',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetPermissionType',
                 request_serializer=services_dot_sharing__service__pb2.GetPermissionTypeRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.PermissionType.FromString,
                 _registered_method=True)
         self.GetPermissionTypes = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/GetPermissionTypes',
+                '/org.apache.airavata.api.iam.sharing.SharingService/GetPermissionTypes',
                 request_serializer=services_dot_sharing__service__pb2.GetPermissionTypesRequest.SerializeToString,
                 response_deserializer=services_dot_sharing__service__pb2.GetPermissionTypesResponse.FromString,
                 _registered_method=True)
         self.ShareEntityWithUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/ShareEntityWithUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/ShareEntityWithUsers',
                 request_serializer=services_dot_sharing__service__pb2.ShareEntityWithUsersRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RevokeEntitySharingFromUsers = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RevokeEntitySharingFromUsers',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RevokeEntitySharingFromUsers',
                 request_serializer=services_dot_sharing__service__pb2.RevokeEntitySharingFromUsersRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.ShareEntityWithGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/ShareEntityWithGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/ShareEntityWithGroups',
                 request_serializer=services_dot_sharing__service__pb2.ShareEntityWithGroupsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RevokeEntitySharingFromGroups = channel.unary_unary(
-                '/org.apache.airavata.api.sharing.SharingService/RevokeEntitySharingFromGroups',
+                '/org.apache.airavata.api.iam.sharing.SharingService/RevokeEntitySharingFromGroups',
                 request_serializer=services_dot_sharing__service__pb2.RevokeEntitySharingFromGroupsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
@@ -753,7 +753,7 @@ class SharingServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ShareEntityWithUsers(self, request, context):
-        """--- Entity sharing (Thrift-compatible aliases using domain_id) ---
+        """--- Entity sharing (aliases using domain_id) ---
 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -1108,9 +1108,9 @@ def add_SharingServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'org.apache.airavata.api.sharing.SharingService', rpc_method_handlers)
+            'org.apache.airavata.api.iam.sharing.SharingService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('org.apache.airavata.api.sharing.SharingService', rpc_method_handlers)
+    server.add_registered_method_handlers('org.apache.airavata.api.iam.sharing.SharingService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -1133,7 +1133,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/ShareResourceWithUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/ShareResourceWithUsers',
             services_dot_sharing__service__pb2.ShareResourceWithUsersRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1160,7 +1160,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/ShareResourceWithGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/ShareResourceWithGroups',
             services_dot_sharing__service__pb2.ShareResourceWithGroupsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1187,7 +1187,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RevokeFromUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RevokeFromUsers',
             services_dot_sharing__service__pb2.RevokeFromUsersRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1214,7 +1214,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RevokeFromGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RevokeFromGroups',
             services_dot_sharing__service__pb2.RevokeFromGroupsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1241,7 +1241,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetAllAccessibleUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetAllAccessibleUsers',
             services_dot_sharing__service__pb2.GetAllAccessibleUsersRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetAllAccessibleUsersResponse.FromString,
             options,
@@ -1268,7 +1268,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetAllDirectlyAccessibleUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetAllDirectlyAccessibleUsers',
             services_dot_sharing__service__pb2.GetAllDirectlyAccessibleUsersRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetAllDirectlyAccessibleUsersResponse.FromString,
             options,
@@ -1295,7 +1295,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetAllAccessibleGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetAllAccessibleGroups',
             services_dot_sharing__service__pb2.GetAllAccessibleGroupsRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetAllAccessibleGroupsResponse.FromString,
             options,
@@ -1322,7 +1322,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetAllDirectlyAccessibleGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetAllDirectlyAccessibleGroups',
             services_dot_sharing__service__pb2.GetAllDirectlyAccessibleGroupsRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetAllDirectlyAccessibleGroupsResponse.FromString,
             options,
@@ -1349,7 +1349,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UserHasAccess',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UserHasAccess',
             services_dot_sharing__service__pb2.UserHasAccessRequest.SerializeToString,
             services_dot_sharing__service__pb2.UserHasAccessResponse.FromString,
             options,
@@ -1376,7 +1376,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/CreateDomain',
+            '/org.apache.airavata.api.iam.sharing.SharingService/CreateDomain',
             services_dot_sharing__service__pb2.CreateDomainRequest.SerializeToString,
             services_dot_sharing__service__pb2.CreateDomainResponse.FromString,
             options,
@@ -1403,7 +1403,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UpdateDomain',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UpdateDomain',
             services_dot_sharing__service__pb2.UpdateDomainRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1430,7 +1430,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/IsDomainExists',
+            '/org.apache.airavata.api.iam.sharing.SharingService/IsDomainExists',
             services_dot_sharing__service__pb2.IsDomainExistsRequest.SerializeToString,
             services_dot_sharing__service__pb2.IsDomainExistsResponse.FromString,
             options,
@@ -1457,7 +1457,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/DeleteDomain',
+            '/org.apache.airavata.api.iam.sharing.SharingService/DeleteDomain',
             services_dot_sharing__service__pb2.DeleteDomainRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1484,7 +1484,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetDomain',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetDomain',
             services_dot_sharing__service__pb2.GetDomainRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.Domain.FromString,
             options,
@@ -1511,7 +1511,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetDomains',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetDomains',
             services_dot_sharing__service__pb2.GetDomainsRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetDomainsResponse.FromString,
             options,
@@ -1538,7 +1538,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/CreateUser',
+            '/org.apache.airavata.api.iam.sharing.SharingService/CreateUser',
             services_dot_sharing__service__pb2.CreateUserRequest.SerializeToString,
             services_dot_sharing__service__pb2.CreateUserResponse.FromString,
             options,
@@ -1565,7 +1565,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UpdateUser',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UpdateUser',
             services_dot_sharing__service__pb2.UpdateUserRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1592,7 +1592,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/IsUserExists',
+            '/org.apache.airavata.api.iam.sharing.SharingService/IsUserExists',
             services_dot_sharing__service__pb2.IsUserExistsRequest.SerializeToString,
             services_dot_sharing__service__pb2.IsUserExistsResponse.FromString,
             options,
@@ -1619,7 +1619,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/DeleteUser',
+            '/org.apache.airavata.api.iam.sharing.SharingService/DeleteUser',
             services_dot_sharing__service__pb2.DeleteUserRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1646,7 +1646,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetUser',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetUser',
             services_dot_sharing__service__pb2.GetUserRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.User.FromString,
             options,
@@ -1673,7 +1673,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetUsers',
             services_dot_sharing__service__pb2.GetUsersRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetUsersResponse.FromString,
             options,
@@ -1700,7 +1700,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/CreateGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/CreateGroup',
             services_dot_sharing__service__pb2.CreateGroupRequest.SerializeToString,
             services_dot_sharing__service__pb2.CreateGroupResponse.FromString,
             options,
@@ -1727,7 +1727,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UpdateGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UpdateGroup',
             services_dot_sharing__service__pb2.UpdateGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1754,7 +1754,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/IsGroupExists',
+            '/org.apache.airavata.api.iam.sharing.SharingService/IsGroupExists',
             services_dot_sharing__service__pb2.IsGroupExistsRequest.SerializeToString,
             services_dot_sharing__service__pb2.IsGroupExistsResponse.FromString,
             options,
@@ -1781,7 +1781,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/DeleteGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/DeleteGroup',
             services_dot_sharing__service__pb2.DeleteGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1808,7 +1808,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetGroup',
             services_dot_sharing__service__pb2.GetGroupRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.UserGroup.FromString,
             options,
@@ -1835,7 +1835,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetGroups',
             services_dot_sharing__service__pb2.GetGroupsRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetGroupsResponse.FromString,
             options,
@@ -1862,7 +1862,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/AddUsersToGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/AddUsersToGroup',
             services_dot_sharing__service__pb2.AddUsersToGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1889,7 +1889,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RemoveUsersFromGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RemoveUsersFromGroup',
             services_dot_sharing__service__pb2.RemoveUsersFromGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1916,7 +1916,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/TransferGroupOwnership',
+            '/org.apache.airavata.api.iam.sharing.SharingService/TransferGroupOwnership',
             services_dot_sharing__service__pb2.TransferGroupOwnershipRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1943,7 +1943,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/AddGroupAdmins',
+            '/org.apache.airavata.api.iam.sharing.SharingService/AddGroupAdmins',
             services_dot_sharing__service__pb2.AddGroupAdminsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1970,7 +1970,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RemoveGroupAdmins',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RemoveGroupAdmins',
             services_dot_sharing__service__pb2.RemoveGroupAdminsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -1997,7 +1997,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/HasAdminAccess',
+            '/org.apache.airavata.api.iam.sharing.SharingService/HasAdminAccess',
             services_dot_sharing__service__pb2.HasAdminAccessRequest.SerializeToString,
             services_dot_sharing__service__pb2.HasAdminAccessResponse.FromString,
             options,
@@ -2024,7 +2024,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/HasOwnerAccess',
+            '/org.apache.airavata.api.iam.sharing.SharingService/HasOwnerAccess',
             services_dot_sharing__service__pb2.HasOwnerAccessRequest.SerializeToString,
             services_dot_sharing__service__pb2.HasOwnerAccessResponse.FromString,
             options,
@@ -2051,7 +2051,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetGroupMembersOfTypeUser',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetGroupMembersOfTypeUser',
             services_dot_sharing__service__pb2.GetGroupMembersOfTypeUserRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetGroupMembersOfTypeUserResponse.FromString,
             options,
@@ -2078,7 +2078,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetGroupMembersOfTypeGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetGroupMembersOfTypeGroup',
             services_dot_sharing__service__pb2.GetGroupMembersOfTypeGroupRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetGroupMembersOfTypeGroupResponse.FromString,
             options,
@@ -2105,7 +2105,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/AddChildGroupsToParentGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/AddChildGroupsToParentGroup',
             services_dot_sharing__service__pb2.AddChildGroupsToParentGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2132,7 +2132,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RemoveChildGroupFromParentGroup',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RemoveChildGroupFromParentGroup',
             services_dot_sharing__service__pb2.RemoveChildGroupFromParentGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2159,7 +2159,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetAllMemberGroupsForUser',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetAllMemberGroupsForUser',
             services_dot_sharing__service__pb2.GetAllMemberGroupsForUserRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetAllMemberGroupsForUserResponse.FromString,
             options,
@@ -2186,7 +2186,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/CreateEntityType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/CreateEntityType',
             services_dot_sharing__service__pb2.CreateEntityTypeRequest.SerializeToString,
             services_dot_sharing__service__pb2.CreateEntityTypeResponse.FromString,
             options,
@@ -2213,7 +2213,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UpdateEntityType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UpdateEntityType',
             services_dot_sharing__service__pb2.UpdateEntityTypeRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2240,7 +2240,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/IsEntityTypeExists',
+            '/org.apache.airavata.api.iam.sharing.SharingService/IsEntityTypeExists',
             services_dot_sharing__service__pb2.IsEntityTypeExistsRequest.SerializeToString,
             services_dot_sharing__service__pb2.IsEntityTypeExistsResponse.FromString,
             options,
@@ -2267,7 +2267,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/DeleteEntityType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/DeleteEntityType',
             services_dot_sharing__service__pb2.DeleteEntityTypeRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2294,7 +2294,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetEntityType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetEntityType',
             services_dot_sharing__service__pb2.GetEntityTypeRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.EntityType.FromString,
             options,
@@ -2321,7 +2321,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetEntityTypes',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetEntityTypes',
             services_dot_sharing__service__pb2.GetEntityTypesRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetEntityTypesResponse.FromString,
             options,
@@ -2348,7 +2348,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/CreateEntity',
+            '/org.apache.airavata.api.iam.sharing.SharingService/CreateEntity',
             services_dot_sharing__service__pb2.CreateEntityRequest.SerializeToString,
             services_dot_sharing__service__pb2.CreateEntityResponse.FromString,
             options,
@@ -2375,7 +2375,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UpdateEntity',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UpdateEntity',
             services_dot_sharing__service__pb2.UpdateEntityRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2402,7 +2402,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/IsEntityExists',
+            '/org.apache.airavata.api.iam.sharing.SharingService/IsEntityExists',
             services_dot_sharing__service__pb2.IsEntityExistsRequest.SerializeToString,
             services_dot_sharing__service__pb2.IsEntityExistsResponse.FromString,
             options,
@@ -2429,7 +2429,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/DeleteEntity',
+            '/org.apache.airavata.api.iam.sharing.SharingService/DeleteEntity',
             services_dot_sharing__service__pb2.DeleteEntityRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2456,7 +2456,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetEntity',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetEntity',
             services_dot_sharing__service__pb2.GetEntityRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.Entity.FromString,
             options,
@@ -2483,7 +2483,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/SearchEntities',
+            '/org.apache.airavata.api.iam.sharing.SharingService/SearchEntities',
             services_dot_sharing__service__pb2.SearchEntitiesRequest.SerializeToString,
             services_dot_sharing__service__pb2.SearchEntitiesResponse.FromString,
             options,
@@ -2510,7 +2510,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetListOfSharedUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfSharedUsers',
             services_dot_sharing__service__pb2.GetListOfSharedUsersRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetListOfSharedUsersResponse.FromString,
             options,
@@ -2537,7 +2537,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetListOfDirectlySharedUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfDirectlySharedUsers',
             services_dot_sharing__service__pb2.GetListOfDirectlySharedUsersRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetListOfDirectlySharedUsersResponse.FromString,
             options,
@@ -2564,7 +2564,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetListOfSharedGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfSharedGroups',
             services_dot_sharing__service__pb2.GetListOfSharedGroupsRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetListOfSharedGroupsResponse.FromString,
             options,
@@ -2591,7 +2591,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetListOfDirectlySharedGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetListOfDirectlySharedGroups',
             services_dot_sharing__service__pb2.GetListOfDirectlySharedGroupsRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetListOfDirectlySharedGroupsResponse.FromString,
             options,
@@ -2618,7 +2618,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/CreatePermissionType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/CreatePermissionType',
             services_dot_sharing__service__pb2.CreatePermissionTypeRequest.SerializeToString,
             services_dot_sharing__service__pb2.CreatePermissionTypeResponse.FromString,
             options,
@@ -2645,7 +2645,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/UpdatePermissionType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/UpdatePermissionType',
             services_dot_sharing__service__pb2.UpdatePermissionTypeRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2672,7 +2672,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/IsPermissionExists',
+            '/org.apache.airavata.api.iam.sharing.SharingService/IsPermissionExists',
             services_dot_sharing__service__pb2.IsPermissionExistsRequest.SerializeToString,
             services_dot_sharing__service__pb2.IsPermissionExistsResponse.FromString,
             options,
@@ -2699,7 +2699,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/DeletePermissionType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/DeletePermissionType',
             services_dot_sharing__service__pb2.DeletePermissionTypeRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2726,7 +2726,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetPermissionType',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetPermissionType',
             services_dot_sharing__service__pb2.GetPermissionTypeRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_sharing_dot_sharing__pb2.PermissionType.FromString,
             options,
@@ -2753,7 +2753,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/GetPermissionTypes',
+            '/org.apache.airavata.api.iam.sharing.SharingService/GetPermissionTypes',
             services_dot_sharing__service__pb2.GetPermissionTypesRequest.SerializeToString,
             services_dot_sharing__service__pb2.GetPermissionTypesResponse.FromString,
             options,
@@ -2780,7 +2780,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/ShareEntityWithUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/ShareEntityWithUsers',
             services_dot_sharing__service__pb2.ShareEntityWithUsersRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2807,7 +2807,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RevokeEntitySharingFromUsers',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RevokeEntitySharingFromUsers',
             services_dot_sharing__service__pb2.RevokeEntitySharingFromUsersRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2834,7 +2834,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/ShareEntityWithGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/ShareEntityWithGroups',
             services_dot_sharing__service__pb2.ShareEntityWithGroupsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -2861,7 +2861,7 @@ class SharingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.sharing.SharingService/RevokeEntitySharingFromGroups',
+            '/org.apache.airavata.api.iam.sharing.SharingService/RevokeEntitySharingFromGroups',
             services_dot_sharing__service__pb2.RevokeEntitySharingFromGroupsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,

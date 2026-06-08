@@ -27,14 +27,14 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from org.apache.airavata.model.group import group_manager_pb2 as org_dot_apache_dot_airavata_dot_model_dot_group_dot_group__manager__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n$services/group_manager_service.proto\x12$org.apache.airavata.api.groupmanager\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x33org/apache/airavata/model/group/group_manager.proto\"P\n\x12\x43reateGroupRequest\x12:\n\x05group\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"\'\n\x13\x43reateGroupResponse\x12\x10\n\x08group_id\x18\x01 \x01(\t\"P\n\x12UpdateGroupRequest\x12:\n\x05group\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"8\n\x12\x44\x65leteGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08owner_id\x18\x02 \x01(\t\"#\n\x0fGetGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\"\x12\n\x10GetGroupsRequest\"P\n\x11GetGroupsResponse\x12;\n\x06groups\x18\x01 \x03(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"3\n\x1eGetAllGroupsUserBelongsRequest\x12\x11\n\tuser_name\x18\x01 \x01(\t\"^\n\x1fGetAllGroupsUserBelongsResponse\x12;\n\x06groups\x18\x01 \x03(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"<\n\x16\x41\x64\x64UsersToGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08user_ids\x18\x02 \x03(\t\"A\n\x1bRemoveUsersFromGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08user_ids\x18\x02 \x03(\t\"G\n\x1dTransferGroupOwnershipRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x14\n\x0cnew_owner_id\x18\x02 \x01(\t\"<\n\x15\x41\x64\x64GroupAdminsRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x11\n\tadmin_ids\x18\x02 \x03(\t\"?\n\x18RemoveGroupAdminsRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x11\n\tadmin_ids\x18\x02 \x03(\t\";\n\x15HasAdminAccessRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08\x61\x64min_id\x18\x02 \x01(\t\",\n\x16HasAdminAccessResponse\x12\x12\n\nhas_access\x18\x01 \x01(\x08\";\n\x15HasOwnerAccessRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08owner_id\x18\x02 \x01(\t\",\n\x16HasOwnerAccessResponse\x12\x12\n\nhas_access\x18\x01 \x01(\x08\x32\xe5\x10\n\x13GroupManagerService\x12\xa1\x01\n\x0b\x43reateGroup\x12\x38.org.apache.airavata.api.groupmanager.CreateGroupRequest\x1a\x39.org.apache.airavata.api.groupmanager.CreateGroupResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x0e/api/v1/groups:\x05group\x12\x89\x01\n\x0bUpdateGroup\x12\x38.org.apache.airavata.api.groupmanager.UpdateGroupRequest\x1a\x16.google.protobuf.Empty\"(\x82\xd3\xe4\x93\x02\"\x1a\x19/api/v1/groups/{group.id}:\x05group\x12\x82\x01\n\x0b\x44\x65leteGroup\x12\x38.org.apache.airavata.api.groupmanager.DeleteGroupRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b*\x19/api/v1/groups/{group_id}\x12\x91\x01\n\x08GetGroup\x12\x35.org.apache.airavata.api.groupmanager.GetGroupRequest\x1a+.org.apache.airavata.model.group.GroupModel\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/v1/groups/{group_id}\x12\x94\x01\n\tGetGroups\x12\x36.org.apache.airavata.api.groupmanager.GetGroupsRequest\x1a\x37.org.apache.airavata.api.groupmanager.GetGroupsResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/api/v1/groups\x12\xcf\x01\n\x17GetAllGroupsUserBelongs\x12\x44.org.apache.airavata.api.groupmanager.GetAllGroupsUserBelongsRequest\x1a\x45.org.apache.airavata.api.groupmanager.GetAllGroupsUserBelongsResponse\"\'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/groups/user/{user_name}\x12\x95\x01\n\x0f\x41\x64\x64UsersToGroup\x12<.org.apache.airavata.api.groupmanager.AddUsersToGroupRequest\x1a\x16.google.protobuf.Empty\",\x82\xd3\xe4\x93\x02&\"!/api/v1/groups/{group_id}/members:\x01*\x12\x9c\x01\n\x14RemoveUsersFromGroup\x12\x41.org.apache.airavata.api.groupmanager.RemoveUsersFromGroupRequest\x1a\x16.google.protobuf.Empty\")\x82\xd3\xe4\x93\x02#*!/api/v1/groups/{group_id}/members\x12\xa5\x01\n\x16TransferGroupOwnership\x12\x43.org.apache.airavata.api.groupmanager.TransferGroupOwnershipRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(\"#/api/v1/groups/{group_id}/ownership:\x01*\x12\x92\x01\n\x0e\x41\x64\x64GroupAdmins\x12;.org.apache.airavata.api.groupmanager.AddGroupAdminsRequest\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%\" /api/v1/groups/{group_id}/admins:\x01*\x12\x95\x01\n\x11RemoveGroupAdmins\x12>.org.apache.airavata.api.groupmanager.RemoveGroupAdminsRequest\x1a\x16.google.protobuf.Empty\"(\x82\xd3\xe4\x93\x02\"* /api/v1/groups/{group_id}/admins\x12\xc6\x01\n\x0eHasAdminAccess\x12;.org.apache.airavata.api.groupmanager.HasAdminAccessRequest\x1a<.org.apache.airavata.api.groupmanager.HasAdminAccessResponse\"9\x82\xd3\xe4\x93\x02\x33\x12\x31/api/v1/groups/{group_id}/admins/{admin_id}:check\x12\xc6\x01\n\x0eHasOwnerAccess\x12;.org.apache.airavata.api.groupmanager.HasOwnerAccessRequest\x1a<.org.apache.airavata.api.groupmanager.HasOwnerAccessResponse\"9\x82\xd3\xe4\x93\x02\x33\x12\x31/api/v1/groups/{group_id}/owners/{owner_id}:checkB(\n$org.apache.airavata.api.groupmanagerP\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n$services/group_manager_service.proto\x12(org.apache.airavata.api.iam.groupmanager\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x33org/apache/airavata/model/group/group_manager.proto\"P\n\x12\x43reateGroupRequest\x12:\n\x05group\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"\'\n\x13\x43reateGroupResponse\x12\x10\n\x08group_id\x18\x01 \x01(\t\"P\n\x12UpdateGroupRequest\x12:\n\x05group\x18\x01 \x01(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"8\n\x12\x44\x65leteGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08owner_id\x18\x02 \x01(\t\"#\n\x0fGetGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\"\x12\n\x10GetGroupsRequest\"P\n\x11GetGroupsResponse\x12;\n\x06groups\x18\x01 \x03(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"3\n\x1eGetAllGroupsUserBelongsRequest\x12\x11\n\tuser_name\x18\x01 \x01(\t\"^\n\x1fGetAllGroupsUserBelongsResponse\x12;\n\x06groups\x18\x01 \x03(\x0b\x32+.org.apache.airavata.model.group.GroupModel\"<\n\x16\x41\x64\x64UsersToGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08user_ids\x18\x02 \x03(\t\"A\n\x1bRemoveUsersFromGroupRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08user_ids\x18\x02 \x03(\t\"G\n\x1dTransferGroupOwnershipRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x14\n\x0cnew_owner_id\x18\x02 \x01(\t\"<\n\x15\x41\x64\x64GroupAdminsRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x11\n\tadmin_ids\x18\x02 \x03(\t\"?\n\x18RemoveGroupAdminsRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x11\n\tadmin_ids\x18\x02 \x03(\t\";\n\x15HasAdminAccessRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08\x61\x64min_id\x18\x02 \x01(\t\",\n\x16HasAdminAccessResponse\x12\x12\n\nhas_access\x18\x01 \x01(\x08\";\n\x15HasOwnerAccessRequest\x12\x10\n\x08group_id\x18\x01 \x01(\t\x12\x10\n\x08owner_id\x18\x02 \x01(\t\",\n\x16HasOwnerAccessResponse\x12\x12\n\nhas_access\x18\x01 \x01(\x08\x32\xad\x11\n\x13GroupManagerService\x12\xa9\x01\n\x0b\x43reateGroup\x12<.org.apache.airavata.api.iam.groupmanager.CreateGroupRequest\x1a=.org.apache.airavata.api.iam.groupmanager.CreateGroupResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x0e/api/v1/groups:\x05group\x12\x8d\x01\n\x0bUpdateGroup\x12<.org.apache.airavata.api.iam.groupmanager.UpdateGroupRequest\x1a\x16.google.protobuf.Empty\"(\x82\xd3\xe4\x93\x02\"\x1a\x19/api/v1/groups/{group.id}:\x05group\x12\x86\x01\n\x0b\x44\x65leteGroup\x12<.org.apache.airavata.api.iam.groupmanager.DeleteGroupRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b*\x19/api/v1/groups/{group_id}\x12\x95\x01\n\x08GetGroup\x12\x39.org.apache.airavata.api.iam.groupmanager.GetGroupRequest\x1a+.org.apache.airavata.model.group.GroupModel\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/v1/groups/{group_id}\x12\x9c\x01\n\tGetGroups\x12:.org.apache.airavata.api.iam.groupmanager.GetGroupsRequest\x1a;.org.apache.airavata.api.iam.groupmanager.GetGroupsResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/api/v1/groups\x12\xd7\x01\n\x17GetAllGroupsUserBelongs\x12H.org.apache.airavata.api.iam.groupmanager.GetAllGroupsUserBelongsRequest\x1aI.org.apache.airavata.api.iam.groupmanager.GetAllGroupsUserBelongsResponse\"\'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/groups/user/{user_name}\x12\x99\x01\n\x0f\x41\x64\x64UsersToGroup\x12@.org.apache.airavata.api.iam.groupmanager.AddUsersToGroupRequest\x1a\x16.google.protobuf.Empty\",\x82\xd3\xe4\x93\x02&\"!/api/v1/groups/{group_id}/members:\x01*\x12\xa0\x01\n\x14RemoveUsersFromGroup\x12\x45.org.apache.airavata.api.iam.groupmanager.RemoveUsersFromGroupRequest\x1a\x16.google.protobuf.Empty\")\x82\xd3\xe4\x93\x02#*!/api/v1/groups/{group_id}/members\x12\xa9\x01\n\x16TransferGroupOwnership\x12G.org.apache.airavata.api.iam.groupmanager.TransferGroupOwnershipRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(\"#/api/v1/groups/{group_id}/ownership:\x01*\x12\x96\x01\n\x0e\x41\x64\x64GroupAdmins\x12?.org.apache.airavata.api.iam.groupmanager.AddGroupAdminsRequest\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%\" /api/v1/groups/{group_id}/admins:\x01*\x12\x99\x01\n\x11RemoveGroupAdmins\x12\x42.org.apache.airavata.api.iam.groupmanager.RemoveGroupAdminsRequest\x1a\x16.google.protobuf.Empty\"(\x82\xd3\xe4\x93\x02\"* /api/v1/groups/{group_id}/admins\x12\xce\x01\n\x0eHasAdminAccess\x12?.org.apache.airavata.api.iam.groupmanager.HasAdminAccessRequest\x1a@.org.apache.airavata.api.iam.groupmanager.HasAdminAccessResponse\"9\x82\xd3\xe4\x93\x02\x33\x12\x31/api/v1/groups/{group_id}/admins/{admin_id}:check\x12\xce\x01\n\x0eHasOwnerAccess\x12?.org.apache.airavata.api.iam.groupmanager.HasOwnerAccessRequest\x1a@.org.apache.airavata.api.iam.groupmanager.HasOwnerAccessResponse\"9\x82\xd3\xe4\x93\x02\x33\x12\x31/api/v1/groups/{group_id}/owners/{owner_id}:checkB,\n(org.apache.airavata.api.iam.groupmanagerP\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.group_manager_service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\n$org.apache.airavata.api.groupmanagerP\001'
+  _globals['DESCRIPTOR']._serialized_options = b'\n(org.apache.airavata.api.iam.groupmanagerP\001'
   _globals['_GROUPMANAGERSERVICE'].methods_by_name['CreateGroup']._loaded_options = None
   _globals['_GROUPMANAGERSERVICE'].methods_by_name['CreateGroup']._serialized_options = b'\202\323\344\223\002\027\"\016/api/v1/groups:\005group'
   _globals['_GROUPMANAGERSERVICE'].methods_by_name['UpdateGroup']._loaded_options = None
@@ -61,42 +61,42 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GROUPMANAGERSERVICE'].methods_by_name['HasAdminAccess']._serialized_options = b'\202\323\344\223\0023\0221/api/v1/groups/{group_id}/admins/{admin_id}:check'
   _globals['_GROUPMANAGERSERVICE'].methods_by_name['HasOwnerAccess']._loaded_options = None
   _globals['_GROUPMANAGERSERVICE'].methods_by_name['HasOwnerAccess']._serialized_options = b'\202\323\344\223\0023\0221/api/v1/groups/{group_id}/owners/{owner_id}:check'
-  _globals['_CREATEGROUPREQUEST']._serialized_start=190
-  _globals['_CREATEGROUPREQUEST']._serialized_end=270
-  _globals['_CREATEGROUPRESPONSE']._serialized_start=272
-  _globals['_CREATEGROUPRESPONSE']._serialized_end=311
-  _globals['_UPDATEGROUPREQUEST']._serialized_start=313
-  _globals['_UPDATEGROUPREQUEST']._serialized_end=393
-  _globals['_DELETEGROUPREQUEST']._serialized_start=395
-  _globals['_DELETEGROUPREQUEST']._serialized_end=451
-  _globals['_GETGROUPREQUEST']._serialized_start=453
-  _globals['_GETGROUPREQUEST']._serialized_end=488
-  _globals['_GETGROUPSREQUEST']._serialized_start=490
-  _globals['_GETGROUPSREQUEST']._serialized_end=508
-  _globals['_GETGROUPSRESPONSE']._serialized_start=510
-  _globals['_GETGROUPSRESPONSE']._serialized_end=590
-  _globals['_GETALLGROUPSUSERBELONGSREQUEST']._serialized_start=592
-  _globals['_GETALLGROUPSUSERBELONGSREQUEST']._serialized_end=643
-  _globals['_GETALLGROUPSUSERBELONGSRESPONSE']._serialized_start=645
-  _globals['_GETALLGROUPSUSERBELONGSRESPONSE']._serialized_end=739
-  _globals['_ADDUSERSTOGROUPREQUEST']._serialized_start=741
-  _globals['_ADDUSERSTOGROUPREQUEST']._serialized_end=801
-  _globals['_REMOVEUSERSFROMGROUPREQUEST']._serialized_start=803
-  _globals['_REMOVEUSERSFROMGROUPREQUEST']._serialized_end=868
-  _globals['_TRANSFERGROUPOWNERSHIPREQUEST']._serialized_start=870
-  _globals['_TRANSFERGROUPOWNERSHIPREQUEST']._serialized_end=941
-  _globals['_ADDGROUPADMINSREQUEST']._serialized_start=943
-  _globals['_ADDGROUPADMINSREQUEST']._serialized_end=1003
-  _globals['_REMOVEGROUPADMINSREQUEST']._serialized_start=1005
-  _globals['_REMOVEGROUPADMINSREQUEST']._serialized_end=1068
-  _globals['_HASADMINACCESSREQUEST']._serialized_start=1070
-  _globals['_HASADMINACCESSREQUEST']._serialized_end=1129
-  _globals['_HASADMINACCESSRESPONSE']._serialized_start=1131
-  _globals['_HASADMINACCESSRESPONSE']._serialized_end=1175
-  _globals['_HASOWNERACCESSREQUEST']._serialized_start=1177
-  _globals['_HASOWNERACCESSREQUEST']._serialized_end=1236
-  _globals['_HASOWNERACCESSRESPONSE']._serialized_start=1238
-  _globals['_HASOWNERACCESSRESPONSE']._serialized_end=1282
-  _globals['_GROUPMANAGERSERVICE']._serialized_start=1285
-  _globals['_GROUPMANAGERSERVICE']._serialized_end=3434
+  _globals['_CREATEGROUPREQUEST']._serialized_start=194
+  _globals['_CREATEGROUPREQUEST']._serialized_end=274
+  _globals['_CREATEGROUPRESPONSE']._serialized_start=276
+  _globals['_CREATEGROUPRESPONSE']._serialized_end=315
+  _globals['_UPDATEGROUPREQUEST']._serialized_start=317
+  _globals['_UPDATEGROUPREQUEST']._serialized_end=397
+  _globals['_DELETEGROUPREQUEST']._serialized_start=399
+  _globals['_DELETEGROUPREQUEST']._serialized_end=455
+  _globals['_GETGROUPREQUEST']._serialized_start=457
+  _globals['_GETGROUPREQUEST']._serialized_end=492
+  _globals['_GETGROUPSREQUEST']._serialized_start=494
+  _globals['_GETGROUPSREQUEST']._serialized_end=512
+  _globals['_GETGROUPSRESPONSE']._serialized_start=514
+  _globals['_GETGROUPSRESPONSE']._serialized_end=594
+  _globals['_GETALLGROUPSUSERBELONGSREQUEST']._serialized_start=596
+  _globals['_GETALLGROUPSUSERBELONGSREQUEST']._serialized_end=647
+  _globals['_GETALLGROUPSUSERBELONGSRESPONSE']._serialized_start=649
+  _globals['_GETALLGROUPSUSERBELONGSRESPONSE']._serialized_end=743
+  _globals['_ADDUSERSTOGROUPREQUEST']._serialized_start=745
+  _globals['_ADDUSERSTOGROUPREQUEST']._serialized_end=805
+  _globals['_REMOVEUSERSFROMGROUPREQUEST']._serialized_start=807
+  _globals['_REMOVEUSERSFROMGROUPREQUEST']._serialized_end=872
+  _globals['_TRANSFERGROUPOWNERSHIPREQUEST']._serialized_start=874
+  _globals['_TRANSFERGROUPOWNERSHIPREQUEST']._serialized_end=945
+  _globals['_ADDGROUPADMINSREQUEST']._serialized_start=947
+  _globals['_ADDGROUPADMINSREQUEST']._serialized_end=1007
+  _globals['_REMOVEGROUPADMINSREQUEST']._serialized_start=1009
+  _globals['_REMOVEGROUPADMINSREQUEST']._serialized_end=1072
+  _globals['_HASADMINACCESSREQUEST']._serialized_start=1074
+  _globals['_HASADMINACCESSREQUEST']._serialized_end=1133
+  _globals['_HASADMINACCESSRESPONSE']._serialized_start=1135
+  _globals['_HASADMINACCESSRESPONSE']._serialized_end=1179
+  _globals['_HASOWNERACCESSREQUEST']._serialized_start=1181
+  _globals['_HASOWNERACCESSREQUEST']._serialized_end=1240
+  _globals['_HASOWNERACCESSRESPONSE']._serialized_start=1242
+  _globals['_HASOWNERACCESSRESPONSE']._serialized_end=1286
+  _globals['_GROUPMANAGERSERVICE']._serialized_start=1289
+  _globals['_GROUPMANAGERSERVICE']._serialized_end=3510
 # @@protoc_insertion_point(module_scope)

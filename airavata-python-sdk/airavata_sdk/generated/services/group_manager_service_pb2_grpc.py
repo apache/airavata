@@ -38,67 +38,67 @@ class GroupManagerServiceStub(object):
             channel: A grpc.Channel.
         """
         self.CreateGroup = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/CreateGroup',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/CreateGroup',
                 request_serializer=services_dot_group__manager__service__pb2.CreateGroupRequest.SerializeToString,
                 response_deserializer=services_dot_group__manager__service__pb2.CreateGroupResponse.FromString,
                 _registered_method=True)
         self.UpdateGroup = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/UpdateGroup',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/UpdateGroup',
                 request_serializer=services_dot_group__manager__service__pb2.UpdateGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.DeleteGroup = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/DeleteGroup',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/DeleteGroup',
                 request_serializer=services_dot_group__manager__service__pb2.DeleteGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.GetGroup = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/GetGroup',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/GetGroup',
                 request_serializer=services_dot_group__manager__service__pb2.GetGroupRequest.SerializeToString,
                 response_deserializer=org_dot_apache_dot_airavata_dot_model_dot_group_dot_group__manager__pb2.GroupModel.FromString,
                 _registered_method=True)
         self.GetGroups = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/GetGroups',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/GetGroups',
                 request_serializer=services_dot_group__manager__service__pb2.GetGroupsRequest.SerializeToString,
                 response_deserializer=services_dot_group__manager__service__pb2.GetGroupsResponse.FromString,
                 _registered_method=True)
         self.GetAllGroupsUserBelongs = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/GetAllGroupsUserBelongs',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/GetAllGroupsUserBelongs',
                 request_serializer=services_dot_group__manager__service__pb2.GetAllGroupsUserBelongsRequest.SerializeToString,
                 response_deserializer=services_dot_group__manager__service__pb2.GetAllGroupsUserBelongsResponse.FromString,
                 _registered_method=True)
         self.AddUsersToGroup = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/AddUsersToGroup',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/AddUsersToGroup',
                 request_serializer=services_dot_group__manager__service__pb2.AddUsersToGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RemoveUsersFromGroup = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/RemoveUsersFromGroup',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/RemoveUsersFromGroup',
                 request_serializer=services_dot_group__manager__service__pb2.RemoveUsersFromGroupRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.TransferGroupOwnership = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/TransferGroupOwnership',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/TransferGroupOwnership',
                 request_serializer=services_dot_group__manager__service__pb2.TransferGroupOwnershipRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.AddGroupAdmins = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/AddGroupAdmins',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/AddGroupAdmins',
                 request_serializer=services_dot_group__manager__service__pb2.AddGroupAdminsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.RemoveGroupAdmins = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/RemoveGroupAdmins',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/RemoveGroupAdmins',
                 request_serializer=services_dot_group__manager__service__pb2.RemoveGroupAdminsRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.HasAdminAccess = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/HasAdminAccess',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/HasAdminAccess',
                 request_serializer=services_dot_group__manager__service__pb2.HasAdminAccessRequest.SerializeToString,
                 response_deserializer=services_dot_group__manager__service__pb2.HasAdminAccessResponse.FromString,
                 _registered_method=True)
         self.HasOwnerAccess = channel.unary_unary(
-                '/org.apache.airavata.api.groupmanager.GroupManagerService/HasOwnerAccess',
+                '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/HasOwnerAccess',
                 request_serializer=services_dot_group__manager__service__pb2.HasOwnerAccessRequest.SerializeToString,
                 response_deserializer=services_dot_group__manager__service__pb2.HasOwnerAccessResponse.FromString,
                 _registered_method=True)
@@ -256,9 +256,9 @@ def add_GroupManagerServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'org.apache.airavata.api.groupmanager.GroupManagerService', rpc_method_handlers)
+            'org.apache.airavata.api.iam.groupmanager.GroupManagerService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('org.apache.airavata.api.groupmanager.GroupManagerService', rpc_method_handlers)
+    server.add_registered_method_handlers('org.apache.airavata.api.iam.groupmanager.GroupManagerService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -280,7 +280,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/CreateGroup',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/CreateGroup',
             services_dot_group__manager__service__pb2.CreateGroupRequest.SerializeToString,
             services_dot_group__manager__service__pb2.CreateGroupResponse.FromString,
             options,
@@ -307,7 +307,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/UpdateGroup',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/UpdateGroup',
             services_dot_group__manager__service__pb2.UpdateGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -334,7 +334,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/DeleteGroup',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/DeleteGroup',
             services_dot_group__manager__service__pb2.DeleteGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -361,7 +361,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/GetGroup',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/GetGroup',
             services_dot_group__manager__service__pb2.GetGroupRequest.SerializeToString,
             org_dot_apache_dot_airavata_dot_model_dot_group_dot_group__manager__pb2.GroupModel.FromString,
             options,
@@ -388,7 +388,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/GetGroups',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/GetGroups',
             services_dot_group__manager__service__pb2.GetGroupsRequest.SerializeToString,
             services_dot_group__manager__service__pb2.GetGroupsResponse.FromString,
             options,
@@ -415,7 +415,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/GetAllGroupsUserBelongs',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/GetAllGroupsUserBelongs',
             services_dot_group__manager__service__pb2.GetAllGroupsUserBelongsRequest.SerializeToString,
             services_dot_group__manager__service__pb2.GetAllGroupsUserBelongsResponse.FromString,
             options,
@@ -442,7 +442,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/AddUsersToGroup',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/AddUsersToGroup',
             services_dot_group__manager__service__pb2.AddUsersToGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -469,7 +469,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/RemoveUsersFromGroup',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/RemoveUsersFromGroup',
             services_dot_group__manager__service__pb2.RemoveUsersFromGroupRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -496,7 +496,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/TransferGroupOwnership',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/TransferGroupOwnership',
             services_dot_group__manager__service__pb2.TransferGroupOwnershipRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -523,7 +523,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/AddGroupAdmins',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/AddGroupAdmins',
             services_dot_group__manager__service__pb2.AddGroupAdminsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -550,7 +550,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/RemoveGroupAdmins',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/RemoveGroupAdmins',
             services_dot_group__manager__service__pb2.RemoveGroupAdminsRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
@@ -577,7 +577,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/HasAdminAccess',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/HasAdminAccess',
             services_dot_group__manager__service__pb2.HasAdminAccessRequest.SerializeToString,
             services_dot_group__manager__service__pb2.HasAdminAccessResponse.FromString,
             options,
@@ -604,7 +604,7 @@ class GroupManagerService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/org.apache.airavata.api.groupmanager.GroupManagerService/HasOwnerAccess',
+            '/org.apache.airavata.api.iam.groupmanager.GroupManagerService/HasOwnerAccess',
             services_dot_group__manager__service__pb2.HasOwnerAccessRequest.SerializeToString,
             services_dot_group__manager__service__pb2.HasOwnerAccessResponse.FromString,
             options,
