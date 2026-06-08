@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
@@ -300,153 +302,68 @@ public class ExperimentSummaryRepository
                 }
             }
 
-            int allExperimentsCount = getExperimentStatisticsCountForState(
-                    null,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds);
-            List<ExperimentSummaryModel> allExperiments = getExperimentStatisticsForState(
-                    null,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds,
-                    limit,
-                    offset);
-            experimentStatisticsBuilder.setAllExperimentCount(allExperimentsCount);
-            experimentStatisticsBuilder.addAllAllExperiments(allExperiments);
+            record StatGroup(
+                    List<ExperimentState> states,
+                    IntConsumer countSetter,
+                    Consumer<List<ExperimentSummaryModel>> listSetter) {}
 
-            List<ExperimentState> createdStates =
-                    Arrays.asList(ExperimentState.EXPERIMENT_STATE_CREATED, ExperimentState.EXPERIMENT_STATE_VALIDATED);
-            int createdExperimentsCount = getExperimentStatisticsCountForState(
-                    createdStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds);
-            List<ExperimentSummaryModel> createdExperiments = getExperimentStatisticsForState(
-                    createdStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds,
-                    limit,
-                    offset);
-            experimentStatisticsBuilder.setCreatedExperimentCount(createdExperimentsCount);
-            experimentStatisticsBuilder.addAllCreatedExperiments(createdExperiments);
+            List<StatGroup> statGroups = Arrays.asList(
+                    new StatGroup(
+                            null,
+                            experimentStatisticsBuilder::setAllExperimentCount,
+                            experimentStatisticsBuilder::addAllAllExperiments),
+                    new StatGroup(
+                            Arrays.asList(
+                                    ExperimentState.EXPERIMENT_STATE_CREATED,
+                                    ExperimentState.EXPERIMENT_STATE_VALIDATED),
+                            experimentStatisticsBuilder::setCreatedExperimentCount,
+                            experimentStatisticsBuilder::addAllCreatedExperiments),
+                    new StatGroup(
+                            Arrays.asList(
+                                    ExperimentState.EXPERIMENT_STATE_EXECUTING,
+                                    ExperimentState.EXPERIMENT_STATE_SCHEDULED,
+                                    ExperimentState.EXPERIMENT_STATE_LAUNCHED),
+                            experimentStatisticsBuilder::setRunningExperimentCount,
+                            experimentStatisticsBuilder::addAllRunningExperiments),
+                    new StatGroup(
+                            Arrays.asList(ExperimentState.EXPERIMENT_STATE_COMPLETED),
+                            experimentStatisticsBuilder::setCompletedExperimentCount,
+                            experimentStatisticsBuilder::addAllCompletedExperiments),
+                    new StatGroup(
+                            Arrays.asList(ExperimentState.EXPERIMENT_STATE_FAILED),
+                            experimentStatisticsBuilder::setFailedExperimentCount,
+                            experimentStatisticsBuilder::addAllFailedExperiments),
+                    new StatGroup(
+                            Arrays.asList(
+                                    ExperimentState.EXPERIMENT_STATE_CANCELED,
+                                    ExperimentState.EXPERIMENT_STATE_CANCELING),
+                            experimentStatisticsBuilder::setCancelledExperimentCount,
+                            experimentStatisticsBuilder::addAllCancelledExperiments));
 
-            List<ExperimentState> runningStates = Arrays.asList(
-                    ExperimentState.EXPERIMENT_STATE_EXECUTING,
-                    ExperimentState.EXPERIMENT_STATE_SCHEDULED,
-                    ExperimentState.EXPERIMENT_STATE_LAUNCHED);
-            int runningExperimentsCount = getExperimentStatisticsCountForState(
-                    runningStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds);
-            List<ExperimentSummaryModel> runningExperiments = getExperimentStatisticsForState(
-                    runningStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds,
-                    limit,
-                    offset);
-            experimentStatisticsBuilder.setRunningExperimentCount(runningExperimentsCount);
-            experimentStatisticsBuilder.addAllRunningExperiments(runningExperiments);
-
-            List<ExperimentState> completedStates = Arrays.asList(ExperimentState.EXPERIMENT_STATE_COMPLETED);
-            int completedExperimentsCount = getExperimentStatisticsCountForState(
-                    completedStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds);
-            List<ExperimentSummaryModel> completedExperiments = getExperimentStatisticsForState(
-                    completedStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds,
-                    limit,
-                    offset);
-            experimentStatisticsBuilder.setCompletedExperimentCount(completedExperimentsCount);
-            experimentStatisticsBuilder.addAllCompletedExperiments(completedExperiments);
-
-            List<ExperimentState> failedStates = Arrays.asList(ExperimentState.EXPERIMENT_STATE_FAILED);
-            int failedExperimentsCount = getExperimentStatisticsCountForState(
-                    failedStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds);
-            List<ExperimentSummaryModel> failedExperiments = getExperimentStatisticsForState(
-                    failedStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds,
-                    limit,
-                    offset);
-            experimentStatisticsBuilder.setFailedExperimentCount(failedExperimentsCount);
-            experimentStatisticsBuilder.addAllFailedExperiments(failedExperiments);
-
-            List<ExperimentState> cancelledStates = Arrays.asList(
-                    ExperimentState.EXPERIMENT_STATE_CANCELED, ExperimentState.EXPERIMENT_STATE_CANCELING);
-            int cancelledExperimentsCount = getExperimentStatisticsCountForState(
-                    cancelledStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds);
-            List<ExperimentSummaryModel> cancelledExperiments = getExperimentStatisticsForState(
-                    cancelledStates,
-                    gatewayId,
-                    fromDate,
-                    toDate,
-                    userName,
-                    applicationName,
-                    resourceHostName,
-                    accessibleExperimentIds,
-                    limit,
-                    offset);
-            experimentStatisticsBuilder.setCancelledExperimentCount(cancelledExperimentsCount);
-            experimentStatisticsBuilder.addAllCancelledExperiments(cancelledExperiments);
+            for (StatGroup group : statGroups) {
+                int count = getExperimentStatisticsCountForState(
+                        group.states(),
+                        gatewayId,
+                        fromDate,
+                        toDate,
+                        userName,
+                        applicationName,
+                        resourceHostName,
+                        accessibleExperimentIds);
+                List<ExperimentSummaryModel> experiments = getExperimentStatisticsForState(
+                        group.states(),
+                        gatewayId,
+                        fromDate,
+                        toDate,
+                        userName,
+                        applicationName,
+                        resourceHostName,
+                        accessibleExperimentIds,
+                        limit,
+                        offset);
+                group.countSetter().accept(count);
+                group.listSetter().accept(experiments);
+            }
 
             return experimentStatisticsBuilder.build();
         } catch (RegistryException e) {

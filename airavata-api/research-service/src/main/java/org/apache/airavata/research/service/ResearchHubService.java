@@ -54,6 +54,7 @@ public class ResearchHubService {
     private final SessionService sessionService;
     private final ResearchProjectRepository projectRepository;
     private final ResearchProperties researchProperties;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public ResearchHubService(
             ResearchProjectService researchProjectService,
@@ -67,36 +68,30 @@ public class ResearchHubService {
     }
 
     public boolean stopSession(String sessionId) {
-        String userId = UserContext.userId();
-        String url = String.format(SERVERS_API_URL, researchProperties.getHubUrl(), userId, sessionId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "token " + researchProperties.getAdminApiKey());
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
-        ResponseEntity<Void> response = new RestTemplate().exchange(url, HttpMethod.DELETE, request, Void.class);
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            LOGGER.info("Successfully stopped/deleted RHub session {} for user {}", sessionId, userId);
-            return true;
-        } else {
-            throw new RuntimeException("Failed to delete RHub session " + sessionId + " for user " + userId);
-        }
+        return deleteHubSession(sessionId, false);
     }
 
     public boolean deleteSession(String sessionId) {
+        return deleteHubSession(sessionId, true);
+    }
+
+    private boolean deleteHubSession(String sessionId, boolean remove) {
         String userId = UserContext.userId();
         String url = String.format(SERVERS_API_URL, researchProperties.getHubUrl(), userId, sessionId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "token " + researchProperties.getAdminApiKey());
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("remove", true);
+        HttpEntity<?> request;
+        if (remove) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("remove", true);
+            request = new HttpEntity<>(body, headers);
+        } else {
+            request = new HttpEntity<>(headers);
+        }
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-
-        ResponseEntity<Void> response = new RestTemplate().exchange(url, HttpMethod.DELETE, request, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             LOGGER.info("Successfully stopped/deleted RHub session {} for user {}", sessionId, userId);
