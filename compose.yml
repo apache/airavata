@@ -194,7 +194,6 @@ services:
       JAVA_TOOL_OPTIONS: >-
         -Dspring.datasource.url=jdbc:mariadb://db:3306/airavata
         -Dkafka.broker.url=kafka:9092
-        -Dairavata.kafka.broker-url=kafka:9092
         -Drabbitmq.broker.url=amqp://airavata:airavata@rabbitmq:5672
         -Dspring.rabbitmq.host=rabbitmq
         -Dspring.rabbitmq.port=5672
