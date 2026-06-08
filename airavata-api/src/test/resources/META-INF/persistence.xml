@@ -100,7 +100,7 @@
     <class>org.apache.airavata.research.model.SessionEntity</class>
     <class>org.apache.airavata.research.model.TagEntity</class>
 
-    <!-- sharing-service -->
+    <!-- iam-service (sharing / access control) -->
     <class>org.apache.airavata.sharing.model.DomainEntity</class>
     <class>org.apache.airavata.sharing.model.EntityEntity</class>
     <class>org.apache.airavata.sharing.model.EntityTypeEntity</class>

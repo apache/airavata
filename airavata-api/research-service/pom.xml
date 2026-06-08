@@ -85,11 +85,6 @@ under the License.
       <artifactId>compute-service</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.airavata</groupId>
-      <artifactId>sharing-service</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
