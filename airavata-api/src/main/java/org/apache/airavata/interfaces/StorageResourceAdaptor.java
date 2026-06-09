@@ -45,6 +45,10 @@ public interface StorageResourceAdaptor extends AgentAdaptor {
 
     public void deleteFile(String path) throws AgentException;
 
+    public void moveFile(String sourcePath, String destinationPath) throws AgentException;
+
+    public void createSymlink(String targetPath, String linkPath) throws AgentException;
+
     public List<String> listDirectory(String path) throws AgentException;
 
     public Boolean doesFileExist(String filePath) throws AgentException;
