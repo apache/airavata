@@ -28,6 +28,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreferen
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.proto.SSHCredential;
 import org.apache.airavata.model.data.movement.proto.DMType;
+import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
 import org.apache.airavata.model.data.movement.proto.SecurityProtocol;
 import org.apache.airavata.orchestration.service.RegistryServerHandler;
@@ -51,7 +52,9 @@ public class DevStorageInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(DevStorageInitializer.class);
 
-    private static final String STORAGE_HOST = "localhost";
+    // The storage-service runs inside the airavata-dind network and reaches the
+    // atmoz/sftp container by its compose service name, not "localhost".
+    private static final String STORAGE_HOST = "sftp";
     private static final String STORAGE_DESCRIPTION = "Dev SFTP storage (atmoz/sftp container)";
     private static final String SFTP_LOGIN_USER = "airavata";
     private static final String SFTP_FS_ROOT = "/storage";
@@ -80,7 +83,24 @@ public class DevStorageInitializer {
             var allNames = registryHandler.getAllStorageResourceNames();
             for (var entry : allNames.entrySet()) {
                 if (STORAGE_HOST.equals(entry.getValue())) {
-                    logger.info("Dev storage resource already exists: {} ({})", entry.getValue(), entry.getKey());
+                    // Resource exists. Ensure it has an SCP data movement interface —
+                    // a partial prior init can leave it without one, which then fails
+                    // the SFTP adaptor with "No SCP data movement interface".
+                    String existingId = entry.getKey();
+                    boolean hasScp = registryHandler.getStorageResource(existingId).getDataMovementInterfacesList()
+                            .stream()
+                            .anyMatch(i -> i.getDataMovementProtocol() == DataMovementProtocol.SCP);
+                    if (!hasScp) {
+                        SCPDataMovement scpDm = SCPDataMovement.newBuilder()
+                                .setSecurityProtocol(SecurityProtocol.SSH_KEYS)
+                                .setSshPort(22)
+                                .build();
+                        registryHandler.addSCPDataMovementDetails(existingId, DMType.STORAGE_RESOURCE, 0, scpDm);
+                        logger.info("Healed dev storage resource {}: added missing SCP data movement interface",
+                                existingId);
+                    } else {
+                        logger.info("Dev storage resource already exists: {} ({})", entry.getValue(), existingId);
+                    }
                     return;
                 }
             }
