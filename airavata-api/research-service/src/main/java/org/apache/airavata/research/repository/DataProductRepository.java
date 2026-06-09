@@ -98,7 +98,12 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
             throw new ReplicaCatalogException("Owner name and gateway ID should not be empty");
         }
 
+        // A top-level (parentless) data product has no parent URI. Protobuf string
+        // fields default to "" rather than null, so an unset parent_product_uri
+        // arrives here as an empty string; treat that the same as null and skip the
+        // parent-Collection check (otherwise every top-level registration fails).
         if (dataProductEntity.getParentProductUri() != null
+                && !dataProductEntity.getParentProductUri().isEmpty()
                 && (!isExists(dataProductEntity.getParentProductUri())
                         || !getDataProduct(dataProductEntity.getParentProductUri())
                                 .getDataProductType()
@@ -118,7 +123,11 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
             logger.debug("Populating the product URI for ReplicaLocations objects for the Data Product");
             dataProductEntity.getReplicaLocations().forEach(dataReplicaLocationEntity -> {
                 dataReplicaLocationEntity.setProductUri(productUri);
-                if (dataReplicaLocationEntity.getReplicaId() == null) {
+                // proto3 string fields default to "" (not null), so a replica with no
+                // client-supplied id arrives with an empty REPLICA_ID. Generate one;
+                // otherwise every replica collides on the same empty primary key.
+                if (dataReplicaLocationEntity.getReplicaId() == null
+                        || dataReplicaLocationEntity.getReplicaId().isEmpty()) {
                     dataReplicaLocationEntity.setReplicaId(UUID.randomUUID().toString());
                 }
                 if (!dataReplicaLocationRepository.isExists(dataReplicaLocationEntity.getReplicaId())) {
