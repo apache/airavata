@@ -195,6 +195,15 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     }
 
     @Override
+    public void deleteFile(String path) throws AgentException {
+        try (SFTPClient sftp = openSftp()) {
+            sftp.rm(path);
+        } catch (Exception e) {
+            throw new AgentException("Failed to delete file: " + path, e);
+        }
+    }
+
+    @Override
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
         try (SFTPClient sftp = openSftp()) {
             sftp.put(localFile, remoteFile);

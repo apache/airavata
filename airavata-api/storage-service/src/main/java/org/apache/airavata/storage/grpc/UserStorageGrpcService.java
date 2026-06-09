@@ -276,7 +276,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
             String path = resolvePath(request.getPath(), request.getStorageResourceId());
-            adaptor.executeCommand("rm -f " + path, "/");
+            adaptor.deleteFile(path);
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {

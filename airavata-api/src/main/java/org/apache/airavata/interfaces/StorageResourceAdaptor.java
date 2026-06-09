@@ -43,6 +43,8 @@ public interface StorageResourceAdaptor extends AgentAdaptor {
 
     public void deleteDirectory(String path) throws AgentException;
 
+    public void deleteFile(String path) throws AgentException;
+
     public List<String> listDirectory(String path) throws AgentException;
 
     public Boolean doesFileExist(String filePath) throws AgentException;
