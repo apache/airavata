@@ -196,6 +196,17 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
     }
 
     @Override
+    public DataProductModel getDataProductByReplicaFilePath(String gatewayId, String filePath)
+            throws ReplicaCatalogException {
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.DataProduct.GATEWAY_ID, gatewayId);
+        queryParameters.put(DBConstants.DataProduct.FILE_PATH, filePath);
+        List<DataProductModel> matches =
+                select(QueryConstants.FIND_DATA_PRODUCT_BY_REPLICA_FILE_PATH, 1, 0, queryParameters);
+        return matches.isEmpty() ? null : matches.get(0);
+    }
+
+    @Override
     public boolean isDataProductExists(String productUri) throws ReplicaCatalogException {
         return isExists(productUri);
     }

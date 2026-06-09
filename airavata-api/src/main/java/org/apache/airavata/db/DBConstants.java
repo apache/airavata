@@ -169,6 +169,7 @@ public class DBConstants {
         public static final String OWNER_NAME = "ownerName";
         public static final String PRODUCT_NAME = "productName";
         public static final String PARENT_PRODUCT_URI = "parentProductUri";
+        public static final String FILE_PATH = "filePath";
     }
 
     public static class Workflow {

@@ -208,6 +208,10 @@ public interface QueryConstants {
             + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" + DBConstants.DataProduct.OWNER_NAME
             + " AND DP.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
 
+    String FIND_DATA_PRODUCT_BY_REPLICA_FILE_PATH = "SELECT DP FROM " + "DataProductEntity" + " DP "
+            + "JOIN DP.replicaLocations R WHERE DP.gatewayId = :"
+            + DBConstants.DataProduct.GATEWAY_ID + " AND R.filePath = :" + DBConstants.DataProduct.FILE_PATH;
+
     String GET_WORKFLOW_FOR_EXPERIMENT_ID = "SELECT W FROM " + AIRAVATA_WORKFLOW_ENTITY + " W "
             + "WHERE W.experimentId LIKE :" + DBConstants.Workflow.EXPERIMENT_ID;
 

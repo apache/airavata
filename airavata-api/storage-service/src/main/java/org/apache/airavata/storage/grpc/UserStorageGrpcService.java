@@ -33,6 +33,7 @@ import org.apache.airavata.grpc.GrpcStatusMapper;
 import org.apache.airavata.interfaces.ExperimentRegistry;
 import org.apache.airavata.interfaces.FileMetadata;
 import org.apache.airavata.interfaces.GatewayStoragePreferenceProvider;
+import org.apache.airavata.interfaces.StorageProvider;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
 import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
@@ -52,14 +53,37 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
     private final AdaptorSupport adaptorSupport;
     private final ExperimentRegistry experimentRegistry;
     private final GatewayStoragePreferenceProvider gatewayStoragePreferenceProvider;
+    private final StorageProvider storageProvider;
 
     public UserStorageGrpcService(
             AdaptorSupport adaptorSupport,
             ExperimentRegistry experimentRegistry,
-            GatewayStoragePreferenceProvider gatewayStoragePreferenceProvider) {
+            GatewayStoragePreferenceProvider gatewayStoragePreferenceProvider,
+            StorageProvider storageProvider) {
         this.adaptorSupport = adaptorSupport;
         this.experimentRegistry = experimentRegistry;
         this.gatewayStoragePreferenceProvider = gatewayStoragePreferenceProvider;
+        this.storageProvider = storageProvider;
+    }
+
+    /**
+     * Resolve (registering if necessary) the data product URI for a stored file, so listings and
+     * metadata can expose a stable URI per file. Returns "" for directories or on any failure
+     * (best-effort: a missing data product URI must not fail the listing).
+     */
+    private String resolveDataProductUri(FileMetadata meta, String path, String storageResourceId) {
+        if (meta.isDirectory()) {
+            return "";
+        }
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            String uri = storageProvider.getOrCreateDataProductByPath(
+                    ctx.getGatewayId(), ctx.getUserId(), meta.getName(), path, storageResourceId);
+            return uri != null ? uri : "";
+        } catch (Exception e) {
+            logger.warn("Could not resolve data product URI for {}", path, e);
+            return "";
+        }
     }
 
     private StoragePreference resolveStoragePreference(String storageResourceId) throws Exception {
@@ -77,6 +101,15 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             }
         }
         return prefs.get(0);
+    }
+
+    /** Resolve the effective storage resource id: the request's, else the gateway default. */
+    private String resolveStorageResourceId(String storageResourceId) throws Exception {
+        if (storageResourceId != null && !storageResourceId.isEmpty()) {
+            return storageResourceId;
+        }
+        StoragePreference pref = resolveStoragePreference(storageResourceId);
+        return pref != null ? pref.getStorageResourceId() : "";
     }
 
     private StorageResourceAdaptor getStorageAdaptor(String storageResourceId) throws Exception {
@@ -214,6 +247,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
             String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            String storageResourceId = resolveStorageResourceId(request.getStorageResourceId());
 
             List<String> entries = adaptor.listDirectory(path);
             ListDirResponse.Builder responseBuilder = ListDirResponse.newBuilder();
@@ -221,7 +255,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             for (String entry : entries) {
                 String fullPath = path.endsWith("/") ? path + entry : path + "/" + entry;
                 FileMetadata meta = adaptor.getFileMetadata(fullPath);
-                FileMetadataResponse fileMeta = toFileMetadataResponse(meta, fullPath);
+                FileMetadataResponse fileMeta = toFileMetadataResponse(
+                        meta, fullPath, resolveDataProductUri(meta, fullPath, storageResourceId));
                 if (meta.isDirectory()) {
                     responseBuilder.addDirectories(fileMeta);
                 } else {
@@ -316,8 +351,10 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
             String path = resolvePath(request.getPath(), request.getStorageResourceId());
+            String storageResourceId = resolveStorageResourceId(request.getStorageResourceId());
             FileMetadata meta = adaptor.getFileMetadata(path);
-            observer.onNext(toFileMetadataResponse(meta, path));
+            observer.onNext(toFileMetadataResponse(
+                    meta, path, resolveDataProductUri(meta, path, storageResourceId)));
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -375,7 +412,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
                 String fullPath =
                         experimentDataDir.endsWith("/") ? experimentDataDir + entry : experimentDataDir + "/" + entry;
                 FileMetadata meta = adaptor.getFileMetadata(fullPath);
-                FileMetadataResponse fileMeta = toFileMetadataResponse(meta, fullPath);
+                FileMetadataResponse fileMeta = toFileMetadataResponse(
+                        meta, fullPath, resolveDataProductUri(meta, fullPath, storageResourceId));
                 if (meta.isDirectory()) {
                     responseBuilder.addDirectories(fileMeta);
                 } else {
@@ -416,7 +454,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         }
     }
 
-    private static FileMetadataResponse toFileMetadataResponse(FileMetadata meta, String path) {
+    private static FileMetadataResponse toFileMetadataResponse(
+            FileMetadata meta, String path, String dataProductUri) {
         return FileMetadataResponse.newBuilder()
                 .setName(meta.getName() != null ? meta.getName() : "")
                 .setPath(path)
@@ -424,6 +463,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
                 .setIsDirectory(meta.isDirectory())
                 .setModifiedTime(meta.getModifiedTime())
                 .setContentType(meta.getContentType() != null ? meta.getContentType() : "")
+                .setDataProductUri(dataProductUri != null ? dataProductUri : "")
                 .build();
     }
 }

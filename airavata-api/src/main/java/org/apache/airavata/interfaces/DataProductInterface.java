@@ -39,6 +39,13 @@ public interface DataProductInterface {
     List<DataProductModel> searchDataProductsByName(
             String gatewayId, String userId, String productName, int limit, int offset) throws ReplicaCatalogException;
 
+    /**
+     * Return the data product in the gateway that has a replica at the given file path, or
+     * {@code null} if none exists.
+     */
+    DataProductModel getDataProductByReplicaFilePath(String gatewayId, String filePath)
+            throws ReplicaCatalogException;
+
     boolean isDataProductExists(String productUri) throws ReplicaCatalogException;
 
     boolean removeDataProduct(String productUri) throws ReplicaCatalogException;

@@ -203,4 +203,22 @@ public interface StorageProvider {
      * @throws Exception if a data access error occurs
      */
     boolean removeReplicaLocation(String replicaId) throws Exception;
+
+    /**
+     * Return the product URI of the data product whose gateway-data-store replica is the given
+     * file path, registering a new {@code FILE} data product for it if none exists. This is the
+     * server-side equivalent of the legacy per-file file-path-to-data-product mapping, so callers
+     * (e.g. file listings) can surface a stable data product URI for each stored file.
+     *
+     * @param gatewayId the gateway id
+     * @param ownerName the file owner's user id
+     * @param fileName the file name (used as the product name when creating)
+     * @param filePath the absolute file path on the storage resource
+     * @param storageResourceId the storage resource id holding the file
+     * @return the existing or newly registered data product URI
+     * @throws Exception if a data access error occurs
+     */
+    String getOrCreateDataProductByPath(
+            String gatewayId, String ownerName, String fileName, String filePath, String storageResourceId)
+            throws Exception;
 }
