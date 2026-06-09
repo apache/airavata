@@ -51,12 +51,22 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    // The child (STORAGE_INTERFACE) already maps the FK as part of its composite
+    // @Id (DataMovementInterfaceEntity.resourceId -> STORAGE_RESOURCE_ID), so the
+    // association must join on that same column and be read-only here (the child
+    // owns it). Pointing this at a separate "RESOURCE_ID" column left the
+    // association always empty, which broke the SFTP storage adaptor ("No SCP
+    // data movement interface for storage resource").
     @OneToMany(
             targetEntity = DataMovementInterfaceEntity.class,
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER)
-    @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "STORAGE_RESOURCE_ID")
+    @JoinColumn(
+            name = "STORAGE_RESOURCE_ID",
+            referencedColumnName = "STORAGE_RESOURCE_ID",
+            insertable = false,
+            updatable = false)
     private List<DataMovementInterfaceEntity> dataMovementInterfaces;
 
     public StorageResourceEntity() {}

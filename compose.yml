@@ -169,6 +169,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./conf/sftp/id_rsa.pub:/home/airavata/.ssh/keys/id_rsa.pub:ro
+      - ./conf/sftp/chown-storage.sh:/etc/sftp.d/chown-storage.sh:ro
       - sftp_data:/home/airavata/storage
     command: "airavata::1000"
     healthcheck:
