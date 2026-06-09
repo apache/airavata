@@ -422,6 +422,8 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
                 .setPath(path)
                 .setSize(meta.getSize())
                 .setIsDirectory(meta.isDirectory())
+                .setModifiedTime(meta.getModifiedTime())
+                .setContentType(meta.getContentType() != null ? meta.getContentType() : "")
                 .build();
     }
 }

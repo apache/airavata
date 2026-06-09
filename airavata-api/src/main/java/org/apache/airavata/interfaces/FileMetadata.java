@@ -25,6 +25,8 @@ public class FileMetadata {
     private long size;
     private int permissions = 420;
     private boolean isDirectory;
+    private long modifiedTime;
+    private String contentType;
 
     public String getName() {
         return name;
@@ -56,5 +58,23 @@ public class FileMetadata {
 
     public void setDirectory(boolean isDirectory) {
         this.isDirectory = isDirectory;
+    }
+
+    /** Last-modified time in epoch milliseconds, or 0 if unknown. */
+    public long getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(long modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
+
+    /** MIME content type guessed from the file name, or null if unknown. */
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }
