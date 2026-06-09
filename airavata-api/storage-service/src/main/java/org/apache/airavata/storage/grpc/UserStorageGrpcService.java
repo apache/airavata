@@ -353,8 +353,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             String path = resolvePath(request.getPath(), request.getStorageResourceId());
             String storageResourceId = resolveStorageResourceId(request.getStorageResourceId());
             FileMetadata meta = adaptor.getFileMetadata(path);
-            observer.onNext(toFileMetadataResponse(
-                    meta, path, resolveDataProductUri(meta, path, storageResourceId)));
+            observer.onNext(toFileMetadataResponse(meta, path, resolveDataProductUri(meta, path, storageResourceId)));
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -454,8 +453,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         }
     }
 
-    private static FileMetadataResponse toFileMetadataResponse(
-            FileMetadata meta, String path, String dataProductUri) {
+    private static FileMetadataResponse toFileMetadataResponse(FileMetadata meta, String path, String dataProductUri) {
         return FileMetadataResponse.newBuilder()
                 .setName(meta.getName() != null ? meta.getName() : "")
                 .setPath(path)

@@ -87,16 +87,17 @@ public class DevStorageInitializer {
                     // a partial prior init can leave it without one, which then fails
                     // the SFTP adaptor with "No SCP data movement interface".
                     String existingId = entry.getKey();
-                    boolean hasScp = registryHandler.getStorageResource(existingId).getDataMovementInterfacesList()
-                            .stream()
-                            .anyMatch(i -> i.getDataMovementProtocol() == DataMovementProtocol.SCP);
+                    boolean hasScp =
+                            registryHandler.getStorageResource(existingId).getDataMovementInterfacesList().stream()
+                                    .anyMatch(i -> i.getDataMovementProtocol() == DataMovementProtocol.SCP);
                     if (!hasScp) {
                         SCPDataMovement scpDm = SCPDataMovement.newBuilder()
                                 .setSecurityProtocol(SecurityProtocol.SSH_KEYS)
                                 .setSshPort(22)
                                 .build();
                         registryHandler.addSCPDataMovementDetails(existingId, DMType.STORAGE_RESOURCE, 0, scpDm);
-                        logger.info("Healed dev storage resource {}: added missing SCP data movement interface",
+                        logger.info(
+                                "Healed dev storage resource {}: added missing SCP data movement interface",
                                 existingId);
                     } else {
                         logger.info("Dev storage resource already exists: {} ({})", entry.getValue(), existingId);
