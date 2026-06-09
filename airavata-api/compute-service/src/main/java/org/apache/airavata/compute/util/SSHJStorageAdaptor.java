@@ -148,9 +148,13 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
         try (SFTPClient sftp = openSftp()) {
             FileAttributes attrs = sftp.stat(remoteFile);
             FileMetadata meta = new FileMetadata();
-            meta.setName(remoteFile.substring(remoteFile.lastIndexOf('/') + 1));
+            String name = remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
+            meta.setName(name);
             meta.setSize(attrs.getSize());
             meta.setDirectory(attrs.getType() == FileMode.Type.DIRECTORY);
+            // SFTP mtime is seconds since the epoch; expose it as epoch millis.
+            meta.setModifiedTime(attrs.getMtime() * 1000L);
+            meta.setContentType(java.net.URLConnection.guessContentTypeFromName(name));
             return meta;
         } catch (Exception e) {
             throw new AgentException("Failed to get file metadata: " + remoteFile, e);
