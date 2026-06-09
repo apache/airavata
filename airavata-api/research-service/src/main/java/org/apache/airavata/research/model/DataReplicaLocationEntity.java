@@ -30,7 +30,12 @@ import org.apache.airavata.model.data.replica.proto.ReplicaPersistentType;
  * The persistent class for the data_replica_location database table.
  */
 @Entity
-@Table(name = "DATA_REPLICA_LOCATION")
+@Table(
+        name = "DATA_REPLICA_LOCATION",
+        // Index FILE_PATH so the get-or-create-by-path lookup used when listing a
+        // directory (resolving a data product URI per file) is an index seek, not a
+        // full scan per file.
+        indexes = @Index(name = "IDX_DATA_REPLICA_FILE_PATH", columnList = "FILE_PATH"))
 public class DataReplicaLocationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
