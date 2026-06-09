@@ -204,6 +204,24 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     }
 
     @Override
+    public void moveFile(String sourcePath, String destinationPath) throws AgentException {
+        try (SFTPClient sftp = openSftp()) {
+            sftp.rename(sourcePath, destinationPath);
+        } catch (Exception e) {
+            throw new AgentException("Failed to move file: " + sourcePath + " -> " + destinationPath, e);
+        }
+    }
+
+    @Override
+    public void createSymlink(String targetPath, String linkPath) throws AgentException {
+        try (SFTPClient sftp = openSftp()) {
+            sftp.symlink(linkPath, targetPath);
+        } catch (Exception e) {
+            throw new AgentException("Failed to create symlink: " + linkPath + " -> " + targetPath, e);
+        }
+    }
+
+    @Override
     public void uploadFile(String localFile, String remoteFile) throws AgentException {
         try (SFTPClient sftp = openSftp()) {
             sftp.put(localFile, remoteFile);

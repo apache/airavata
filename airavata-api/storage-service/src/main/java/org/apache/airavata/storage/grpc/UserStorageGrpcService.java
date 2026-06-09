@@ -303,7 +303,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
             String src = resolvePath(request.getSourcePath(), request.getStorageResourceId());
             String dst = resolvePath(request.getDestinationPath(), request.getStorageResourceId());
-            adaptor.executeCommand("mv " + src + " " + dst, "/");
+            adaptor.moveFile(src, dst);
 
             DataProductModel product = DataProductModel.newBuilder()
                     .setProductName(Paths.get(request.getDestinationPath())
@@ -338,7 +338,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
             String target = resolvePath(request.getTargetPath(), request.getStorageResourceId());
             String source = resolvePath(request.getSourcePath(), request.getStorageResourceId());
-            adaptor.executeCommand("ln -s " + target + " " + source, "/");
+            adaptor.createSymlink(target, source);
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
