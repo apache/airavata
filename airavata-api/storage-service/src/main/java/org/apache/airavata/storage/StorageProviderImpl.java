@@ -27,7 +27,10 @@ import org.apache.airavata.interfaces.StorageProvider;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
 import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
+import org.apache.airavata.model.data.replica.proto.DataProductType;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
+import org.apache.airavata.model.data.replica.proto.ReplicaLocationCategory;
+import org.apache.airavata.model.data.replica.proto.ReplicaPersistentType;
 import org.apache.airavata.storage.repository.StorageResourceRepository;
 import org.springframework.stereotype.Service;
 
@@ -134,5 +137,30 @@ public class StorageProviderImpl implements StorageProvider {
     @Override
     public boolean removeReplicaLocation(String replicaId) throws Exception {
         return dataReplicaLocationRepository.removeReplicaLocation(replicaId);
+    }
+
+    @Override
+    public String getOrCreateDataProductByPath(
+            String gatewayId, String ownerName, String fileName, String filePath, String storageResourceId)
+            throws Exception {
+        DataProductModel existing = dataProductRepository.getDataProductByReplicaFilePath(gatewayId, filePath);
+        if (existing != null) {
+            return existing.getProductUri();
+        }
+        DataReplicaLocationModel replica = DataReplicaLocationModel.newBuilder()
+                .setReplicaName(fileName + " gateway data store copy")
+                .setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE)
+                .setReplicaPersistentType(ReplicaPersistentType.TRANSIENT)
+                .setStorageResourceId(storageResourceId != null ? storageResourceId : "")
+                .setFilePath(filePath)
+                .build();
+        DataProductModel product = DataProductModel.newBuilder()
+                .setGatewayId(gatewayId)
+                .setOwnerName(ownerName != null ? ownerName : "")
+                .setProductName(fileName)
+                .setDataProductType(DataProductType.FILE)
+                .addReplicaLocations(replica)
+                .build();
+        return dataProductRepository.registerDataProduct(product);
     }
 }
