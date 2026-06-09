@@ -552,7 +552,7 @@ class ResearchClient:
     def get_data_product(self, data_product_uri):
         pb2 = self._svc("data_product_service_pb2")
         return self._data_product.GetDataProduct(
-            pb2.GetDataProductRequest(data_product_uri=data_product_uri),
+            pb2.GetDataProductRequest(product_uri=data_product_uri),
             metadata=self._metadata,
         )
 
@@ -567,14 +567,14 @@ class ResearchClient:
     def get_parent_data_product(self, data_product_uri):
         pb2 = self._svc("data_product_service_pb2")
         return self._data_product.GetParentDataProduct(
-            pb2.GetParentDataProductRequest(data_product_uri=data_product_uri),
+            pb2.GetParentDataProductRequest(product_uri=data_product_uri),
             metadata=self._metadata,
         )
 
     def get_child_data_products(self, data_product_uri):
         pb2 = self._svc("data_product_service_pb2")
         response = self._data_product.GetChildDataProducts(
-            pb2.GetChildDataProductsRequest(data_product_uri=data_product_uri),
+            pb2.GetChildDataProductsRequest(product_uri=data_product_uri),
             metadata=self._metadata,
         )
         return list(response.data_products)
