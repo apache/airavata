@@ -1,16 +1,8 @@
-"""Queue-settings calculator registry.
+"""In-process queue-settings calculator registry (no framework deps).
 
-Relocated verbatim (in behavior) from
-``airavata_django_portal_sdk.queue_settings_calculators`` plus the
-``queue_settings_calculator`` decorator from ``decorators.py``. This is a pure
-in-process registry with no framework dependencies.
-
-A gateway registers calculator functions with the
-:func:`queue_settings_calculator` decorator, then invokes them by id via
-:func:`calculate_queue_settings`. The registered callable receives whatever
-positional/keyword arguments the caller passes through, so an existing portal
-caller can keep invoking ``calculate_queue_settings(id, request, experiment_model)``
-unchanged.
+A gateway registers calculators with :func:`queue_settings_calculator`, then
+invokes them by id via :func:`calculate_queue_settings`; positional/keyword args
+are forwarded verbatim to the registered callable.
 """
 
 from typing import Callable, NamedTuple
@@ -25,9 +17,7 @@ class QueueSettingsCalculator(NamedTuple):
 
 
 def queue_settings_calculator(_func=None, *, id=None, name=None, **kwargs):
-    """Decorator for registering queue settings calculator functions."""
     def decorator(func):
-        # Register decorator
         name_ = name
         if name_ is None:
             name_ = func.__name__
@@ -45,11 +35,6 @@ def queue_settings_calculator(_func=None, *, id=None, name=None, **kwargs):
 
 
 def calculate_queue_settings(calculator_id, *args, **kwargs):
-    """Invoke a queue settings calculator by id.
-
-    Any positional and keyword arguments are forwarded verbatim to the
-    registered calculator function.
-    """
     calcs = [calc for calc in QUEUE_SETTINGS_CALCULATORS if calc.id == calculator_id]
     if len(calcs) == 0:
         raise LookupError(f"Could not find queue settings calculator for {calculator_id}")
@@ -61,7 +46,6 @@ def calculate_queue_settings(calculator_id, *args, **kwargs):
 
 
 def get_all():
-    """Return a list of all registered queue settings calculators."""
     return QUEUE_SETTINGS_CALCULATORS.copy()
 
 
@@ -71,6 +55,5 @@ def exists(calculator_id):
 
 
 def reset_registry():
-    """Reset registry, used for testing."""
     global QUEUE_SETTINGS_CALCULATORS
     QUEUE_SETTINGS_CALCULATORS = []

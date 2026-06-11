@@ -24,6 +24,8 @@ class AiravataClient:
         else:
             self._channel = grpc.insecure_channel(target, options=options)
 
+        self.claims = claims or {}
+
         self._metadata = []
         if token:
             self._metadata.append(("authorization", f"Bearer {token}"))
@@ -44,6 +46,16 @@ class AiravataClient:
         self.iam = IamClient(self._channel, self._metadata, self._gateway_id)
         self.sharing = SharingClient(self._channel, self._metadata, self._gateway_id)
         self.agent = AgentClient(self._channel, self._metadata, self._gateway_id)
+
+    @property
+    def username(self):
+        """Return the caller's username from JWT claims, or None if unavailable."""
+        return (self.claims or {}).get("userName")
+
+    @property
+    def gateway_id(self):
+        """Return the gateway ID this client was initialised with."""
+        return self._gateway_id
 
     def close(self):
         self._channel.close()

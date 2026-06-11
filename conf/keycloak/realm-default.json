@@ -1406,7 +1406,8 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "m36BXQIxX3j3VILadeHMK5IvbOeRlCCc",
       "redirectUris": [
-        "http://localhost:8000/*"
+        "http://airavata.localhost:8000/*",
+        "https://gateway.airavata.localhost/*"
       ],
       "webOrigins": [
         "+"
