@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.storage.mapper;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +34,10 @@ import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
 import org.apache.airavata.model.data.movement.proto.SecurityProtocol;
 import org.apache.airavata.model.data.movement.proto.UnicoreDataMovement;
 import org.apache.airavata.storage.model.*;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -66,6 +69,20 @@ public interface StorageMapper extends CommonMapperConversions {
     }
 
     StorageResourceEntity storageResourceToEntity(StorageResourceDescription model);
+
+    // MapStruct can't match the proto repeated accessor getDataMovementInterfacesList() to the
+    // entity's `dataMovementInterfaces` property, so set it explicitly after the scalar mapping.
+    @AfterMapping
+    default void afterStorageResourceToEntity(
+            StorageResourceDescription model, @MappingTarget StorageResourceEntity entity) {
+        if (!model.getDataMovementInterfacesList().isEmpty()) {
+            List<DataMovementInterfaceEntity> interfaces = new ArrayList<>();
+            for (DataMovementInterface dm : model.getDataMovementInterfacesList()) {
+                interfaces.add(dataMovementInterfaceToEntity(dm));
+            }
+            entity.setDataMovementInterfaces(interfaces);
+        }
+    }
 
     // --- DataMovementInterface (used for StorageResourceEntity.dataMovementInterfaces) ---
     @Mapping(source = "resourceId", target = "storageResourceId")

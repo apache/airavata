@@ -6,10 +6,10 @@ Read paths are proto-direct: ``get_gateway_resource_profile`` /
 ``get_compute_resource`` and the four ``get_*_job_submission`` helpers return the
 bare proto.
 
-The protocol-enum int bridges below exist ONLY for the group-resource-profile
-WRITE builders, which still accept the historical Thrift-int wire format (proto
-and Thrift assign different ints to the same member, so the bridge maps by member
-NAME). Read paths render enum NAMES via ``MessageToDict`` and do not use them.
+The group-resource-profile WRITE builders resolve protocol/resource-type enums
+with ``proto_enum_value`` (the proto enum is the source of type-truth — it accepts
+the proto member NAME or the proto int the frontend sends, never a Thrift int).
+Read paths render enum NAMES via ``MessageToDict``.
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ from airavata_sdk.helpers._envelope import WithAccess
 from airavata_sdk.helpers.models import (
     GroupResourceProfileCreate,
     WorkspaceDefaultsModel,
+    proto_enum_value,
 )
 
 if TYPE_CHECKING:
@@ -35,71 +36,18 @@ if TYPE_CHECKING:
     )
 
 
-# Historical Thrift enum integers, keyed by member NAME.
-_THRIFT_JOB_SUBMISSION_PROTOCOL = {
-    'CLOUD': 4, 'GLOBUS': 2, 'LOCAL': 0, 'LOCAL_FORK': 6,
-    'SSH': 1, 'SSH_FORK': 5, 'UNICORE': 3,
-}
-_THRIFT_DATA_MOVEMENT_PROTOCOL = {
-    'GridFTP': 3, 'LOCAL': 0, 'SCP': 1, 'SFTP': 2,
-    'UNICORE_STORAGE_SERVICE': 4,
-}
-
-# proto member name -> Thrift member name for members whose proto3 names diverge
-# beyond a simple prefix strip.
-_JSP_NAME_MAP = {'JSP_CLOUD': 'CLOUD'}
-_DMP_NAME_MAP = {'DATA_MOVEMENT_PROTOCOL_LOCAL': 'LOCAL'}
+def _jsp_enum():
+    from airavata_sdk.generated.org.apache.airavata.model.appcatalog.computeresource import (  # noqa: E501
+        compute_resource_pb2,
+    )
+    return compute_resource_pb2.JobSubmissionProtocol
 
 
-def _build_proto_to_thrift(enum_descriptor, thrift_ints, prefix, name_map):
-    """``{proto int: Thrift int or None}``: a proto member is resolved to a Thrift
-    member name (via *name_map* or by stripping *prefix*), then looked up;
-    members absent from *thrift_ints* map to ``None``.
-    """
-    out = {}
-    for v in enum_descriptor.values:
-        if v.name in name_map:
-            name = name_map[v.name]
-        else:
-            name = v.name
-            if prefix and name.startswith(prefix):
-                name = name[len(prefix):]
-        out[v.number] = thrift_ints.get(name)
-    return out
-
-
-_JSP_PROTO_TO_THRIFT: Optional[dict] = None
-_DMP_PROTO_TO_THRIFT: Optional[dict] = None
-
-
-def _job_submission_protocol_int(proto_int: int) -> Optional[int]:
-    global _JSP_PROTO_TO_THRIFT
-    if _JSP_PROTO_TO_THRIFT is None:
-        from airavata_sdk.generated.org.apache.airavata.model.appcatalog.computeresource import (  # noqa: E501
-            compute_resource_pb2,
-        )
-        _JSP_PROTO_TO_THRIFT = _build_proto_to_thrift(
-            compute_resource_pb2.JobSubmissionProtocol.DESCRIPTOR,
-            _THRIFT_JOB_SUBMISSION_PROTOCOL,
-            'JOB_SUBMISSION_PROTOCOL_',
-            _JSP_NAME_MAP,
-        )
-    return _JSP_PROTO_TO_THRIFT.get(proto_int)
-
-
-def _data_movement_protocol_int(proto_int: int) -> Optional[int]:
-    global _DMP_PROTO_TO_THRIFT
-    if _DMP_PROTO_TO_THRIFT is None:
-        from airavata_sdk.generated.org.apache.airavata.model.data.movement import (  # noqa: E501
-            data_movement_pb2,
-        )
-        _DMP_PROTO_TO_THRIFT = _build_proto_to_thrift(
-            data_movement_pb2.DataMovementProtocol.DESCRIPTOR,
-            _THRIFT_DATA_MOVEMENT_PROTOCOL,
-            'DATA_MOVEMENT_PROTOCOL_',
-            _DMP_NAME_MAP,
-        )
-    return _DMP_PROTO_TO_THRIFT.get(proto_int)
+def _dmp_enum():
+    from airavata_sdk.generated.org.apache.airavata.model.data.movement import (  # noqa: E501
+        data_movement_pb2,
+    )
+    return data_movement_pb2.DataMovementProtocol
 
 
 # StoragePreference — bare proto, no envelope (a flat message with no ownership
@@ -200,10 +148,10 @@ def _build_compute_resource_preference(data: dict):
         # decamelized incoming ``overridebyAiravata`` -> ``overrideby_airavata``
         override_by_airavata=bool(data.get("overrideby_airavata", False)),
         login_user_name=data.get("login_user_name") or "",
-        preferred_job_submission_protocol=_job_submission_protocol_proto(
-            data.get("preferred_job_submission_protocol")),
-        preferred_data_movement_protocol=_data_movement_protocol_proto(
-            data.get("preferred_data_movement_protocol")),
+        preferred_job_submission_protocol=proto_enum_value(
+            _jsp_enum(), data.get("preferred_job_submission_protocol")),
+        preferred_data_movement_protocol=proto_enum_value(
+            _dmp_enum(), data.get("preferred_data_movement_protocol")),
         preferred_batch_queue=data.get("preferred_batch_queue") or "",
         scratch_location=data.get("scratch_location") or "",
         allocation_project_number=data.get("allocation_project_number") or "",
@@ -220,33 +168,6 @@ def _build_compute_resource_preference(data: dict):
         ssh_account_provisioner_additional_info=data.get(
             "ssh_account_provisioner_additional_info") or "",
     )
-
-
-# Reverse lookups (Thrift int -> proto int), built lazily from the forward maps.
-_JSP_THRIFT_TO_PROTO: Optional[dict] = None
-_DMP_THRIFT_TO_PROTO: Optional[dict] = None
-
-
-def _job_submission_protocol_proto(thrift_int: Optional[int]) -> int:
-    global _JSP_THRIFT_TO_PROTO
-    if _JSP_THRIFT_TO_PROTO is None:
-        _job_submission_protocol_int(0)  # ensure forward map built
-        _JSP_THRIFT_TO_PROTO = {
-            t: p for p, t in _JSP_PROTO_TO_THRIFT.items() if t is not None}
-    if not thrift_int:
-        return 0
-    return _JSP_THRIFT_TO_PROTO.get(int(thrift_int), 0)
-
-
-def _data_movement_protocol_proto(thrift_int: Optional[int]) -> int:
-    global _DMP_THRIFT_TO_PROTO
-    if _DMP_THRIFT_TO_PROTO is None:
-        _data_movement_protocol_int(0)  # ensure forward map built
-        _DMP_THRIFT_TO_PROTO = {
-            t: p for p, t in _DMP_PROTO_TO_THRIFT.items() if t is not None}
-    if not thrift_int:
-        return 0
-    return _DMP_THRIFT_TO_PROTO.get(int(thrift_int), 0)
 
 
 def build_gateway_resource_profile(
@@ -304,8 +225,6 @@ def list_compute_resource_names(client: "AiravataClient") -> dict[str, str]:
 # False). user_has_write_access is NOT a single chained sharing lookup but a
 # COMPOSITE request-bound boolean (WRITE on the profile AND READ on every
 # credential token), so the ViewSet computes it and passes it in as has_write.
-# The WRITE builders below still accept the historical Thrift-int wire format, so
-# the enum int->proto bridges remain.
 
 
 def _grp_pb2():
@@ -316,17 +235,6 @@ def _grp_pb2():
 
 
 # GroupResourceProfile: write builders (snake_case dict -> proto).
-
-
-def _resource_type_proto(thrift_int: Optional[int]) -> int:
-    """Thrift/proto ``resource_type`` int -> proto int. Thrift SLURM(0)->proto
-    SLURM(1), Thrift AWS(1)->proto AWS(2); None/unknown -> 0.
-    """
-    if thrift_int is None:
-        return 0
-    grp = _grp_pb2()
-    thrift_to_proto = {0: grp.ResourceType.SLURM, 1: grp.ResourceType.AWS}
-    return thrift_to_proto.get(int(thrift_int), 0)
 
 
 def _build_ssh_provisioner_config(c: dict):
@@ -381,21 +289,21 @@ def _build_aws_pref(a: dict):
 def _build_group_compute_resource_preference(d: dict):
     """The write payload's ``specific_preferences`` (a ``{'slurm': {...}}`` / AWS
     dict) plus a flattened ``allocation_project_number`` / ``resource_type`` are
-    mapped into the proto oneof. Protocol enums accept the Thrift-int wire format.
+    mapped into the proto oneof. Enums resolve via the proto enum (NAME or proto int).
     """
     grp = _grp_pb2()
     sp = d.get("specific_preferences")
-    resource_type = _resource_type_proto(d.get("resource_type"))
+    resource_type = proto_enum_value(grp.ResourceType, d.get("resource_type"))
     msg = grp.GroupComputeResourcePreference(
         compute_resource_id=d.get("compute_resource_id", "") or "",
         group_resource_profile_id=d.get("group_resource_profile_id", "") or "",
         override_by_airavata=bool(d.get("overrideby_airavata", False)),
         login_user_name=d.get("login_user_name", "") or "",
         scratch_location=d.get("scratch_location", "") or "",
-        preferred_job_submission_protocol=_job_submission_protocol_proto(
-            d.get("preferred_job_submission_protocol")),
-        preferred_data_movement_protocol=_data_movement_protocol_proto(
-            d.get("preferred_data_movement_protocol")),
+        preferred_job_submission_protocol=proto_enum_value(
+            _jsp_enum(), d.get("preferred_job_submission_protocol")),
+        preferred_data_movement_protocol=proto_enum_value(
+            _dmp_enum(), d.get("preferred_data_movement_protocol")),
         resource_specific_credential_store_token=d.get(
             "resource_specific_credential_store_token", "") or "",
         resource_type=resource_type,

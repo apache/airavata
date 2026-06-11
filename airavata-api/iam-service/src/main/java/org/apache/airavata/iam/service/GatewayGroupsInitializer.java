@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.iam.service;
 
+import org.apache.airavata.config.ServerSettings;
 import org.apache.airavata.interfaces.CredentialProvider;
 import org.apache.airavata.interfaces.GatewayGroupsProvider;
 import org.apache.airavata.interfaces.RegistryProvider;
@@ -58,6 +59,7 @@ public class GatewayGroupsInitializer implements GatewayGroupsProvider {
         try {
             return initialize(gatewayId);
         } catch (Exception e) {
+            logger.error("Failed to initialize a GatewayGroups instance for gateway: {}", gatewayId, e);
             throw new RuntimeException("Failed to initialize a GatewayGroups instance for gateway: " + gatewayId, e);
         }
     }
@@ -120,9 +122,27 @@ public class GatewayGroupsInitializer implements GatewayGroupsProvider {
     private String getAdminOwnerUsername(String gatewayId) throws Exception {
 
         GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);
-        PasswordCredential credential = credentialStoreClient.getPasswordCredential(
-                gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayId());
-        String adminUsername = credential.getLoginUserName();
-        return adminUsername;
+        String credToken = gatewayResourceProfile.getIdentityServerPwdCredToken();
+        if (credToken != null && !credToken.isEmpty()) {
+            PasswordCredential credential =
+                    credentialStoreClient.getPasswordCredential(credToken, gatewayResourceProfile.getGatewayId());
+            if (credential != null
+                    && credential.getLoginUserName() != null
+                    && !credential.getLoginUserName().isEmpty()) {
+                return credential.getLoginUserName();
+            }
+        }
+        // Cold-start fallback: no identity-server password credential has been seeded for this
+        // gateway (blank token / missing credential), so resolve the gateway admin owner from the
+        // configured default registry user instead of NPE-ing on a null credential. This lets
+        // GatewayGroups initialize on a fresh cold start with no manual seeding step.
+        String defaultUser = ServerSettings.getDefaultUser();
+        logger.warn(
+                "No identity-server password credential for gateway {} (token='{}'); falling back to "
+                        + "default admin owner '{}' for GatewayGroups initialization.",
+                gatewayId,
+                credToken,
+                defaultUser);
+        return defaultUser;
     }
 }

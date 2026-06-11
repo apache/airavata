@@ -104,12 +104,6 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
         }
         ExperimentEntity experimentEntity = ResearchMapper.INSTANCE.experimentToEntity(experimentModel);
 
-        // UserConfigurationData and Processes are managed by their own entities (in orchestration-service).
-        // Persist UserConfigurationData via ExecutionDataAccess to avoid cross-module entity references.
-        if (experimentModel.hasUserConfigurationData()) {
-            executionDataAccess.saveUserConfigurationData(experimentModel.getUserConfigurationData(), experimentId);
-        }
-
         if (experimentEntity.getExperimentInputs() != null) {
             logger.debug("Populating the entity ID of ExperimentInput params for the Experiment");
             experimentEntity.getExperimentInputs().forEach(param -> {
@@ -139,7 +133,18 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
                     .getErrors()
                     .forEach(experimentErrorEntity -> experimentErrorEntity.setExperimentId(experimentId));
         }
-        return execute(entityManager -> entityManager.merge(experimentEntity));
+
+        // Persist the experiment row FIRST so the EXPERIMENT_ID exists before any child row
+        // (cascaded inputs/outputs/status/errors, and the user_configuration_data below) references it.
+        ExperimentEntity savedEntity = execute(entityManager -> entityManager.merge(experimentEntity));
+
+        // UserConfigurationData and Processes are managed by their own entities (in orchestration-service).
+        // Persist UserConfigurationData via ExecutionDataAccess AFTER the experiment row exists, since
+        // user_configuration_data.EXPERIMENT_ID is a FK to experiment.EXPERIMENT_ID.
+        if (experimentModel.hasUserConfigurationData()) {
+            executionDataAccess.saveUserConfigurationData(experimentModel.getUserConfigurationData(), experimentId);
+        }
+        return savedEntity;
     }
 
     public String addExperiment(ExperimentModel experimentModel) throws RegistryException {

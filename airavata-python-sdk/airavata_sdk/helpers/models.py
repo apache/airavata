@@ -8,9 +8,46 @@ int); timestamp fields are ``int | str | None`` (epoch millis or ISO string).
 
 from __future__ import annotations
 
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, BeforeValidator, ConfigDict
+
+
+def _blank_to_none(value):
+    """Map an empty-string form value to ``None`` so an ``int`` field doesn't
+    choke on it (HTML number inputs can submit ``""`` for a cleared field)."""
+    return None if value == "" else value
+
+
+# An int field that mirrors a proto int32/int64: pydantic coerces a numeric
+# string ("1") to int at the typed boundary; "" -> None (left unset -> proto 0).
+_OptInt = Annotated[Optional[int], BeforeValidator(_blank_to_none)]
+
+
+def proto_enum_value(enum_cls, value) -> int:
+    """Resolve a wire value to a proto enum's INT value, with the PROTO enum as
+    the single source of type-truth — there is NO Thrift remapping.
+
+    Accepts the proto member NAME (full proto name, e.g. ``"EXPERIMENT_STATE_CREATED"``,
+    or the prefix-stripped short alias, e.g. ``"LOCAL"``) or the proto int as-is;
+    ``None`` / ``""`` / bool -> 0 (the proto UNKNOWN sentinel). *enum_cls* is a
+    protobuf ``EnumTypeWrapper`` (e.g. ``compute_resource_pb2.JobSubmissionProtocol``).
+    """
+    if value is None or value == "" or isinstance(value, bool):
+        return 0
+    if isinstance(value, int):
+        return value  # already the proto int — pass through, never remap
+    name = str(value)
+    if name in enum_cls.keys():
+        return enum_cls.Value(name)
+    # short alias: re-attach the enum's SCREAMING_SNAKE prefix, derived from the
+    # 0-sentinel member name (e.g. JOB_SUBMISSION_PROTOCOL_UNKNOWN -> prefix).
+    zero = enum_cls.DESCRIPTOR.values_by_number.get(0)
+    if zero is not None and "_" in zero.name:
+        prefix = zero.name[: zero.name.rfind("_") + 1]
+        if (prefix + name) in enum_cls.keys():
+            return enum_cls.Value(prefix + name)
+    return 0
 
 
 class _Base(BaseModel):
@@ -29,6 +66,39 @@ class ProjectCreate(_Base):
     description: Optional[str] = None
 
 
+class ComputationalResourceSchedulingCreate(_Base):
+    # int fields mirror the proto int32s; the typed boundary coerces "1" -> 1.
+    resource_host_id: Optional[str] = None
+    total_cpu_count: _OptInt = None
+    node_count: _OptInt = None
+    number_of_threads: _OptInt = None
+    queue_name: Optional[str] = None
+    wall_time_limit: _OptInt = None
+    total_physical_memory: _OptInt = None
+    chessis_number: Optional[str] = None
+    static_working_dir: Optional[str] = None
+    override_login_user_name: Optional[str] = None
+    override_scratch_location: Optional[str] = None
+    override_allocation_project_number: Optional[str] = None
+    m_group_count: _OptInt = None
+
+
+class UserConfigurationDataCreate(_Base):
+    airavata_auto_schedule: Optional[bool] = None
+    override_manual_scheduled_params: Optional[bool] = None
+    share_experiment_publicly: Optional[bool] = None
+    computational_resource_scheduling: Optional[
+        ComputationalResourceSchedulingCreate] = None
+    throttle_resources: Optional[bool] = None
+    user_dn: Optional[str] = None
+    generate_cert: Optional[bool] = None
+    input_storage_resource_id: Optional[str] = None
+    output_storage_resource_id: Optional[str] = None
+    experiment_data_dir: Optional[str] = None
+    use_user_cr_pref: Optional[bool] = None
+    group_resource_profile_id: Optional[str] = None
+
+
 class ExperimentCreate(_Base):
     experiment_id: Optional[str] = None
     project_id: Optional[str] = None
@@ -40,7 +110,7 @@ class ExperimentCreate(_Base):
     email_addresses: Optional[list[str]] = None
     experiment_inputs: Optional[list[dict]] = None
     experiment_outputs: Optional[list[dict]] = None
-    user_configuration_data: Optional[dict] = None
+    user_configuration_data: Optional[UserConfigurationDataCreate] = None
 
 
 class NotificationCreate(_Base):
