@@ -1,20 +1,13 @@
-"""Framework-agnostic experiment orchestration helpers.
-
-Relocated (in behavior) from
-``airavata_django_portal_sdk.experiment_util`` (``api.py`` and
-``intermediate_output.py``) and repointed from Thrift
-(``request.airavata_client.*``) plus the Django ``user_storage`` module onto the
-gRPC facades exposed by :class:`airavata_sdk.client.AiravataClient`
-(``client.research``, ``client.storage``, ``client.sharing``).
-
-There is no Django, DRF, ``request`` object, or Thrift here. Every function
-takes an :class:`~airavata_sdk.client.AiravataClient` (named ``client``) plus
-explicit keyword arguments. ``experiment`` arguments are proto
-``ExperimentModel`` instances (snake_case field names).
+"""Experiment orchestration helpers over the gRPC facades. Every function takes
+an :class:`~airavata_sdk.client.AiravataClient` plus explicit keyword arguments;
+``experiment`` arguments are proto ``ExperimentModel`` instances.
 """
+
+from __future__ import annotations
 
 import logging
 import os
+from typing import TYPE_CHECKING, Optional
 from urllib.parse import unquote, urlparse
 
 # Importing ``airavata_sdk.generated`` puts the generated proto root on sys.path
@@ -28,6 +21,12 @@ from airavata_sdk.generated.org.apache.airavata.model.data.replica import (
 )
 from airavata_sdk.generated.org.apache.airavata.model.status import status_pb2
 from airavata_sdk.generated.org.apache.airavata.model.task import task_pb2
+
+if TYPE_CHECKING:
+    from airavata_sdk.client import AiravataClient
+    from airavata_sdk.generated.org.apache.airavata.model.experiment import (
+        experiment_pb2,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -47,12 +46,8 @@ _TERMINAL_PROCESS_STATES = (
 )
 
 
-# ---------------------------------------------------------------------------
-# Replica / data-product helpers (pure, no backend calls)
-# ---------------------------------------------------------------------------
-
 def _gateway_data_store_replica(data_product):
-    """Return the GATEWAY_DATA_STORE replica of a data product, or None."""
+    """The GATEWAY_DATA_STORE replica, or the first replica, or None."""
     replicas = [
         rep
         for rep in data_product.replica_locations
@@ -60,30 +55,23 @@ def _gateway_data_store_replica(data_product):
     ]
     if replicas:
         return replicas[0]
-    # Fall back to the first replica if none is explicitly GATEWAY_DATA_STORE.
     return data_product.replica_locations[0] if data_product.replica_locations else None
 
 
 def _replica_filesystem_path(replica):
-    """Return the plain filesystem path encoded in a replica's file_path.
-
-    Mirrors the old portal's ``_get_replica_filepath``: replica file paths may be
-    stored as ``file://<host>:<path>`` (or URL-encoded), so parse out and unquote
-    just the path component.
+    """The plain filesystem path from a replica's file_path (which may be stored
+    as ``file://<host>:<path>`` or URL-encoded).
     """
     if replica is None or not replica.file_path:
         return None
     return unquote(urlparse(replica.file_path).path)
 
 
-def is_input_file(data_product) -> bool:
-    """Return True if the data product is a tmp input-file upload.
-
-    A data product is a tmp input-file upload iff its (gateway-data-store)
-    replica's file_path lives directly under the ``tmp`` directory
-    (TMP_INPUT_FILE_UPLOAD_DIR). Derived entirely from the DataProductModel proto
-    — no backend call (the old portal hit the storage backend; the proto already
-    carries the replica file path).
+def is_input_file(
+    data_product: "replica_catalog_pb2.DataProductModel",
+) -> bool:
+    """True iff the gateway-data-store replica's file_path lives directly under
+    the tmp upload dir.
     """
     replica = _gateway_data_store_replica(data_product)
     path = _replica_filesystem_path(replica)
@@ -92,17 +80,13 @@ def is_input_file(data_product) -> bool:
     return os.path.basename(os.path.dirname(path)) == TMP_INPUT_FILE_UPLOAD_DIR
 
 
-# ---------------------------------------------------------------------------
-# Launch
-# ---------------------------------------------------------------------------
-
-def launch(client, experiment_id, *, username) -> None:
-    """Launch an experiment.
-
-    Equivalent to the old ``experiment_util.api.launch`` non-remote-API branch:
-    set storage ids + per-experiment data dir, move any tmp input-file uploads
-    into that data dir, persist the experiment, then launch it.
-    """
+def launch(
+    client: "AiravataClient",
+    experiment_id: str,
+    *,
+    username: str,
+) -> None:
+    """Set storage ids + data dir, move tmp input uploads into it, persist, launch."""
     experiment = client.research.get_experiment(experiment_id)
     _set_storage_id_and_data_dir(client, experiment, username=username)
     _move_tmp_input_file_uploads_to_data_dir(client, experiment)
@@ -111,11 +95,8 @@ def launch(client, experiment_id, *, username) -> None:
 
 
 def _set_storage_id_and_data_dir(client, experiment, *, username):
-    """Set input/output storage resource ids and the per-experiment data dir.
-
-    Defaults both input and output storage to the gateway default storage
-    resource, then ensures ``experiment_data_dir`` is set, creating the directory
-    on storage when necessary.
+    """Default input/output storage to the gateway default, then ensure
+    ``experiment_data_dir`` is set, creating the directory on storage if needed.
     """
     default_storage_id = client.storage.get_default_storage_resource_id()
 
@@ -125,41 +106,31 @@ def _set_storage_id_and_data_dir(client, experiment, *, username):
 
     if not user_config.experiment_data_dir:
         project = client.research.get_project(experiment.project_id)
-        # Path convention mirrors the old create_user_dir(dir_names=(project.name,
-        # experiment_name)): "<project>/<experiment>" under the storage root.
-        # Names are sanitized for filesystem safety (spaces -> underscores).
+        # "<project>/<experiment>" under the storage root (spaces -> underscores).
         exp_dir = "/".join(
             _sanitize_path_component(part)
             for part in (project.name, experiment.experiment_name)
         )
-        # TODO(sdk-consolidation): the old create_user_dir(create_unique=True)
-        # guaranteed a non-colliding directory by suffixing on collision. The
-        # storage facade's create_dir has no uniqueness guarantee, so two
-        # experiments with the same project+name share a data dir. A
-        # create_unique option on the storage facade would restore old behavior.
+        # TODO(sdk-consolidation): the storage facade's create_dir has no
+        # uniqueness guarantee, so two experiments with the same project+name
+        # share a data dir (the old create_user_dir(create_unique=True) suffixed
+        # on collision). A create_unique option would restore old behavior.
         resp = client.storage.create_dir(exp_dir, storage_resource_id=default_storage_id)
-        # create_dir returns the created path; fall back to the requested path.
         created = getattr(resp, "created_path", "") or exp_dir
         user_config.experiment_data_dir = created
     else:
-        # Ensure the directory exists on storage (the old code re-validated and
-        # created the absolute path via create_user_dir).
         client.storage.create_dir(
             user_config.experiment_data_dir, storage_resource_id=default_storage_id
         )
 
 
 def _sanitize_path_component(name):
-    """Sanitize a single path component for use in a storage path."""
     return (name or "").strip().replace(" ", "_")
 
 
 def _move_tmp_input_file_uploads_to_data_dir(client, experiment):
-    """Move any tmp input-file uploads into the experiment data dir.
-
-    Walks the experiment's URI / URI_COLLECTION inputs and relocates any data
-    product that is a tmp input-file upload, rewriting the input value to the
-    (possibly unchanged) data-product URI.
+    """Relocate any URI / URI_COLLECTION input that is a tmp upload into the
+    experiment data dir, rewriting the input value to the (same) data-product URI.
     """
     exp_data_dir = experiment.user_configuration_data.experiment_data_dir
     storage_id = experiment.user_configuration_data.input_storage_resource_id or None
@@ -181,12 +152,8 @@ def _move_tmp_input_file_uploads_to_data_dir(client, experiment):
 
 
 def _move_if_tmp_input_file_upload(client, data_product_uri, experiment_data_dir, storage_id):
-    """Move a tmp input-file upload into the data dir; return its (same) URI.
-
-    Reads the data product, and if it is a tmp upload, relocates the underlying
-    bytes and repoints its replica's file_path in place — preserving the
-    data-product URI (unlike the old portal, which created a copy + new URI; the
-    gRPC facade lets us keep the same product).
+    """If a tmp upload, relocate the bytes and repoint the replica's file_path in
+    place — preserving the data-product URI. Returns the (same) URI.
     """
     data_product = client.research.get_data_product(data_product_uri)
     if not is_input_file(data_product):
@@ -221,23 +188,21 @@ def _move_if_tmp_input_file_upload(client, data_product_uri, experiment_data_dir
 
 
 def _join_storage_path(directory, name):
-    """Join a storage directory and a file name with a single separator."""
     if not directory:
         return name
     return directory.rstrip("/") + "/" + name
 
 
-# ---------------------------------------------------------------------------
-# Clone
-# ---------------------------------------------------------------------------
-
-def clone(client, experiment_id, *, username, project_id=None) -> str:
-    """Clone an experiment and return the cloned experiment's id.
-
-    Picks a writeable target project (the given ``project_id`` if provided and
-    writeable, else the source experiment's project if writeable, else the first
-    writeable project), clones the experiment, copies its input files into fresh
-    tmp uploads, nulls out the data dir, and persists.
+def clone(
+    client: "AiravataClient",
+    experiment_id: str,
+    *,
+    username: str,
+    project_id: Optional[str] = None,
+) -> str:
+    """Clone into a writeable project (the given *project_id*, else the source's,
+    else the first writeable), copy input files into fresh tmp uploads, null the
+    data dir, persist. Returns the cloned id.
     """
     experiment = client.research.get_experiment(experiment_id)
     target_project_id = project_id or _get_writeable_project(client, experiment, username=username)
@@ -249,21 +214,16 @@ def clone(client, experiment_id, *, username, project_id=None) -> str:
     )
     cloned_experiment = client.research.get_experiment(cloned_experiment_id)
 
-    # Create a copy of the experiment input files.
     _copy_cloned_experiment_input_uris(client, cloned_experiment, username=username)
 
-    # Null out experiment_data_dir so a new one is created at launch time.
+    # Null experiment_data_dir so a fresh one is created at launch time.
     cloned_experiment.user_configuration_data.experiment_data_dir = ""
     client.research.update_experiment(cloned_experiment.experiment_id, cloned_experiment)
     return cloned_experiment_id
 
 
 def _get_writeable_project(client, experiment, *, username):
-    """Return a project id the user can write to.
-
-    Preference order: the experiment's own project (if writeable), else the
-    first writeable project among the user's projects.
-    """
+    """The experiment's own project if writeable, else the first writeable one."""
     project_id = experiment.project_id
     if _can_write(client, project_id, username=username):
         return project_id
@@ -281,21 +241,13 @@ def _get_writeable_project(client, experiment, *, username):
 
 
 def _can_write(client, entity_id, *, username) -> bool:
-    """Return True if the calling user has WRITE access to the entity.
-
-    The sharing service evaluates access for the authenticated request user; the
-    ``username`` is passed through as the request's user_id for completeness.
-    """
     return client.sharing.user_has_access(entity_id, username, _WRITE_PERMISSION)
 
 
 def _copy_cloned_experiment_input_uris(client, cloned_experiment, *, username):
-    """Copy URI / URI_COLLECTION input files for a freshly cloned experiment.
-
-    Each referenced data product is copied into a fresh tmp upload and the input
-    value is rewritten to the new data-product URI. Inputs whose source file is
-    missing are dropped (URI) or omitted (URI_COLLECTION), matching the old
-    portal.
+    """Copy each referenced data product into a fresh tmp upload and rewrite the
+    input value to the new URI. Missing source files are dropped (URI) / omitted
+    (URI_COLLECTION).
     """
     for experiment_input in cloned_experiment.experiment_inputs:
         if not experiment_input.value:
@@ -320,14 +272,9 @@ def _copy_cloned_experiment_input_uris(client, cloned_experiment, *, username):
 
 
 def _copy_experiment_input_uri(client, data_product_uri, *, username):
-    """Copy the file behind a data product into a fresh tmp upload.
-
-    Returns the new data-product URI, or None if the source file does not exist.
-
-    The storage facade has no copy primitive, so this downloads the source bytes
-    and re-uploads them to a fresh ``tmp`` path, then registers a new data
-    product pointing at the uploaded copy (the old portal's ``_copy_input_file``
-    -> ``_save_copy_of_data_product``).
+    """The storage facade has no copy primitive, so download the source bytes,
+    re-upload to a fresh tmp path, and register a new data product. Returns the
+    new URI, or None if the source file does not exist.
     """
     source_product = client.research.get_data_product(data_product_uri)
     replica = _gateway_data_store_replica(source_product)
@@ -353,9 +300,8 @@ def _copy_experiment_input_uri(client, data_product_uri, *, username):
         content_type=content_type,
     )
 
-    # Register a new data product for the uploaded copy (the storage facade's
-    # upload returns a minimal DataProductModel without a URI, so register it
-    # explicitly to obtain a persistent URI).
+    # The facade's upload returns a DataProductModel without a URI; register it
+    # explicitly to mint a persistent URI.
     new_product = _build_copy_data_product(
         client, source_product, dest_path, file_name, storage_id, username
     )
@@ -401,16 +347,14 @@ def _get_output_fetching_processes(experiment):
     ]
 
 
-def get_intermediate_output_process_status(client, experiment, *output_names):
-    """Return the ProcessStatus of the intermediate-output fetch process, or None.
-
-    Returns None when the experiment has no output-fetching processes or the
-    backend call fails.
-
-    NOTE: the gRPC facade's ``get_intermediate_output_process_status`` takes only
-    the experiment id (no per-output filtering), unlike the old Thrift call which
-    passed the output names. ``output_names`` is accepted for signature
-    compatibility but not forwarded.
+def get_intermediate_output_process_status(
+    client: "AiravataClient",
+    experiment: "experiment_pb2.ExperimentModel",
+    *output_names: str,
+) -> "Optional[status_pb2.ProcessStatus]":
+    """ProcessStatus of the intermediate-output fetch process, or None (no
+    output-fetching processes / backend error). ``output_names`` is accepted for
+    signature compatibility but the facade does not filter by it (see TODO).
     """
     output_fetching_processes = _get_output_fetching_processes(experiment)
     if not output_fetching_processes:
@@ -427,11 +371,13 @@ def get_intermediate_output_process_status(client, experiment, *output_names):
         return None
 
 
-def can_fetch_intermediate_output(client, experiment, output_name) -> bool:
-    """Return True if intermediate output can be fetched for the named output.
-
-    True only when at least one job is currently ACTIVE and there is no
-    in-progress (non-terminal) intermediate-output process.
+def can_fetch_intermediate_output(
+    client: "AiravataClient",
+    experiment: "experiment_pb2.ExperimentModel",
+    output_name: str,
+) -> bool:
+    """True only when at least one job is ACTIVE and there is no in-progress
+    (non-terminal) intermediate-output process.
     """
     jobs = []
     for process in experiment.processes:
@@ -458,19 +404,24 @@ def can_fetch_intermediate_output(client, experiment, output_name) -> bool:
         return True
 
 
-def fetch_intermediate_output(client, experiment_id, *output_names):
+def fetch_intermediate_output(
+    client: "AiravataClient",
+    experiment_id: str,
+    *output_names: str,
+):
     """Start a fetch of the output file(s) for a currently running experiment."""
     return client.research.get_intermediate_outputs(
         experiment_id, output_names=list(output_names)
     )
 
 
-def get_intermediate_output_data_products(client, experiment, output_name):
-    """Return the DataProduct instance(s) for the named intermediate output.
-
-    Looks at the most-recent completed output-fetching process, finds the
-    matching process output, and resolves its (comma-separated) data-product
-    URIs.
+def get_intermediate_output_data_products(
+    client: "AiravataClient",
+    experiment: "experiment_pb2.ExperimentModel",
+    output_name: str,
+) -> list:
+    """DataProduct(s) for the named output: the most-recent completed
+    output-fetching process's matching output, with its data-product URIs resolved.
     """
     output_fetching_processes = _get_output_fetching_processes(experiment)
 
@@ -480,7 +431,6 @@ def get_intermediate_output_data_products(client, experiment, output_name):
 
     most_recent_completed_output = None
     for process in output_fetching_processes:
-        # Skip processes that aren't completed.
         if (
             not process.process_statuses
             or process.process_statuses[-1].state != status_pb2.PROCESS_STATE_COMPLETED
