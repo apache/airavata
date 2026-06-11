@@ -1,52 +1,10 @@
+name: airavata
+
+networks:
+  airavata-devstack:
+    external: true
+
 services:
-
-  # --- In-DinD image registry (server image, registry-in-the-loop) ---
-  registry:
-    image: registry:2
-    container_name: airavata-registry
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:5000/v2/ >/dev/null 2>&1 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-
-  # --- Ingress: routes *.airavata.localhost by Host header ---
-  traefik:
-    image: traefik:v3.3
-    container_name: airavata-traefik
-    restart: unless-stopped
-    command:
-      - --providers.docker=true
-      - --providers.docker.exposedByDefault=false
-      - --providers.file.directory=/etc/traefik/dynamic
-      - --providers.file.watch=true
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --ping=true
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./conf/traefik/certs:/etc/traefik/certs:ro
-      - ./conf/traefik/dynamic:/etc/traefik/dynamic:ro
-    networks:
-      default:
-        aliases:
-          - api.airavata.localhost
-          - auth.airavata.localhost
-          - rabbitmq.airavata.localhost
-          - adminer.airavata.localhost
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
 
   db:
     image: mariadb:11.8
@@ -62,7 +20,11 @@ services:
       - db_data:/var/lib/mysql
       - ./airavata-server/src/main/resources/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     ports:
-      - "13306:3306"
+      - "127.0.0.1:3306:3306"
+    networks:
+      airavata-devstack:
+        aliases:
+          - db.airavata.host
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
@@ -79,6 +41,8 @@ services:
       RABBITMQ_DEFAULT_PASS: airavata
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - airavata-devstack
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -87,10 +51,11 @@ services:
       start_period: 20s
     labels:
       - traefik.enable=true
-      - traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.airavata.localhost`)
-      - traefik.http.routers.rabbitmq.entrypoints=web,websecure
-      - traefik.http.routers.rabbitmq.tls=true
-      - traefik.http.services.rabbitmq.loadbalancer.server.port=15672
+      - traefik.http.routers.airavata-rabbitmq.rule=Host(`rabbitmq.airavata.host`)
+      - traefik.http.routers.airavata-rabbitmq.entrypoints=web,websecure
+      - traefik.http.routers.airavata-rabbitmq.tls=true
+      - traefik.http.services.airavata-rabbitmq.loadbalancer.server.port=15672
+      - traefik.docker.network=airavata-devstack
 
   zookeeper:
     image: zookeeper:3.9
@@ -99,6 +64,8 @@ services:
     volumes:
       - zk_data:/data
       - zk_logs:/datalog
+    networks:
+      - airavata-devstack
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8080/commands/ruok || exit 1"]
       interval: 10s
@@ -122,6 +89,8 @@ services:
       CLUSTER_ID: airavata-kafka-cluster-id-01
     volumes:
       - kafka_data:/var/lib/kafka/data
+    networks:
+      - airavata-devstack
     healthcheck:
       test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
       interval: 10s
@@ -136,6 +105,9 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: auth.airavata.host
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
     volumes:
       - ./conf/keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json:ro
       - ./conf/keycloak/themes/airavata:/opt/keycloak/themes/airavata:ro
@@ -150,6 +122,8 @@ services:
       - --metrics-enabled=true
       - --log-level=INFO
       - --spi-theme-default=airavata
+    networks:
+      - airavata-devstack
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
       interval: 10s
@@ -158,10 +132,11 @@ services:
       start_period: 60s
     labels:
       - traefik.enable=true
-      - traefik.http.routers.auth.rule=Host(`auth.airavata.localhost`)
-      - traefik.http.routers.auth.entrypoints=web,websecure
-      - traefik.http.routers.auth.tls=true
-      - traefik.http.services.auth.loadbalancer.server.port=18080
+      - traefik.http.routers.airavata-auth.rule=Host(`auth.airavata.host`)
+      - traefik.http.routers.airavata-auth.entrypoints=web,websecure
+      - traefik.http.routers.airavata-auth.tls=true
+      - traefik.http.services.airavata-auth.loadbalancer.server.port=18080
+      - traefik.docker.network=airavata-devstack
 
   sftp:
     image: atmoz/sftp:latest
@@ -172,6 +147,8 @@ services:
       - ./conf/sftp/chown-storage.sh:/etc/sftp.d/chown-storage.sh:ro
       - sftp_data:/home/airavata/storage
     command: "airavata::1000"
+    networks:
+      - airavata-devstack
     healthcheck:
       test: ["CMD-SHELL", "cat /proc/1/cmdline | tr '\\0' ' ' | grep -q sshd || exit 1"]
       interval: 10s
@@ -179,12 +156,9 @@ services:
       retries: 5
       start_period: 10s
 
-  # --- Airavata server (built on host -> image in DinD -> pulled from registry) ---
+  # --- Airavata server (image built by Tilt's docker_build; no build: block here) ---
   airavata-server:
-    image: localhost:5000/airavata-server:dev
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: airavata-server:dev
     container_name: airavata-server
     restart: unless-stopped
     # Connection settings are read by Airavata's ApplicationSettings (resolution order:
@@ -193,7 +167,7 @@ services:
     # system properties via JAVA_TOOL_OPTIONS (auto-read by the JVM, honored by both).
     environment:
       JAVA_TOOL_OPTIONS: >-
-        -Dspring.datasource.url=jdbc:mariadb://db:3306/airavata
+        -Dspring.datasource.url=jdbc:mariadb://db.airavata.host:3306/airavata
         -Dkafka.broker.url=kafka:9092
         -Drabbitmq.broker.url=amqp://airavata:airavata@rabbitmq:5672
         -Dspring.rabbitmq.host=rabbitmq
@@ -201,28 +175,13 @@ services:
         -Dspring.rabbitmq.username=airavata
         -Dspring.rabbitmq.password=airavata
         -Dzookeeper.server.connection=zookeeper:2181
-        -Dairavata.security.openid-url=https://auth.airavata.localhost/realms/default
-        -Diam.server.url=https://auth.airavata.localhost
-        -Djavax.net.ssl.trustStore=/tmp/airavata-truststore.p12
-        -Djavax.net.ssl.trustStorePassword=changeit
-    # The Keycloak issuer is now https (TLS terminated at Traefik). Trust the mkcert dev
-    # CA by importing it into a writable copy of the JVM truststore before launching, so
-    # the server can fetch JWKS over https. The Dockerfile's JAVA_HOME is unreliable, so
-    # detect the real java home from `command -v java`. `$$` escapes compose substitution.
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - >-
-        JH=$$(dirname $$(dirname $$(readlink -f $$(command -v java))));
-        cp "$$JH/lib/security/cacerts" /tmp/airavata-truststore.p12;
-        keytool -importcert -noprompt -alias airavata-dev-ca -file /certs/rootCA.pem
-        -keystore /tmp/airavata-truststore.p12 -storepass changeit
-        || echo "WARN: mkcert CA import failed; https to keycloak may not validate";
-        exec java -jar airavata-server.jar
+        -Dairavata.security.openid-url=https://auth.airavata.host/realms/default
+        -Diam.server.url=https://auth.airavata.host
     volumes:
-      - ./conf/traefik/certs/rootCA.pem:/certs/rootCA.pem:ro
+      - ${HOME}/.airavata-devstack/certs/rootCA.pem:/certs/rootCA.pem:ro
       - ./conf:/opt/airavata/conf:ro   # SSH key, credential keystore, TLS read from conf/
-    ports:
-      - "9090:9090"
+    networks:
+      - airavata-devstack
     depends_on:
       db: { condition: service_healthy }
       rabbitmq: { condition: service_healthy }
@@ -231,11 +190,12 @@ services:
       keycloak: { condition: service_healthy }
     labels:
       - traefik.enable=true
-      - traefik.http.routers.api.rule=Host(`api.airavata.localhost`)
-      - traefik.http.routers.api.entrypoints=web,websecure
-      - traefik.http.routers.api.tls=true
-      - traefik.http.services.api.loadbalancer.server.port=9090
-      - traefik.http.services.api.loadbalancer.server.scheme=h2c
+      - traefik.http.routers.airavata-api.rule=Host(`api.airavata.host`)
+      - traefik.http.routers.airavata-api.entrypoints=web,websecure
+      - traefik.http.routers.airavata-api.tls=true
+      - traefik.http.services.airavata-api.loadbalancer.server.port=9090
+      - traefik.http.services.airavata-api.loadbalancer.server.scheme=h2c
+      - traefik.docker.network=airavata-devstack
     # Spring Actuator is bridged onto Armeria (armeria-spring-boot3-actuator-autoconfigure),
     # so /actuator/health reflects DB + messaging health (200 UP only when db, rabbitmq,
     # kafka, and zookeeper are all reachable; 503 otherwise).
@@ -253,17 +213,18 @@ services:
     image: adminer:4
     container_name: airavata-adminer
     restart: unless-stopped
-    ports:
-      - "18088:8080"
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - airavata-devstack
     labels:
       - traefik.enable=true
-      - traefik.http.routers.adminer.rule=Host(`adminer.airavata.localhost`)
-      - traefik.http.routers.adminer.entrypoints=web,websecure
-      - traefik.http.routers.adminer.tls=true
-      - traefik.http.services.adminer.loadbalancer.server.port=8080
+      - traefik.http.routers.airavata-adminer.rule=Host(`adminer.airavata.host`)
+      - traefik.http.routers.airavata-adminer.entrypoints=web,websecure
+      - traefik.http.routers.airavata-adminer.tls=true
+      - traefik.http.services.airavata-adminer.loadbalancer.server.port=8080
+      - traefik.docker.network=airavata-devstack
 
 volumes:
   db_data:

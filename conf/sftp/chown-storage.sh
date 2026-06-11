@@ -4,4 +4,6 @@
 # is created root-owned by Docker, so the chrooted "airavata" user (uid 1000)
 # cannot create directories or write files there. Chown it on every startup so
 # the storage-service's SFTP adaptor can upload.
-chown -R airavata:airavata /home/airavata/storage
+# Use the user's login group (`airavata:`) rather than a hard-coded `airavata` group —
+# atmoz/sftp:latest no longer always creates a same-named group, which fails the chown.
+chown -R airavata: /home/airavata/storage

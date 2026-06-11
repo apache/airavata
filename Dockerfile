@@ -47,5 +47,17 @@ EXPOSE 9097
 RUN chown -R airavata:airavata /opt/airavata
 USER airavata
 
-ENTRYPOINT ["java"]
-CMD ["-jar", "airavata-server.jar"]
+# Import the devstack mkcert CA into a writable truststore copy at container start.
+# The CA file is mounted at /certs/rootCA.pem (see compose.yml). The import is
+# idempotent: skip if the alias mkcert-airavata already exists.
+ENTRYPOINT ["/bin/sh", "-c", "\
+  JH=$(dirname $(dirname $(readlink -f $(command -v java)))); \
+  cp \"$JH/lib/security/cacerts\" /tmp/airavata-truststore.p12; \
+  keytool -list -alias mkcert-airavata -keystore /tmp/airavata-truststore.p12 -storepass changeit >/dev/null 2>&1 \
+    || keytool -importcert -noprompt -alias mkcert-airavata -file /certs/rootCA.pem \
+       -keystore /tmp/airavata-truststore.p12 -storepass changeit \
+    || echo 'WARN: mkcert CA import failed; https to Keycloak may not validate'; \
+  exec java $JAVA_OPTS -Djavax.net.ssl.trustStore=/tmp/airavata-truststore.p12 \
+       -Djavax.net.ssl.trustStorePassword=changeit \
+       -jar airavata-server.jar\
+"]
