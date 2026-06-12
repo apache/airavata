@@ -31,8 +31,12 @@ import java.sql.Timestamp;
 public class ExecStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    // STATUS_ID is always assigned by the repositories (ExpCatalogUtils.getID("PROCESS_STATE"/
+    // "TASK_STATE"/"JOB_STATE")), so it is a plain assigned @Id. A @GeneratedValue here made
+    // Hibernate treat the assigned-id row as detached on merge and issue a 0-row UPDATE,
+    // throwing StaleObjectStateException ("unsaved-value mapping was incorrect") when a process
+    // was first persisted.
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "STATUS_ID")
     private String statusId;
 
@@ -48,8 +52,9 @@ public class ExecStatusEntity implements Serializable {
     @Column(name = "TIME_OF_STATE_CHANGE")
     private Timestamp timeOfStateChange;
 
-    @Lob
-    @Column(name = "REASON")
+    // Explicit LONGTEXT: Hibernate's @Lob String maps to tinytext on MariaDB and reverts on
+    // ddl-auto restart, truncating failure reasons (stack-trace-ish messages overflow 255 chars).
+    @Column(name = "REASON", columnDefinition = "LONGTEXT")
     private String reason;
 
     public ExecStatusEntity() {}

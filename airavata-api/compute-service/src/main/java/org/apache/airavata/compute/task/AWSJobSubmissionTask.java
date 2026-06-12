@@ -38,7 +38,7 @@ import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.util.AiravataUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -57,7 +57,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
     private static final long MAX_DELAY_SECONDS = 20;
 
     @Override
-    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         LOGGER.info("Starting AWS Job Submission Task for process {}", getProcessId());
 
         try {
@@ -281,7 +281,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
         }
     }
 
-    private TaskResult handleJobSubmissionFailure(GroovyMapData mapData, String reason) throws Exception {
+    private DbTaskResult handleJobSubmissionFailure(GroovyMapData mapData, String reason) throws Exception {
         LOGGER.error(reason);
         JobStatus jobStatus = JobStatus.newBuilder()
                 .setJobState(JobState.FAILED)

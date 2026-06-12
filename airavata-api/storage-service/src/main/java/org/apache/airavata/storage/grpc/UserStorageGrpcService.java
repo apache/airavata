@@ -36,7 +36,6 @@ import org.apache.airavata.interfaces.GatewayStoragePreferenceProvider;
 import org.apache.airavata.interfaces.StorageProvider;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
@@ -136,8 +135,7 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         if (resolvedId == null || resolvedId.isEmpty()) {
             throw new IllegalStateException("No storage resource configured for gateway " + ctx.getGatewayId());
         }
-        return adaptorSupport.fetchStorageAdaptor(
-                ctx.getGatewayId(), resolvedId, DataMovementProtocol.SCP, credentialToken, loginUser);
+        return adaptorSupport.fetchStorageAdaptor(ctx.getGatewayId(), resolvedId, credentialToken, loginUser);
     }
 
     /**
@@ -146,18 +144,30 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
      */
     private String resolvePath(String path, String storageResourceId) throws Exception {
         if (path == null || path.isEmpty()) {
-            path = "/";
+            path = "~";
         }
-        if (path.startsWith("~/") || path.equals("~")) {
-            StoragePreference pref = resolveStoragePreference(storageResourceId);
-            String root = (pref != null && !pref.getFileSystemRootLocation().isEmpty())
-                    ? pref.getFileSystemRootLocation()
-                    : "/";
-            if (!root.endsWith("/")) root += "/";
-            String suffix = path.length() > 2 ? path.substring(2) : "";
-            path = root + suffix;
+        // Absolute paths are honored as-is. The home shortcut (~) and bare relative
+        // paths both resolve against the storage resource's filesystem root: the SFTP
+        // session is chrooted and its starting directory (the chroot root) is not
+        // writable, so a bare "project/experiment" must be anchored under the root
+        // (e.g. /storage) rather than left to resolve against the chroot root.
+        if (path.startsWith("/")) {
+            return path;
         }
-        return path;
+        StoragePreference pref = resolveStoragePreference(storageResourceId);
+        String root = (pref != null && !pref.getFileSystemRootLocation().isEmpty())
+                ? pref.getFileSystemRootLocation()
+                : "/";
+        if (!root.endsWith("/")) root += "/";
+        String suffix;
+        if (path.startsWith("~/")) {
+            suffix = path.substring(2);
+        } else if (path.equals("~")) {
+            suffix = "";
+        } else {
+            suffix = path;
+        }
+        return root + suffix;
     }
 
     @Override
@@ -232,8 +242,12 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             try {
                 FileMetadata metadata = adaptor.getFileMetadata(path);
                 exists = metadata.isDirectory();
-            } catch (Exception ignored) {
-                // Path does not exist or is not accessible
+            } catch (Exception e) {
+                // getFileMetadata collapses not-found AND permission/IO errors into a generic
+                // AgentException; log the cause so genuine storage/permission failures stay
+                // traceable instead of masquerading as "directory not found".
+                logger.debug("dirExists: getFileMetadata failed for {} (treating as not-found)", path, e);
+                exists = false;
             }
             observer.onNext(DirExistsResponse.newBuilder().setExists(exists).build());
             observer.onCompleted();
@@ -402,14 +416,18 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
                 return;
             }
 
-            // Delegate to the existing listDir logic
+            // Anchor the (typically bare-relative) experiment data dir under the storage
+            // resource's filesystem root, matching DataStagingTask.buildDestinationFilePath,
+            // so the listing reads the same chroot-anchored location the data was staged to
+            // (an unanchored relative path resolves against the non-writable SFTP chroot root).
             StorageResourceAdaptor adaptor = getStorageAdaptor(storageResourceId);
-            List<String> entries = adaptor.listDirectory(experimentDataDir);
+            String resolvedDataDir = resolvePath(experimentDataDir, storageResourceId);
+            List<String> entries = adaptor.listDirectory(resolvedDataDir);
             ListDirResponse.Builder responseBuilder = ListDirResponse.newBuilder();
 
             for (String entry : entries) {
                 String fullPath =
-                        experimentDataDir.endsWith("/") ? experimentDataDir + entry : experimentDataDir + "/" + entry;
+                        resolvedDataDir.endsWith("/") ? resolvedDataDir + entry : resolvedDataDir + "/" + entry;
                 FileMetadata meta = adaptor.getFileMetadata(fullPath);
                 FileMetadataResponse fileMeta = toFileMetadataResponse(
                         meta, fullPath, resolveDataProductUri(meta, fullPath, storageResourceId));

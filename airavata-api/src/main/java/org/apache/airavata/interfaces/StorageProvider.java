@@ -22,7 +22,6 @@ package org.apache.airavata.interfaces;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 
@@ -115,24 +114,6 @@ public interface StorageProvider {
      * @throws Exception if a data access error occurs
      */
     void removeStorageResource(String storageResourceId) throws Exception;
-
-    /**
-     * Add a data movement interface to a storage resource.
-     *
-     * @param dataMovementInterface the data movement interface
-     * @return the data movement interface id
-     * @throws Exception if a data access error occurs
-     */
-    String addDataMovementInterface(DataMovementInterface dataMovementInterface) throws Exception;
-
-    /**
-     * Remove a data movement interface from a storage resource.
-     *
-     * @param storageResourceId the storage resource id
-     * @param dataMovementInterfaceId the data movement interface id
-     * @throws Exception if a data access error occurs
-     */
-    void removeDataMovementInterface(String storageResourceId, String dataMovementInterfaceId) throws Exception;
 
     // --- Data product operations ---
 

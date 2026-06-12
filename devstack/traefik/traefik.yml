@@ -1,0 +1,18 @@
+# Shared Traefik static config (staged to ~/.airavata-devstack/traefik/traefik.yml).
+# Entrypoints listen on ALL container interfaces (:80/:443); the host-side
+# 127.0.0.1 restriction lives in compose's `ports:` mapping, not here.
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+    transport:
+      respondingTimeouts:
+        readTimeout: 0      # keep long-lived gRPC (agent bidi) streams alive — spec R8
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+  docker:
+    endpoint: "tcp://airavata-devstack-proxy:2375"
+    exposedByDefault: false

@@ -22,9 +22,6 @@ package org.apache.airavata.model.appcatalog.computeresource;
 option java_package = "org.apache.airavata.model.appcatalog.computeresource.proto";
 option java_multiple_files = true;
 
-import "org/apache/airavata/model/parallelism/parallelism.proto";
-import "org/apache/airavata/model/data/movement/data_movement.proto";
-
 // Enumeration of local resource job manager types supported by Airavata.
 //
 // FORK: Forking of commands without any job manager.
@@ -114,118 +111,6 @@ message BatchQueue {
   bool is_default_queue = 13;
 }
 
-// Enumeration of Airavata supported Job Submission Mechanisms for HPC clusters.
-//
-// SSH: Execute remote job submission commands via secure shell protocol.
-// GLOBUS: Execute remote jobs via Globus GRAM service.
-// UNICORE: Execute remote jobs via Unicore services.
-enum JobSubmissionProtocol {
-  JOB_SUBMISSION_PROTOCOL_UNKNOWN = 0;
-  LOCAL = 1;
-  SSH = 2;
-  GLOBUS = 3;
-  UNICORE = 4;
-  JSP_CLOUD = 5;
-  SSH_FORK = 6;
-  LOCAL_FORK = 7;
-}
-
-// Monitoring modes.
-//
-// POLL_JOB_MANAGER: GFac needs to pull job status changes.
-// XSEDE_AMQP_SUBSCRIBE: Server will publish job status changes to AMQP server.
-enum MonitorMode {
-  MONITOR_MODE_UNKNOWN = 0;
-  POLL_JOB_MANAGER = 1;
-  CLOUD_JOB_MONITOR = 2;
-  JOB_EMAIL_NOTIFICATION_MONITOR = 3;
-  XSEDE_AMQP_SUBSCRIBE = 4;
-  MONITOR_FORK = 5;
-  MONITOR_LOCAL = 6;
-}
-
-enum DMType {
-  DM_TYPE_UNKNOWN = 0;
-  COMPUTE_RESOURCE = 1;
-  STORAGE_RESOURCE = 2;
-}
-
-// Locally Fork Jobs as OS processes.
-//
-// job_submission_interface_id: Airavata Internal Unique ID.
-// resource_job_manager: Resource job manager configuration.
-// security_protocol: Security protocol.
-message LOCALSubmission {
-  string job_submission_interface_id = 1;
-  ResourceJobManager resource_job_manager = 2;
-  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 3;
-}
-
-// Authenticate using Secured Shell.
-//
-// job_submission_interface_id: Airavata Internal Unique ID.
-// security_protocol: Security protocol.
-// resource_job_manager: Resource job manager configuration.
-// alternative_ssh_host_name: If the login to ssh is different than the hostname.
-// ssh_port: If a non-default port needs to be used.
-// monitor_mode: Job monitoring mode.
-// batch_queue_email_senders: Full email addresses for batch queue monitoring.
-message SSHJobSubmission {
-  string job_submission_interface_id = 1;
-  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
-  ResourceJobManager resource_job_manager = 3;
-  string alternative_ssh_host_name = 4;
-  int32 ssh_port = 5;
-  MonitorMode monitor_mode = 6;
-  repeated string batch_queue_email_senders = 7;
-}
-
-message GlobusJobSubmission {
-  string job_submission_interface_id = 1;
-  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
-  repeated string globus_gate_keeper_end_point = 3;
-}
-
-// Unicore Job Submission.
-//
-// unicore_end_point_url: unicoreGateway End Point.
-// security_protocol: The authenticationMode defines the way certificate is fetched.
-message UnicoreJobSubmission {
-  string job_submission_interface_id = 1;
-  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
-  string unicore_end_point_url = 3;
-}
-
-// Cloud provider name.
-enum ProviderName {
-  PROVIDER_NAME_UNKNOWN = 0;
-  EC2 = 1;
-  AWSEC2 = 2;
-  RACKSPACE = 3;
-}
-
-// Cloud Job Submission.
-message CloudJobSubmission {
-  string job_submission_interface_id = 1;
-  org.apache.airavata.model.data.movement.SecurityProtocol security_protocol = 2;
-  string node_id = 3;
-  string executable_type = 4;
-  ProviderName provider_name = 5;
-  string user_account_name = 6;
-}
-
-// Job Submission Interfaces.
-//
-// job_submission_interface_id: The Job Submission Interface has to be previously
-//   registered and referenced here.
-// priority_order: For resources with multiple interfaces, the priority order
-//   should be selected. Lower the numerical number, higher the priority.
-message JobSubmissionInterface {
-  string job_submission_interface_id = 1;
-  JobSubmissionProtocol job_submission_protocol = 2;
-  int32 priority_order = 3;
-}
-
 // Computational Resource Description.
 //
 // compute_resource_id: Airavata Internal Unique Identifier to distinguish
@@ -234,8 +119,9 @@ message JobSubmissionInterface {
 // host_aliases: Aliases if any.
 // ip_addresses: IP Addresses of the Resource.
 // resource_description: A user friendly description of the resource.
-// job_submission_interfaces: All available mechanisms to interact with the resource.
 // file_systems: Map of file systems type and the path.
+// ssh_port: SSH port for remote job-submission commands on the host.
+// resource_job_manager: Resource job manager configuration (SLURM provisioning).
 message ComputeResourceDescription {
   string compute_resource_id = 1;
   string host_name = 2;
@@ -245,7 +131,7 @@ message ComputeResourceDescription {
   bool enabled = 6;
   repeated BatchQueue batch_queues = 7;
   map<int32, string> file_systems = 8;
-  repeated JobSubmissionInterface job_submission_interfaces = 9;
+  reserved 9;  // was job_submission_interfaces, removed — transport is now always SSH
   reserved 10; // was data_movement_interfaces, removed — data movement is now storage-only
   int32 max_memory_per_node = 11;
   bool gateway_usage_reporting = 12;
@@ -255,4 +141,6 @@ message ComputeResourceDescription {
   int32 default_node_count = 16;
   int32 default_cpu_count = 17;
   int32 default_walltime = 18;
+  int32 ssh_port = 19;
+  ResourceJobManager resource_job_manager = 20;
 }

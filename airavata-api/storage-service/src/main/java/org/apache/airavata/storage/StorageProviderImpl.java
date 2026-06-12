@@ -25,7 +25,6 @@ import org.apache.airavata.interfaces.DataProductInterface;
 import org.apache.airavata.interfaces.DataReplicaLocationInterface;
 import org.apache.airavata.interfaces.StorageProvider;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataProductType;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
@@ -91,16 +90,6 @@ public class StorageProviderImpl implements StorageProvider {
     @Override
     public void removeStorageResource(String storageResourceId) throws Exception {
         storageResourceRepository.removeStorageResource(storageResourceId);
-    }
-
-    @Override
-    public String addDataMovementInterface(DataMovementInterface dataMovementInterface) throws Exception {
-        return storageResourceRepository.addDataMovementInterface(dataMovementInterface);
-    }
-
-    @Override
-    public void removeDataMovementInterface(String storageResourceId, String dataMovementInterfaceId) throws Exception {
-        storageResourceRepository.removeDataMovementInterface(storageResourceId, dataMovementInterfaceId);
     }
 
     @Override

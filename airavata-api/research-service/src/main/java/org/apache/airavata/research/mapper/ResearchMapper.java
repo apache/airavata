@@ -52,8 +52,10 @@ import org.apache.airavata.research.model.ApplicationInterfaceEntity;
 import org.apache.airavata.research.model.ApplicationModuleEntity;
 import org.apache.airavata.research.model.NotificationEntity;
 import org.apache.airavata.research.model.ProjectEntity;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -69,6 +71,70 @@ public interface ResearchMapper extends CommonMapperConversions {
     @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.getEmailAddressesList()))")
     ExperimentEntity experimentToEntity(ExperimentModel model);
 
+    // MapStruct does not match protobuf's repeated accessors (getExperimentInputsList(), etc.)
+    // to the entity's list properties, so it silently drops these child collections. Map them here.
+    @AfterMapping
+    default void afterExperimentToModel(ExperimentEntity entity, @MappingTarget ExperimentModel.Builder builder) {
+        if (entity.getExperimentInputs() != null) {
+            for (ResearchIoParamEntity input : entity.getExperimentInputs()) {
+                builder.addExperimentInputs(experimentInputToModel(input));
+            }
+        }
+        if (entity.getExperimentOutputs() != null) {
+            for (ResearchIoParamEntity output : entity.getExperimentOutputs()) {
+                builder.addExperimentOutputs(experimentOutputToModel(output));
+            }
+        }
+        if (entity.getExperimentStatus() != null) {
+            for (ExperimentStatusEntity status : entity.getExperimentStatus()) {
+                builder.addExperimentStatus(experimentStatusToModel(status));
+            }
+        }
+        if (entity.getErrors() != null) {
+            for (ExperimentErrorEntity error : entity.getErrors()) {
+                builder.addErrors(experimentErrorToModel(error));
+            }
+        }
+    }
+
+    @AfterMapping
+    default void afterExperimentToEntity(ExperimentModel model, @MappingTarget ExperimentEntity entity) {
+        if (!model.getExperimentInputsList().isEmpty()) {
+            List<ResearchIoParamEntity> inputs = new ArrayList<>();
+            for (InputDataObjectType input : model.getExperimentInputsList()) {
+                inputs.add(experimentInputToEntity(input));
+            }
+            entity.setExperimentInputs(inputs);
+        }
+        if (!model.getExperimentOutputsList().isEmpty()) {
+            List<ResearchIoParamEntity> outputs = new ArrayList<>();
+            for (OutputDataObjectType output : model.getExperimentOutputsList()) {
+                outputs.add(experimentOutputToEntity(output));
+            }
+            entity.setExperimentOutputs(outputs);
+        }
+        if (!model.getExperimentStatusList().isEmpty()) {
+            List<ExperimentStatusEntity> statuses = new ArrayList<>();
+            for (ExperimentStatus status : model.getExperimentStatusList()) {
+                ExperimentStatusEntity statusEntity = experimentStatusToEntity(status);
+                // Set the @ManyToOne back-reference so the child persists with its parent.
+                statusEntity.setExperiment(entity);
+                statuses.add(statusEntity);
+            }
+            entity.setExperimentStatus(statuses);
+        }
+        if (!model.getErrorsList().isEmpty()) {
+            List<ExperimentErrorEntity> errors = new ArrayList<>();
+            for (ErrorModel error : model.getErrorsList()) {
+                ExperimentErrorEntity errorEntity = experimentErrorToEntity(error);
+                // Set the @ManyToOne back-reference so the child persists with its parent.
+                errorEntity.setExperiment(entity);
+                errors.add(errorEntity);
+            }
+            entity.setErrors(errors);
+        }
+    }
+
     // --- ExperimentSummary ---
     ExperimentSummaryModel experimentSummaryToModel(ExperimentSummaryEntity entity);
 
@@ -83,6 +149,21 @@ public interface ResearchMapper extends CommonMapperConversions {
     ErrorModel experimentErrorToModel(ExperimentErrorEntity entity);
 
     ExperimentErrorEntity experimentErrorToEntity(ErrorModel model);
+
+    // The proto repeated root_cause_error_id_list is stored as a CSV String on the entity, so
+    // MapStruct cannot map it automatically. Bridge it with the shared CSV converters.
+    @AfterMapping
+    default void afterExperimentErrorToModel(ExperimentErrorEntity entity, @MappingTarget ErrorModel.Builder builder) {
+        List<String> rootCauses = csvToList(entity.getRootCauseErrorIdList());
+        if (rootCauses != null) {
+            builder.addAllRootCauseErrorIdList(rootCauses);
+        }
+    }
+
+    @AfterMapping
+    default void afterExperimentErrorToEntity(ErrorModel model, @MappingTarget ExperimentErrorEntity entity) {
+        entity.setRootCauseErrorIdList(listToCsv(model.getRootCauseErrorIdListList()));
+    }
 
     // --- ExperimentInput ---
     InputDataObjectType experimentInputToModel(ResearchIoParamEntity entity);
@@ -207,6 +288,48 @@ public interface ResearchMapper extends CommonMapperConversions {
     ApplicationInterfaceDescription appInterfaceToModel(ApplicationInterfaceEntity entity);
 
     ApplicationInterfaceEntity appInterfaceToEntity(ApplicationInterfaceDescription model);
+
+    // MapStruct does not match protobuf's repeated accessors to the entity's list properties,
+    // so it silently drops application_modules (plain strings) and the input/output collections.
+    @AfterMapping
+    default void afterAppInterfaceToModel(
+            ApplicationInterfaceEntity entity, @MappingTarget ApplicationInterfaceDescription.Builder builder) {
+        if (entity.getApplicationModules() != null) {
+            builder.addAllApplicationModules(entity.getApplicationModules());
+        }
+        if (entity.getApplicationInputs() != null) {
+            for (AppIoParamEntity input : entity.getApplicationInputs()) {
+                builder.addApplicationInputs(appInputToModel(input));
+            }
+        }
+        if (entity.getApplicationOutputs() != null) {
+            for (AppIoParamEntity output : entity.getApplicationOutputs()) {
+                builder.addApplicationOutputs(appOutputToModel(output));
+            }
+        }
+    }
+
+    @AfterMapping
+    default void afterAppInterfaceToEntity(
+            ApplicationInterfaceDescription model, @MappingTarget ApplicationInterfaceEntity entity) {
+        if (!model.getApplicationModulesList().isEmpty()) {
+            entity.setApplicationModules(new ArrayList<>(model.getApplicationModulesList()));
+        }
+        if (!model.getApplicationInputsList().isEmpty()) {
+            List<AppIoParamEntity> inputs = new ArrayList<>();
+            for (InputDataObjectType input : model.getApplicationInputsList()) {
+                inputs.add(appInputToEntity(input));
+            }
+            entity.setApplicationInputs(inputs);
+        }
+        if (!model.getApplicationOutputsList().isEmpty()) {
+            List<AppIoParamEntity> outputs = new ArrayList<>();
+            for (OutputDataObjectType output : model.getApplicationOutputsList()) {
+                outputs.add(appOutputToEntity(output));
+            }
+            entity.setApplicationOutputs(outputs);
+        }
+    }
 
     // --- ApplicationModule ---
     ApplicationModule appModuleToModel(ApplicationModuleEntity entity);

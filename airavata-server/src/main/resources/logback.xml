@@ -26,8 +26,6 @@
     </encoder>
   </appender>
 
-  <logger name="org.apache.helix" level="WARN" />
-  <logger name="org.apache.zookeeper" level="ERROR" />
   <logger name="org.apache.airavata" level="INFO" />
   <logger name="org.hibernate" level="ERROR" />
   <!-- Kafka client config dumps are very verbose; keep them out of normal (INFO) logs. -->

@@ -26,7 +26,9 @@ import org.apache.airavata.mapper.CommonMapperConversions;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.apache.airavata.model.workspace.proto.Gateway;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -39,6 +41,28 @@ public interface ProfileMapper extends CommonMapperConversions {
     UserProfile userProfileToModel(UserProfileEntity entity);
 
     UserProfileEntity userProfileToEntity(UserProfile model);
+
+    // MapStruct does not match protobuf's repeated accessors (getEmailsList()/addAllEmails())
+    // to the entity's `emails` property, so it silently drops every repeated-string field on
+    // UserProfile in both directions. Map them explicitly here (List<String> -> repeated string
+    // is an identity mapping, so no element converter is needed).
+    @AfterMapping
+    default void userProfileRepeatedToModel(UserProfileEntity entity, @MappingTarget UserProfile.Builder builder) {
+        if (entity.getEmails() != null) builder.addAllEmails(entity.getEmails());
+        if (entity.getPhones() != null) builder.addAllPhones(entity.getPhones());
+        if (entity.getNationality() != null) builder.addAllNationality(entity.getNationality());
+        if (entity.getLabeledURI() != null) builder.addAllLabeledUri(entity.getLabeledURI());
+    }
+
+    @AfterMapping
+    default void userProfileRepeatedToEntity(UserProfile model, @MappingTarget UserProfileEntity entity) {
+        if (!model.getEmailsList().isEmpty()) entity.setEmails(new java.util.ArrayList<>(model.getEmailsList()));
+        if (!model.getPhonesList().isEmpty()) entity.setPhones(new java.util.ArrayList<>(model.getPhonesList()));
+        if (!model.getNationalityList().isEmpty())
+            entity.setNationality(new java.util.ArrayList<>(model.getNationalityList()));
+        if (!model.getLabeledUriList().isEmpty())
+            entity.setLabeledURI(new java.util.ArrayList<>(model.getLabeledUriList()));
+    }
 
     // --- Gateway (tenant profile) ---
     Gateway gatewayToModel(GatewayEntity entity);

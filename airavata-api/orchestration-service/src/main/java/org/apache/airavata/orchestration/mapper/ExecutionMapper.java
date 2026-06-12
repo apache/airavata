@@ -94,6 +94,16 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (entity.getProcessOutputs() != null) {
             entity.getProcessOutputs().forEach(o -> b.addProcessOutputs(processOutputToModel(o)));
         }
+        if (entity.getEmailAddresses() != null) {
+            java.util.List<String> emails = csvToList(entity.getEmailAddresses());
+            if (emails != null) b.addAllEmailAddresses(emails);
+        }
+        if (entity.getTasks() != null) {
+            entity.getTasks().forEach(t -> b.addTasks(taskToModel(t)));
+        }
+        if (entity.getProcessWorkflows() != null) {
+            entity.getProcessWorkflows().forEach(w -> b.addProcessWorkflows(processWorkflowToModel(w)));
+        }
         return b.build();
     }
 
@@ -118,6 +128,15 @@ public interface ExecutionMapper extends CommonMapperConversions {
             model.getProcessOutputsList()
                     .forEach(o -> entity.getProcessOutputs().add(processOutputToEntity(o)));
         }
+        if (!model.getTasksList().isEmpty()) {
+            entity.setTasks(new java.util.ArrayList<>());
+            model.getTasksList().forEach(t -> entity.getTasks().add(taskToEntity(t)));
+        }
+        if (!model.getProcessWorkflowsList().isEmpty()) {
+            entity.setProcessWorkflows(new java.util.ArrayList<>());
+            model.getProcessWorkflowsList()
+                    .forEach(w -> entity.getProcessWorkflows().add(processWorkflowToEntity(w)));
+        }
         return entity;
     }
 
@@ -130,6 +149,9 @@ public interface ExecutionMapper extends CommonMapperConversions {
         }
         if (entity.getTaskErrors() != null) {
             entity.getTaskErrors().forEach(e -> b.addTaskErrors(taskErrorToModel(e)));
+        }
+        if (entity.getJobs() != null) {
+            entity.getJobs().forEach(j -> b.addJobs(jobToModel(j)));
         }
         return b.build();
     }
@@ -144,6 +166,10 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (!model.getTaskErrorsList().isEmpty()) {
             entity.setTaskErrors(new java.util.ArrayList<>());
             model.getTaskErrorsList().forEach(e -> entity.getTaskErrors().add(taskErrorToEntity(e)));
+        }
+        if (!model.getJobsList().isEmpty()) {
+            entity.setJobs(new java.util.ArrayList<>());
+            model.getJobsList().forEach(j -> entity.getJobs().add(jobToEntity(j)));
         }
         return entity;
     }

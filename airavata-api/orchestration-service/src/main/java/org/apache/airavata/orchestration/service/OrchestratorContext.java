@@ -19,23 +19,12 @@
 */
 package org.apache.airavata.orchestration.service;
 
-import org.apache.airavata.messaging.service.Publisher;
-
 /**
  * This is the context object used in orchestrator which
  */
 public class OrchestratorContext {
     private OrchestratorConfiguration orchestratorConfiguration;
-    private Publisher publisher;
     private String gatewayId;
-
-    public Publisher getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
 
     public OrchestratorConfiguration getOrchestratorConfiguration() {
         return orchestratorConfiguration;

@@ -27,10 +27,6 @@ import org.apache.airavata.credential.service.CredentialStoreService;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.proto.SSHCredential;
-import org.apache.airavata.model.data.movement.proto.DMType;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
-import org.apache.airavata.model.data.movement.proto.SecurityProtocol;
 import org.apache.airavata.orchestration.service.RegistryServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,47 +79,22 @@ public class DevStorageInitializer {
             var allNames = registryHandler.getAllStorageResourceNames();
             for (var entry : allNames.entrySet()) {
                 if (STORAGE_HOST.equals(entry.getValue())) {
-                    // Resource exists. Ensure it has an SCP data movement interface —
-                    // a partial prior init can leave it without one, which then fails
-                    // the SFTP adaptor with "No SCP data movement interface".
-                    String existingId = entry.getKey();
-                    boolean hasScp =
-                            registryHandler.getStorageResource(existingId).getDataMovementInterfacesList().stream()
-                                    .anyMatch(i -> i.getDataMovementProtocol() == DataMovementProtocol.SCP);
-                    if (!hasScp) {
-                        SCPDataMovement scpDm = SCPDataMovement.newBuilder()
-                                .setSecurityProtocol(SecurityProtocol.SSH_KEYS)
-                                .setSshPort(22)
-                                .build();
-                        registryHandler.addSCPDataMovementDetails(existingId, DMType.STORAGE_RESOURCE, 0, scpDm);
-                        logger.info(
-                                "Healed dev storage resource {}: added missing SCP data movement interface",
-                                existingId);
-                    } else {
-                        logger.info("Dev storage resource already exists: {} ({})", entry.getValue(), existingId);
-                    }
+                    logger.info("Dev storage resource already exists: {} ({})", entry.getValue(), entry.getKey());
                     return;
                 }
             }
 
-            // 1. Register storage resource
+            // 1. Register storage resource. Transport is always SFTP; the resource carries the SFTP port directly.
             StorageResourceDescription storageResource = StorageResourceDescription.newBuilder()
                     .setHostName(STORAGE_HOST)
                     .setStorageResourceDescription(STORAGE_DESCRIPTION)
                     .setEnabled(true)
+                    .setSftpPort(22)
                     .build();
             String storageResourceId = registryHandler.registerStorageResource(storageResource);
             logger.info("Registered dev storage resource: {} ({})", STORAGE_HOST, storageResourceId);
 
-            // 2. Add SCP data movement interface
-            SCPDataMovement scpDm = SCPDataMovement.newBuilder()
-                    .setSecurityProtocol(SecurityProtocol.SSH_KEYS)
-                    .setSshPort(22)
-                    .build();
-            registryHandler.addSCPDataMovementDetails(storageResourceId, DMType.STORAGE_RESOURCE, 0, scpDm);
-            logger.info("Added SCP data movement interface for storage: {}", storageResourceId);
-
-            // 3. Register SSH credential from Tiltfile-generated keypair
+            // 2. Register SSH credential from Tiltfile-generated keypair
             String privateKey = readKeyFile(privateKeyPath);
             String publicKey = readKeyFile(publicKeyPath);
             if (privateKey == null || publicKey == null) {
@@ -141,7 +112,7 @@ public class DevStorageInitializer {
             String credentialToken = credentialStoreService.addSSHCredential(sshCredential);
             logger.info("Registered SSH credential from {} for dev storage: {}", privateKeyPath, credentialToken);
 
-            // 4. Add gateway storage preference
+            // 3. Add gateway storage preference
             StoragePreference storagePreference = StoragePreference.newBuilder()
                     .setStorageResourceId(storageResourceId)
                     .setLoginUserName(SFTP_LOGIN_USER)

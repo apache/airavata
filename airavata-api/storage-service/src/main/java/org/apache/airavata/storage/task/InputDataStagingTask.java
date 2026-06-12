@@ -32,7 +32,7 @@ import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskOnFailException;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class InputDataStagingTask extends DataStagingTask {
     private static final CountMonitor inputDSTaskCounter = new CountMonitor("input_ds_task_counter");
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting Input Data Staging Task " + getTaskId());
 
         inputDSTaskCounter.inc();

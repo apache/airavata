@@ -31,7 +31,7 @@ import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class JobVerificationTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(JobVerificationTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
             List<JobModel> jobs = getRegistryServiceClient().getJobs("processId", getProcessId());
@@ -56,17 +56,14 @@ public class JobVerificationTask extends AiravataTask {
 
             logger.info("Fetching job manager configuration for process " + getProcessId());
 
-            JobManagerConfiguration jobManagerConfiguration = JobFactoryHelper.getJobManagerConfiguration(
-                    getRegistryServiceClient(),
-                    getTaskContext().getJobSubmissionProtocol(),
-                    getTaskContext().getPreferredJobSubmissionInterface());
+            JobManagerConfiguration jobManagerConfiguration =
+                    JobFactoryHelper.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
 
             AgentAdaptor adaptor = taskHelper
                     .getAdaptorSupport()
                     .fetchAdaptor(
                             getTaskContext().getGatewayId(),
                             getTaskContext().getComputeResourceId(),
-                            getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getComputeResourceCredentialToken(),
                             getTaskContext().getComputeResourceLoginUserName());
 

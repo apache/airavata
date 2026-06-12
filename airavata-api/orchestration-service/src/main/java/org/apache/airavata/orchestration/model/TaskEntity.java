@@ -63,7 +63,10 @@ public class TaskEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "TASK_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "TASK_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("ENTITY_TYPE = 'TASK'")
     @OrderBy("timeOfStateChange ASC")
     private List<ExecStatusEntity> taskStatuses;
@@ -73,7 +76,10 @@ public class TaskEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "TASK_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "TASK_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("ENTITY_TYPE = 'TASK'")
     private List<ExecErrorEntity> taskErrors;
 

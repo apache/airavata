@@ -270,7 +270,7 @@ public interface QueryConstants {
                     + "  es.TIME_OF_STATE_CHANGE <= ALL(SELECT ps1.TIME_OF_STATE_CHANGE FROM EXPERIMENT_STATUS ps1 "
                     + "  WHERE ps1.EXPERIMENT_ID=es.EXPERIMENT_ID AND ps1.STATE='SCHEDULED') AND es.TIME_OF_STATE_CHANGE > now()-interval ?2 minute)abstract_t";
 
-    String FIND_AVG_TIME_HELIX_NATIVE_QUERY =
+    String FIND_AVG_TIME_SUBMISSION_NATIVE_QUERY =
             "SELECT AVG(difference) FROM(SELECT es.TIME_OF_STATE_CHANGE AS esTime1, ps.TIME_OF_STATE_CHANGE as psTime1, "
                     + " TIMESTAMPDIFF(MICROSECOND, es.TIME_OF_STATE_CHANGE, ps.TIME_OF_STATE_CHANGE) AS difference from EXPERIMENT_STATUS es, "
                     + " EXEC_STATUS ps where ps.ENTITY_TYPE='JOB' AND es.EXPERIMENT_ID IN (SELECT EXPERIMENT_ID FROM EXPERIMENT WHERE GATEWAY_ID=?1) "

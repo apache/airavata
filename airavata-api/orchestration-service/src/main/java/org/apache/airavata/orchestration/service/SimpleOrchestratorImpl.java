@@ -32,17 +32,12 @@ import org.apache.airavata.exception.AiravataException;
 import org.apache.airavata.interfaces.RegistryHandler;
 import org.apache.airavata.model.appcatalog.appinterface.proto.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.proto.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ResourceType;
 import org.apache.airavata.model.application.io.proto.DataType;
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.commons.proto.ErrorModel;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 import org.apache.airavata.model.error.proto.LaunchValidationException;
 import org.apache.airavata.model.error.proto.ValidationResults;
 import org.apache.airavata.model.error.proto.ValidatorResult;
@@ -58,7 +53,6 @@ import org.apache.airavata.model.task.proto.JobSubmissionTaskModel;
 import org.apache.airavata.model.task.proto.MonitorTaskModel;
 import org.apache.airavata.model.task.proto.TaskModel;
 import org.apache.airavata.model.task.proto.TaskTypes;
-import org.apache.airavata.orchestration.infrastructure.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestration.infrastructure.JobSubmitter;
 import org.apache.airavata.orchestration.util.ExperimentModelUtil;
 import org.apache.airavata.orchestration.util.OrchestratorConstants;
@@ -71,27 +65,18 @@ import org.slf4j.LoggerFactory;
 
 public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);
+    // Data transport is fixed SFTP; used only as the URI scheme label.
+    private static final String SFTP_SCHEME = "sftp";
     private ExecutorService executor;
 
     // this is going to be null unless the thread count is 0
     private JobSubmitter jobSubmitter = null;
 
     public SimpleOrchestratorImpl() throws OrchestratorException, Exception {
-        try {
-            try {
-                // We are only going to use GFacPassiveJobSubmitter
-                jobSubmitter = new GFACPassiveJobSubmitter();
-                jobSubmitter.initialize(this.orchestratorContext);
-
-            } catch (Exception e) {
-                String error = "Error creating JobSubmitter in non threaded mode ";
-                logger.error(error);
-                throw new OrchestratorException(error, e);
-            }
-        } catch (OrchestratorException e) {
-            logger.error("Error Constructing the Orchestrator");
-            throw e;
-        }
+        // The DB-transactional launch path does not submit jobs through RabbitMQ, so the
+        // GFACPassiveJobSubmitter (which opens a PROCESS_LAUNCH publisher) is no longer built
+        // here. jobSubmitter stays null; launchProcess/cancelExperiment are off the new path.
+        super();
     }
 
     public boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException {
@@ -284,6 +269,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
             if (processModels == null || processModels.isEmpty()) {
                 ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
+                // The deployment is host-specific; resolve it for the process's compute resource
+                // (cloneProcessFromExperiment only carries the application interface).
+                String deploymentId = resolveApplicationDeploymentId(registryClient, processModel);
+                if (deploymentId != null && !deploymentId.isEmpty()) {
+                    processModel = processModel.toBuilder()
+                            .setApplicationDeploymentId(deploymentId)
+                            .build();
+                }
                 String processId = registryClient.addProcess(processModel, experimentId);
                 processModel = processModel.toBuilder().setProcessId(processId).build();
                 processModels = new ArrayList<>();
@@ -293,6 +286,31 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
         }
+    }
+
+    /** Resolve the app deployment for this process's application interface + compute resource. */
+    private String resolveApplicationDeploymentId(RegistryHandler registryClient, ProcessModel processModel) {
+        try {
+            String interfaceId = processModel.getApplicationInterfaceId();
+            String computeHost = processModel.getComputeResourceId();
+            if (interfaceId == null || interfaceId.isEmpty() || computeHost == null || computeHost.isEmpty()) {
+                return "";
+            }
+            var appInterface = registryClient.getApplicationInterface(interfaceId);
+            for (String moduleId : appInterface.getApplicationModulesList()) {
+                for (var dep : registryClient.getApplicationDeployments(moduleId)) {
+                    if (computeHost.equals(dep.getComputeHostId())) {
+                        return dep.getAppDeploymentId();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn(
+                    "Could not resolve application deployment for process {}: {}",
+                    processModel.getProcessId(),
+                    e.getMessage());
+        }
+        return "";
     }
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel) throws OrchestratorException {
@@ -311,24 +329,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             }
 
             // TODO - handle for different resource types
-            JobSubmissionInterface preferredJobSubmissionInterface =
-                    OrchestratorUtils.getPreferredJobSubmissionInterface(processModel, gatewayId);
-            JobSubmissionProtocol preferredJobSubmissionProtocol =
-                    OrchestratorUtils.getPreferredJobSubmissionProtocol(processModel, gatewayId);
             List<String> taskIdList = new ArrayList<>();
-
-            if (preferredJobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
-                // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE
-                // here.
-                taskIdList.addAll(createAndSaveSubmissionTasks(
-                        registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
-            } else {
-                taskIdList.addAll(createAndSaveEnvSetupTask(registryClient, gatewayId, processModel, resourceType));
-                taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId, resourceType));
-                taskIdList.addAll(createAndSaveSubmissionTasks(
-                        registryClient, preferredJobSubmissionInterface, processModel, userGivenWallTime));
-                taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId, resourceType));
-            }
+            taskIdList.addAll(createAndSaveEnvSetupTask(registryClient, gatewayId, processModel, resourceType));
+            taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId, resourceType));
+            taskIdList.addAll(createAndSaveSubmissionTasks(registryClient, processModel, userGivenWallTime));
+            taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId, resourceType));
             // update process scheduling
             registryClient.updateProcess(processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
@@ -374,11 +379,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         String scratchLocation = OrchestratorUtils.getScratchLocation(processModel, gatewayId);
         String workingDir = scratchLocation + File.separator + processModel.getProcessId();
 
-        EnvironmentSetupTaskModel envSetupSubModel = EnvironmentSetupTaskModel.newBuilder()
-                .setProtocol(
-                        OrchestratorUtils.getSecurityProtocol(processModel, gatewayId)) // TODO support for CLOUD (AWS)
-                .setLocation(workingDir)
-                .build();
+        // Transport is always SSH; security protocol is no longer carried on the task model.
+        EnvironmentSetupTaskModel envSetupSubModel =
+                EnvironmentSetupTaskModel.newBuilder().setLocation(workingDir).build();
 
         TaskModel envSetupTask = TaskModel.newBuilder()
                 .setTaskType(TaskTypes.ENV_SETUP)
@@ -403,7 +406,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
             ProcessModel processModel, String gatewayId, ResourceType resourceType) throws AiravataException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
-        List<InputDataObjectType> processInputs = processModel.getProcessInputsList();
+        // proto getXList() is immutable; copy so sortByInputOrder can sort in place
+        List<InputDataObjectType> processInputs = new ArrayList<>(processModel.getProcessInputsList());
 
         sortByInputOrder(processInputs);
         if (!processInputs.isEmpty()) {
@@ -642,47 +646,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    private List<String> createAndSaveSubmissionTasks(
-            RegistryHandler registryClient,
-            JobSubmissionInterface jobSubmissionInterface,
-            ProcessModel processModel,
-            int wallTime)
+    private List<String> createAndSaveSubmissionTasks(RegistryHandler registryClient, ProcessModel processModel, int wallTime)
             throws Exception, OrchestratorException {
 
-        JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
-        MonitorMode monitorMode;
-
-        if (jobSubmissionProtocol == JobSubmissionProtocol.SSH
-                || jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-            SSHJobSubmission sshJobSubmission =
-                    OrchestratorUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
-            monitorMode = sshJobSubmission.getMonitorMode();
-        } else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
-            monitorMode = MonitorMode.MONITOR_FORK;
-        } else if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL) {
-            monitorMode = MonitorMode.MONITOR_LOCAL;
-        } else if (jobSubmissionProtocol == JobSubmissionProtocol.JSP_CLOUD) {
-            monitorMode = MonitorMode.CLOUD_JOB_MONITOR;
-        } else {
-            logger.error(
-                    "expId : {}, processId : {} :- Unsupported Job submission protocol {}.",
-                    processModel.getExperimentId(),
-                    processModel.getProcessId(),
-                    jobSubmissionProtocol.name());
-            throw new OrchestratorException("Unsupported Job Submission Protocol " + jobSubmissionProtocol.name());
-        }
-
+        // Transport is always SSH; monitoring is derived from the provisioning type.
         List<String> submissionTaskIds = new ArrayList<>();
         TaskStatus taskStatus = TaskStatus.newBuilder()
                 .setState(TaskState.TASK_STATE_CREATED)
                 .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
                 .build();
 
-        JobSubmissionTaskModel submissionSubTask = JobSubmissionTaskModel.newBuilder()
-                .setMonitorMode(monitorMode)
-                .setJobSubmissionProtocol(jobSubmissionProtocol)
-                .setWallTime(wallTime)
-                .build();
+        JobSubmissionTaskModel submissionSubTask =
+                JobSubmissionTaskModel.newBuilder().setWallTime(wallTime).build();
 
         long creationTime = System.currentTimeMillis();
         TaskModel taskModel = TaskModel.newBuilder()
@@ -700,31 +675,27 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         taskModel = taskModel.toBuilder().setTaskId(taskId).build();
         submissionTaskIds.add(taskModel.getTaskId());
 
-        // create monitor task for this Email based monitor mode job
-        if (monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR || monitorMode == MonitorMode.CLOUD_JOB_MONITOR) {
+        // create monitor task
+        TaskStatus monitorTaskStatus = TaskStatus.newBuilder()
+                .setState(TaskState.TASK_STATE_CREATED)
+                .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
+                .build();
 
-            TaskStatus monitorTaskStatus = TaskStatus.newBuilder()
-                    .setState(TaskState.TASK_STATE_CREATED)
-                    .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
-                    .build();
+        MonitorTaskModel monitorSubTaskModel = MonitorTaskModel.newBuilder().build();
 
-            MonitorTaskModel monitorSubTaskModel =
-                    MonitorTaskModel.newBuilder().setMonitorMode(monitorMode).build();
+        long monitorCreationTime = System.currentTimeMillis();
+        TaskModel monitorTaskModel = TaskModel.newBuilder()
+                .setParentProcessId(processModel.getProcessId())
+                .setCreationTime(monitorCreationTime)
+                .setLastUpdateTime(monitorCreationTime)
+                .addTaskStatuses(monitorTaskStatus)
+                .setTaskType(TaskTypes.MONITORING)
+                .setSubTaskModel(com.google.protobuf.ByteString.copyFrom(monitorSubTaskModel.toByteArray()))
+                .build();
 
-            long monitorCreationTime = System.currentTimeMillis();
-            TaskModel monitorTaskModel = TaskModel.newBuilder()
-                    .setParentProcessId(processModel.getProcessId())
-                    .setCreationTime(monitorCreationTime)
-                    .setLastUpdateTime(monitorCreationTime)
-                    .addTaskStatuses(monitorTaskStatus)
-                    .setTaskType(TaskTypes.MONITORING)
-                    .setSubTaskModel(com.google.protobuf.ByteString.copyFrom(monitorSubTaskModel.toByteArray()))
-                    .build();
-
-            String mTaskId = registryClient.addTask(monitorTaskModel, processModel.getProcessId());
-            monitorTaskModel = monitorTaskModel.toBuilder().setTaskId(mTaskId).build();
-            submissionTaskIds.add(monitorTaskModel.getTaskId());
-        }
+        String mTaskId = registryClient.addTask(monitorTaskModel, processModel.getProcessId());
+        monitorTaskModel = monitorTaskModel.toBuilder().setTaskId(mTaskId).build();
+        submissionTaskIds.add(monitorTaskModel.getTaskId());
 
         return submissionTaskIds;
     }
@@ -756,8 +727,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
         URI destination;
         try {
-            DataMovementProtocol dataMovementProtocol =
-                    OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
             String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
             StringBuilder destinationPath = new StringBuilder(workingDir);
             String overrideFilename = processInput.getOverrideFilename();
@@ -765,11 +734,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                 destinationPath.append(overrideFilename);
             }
 
+            // Transport is always SFTP; port is resolved off the resource at staging time.
             destination = new URI(
-                    dataMovementProtocol.name(),
+                    SFTP_SCHEME,
                     loginUserName,
                     computeResource.getHostName(),
-                    OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                    -1,
                     destinationPath.toString(),
                     null,
                     null);
@@ -822,34 +792,26 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                     + File.separator
                     + (parentProcess == null ? processModel.getProcessId() : parentProcess.getProcessId())
                     + File.separator;
-            DataMovementProtocol dataMovementProtocol =
-                    OrchestratorUtils.getPreferredDataMovementProtocol(processModel, gatewayId);
 
             DataStagingTaskModel.Builder submodelBuilder = DataStagingTaskModel.newBuilder();
             URI source;
             try {
                 String loginUserName = OrchestratorUtils.getLoginUserName(processModel, gatewayId);
+                // Transport is always SFTP; port is resolved off the resource at staging time.
                 if (processOutput != null) {
                     submodelBuilder.setType(DataStageType.OUPUT).setProcessOutput(processOutput);
                     source = new URI(
-                            dataMovementProtocol.name(),
+                            SFTP_SCHEME,
                             loginUserName,
                             computeResource.getHostName(),
-                            OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
+                            -1,
                             workingDir + processOutput.getValue(),
                             null,
                             null);
                 } else {
                     // archive
                     submodelBuilder.setType(DataStageType.ARCHIVE_OUTPUT);
-                    source = new URI(
-                            dataMovementProtocol.name(),
-                            loginUserName,
-                            computeResource.getHostName(),
-                            OrchestratorUtils.getDataMovementPort(processModel, gatewayId),
-                            workingDir,
-                            null,
-                            null);
+                    source = new URI(SFTP_SCHEME, loginUserName, computeResource.getHostName(), -1, workingDir, null, null);
                 }
 
             } catch (URISyntaxException e) {

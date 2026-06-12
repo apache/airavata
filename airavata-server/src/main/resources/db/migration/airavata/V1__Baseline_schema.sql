@@ -131,20 +131,9 @@ CREATE TABLE IF NOT EXISTS EXPERIMENT (
     PRIMARY KEY (EXPERIMENT_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS EXPERIMENT_SUMMARY (
-    EXPERIMENT_ID        VARCHAR(255) NOT NULL,
-    PROJECT_ID           VARCHAR(255),
-    GATEWAY_ID           VARCHAR(255),
-    CREATION_TIME        TIMESTAMP NULL,
-    USER_NAME            VARCHAR(255),
-    EXPERIMENT_NAME      VARCHAR(255),
-    DESCRIPTION          VARCHAR(255),
-    EXECUTION_ID         VARCHAR(255),
-    STATE                VARCHAR(255),
-    RESOURCE_HOST_ID     VARCHAR(255),
-    TIME_OF_STATE_CHANGE TIMESTAMP NULL,
-    PRIMARY KEY (EXPERIMENT_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- EXPERIMENT_SUMMARY is a read-only VIEW (denormalized experiment + latest status),
+-- defined at the end of this file once EXPERIMENT, EXPERIMENT_STATUS and
+-- USER_CONFIGURATION_DATA exist. ExperimentSummaryEntity maps to it for search.
 
 CREATE TABLE IF NOT EXISTS EXPERIMENT_INPUT (
     EXPERIMENT_ID             VARCHAR(255) NOT NULL,
@@ -1742,6 +1731,35 @@ CREATE TABLE IF NOT EXISTS COMMUNITY_USER (
     COMMUNITY_USER_EMAIL VARCHAR(256),
     PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================================
+-- EXPERIMENT_SUMMARY VIEW
+-- Read-only denormalized projection backing experiment search (ExperimentSummaryEntity).
+-- Each experiment with its LATEST status (max TIME_OF_STATE_CHANGE) and the
+-- scheduled resource host. Defined here so its base tables already exist.
+-- ============================================================================
+CREATE OR REPLACE VIEW EXPERIMENT_SUMMARY AS
+SELECT
+    E.EXPERIMENT_ID         AS EXPERIMENT_ID,
+    E.PROJECT_ID            AS PROJECT_ID,
+    E.GATEWAY_ID            AS GATEWAY_ID,
+    E.CREATION_TIME         AS CREATION_TIME,
+    E.USER_NAME             AS USER_NAME,
+    E.EXPERIMENT_NAME       AS EXPERIMENT_NAME,
+    E.DESCRIPTION           AS DESCRIPTION,
+    E.EXECUTION_ID          AS EXECUTION_ID,
+    ES.STATE                AS STATE,
+    UCD.RESOURCE_HOST_ID    AS RESOURCE_HOST_ID,
+    ES.TIME_OF_STATE_CHANGE AS TIME_OF_STATE_CHANGE
+FROM EXPERIMENT E
+    LEFT JOIN EXPERIMENT_STATUS ES
+        ON ES.EXPERIMENT_ID = E.EXPERIMENT_ID
+        AND ES.TIME_OF_STATE_CHANGE = (
+            SELECT MAX(ES2.TIME_OF_STATE_CHANGE)
+            FROM EXPERIMENT_STATUS ES2
+            WHERE ES2.EXPERIMENT_ID = E.EXPERIMENT_ID)
+    LEFT JOIN USER_CONFIGURATION_DATA UCD
+        ON UCD.EXPERIMENT_ID = E.EXPERIMENT_ID;
 
 -- ============================================================================
 -- END OF BASELINE SCHEMA

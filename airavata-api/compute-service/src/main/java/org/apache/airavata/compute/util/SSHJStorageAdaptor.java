@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode;
@@ -36,9 +35,6 @@ import org.apache.airavata.interfaces.FileMetadata;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
 import org.apache.airavata.model.credential.store.proto.SSHCredential;
-import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,22 +64,11 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
             StorageResourceDescription sr =
                     AgentUtils.getRegistryServiceClient().getStorageResource(storageResourceId);
 
-            Optional<DataMovementInterface> dmOp = sr.getDataMovementInterfacesList().stream()
-                    .filter(iface -> iface.getDataMovementProtocol() == DataMovementProtocol.SCP)
-                    .findFirst();
-
-            DataMovementInterface dm = dmOp.orElseThrow(() ->
-                    new AgentException("No SCP data movement interface for storage resource " + storageResourceId));
-
-            SCPDataMovement scp =
-                    AgentUtils.getRegistryServiceClient().getSCPDataMovement(dm.getDataMovementInterfaceId());
-
             SSHCredential cred = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
             if (cred == null) throw new AgentException("No credential for token " + token);
 
-            String altHost = scp.getAlternativeScpHostName();
-            this.host = (altHost != null && !altHost.isEmpty()) ? altHost : sr.getHostName();
-            this.port = scp.getSshPort() == 0 ? 22 : scp.getSshPort();
+            this.host = sr.getHostName();
+            this.port = sr.getSftpPort() == 0 ? 22 : sr.getSftpPort();
             this.username = loginUser;
             this.privateKey = cred.getPrivateKey();
             this.passphrase = cred.getPassphrase();

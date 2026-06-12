@@ -41,7 +41,7 @@ import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskOnFailException;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class OutputDataStagingTask extends DataStagingTask {
     private static final CountMonitor outputDSTaskCounter = new CountMonitor("output_ds_task_counter");
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         logger.info("Starting output data staging task " + getTaskId() + " in experiment " + getExperimentId());
         outputDSTaskCounter.inc();
@@ -235,6 +235,17 @@ public class OutputDataStagingTask extends DataStagingTask {
                     } catch (Exception e) {
                         logger.warn("Failed to clean up source files after staging for task {}", getTaskId(), e);
                     }
+                } else if (processOutput.getIsRequired()) {
+                    throw new TaskOnFailException(
+                            "Required output " + processOutput.getName() + " produced no files to stage for task "
+                                    + getTaskId(),
+                            true,
+                            null);
+                } else {
+                    logger.warn(
+                            "Optional output {} produced no files to stage for task {}",
+                            processOutput.getName(),
+                            getTaskId());
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
@@ -270,8 +281,14 @@ public class OutputDataStagingTask extends DataStagingTask {
                                 getTaskId(),
                                 e);
                     }
+                } else if (processOutput.getIsRequired()) {
+                    throw new TaskOnFailException(
+                            "Required output " + processOutput.getName() + " (" + sourceFileName
+                                    + ") was not available to stage for task " + getTaskId(),
+                            true,
+                            null);
                 } else {
-                    logger.warn("File {} did not transfer", sourceFileName);
+                    logger.warn("Optional output file {} did not transfer", sourceFileName);
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
             }

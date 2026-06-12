@@ -22,6 +22,7 @@ from airavata_sdk.helpers.models import (
     NotificationCreate,
     ParserCreate,
     ProjectCreate,
+    proto_enum_value,
 )
 
 if TYPE_CHECKING:
@@ -219,8 +220,9 @@ def update_application_module(
 
 
 # Experiment (experiments-core) — WithAccess. The whole process/task/job tree
-# flows through the proto wholesale. is_owner is always False (the read model has
-# no ownership flag); user_has_write_access is a chained sharing WRITE lookup.
+# flows through the proto wholesale. is_owner compares the experiment's owner
+# (user_name) against the caller; user_has_write_access is ownership OR a chained
+# sharing WRITE lookup (owners always retain write/edit/launch rights).
 
 
 def get_experiment(
@@ -228,10 +230,12 @@ def get_experiment(
     experiment_id: str,
 ) -> "WithAccess":
     e = client.research.get_experiment(experiment_id)
+    is_owner = e.user_name == client.username
     return WithAccess(
         message=e,
-        is_owner=False,
-        user_has_write_access=client.sharing.user_has_access(
+        is_owner=is_owner,
+        user_has_write_access=is_owner
+        or client.sharing.user_has_access(
             resource_id=experiment_id,
             user_id=client.username,
             permission_type="WRITE",
@@ -260,17 +264,26 @@ def get_experiments_in_project(
     experiments = client.research.get_experiments_in_project(
         project_id, limit, offset)
     return [
-        WithAccess(
-            message=e,
-            is_owner=False,
-            user_has_write_access=client.sharing.user_has_access(
-                resource_id=e.experiment_id,
-                user_id=client.username,
-                permission_type="WRITE",
-            ),
-        )
+        _experiment_with_access(client, e)
         for e in experiments
     ]
+
+
+def _experiment_with_access(
+    client: "AiravataClient",
+    e: "experiment_pb2.ExperimentModel",
+) -> "WithAccess":
+    is_owner = e.user_name == client.username
+    return WithAccess(
+        message=e,
+        is_owner=is_owner,
+        user_has_write_access=is_owner
+        or client.sharing.user_has_access(
+            resource_id=e.experiment_id,
+            user_id=client.username,
+            permission_type="WRITE",
+        ),
+    )
 
 
 def list_experiment_jobs(
@@ -455,6 +468,8 @@ def _build_computational_resource_scheduling(data: dict):
         scheduling_pb2,
     )
 
+    # Scheduling ints are coerced to int at the typed boundary
+    # (ComputationalResourceSchedulingCreate), so they arrive here already int.
     return scheduling_pb2.ComputationalResourceSchedulingModel(
         resource_host_id=data.get("resource_host_id") or "",
         total_cpu_count=data.get("total_cpu_count") or 0,
@@ -538,30 +553,15 @@ def _build_experiment(client: "AiravataClient", data: dict):
 
 
 def _experiment_type_int(value) -> int:
-    """``experiment_type`` -> proto enum int. Accepts the Thrift int (0 ->
-    SINGLE_APPLICATION/1, 1 -> WORKFLOW/2) or the member NAME; None/"" -> 0.
+    """``experiment_type`` -> proto ``ExperimentType`` int via the proto enum
+    (member NAME or proto int; ``None`` / ``""`` -> 0). The proto enum is the type
+    truth — no Thrift remapping.
     """
     from airavata_sdk.generated.org.apache.airavata.model.experiment import (
         experiment_pb2,
     )
 
-    if value is None or value == "":
-        return 0
-    if isinstance(value, bool):
-        return 0
-    if isinstance(value, int):
-        thrift_to_proto = {0: 1, 1: 2}
-        return thrift_to_proto.get(value, 0)
-    name = str(value)
-    enum = experiment_pb2.ExperimentType
-    try:
-        return enum.Value(name)
-    except ValueError:
-        prefixed = "EXPERIMENT_TYPE_" + name
-        try:
-            return enum.Value(prefixed)
-        except ValueError:
-            return 0
+    return proto_enum_value(experiment_pb2.ExperimentType, value)
 
 
 def build_experiment(
@@ -699,27 +699,14 @@ def _to_epoch_ms(value) -> int:
 
 
 def _to_priority_int(value) -> int:
-    """priority -> proto ``NotificationPriority`` int. Member NAME (e.g.
-    ``"HIGH"``) or int; None/""/unknown -> 0.
+    """priority -> proto ``NotificationPriority`` int via the proto enum (member
+    NAME or proto int; ``None`` / ``""`` -> 0).
     """
     from airavata_sdk.generated.org.apache.airavata.model.workspace import (
         workspace_pb2,
     )
 
-    if not value:
-        return 0
-    if isinstance(value, int) and not isinstance(value, bool):
-        return value
-    name = str(value)
-    enum = workspace_pb2.NotificationPriority
-    try:
-        return enum.Value(name)
-    except ValueError:
-        prefixed = "NOTIFICATION_PRIORITY_" + name
-        try:
-            return enum.Value(prefixed)
-        except ValueError:
-            return 0
+    return proto_enum_value(workspace_pb2.NotificationPriority, value)
 
 
 def _build_notification(
@@ -830,28 +817,14 @@ def delete_notification(
 
 
 def _io_type_value(value) -> int:
-    """parser ``type`` -> proto ``IOType`` int. Member NAME (with or without the
-    ``IO_TYPE_`` prefix) or int; None/""/unknown -> 0.
+    """parser ``type`` -> proto ``IOType`` int via the proto enum (member NAME or
+    proto int; ``None`` / ``""`` -> 0).
     """
     from airavata_sdk.generated.org.apache.airavata.model.appcatalog.parser import (  # noqa: E501
         parser_pb2,
     )
 
-    enum = parser_pb2.IOType
-    if value is None or value == "":
-        return 0
-    if isinstance(value, bool):
-        return 0
-    if isinstance(value, int):
-        return value if value in enum.values() else 0
-    name = str(value)
-    try:
-        return enum.Value(name)
-    except ValueError:
-        try:
-            return enum.Value("IO_TYPE_" + name)
-        except ValueError:
-            return 0
+    return proto_enum_value(parser_pb2.IOType, value)
 
 
 def _build_parser(
@@ -1076,29 +1049,14 @@ def _proto_output_data_object(data: dict):
 
 
 def _data_type_int(value) -> int:
-    """``DataType`` -> proto enum int. Member NAME (e.g. ``"URI"``) or int;
-    None/""/unknown -> 0.
+    """``DataType`` -> proto enum int via the proto enum (member NAME or proto
+    int; ``None`` / ``""`` -> 0).
     """
     from airavata_sdk.generated.org.apache.airavata.model.application.io import (
         application_io_pb2 as io,
     )
 
-    if not value:
-        return 0
-    if isinstance(value, bool):
-        return 0
-    if isinstance(value, int):
-        return value
-    name = str(value)
-    enum = io.DataType
-    try:
-        return enum.Value(name)
-    except ValueError:
-        prefixed = "DATA_TYPE_" + name
-        try:
-            return enum.Value(prefixed)
-        except ValueError:
-            return 0
+    return proto_enum_value(io.DataType, value)
 
 
 def _meta_data_str(value) -> str:
@@ -1306,34 +1264,14 @@ def _proto_set_env_paths(data: dict):
 
 
 def _parallelism_input_to_proto_int(value) -> int:
-    """``parallelism`` -> proto enum int. Member NAME (the name lookup tries the
-    value verbatim, then with the ``APPLICATION_PARALLELISM_TYPE_`` prefix
-    stripped, then added) or int; None/""/unresolvable -> 0.
+    """``parallelism`` -> proto ``ApplicationParallelismType`` int via the proto
+    enum (member NAME or proto int; ``None`` / ``""`` -> 0).
     """
     from airavata_sdk.generated.org.apache.airavata.model.parallelism import (
         parallelism_pb2,
     )
 
-    if value is None or value == "":
-        return 0
-    if isinstance(value, bool):
-        return 0
-    if isinstance(value, int):
-        return value
-    name = str(value)
-    enum = parallelism_pb2.ApplicationParallelismType
-    prefix = "APPLICATION_PARALLELISM_TYPE_"
-    candidates = [name]
-    if name.startswith(prefix):
-        candidates.append(name[len(prefix):])
-    else:
-        candidates.append(prefix + name)
-    for candidate in candidates:
-        try:
-            return enum.Value(candidate)
-        except ValueError:
-            continue
-    return 0
+    return proto_enum_value(parallelism_pb2.ApplicationParallelismType, value)
 
 
 def _build_application_deployment(

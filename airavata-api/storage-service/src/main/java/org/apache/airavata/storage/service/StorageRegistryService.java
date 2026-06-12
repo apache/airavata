@@ -26,16 +26,8 @@ import org.apache.airavata.interfaces.RegistryException;
 import org.apache.airavata.interfaces.StorageProvider;
 import org.apache.airavata.interfaces.StorageRegistry;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.proto.DMType;
-import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.proto.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.proto.LOCALDataMovement;
-import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
-import org.apache.airavata.model.data.movement.proto.UnicoreDataMovement;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
-import org.apache.airavata.storage.repository.DataMovementRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
@@ -48,8 +40,6 @@ public class StorageRegistryService implements StorageRegistry {
 
     @org.springframework.beans.factory.annotation.Autowired
     private StorageProvider storageProvider;
-
-    private final DataMovementRepository dataMovementRepository = new DataMovementRepository();
 
     // =========================================================================
     // StorageRegistry interface methods
@@ -64,17 +54,6 @@ public class StorageRegistryService implements StorageRegistry {
         } catch (AppCatalogException e) {
             logger.error(storageResourceId, "Error while retrieving storage resource...", e);
             throw new RegistryException("Error while retrieving storage resource. More info : " + e.getMessage());
-        }
-    }
-
-    @Override
-    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws Exception {
-        try {
-            return dataMovementRepository.getSCPDataMovement(dataMovementId);
-        } catch (Exception e) {
-            String errorMsg = "Error while retrieving SCP data movement interface...";
-            logger.error(dataMovementId, errorMsg, e);
-            throw new RegistryException(errorMsg + e.getMessage());
         }
     }
 
@@ -244,168 +223,5 @@ public class StorageRegistryService implements StorageRegistry {
         } catch (AppCatalogException e) {
             throw new RegistryException("Error while saving storage resource. More info : " + e.getMessage());
         }
-    }
-
-    // =========================================================================
-    // Data movement methods (moved from compute-service)
-    // =========================================================================
-
-    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws Exception {
-        try {
-            return dataMovementRepository.getLocalDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while retrieving local data movement: " + e.getMessage());
-        }
-    }
-
-    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws Exception {
-        try {
-            return dataMovementRepository.getUNICOREDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while retrieving UNICORE data movement: " + e.getMessage());
-        }
-    }
-
-    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws Exception {
-        try {
-            return dataMovementRepository.getGridFTPDataMovement(dataMovementId);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while retrieving GridFTP data movement: " + e.getMessage());
-        }
-    }
-
-    public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
-            throws Exception {
-        try {
-            switch (dmType) {
-                case COMPUTE_RESOURCE:
-                    dataMovementRepository.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
-                    return true;
-                case STORAGE_RESOURCE:
-                    storageProvider.removeDataMovementInterface(resourceId, dataMovementInterfaceId);
-                    return true;
-                default:
-                    return false;
-            }
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while deleting data movement interface: " + e.getMessage());
-        }
-    }
-
-    public boolean updateGridFTPDataMovementDetails(
-            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws Exception {
-        throw new RegistryException("updateGridFTPDataMovementDetails is not yet implemented");
-    }
-
-    public String addGridFTPDataMovementDetails(
-            String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
-            throws Exception {
-        try {
-            String dataMovementInterfaceId = dataMovementRepository.addGridFTPDataMovement(gridFTPDataMovement);
-            return addDataMovementInterface(
-                    computeResourceId, dmType, dataMovementInterfaceId, DataMovementProtocol.GRID_FTP, priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while adding GridFTP data movement: " + e.getMessage());
-        }
-    }
-
-    public boolean updateUnicoreDataMovementDetails(
-            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws Exception {
-        throw new RegistryException("updateUnicoreDataMovementDetails is not yet implemented");
-    }
-
-    public String addUnicoreDataMovementDetails(
-            String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
-            throws Exception {
-        try {
-            String dataMovementInterfaceId = dataMovementRepository.addUnicoreDataMovement(unicoreDataMovement);
-            return addDataMovementInterface(
-                    resourceId,
-                    dmType,
-                    dataMovementInterfaceId,
-                    DataMovementProtocol.UNICORE_STORAGE_SERVICE,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while adding UNICORE data movement: " + e.getMessage());
-        }
-    }
-
-    public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
-            throws Exception {
-        try {
-            dataMovementRepository.updateScpDataMovement(scpDataMovement);
-            return true;
-        } catch (Exception e) {
-            throw new RegistryException("Error while updating SCP data movement: " + e.getMessage());
-        }
-    }
-
-    public String addSCPDataMovementDetails(
-            String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement) throws Exception {
-        try {
-            String dataMovementInterfaceId = dataMovementRepository.addScpDataMovement(scpDataMovement);
-            return addDataMovementInterface(
-                    resourceId, dmType, dataMovementInterfaceId, DataMovementProtocol.SCP, priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while adding SCP data movement: " + e.getMessage());
-        }
-    }
-
-    public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
-            throws Exception {
-        try {
-            dataMovementRepository.updateLocalDataMovement(localDataMovement);
-            return true;
-        } catch (Exception e) {
-            throw new RegistryException("Error while updating local data movement: " + e.getMessage());
-        }
-    }
-
-    public String addLocalDataMovementDetails(
-            String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement)
-            throws Exception {
-        try {
-            String dataMovementInterfaceId = dataMovementRepository.addLocalDataMovement(localDataMovement);
-            return addDataMovementInterface(
-                    resourceId,
-                    dataMoveType,
-                    dataMovementInterfaceId,
-                    DataMovementProtocol.DATA_MOVEMENT_PROTOCOL_LOCAL,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while adding local data movement: " + e.getMessage());
-        }
-    }
-
-    public boolean changeDataMovementPriority(String dataMovementInterfaceId, int newPriorityOrder) throws Exception {
-        return false;
-    }
-
-    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws Exception {
-        return false;
-    }
-
-    // =========================================================================
-    // Private helpers
-    // =========================================================================
-
-    private String addDataMovementInterface(
-            String resourceId,
-            DMType dmType,
-            String dataMovementInterfaceId,
-            DataMovementProtocol protocolType,
-            int priorityOrder)
-            throws Exception {
-        DataMovementInterface.Builder dmiBuilder = DataMovementInterface.newBuilder()
-                .setDataMovementInterfaceId(dataMovementInterfaceId)
-                .setPriorityOrder(priorityOrder)
-                .setDataMovementProtocol(protocolType);
-        if (dmType.equals(DMType.COMPUTE_RESOURCE)) {
-            return dataMovementRepository.addDataMovementProtocol(resourceId, dmiBuilder.build());
-        } else if (dmType.equals(DMType.STORAGE_RESOURCE)) {
-            dmiBuilder.setStorageResourceId(resourceId);
-            return storageProvider.addDataMovementInterface(dmiBuilder.build());
-        }
-        return null;
     }
 }

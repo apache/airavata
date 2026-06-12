@@ -24,7 +24,7 @@ import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class AWSCompletingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(AWSCompletingTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         logger.info("Starting completing task for task {}, experiment id {}", getTaskId(), getExperimentId());
         logger.info("Process {} successfully completed", getProcessId());
         saveAndPublishProcessStatus(ProcessState.PROCESS_STATE_COMPLETED);

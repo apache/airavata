@@ -29,26 +29,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.config.ServerSettings;
-import org.apache.airavata.exception.AiravataException;
 import org.apache.airavata.interfaces.RegistryHandler;
 import org.apache.airavata.interfaces.UserProfileProvider;
-import org.apache.airavata.messaging.service.MessageContext;
-import org.apache.airavata.messaging.service.MessagingFactory;
-import org.apache.airavata.messaging.service.Publisher;
-import org.apache.airavata.messaging.service.Type;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.data.replica.proto.*;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
-import org.apache.airavata.model.messaging.event.proto.*;
 import org.apache.airavata.model.process.proto.ProcessModel;
 import org.apache.airavata.model.status.proto.*;
 import org.apache.airavata.util.AiravataUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.helix.HelixManager;
-import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -56,8 +48,6 @@ import org.slf4j.MDC;
 public abstract class AiravataTask extends AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AiravataTask.class);
-
-    private static Publisher statusPublisher;
 
     private ProcessModel processModel;
     private ExperimentModel experimentModel;
@@ -89,110 +79,72 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "Auto Schedule")
     private boolean autoSchedule = false;
 
-    protected TaskResult onSuccess(String message) {
+    protected DbTaskResult onSuccess(String message) {
         logger.info(message);
         if (!skipAllStatusPublish) {
             publishTaskState(TaskState.TASK_STATE_COMPLETED);
         }
-
-        try {
-            logger.info("Deleting task specific monitoring nodes");
-            MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
-        } catch (Exception e) {
-            logger.error("Failed to delete task specific nodes but continuing", e);
-        }
-
         return super.onSuccess(message);
     }
 
-    protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
+    protected DbTaskResult onFail(String reason, boolean fatal, Throwable error) {
         logger.error(reason, error);
-        int currentRetryCount = 1;
-        try {
-            currentRetryCount = getCurrentRetryCount();
-        } catch (Exception e) {
-            logger.error("Failed to obtain current retry count. So failing the task permanently", e);
-            fatal = true;
-        }
 
-        logger.warn("Task failed with fatal = " + fatal + ".  Current retry count " + currentRetryCount
-                + " total retry count " + getRetryCount());
+        ProcessStatus status = ProcessStatus.newBuilder()
+                .setState(ProcessState.PROCESS_STATE_FAILED)
+                .build();
+        StringWriter errors = new StringWriter();
 
-        if (currentRetryCount < getRetryCount() && !fatal) {
-            try {
-                markNewRetry(currentRetryCount);
-            } catch (Exception e) {
-                logger.error("Failed to mark retry. So failing the task permanently", e);
-                fatal = true;
-            }
-        }
+        String errorCode = UUID.randomUUID().toString();
+        String errorMessage = "Error Code : " + errorCode + ", Task " + getTaskId() + " failed due to " + reason
+                + (error == null ? "" : ", " + error.getMessage());
 
-        if (currentRetryCount >= getRetryCount() || fatal) {
-            ProcessStatus status = ProcessStatus.newBuilder()
-                    .setState(ProcessState.PROCESS_STATE_FAILED)
-                    .build();
-            StringWriter errors = new StringWriter();
+        // wrapping from new error object with error code
+        error = new TaskOnFailException(errorMessage, true, error);
 
-            String errorCode = UUID.randomUUID().toString();
-            String errorMessage = "Error Code : " + errorCode + ", Task " + getTaskId() + " failed due to " + reason
-                    + (error == null ? "" : ", " + error.getMessage());
+        status = status.toBuilder()
+                .setReason(errorMessage)
+                .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
+                .build();
+        errors.write(ExceptionUtils.getStackTrace(error));
+        logger.error(errorMessage, error);
 
-            // wrapping from new error object with error code
-            error = new TaskOnFailException(errorMessage, true, error);
-
-            status = status.toBuilder()
-                    .setReason(errorMessage)
-                    .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
-                    .build();
-            errors.write(ExceptionUtils.getStackTrace(error));
-            logger.error(errorMessage, error);
-
-            if (getTaskContext() != null) { // task context could be null if the initialization failed
-                getTaskContext().setProcessStatus(status);
-            } else {
-                logger.warn("Task context is null. So can not store the process status in the context");
-            }
-
-            ErrorModel errorModel = ErrorModel.newBuilder()
-                    .setUserFriendlyMessage(reason)
-                    .setActualErrorMessage(errors.toString())
-                    .setCreationTime(AiravataUtils.getCurrentTimestamp().getTime())
-                    .build();
-
-            if (!skipAllStatusPublish) {
-                publishTaskState(TaskState.TASK_STATE_FAILED);
-                saveTaskError(errorModel);
-
-                if (!skipProcessStatusPublish) {
-                    saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
-                    saveProcessError(errorModel);
-                }
-
-                if (!skipExperimentStatusPublish) {
-                    saveExperimentError(errorModel);
-                }
-            }
-
-            try {
-                logger.info("Deleting task specific monitoring nodes");
-                MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
-            } catch (Exception e) {
-                logger.error("Failed to delete task specific nodes but continuing", e);
-            }
-
-            cleanup();
-
-            if (autoSchedule) {
-                ProcessStatus requeueStatus = ProcessStatus.newBuilder()
-                        .setState(ProcessState.PROCESS_STATE_REQUEUED)
-                        .build();
-                saveAndPublishProcessStatus(requeueStatus);
-            }
-
-            return onFail(errorMessage, fatal);
+        if (getTaskContext() != null) { // task context could be null if the initialization failed
+            getTaskContext().setProcessStatus(status);
         } else {
-            return onFail("Handover back to helix engine to retry", fatal);
+            logger.warn("Task context is null. So can not store the process status in the context");
         }
+
+        ErrorModel errorModel = ErrorModel.newBuilder()
+                .setUserFriendlyMessage(reason)
+                .setActualErrorMessage(errors.toString())
+                .setCreationTime(AiravataUtils.getCurrentTimestamp().getTime())
+                .build();
+
+        if (!skipAllStatusPublish) {
+            publishTaskState(TaskState.TASK_STATE_FAILED);
+            saveTaskError(errorModel);
+
+            if (!skipProcessStatusPublish) {
+                saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
+                saveProcessError(errorModel);
+            }
+
+            if (!skipExperimentStatusPublish) {
+                saveExperimentError(errorModel);
+            }
+        }
+
+        cleanup();
+
+        if (autoSchedule) {
+            ProcessStatus requeueStatus = ProcessStatus.newBuilder()
+                    .setState(ProcessState.PROCESS_STATE_REQUEUED)
+                    .build();
+            saveAndPublishProcessStatus(requeueStatus);
+        }
+
+        return onFail(errorMessage, fatal);
     }
 
     protected void cleanup() {
@@ -240,22 +192,6 @@ public abstract class AiravataTask extends AbstractTask {
                             .build();
                 }
                 getRegistryServiceClient().addProcessStatus(status, getProcessId());
-                ProcessIdentifier identifier = ProcessIdentifier.newBuilder()
-                        .setProcessId(getProcessId())
-                        .setExperimentId(getExperimentId())
-                        .setGatewayId(getGatewayId())
-                        .build();
-                ProcessStatusChangeEvent processStatusChangeEvent = ProcessStatusChangeEvent.newBuilder()
-                        .setState(status.getState())
-                        .setProcessIdentity(identifier)
-                        .build();
-                MessageContext msgCtx = new MessageContext(
-                        processStatusChangeEvent,
-                        MessageType.PROCESS,
-                        AiravataUtils.getId(MessageType.PROCESS.name()),
-                        getGatewayId());
-                msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                getStatusPublisher().publish(msgCtx);
             }
         } catch (Exception e) {
             logger.error("Failed to save process status of process " + getProcessId(), e);
@@ -275,23 +211,6 @@ public abstract class AiravataTask extends AbstractTask {
                     .build();
 
             getRegistryServiceClient().addJobStatus(jobStatus, taskId, jobId);
-
-            JobIdentifier identifier = JobIdentifier.newBuilder()
-                    .setJobId(jobId)
-                    .setTaskId(taskId)
-                    .setProcessId(processId)
-                    .setExperimentId(experimentId)
-                    .setGatewayId(gateway)
-                    .build();
-
-            JobStatusChangeEvent jobStatusChangeEvent = JobStatusChangeEvent.newBuilder()
-                    .setState(jobStatus.getJobState())
-                    .setJobIdentity(identifier)
-                    .build();
-            MessageContext msgCtx = new MessageContext(
-                    jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId(MessageType.JOB.name()), gateway);
-            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
 
         } catch (Exception e) {
             logger.error("Error persisting job status " + e.getLocalizedMessage(), e);
@@ -452,19 +371,8 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    protected Publisher getStatusPublisher() throws AiravataException {
-        if (statusPublisher == null) {
-            synchronized (AiravataTask.class) {
-                if (statusPublisher == null) {
-                    statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
-                }
-            }
-        }
-        return statusPublisher;
-    }
-
     @Override
-    public TaskResult onRun(TaskHelper helper) {
+    public DbTaskResult onRun(TaskHelper helper) {
 
         try {
             MDC.put("experiment", getExperimentId());
@@ -495,7 +403,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public abstract TaskResult onRun(TaskHelper helper, TaskContext taskContext);
+    public abstract DbTaskResult onRun(TaskHelper helper, TaskContext taskContext);
 
     @Override
     public void onCancel() {
@@ -507,14 +415,6 @@ public abstract class AiravataTask extends AbstractTask {
             if (!skipAllStatusPublish) {
                 publishTaskState(TaskState.TASK_STATE_CANCELED);
             }
-
-            try {
-                logger.info("Deleting task specific monitoring nodes");
-                MonitoringUtil.deleteTaskSpecificNodes(getCuratorClient(), getTaskId());
-            } catch (Exception e) {
-                logger.error("Failed to delete task specific nodes but continuing", e);
-            }
-
             onCancel(getTaskContext());
         } finally {
             MDC.clear();
@@ -522,21 +422,6 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     public abstract void onCancel(TaskContext taskContext);
-
-    @Override
-    public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
-
-        try {
-            super.init(manager, workflowName, jobName, taskName);
-            MDC.put("experiment", getExperimentId());
-            MDC.put("process", getProcessId());
-            MDC.put("gateway", getGatewayId());
-            MDC.put("task", getTaskId());
-            this.taskName = taskName;
-        } finally {
-            MDC.clear();
-        }
-    }
 
     protected void loadContext() throws TaskOnFailException {
         try {
@@ -577,23 +462,6 @@ public abstract class AiravataTask extends AbstractTask {
                     .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
                     .build();
             getRegistryServiceClient().addTaskStatus(taskStatus, getTaskId());
-            TaskIdentifier identifier = TaskIdentifier.newBuilder()
-                    .setTaskId(getTaskId())
-                    .setProcessId(getProcessId())
-                    .setExperimentId(getExperimentId())
-                    .setGatewayId(getGatewayId())
-                    .build();
-            TaskStatusChangeEvent taskStatusChangeEvent = TaskStatusChangeEvent.newBuilder()
-                    .setState(ts)
-                    .setTaskIdentity(identifier)
-                    .build();
-            MessageContext msgCtx = new MessageContext(
-                    taskStatusChangeEvent,
-                    MessageType.TASK,
-                    AiravataUtils.getId(MessageType.TASK.name()),
-                    getGatewayId());
-            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            statusPublisher.publish(msgCtx);
         } catch (Exception e) {
             logger.error(
                     "Failed to publish task status " + (ts != null ? ts.name() : "null") + " of task " + getTaskId());

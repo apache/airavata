@@ -19,15 +19,7 @@
 */
 package org.apache.airavata.task;
 
-import org.apache.airavata.exception.AiravataException;
 import org.apache.airavata.interfaces.RegistryHandler;
-import org.apache.airavata.messaging.service.MessageContext;
-import org.apache.airavata.messaging.service.MessagingFactory;
-import org.apache.airavata.messaging.service.Publisher;
-import org.apache.airavata.messaging.service.Type;
-import org.apache.airavata.model.messaging.event.proto.MessageType;
-import org.apache.airavata.model.messaging.event.proto.ProcessIdentifier;
-import org.apache.airavata.model.messaging.event.proto.ProcessStatusChangeEvent;
 import org.apache.airavata.model.status.proto.ProcessState;
 import org.apache.airavata.model.status.proto.ProcessStatus;
 import org.apache.airavata.util.AiravataUtils;
@@ -38,7 +30,6 @@ import org.apache.airavata.util.AiravataUtils;
 public class SchedulerUtils {
 
     private static RegistryHandler registryHandler;
-    private static Publisher statusPublisher;
 
     /**
      * Sets the registry handler for direct in-JVM calls.
@@ -67,22 +58,6 @@ public class SchedulerUtils {
                 .build();
 
         getRegistryHandler().addProcessStatus(processStatus, processId);
-        ProcessIdentifier identifier = ProcessIdentifier.newBuilder()
-                .setProcessId(processId)
-                .setExperimentId(experimentId)
-                .setGatewayId(gatewayId)
-                .build();
-        ProcessStatusChangeEvent processStatusChangeEvent = ProcessStatusChangeEvent.newBuilder()
-                .setState(processState)
-                .setProcessIdentity(identifier)
-                .build();
-        MessageContext msgCtx = new MessageContext(
-                processStatusChangeEvent,
-                MessageType.PROCESS,
-                AiravataUtils.getId(MessageType.PROCESS.name()),
-                gatewayId);
-        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
     }
 
     public static void updateProcessStatusAndPublishStatus(
@@ -93,28 +68,5 @@ public class SchedulerUtils {
                 .build();
 
         getRegistryHandler().updateProcessStatus(processStatus, processId);
-        ProcessIdentifier identifier = ProcessIdentifier.newBuilder()
-                .setProcessId(processId)
-                .setExperimentId(experimentId)
-                .setGatewayId(gatewayId)
-                .build();
-        ProcessStatusChangeEvent processStatusChangeEvent = ProcessStatusChangeEvent.newBuilder()
-                .setState(processState)
-                .setProcessIdentity(identifier)
-                .build();
-        MessageContext msgCtx = new MessageContext(
-                processStatusChangeEvent,
-                MessageType.PROCESS,
-                AiravataUtils.getId(MessageType.PROCESS.name()),
-                gatewayId);
-        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
-    }
-
-    public static synchronized Publisher getStatusPublisher() throws AiravataException {
-        if (statusPublisher == null) {
-            statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
-        }
-        return statusPublisher;
     }
 }

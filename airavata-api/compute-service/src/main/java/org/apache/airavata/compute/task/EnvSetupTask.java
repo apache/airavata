@@ -26,7 +26,7 @@ import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public class EnvSetupTask extends AiravataTask {
     private static final CountMonitor envSetupTaskCounter = new CountMonitor("env_setup_task_counter");
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         try {
             envSetupTaskCounter.inc();
             saveAndPublishProcessStatus(ProcessState.PROCESS_STATE_CONFIGURING_WORKSPACE);
@@ -46,7 +46,6 @@ public class EnvSetupTask extends AiravataTask {
                     .fetchAdaptor(
                             getTaskContext().getGatewayId(),
                             getTaskContext().getComputeResourceId(),
-                            getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getComputeResourceCredentialToken(),
                             getTaskContext().getComputeResourceLoginUserName());
 

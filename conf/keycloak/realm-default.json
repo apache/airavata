@@ -1223,11 +1223,11 @@
       "secret": "DxeMtfiWU1qkDEmaGHf13RDahCujzhy1",
       "redirectUris": [
         "http://localhost:*/*",
-        "http://airavata.localhost:20000/hub/oauth_callback"
+        "http://airavata.host:20000/hub/oauth_callback"
       ],
       "webOrigins": [
         "http://localhost:*",
-        "http://airavata.localhost:20000"
+        "http://airavata.host:20000"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -1339,7 +1339,7 @@
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
-      "baseUrl": "http://airavata.localhost:8009/",
+      "baseUrl": "http://airavata.host:8009/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
@@ -1406,8 +1406,8 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "m36BXQIxX3j3VILadeHMK5IvbOeRlCCc",
       "redirectUris": [
-        "http://airavata.localhost:8000/*",
-        "https://gateway.airavata.localhost/*"
+        "https://gateway.airavata.host/*",
+        "https://api.airavata.host/*"
       ],
       "webOrigins": [
         "+"
@@ -2347,7 +2347,7 @@
         "forwardParameters": "kc_idp_hint",
         "authorizationUrl": "https://cilogon.org/authorize",
         "disableUserInfo": "false",
-        "logoutUrl": "http://airavata.localhost:8009/",
+        "logoutUrl": "http://airavata.host:8009/",
         "sendIdTokenOnLogout": "true",
         "passMaxAge": "false"
       }

@@ -161,7 +161,6 @@ public abstract class DataStagingTask extends AiravataTask {
             return adaptorSupport.fetchAdaptor(
                     getTaskContext().getGatewayId(),
                     computeId,
-                    getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
@@ -441,7 +440,7 @@ public abstract class DataStagingTask extends AiravataTask {
             }
 
             if (!fileExists) {
-                logger.warn("Ignoring the file {} transfer as it is not available", sourcePath);
+                logger.error("Source file {} is not available after retries; transfer skipped", sourcePath);
                 return false;
             }
         } catch (AgentException e) {
@@ -495,11 +494,7 @@ public abstract class DataStagingTask extends AiravataTask {
                     : getTaskContext().getGatewayResourceProfile().getCredentialStoreToken();
 
             StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
-                    getGatewayId(),
-                    storageId,
-                    getTaskContext().getDataMovementProtocol(),
-                    credentialToken,
-                    storagePreference.getLoginUserName());
+                    getGatewayId(), storageId, credentialToken, storagePreference.getLoginUserName());
 
             if (storageResourceAdaptor == null) {
                 throw new TaskOnFailException(

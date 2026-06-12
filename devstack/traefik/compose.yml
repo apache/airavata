@@ -1,0 +1,29 @@
+# Shared substrate ingress — ONE instance for all projects. Operates on ~/.airavata-devstack.
+# Bound to 127.0.0.1 only. Cert + router fragments are dropped into traefik/dynamic by ensure.
+name: airavata-devstack-ingress
+services:
+  proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    container_name: airavata-devstack-proxy
+    environment: { CONTAINERS: 1, NETWORKS: 1, SERVICES: 1, TASKS: 1, ENDPOINTS: 1, INFO: 1 }
+    volumes: [ "/var/run/docker.sock:/var/run/docker.sock:ro" ]
+    networks: [ ingress ]
+    restart: unless-stopped
+  traefik:
+    # v3.7+ negotiates the Docker API version. v3.3 was stuck at the ancient default 1.24,
+    # which colima's daemon (min API 1.40) rejects, breaking the docker provider entirely.
+    # Do NOT downgrade below v3.7.
+    image: traefik:v3.7
+    container_name: airavata-devstack-traefik
+    depends_on: [ proxy ]
+    ports: [ "127.0.0.1:80:80", "127.0.0.1:443:443" ]
+    volumes:
+      - "${DEVSTACK_HOME}/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "${DEVSTACK_HOME}/traefik/dynamic:/etc/traefik/dynamic:ro"
+      - "${DEVSTACK_HOME}/certs:/certs:ro"
+    networks: [ ingress ]
+    restart: unless-stopped
+networks:
+  ingress:
+    name: airavata-devstack-ingress
+    attachable: true

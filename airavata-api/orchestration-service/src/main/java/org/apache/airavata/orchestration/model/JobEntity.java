@@ -45,7 +45,7 @@ public class JobEntity implements Serializable {
     private String processId;
 
     @Lob
-    @Column(name = "JOB_DESCRIPTION")
+    @Column(name = "JOB_DESCRIPTION", columnDefinition = "LONGTEXT")
     private String jobDescription;
 
     @Column(name = "CREATION_TIME")
@@ -61,11 +61,11 @@ public class JobEntity implements Serializable {
     private String workingDir;
 
     @Lob
-    @Column(name = "STD_OUT")
+    @Column(name = "STD_OUT", columnDefinition = "LONGTEXT")
     private String stdOut;
 
     @Lob
-    @Column(name = "STD_ERR")
+    @Column(name = "STD_ERR", columnDefinition = "LONGTEXT")
     private String stdErr;
 
     @Column(name = "EXIT_CODE")
@@ -76,7 +76,10 @@ public class JobEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "JOB_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "JOB_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("ENTITY_TYPE = 'JOB'")
     @OrderBy("timeOfStateChange ASC")
     private List<ExecStatusEntity> jobStatuses;

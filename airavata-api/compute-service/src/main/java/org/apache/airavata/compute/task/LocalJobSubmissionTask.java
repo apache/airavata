@@ -25,13 +25,13 @@ import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.util.AiravataUtils;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 
 @TaskDef(name = "Local Job Submission")
 public class LocalJobSubmissionTask extends JobSubmissionTask {
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
             GroovyMapData groovyMapData = new GroovyMapData();

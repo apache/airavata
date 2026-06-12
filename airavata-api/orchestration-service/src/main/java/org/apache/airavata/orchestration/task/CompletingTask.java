@@ -26,7 +26,7 @@ import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class CompletingTask extends AiravataTask {
     private static final Logger logger = LoggerFactory.getLogger(CompletingTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         logger.info("Starting completing task for task " + getTaskId() + ", experiment id " + getExperimentId());
         logger.info("Process " + getProcessId() + " successfully completed");
         saveAndPublishProcessStatus(ProcessState.PROCESS_STATE_COMPLETED);
@@ -48,7 +48,6 @@ public class CompletingTask extends AiravataTask {
                         .fetchAdaptor(
                                 getTaskContext().getGatewayId(),
                                 getTaskContext().getComputeResourceId(),
-                                getTaskContext().getJobSubmissionProtocol(),
                                 getTaskContext().getComputeResourceCredentialToken(),
                                 getTaskContext().getComputeResourceLoginUserName());
                 logger.info("Cleaning up the working directory {}", taskContext.getWorkingDir());

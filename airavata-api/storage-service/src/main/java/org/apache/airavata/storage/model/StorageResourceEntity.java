@@ -22,7 +22,6 @@ package org.apache.airavata.storage.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.List;
 
 /**
  * The persistent class for the storage_resource database table.
@@ -48,26 +47,11 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "HOST_NAME")
     private String hostName;
 
+    @Column(name = "SFTP_PORT")
+    private int sftpPort;
+
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
-
-    // The child (STORAGE_INTERFACE) already maps the FK as part of its composite
-    // @Id (DataMovementInterfaceEntity.resourceId -> STORAGE_RESOURCE_ID), so the
-    // association must join on that same column and be read-only here (the child
-    // owns it). Pointing this at a separate "RESOURCE_ID" column left the
-    // association always empty, which broke the SFTP storage adaptor ("No SCP
-    // data movement interface for storage resource").
-    @OneToMany(
-            targetEntity = DataMovementInterfaceEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    @JoinColumn(
-            name = "STORAGE_RESOURCE_ID",
-            referencedColumnName = "STORAGE_RESOURCE_ID",
-            insertable = false,
-            updatable = false)
-    private List<DataMovementInterfaceEntity> dataMovementInterfaces;
 
     public StorageResourceEntity() {}
 
@@ -103,6 +87,14 @@ public class StorageResourceEntity implements Serializable {
         this.hostName = hostName;
     }
 
+    public int getSftpPort() {
+        return sftpPort;
+    }
+
+    public void setSftpPort(int sftpPort) {
+        this.sftpPort = sftpPort;
+    }
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -117,13 +109,5 @@ public class StorageResourceEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public List<DataMovementInterfaceEntity> getDataMovementInterfaces() {
-        return dataMovementInterfaces;
-    }
-
-    public void setDataMovementInterfaces(List<DataMovementInterfaceEntity> dataMovementInterfaces) {
-        this.dataMovementInterfaces = dataMovementInterfaces;
     }
 }

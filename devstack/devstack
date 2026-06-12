@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# devstack — shared dev-substrate CLI. Usage: devstack {setup|ensure|status|down|reset}
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/lib/config.sh"
+. "$HERE/lib/colima.sh"
+. "$HERE/lib/certs.sh"
+. "$HERE/lib/dns.sh"
+. "$HERE/lib/ingress.sh"
+. "$HERE/lib/verify.sh"
+. "$HERE/lib/commands.sh"
+devstack_load_config
+
+cmd="${1:-help}"
+case "$cmd" in
+  setup)  devstack_setup ;;
+  ensure) devstack_ensure ;;
+  status) devstack_status ;;
+  down)   devstack_down ;;
+  reset)  devstack_reset ;;
+  *) echo "usage: devstack {setup|ensure|status|down|reset}"; exit 2 ;;
+esac

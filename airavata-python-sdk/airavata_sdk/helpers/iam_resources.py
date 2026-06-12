@@ -60,7 +60,7 @@ class IAMUser(BaseModel):
     last_name: str
     enabled: bool
     email_verified: bool
-    creation_time: str
+    creation_time: int
     airavata_user_profile_exists: bool
     user_has_write_access: bool
     groups: list[dict[str, Any]]
@@ -82,7 +82,7 @@ class UnverifiedEmailUser(BaseModel):
     last_name: str
     enabled: bool
     email_verified: bool
-    creation_time: str
+    creation_time: int
     user_has_write_access: bool
 
 
@@ -124,7 +124,7 @@ def get_iam_user(
         last_name=user_profile.last_name,
         enabled=enabled,
         email_verified=email_verified,
-        creation_time=str(user_profile.creation_time),
+        creation_time=user_profile.creation_time,
         airavata_user_profile_exists=airavata_user_profile_exists,
         user_has_write_access=user_has_write_access,
         groups=groups or [],
@@ -150,7 +150,7 @@ def get_unverified_email_user(
         last_name=user_profile.last_name,
         enabled=enabled,
         email_verified=email_verified,
-        creation_time=str(user_profile.creation_time),
+        creation_time=user_profile.creation_time,
         user_has_write_access=user_has_write_access,
     )
 

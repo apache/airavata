@@ -52,11 +52,6 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserStorag
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.commons.proto.ErrorModel;
-import org.apache.airavata.model.data.movement.proto.DMType;
-import org.apache.airavata.model.data.movement.proto.GridFTPDataMovement;
-import org.apache.airavata.model.data.movement.proto.LOCALDataMovement;
-import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
-import org.apache.airavata.model.data.movement.proto.UnicoreDataMovement;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 import org.apache.airavata.model.experiment.proto.*;
@@ -597,26 +592,6 @@ public class RegistryServerHandler implements RegistryHandler {
         return computeRegistryHandler.getComputeResource(computeResourceId);
     }
 
-    @Override
-    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws Exception {
-        return computeRegistryHandler.getLocalJobSubmission(jobSubmissionId);
-    }
-
-    @Override
-    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws Exception {
-        return computeRegistryHandler.getSSHJobSubmission(jobSubmissionId);
-    }
-
-    @Override
-    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws Exception {
-        return computeRegistryHandler.getUnicoreJobSubmission(jobSubmissionId);
-    }
-
-    @Override
-    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws Exception {
-        return computeRegistryHandler.getCloudJobSubmission(jobSubmissionId);
-    }
-
     // Additional compute methods
     public Map<String, String> getAllComputeResourceNames() throws Exception {
         return computeRegistryHandler.getAllComputeResourceNames();
@@ -633,27 +608,6 @@ public class RegistryServerHandler implements RegistryHandler {
 
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription) throws Exception {
         return computeRegistryHandler.registerComputeResource(computeResourceDescription);
-    }
-
-    public boolean changeJobSubmissionPriority(String jobSubmissionInterfaceId, int newPriorityOrder) throws Exception {
-        return computeRegistryHandler.changeJobSubmissionPriority(jobSubmissionInterfaceId, newPriorityOrder);
-    }
-
-    public boolean changeDataMovementPriority(String dataMovementInterfaceId, int newPriorityOrder) throws Exception {
-        return storageRegistryHandler.changeDataMovementPriority(dataMovementInterfaceId, newPriorityOrder);
-    }
-
-    public boolean changeJobSubmissionPriorities(Map<String, Integer> jobSubmissionPriorityMap) throws Exception {
-        return computeRegistryHandler.changeJobSubmissionPriorities(jobSubmissionPriorityMap);
-    }
-
-    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws Exception {
-        return storageRegistryHandler.changeDataMovementPriorities(dataMovementPriorityMap);
-    }
-
-    public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
-            throws Exception {
-        return computeRegistryHandler.deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
     }
 
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws Exception {
@@ -675,116 +629,6 @@ public class RegistryServerHandler implements RegistryHandler {
 
     public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws Exception {
         return computeRegistryHandler.registerResourceJobManager(resourceJobManager);
-    }
-
-    public String addCloudJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission) throws Exception {
-        return computeRegistryHandler.addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
-    }
-
-    public String addUNICOREJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission) throws Exception {
-        return computeRegistryHandler.addUNICOREJobSubmissionDetails(
-                computeResourceId, priorityOrder, unicoreJobSubmission);
-    }
-
-    public String addSSHForkJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws Exception {
-        return computeRegistryHandler.addSSHForkJobSubmissionDetails(
-                computeResourceId, priorityOrder, sshJobSubmission);
-    }
-
-    public String addSSHJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws Exception {
-        return computeRegistryHandler.addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
-    }
-
-    public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
-            throws Exception {
-        return computeRegistryHandler.updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
-    }
-
-    public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)
-            throws Exception {
-        return computeRegistryHandler.updateCloudJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
-    }
-
-    public boolean updateUnicoreJobSubmissionDetails(
-            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws Exception {
-        return computeRegistryHandler.updateUnicoreJobSubmissionDetails(jobSubmissionInterfaceId, unicoreJobSubmission);
-    }
-
-    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
-            throws Exception {
-        return computeRegistryHandler.updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
-    }
-
-    public String addLocalSubmissionDetails(
-            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws Exception {
-        return computeRegistryHandler.addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
-    }
-
-    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws Exception {
-        return storageRegistryHandler.getLocalDataMovement(dataMovementId);
-    }
-
-    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws Exception {
-        return storageRegistryHandler.getUnicoreDataMovement(dataMovementId);
-    }
-
-    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws Exception {
-        return storageRegistryHandler.getGridFTPDataMovement(dataMovementId);
-    }
-
-    public boolean deleteDataMovementInterface(String resourceId, String dataMovementInterfaceId, DMType dmType)
-            throws Exception {
-        return storageRegistryHandler.deleteDataMovementInterface(resourceId, dataMovementInterfaceId, dmType);
-    }
-
-    public boolean updateGridFTPDataMovementDetails(
-            String dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws Exception {
-        return storageRegistryHandler.updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
-    }
-
-    public String addGridFTPDataMovementDetails(
-            String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement)
-            throws Exception {
-        return storageRegistryHandler.addGridFTPDataMovementDetails(
-                computeResourceId, dmType, priorityOrder, gridFTPDataMovement);
-    }
-
-    public boolean updateUnicoreDataMovementDetails(
-            String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws Exception {
-        return storageRegistryHandler.updateUnicoreDataMovementDetails(dataMovementInterfaceId, unicoreDataMovement);
-    }
-
-    public String addUnicoreDataMovementDetails(
-            String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
-            throws Exception {
-        return storageRegistryHandler.addUnicoreDataMovementDetails(
-                resourceId, dmType, priorityOrder, unicoreDataMovement);
-    }
-
-    public boolean updateSCPDataMovementDetails(String dataMovementInterfaceId, SCPDataMovement scpDataMovement)
-            throws Exception {
-        return storageRegistryHandler.updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
-    }
-
-    public String addSCPDataMovementDetails(
-            String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement) throws Exception {
-        return storageRegistryHandler.addSCPDataMovementDetails(resourceId, dmType, priorityOrder, scpDataMovement);
-    }
-
-    public boolean updateLocalDataMovementDetails(String dataMovementInterfaceId, LOCALDataMovement localDataMovement)
-            throws Exception {
-        return storageRegistryHandler.updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
-    }
-
-    public String addLocalDataMovementDetails(
-            String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement)
-            throws Exception {
-        return storageRegistryHandler.addLocalDataMovementDetails(
-                resourceId, dataMoveType, priorityOrder, localDataMovement);
     }
 
     // =========================================================================
@@ -1053,11 +897,6 @@ public class RegistryServerHandler implements RegistryHandler {
     @Override
     public StorageResourceDescription getStorageResource(String storageResourceId) throws Exception {
         return storageRegistryHandler.getStorageResource(storageResourceId);
-    }
-
-    @Override
-    public SCPDataMovement getSCPDataMovement(String dataMoveId) throws Exception {
-        return storageRegistryHandler.getSCPDataMovement(dataMoveId);
     }
 
     @Override

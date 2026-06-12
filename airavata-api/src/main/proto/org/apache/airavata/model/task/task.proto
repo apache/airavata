@@ -24,8 +24,6 @@ option java_multiple_files = true;
 
 import "org/apache/airavata/model/commons/commons.proto";
 import "org/apache/airavata/model/application/io/application_io.proto";
-import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
-import "org/apache/airavata/model/data/movement/data_movement.proto";
 import "org/apache/airavata/model/job/job.proto";
 import "org/apache/airavata/model/status/status.proto";
 
@@ -97,15 +95,15 @@ message DataStagingTaskModel {
 // EnvironmentSetupTaskModel: A structure holding the environment creation task details.
 message EnvironmentSetupTaskModel {
   string location = 1;
-  org.apache.airavata.model.data.movement.SecurityProtocol protocol = 2;
+  reserved 2; // was protocol (SecurityProtocol), removed — transport is now always SSH
 }
 
 message JobSubmissionTaskModel {
-  org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol job_submission_protocol = 1;
-  org.apache.airavata.model.appcatalog.computeresource.MonitorMode monitor_mode = 2;
+  reserved 1; // was job_submission_protocol, removed — transport is now always SSH
+  reserved 2; // was monitor_mode, removed — monitoring derived from provisioning type
   int32 wall_time = 3;
 }
 
 message MonitorTaskModel {
-  org.apache.airavata.model.appcatalog.computeresource.MonitorMode monitor_mode = 1;
+  reserved 1; // was monitor_mode, removed — monitoring derived from provisioning type
 }

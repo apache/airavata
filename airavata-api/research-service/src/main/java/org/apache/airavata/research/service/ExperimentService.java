@@ -35,7 +35,6 @@ import org.apache.airavata.interfaces.AppCatalogRegistry;
 import org.apache.airavata.interfaces.ExperimentRegistry;
 import org.apache.airavata.interfaces.ProjectRegistry;
 import org.apache.airavata.interfaces.SharingFacade;
-import org.apache.airavata.messaging.service.EventPublisher;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.experiment.proto.ExperimentSearchFields;
@@ -70,7 +69,7 @@ public class ExperimentService {
     private final AppCatalogRegistry appCatalogRegistry;
     private final ProjectRegistry projectRegistry;
     private final SharingFacade sharingHandler;
-    private final EventPublisher eventPublisher;
+    private final java.util.Optional<org.apache.airavata.orchestration.service.LaunchOrchestrator> launchOrchestrator;
     private GroupResourceProfileListProvider groupResourceProfileListProvider;
 
     /**
@@ -89,12 +88,12 @@ public class ExperimentService {
             AppCatalogRegistry appCatalogRegistry,
             ProjectRegistry projectRegistry,
             SharingFacade sharingHandler,
-            EventPublisher eventPublisher) {
+            java.util.Optional<org.apache.airavata.orchestration.service.LaunchOrchestrator> launchOrchestrator) {
         this.experimentRegistry = experimentRegistry;
         this.appCatalogRegistry = appCatalogRegistry;
         this.projectRegistry = projectRegistry;
         this.sharingHandler = sharingHandler;
-        this.eventPublisher = eventPublisher;
+        this.launchOrchestrator = launchOrchestrator;
     }
 
     public void setGroupResourceProfileListProvider(GroupResourceProfileListProvider groupResourceProfileListProvider) {
@@ -123,8 +122,6 @@ public class ExperimentService {
                 }
             }
 
-            eventPublisher.publishExperimentStatus(
-                    experimentId, ctx.getGatewayId(), ExperimentState.EXPERIMENT_STATE_CREATED);
             logger.info("Created new experiment with name {} and id {}", experiment.getExperimentName(), experimentId);
             return experimentId;
         } catch (ServiceException e) {
@@ -332,7 +329,6 @@ public class ExperimentService {
                     logger.warn("Experiment termination is only allowed for launched experiments.");
                     return;
                 default:
-                    eventPublisher.publishExperimentCancel(experimentId, ctx.getGatewayId());
                     logger.debug("Cancelled experiment {}", experimentId);
             }
         } catch (ServiceException e) {
@@ -575,7 +571,7 @@ public class ExperimentService {
                         "There are already intermediate output fetching tasks running for those outputs.");
             }
 
-            eventPublisher.publishIntermediateOutputs(experimentId, ctx.getGatewayId(), outputNames);
+            throw new ServiceException("Fetching intermediate outputs is not supported in this deployment");
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
@@ -730,7 +726,10 @@ public class ExperimentService {
                 }
             }
 
-            eventPublisher.publishExperimentLaunch(experimentId, gatewayId);
+            if (launchOrchestrator.isEmpty()) {
+                throw new ServiceException("No launch orchestrator is available to submit experiment " + experimentId);
+            }
+            launchOrchestrator.get().launchExperiment(experimentId, gatewayId);
             logger.info("Experiment with ExpId: {} was submitted in gateway: {}", experimentId, gatewayId);
         } catch (ServiceException e) {
             throw e;

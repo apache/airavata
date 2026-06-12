@@ -59,6 +59,9 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "MAX_MEMORY_NODE")
     private int maxMemoryPerNode;
 
+    @Column(name = "SSH_PORT")
+    private int sshPort;
+
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
 
@@ -100,13 +103,9 @@ public class ComputeResourceEntity implements Serializable {
             fetch = FetchType.EAGER)
     private List<BatchQueueEntity> batchQueues;
 
-    @OneToMany(
-            targetEntity = JobSubmissionInterfaceEntity.class,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "computeResource",
-            fetch = FetchType.EAGER)
-    private List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces;
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID", referencedColumnName = "RESOURCE_JOB_MANAGER_ID")
+    private ResourceJobManagerEntity resourceJobManager;
 
     public ComputeResourceEntity() {}
 
@@ -164,6 +163,22 @@ public class ComputeResourceEntity implements Serializable {
 
     public void setMaxMemoryPerNode(int maxMemoryPerNode) {
         this.maxMemoryPerNode = maxMemoryPerNode;
+    }
+
+    public int getSshPort() {
+        return sshPort;
+    }
+
+    public void setSshPort(int sshPort) {
+        this.sshPort = sshPort;
+    }
+
+    public ResourceJobManagerEntity getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
     }
 
     public String getHostName() {
@@ -244,14 +259,6 @@ public class ComputeResourceEntity implements Serializable {
 
     public void setBatchQueues(List<BatchQueueEntity> batchQueues) {
         this.batchQueues = batchQueues;
-    }
-
-    public List<JobSubmissionInterfaceEntity> getJobSubmissionInterfaces() {
-        return jobSubmissionInterfaces;
-    }
-
-    public void setJobSubmissionInterfaces(List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces) {
-        this.jobSubmissionInterfaces = jobSubmissionInterfaces;
     }
 
     public List<Map<String, Object>> getFileSystems() {

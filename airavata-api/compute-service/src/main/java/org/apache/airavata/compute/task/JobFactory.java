@@ -19,15 +19,10 @@
 */
 package org.apache.airavata.compute.task;
 
-import org.apache.airavata.interfaces.AppCatalogException;
-import org.apache.airavata.interfaces.RegistryHandler;
-import org.apache.airavata.model.appcatalog.computeresource.proto.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManagerType;
 
 public class JobFactory {
-
-    private static final Logger logger = LoggerFactory.getLogger(JobFactory.class);
 
     public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
         return switch (resourceJobManagerType) {
@@ -40,67 +35,6 @@ public class JobFactory {
             case HTCONDOR -> "HTCONDOR_Groovy.template";
             default -> null;
         };
-    }
-
-    public static ResourceJobManager getResourceJobManager(
-            RegistryHandler registryClient,
-            JobSubmissionProtocol submissionProtocol,
-            JobSubmissionInterface jobSubmissionInterface)
-            throws Exception {
-        try {
-            if (submissionProtocol == JobSubmissionProtocol.SSH) {
-                SSHJobSubmission sshJobSubmission =
-                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
-                if (sshJobSubmission != null) {
-                    return sshJobSubmission.getResourceJobManager();
-                }
-            } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localJobSubmission =
-                        getLocalJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
-                if (localJobSubmission != null) {
-                    return localJobSubmission.getResourceJobManager();
-                }
-            } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-                SSHJobSubmission sshJobSubmission =
-                        getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
-                if (sshJobSubmission != null) {
-                    return sshJobSubmission.getResourceJobManager();
-                }
-            }
-        } catch (Exception e) {
-            logger.error(
-                    "Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface "
-                            + jobSubmissionInterface.getJobSubmissionInterfaceId(),
-                    e);
-            throw new Exception(
-                    "Failed to fetch a resource job manager for protocol " + submissionProtocol + " and interface "
-                            + jobSubmissionInterface.getJobSubmissionInterfaceId(),
-                    e);
-        }
-
-        // If not resource job manager is found, throw an exception to fail fast
-        throw new Exception("No resource job manager for protocol " + submissionProtocol + " and interface "
-                + jobSubmissionInterface.getJobSubmissionInterfaceId());
-    }
-
-    public static LOCALSubmission getLocalJobSubmission(RegistryHandler registryClient, String submissionId)
-            throws AppCatalogException {
-        try {
-            return registryClient.getLocalJobSubmission(submissionId);
-        } catch (Exception e) {
-            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
-            throw new AppCatalogException(errorMsg, e);
-        }
-    }
-
-    public static SSHJobSubmission getSSHJobSubmission(RegistryHandler registryClient, String submissionId)
-            throws AppCatalogException {
-        try {
-            return registryClient.getSSHJobSubmission(submissionId);
-        } catch (Exception e) {
-            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
-            throw new AppCatalogException(errorMsg, e);
-        }
     }
 
     public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager)

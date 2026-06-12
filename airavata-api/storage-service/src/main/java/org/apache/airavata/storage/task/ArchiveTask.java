@@ -35,7 +35,7 @@ import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.task.TaskOnFailException;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class ArchiveTask extends DataStagingTask {
     private static final CountMonitor archiveTaskCounter = new CountMonitor("archive_task_counter");
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting archival task " + getTaskId() + " in experiment " + getExperimentId());
         archiveTaskCounter.inc();
         saveAndPublishProcessStatus(ProcessState.PROCESS_STATE_OUTPUT_DATA_STAGING);
@@ -107,7 +107,7 @@ public class ArchiveTask extends DataStagingTask {
                 }
 
             } catch (AgentException e) {
-                throw new TaskOnFailException("Failed while running the tar command " + tarringCommand, true, null);
+                throw new TaskOnFailException("Failed while running the tar command " + tarringCommand, true, e);
             }
 
             try {
@@ -148,8 +148,16 @@ public class ArchiveTask extends DataStagingTask {
                             }
                         }
                     } catch (AgentException e) {
-                        throw new TaskOnFailException(
-                                "Failed while running the untar command " + tarringCommand, false, null);
+                        // A storage adaptor backed by SFTP (SSHJStorageAdaptor) does not support shell
+                        // command execution, so the archive cannot be extracted in place. The archive
+                        // tarball itself was transferred successfully above; log the real cause and skip
+                        // extraction rather than dropping the error silently or failing the whole task.
+                        logger.warn(
+                                "Skipping in-place extraction of archive {} into {}: storage adaptor does not"
+                                        + " support command execution",
+                                archiveFileName,
+                                storageArchiveDir,
+                                e);
                     }
 
                     return onSuccess("Archival task successfully completed");

@@ -29,7 +29,7 @@ import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class CreateEC2InstanceTask extends AiravataTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEC2InstanceTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         LOGGER.info("Starting Create EC2 Instance Task for process {}", getProcessId());
         Security.addProvider(new BouncyCastleProvider());
 

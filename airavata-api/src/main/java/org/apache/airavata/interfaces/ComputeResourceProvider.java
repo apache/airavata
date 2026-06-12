@@ -20,12 +20,8 @@
 package org.apache.airavata.interfaces;
 
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.computeresource.proto.CloudJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.proto.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
 
@@ -54,42 +50,6 @@ public interface ComputeResourceProvider {
      * @throws Exception if a data access error occurs
      */
     Map<String, String> getAllComputeResourceNames() throws Exception;
-
-    /**
-     * Retrieve a LOCAL job submission configuration.
-     *
-     * @param jobSubmissionId the job submission interface identifier
-     * @return the local submission description
-     * @throws Exception if not found or a data access error occurs
-     */
-    LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws Exception;
-
-    /**
-     * Retrieve an SSH job submission configuration.
-     *
-     * @param jobSubmissionId the job submission interface identifier
-     * @return the SSH submission description
-     * @throws Exception if not found or a data access error occurs
-     */
-    SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws Exception;
-
-    /**
-     * Retrieve a UNICORE job submission configuration.
-     *
-     * @param jobSubmissionId the job submission interface identifier
-     * @return the UNICORE submission description
-     * @throws Exception if not found or a data access error occurs
-     */
-    UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws Exception;
-
-    /**
-     * Retrieve a cloud job submission configuration.
-     *
-     * @param jobSubmissionId the job submission interface identifier
-     * @return the cloud submission description
-     * @throws Exception if not found or a data access error occurs
-     */
-    CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws Exception;
 
     /**
      * Retrieve a resource job manager by its identifier.

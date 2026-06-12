@@ -19,148 +19,53 @@
 */
 package org.apache.airavata.task;
 
-import org.apache.airavata.config.ServerSettings;
-import org.apache.airavata.exception.ApplicationSettingsException;
 import org.apache.airavata.server.CountMonitor;
 import org.apache.airavata.server.GaugeMonitor;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.helix.HelixManager;
-import org.apache.helix.task.Task;
-import org.apache.helix.task.TaskCallbackContext;
-import org.apache.helix.task.TaskResult;
-import org.apache.helix.task.UserContentStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
+ * Base for the DB-transactional task SPI. The {@link org.apache.airavata.orchestration} executor
+ * resolves the concrete task, populates its {@code @TaskParam} fields via {@link TaskUtil}, and
+ * invokes {@link #onRun(TaskHelper)}; task sequencing and retries are driven off the DB
+ * ({@code PROCESS.TASK_DAG}, {@code EXEC_STATUS}), not an external workflow engine.
  */
-public abstract class AbstractTask extends UserContentStore implements Task {
+public abstract class AbstractTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
-    private static final CountMonitor taskInitCounter = new CountMonitor("task_init_count");
     private static final GaugeMonitor taskRunGauge = new GaugeMonitor("task_run_gauge");
-    private static final CountMonitor taskCancelCounter = new CountMonitor("task_cancel_count");
     private static final CountMonitor taskFailCounter = new CountMonitor("task_fail_count");
     private static final CountMonitor taskCompleteCounter = new CountMonitor("task_complete_count");
-
-    private static final String NEXT_JOB = "next-job";
-    private static final String WORKFLOW_STARTED = "workflow-started";
-
-    private static CuratorFramework curatorClient = null;
 
     @TaskParam(name = "taskId")
     private String taskId;
 
-    @TaskOutPort(name = "Next Task")
-    private OutPort nextTask;
-
-    private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
-    private HelixParticipant participant;
 
     @TaskParam(name = "Retry Count")
     private int retryCount = 3;
 
-    @Override
-    public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
-        super.init(manager, workflowName, jobName, taskName);
-        try {
-            taskInitCounter.inc();
-            TaskUtil.deserializeTaskData(
-                    this, this.callbackContext.getTaskConfig().getConfigMap());
-        } catch (Exception e) {
-            taskFailCounter.inc();
-            logger.error("Deserialization of task parameters failed", e);
-        }
-        if (participant != null) {
-            participant.registerRunningTask(this);
-        } else {
-            logger.warn("Task with id: " + taskId + " is not registered since the participant is not set");
-        }
-    }
-
-    @Override
-    public final TaskResult run() {
-        try {
-            taskRunGauge.inc();
-            boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null
-                    || this.callbackContext
-                            .getJobConfig()
-                            .getJobId()
-                            .equals(this.callbackContext.getJobConfig().getWorkflow() + "_"
-                                    + getUserContent(NEXT_JOB, Scope.WORKFLOW));
-
-            return isThisNextJob
-                    ? onRun(this.taskHelper)
-                    : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
-        } finally {
-            if (participant != null) {
-                participant.unregisterRunningTask(this);
-            } else {
-                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
-            }
-        }
-    }
-
-    @Override
-    public final void cancel() {
-        try {
-            taskRunGauge.dec();
-            taskCancelCounter.inc();
-            logger.info("Cancelling task " + taskId);
-            onCancel();
-        } finally {
-            if (participant != null) {
-                participant.unregisterRunningTask(this);
-            } else {
-                logger.warn("Task with id: " + taskId + " is not unregistered since the participant is not set");
-            }
-        }
-    }
-
-    public abstract TaskResult onRun(TaskHelper helper);
+    public abstract DbTaskResult onRun(TaskHelper helper);
 
     public abstract void onCancel();
 
-    protected TaskResult onSuccess(String message) {
+    protected DbTaskResult onSuccess(String message) {
         taskRunGauge.dec();
         taskCompleteCounter.inc();
         String successMessage =
                 "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
-        return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
+        return DbTaskResult.completed(message);
     }
 
-    protected TaskResult onFail(String reason, boolean fatal) {
+    protected DbTaskResult onFail(String reason, boolean fatal) {
         taskRunGauge.dec();
         taskFailCounter.inc();
-        return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, reason);
+        return fatal ? DbTaskResult.fatal(reason) : DbTaskResult.failed(reason);
     }
 
     protected void publishErrors(Throwable e) {
-        e.printStackTrace();
-    }
-
-    public void sendNextJob(String jobId) {
-        putUserContent(WORKFLOW_STARTED, "TRUE", Scope.WORKFLOW);
-        if (jobId != null) {
-            putUserContent(NEXT_JOB, jobId, Scope.WORKFLOW);
-        }
-    }
-
-    protected void setContextVariable(String key, String value) {
-        putUserContent(key, value, Scope.WORKFLOW);
-    }
-
-    protected String getContextVariable(String key) {
-        return getUserContent(key, Scope.WORKFLOW);
+        logger.error("Task {} failed", getTaskId(), e);
     }
 
     // Getters and setters
@@ -174,15 +79,6 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         return this;
     }
 
-    public TaskCallbackContext getCallbackContext() {
-        return callbackContext;
-    }
-
-    public AbstractTask setCallbackContext(TaskCallbackContext callbackContext) {
-        this.callbackContext = callbackContext;
-        return this;
-    }
-
     public TaskHelper getTaskHelper() {
         return taskHelper;
     }
@@ -192,14 +88,6 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         return this;
     }
 
-    protected int getCurrentRetryCount() throws Exception {
-        return MonitoringUtil.getTaskRetryCount(getCuratorClient(), taskId);
-    }
-
-    protected void markNewRetry(int currentRetryCount) throws Exception {
-        MonitoringUtil.increaseTaskRetryCount(getCuratorClient(), taskId, currentRetryCount);
-    }
-
     public int getRetryCount() {
         return retryCount;
     }
@@ -207,34 +95,5 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     public void setRetryCount(int retryCount) {
         // set the default retry count to 1
         this.retryCount = retryCount <= 0 ? 1 : retryCount;
-    }
-
-    public OutPort getNextTask() {
-        return nextTask;
-    }
-
-    public void setNextTask(OutPort nextTask) {
-        this.nextTask = nextTask;
-    }
-
-    protected synchronized CuratorFramework getCuratorClient() {
-
-        if (curatorClient == null) {
-            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-            try {
-                this.curatorClient =
-                        CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-                this.curatorClient.start();
-            } catch (ApplicationSettingsException e) {
-                logger.error("Failed to create curator client ", e);
-                throw new RuntimeException(e);
-            }
-        }
-        return curatorClient;
-    }
-
-    public AbstractTask setParticipant(HelixParticipant participant) {
-        this.participant = participant;
-        return this;
     }
 }

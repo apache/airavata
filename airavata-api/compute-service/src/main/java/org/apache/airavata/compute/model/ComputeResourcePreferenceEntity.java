@@ -25,8 +25,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.db.JsonListConverter;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 
 /**
  * The persistent class for the compute_resource_preference database table.
@@ -56,14 +54,6 @@ public class ComputeResourcePreferenceEntity implements Serializable {
 
     @Column(name = "PREFERED_BATCH_QUEUE")
     private String preferredBatchQueue;
-
-    @Column(name = "PREFERED_DATA_MOVE_PROTOCOL")
-    @Enumerated(EnumType.STRING)
-    private DataMovementProtocol preferredDataMovementProtocol;
-
-    @Column(name = "PREFERED_JOB_SUB_PROTOCOL")
-    @Enumerated(EnumType.STRING)
-    private JobSubmissionProtocol preferredJobSubmissionProtocol;
 
     @Column(name = "QUALITY_OF_SERVICE")
     private String qualityOfService;
@@ -221,22 +211,6 @@ public class ComputeResourcePreferenceEntity implements Serializable {
 
     public void setPreferredBatchQueue(String preferredBatchQueue) {
         this.preferredBatchQueue = preferredBatchQueue;
-    }
-
-    public DataMovementProtocol getPreferredDataMovementProtocol() {
-        return preferredDataMovementProtocol;
-    }
-
-    public void setPreferredDataMovementProtocol(DataMovementProtocol preferredDataMovementProtocol) {
-        this.preferredDataMovementProtocol = preferredDataMovementProtocol;
-    }
-
-    public JobSubmissionProtocol getPreferredJobSubmissionProtocol() {
-        return preferredJobSubmissionProtocol;
-    }
-
-    public void setPreferredJobSubmissionProtocol(JobSubmissionProtocol preferredJobSubmissionProtocol) {
-        this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
     }
 
     public String getResourceSpecificCredentialStoreToken() {

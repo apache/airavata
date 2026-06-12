@@ -32,7 +32,7 @@ import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.util.AiravataUtils;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         defaultJSTaskCounter.inc();
         String jobId = null;
@@ -59,7 +59,6 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     .fetchAdaptor(
                             getTaskContext().getGatewayId(),
                             computeId,
-                            getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getComputeResourceCredentialToken(),
                             getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
