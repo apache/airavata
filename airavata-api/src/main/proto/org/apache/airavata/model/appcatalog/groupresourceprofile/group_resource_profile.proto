@@ -22,9 +22,6 @@ package org.apache.airavata.model.appcatalog.groupresourceprofile;
 option java_package = "org.apache.airavata.model.appcatalog.groupresourceprofile.proto";
 option java_multiple_files = true;
 
-import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
-import "org/apache/airavata/model/data/movement/data_movement.proto";
-
 enum ResourceType {
   RESOURCE_TYPE_UNKNOWN = 0;
   SLURM = 1;
@@ -77,8 +74,8 @@ message GroupComputeResourcePreference {
   bool override_by_airavata = 3;
   string login_user_name = 4;
   string scratch_location = 5;
-  org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferred_job_submission_protocol = 6;
-  org.apache.airavata.model.data.movement.DataMovementProtocol preferred_data_movement_protocol = 7;
+  reserved 6; // was preferred_job_submission_protocol, removed — transport is now always SSH
+  reserved 7; // was preferred_data_movement_protocol, removed — transport is now always SFTP
   string resource_specific_credential_store_token = 8;
   ResourceType resource_type = 9;
   EnvironmentSpecificPreferences specific_preferences = 10;

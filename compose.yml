@@ -32,47 +32,6 @@ services:
       retries: 5
       start_period: 30s
 
-  rabbitmq:
-    image: rabbitmq:4.0-management
-    container_name: airavata-rabbitmq
-    restart: unless-stopped
-    environment:
-      RABBITMQ_DEFAULT_USER: airavata
-      RABBITMQ_DEFAULT_PASS: airavata
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - airavata-devstack
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.airavata-rabbitmq.rule=Host(`rabbitmq.airavata.host`)
-      - traefik.http.routers.airavata-rabbitmq.entrypoints=web,websecure
-      - traefik.http.routers.airavata-rabbitmq.tls=true
-      - traefik.http.services.airavata-rabbitmq.loadbalancer.server.port=15672
-      - traefik.docker.network=airavata-devstack
-
-  zookeeper:
-    image: zookeeper:3.9
-    container_name: airavata-zookeeper
-    restart: unless-stopped
-    volumes:
-      - zk_data:/data
-      - zk_logs:/datalog
-    networks:
-      - airavata-devstack
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8080/commands/ruok || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
   kafka:
     image: apache/kafka:3.9.0
     container_name: airavata-kafka
@@ -169,12 +128,6 @@ services:
       JAVA_TOOL_OPTIONS: >-
         -Dspring.datasource.url=jdbc:mariadb://db.airavata.host:3306/airavata
         -Dkafka.broker.url=kafka:9092
-        -Drabbitmq.broker.url=amqp://airavata:airavata@rabbitmq:5672
-        -Dspring.rabbitmq.host=rabbitmq
-        -Dspring.rabbitmq.port=5672
-        -Dspring.rabbitmq.username=airavata
-        -Dspring.rabbitmq.password=airavata
-        -Dzookeeper.server.connection=zookeeper:2181
         -Dairavata.security.openid-url=https://auth.airavata.host/realms/default
         -Diam.server.url=https://auth.airavata.host
     volumes:
@@ -184,8 +137,6 @@ services:
       - airavata-devstack
     depends_on:
       db: { condition: service_healthy }
-      rabbitmq: { condition: service_healthy }
-      zookeeper: { condition: service_healthy }
       kafka: { condition: service_healthy }
       keycloak: { condition: service_healthy }
     labels:
@@ -197,8 +148,7 @@ services:
       - traefik.http.services.airavata-api.loadbalancer.server.scheme=h2c
       - traefik.docker.network=airavata-devstack
     # Spring Actuator is bridged onto Armeria (armeria-spring-boot3-actuator-autoconfigure),
-    # so /actuator/health reflects DB + messaging health (200 UP only when db, rabbitmq,
-    # kafka, and zookeeper are all reachable; 503 otherwise).
+    # Health is Spring Boot defaults (DB ping); orchestration messaging/ZK removed.
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
       interval: 15s
@@ -226,10 +176,141 @@ services:
       - traefik.http.services.airavata-adminer.loadbalancer.server.port=8080
       - traefik.docker.network=airavata-devstack
 
+  # --- SLURM cluster (image built by Tilt's docker_build; no build: block here) ---
+  # A real multi-node SLURM cluster: a controller/login node (slurmctld, also the
+  # ssh submit host reachable as `slurm`), two compute nodes (c1, c2 running
+  # slurmd), the accounting daemon (slurmdbd) and its dedicated MariaDB. munge
+  # provides shared auth via the slurm_munge volume; jobs share /home/airavata via
+  # the slurm_scratch volume across the submit node and every compute node.
+
+  # Dedicated accounting DB so `sacct` returns job state/history. Kept separate
+  # from the Airavata `db` to avoid coupling SLURM's schema to Airavata's.
+  slurm-dbmysql:
+    image: mariadb:11.8
+    container_name: airavata-slurm-dbmysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: slurm_acct_db
+      MYSQL_USER: slurm
+      MYSQL_PASSWORD: slurm
+    volumes:
+      - slurm_db_data:/var/lib/mysql
+    networks:
+      - airavata-devstack
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  slurmdbd:
+    image: airavata-slurm:dev
+    container_name: airavata-slurmdbd
+    hostname: slurmdbd
+    restart: unless-stopped
+    command: ["slurmdbd"]
+    volumes:
+      - slurm_munge:/etc/munge
+    networks:
+      airavata-devstack:
+        aliases:
+          - slurmdbd
+    depends_on:
+      slurm-dbmysql: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/6819' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Controller + ssh login/submit node. The airavata-server ssh-es into this as
+  # `airavata` (via the devstack id_rsa keypair) to run sbatch/squeue/sacct.
+  slurmctld:
+    image: airavata-slurm:dev
+    container_name: airavata-slurmctld
+    hostname: slurmctld
+    restart: unless-stopped
+    command: ["slurmctld"]
+    volumes:
+      - slurm_munge:/etc/munge
+      - slurm_scratch:/home/airavata
+      - ./conf/sftp/id_rsa.pub:/etc/airavata/authorized_keys:ro
+    networks:
+      airavata-devstack:
+        aliases:
+          - slurmctld
+          - slurm          # ssh submit-host alias the airavata-server connects to
+    depends_on:
+      slurmdbd: { condition: service_healthy }
+    healthcheck:
+      # Ready only when both compute nodes have registered and are idle/available.
+      test: ["CMD-SHELL", "sinfo -h -t idle,alloc,mix -o '%n' | grep -q c1 && sinfo -h -t idle,alloc,mix -o '%n' | grep -q c2"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 25s
+
+  c1:
+    image: airavata-slurm:dev
+    container_name: airavata-slurm-c1
+    hostname: c1
+    restart: unless-stopped
+    command: ["slurmd"]
+    # slurmd (23.11) always initializes a cgroup plugin for the slurmstepd scope.
+    # The host /sys/fs/cgroup is read-only here, so we give slurmd a private
+    # writable tmpfs the cgroup/v1 plugin (see cgroup.conf) can populate.
+    tmpfs:
+      - /sys/fs/cgroup:rw,mode=0755
+    volumes:
+      - slurm_munge:/etc/munge
+      - slurm_scratch:/home/airavata
+      - ./conf/sftp/id_rsa.pub:/etc/airavata/authorized_keys:ro
+    networks:
+      airavata-devstack:
+        aliases:
+          - c1
+    depends_on:
+      slurmdbd: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/6818' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  c2:
+    image: airavata-slurm:dev
+    container_name: airavata-slurm-c2
+    hostname: c2
+    restart: unless-stopped
+    command: ["slurmd"]
+    # See c1: writable cgroup tmpfs for slurmd's cgroup/v1 stepd scope.
+    tmpfs:
+      - /sys/fs/cgroup:rw,mode=0755
+    volumes:
+      - slurm_munge:/etc/munge
+      - slurm_scratch:/home/airavata
+      - ./conf/sftp/id_rsa.pub:/etc/airavata/authorized_keys:ro
+    networks:
+      airavata-devstack:
+        aliases:
+          - c2
+    depends_on:
+      slurmdbd: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/6818' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
 volumes:
   db_data:
-  rabbitmq_data:
-  zk_data:
-  zk_logs:
   kafka_data:
   sftp_data:
+  slurm_db_data:    # accounting DB storage
+  slurm_munge:      # shared munge.key across all slurm daemons
+  slurm_scratch:    # shared /home/airavata job scratch across submit + compute nodes

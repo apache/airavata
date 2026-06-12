@@ -120,10 +120,12 @@ public class AiravataFileService {
                 }
             }
         } catch (ServiceException | ExecutionException e) {
-            LOGGER.error("Failed to fetch experiments when trying to read the directory");
+            LOGGER.error("Failed to fetch experiments when trying to read the directory {}", fusePath, e);
             responseObserver.onError(Status.INTERNAL
-                    .withDescription("Failed to fetch experiments  when trying to read the directory")
+                    .withDescription("Failed to fetch experiments when trying to read the directory")
+                    .withCause(e)
                     .asRuntimeException());
+            return;
         }
 
         // responseObserver.onNext(ServerMessage.newBuilder().setReadDirRes(readDirResBuilder.build()).build());

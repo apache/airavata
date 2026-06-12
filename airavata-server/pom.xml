@@ -88,12 +88,6 @@ under the License.
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Messaging -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
         <!-- Armeria gRPC -->
         <dependency>
             <groupId>com.linecorp.armeria</groupId>

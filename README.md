@@ -61,27 +61,25 @@ Airavata runs as a **single unified JVM** (Spring Boot + Armeria) that serves gR
 graph TB
     subgraph "Docker Infrastructure (compose.yml)"
         DB[(MariaDB<br/>:13306)]
-        RMQ[RabbitMQ<br/>:5672]
-        ZK[ZooKeeper<br/>:2181]
         KFK[Kafka<br/>:9092]
         KC[Keycloak<br/>:18080]
+        SFTP[SFTP<br/>:22]
     end
 
     subgraph "Unified Airavata Server (single JVM)"
         direction TB
         ARMERIA["Armeria :9090<br/>gRPC + REST transcoding"]
         SVC["Service Layer<br/>(airavata-api module)"]
-        BG["Background Services<br/>12 workers"]
+        BG["DB-transactional<br/>ProcessExecutor"]
     end
 
     SDK[Python SDK] -->|gRPC| ARMERIA
     Portal[Web Portal] -->|REST| ARMERIA
     ARMERIA --> SVC
     SVC --> DB
-    SVC --> RMQ
-    BG --> ZK
+    BG --> DB
     BG --> KFK
-    BG --> RMQ
+    BG -.->|SFTP/SSH| SFTP
     SVC -.->|auth| KC
 ```
 
@@ -93,7 +91,7 @@ The unified server hosts gRPC and REST (via Armeria HTTP/JSON transcoding) on a 
 
 1. Initializes the unified `airavata` database
 2. Starts Armeria server on port **9090** (gRPC + REST transcoding + DocService at `/docs`)
-3. Starts background `IServer` workers
+3. Starts the DB-transactional `ProcessExecutor` worker pool
 
 #### Architecture: Service Layer + gRPC Transport
 
@@ -116,33 +114,26 @@ All business logic lives in a transport-agnostic **service layer** (`org.apache.
 | `NotificationService` | Notification CRUD |
 | `ParserService` | Parsers and parsing templates |
 
-Shared utilities: `SharingHelper` (sharing operations), `EventPublisher` (messaging), `RequestContext` (transport-agnostic identity).
+Shared utilities: `SharingHelper` (sharing operations), `RequestContext` (transport-agnostic identity).
 
-#### Background Services (IServer lifecycle, same JVM)
+#### Background Services (Spring lifecycle, same JVM)
 
 | Service | Responsibility |
 |---|---|
-| `DBEventManagerRunner` | Syncs task execution events to the DB via pub/sub |
-| `MonitoringServer` | Prometheus metrics endpoint (optional) |
-| `ComputationalResourceMonitoringService` | Polls compute resource queue status |
-| `DataInterpreterService` | Metadata analysis for submitted jobs |
-| `ProcessReschedulingService` | Retries and reschedules failed processes |
-| `HelixController` | Manages Helix cluster state transitions |
-| `GlobalParticipant` | Executes task steps (`EnvSetupTask`, `InputDataStagingTask`, `OutputDataStagingTask`, `JobVerificationTask`, `CompletingTask`, `ForkJobSubmissionTask`, `DefaultJobSubmissionTask`, `LocalJobSubmissionTask`, `ArchiveTask`, `WorkflowCancellationTask`, `RemoteJobCancellationTask`, `CancelCompletingTask`, `DataParsingTask`, `ParsingTriggeringTask`) |
-| `PreWorkflowManager` | Handles pre-execution phase (env setup, data staging) |
-| `PostWorkflowManager` | Handles post-execution phase (cleanup, output fetching) |
-| `ParserWorkflowManager` | Handles parsing/data-interpretation workflow phase |
-| `EmailBasedMonitor` | Polls email inbox for job status updates (optional) |
-| `RealtimeMonitor` | Listens on Kafka for real-time job state changes |
+| `ProcessExecutor` | Orchestration engine — a `SmartLifecycle` worker pool that claims ready work with `SELECT … FOR UPDATE SKIP LOCKED` and walks each experiment's `PROCESS → TASK` DAG (env setup → data staging → job submission → monitoring) to completion |
+| `DbLaunchOrchestrator` | Materializes the `PROCESS`/`TASK` DAG for an experiment at launch and advances its status |
+| `KafkaProxyService` | Bridges the remote-agent path over Kafka (KRaft mode) |
+
+The DB (`PROCESS`/`TASK`/`EXEC_STATUS`) is the transactional source of truth — exactly-once task claiming across threads and JVM restarts, with no Helix/ZooKeeper/Curator/RabbitMQ on the run path.
 
 ```mermaid
 stateDiagram-v2
     [*] --> CREATED
     CREATED --> VALIDATED : validateExperiment
     VALIDATED --> LAUNCHED : launchExperiment
-    LAUNCHED --> EXECUTING : PreWorkflowManager
-    EXECUTING --> MONITORING : job submitted
-    MONITORING --> COMPLETED : job finished
+    LAUNCHED --> EXECUTING : ProcessExecutor claims process
+    EXECUTING --> MONITORING : job submitted (sbatch over SSH)
+    MONITORING --> COMPLETED : sacct reports terminal
     MONITORING --> FAILED : job error
     EXECUTING --> CANCELLED : terminateExperiment
     COMPLETED --> [*]
@@ -154,13 +145,9 @@ stateDiagram-v2
 graph LR
     subgraph "Startup Sequence"
         direction TB
-        A[1. DB Init] --> B[2. Armeria Server :9090]
-        B --> C[3. DBEventManager]
-        C --> D[4. HelixController]
-        D --> E{waitForHelixCluster}
-        E --> F[5. HelixParticipant]
-        F --> G[6. Pre/Post/Parser WF Managers]
-        G --> H[7. Email/Realtime Monitors]
+        A[1. DB Init / Flyway] --> B[2. Armeria Server :9090]
+        B --> C[3. ProcessExecutor worker pool]
+        C --> D[4. KafkaProxyService]
     end
 ```
 
@@ -209,7 +196,7 @@ tilt up
 ```
 
 This starts:
-- **Infrastructure**: MariaDB, RabbitMQ, ZooKeeper, Kafka, Keycloak (via `compose.yml`)
+- **Infrastructure**: MariaDB, Kafka, Keycloak, SFTP, and a docker-SLURM cluster (via `compose.yml`)
 - **Unified Airavata Server**: gRPC + REST on port 9090, API docs at `/docs`
 
 Open the Tilt UI at `http://localhost:10350` to monitor all resources. Integration tests can be triggered manually from the Tilt UI.

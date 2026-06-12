@@ -92,19 +92,6 @@ under the License.
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>research-service</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>research-service</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -188,7 +175,7 @@ under the License.
                 </configuration>
             </plugin>
 
-            <!-- Publish test-jar so research-service tests can reuse TestBase -->
+            <!-- Publish test-jar so sibling modules can reuse this module's test fixtures -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

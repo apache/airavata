@@ -159,10 +159,12 @@ class DataModelCreationUtil(object):
             for key in file_mapping.keys():
                 for inp in inputs:
                     if key == inp.name:
-                        if inp.type == 3:
+                        # Compare against the proto DataType members (inp.type stays the
+                        # proto enum). URI -> single path; URI_COLLECTION -> comma-joined.
+                        if inp.type == application_io_pb2.URI:
                             inp.value = file_mapping[key]
                             configured_inputs.append(inp)
-                        elif inp.type == 4:
+                        elif inp.type == application_io_pb2.URI_COLLECTION:
                             val = ','.join(file_mapping[key])
                             inp.value = val
                             configured_inputs.append(inp)

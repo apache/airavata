@@ -53,7 +53,6 @@ no `/etc/hosts` needed):
 |----------|---------|-------|
 | `api.airavata.host` | Airavata server (gRPC + REST) | — |
 | `auth.airavata.host` | Keycloak | `admin` / `admin` |
-| `rabbitmq.airavata.host` | RabbitMQ management UI | `airavata` / `airavata` |
 | `adminer.airavata.host` | Adminer (`--profile tools`) | — |
 | `gateway.airavata.host` | Django portal (separate `tilt up --port 10351` in `airavata-portals`) | — |
 
@@ -70,8 +69,7 @@ cd ../airavata-portals && tilt up --port 10351   # 2. portals (distinct Tilt UI 
 
 MariaDB is published on `127.0.0.1:3306` (replacing the old `13306`) and reachable
 inside the VM as `db.airavata.host:3306`. Internally the server reaches infra by
-service name (`rabbitmq:5672`, `kafka:9092`, `zookeeper:2181`, `keycloak:18080`,
-`sftp:22`; SFTP creds `airavata`/`pass`).
+service name (`kafka:9092`, `keycloak:18080`, `sftp:22`; SFTP creds `airavata`/`pass`).
 
 **Restart matrix:**
 
@@ -85,7 +83,7 @@ Gotchas:
 - Connection settings are injected as `-D` system properties via `JAVA_TOOL_OPTIONS` in the
   `airavata-server` service. Airavata's `ApplicationSettings` resolves *dotted* keys
   (`system-property > env-var-with-exact-dotted-key > file`), so `SPRING_DATASOURCE_URL`-style
-  env vars do **not** override `kafka.broker.url` / `rabbitmq.broker.url` / etc.
+  env vars do **not** override `kafka.broker.url` / `spring.datasource.url` / etc.
 - The Keycloak issuer is `https://auth.airavata.host/realms/default` for both browser and
   in-network server (TLS terminates at Traefik, which forwards `X-Forwarded-Proto`).
 - `docker` must be on `PATH` for Tilt's shell-outs (colima installs the CLI keg-only — run
@@ -106,10 +104,10 @@ Contains all service modules, each with `src/main/{java,proto,resources}`:
 | `compute-service` | HPC resource catalog, resource profiles, scheduling |
 | `research-service` | Projects, experiments, app catalog, data products |
 | `storage-service` | Storage registry, file operations |
-| `orchestration-service` | Workflow orchestration, job monitoring (Helix state machine) |
+| `orchestration-service` | Experiment launch + task-DAG execution (DB-transactional executor), job monitoring |
 | `agent-service` | Remote agent communication (bidirectional streaming) |
 
-Also contains `src/main/` at the api level for shared utilities: `EventPublisher`, `GrpcStatusMapper`, `GrpcAuthInterceptor`, `RequestContext`.
+Also contains `src/main/` at the api level for shared utilities: `GrpcStatusMapper`, `GrpcAuthInterceptor`, `RequestContext`.
 
 ### `airavata-server`
 
@@ -147,21 +145,20 @@ Example: `ProjectService` proto → `ProjectServiceGrpcImpl` (adapter) → `Proj
 - **gRPC 1.73 / Protobuf 4.29** — API contracts
 - **MapStruct 1.6** — Entity ↔ Protobuf mapping
 - **Flyway** — Schema migration (`V1__Baseline_schema.sql`)
-- **Helix 1.4** — Workflow orchestration state machine
 - **Keycloak 26** — IAM (JWT validation via `GrpcAuthInterceptor`)
 
 ### Background Services
 
-Launched as `IServer` workers in the same JVM:
-- `DBEventManagerRunner` — RabbitMQ listener for task events
-- `HelixController` / `GlobalParticipant` — Workflow state machine (env setup, staging, submission, monitoring)
-- `RealtimeMonitor` — Kafka listener for job completions
-- `ProcessReschedulingService` — Retries failed processes
+The DB-transactional `ProcessExecutor` (a Spring `SmartLifecycle` worker pool) is the
+orchestration engine: it claims ready work with `SELECT … FOR UPDATE SKIP LOCKED` and walks
+each experiment's `PROCESS → TASK` DAG (env setup → data staging → job submission →
+monitoring) to completion, with the DB (`PROCESS`/`TASK`/`EXEC_STATUS`) as the transactional
+source of truth. `DbLaunchOrchestrator` materializes the DAG at launch. There is no
+Helix/ZooKeeper/Curator/RabbitMQ on the run path.
 
 ### Messaging
 
-- **RabbitMQ** — Experiment/process state changes (`experiment_exchange`, `process_exchange`, `status_exchange`)
-- **Kafka** — Real-time job monitoring (`monitoring-data` topic)
+- **Kafka** — backs `KafkaProxyService` for the remote-agent path (KRaft mode; no ZooKeeper).
 
 ## Logging
 

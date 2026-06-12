@@ -21,20 +21,16 @@ package org.apache.airavata.interfaces;
 
 import java.util.List;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 
 /**
- * Registry operations for storage resources, data movement, and data products.
+ * Registry operations for storage resources and data products.
  */
 public interface StorageRegistry {
 
     // --- Storage resource operations ---
     StorageResourceDescription getStorageResource(String storageResourceId) throws Exception;
-
-    // --- Data movement operations ---
-    SCPDataMovement getSCPDataMovement(String dataMoveId) throws Exception;
 
     // --- Data product operations ---
     String registerDataProduct(DataProductModel dataProductModel) throws Exception;

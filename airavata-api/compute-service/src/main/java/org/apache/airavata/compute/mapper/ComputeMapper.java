@@ -26,16 +26,9 @@ import java.util.Map;
 import org.apache.airavata.compute.model.*;
 import org.apache.airavata.mapper.CommonMapperConversions;
 import org.apache.airavata.model.appcatalog.computeresource.proto.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.proto.CloudJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.proto.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.proto.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ProviderName;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.proto.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.BatchQueueResourcePolicy;
@@ -74,6 +67,9 @@ public interface ComputeMapper extends CommonMapperConversions {
         b.setEnabled(entity.getEnabled() != 0);
         b.setMaxMemoryPerNode(entity.getMaxMemoryPerNode());
         b.setGatewayUsageReporting(entity.isGatewayUsageReporting());
+        b.setSshPort(entity.getSshPort());
+        if (entity.getResourceJobManager() != null)
+            b.setResourceJobManager(resourceJobManagerToModel(entity.getResourceJobManager()));
         if (entity.getGatewayUsageModuleLoadCommand() != null)
             b.setGatewayUsageModuleLoadCommand(entity.getGatewayUsageModuleLoadCommand());
         if (entity.getGatewayUsageExecutable() != null) b.setGatewayUsageExecutable(entity.getGatewayUsageExecutable());
@@ -85,10 +81,6 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (entity.getIpAddresses() != null) b.addAllIpAddresses(entity.getIpAddresses());
         if (entity.getBatchQueues() != null) {
             entity.getBatchQueues().forEach(q -> b.addBatchQueues(batchQueueToModel(q)));
-        }
-        if (entity.getJobSubmissionInterfaces() != null) {
-            entity.getJobSubmissionInterfaces()
-                    .forEach(j -> b.addJobSubmissionInterfaces(jobSubmissionInterfaceToModel(j)));
         }
         if (entity.getFileSystems() != null) {
             for (Map<String, Object> entry : entity.getFileSystems()) {
@@ -115,6 +107,9 @@ public interface ComputeMapper extends CommonMapperConversions {
         entity.setEnabled(model.getEnabled() ? (short) 1 : (short) 0);
         entity.setMaxMemoryPerNode(model.getMaxMemoryPerNode());
         entity.setGatewayUsageReporting(model.getGatewayUsageReporting());
+        entity.setSshPort(model.getSshPort());
+        if (model.hasResourceJobManager())
+            entity.setResourceJobManager(resourceJobManagerToEntity(model.getResourceJobManager()));
         entity.setGatewayUsageModuleLoadCommand(model.getGatewayUsageModuleLoadCommand());
         entity.setGatewayUsageExecutable(model.getGatewayUsageExecutable());
         entity.setCpusPerNode(model.getCpusPerNode());
@@ -126,11 +121,6 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (!model.getBatchQueuesList().isEmpty()) {
             entity.setBatchQueues(model.getBatchQueuesList().stream()
                     .map(this::batchQueueToEntity)
-                    .toList());
-        }
-        if (!model.getJobSubmissionInterfacesList().isEmpty()) {
-            entity.setJobSubmissionInterfaces(model.getJobSubmissionInterfacesList().stream()
-                    .map(this::jobSubmissionInterfaceToEntity)
                     .toList());
         }
         if (!model.getFileSystemsMap().isEmpty()) {
@@ -157,18 +147,59 @@ public interface ComputeMapper extends CommonMapperConversions {
     BatchQueueEntity batchQueueToEntity(BatchQueue model);
 
     // --- ResourceJobManager ---
-    @Mapping(target = "jobManagerCommands", ignore = true)
-    @Mapping(target = "parallelismPrefix", ignore = true)
-    ResourceJobManager resourceJobManagerToModel(ResourceJobManagerEntity entity);
+    // Hand-written so the job_manager_commands map (proto map<int32,string> keyed by the
+    // JobManagerCommand enum number) round-trips through the JOB_MANAGER_COMMAND child table.
+    // MapStruct cannot match the proto map accessor to the entity's List<JobManagerCommandEntity>
+    // and previously dropped the commands silently (sbatch/squeue/scancel were never persisted).
+    default ResourceJobManager resourceJobManagerToModel(ResourceJobManagerEntity entity) {
+        if (entity == null) return null;
+        ResourceJobManager.Builder b = ResourceJobManager.newBuilder();
+        if (entity.getResourceJobManagerId() != null) b.setResourceJobManagerId(entity.getResourceJobManagerId());
+        if (entity.getResourceJobManagerType() != null)
+            b.setResourceJobManagerType(entity.getResourceJobManagerType());
+        if (entity.getJobManagerBinPath() != null) b.setJobManagerBinPath(entity.getJobManagerBinPath());
+        if (entity.getPushMonitoringEndpoint() != null)
+            b.setPushMonitoringEndpoint(entity.getPushMonitoringEndpoint());
+        if (entity.getJobManagerCommands() != null) {
+            for (JobManagerCommandEntity cmd : entity.getJobManagerCommands()) {
+                if (cmd.getCommandType() != null && cmd.getCommand() != null) {
+                    b.putJobManagerCommands(cmd.getCommandType().getNumber(), cmd.getCommand());
+                }
+            }
+        }
+        return b.build();
+    }
 
-    @Mapping(target = "jobManagerCommands", ignore = true)
-    @Mapping(target = "parallelismCommands", ignore = true)
-    ResourceJobManagerEntity resourceJobManagerToEntity(ResourceJobManager model);
-
-    // --- JobSubmissionInterface ---
-    JobSubmissionInterface jobSubmissionInterfaceToModel(JobSubmissionInterfaceEntity entity);
-
-    JobSubmissionInterfaceEntity jobSubmissionInterfaceToEntity(JobSubmissionInterface model);
+    default ResourceJobManagerEntity resourceJobManagerToEntity(ResourceJobManager model) {
+        if (model == null) return null;
+        ResourceJobManagerEntity entity = new ResourceJobManagerEntity();
+        String rjmId = model.getResourceJobManagerId();
+        if (rjmId == null || rjmId.isEmpty()) {
+            rjmId = "RJM_" + java.util.UUID.randomUUID();
+        }
+        entity.setResourceJobManagerId(rjmId);
+        if (model.getResourceJobManagerType() != null)
+            entity.setResourceJobManagerType(model.getResourceJobManagerType());
+        entity.setJobManagerBinPath(model.getJobManagerBinPath());
+        entity.setPushMonitoringEndpoint(model.getPushMonitoringEndpoint());
+        if (!model.getJobManagerCommandsMap().isEmpty()) {
+            List<JobManagerCommandEntity> cmds = new ArrayList<>();
+            for (Map.Entry<Integer, String> e : model.getJobManagerCommandsMap().entrySet()) {
+                org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand type =
+                        org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand.forNumber(
+                                e.getKey());
+                if (type == null) continue;
+                JobManagerCommandEntity cmd = new JobManagerCommandEntity();
+                cmd.setResourceJobManagerId(rjmId);
+                cmd.setCommandType(type);
+                cmd.setCommand(e.getValue());
+                cmd.setResourceJobManager(entity);
+                cmds.add(cmd);
+            }
+            entity.setJobManagerCommands(cmds);
+        }
+        return entity;
+    }
 
     // --- GatewayResourceProfile / GatewayProfileEntity ---
     // MapStruct auto-maps the scalar tokens/IDs; the @AfterMapping hooks below add the repeated
@@ -208,10 +239,6 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (entity.getLoginUserName() != null) b.setLoginUserName(entity.getLoginUserName());
         b.setOverrideByAiravata(entity.isOverridebyAiravata());
         if (entity.getPreferredBatchQueue() != null) b.setPreferredBatchQueue(entity.getPreferredBatchQueue());
-        if (entity.getPreferredDataMovementProtocol() != null)
-            b.setPreferredDataMovementProtocol(entity.getPreferredDataMovementProtocol());
-        if (entity.getPreferredJobSubmissionProtocol() != null)
-            b.setPreferredJobSubmissionProtocol(entity.getPreferredJobSubmissionProtocol());
         if (entity.getQualityOfService() != null) b.setQualityOfService(entity.getQualityOfService());
         if (entity.getReservation() != null) b.setReservation(entity.getReservation());
         if (entity.getReservationStartTime() != null)
@@ -243,8 +270,6 @@ public interface ComputeMapper extends CommonMapperConversions {
         entity.setLoginUserName(model.getLoginUserName());
         entity.setOverridebyAiravata(model.getOverrideByAiravata());
         entity.setPreferredBatchQueue(model.getPreferredBatchQueue());
-        entity.setPreferredDataMovementProtocol(model.getPreferredDataMovementProtocol());
-        entity.setPreferredJobSubmissionProtocol(model.getPreferredJobSubmissionProtocol());
         entity.setQualityOfService(model.getQualityOfService());
         entity.setReservation(model.getReservation());
         if (model.getReservationStartTime() != 0)
@@ -350,10 +375,6 @@ public interface ComputeMapper extends CommonMapperConversions {
         b.setOverrideByAiravata(entity.getOverridebyAiravata() != 0);
         if (entity.getLoginUserName() != null) b.setLoginUserName(entity.getLoginUserName());
         if (entity.getScratchLocation() != null) b.setScratchLocation(entity.getScratchLocation());
-        if (entity.getPreferredJobSubmissionProtocol() != null)
-            b.setPreferredJobSubmissionProtocol(entity.getPreferredJobSubmissionProtocol());
-        if (entity.getPreferredDataMovementProtocol() != null)
-            b.setPreferredDataMovementProtocol(entity.getPreferredDataMovementProtocol());
         if (entity.getResourceSpecificCredentialStoreToken() != null)
             b.setResourceSpecificCredentialStoreToken(entity.getResourceSpecificCredentialStoreToken());
         if (entity instanceof SlurmGroupComputeResourcePrefEntity slurm) {
@@ -403,8 +424,6 @@ public interface ComputeMapper extends CommonMapperConversions {
         entity.setOverridebyAiravata(model.getOverrideByAiravata() ? (short) 1 : (short) 0);
         entity.setLoginUserName(model.getLoginUserName());
         entity.setScratchLocation(model.getScratchLocation());
-        entity.setPreferredDataMovementProtocol(model.getPreferredDataMovementProtocol());
-        entity.setPreferredJobSubmissionProtocol(model.getPreferredJobSubmissionProtocol());
         entity.setResourceSpecificCredentialStoreToken(model.getResourceSpecificCredentialStoreToken());
         if (model.hasSpecificPreferences()
                 && model.getSpecificPreferences().getPreferencesCase()
@@ -524,123 +543,6 @@ public interface ComputeMapper extends CommonMapperConversions {
     UserComputeResourcePreference userComputeResourcePrefToModel(UserComputeResourcePreferenceEntity entity);
 
     UserComputeResourcePreferenceEntity userComputeResourcePrefToEntity(UserComputeResourcePreference model);
-
-    // --- Consolidated ComputeJobSubmissionEntity mappings ---
-
-    // SSHJobSubmission
-    default SSHJobSubmission sshJobSubmissionToModel(ComputeJobSubmissionEntity entity) {
-        if (entity == null) return null;
-        SSHJobSubmission.Builder b = SSHJobSubmission.newBuilder();
-        b.setJobSubmissionInterfaceId(entity.getSubmissionId());
-        if (entity.getSecurityProtocol() != null) b.setSecurityProtocol(entity.getSecurityProtocol());
-        if (entity.getResourceJobManager() != null)
-            b.setResourceJobManager(resourceJobManagerToModel(entity.getResourceJobManager()));
-        Map<String, Object> cfg = entity.getConfig();
-        if (cfg != null) {
-            b.setSshPort(((Number) cfg.getOrDefault("sshPort", 22)).intValue());
-            if (cfg.get("alternativeSshHostname") != null)
-                b.setAlternativeSshHostName((String) cfg.get("alternativeSshHostname"));
-            if (cfg.get("monitorMode") != null) b.setMonitorMode(MonitorMode.valueOf((String) cfg.get("monitorMode")));
-        }
-        return b.build();
-    }
-
-    default ComputeJobSubmissionEntity sshJobSubmissionToEntity(SSHJobSubmission model) {
-        if (model == null) return null;
-        ComputeJobSubmissionEntity entity = new ComputeJobSubmissionEntity();
-        entity.setSubmissionId(model.getJobSubmissionInterfaceId());
-        entity.setSubmissionType("SSH");
-        entity.setSecurityProtocol(model.getSecurityProtocol());
-        if (model.hasResourceJobManager())
-            entity.setResourceJobManager(resourceJobManagerToEntity(model.getResourceJobManager()));
-        Map<String, Object> cfg = new LinkedHashMap<>();
-        cfg.put("sshPort", model.getSshPort());
-        if (!model.getAlternativeSshHostName().isEmpty())
-            cfg.put("alternativeSshHostname", model.getAlternativeSshHostName());
-        if (model.getMonitorMode() != null)
-            cfg.put("monitorMode", model.getMonitorMode().name());
-        entity.setConfig(cfg);
-        return entity;
-    }
-
-    // LOCALSubmission
-    default LOCALSubmission localSubmissionToModel(ComputeJobSubmissionEntity entity) {
-        if (entity == null) return null;
-        LOCALSubmission.Builder b = LOCALSubmission.newBuilder();
-        b.setJobSubmissionInterfaceId(entity.getSubmissionId());
-        if (entity.getSecurityProtocol() != null) b.setSecurityProtocol(entity.getSecurityProtocol());
-        if (entity.getResourceJobManager() != null)
-            b.setResourceJobManager(resourceJobManagerToModel(entity.getResourceJobManager()));
-        return b.build();
-    }
-
-    default ComputeJobSubmissionEntity localSubmissionToEntity(LOCALSubmission model) {
-        if (model == null) return null;
-        ComputeJobSubmissionEntity entity = new ComputeJobSubmissionEntity();
-        entity.setSubmissionId(model.getJobSubmissionInterfaceId());
-        entity.setSubmissionType("LOCAL");
-        entity.setSecurityProtocol(model.getSecurityProtocol());
-        if (model.hasResourceJobManager())
-            entity.setResourceJobManager(resourceJobManagerToEntity(model.getResourceJobManager()));
-        return entity;
-    }
-
-    // CloudJobSubmission
-    default CloudJobSubmission cloudJobSubmissionToModel(ComputeJobSubmissionEntity entity) {
-        if (entity == null) return null;
-        CloudJobSubmission.Builder b = CloudJobSubmission.newBuilder();
-        b.setJobSubmissionInterfaceId(entity.getSubmissionId());
-        if (entity.getSecurityProtocol() != null) b.setSecurityProtocol(entity.getSecurityProtocol());
-        Map<String, Object> cfg = entity.getConfig();
-        if (cfg != null) {
-            if (cfg.get("nodeId") != null) b.setNodeId((String) cfg.get("nodeId"));
-            if (cfg.get("executableType") != null) b.setExecutableType((String) cfg.get("executableType"));
-            if (cfg.get("providerName") != null)
-                b.setProviderName(ProviderName.valueOf((String) cfg.get("providerName")));
-            if (cfg.get("userAccountName") != null) b.setUserAccountName((String) cfg.get("userAccountName"));
-        }
-        return b.build();
-    }
-
-    default ComputeJobSubmissionEntity cloudJobSubmissionToEntity(CloudJobSubmission model) {
-        if (model == null) return null;
-        ComputeJobSubmissionEntity entity = new ComputeJobSubmissionEntity();
-        entity.setSubmissionId(model.getJobSubmissionInterfaceId());
-        entity.setSubmissionType("CLOUD");
-        entity.setSecurityProtocol(model.getSecurityProtocol());
-        Map<String, Object> cfg = new LinkedHashMap<>();
-        if (!model.getNodeId().isEmpty()) cfg.put("nodeId", model.getNodeId());
-        if (!model.getExecutableType().isEmpty()) cfg.put("executableType", model.getExecutableType());
-        if (model.getProviderName() != null)
-            cfg.put("providerName", model.getProviderName().name());
-        if (!model.getUserAccountName().isEmpty()) cfg.put("userAccountName", model.getUserAccountName());
-        entity.setConfig(cfg);
-        return entity;
-    }
-
-    // UnicoreJobSubmission
-    default UnicoreJobSubmission unicoreSubmissionToModel(ComputeJobSubmissionEntity entity) {
-        if (entity == null) return null;
-        UnicoreJobSubmission.Builder b = UnicoreJobSubmission.newBuilder();
-        b.setJobSubmissionInterfaceId(entity.getSubmissionId());
-        if (entity.getSecurityProtocol() != null) b.setSecurityProtocol(entity.getSecurityProtocol());
-        Map<String, Object> cfg = entity.getConfig();
-        if (cfg != null && cfg.get("unicoreEndPointURL") != null)
-            b.setUnicoreEndPointUrl((String) cfg.get("unicoreEndPointURL"));
-        return b.build();
-    }
-
-    default ComputeJobSubmissionEntity unicoreSubmissionToEntity(UnicoreJobSubmission model) {
-        if (model == null) return null;
-        ComputeJobSubmissionEntity entity = new ComputeJobSubmissionEntity();
-        entity.setSubmissionId(model.getJobSubmissionInterfaceId());
-        entity.setSubmissionType("UNICORE");
-        entity.setSecurityProtocol(model.getSecurityProtocol());
-        Map<String, Object> cfg = new LinkedHashMap<>();
-        if (!model.getUnicoreEndPointUrl().isEmpty()) cfg.put("unicoreEndPointURL", model.getUnicoreEndPointUrl());
-        entity.setConfig(cfg);
-        return entity;
-    }
 
     // --- QueueStatus ---
     QueueStatusModel queueStatusToModel(QueueStatusEntity entity);

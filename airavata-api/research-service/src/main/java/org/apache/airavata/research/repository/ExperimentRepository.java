@@ -171,14 +171,19 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
         ExperimentModel baseModel = get(experimentId);
         ExperimentModel.Builder builder = baseModel.toBuilder();
 
-        // Load UserConfigurationData and Processes via ExecutionDataAccess (avoids cross-module entity imports)
-        UserConfigurationDataModel ucdModel = executionDataAccess.getUserConfigurationData(experimentId);
-        if (ucdModel != null) {
-            builder.setUserConfigurationData(ucdModel);
-        }
-        List<ProcessModel> processes = executionDataAccess.getProcessesForExperiment(experimentId);
-        for (ProcessModel pm : processes) {
-            builder.addProcesses(pm);
+        // Load UserConfigurationData and Processes via ExecutionDataAccess (avoids cross-module entity imports).
+        // executionDataAccess is wired only on the Spring-managed instance; ad-hoc `new ExperimentRepository()`
+        // callers (e.g. ExperimentStatusRepository, which only needs the status already present on the base model)
+        // get a best-effort load without it rather than an NPE.
+        if (executionDataAccess != null) {
+            UserConfigurationDataModel ucdModel = executionDataAccess.getUserConfigurationData(experimentId);
+            if (ucdModel != null) {
+                builder.setUserConfigurationData(ucdModel);
+            }
+            List<ProcessModel> processes = executionDataAccess.getProcessesForExperiment(experimentId);
+            for (ProcessModel pm : processes) {
+                builder.addProcesses(pm);
+            }
         }
 
         return builder.build();

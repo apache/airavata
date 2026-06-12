@@ -35,8 +35,6 @@ import org.springframework.stereotype.Service;
 public class ComputeRegistryService implements ComputeRegistry {
     private static final Logger logger = LoggerFactory.getLogger(ComputeRegistryService.class);
 
-    private final ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-
     // =========================================================================
     // ComputeRegistry interface methods
     // =========================================================================
@@ -51,61 +49,6 @@ public class ComputeRegistryService implements ComputeRegistry {
         } catch (AppCatalogException e) {
             logger.error(computeResourceId, "Error while retrieving compute resource...", e);
             throw new RegistryException("Error while retrieving compute resource. More info : " + e.getMessage());
-        }
-    }
-
-    @Override
-    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws Exception {
-        try {
-            LOCALSubmission localJobSubmission = new ComputeResourceRepository().getLocalJobSubmission(jobSubmissionId);
-            logger.debug("Airavata retrieved local job submission for job submission interface id: " + jobSubmissionId);
-            return localJobSubmission;
-        } catch (AppCatalogException e) {
-            String errorMsg = "Error while retrieving local job submission interface to resource compute resource...";
-            logger.error(jobSubmissionId, errorMsg, e);
-            throw new RegistryException(errorMsg + e.getMessage());
-        }
-    }
-
-    @Override
-    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws Exception {
-        try {
-            SSHJobSubmission sshJobSubmission = new ComputeResourceRepository().getSSHJobSubmission(jobSubmissionId);
-            logger.debug("Airavata retrieved SSH job submission for job submission interface id: " + jobSubmissionId);
-            return sshJobSubmission;
-        } catch (AppCatalogException e) {
-            String errorMsg = "Error while retrieving SSH job submission interface to resource compute resource...";
-            logger.error(jobSubmissionId, errorMsg, e);
-            throw new RegistryException(errorMsg + e.getMessage());
-        }
-    }
-
-    @Override
-    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws Exception {
-        try {
-            UnicoreJobSubmission unicoreJobSubmission =
-                    new ComputeResourceRepository().getUNICOREJobSubmission(jobSubmissionId);
-            logger.debug(
-                    "Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
-            return unicoreJobSubmission;
-        } catch (AppCatalogException e) {
-            String errorMsg = "Error while retrieving Unicore job submission interface to resource compute resource...";
-            logger.error(jobSubmissionId, errorMsg, e);
-            throw new RegistryException(errorMsg + e.getMessage());
-        }
-    }
-
-    @Override
-    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws Exception {
-        try {
-            CloudJobSubmission cloudJobSubmission =
-                    new ComputeResourceRepository().getCloudJobSubmission(jobSubmissionId);
-            logger.debug("Airavata retrieved cloud job submission for job submission interface id: " + jobSubmissionId);
-            return cloudJobSubmission;
-        } catch (AppCatalogException e) {
-            String errorMsg = "Error while retrieving Cloud job submission interface to resource compute resource...";
-            logger.error(jobSubmissionId, errorMsg, e);
-            throw new RegistryException(errorMsg + e.getMessage());
         }
     }
 
@@ -145,26 +88,6 @@ public class ComputeRegistryService implements ComputeRegistry {
             return new ComputeResourceRepository().addComputeResource(computeResourceDescription);
         } catch (AppCatalogException e) {
             throw new RegistryException("Error while saving compute resource. More info : " + e.getMessage());
-        }
-    }
-
-    // --- Job submission priority/delete methods ---
-
-    public boolean changeJobSubmissionPriority(String jobSubmissionInterfaceId, int newPriorityOrder) throws Exception {
-        return false;
-    }
-
-    public boolean changeJobSubmissionPriorities(Map<String, Integer> jobSubmissionPriorityMap) throws Exception {
-        return false;
-    }
-
-    public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
-            throws Exception {
-        try {
-            new ComputeResourceRepository().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
-            return true;
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while deleting job submission interface. More info : " + e.getMessage());
         }
     }
 
@@ -210,152 +133,5 @@ public class ComputeRegistryService implements ComputeRegistry {
         } catch (AppCatalogException e) {
             throw new RegistryException("Error while adding resource job manager. More info : " + e.getMessage());
         }
-    }
-
-    // --- Job submission details methods ---
-
-    public String addCloudJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission) throws Exception {
-        try {
-            ComputeResourceRepository r = new ComputeResourceRepository();
-            return addJobSubmissionInterface(
-                    r,
-                    computeResourceId,
-                    r.addCloudJobSubmission(cloudSubmission),
-                    JobSubmissionProtocol.JSP_CLOUD,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public String addUNICOREJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission) throws Exception {
-        try {
-            ComputeResourceRepository r = new ComputeResourceRepository();
-            return addJobSubmissionInterface(
-                    r,
-                    computeResourceId,
-                    r.addUNICOREJobSubmission(unicoreJobSubmission),
-                    JobSubmissionProtocol.UNICORE,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public String addSSHForkJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws Exception {
-        try {
-            ComputeResourceRepository r = new ComputeResourceRepository();
-            return addJobSubmissionInterface(
-                    r,
-                    computeResourceId,
-                    r.addSSHJobSubmission(sshJobSubmission),
-                    JobSubmissionProtocol.SSH_FORK,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public String addSSHJobSubmissionDetails(
-            String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws Exception {
-        try {
-            ComputeResourceRepository r = new ComputeResourceRepository();
-            return addJobSubmissionInterface(
-                    r,
-                    computeResourceId,
-                    r.addSSHJobSubmission(sshJobSubmission),
-                    JobSubmissionProtocol.SSH,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
-            throws Exception {
-        try {
-            computeResourceRepository.updateSSHJobSubmission(sshJobSubmission);
-            return true;
-        } catch (Exception e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)
-            throws Exception {
-        try {
-            computeResourceRepository.updateCloudJobSubmission(sshJobSubmission);
-            return true;
-        } catch (Exception e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public boolean updateUnicoreJobSubmissionDetails(
-            String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws Exception {
-        throw new RegistryException("updateUnicoreJobSubmissionDetails is not yet implemented");
-    }
-
-    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
-            throws Exception {
-        try {
-            computeResourceRepository.updateLocalJobSubmission(localSubmission);
-            return true;
-        } catch (Exception e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    public String addLocalSubmissionDetails(
-            String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws Exception {
-        try {
-            ComputeResourceRepository r = new ComputeResourceRepository();
-            return addJobSubmissionInterface(
-                    r,
-                    computeResourceId,
-                    r.addLocalJobSubmission(localSubmission),
-                    JobSubmissionProtocol.LOCAL,
-                    priorityOrder);
-        } catch (AppCatalogException e) {
-            throw new RegistryException(
-                    "Error while adding job submission interface to resource compute resource. More info : "
-                            + e.getMessage());
-        }
-    }
-
-    // =========================================================================
-    // Private helpers
-    // =========================================================================
-
-    private String addJobSubmissionInterface(
-            ComputeResourceRepository computeResourceRepository,
-            String computeResourceId,
-            String jobSubmissionInterfaceId,
-            JobSubmissionProtocol protocolType,
-            int priorityOrder)
-            throws AppCatalogException {
-        JobSubmissionInterface jsi = JobSubmissionInterface.newBuilder()
-                .setJobSubmissionInterfaceId(jobSubmissionInterfaceId)
-                .setPriorityOrder(priorityOrder)
-                .setJobSubmissionProtocol(protocolType)
-                .build();
-        return computeResourceRepository.addJobSubmissionProtocol(computeResourceId, jsi);
     }
 }

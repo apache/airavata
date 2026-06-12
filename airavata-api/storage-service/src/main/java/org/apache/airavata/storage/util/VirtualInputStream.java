@@ -23,8 +23,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VirtualInputStream extends InputStream {
+
+    private static final Logger log = LoggerFactory.getLogger(VirtualInputStream.class);
 
     private BlockingQueue<Integer> queue;
     private long byteCount;
@@ -62,6 +66,14 @@ public class VirtualInputStream extends InputStream {
                 b[off + i] = (byte) c;
             }
         } catch (IOException ee) {
+            // A mid-stream failure (queue timeout / interrupt in read()) must not be masked as a
+            // clean short read — log it so a truncated/stalled upload is traceable.
+            log.warn(
+                    "Partial read of {} of {} bytes from virtual storage stream; producer side may have"
+                            + " stalled or failed",
+                    i,
+                    len,
+                    ee);
         }
         return i;
     }

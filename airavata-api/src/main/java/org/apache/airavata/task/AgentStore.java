@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.airavata.interfaces.AgentAdaptor;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 
 /**
  * TODO: Class level comments please
@@ -35,27 +33,19 @@ import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
  */
 public class AgentStore {
 
-    // compute resource: Job submission protocol: auth token: user: adaptor
-    private final Map<String, Map<JobSubmissionProtocol, Map<String, Map<String, AgentAdaptor>>>> agentAdaptorCache =
-            new HashMap<>();
-    private final Map<String, Map<DataMovementProtocol, Map<String, Map<String, StorageResourceAdaptor>>>>
-            storageAdaptorCache = new HashMap<>();
+    // compute resource: auth token: user: adaptor
+    private final Map<String, Map<String, Map<String, AgentAdaptor>>> agentAdaptorCache = new HashMap<>();
+    // storage resource: auth token: user: adaptor
+    private final Map<String, Map<String, Map<String, StorageResourceAdaptor>>> storageAdaptorCache = new HashMap<>();
     // SSH adaptor cache: resourceId (with compute/storage prefix): auth token: gatewayUserId: loginUserName: adaptor
     private final Map<String, Map<String, Map<String, Map<String, AgentAdaptor>>>> sshAdaptorCache = new HashMap<>();
 
-    public Optional<AgentAdaptor> getAgentAdaptor(
-            String computeResource, JobSubmissionProtocol submissionProtocol, String authToken, String userId) {
-        Map<JobSubmissionProtocol, Map<String, Map<String, AgentAdaptor>>> protoToTokenMap =
-                agentAdaptorCache.get(computeResource);
-        if (protoToTokenMap != null) {
-            Map<String, Map<String, AgentAdaptor>> tokenToUserMap = protoToTokenMap.get(submissionProtocol);
-            if (tokenToUserMap != null) {
-                Map<String, AgentAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);
-                if (userToAdaptorMap != null) {
-                    return Optional.ofNullable(userToAdaptorMap.get(userId));
-                } else {
-                    return Optional.empty();
-                }
+    public Optional<AgentAdaptor> getAgentAdaptor(String computeResource, String authToken, String userId) {
+        Map<String, Map<String, AgentAdaptor>> tokenToUserMap = agentAdaptorCache.get(computeResource);
+        if (tokenToUserMap != null) {
+            Map<String, AgentAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);
+            if (userToAdaptorMap != null) {
+                return Optional.ofNullable(userToAdaptorMap.get(userId));
             } else {
                 return Optional.empty();
             }
@@ -64,33 +54,20 @@ public class AgentStore {
         }
     }
 
-    public void putAgentAdaptor(
-            String computeResource,
-            JobSubmissionProtocol submissionProtocol,
-            String authToken,
-            String userId,
-            AgentAdaptor agentAdaptor) {
-        Map<JobSubmissionProtocol, Map<String, Map<String, AgentAdaptor>>> protoToTokenMap =
-                agentAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
+    public void putAgentAdaptor(String computeResource, String authToken, String userId, AgentAdaptor agentAdaptor) {
         Map<String, Map<String, AgentAdaptor>> tokenToUserMap =
-                protoToTokenMap.computeIfAbsent(submissionProtocol, k -> new HashMap<>());
+                agentAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
         Map<String, AgentAdaptor> userToAdaptorMap = tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
         userToAdaptorMap.put(userId, agentAdaptor);
     }
 
     public Optional<StorageResourceAdaptor> getStorageAdaptor(
-            String computeResource, DataMovementProtocol dataMovementProtocol, String authToken, String userId) {
-        Map<DataMovementProtocol, Map<String, Map<String, StorageResourceAdaptor>>> protoToTokenMap =
-                storageAdaptorCache.get(computeResource);
-        if (protoToTokenMap != null) {
-            Map<String, Map<String, StorageResourceAdaptor>> tokenToUserMap = protoToTokenMap.get(dataMovementProtocol);
-            if (tokenToUserMap != null) {
-                Map<String, StorageResourceAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);
-                if (userToAdaptorMap != null) {
-                    return Optional.ofNullable(userToAdaptorMap.get(userId));
-                } else {
-                    return Optional.empty();
-                }
+            String storageResource, String authToken, String userId) {
+        Map<String, Map<String, StorageResourceAdaptor>> tokenToUserMap = storageAdaptorCache.get(storageResource);
+        if (tokenToUserMap != null) {
+            Map<String, StorageResourceAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);
+            if (userToAdaptorMap != null) {
+                return Optional.ofNullable(userToAdaptorMap.get(userId));
             } else {
                 return Optional.empty();
             }
@@ -100,15 +77,9 @@ public class AgentStore {
     }
 
     public void putStorageAdaptor(
-            String computeResource,
-            DataMovementProtocol dataMovementProtocol,
-            String authToken,
-            String userId,
-            StorageResourceAdaptor storageResourceAdaptor) {
-        Map<DataMovementProtocol, Map<String, Map<String, StorageResourceAdaptor>>> protoToTokenMap =
-                storageAdaptorCache.computeIfAbsent(computeResource, k -> new HashMap<>());
+            String storageResource, String authToken, String userId, StorageResourceAdaptor storageResourceAdaptor) {
         Map<String, Map<String, StorageResourceAdaptor>> tokenToUserMap =
-                protoToTokenMap.computeIfAbsent(dataMovementProtocol, k -> new HashMap<>());
+                storageAdaptorCache.computeIfAbsent(storageResource, k -> new HashMap<>());
         Map<String, StorageResourceAdaptor> userToAdaptorMap =
                 tokenToUserMap.computeIfAbsent(authToken, k -> new HashMap<>());
         userToAdaptorMap.put(userId, storageResourceAdaptor);

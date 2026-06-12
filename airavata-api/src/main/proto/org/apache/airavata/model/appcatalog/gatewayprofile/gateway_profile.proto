@@ -22,15 +22,12 @@ package org.apache.airavata.model.appcatalog.gatewayprofile;
 option java_package = "org.apache.airavata.model.appcatalog.gatewayprofile.proto";
 option java_multiple_files = true;
 
-import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
-import "org/apache/airavata/model/data/movement/data_movement.proto";
-
 message ComputeResourcePreference {
   string compute_resource_id = 1;
   bool override_by_airavata = 2;
   string login_user_name = 3;
-  org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferred_job_submission_protocol = 4;
-  org.apache.airavata.model.data.movement.DataMovementProtocol preferred_data_movement_protocol = 5;
+  reserved 4; // was preferred_job_submission_protocol, removed — transport is now always SSH
+  reserved 5; // was preferred_data_movement_protocol, removed — transport is now always SFTP
   string preferred_batch_queue = 6;
   string scratch_location = 7;
   string allocation_project_number = 8;

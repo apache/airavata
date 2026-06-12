@@ -480,17 +480,8 @@ public class GroovyMapBuilder {
     }
 
     public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws Exception {
-        JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
-        JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
-        if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
-            String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission =
-                    taskContext.getRegistryClient().getSSHJobSubmission(jobSubmissionInterfaceId);
-            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
-            return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
-        } else {
-            return false;
-        }
+        // Email-based job monitoring is no longer supported; SSH is the only transport.
+        return false;
     }
 
     public static String listToCsv(List<String> listOfStrings, char separator) {

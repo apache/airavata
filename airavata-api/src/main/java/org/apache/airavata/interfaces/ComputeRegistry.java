@@ -20,26 +20,14 @@
 package org.apache.airavata.interfaces;
 
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.computeresource.proto.CloudJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.proto.UnicoreJobSubmission;
 
 /**
- * Registry operations for compute resources and job submissions.
+ * Registry operations for compute resources.
  */
 public interface ComputeRegistry {
 
     ComputeResourceDescription getComputeResource(String computeResourceId) throws Exception;
-
-    LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws Exception;
-
-    SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws Exception;
-
-    UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws Exception;
-
-    CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws Exception;
 
     Map<String, String> getAllComputeResourceNames() throws Exception;
 }

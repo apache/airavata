@@ -20,7 +20,6 @@
 package org.apache.airavata.interfaces;
 
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
@@ -50,6 +49,4 @@ public interface RegistryProvider {
             throws Exception;
 
     ComputeResourceDescription getComputeResource(String computeResourceId) throws Exception;
-
-    SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws Exception;
 }

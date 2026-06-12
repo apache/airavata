@@ -29,9 +29,6 @@ import org.apache.airavata.interfaces.FileMetadata;
 import org.apache.airavata.interfaces.SSHConnectionService;
 import org.apache.airavata.interfaces.SSHConnectionService.*;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageDirectoryInfo;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageVolumeInfo;
 import org.apache.airavata.model.credential.store.proto.SSHCredential;
@@ -45,7 +42,11 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
     private SSHConnectionService sshConnectionService;
     private SSHConnection sshConnection;
 
-    public SSHJAgentAdaptor() {}
+    public SSHJAgentAdaptor() {
+        // Reflection-instantiated by AdaptorSupportImpl (no Spring injection), so self-init the
+        // stateless sshj connection service.
+        this.sshConnectionService = new org.apache.airavata.credential.ssh.SSHConnectionServiceImpl();
+    }
 
     public SSHJAgentAdaptor(SSHConnectionService sshConnectionService) {
         this.sshConnectionService = sshConnectionService;
@@ -80,19 +81,6 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             ComputeResourceDescription computeResourceDescription =
                     AgentUtils.getRegistryServiceClient().getComputeResource(computeResource);
 
-            logger.info("Fetching job submission interfaces for compute resource " + computeResource);
-
-            Optional<JobSubmissionInterface> jobSubmissionInterfaceOp =
-                    computeResourceDescription.getJobSubmissionInterfacesList().stream()
-                            .filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH)
-                            .findFirst();
-
-            JobSubmissionInterface sshInterface = jobSubmissionInterfaceOp.orElseThrow(
-                    () -> new AgentException("Could not find a SSH interface for compute resource " + computeResource));
-
-            SSHJobSubmission sshJobSubmission = AgentUtils.getRegistryServiceClient()
-                    .getSSHJobSubmission(sshInterface.getJobSubmissionInterfaceId());
-
             logger.info("Fetching credentials for cred store token " + token);
 
             SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
@@ -102,12 +90,10 @@ public class SSHJAgentAdaptor implements AgentAdaptor {
             }
             logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            String alternateHostName = sshJobSubmission.getAlternativeSshHostName();
-            String selectedHostName = (alternateHostName == null || "".equals(alternateHostName))
-                    ? computeResourceDescription.getHostName()
-                    : alternateHostName;
+            String selectedHostName = computeResourceDescription.getHostName();
 
-            int selectedPort = sshJobSubmission.getSshPort() == 0 ? 22 : sshJobSubmission.getSshPort();
+            int selectedPort =
+                    computeResourceDescription.getSshPort() == 0 ? 22 : computeResourceDescription.getSshPort();
 
             logger.info(
                     "Using user {}, Host {}, Port {} to create ssh client for compute resource {}",

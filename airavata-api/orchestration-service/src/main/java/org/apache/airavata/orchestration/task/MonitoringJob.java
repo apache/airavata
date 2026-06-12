@@ -20,8 +20,6 @@
 package org.apache.airavata.orchestration.task;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import org.apache.airavata.interfaces.AgentAdaptor;
 import org.apache.airavata.interfaces.CommandOutput;
@@ -117,13 +115,9 @@ public class MonitoringJob extends ComputeResourceMonitor implements Runnable {
             throws Exception {
         String computeResourceId = computeResourcePolicy.getComputeResourceId();
         ComputeResourceDescription comResourceDes = client.getComputeResource(computeResourceId);
-        List<JobSubmissionInterface> jobSubmissionInterfaces = comResourceDes.getJobSubmissionInterfacesList();
-        Collections.sort(jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
-        JobSubmissionInterface jobSubmissionInterface = jobSubmissionInterfaces.get(0);
-        JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
 
-        ResourceJobManager resourceJobManager =
-                JobFactoryHelper.getResourceJobManager(client, jobSubmissionProtocol, jobSubmissionInterface);
+        // Transport is always SSH; the resource job manager is read off the compute resource.
+        ResourceJobManager resourceJobManager = comResourceDes.getResourceJobManager();
 
         // TODO: intial phase we are only supporting SLURM
         if (resourceJobManager.getResourceJobManagerType().name().equals("SLURM")) {
@@ -156,8 +150,8 @@ public class MonitoringJob extends ComputeResourceMonitor implements Runnable {
                         computeResourcePolicy.getGroupResourceProfileId(),
                         null);
 
-                AgentAdaptor adaptor = adaptorSupport.fetchAdaptor(
-                        gatewayId, computeResourceId, jobSubmissionProtocol, computeResourceToken, loginUsername);
+                AgentAdaptor adaptor =
+                        adaptorSupport.fetchAdaptor(gatewayId, computeResourceId, computeResourceToken, loginUsername);
 
                 CommandOutput commandOutput = adaptor.executeCommand(finalCommand, null);
 

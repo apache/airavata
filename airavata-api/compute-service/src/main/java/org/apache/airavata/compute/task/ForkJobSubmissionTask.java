@@ -28,7 +28,7 @@ import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.util.AiravataUtils;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
     private static final Logger logger = LoggerFactory.getLogger(ForkJobSubmissionTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
@@ -49,7 +49,6 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
                     .fetchAdaptor(
                             getTaskContext().getGatewayId(),
                             getTaskContext().getComputeResourceId(),
-                            getTaskContext().getJobSubmissionProtocol(),
                             getTaskContext().getComputeResourceCredentialToken(),
                             getTaskContext().getComputeResourceLoginUserName());
 

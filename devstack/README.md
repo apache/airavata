@@ -130,7 +130,6 @@ All state is under `$HOME` — colima requires host mounts to be under the home 
 |-----|---------|
 | `https://api.airavata.host` | Airavata server (gRPC + REST) |
 | `https://auth.airavata.host` | Keycloak |
-| `https://rabbitmq.airavata.host` | RabbitMQ management UI |
 | `https://adminer.airavata.host` | Adminer (`--profile tools`) |
 | `https://gateway.airavata.host` | Django portal (portals repo) |
 | `db.airavata.host:3306` | MariaDB — raw TCP on host `127.0.0.1:3306` (connect with a DB client, not a browser) |

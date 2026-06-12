@@ -188,24 +188,9 @@ under the License.
 
             <!-- Apache Projects -->
             <dependency>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-                <version>3.9.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.curator</groupId>
-                <artifactId>curator-framework</artifactId>
-                <version>5.7.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>3.9.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.helix</groupId>
-                <artifactId>helix-core</artifactId>
-                <version>1.4.3</version>
             </dependency>
             <!-- Google Libraries -->
             <dependency>

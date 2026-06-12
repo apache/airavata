@@ -220,8 +220,9 @@ def update_application_module(
 
 
 # Experiment (experiments-core) — WithAccess. The whole process/task/job tree
-# flows through the proto wholesale. is_owner is always False (the read model has
-# no ownership flag); user_has_write_access is a chained sharing WRITE lookup.
+# flows through the proto wholesale. is_owner compares the experiment's owner
+# (user_name) against the caller; user_has_write_access is ownership OR a chained
+# sharing WRITE lookup (owners always retain write/edit/launch rights).
 
 
 def get_experiment(
@@ -229,10 +230,12 @@ def get_experiment(
     experiment_id: str,
 ) -> "WithAccess":
     e = client.research.get_experiment(experiment_id)
+    is_owner = e.user_name == client.username
     return WithAccess(
         message=e,
-        is_owner=False,
-        user_has_write_access=client.sharing.user_has_access(
+        is_owner=is_owner,
+        user_has_write_access=is_owner
+        or client.sharing.user_has_access(
             resource_id=experiment_id,
             user_id=client.username,
             permission_type="WRITE",
@@ -261,17 +264,26 @@ def get_experiments_in_project(
     experiments = client.research.get_experiments_in_project(
         project_id, limit, offset)
     return [
-        WithAccess(
-            message=e,
-            is_owner=False,
-            user_has_write_access=client.sharing.user_has_access(
-                resource_id=e.experiment_id,
-                user_id=client.username,
-                permission_type="WRITE",
-            ),
-        )
+        _experiment_with_access(client, e)
         for e in experiments
     ]
+
+
+def _experiment_with_access(
+    client: "AiravataClient",
+    e: "experiment_pb2.ExperimentModel",
+) -> "WithAccess":
+    is_owner = e.user_name == client.username
+    return WithAccess(
+        message=e,
+        is_owner=is_owner,
+        user_has_write_access=is_owner
+        or client.sharing.user_has_access(
+            resource_id=e.experiment_id,
+            user_id=client.username,
+            permission_type="WRITE",
+        ),
+    )
 
 
 def list_experiment_jobs(

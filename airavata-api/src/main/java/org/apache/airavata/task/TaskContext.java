@@ -20,11 +20,8 @@
 package org.apache.airavata.task;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,16 +29,11 @@ import java.util.Optional;
 import org.apache.airavata.interfaces.GroupComputeResourcePreferenceUtil;
 import org.apache.airavata.interfaces.RegistryHandler;
 import org.apache.airavata.interfaces.UserProfileProvider;
-import org.apache.airavata.messaging.service.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.proto.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.proto.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.proto.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourceReservation;
@@ -55,8 +47,6 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserResour
 import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserStoragePreference;
 import org.apache.airavata.model.application.io.proto.DataType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
-import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
@@ -79,7 +69,6 @@ public class TaskContext {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskContext.class);
 
-    private Publisher statusPublisher;
     private RegistryHandler registryClient;
     private UserProfileProvider userProfileRepository;
 
@@ -115,8 +104,6 @@ public class TaskContext {
     private ApplicationInterfaceDescription applicationInterfaceDescription;
     private StorageResourceDescription storageResourceDescription;
 
-    private JobSubmissionProtocol jobSubmissionProtocol;
-    private DataMovementProtocol dataMovementProtocol;
     private ResourceJobManager resourceJobManager;
 
     private List<String> taskExecutionOrder;
@@ -157,14 +144,6 @@ public class TaskContext {
         return taskId;
     }
 
-    public Publisher getStatusPublisher() {
-        return statusPublisher;
-    }
-
-    public void setStatusPublisher(Publisher statusPublisher) {
-        this.statusPublisher = statusPublisher;
-    }
-
     public ProcessModel getProcessModel() {
         return processModel;
     }
@@ -179,7 +158,10 @@ public class TaskContext {
 
     public String getWorkingDir() throws Exception {
         if (workingDir == null) {
-            if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null) {
+            if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null
+                    && !processModel.getProcessResourceSchedule()
+                            .getStaticWorkingDir()
+                            .isEmpty()) {
                 workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
             } else {
                 String scratchLocation = getScratchLocation();
@@ -216,9 +198,22 @@ public class TaskContext {
     }
 
     public GatewayResourceProfile getGatewayResourceProfile() throws Exception {
-        if (this.groupResourceProfile == null) {
+        if (this.gatewayResourceProfile == null) {
             try {
-                gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);
+                GatewayResourceProfile profile = registryClient.getGatewayResourceProfile(gatewayId);
+                // Storage preferences are a separate child collection (storage-service owned) that the
+                // gateway-profile read does not join; attach them so output staging can resolve the
+                // gateway's default storage.
+                if (profile.getStoragePreferencesList().isEmpty()) {
+                    List<StoragePreference> storagePreferences =
+                            registryClient.getAllGatewayStoragePreferences(gatewayId);
+                    if (storagePreferences != null && !storagePreferences.isEmpty()) {
+                        profile = profile.toBuilder()
+                                .addAllStoragePreferences(storagePreferences)
+                                .build();
+                    }
+                }
+                gatewayResourceProfile = profile;
             } catch (Exception e) {
                 logger.error("Failed to fetch gateway resource profile for gateway {}", gatewayId);
                 throw e;
@@ -501,37 +496,6 @@ public class TaskContext {
         this.inputDir = inputDir;
     }
 
-    public JobSubmissionProtocol getJobSubmissionProtocol() throws Exception {
-        if (jobSubmissionProtocol == null) {
-            // Take highest priority one
-            List<JobSubmissionInterface> jobSubmissionInterfaces =
-                    getComputeResourceDescription().getJobSubmissionInterfacesList();
-            Collections.sort(
-                    jobSubmissionInterfaces, Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
-            jobSubmissionProtocol = jobSubmissionInterfaces.get(0).getJobSubmissionProtocol();
-        }
-        return jobSubmissionProtocol;
-    }
-
-    public void setJobSubmissionProtocol(JobSubmissionProtocol jobSubmissionProtocol) {
-        this.jobSubmissionProtocol = jobSubmissionProtocol;
-    }
-
-    public DataMovementProtocol getDataMovementProtocol() throws Exception {
-        if (dataMovementProtocol == null) {
-            // Data movement is now a storage-only concept — take highest priority from storage resource
-            List<DataMovementInterface> dataMovementInterfaces =
-                    getStorageResourceDescription().getDataMovementInterfacesList();
-            Collections.sort(dataMovementInterfaces, Comparator.comparingInt(DataMovementInterface::getPriorityOrder));
-            dataMovementProtocol = dataMovementInterfaces.get(0).getDataMovementProtocol();
-        }
-        return dataMovementProtocol;
-    }
-
-    public void setDataMovementProtocol(DataMovementProtocol dataMovementProtocol) {
-        this.dataMovementProtocol = dataMovementProtocol;
-    }
-
     public String getTaskDag() {
         return getProcessModel().getTaskDag();
     }
@@ -661,14 +625,6 @@ public class TaskContext {
         }
     }
 
-    public JobSubmissionProtocol getPreferredJobSubmissionProtocol() throws Exception {
-        return getJobSubmissionProtocol();
-    }
-
-    public DataMovementProtocol getPreferredDataMovementProtocol() throws Exception {
-        return getDataMovementProtocol();
-    }
-
     public void setResourceJobManager(ResourceJobManager resourceJobManager) {
         this.resourceJobManager = resourceJobManager;
     }
@@ -676,36 +632,7 @@ public class TaskContext {
     public ResourceJobManager getResourceJobManager() throws Exception {
 
         if (this.resourceJobManager == null) {
-            JobSubmissionInterface jsInterface = getPreferredJobSubmissionInterface();
-
-            if (jsInterface == null) {
-                throw new Exception("Job Submission interface cannot be empty at this point");
-
-            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-                SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
-                resourceJobManager = sshJobSubmission.getResourceJobManager();
-
-            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localSubmission =
-                        getRegistryClient().getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
-                resourceJobManager = localSubmission.getResourceJobManager();
-
-            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
-                SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
-                resourceJobManager = sshJobSubmission.getResourceJobManager();
-
-            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.JSP_CLOUD) {
-                SSHJobSubmission sshJobSubmission =
-                        getRegistryClient().getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
-                resourceJobManager = sshJobSubmission.getResourceJobManager();
-
-            } else {
-                throw new Exception("Unsupported JobSubmissionProtocol - "
-                        + jsInterface.getJobSubmissionProtocol().name());
-            }
-
+            resourceJobManager = getComputeResourceDescription().getResourceJobManager();
             if (resourceJobManager == null) {
                 throw new Exception("Resource Job Manager is empty.");
             }
@@ -942,43 +869,6 @@ public class TaskContext {
             }
         }
         return null;
-    }
-
-    public JobSubmissionInterface getPreferredJobSubmissionInterface() throws Exception {
-        JobSubmissionProtocol preferredJobSubmissionProtocol = getJobSubmissionProtocol();
-        ComputeResourceDescription resourceDescription = getComputeResourceDescription();
-        List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfacesList();
-        Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
-        List<JobSubmissionInterface> interfaces = new ArrayList<>();
-        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-            for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces) {
-
-                if (preferredJobSubmissionProtocol != null) {
-                    if (preferredJobSubmissionProtocol
-                            .toString()
-                            .equals(submissionInterface
-                                    .getJobSubmissionProtocol()
-                                    .toString())) {
-                        if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())) {
-                            List<JobSubmissionInterface> interfaceList =
-                                    orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
-                            interfaceList.add(submissionInterface);
-                        } else {
-                            interfaces.add(submissionInterface);
-                            orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
-                        }
-                    }
-                } else {
-                    jobSubmissionInterfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
-                }
-            }
-            interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
-            interfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
-        } else {
-            throw new TaskOnFailException(
-                    "Compute resource should have at least one job submission interface defined...", true, null);
-        }
-        return interfaces.get(0);
     }
 
     @SuppressWarnings("WeakerAccess")

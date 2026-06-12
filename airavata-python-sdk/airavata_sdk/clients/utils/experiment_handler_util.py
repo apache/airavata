@@ -21,6 +21,7 @@ from typing import Optional
 
 import jwt
 
+from airavata_sdk.generated.org.apache.airavata.model.status import status_pb2
 from airavata_sdk.clients.api_server_client import APIServerClient
 from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
 from airavata_sdk.clients.sftp_file_handling_client import SFTPConnector
@@ -212,17 +213,22 @@ class ExperimentHandlerUtil(object):
         logger.info("For more information visit %s", experiment_url)
 
         if self.settings.MONITOR_STATUS:
-            status = self.api_server_client.get_experiment_status(self.airavata_token, ex_id)
-            status_dict = {'0': 'EXECUTING', '4': 'JOB_ACTIVE', '7': 'COMPLETED'}
-
+            # status.state stays the proto ExperimentState enum; render its NAME via the
+            # enum's own Name() (no hardcoded {int:name} table) and gate the poll loop on
+            # named terminal members rather than a magic-int threshold.
+            ES = status_pb2.ExperimentState
+            terminal = {
+                ES.EXPERIMENT_STATE_COMPLETED,
+                ES.EXPERIMENT_STATE_CANCELED,
+                ES.EXPERIMENT_STATE_FAILED,
+            }
+            status = self.api_server_client.get_experiment_status(ex_id)
             if status is not None:
-                logger.info("Initial state " + status_dict[str(status.state)])
-            while status.state <= 6:
-                status = self.api_server_client.get_experiment_status(self.airavata_token,
-                                                                      ex_id);
+                logger.info("Initial state %s", ES.Name(status.state))
+            while status.state not in terminal:
                 time.sleep(30)
-                if (str(status.state) in status_dict.keys()):
-                      logger.info("State " + status_dict[str(status.state)])
+                status = self.api_server_client.get_experiment_status(ex_id)
+                logger.info("State %s", ES.Name(status.state))
 
             logger.info("Completed")
             remote_path = path_suffix.split(self.user_id)[1]

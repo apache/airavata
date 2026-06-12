@@ -24,8 +24,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Inheritance;
@@ -34,8 +32,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -67,14 +63,6 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
 
     @Column(name = "OVERRIDE_BY_AIRAVATA")
     private short overridebyAiravata;
-
-    @Column(name = "PREFERED_DATA_MOVE_PROTOCOL")
-    @Enumerated(EnumType.STRING)
-    private DataMovementProtocol preferredDataMovementProtocol; // TODO introduce S3
-
-    @Column(name = "PREFERED_JOB_SUB_PROTOCOL")
-    @Enumerated(EnumType.STRING)
-    private JobSubmissionProtocol preferredJobSubmissionProtocol; // TODO introduce CLOUD
 
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceSpecificCredentialStoreToken;
@@ -124,22 +112,6 @@ public abstract class GroupComputeResourcePrefEntity implements Serializable {
 
     public void setOverridebyAiravata(short overridebyAiravata) {
         this.overridebyAiravata = overridebyAiravata;
-    }
-
-    public DataMovementProtocol getPreferredDataMovementProtocol() {
-        return preferredDataMovementProtocol;
-    }
-
-    public void setPreferredDataMovementProtocol(DataMovementProtocol preferredDataMovementProtocol) {
-        this.preferredDataMovementProtocol = preferredDataMovementProtocol;
-    }
-
-    public JobSubmissionProtocol getPreferredJobSubmissionProtocol() {
-        return preferredJobSubmissionProtocol;
-    }
-
-    public void setPreferredJobSubmissionProtocol(JobSubmissionProtocol preferredJobSubmissionProtocol) {
-        this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
     }
 
     public String getResourceSpecificCredentialStoreToken() {

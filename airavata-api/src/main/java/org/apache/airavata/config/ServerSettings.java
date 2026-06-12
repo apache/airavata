@@ -28,9 +28,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
     private static final String ENABLE_SHARING = "enable.sharing";
 
-    // Zookeeper + curator constants
-    public static final String EMBEDDED_ZK = "embedded.zk";
-    public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
     private static final String CREDENTIAL_STORE_DB_URL = "airavata.jdbc.url";
     private static final String CREDENTIAL_STORE_DB_USER = "airavata.jdbc.user";
     private static final String CREDENTIAL_STORE_DB_PASSWORD = "airavata.jdbc.password";
@@ -45,13 +42,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String HOST_SCHEDULER = "host.scheduler";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
-
-    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
-    public static final String RABBITMQ_STATUS_EXCHANGE_NAME = "rabbitmq.status.exchange.name";
-    public static final String RABBITMQ_PROCESS_EXCHANGE_NAME = "rabbitmq.process.exchange.name";
-    public static final String RABBITMQ_EXPERIMENT_EXCHANGE_NAME = "rabbitmq.experiment.exchange.name";
-    public static final String RABBITMQ_DURABLE_QUEUE = "durable.queue";
-    public static final String RABBITMQ_PREFETCH_COUNT = "prefetch.count";
 
     // email-based monitoring configurations
     private static final String EMAIL_BASED_MONITORING_PERIOD = "email.based.monitoring.period";
@@ -90,34 +80,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
-    }
-
-    public static String getRabbitmqExperimentLaunchQueueName() {
-        return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment.launch.queue");
-    }
-
-    public static String getRabbitmqBrokerUrl() {
-        return getSetting(RABBITMQ_BROKER_URL, "amqp://localhost:5672");
-    }
-
-    public static String getRabbitmqStatusExchangeName() {
-        return getSetting(RABBITMQ_STATUS_EXCHANGE_NAME, "status_exchange");
-    }
-
-    public static String getRabbitmqProcessExchangeName() {
-        return getSetting(RABBITMQ_PROCESS_EXCHANGE_NAME, "process_exchange");
-    }
-
-    public static String getRabbitmqExperimentExchangeName() {
-        return getSetting(RABBITMQ_EXPERIMENT_EXCHANGE_NAME, "experiment_exchange");
-    }
-
-    public static boolean getRabbitmqDurableQueue() {
-        return Boolean.parseBoolean(getSetting(RABBITMQ_DURABLE_QUEUE, "false"));
-    }
-
-    public static int getRabbitmqPrefetchCount() {
-        return Integer.parseInt(getSetting(RABBITMQ_PREFETCH_COUNT, "200"));
     }
 
     public static String getDefaultUserPassword() throws ApplicationSettingsException {
@@ -172,10 +134,6 @@ public class ServerSettings extends ApplicationSettings {
         ServerSettings.stopAllThreads = stopAllThreads;
     }
 
-    public static boolean isEmbeddedZK() {
-        return Boolean.parseBoolean(getSetting(EMBEDDED_ZK, "true"));
-    }
-
     public static int getEmailMonitorPeriod() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(EMAIL_BASED_MONITORING_PERIOD, "100000"));
     }
@@ -210,10 +168,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getIamServerSuperAdminPassword() throws ApplicationSettingsException {
         return getSetting(ServerSettings.IAM_SERVER_SUPER_ADMIN_PASSWORD);
-    }
-
-    public static String getZookeeperConnection() throws ApplicationSettingsException {
-        return getSetting(ZOOKEEPER_SERVER_CONNECTION, "localhost:2181");
     }
 
     public static boolean isTLSEnabled() throws ApplicationSettingsException {

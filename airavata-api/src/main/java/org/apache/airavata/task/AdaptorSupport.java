@@ -22,8 +22,6 @@ package org.apache.airavata.task;
 import org.apache.airavata.interfaces.AgentAdaptor;
 import org.apache.airavata.interfaces.AgentException;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 
 /**
  * TODO: Class level comments please
@@ -34,13 +32,11 @@ import org.apache.airavata.model.data.movement.proto.DataMovementProtocol;
 public interface AdaptorSupport {
     void initializeAdaptor();
 
-    AgentAdaptor fetchAdaptor(
-            String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId)
+    AgentAdaptor fetchAdaptor(String gatewayId, String computeResourceId, String authToken, String userId)
             throws Exception;
 
     StorageResourceAdaptor fetchStorageAdaptor(
-            String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId)
-            throws AgentException;
+            String gatewayId, String storageResourceId, String authToken, String userId) throws AgentException;
 
     AgentAdaptor fetchComputeSSHAdaptor(
             String gatewayId, String resourceId, String authToken, String gatewayUserId, String loginUserName)

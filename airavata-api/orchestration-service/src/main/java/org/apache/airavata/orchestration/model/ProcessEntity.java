@@ -104,7 +104,10 @@ public class ProcessEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "PROCESS_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "PROCESS_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("ENTITY_TYPE = 'PROCESS'")
     @OrderBy("timeOfStateChange ASC")
     private List<ExecStatusEntity> processStatuses;
@@ -114,7 +117,10 @@ public class ProcessEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "PROCESS_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "PROCESS_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("ENTITY_TYPE = 'PROCESS'")
     private List<ExecErrorEntity> processErrors;
 
@@ -123,7 +129,10 @@ public class ProcessEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "PROCESS_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "PROCESS_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("DIRECTION = 'INPUT'")
     private List<ExecIoParamEntity> processInputs;
 
@@ -132,7 +141,10 @@ public class ProcessEntity implements Serializable {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true)
-    @JoinColumn(name = "ENTITY_ID", referencedColumnName = "PROCESS_ID")
+    @JoinColumn(
+            name = "ENTITY_ID",
+            referencedColumnName = "PROCESS_ID",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @org.hibernate.annotations.SQLRestriction("DIRECTION = 'OUTPUT'")
     private List<ExecIoParamEntity> processOutputs;
 

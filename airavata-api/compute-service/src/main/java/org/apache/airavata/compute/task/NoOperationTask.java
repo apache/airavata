@@ -20,17 +20,17 @@
 package org.apache.airavata.compute.task;
 
 import org.apache.airavata.task.AiravataTask;
+import org.apache.airavata.task.DbTaskResult;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
 
 @TaskDef(name = "No Operation Task")
 public class NoOperationTask extends AiravataTask {
 
     @Override
-    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
-        return new TaskResult(TaskResult.Status.COMPLETED, "OK");
+    public DbTaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+        return DbTaskResult.completed("OK");
     }
 
     @Override

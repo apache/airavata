@@ -27,7 +27,7 @@ import org.apache.airavata.task.AiravataTask;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
-import org.apache.helix.task.TaskResult;
+import org.apache.airavata.task.DbTaskResult;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class ParsingTriggeringTask extends AiravataTask {
     }
 
     @Override
-    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+    public DbTaskResult onRun(TaskHelper helper, TaskContext taskContext) {
 
         logger.info("Starting parsing triggering task {}, experiment id {}", getTaskId(), getExperimentId());
 

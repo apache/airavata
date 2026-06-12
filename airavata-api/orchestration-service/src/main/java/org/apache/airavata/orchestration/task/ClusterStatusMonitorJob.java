@@ -29,8 +29,6 @@ import org.apache.airavata.interfaces.RegistryHandler;
 import org.apache.airavata.interfaces.SSHConnectionService;
 import org.apache.airavata.interfaces.SSHConnectionService.*;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
 import org.apache.airavata.model.credential.store.proto.SSHCredential;
 import org.apache.airavata.model.status.proto.QueueStatusModel;
@@ -82,35 +80,21 @@ public class ClusterStatusMonitorJob implements Runnable {
                         ComputeResourceDescription computeResourceDescription =
                                 registryClient.getComputeResource(computeResourceId);
                         hostName = computeResourceDescription.getHostName();
-                        // FIXME This should come from compute resource description
-                        port = 22;
+                        port = computeResourceDescription.getSshPort() > 0
+                                ? computeResourceDescription.getSshPort()
+                                : 22;
                         computeResourceDescription.getBatchQueuesList().stream().forEach(q -> {
                             queueNames.add(q.getQueueName());
                         });
 
-                        List<JobSubmissionInterface> jobSubmissionInterfaces =
-                                computeResourceDescription.getJobSubmissionInterfacesList();
-                        if (jobSubmissionInterfaces != null && jobSubmissionInterfaces.size() > 0) {
-                            if (jobSubmissionInterfaces
-                                    .get(0)
-                                    .getJobSubmissionProtocol()
-                                    .equals(JobSubmissionProtocol.SSH)) {
-                                String resourceManagerType = registryClient
-                                        .getSSHJobSubmission(
-                                                jobSubmissionInterfaces.get(0).getJobSubmissionInterfaceId())
-                                        .getResourceJobManager()
-                                        .getResourceJobManagerType()
-                                        .name();
-                                ComputeResourceProfile computeResourceProfile = new ComputeResourceProfile(
-                                        hostName,
-                                        loginUserName,
-                                        port,
-                                        credentialStoreToken,
-                                        queueNames,
-                                        resourceManagerType);
-                                computeResourceProfiles.add(computeResourceProfile);
-                            }
-                        }
+                        // Transport is always SSH; the resource job manager is read off the compute resource.
+                        String resourceManagerType = computeResourceDescription
+                                .getResourceJobManager()
+                                .getResourceJobManagerType()
+                                .name();
+                        ComputeResourceProfile computeResourceProfile = new ComputeResourceProfile(
+                                hostName, loginUserName, port, credentialStoreToken, queueNames, resourceManagerType);
+                        computeResourceProfiles.add(computeResourceProfile);
                     } catch (Exception e) {
                         logger.error(e.getMessage());
                     }

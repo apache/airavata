@@ -33,6 +33,7 @@ import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulin
 import org.apache.airavata.model.status.proto.ProcessState;
 import org.apache.airavata.model.status.proto.ProcessStatus;
 import org.apache.airavata.orchestration.mapper.ExecutionMapper;
+import org.apache.airavata.compute.model.ProcessResourceScheduleEntity;
 import org.apache.airavata.orchestration.model.ProcessEntity;
 import org.apache.airavata.util.AiravataUtils;
 import org.apache.airavata.util.ExpCatalogUtils;
@@ -111,7 +112,18 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
                     }
                 });
             }
-            return entityManager.merge(processEntity);
+            // PROCESS_RESOURCE_SCHEDULE is a shared-PK one-to-one whose PROCESS_ID FKs to PROCESS.
+            // Merging it in the same pass can insert the child before the parent PROCESS row exists
+            // (FK violation), since the owning join column is insertable=false. Persist the process
+            // and its one-to-many children first, then the schedule once the PROCESS row exists.
+            ProcessResourceScheduleEntity schedule = processEntity.getProcessResourceSchedule();
+            processEntity.setProcessResourceSchedule(null);
+            ProcessEntity saved = entityManager.merge(processEntity);
+            if (schedule != null) {
+                schedule.setProcessId(saved.getProcessId());
+                saved.setProcessResourceSchedule(entityManager.merge(schedule));
+            }
+            return saved;
         });
     }
 
@@ -247,8 +259,8 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
                 QueryConstants.FIND_AVG_TIME_UPTO_METASCHEDULER_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
         List<Object> queueingTimeList = processRepository.selectWithNativeQuery(
                 QueryConstants.FIND_AVG_TIME_QUEUED_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
-        List<Object> helixTimeList = processRepository.selectWithNativeQuery(
-                QueryConstants.FIND_AVG_TIME_HELIX_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
+        List<Object> submissionTimeList = processRepository.selectWithNativeQuery(
+                QueryConstants.FIND_AVG_TIME_SUBMISSION_NATIVE_QUERY, gatewayId, String.valueOf(searchTime));
         if (orchTimeList.size() > 0 && orchTimeList.get(0) != null) {
             timeDistributions.put(DBConstants.MetaData.ORCH_TIME, ((BigDecimal) orchTimeList.get(0)).doubleValue());
         }
@@ -256,8 +268,9 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
             timeDistributions.put(
                     DBConstants.MetaData.QUEUED_TIME, ((BigDecimal) queueingTimeList.get(0)).doubleValue());
         }
-        if (helixTimeList.size() > 0 && helixTimeList.get(0) != null) {
-            timeDistributions.put(DBConstants.MetaData.HELIX, ((BigDecimal) helixTimeList.get(0)).doubleValue());
+        if (submissionTimeList.size() > 0 && submissionTimeList.get(0) != null) {
+            timeDistributions.put(
+                    DBConstants.MetaData.SUBMISSION, ((BigDecimal) submissionTimeList.get(0)).doubleValue());
         }
         return timeDistributions;
     }

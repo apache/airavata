@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.compute.mapper.ComputeMapper;
-import org.apache.airavata.compute.model.ComputeJobSubmissionEntity;
 import org.apache.airavata.compute.model.ComputeResourceEntity;
 import org.apache.airavata.compute.model.ResourceJobManagerEntity;
 import org.apache.airavata.db.AbstractRepository;
@@ -32,17 +31,10 @@ import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.interfaces.AppCatalogException;
 import org.apache.airavata.interfaces.ComputeResource;
-import org.apache.airavata.model.appcatalog.computeresource.proto.CloudJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.GlobusJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.proto.UnicoreJobSubmission;
 import org.apache.airavata.model.parallelism.proto.ApplicationParallelismType;
-import org.apache.airavata.util.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -93,12 +85,6 @@ public class ComputeResourceRepository
             computeResourceEntity
                     .getBatchQueues()
                     .forEach(batchQueueEntity -> batchQueueEntity.setComputeResourceId(computeResourceId));
-        }
-        if (computeResourceEntity.getJobSubmissionInterfaces() != null) {
-            computeResourceEntity
-                    .getJobSubmissionInterfaces()
-                    .forEach(jobSubmissionInterfaceEntity ->
-                            jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId));
         }
         return execute(entityManager -> entityManager.merge(computeResourceEntity));
     }
@@ -172,52 +158,6 @@ public class ComputeResourceRepository
     @Override
     public void removeComputeResource(String resourceId) throws AppCatalogException {
         delete(resourceId);
-    }
-
-    @Override
-    public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        String submissionId = AppCatalogUtils.getID("SSH");
-        sshJobSubmission = sshJobSubmission.toBuilder()
-                .setJobSubmissionInterfaceId(submissionId)
-                .build();
-        String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.sshJobSubmissionToEntity(sshJobSubmission);
-        entity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
-        if (sshJobSubmission.getResourceJobManager().getParallelismPrefixMap() != null) {
-            (new ResourceJobManagerRepository())
-                    .createParallesimPrefix(
-                            sshJobSubmission.getResourceJobManager().getParallelismPrefixMap(),
-                            entity.getResourceJobManager());
-        }
-        if (sshJobSubmission.getResourceJobManager().getJobManagerCommandsMap() != null) {
-            (new ResourceJobManagerRepository())
-                    .createJobManagerCommand(
-                            sshJobSubmission.getResourceJobManager().getJobManagerCommandsMap(),
-                            entity.getResourceJobManager());
-        }
-        execute(entityManager -> entityManager.merge(entity));
-        return submissionId;
-    }
-
-    public void updateSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.sshJobSubmissionToEntity(sshJobSubmission);
-        entity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-        execute(entityManager -> entityManager.merge(entity));
-    }
-
-    @Override
-    public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        cloudJobSubmission = cloudJobSubmission.toBuilder()
-                .setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"))
-                .build();
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.cloudJobSubmissionToEntity(cloudJobSubmission);
-        execute(entityManager -> entityManager.merge(entity));
-        return entity.getSubmissionId();
-    }
-
-    public void updateCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.cloudJobSubmissionToEntity(cloudJobSubmission);
-        execute(entityManager -> entityManager.merge(entity));
     }
 
     @Override
@@ -296,113 +236,6 @@ public class ComputeResourceRepository
     }
 
     @Override
-    public String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface)
-            throws AppCatalogException {
-        return (new JobSubmissionInterfaceRepository()).addJobSubmission(computeResourceId, jobSubmissionInterface);
-    }
-
-    @Override
-    public String addLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-        localSubmission = localSubmission.toBuilder()
-                .setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"))
-                .build();
-        String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.localSubmissionToEntity(localSubmission);
-        entity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
-        if (localSubmission.getResourceJobManager().getParallelismPrefixMap() != null) {
-            (new ResourceJobManagerRepository())
-                    .createParallesimPrefix(
-                            localSubmission.getResourceJobManager().getParallelismPrefixMap(),
-                            entity.getResourceJobManager());
-        }
-        if (localSubmission.getResourceJobManager().getJobManagerCommandsMap() != null) {
-            (new ResourceJobManagerRepository())
-                    .createJobManagerCommand(
-                            localSubmission.getResourceJobManager().getJobManagerCommandsMap(),
-                            entity.getResourceJobManager());
-        }
-        execute(entityManager -> entityManager.merge(entity));
-        return entity.getSubmissionId();
-    }
-
-    public void updateLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.localSubmissionToEntity(localSubmission);
-        entity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-        execute(entityManager -> entityManager.merge(entity));
-    }
-
-    @Override
-    public String addGlobusJobSubmission(GlobusJobSubmission globusJobSubmission) throws AppCatalogException {
-        return null;
-    }
-
-    @Override
-    public String addUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException {
-        unicoreJobSubmission = unicoreJobSubmission.toBuilder()
-                .setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"))
-                .build();
-        ComputeJobSubmissionEntity entity = ComputeMapper.INSTANCE.unicoreSubmissionToEntity(unicoreJobSubmission);
-        execute(entityManager -> entityManager.merge(entity));
-        return unicoreJobSubmission.getJobSubmissionInterfaceId();
-    }
-
-    @Override
-    public SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity =
-                execute(entityManager -> entityManager.find(ComputeJobSubmissionEntity.class, submissionId));
-        if (entity == null) return null;
-        SSHJobSubmission sshJobSubmission = ComputeMapper.INSTANCE.sshJobSubmissionToModel(entity);
-        String rjmId = sshJobSubmission.getResourceJobManager().getResourceJobManagerId();
-        ResourceJobManagerRepository rjmRepo = new ResourceJobManagerRepository();
-        Map<ApplicationParallelismType, String> parPrefix = rjmRepo.getParallelismPrefix(rjmId);
-        Map<Integer, String> parPrefixInt = new HashMap<>();
-        for (Map.Entry<ApplicationParallelismType, String> e : parPrefix.entrySet()) {
-            parPrefixInt.put(e.getKey().getNumber(), e.getValue());
-        }
-        Map<JobManagerCommand, String> jmCommands = rjmRepo.getJobManagerCommand(rjmId);
-        Map<Integer, String> jmCommandsInt = new HashMap<>();
-        for (Map.Entry<JobManagerCommand, String> e : jmCommands.entrySet()) {
-            jmCommandsInt.put(e.getKey().getNumber(), e.getValue());
-        }
-        return sshJobSubmission.toBuilder()
-                .setResourceJobManager(sshJobSubmission.getResourceJobManager().toBuilder()
-                        .putAllParallelismPrefix(parPrefixInt)
-                        .putAllJobManagerCommands(jmCommandsInt)
-                        .build())
-                .build();
-    }
-
-    @Override
-    public UnicoreJobSubmission getUNICOREJobSubmission(String submissionId) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity =
-                execute(entityManager -> entityManager.find(ComputeJobSubmissionEntity.class, submissionId));
-        if (entity == null) return null;
-        return ComputeMapper.INSTANCE.unicoreSubmissionToModel(entity);
-    }
-
-    @Override
-    public CloudJobSubmission getCloudJobSubmission(String submissionId) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity =
-                execute(entityManager -> entityManager.find(ComputeJobSubmissionEntity.class, submissionId));
-        if (entity == null) return null;
-        return ComputeMapper.INSTANCE.cloudJobSubmissionToModel(entity);
-    }
-
-    @Override
-    public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId)
-            throws AppCatalogException {
-        execute(entityManager -> {
-            ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
-            if (parent != null && parent.getJobSubmissionInterfaces() != null) {
-                parent.getJobSubmissionInterfaces()
-                        .removeIf(e -> jobSubmissionInterfaceId.equals(e.getJobSubmissionInterfaceId()));
-                entityManager.merge(parent);
-            }
-            return null;
-        });
-    }
-
-    @Override
     public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
         execute(entityManager -> {
             ComputeResourceEntity parent = entityManager.find(ComputeResourceEntity.class, computeResourceId);
@@ -412,31 +245,5 @@ public class ComputeResourceRepository
             }
             return null;
         });
-    }
-
-    @Override
-    public LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException {
-        ComputeJobSubmissionEntity entity =
-                execute(entityManager -> entityManager.find(ComputeJobSubmissionEntity.class, submissionId));
-        if (entity == null) return null;
-        LOCALSubmission localSubmission = ComputeMapper.INSTANCE.localSubmissionToModel(entity);
-        String rjmId = localSubmission.getResourceJobManager().getResourceJobManagerId();
-        ResourceJobManagerRepository rjmRepo = new ResourceJobManagerRepository();
-        Map<ApplicationParallelismType, String> parPrefix = rjmRepo.getParallelismPrefix(rjmId);
-        Map<Integer, String> parPrefixInt = new HashMap<>();
-        for (Map.Entry<ApplicationParallelismType, String> e : parPrefix.entrySet()) {
-            parPrefixInt.put(e.getKey().getNumber(), e.getValue());
-        }
-        Map<JobManagerCommand, String> jmCommands = rjmRepo.getJobManagerCommand(rjmId);
-        Map<Integer, String> jmCommandsInt = new HashMap<>();
-        for (Map.Entry<JobManagerCommand, String> e : jmCommands.entrySet()) {
-            jmCommandsInt.put(e.getKey().getNumber(), e.getValue());
-        }
-        return localSubmission.toBuilder()
-                .setResourceJobManager(localSubmission.getResourceJobManager().toBuilder()
-                        .putAllParallelismPrefix(parPrefixInt)
-                        .putAllJobManagerCommands(jmCommandsInt)
-                        .build())
-                .build();
     }
 }

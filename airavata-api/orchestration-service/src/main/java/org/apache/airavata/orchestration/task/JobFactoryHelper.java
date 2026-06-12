@@ -21,9 +21,6 @@ package org.apache.airavata.orchestration.task;
 
 import java.lang.reflect.Method;
 import org.apache.airavata.interfaces.JobManagerConfiguration;
-import org.apache.airavata.interfaces.RegistryHandler;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
 
 /**
@@ -37,35 +34,6 @@ public final class JobFactoryHelper {
     private static final String JOB_FACTORY_CLASS = "org.apache.airavata.compute.task.JobFactory";
 
     private JobFactoryHelper() {}
-
-    /**
-     * Resolve a {@link ResourceJobManager} for the given submission protocol/interface
-     * by delegating to {@code JobFactory.getResourceJobManager(...)}.
-     */
-    public static ResourceJobManager getResourceJobManager(
-            RegistryHandler registryClient,
-            JobSubmissionProtocol submissionProtocol,
-            JobSubmissionInterface jobSubmissionInterface)
-            throws Exception {
-        try {
-            Class<?> jobFactory = Class.forName(JOB_FACTORY_CLASS);
-            Method method = jobFactory.getMethod(
-                    "getResourceJobManager",
-                    registryClient.getClass(),
-                    JobSubmissionProtocol.class,
-                    JobSubmissionInterface.class);
-            return (ResourceJobManager) method.invoke(null, registryClient, submissionProtocol, jobSubmissionInterface);
-        } catch (java.lang.reflect.InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof Exception) {
-                throw (Exception) cause;
-            }
-            throw new Exception("Failed to invoke JobFactory.getResourceJobManager", cause);
-        } catch (ReflectiveOperationException e) {
-            throw new Exception(
-                    "Failed to call JobFactory.getResourceJobManager; is compute-service on the classpath?", e);
-        }
-    }
 
     /**
      * Create a {@link JobManagerConfiguration} for the given resource job manager
@@ -87,17 +55,5 @@ public final class JobFactoryHelper {
             throw new Exception(
                     "Failed to call JobFactory.getJobManagerConfiguration; is compute-service on the classpath?", e);
         }
-    }
-
-    /**
-     * Combined helper: resolve resource job manager then get its configuration.
-     */
-    public static JobManagerConfiguration getJobManagerConfiguration(
-            RegistryHandler registryClient,
-            JobSubmissionProtocol submissionProtocol,
-            JobSubmissionInterface jobSubmissionInterface)
-            throws Exception {
-        ResourceJobManager rjm = getResourceJobManager(registryClient, submissionProtocol, jobSubmissionInterface);
-        return getJobManagerConfiguration(rjm);
     }
 }

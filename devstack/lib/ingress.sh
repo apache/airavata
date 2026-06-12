@@ -32,7 +32,6 @@ EOF
     docker network create --attachable "$DEVSTACK_PROJECT-devstack"
   docker network connect \
     --alias "api.$DEVSTACK_TLD"      --alias "auth.$DEVSTACK_TLD" \
-    --alias "gateway.$DEVSTACK_TLD"  --alias "rabbitmq.$DEVSTACK_TLD" \
-    --alias "adminer.$DEVSTACK_TLD" \
+    --alias "gateway.$DEVSTACK_TLD"  --alias "adminer.$DEVSTACK_TLD" \
     "$DEVSTACK_PROJECT-devstack" airavata-devstack-traefik 2>/dev/null || true
 }

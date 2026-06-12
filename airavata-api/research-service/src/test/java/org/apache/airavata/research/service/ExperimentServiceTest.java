@@ -33,7 +33,6 @@ import org.apache.airavata.interfaces.AppCatalogRegistry;
 import org.apache.airavata.interfaces.ExperimentRegistry;
 import org.apache.airavata.interfaces.ProjectRegistry;
 import org.apache.airavata.interfaces.SharingFacade;
-import org.apache.airavata.messaging.service.EventPublisher;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.experiment.proto.ExperimentStatistics;
@@ -71,9 +70,6 @@ class ExperimentServiceTest {
     @Mock
     SharingFacade sharingHandler;
 
-    @Mock
-    EventPublisher eventPublisher;
-
     ExperimentService experimentService;
     RequestContext ctx;
 
@@ -87,7 +83,11 @@ class ExperimentServiceTest {
                 .thenReturn(true);
 
         experimentService = new ExperimentService(
-                experimentRegistry, appCatalogRegistry, projectRegistry, sharingHandler, eventPublisher);
+                experimentRegistry,
+                appCatalogRegistry,
+                projectRegistry,
+                sharingHandler,
+                java.util.Optional.empty());
         ctx = new RequestContext(
                 "testUser", "testGateway", "token123", Map.of("userName", "testUser", "gatewayId", "testGateway"));
     }
@@ -268,7 +268,7 @@ class ExperimentServiceTest {
     }
 
     @Test
-    void fetchIntermediateOutputs_publishesEventWhenValid() throws Exception {
+    void fetchIntermediateOutputs_isNotSupported() throws Exception {
         when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "exp-123", "testGateway:OWNER"))
                 .thenReturn(true);
 
@@ -283,9 +283,9 @@ class ExperimentServiceTest {
         job = job.toBuilder().addJobStatuses(jobStatus).build();
         when(experimentRegistry.getJobDetails("exp-123")).thenReturn(List.of(job));
 
-        experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1"));
-
-        verify(eventPublisher).publishIntermediateOutputs("exp-123", "testGateway", List.of("output1"));
+        assertThrows(
+                ServiceException.class,
+                () -> experimentService.fetchIntermediateOutputs(ctx, "exp-123", List.of("output1")));
     }
 
     @Test

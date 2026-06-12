@@ -33,6 +33,7 @@ import org.apache.airavata.config.ConditionalOnServer;
 import org.apache.airavata.research.config.ResearchServiceConfig;
 import org.apache.airavata.server.file.FileController;
 import org.apache.airavata.server.grpc.config.GrpcAuthInterceptor;
+import org.apache.airavata.server.grpc.config.GrpcLoggingInterceptor;
 import org.apache.airavata.server.grpc.config.HttpAuthDecorator;
 import org.apache.airavata.server.kafka.KafkaProxyService;
 import org.springframework.beans.factory.BeanFactory;
@@ -71,11 +72,14 @@ public class AiravataArmeriaConfig {
     public ArmeriaServerConfigurator grpcServerConfigurator(
             List<BindableService> grpcServices,
             GrpcAuthInterceptor authInterceptor,
+            GrpcLoggingInterceptor loggingInterceptor,
             @Value("${airavata.cors.allowed-origins:*}") String allowedOrigins) {
         return builder -> {
+            // loggingInterceptor is outermost so it records the final status of every call,
+            // including auth rejections, with the server-side cause on failure.
             GrpcService grpcService = GrpcService.builder()
                     .addServices(grpcServices)
-                    .intercept(authInterceptor)
+                    .intercept(loggingInterceptor, authInterceptor)
                     .enableHttpJsonTranscoding(true)
                     .build();
 

@@ -32,9 +32,6 @@ import org.apache.airavata.interfaces.RegistryProvider;
 import org.apache.airavata.interfaces.SSHAccountProvisioner;
 import org.apache.airavata.interfaces.SSHAccountProvisionerFactory;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.proto.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserComputeResourcePreference;
 import org.apache.airavata.model.credential.store.proto.PasswordCredential;
@@ -127,30 +124,15 @@ public class SSHAccountManager {
 
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
-        SSHJobSubmission sshJobSubmission = null;
         try {
             computeResourcePreference =
                     registryProvider.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
             computeResourceDescription = registryProvider.getComputeResource(computeResourceId);
-            // Find the SSHJobSubmission
-            for (JobSubmissionInterface jobSubmissionInterface :
-                    computeResourceDescription.getJobSubmissionInterfacesList()) {
-                if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-                    sshJobSubmission =
-                            registryProvider.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
-                    break;
-                }
-            }
         } catch (Exception e) {
             throw new RuntimeException(
                     "Failed to retrieve compute resource information for [" + gatewayId + "] and " + "["
                             + computeResourceId + "]: " + e.getMessage(),
                     e);
-        }
-
-        if (sshJobSubmission == null) {
-            throw new InvalidSetupException(
-                    "Compute resource [" + computeResourceId + "] does not have an SSH Job Submission " + "interface.");
         }
 
         // get the account provisioner and config values for the preferences
@@ -191,8 +173,8 @@ public class SSHAccountManager {
         }
 
         // Verify can authenticate to host
-        String sshHostname = getSSHHostname(computeResourceDescription, sshJobSubmission);
-        int sshPort = sshJobSubmission.getSshPort();
+        String sshHostname = computeResourceDescription.getHostName();
+        int sshPort = computeResourceDescription.getSshPort() == 0 ? 22 : computeResourceDescription.getSshPort();
         boolean validated = false;
         try {
             validated = SSHUtil.validate(sshHostname, sshPort, username, sshCredential);
@@ -226,16 +208,6 @@ public class SSHAccountManager {
                 .setValidated(true)
                 .build();
         return userComputeResourcePreference;
-    }
-
-    private static String getSSHHostname(
-            ComputeResourceDescription computeResourceDescription, SSHJobSubmission sshJobSubmission) {
-        String alternativeSSHHostName = sshJobSubmission.getAlternativeSshHostName();
-        if (alternativeSSHHostName != null && !"".equals(alternativeSSHHostName.trim())) {
-            return alternativeSSHHostName;
-        } else {
-            return computeResourceDescription.getHostName();
-        }
     }
 
     private SSHAccountProvisioner createSshAccountProvisioner(

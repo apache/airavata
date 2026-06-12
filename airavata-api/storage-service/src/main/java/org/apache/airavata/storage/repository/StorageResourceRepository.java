@@ -29,11 +29,7 @@ import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.interfaces.AppCatalogException;
 import org.apache.airavata.interfaces.StorageResource;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
-import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
-import org.apache.airavata.storage.mapper.DataMovementMapper;
 import org.apache.airavata.storage.mapper.StorageMapper;
-import org.apache.airavata.storage.model.DataMovementInterfaceEntity;
-import org.apache.airavata.storage.model.DataMovementInterfacePK;
 import org.apache.airavata.storage.model.StorageResourceEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,14 +69,6 @@ public class StorageResourceRepository
                 descBuilder.setStorageResourceId(storageResourceId);
             }
             descBuilder.setCreationTime(System.currentTimeMillis());
-            if (!description.getDataMovementInterfacesList().isEmpty()) {
-                descBuilder.clearDataMovementInterfaces();
-                for (DataMovementInterface dm : description.getDataMovementInterfacesList()) {
-                    descBuilder.addDataMovementInterfaces(dm.toBuilder()
-                            .setStorageResourceId(descBuilder.getStorageResourceId())
-                            .build());
-                }
-            }
             description = descBuilder.build();
             StorageResourceDescription storageResourceDescription = create(description);
             return storageResourceDescription.getStorageResourceId();
@@ -100,17 +88,8 @@ public class StorageResourceRepository
     public void updateStorageResource(String storageResourceId, StorageResourceDescription updatedStorageResource)
             throws AppCatalogException {
         try {
-            StorageResourceDescription.Builder updBuilder =
-                    updatedStorageResource.toBuilder().setUpdateTime(System.currentTimeMillis());
-            if (!updatedStorageResource.getDataMovementInterfacesList().isEmpty()) {
-                updBuilder.clearDataMovementInterfaces();
-                for (DataMovementInterface dm : updatedStorageResource.getDataMovementInterfacesList()) {
-                    updBuilder.addDataMovementInterfaces(dm.toBuilder()
-                            .setStorageResourceId(updatedStorageResource.getStorageResourceId())
-                            .build());
-                }
-            }
-            updatedStorageResource = updBuilder.build();
+            updatedStorageResource =
+                    updatedStorageResource.toBuilder().setUpdateTime(System.currentTimeMillis()).build();
             update(updatedStorageResource);
         } catch (Exception e) {
             logger.error(
@@ -215,35 +194,10 @@ public class StorageResourceRepository
         }
     }
 
-    public String addDataMovementInterface(DataMovementInterface dataMovementInterface) {
-        DataMovementInterfaceEntity entity = DataMovementMapper.INSTANCE.toEntity(dataMovementInterface);
-        entity.setResourceId(dataMovementInterface.getStorageResourceId());
-        execute(entityManager -> entityManager.merge(entity));
-        return dataMovementInterface.getDataMovementInterfaceId();
-    }
-
     @Override
     public void removeDataMovementInterface(String storageResourceId, String dataMovementInterfaceId)
             throws AppCatalogException {
-        try {
-            DataMovementInterfacePK pk = new DataMovementInterfacePK();
-            pk.setDataMovementInterfaceId(dataMovementInterfaceId);
-            pk.setResourceId(storageResourceId);
-            execute(entityManager -> {
-                DataMovementInterfaceEntity entity = entityManager.find(DataMovementInterfaceEntity.class, pk);
-                entityManager.remove(entity);
-                return entity;
-            });
-        } catch (Exception e) {
-            logger.error(
-                    "Error removing storage data movement interface. StorageResourceId: " + storageResourceId + ""
-                            + " DataMovementInterfaceId: " + dataMovementInterfaceId,
-                    e);
-            throw new AppCatalogException(
-                    "Error removing storage data movement interface. StorageResourceId: " + storageResourceId + ""
-                            + " DataMovementInterfaceId: " + dataMovementInterfaceId,
-                    e);
-        }
+        // Storage resources are reached over SFTP; there is no data-movement interface to remove.
     }
 
     private Map<String, String> getStorageResourceMap(List<StorageResourceDescription> storageResourceDescriptionList) {
