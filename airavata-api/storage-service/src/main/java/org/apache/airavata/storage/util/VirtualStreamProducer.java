@@ -22,7 +22,6 @@ package org.apache.airavata.storage.util;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class VirtualStreamProducer {
@@ -31,7 +30,6 @@ public class VirtualStreamProducer {
     private OutputStream outputStream;
 
     public VirtualStreamProducer(int bufferSize, long streamLength) {
-        ConcurrentLinkedQueue q = new ConcurrentLinkedQueue();
         BlockingQueue<Integer> queue = new LinkedBlockingQueue<>(bufferSize);
         inputStream = new VirtualInputStream(queue, streamLength);
         outputStream = new VirtualOutputStream(queue, streamLength);
@@ -41,15 +39,7 @@ public class VirtualStreamProducer {
         return inputStream;
     }
 
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
     public OutputStream getOutputStream() {
         return outputStream;
-    }
-
-    public void setOutputStream(OutputStream outputStream) {
-        this.outputStream = outputStream;
     }
 }
