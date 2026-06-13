@@ -25,12 +25,6 @@ import java.util.Optional;
 import org.apache.airavata.interfaces.AgentAdaptor;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
 public class AgentStore {
 
     // compute resource: auth token: user: adaptor
@@ -61,8 +55,7 @@ public class AgentStore {
         userToAdaptorMap.put(userId, agentAdaptor);
     }
 
-    public Optional<StorageResourceAdaptor> getStorageAdaptor(
-            String storageResource, String authToken, String userId) {
+    public Optional<StorageResourceAdaptor> getStorageAdaptor(String storageResource, String authToken, String userId) {
         Map<String, Map<String, StorageResourceAdaptor>> tokenToUserMap = storageAdaptorCache.get(storageResource);
         if (tokenToUserMap != null) {
             Map<String, StorageResourceAdaptor> userToAdaptorMap = tokenToUserMap.get(authToken);

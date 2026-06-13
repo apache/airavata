@@ -19,10 +19,4 @@
 */
 package org.apache.airavata.compute.util;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
 public class Agent {}
