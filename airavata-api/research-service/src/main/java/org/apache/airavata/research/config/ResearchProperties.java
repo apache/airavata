@@ -26,9 +26,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "airavata.research")
 public class ResearchProperties {
     private String hubUrl;
-    private String portalUrl;
-    private String devUrl;
-    private String devUser;
     private String adminApiKey;
     private int limit = 10;
 
@@ -38,30 +35,6 @@ public class ResearchProperties {
 
     public void setHubUrl(String hubUrl) {
         this.hubUrl = hubUrl;
-    }
-
-    public String getPortalUrl() {
-        return portalUrl;
-    }
-
-    public void setPortalUrl(String portalUrl) {
-        this.portalUrl = portalUrl;
-    }
-
-    public String getDevUrl() {
-        return devUrl;
-    }
-
-    public void setDevUrl(String devUrl) {
-        this.devUrl = devUrl;
-    }
-
-    public String getDevUser() {
-        return devUser;
-    }
-
-    public void setDevUser(String devUser) {
-        this.devUser = devUser;
     }
 
     public String getAdminApiKey() {
