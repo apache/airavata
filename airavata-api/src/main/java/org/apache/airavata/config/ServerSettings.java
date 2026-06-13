@@ -70,13 +70,6 @@ public class ServerSettings extends ApplicationSettings {
     public static final String METASCHEDULER_CLUSTER_SCANNING_INTERVAL = "cluster.scanning.interval";
     public static final String METASCHEDULER_JOB_SCANNING_INTERVAL = "job.scanning.interval";
     public static final String METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS = "cluster.scanning.parallel.jobs";
-    public static final String COMPUTE_RESOURCE_RESCHEDULER_CLASS = "compute.resource.rescheduler.policy.class";
-    public static final String METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD =
-            "metascheduler.maximum.rescheduler.threshold";
-    public static final String DATA_ANALYZER_SCANNING_INTERVAL = "data.analyzer.scanning.interval";
-    public static final String DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS = "data.analyzer.scanning.parallel.jobs";
-    public static final String DATA_ANALYZER_ENABLED_GATEWAYS = "data.analyzer.enabled.gateways";
-    public static final String DATA_ANALYZER_TIME_STEP_IN_SECONDS = "data.analyzer.time.step.seconds";
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
@@ -228,12 +221,6 @@ public class ServerSettings extends ApplicationSettings {
                 "org.apache.airavata.orchestration.task.MultipleComputeResourcePolicy");
     }
 
-    public static String getReSchedulerPolicyClass() throws ApplicationSettingsException {
-        return getSetting(
-                COMPUTE_RESOURCE_RESCHEDULER_CLASS,
-                "org.apache.airavata.orchestration.task.ExponentialBackOffReScheduler");
-    }
-
     public static String getMetaschedulerGateway() throws ApplicationSettingsException {
         return getSetting(METASCHEDULER_GATEWAY, "");
     }
@@ -246,14 +233,6 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(METASCHEDULER_USERNAME, "");
     }
 
-    public static String getDataAnalyzingEnabledGateways() throws ApplicationSettingsException {
-        return getSetting(DATA_ANALYZER_ENABLED_GATEWAYS, "");
-    }
-
-    public static int getDataAnalyzerTimeStep() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(DATA_ANALYZER_TIME_STEP_IN_SECONDS, "1"));
-    }
-
     public static double getMetaschedulerClusterScanningInterval() throws ApplicationSettingsException {
         return Double.parseDouble(getSetting(METASCHEDULER_CLUSTER_SCANNING_INTERVAL, "1800000"));
     }
@@ -264,17 +243,5 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getMetaschedulerNoOfScanningParallelJobs() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(METASCHEDULER_NO_OF_SCANNING_PARALLEL_JOBS, "1"));
-    }
-
-    public static double getDataAnalyzerScanningInterval() throws ApplicationSettingsException {
-        return Double.parseDouble(getSetting(DATA_ANALYZER_SCANNING_INTERVAL, "1800000"));
-    }
-
-    public static int getDataAnalyzerNoOfScanningParallelJobs() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(DATA_ANALYZER_NO_OF_SCANNING_PARALLEL_JOBS, "1"));
-    }
-
-    public static int getMetaschedulerReschedulingThreshold() throws ApplicationSettingsException {
-        return Integer.parseInt(getSetting(METASCHEDULER_MAXIMUM_RESCHEDULED_THRESHOLD, "5"));
     }
 }
