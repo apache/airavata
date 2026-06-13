@@ -32,16 +32,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResearchProjectRepository extends JpaRepository<ResearchProjectEntity, String> {
 
-    boolean existsByOwnerId(String ownerId);
-
-    List<ResearchProjectEntity> findProjectsByRepositoryResource(RepositoryResourceEntity repositoryResource);
-
-    List<ResearchProjectEntity> findProjectsByDatasetResourcesContaining(Set<DatasetResourceEntity> datasetResources);
-
-    List<ResearchProjectEntity> findAllByOwnerId(String ownerId);
-
-    List<ResearchProjectEntity> findAllByOwnerIdOrderByCreatedAtDesc(String ownerId);
-
     List<ResearchProjectEntity> findALlByState(StateEnum state);
 
     List<ResearchProjectEntity> findProjectsByRepositoryResourceAndState(
@@ -51,8 +41,6 @@ public interface ResearchProjectRepository extends JpaRepository<ResearchProject
 
     List<ResearchProjectEntity> findProjectsByDatasetResourcesContainingAndState(
             Set<DatasetResourceEntity> datasetResources, StateEnum state);
-
-    StateEnum State(StateEnum state);
 
     Optional<ResearchProjectEntity> findByIdAndState(String id, StateEnum state);
 }
