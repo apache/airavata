@@ -28,14 +28,6 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
-CREATE TABLE `agent_deployment_info` (
-  `AGENT_DEPLOYMENT_INFO_ID` varchar(255) NOT NULL,
-  `AGENT_APPLICATION_ID` varchar(255) DEFAULT NULL,
-  `COMPUTE_RESOURCE_ID` varchar(255) DEFAULT NULL,
-  `USER_FRINEDLY_NAME` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`AGENT_DEPLOYMENT_INFO_ID`),
-  UNIQUE KEY `UKf9p10tqcpwt5y0tcjrhq7p8qr` (`USER_FRINEDLY_NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 CREATE TABLE `app_io_param` (
   `PARAM_ID` varchar(255) NOT NULL,
   `APPLICATION_ARGUMENT` varchar(255) DEFAULT NULL,
@@ -256,7 +248,6 @@ CREATE TABLE `credentials` (
   `GATEWAY_ID` varchar(256) NOT NULL,
   `TOKEN_ID` varchar(256) NOT NULL,
   `CREDENTIAL` mediumblob NOT NULL,
-  `CREDENTIAL_OWNER_TYPE` varchar(50) DEFAULT NULL,
   `DESCRIPTION` varchar(500) DEFAULT NULL,
   `PORTAL_USER_ID` varchar(256) NOT NULL,
   `TIME_PERSISTED` datetime(6) DEFAULT NULL,
@@ -582,6 +573,7 @@ CREATE TABLE `parsing_template` (
   `APP_INTERFACE_ID` varchar(255) DEFAULT NULL,
   `GATEWAY_ID` varchar(255) DEFAULT NULL,
   `INITIAL_INPUTS_JSON` tinytext DEFAULT NULL,
+  `PARSER_CONNECTIONS_JSON` tinytext DEFAULT NULL,
   PRIMARY KEY (`PARSING_TEMPLATE_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 CREATE TABLE `permission_type` (
@@ -611,7 +603,6 @@ CREATE TABLE `process` (
   `EXPERIMENT_DATA_DIR` varchar(512) DEFAULT NULL,
   `EXPERIMENT_ID` varchar(255) DEFAULT NULL,
   `GATEWAY_EXECUTION_ID` varchar(255) DEFAULT NULL,
-  `GENERATE_CERT` bit(1) DEFAULT NULL,
   `GROUP_RESOURCE_PROFILE_ID` varchar(255) DEFAULT NULL,
   `INPUT_STORAGE_RESOURCE_ID` varchar(255) DEFAULT NULL,
   `LAST_UPDATE_TIME` datetime(6) DEFAULT NULL,
@@ -619,7 +610,6 @@ CREATE TABLE `process` (
   `PROCESS_DETAIL` tinytext DEFAULT NULL,
   `TASK_DAG` tinytext DEFAULT NULL,
   `USE_USER_CR_PREF` bit(1) DEFAULT NULL,
-  `USER_DN` varchar(255) DEFAULT NULL,
   `USERNAME` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`PROCESS_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
@@ -637,16 +627,6 @@ CREATE TABLE `process_resource_schedule` (
   `TOTAL_PHYSICAL_MEMORY` int(11) DEFAULT NULL,
   `WALL_TIME_LIMIT` int(11) DEFAULT NULL,
   PRIMARY KEY (`PROCESS_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-CREATE TABLE `process_workflow` (
-  `processId` varchar(255) NOT NULL,
-  `workflowId` varchar(255) NOT NULL,
-  `CREATION_TIME` datetime(6) DEFAULT NULL,
-  `TYPE` varchar(255) DEFAULT NULL,
-  `PROCESS_ID` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`processId`,`workflowId`),
-  KEY `FK3t3hw37ici9l1289hpcn4frcn` (`PROCESS_ID`),
-  CONSTRAINT `FK3t3hw37ici9l1289hpcn4frcn` FOREIGN KEY (`PROCESS_ID`) REFERENCES `process` (`PROCESS_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 CREATE TABLE `project` (
   `PROJECT_ID` varchar(255) NOT NULL,
@@ -671,7 +651,7 @@ CREATE TABLE `queue_status` (
   `CREATED_TIME` decimal(38,0) NOT NULL,
   `QUEUE_UP` bit(1) DEFAULT NULL,
   `QUEUED_JOBS` int(11) DEFAULT NULL,
-  `RUNNING_JOBS` bit(1) DEFAULT NULL,
+  `RUNNING_JOBS` int(11) DEFAULT NULL,
   PRIMARY KEY (`HOST_NAME`,`QUEUE_NAME`,`CREATED_TIME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 CREATE TABLE `repository_resource` (
@@ -726,7 +706,6 @@ CREATE TABLE `resource` (
   `name` varchar(255) NOT NULL,
   `privacy` enum('PRIVATE','PUBLIC') NOT NULL,
   `state` enum('ACTIVE','DELETED') NOT NULL,
-  `status` enum('NONE','PENDING','REJECTED','VERIFIED') NOT NULL,
   `updatedAt` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
@@ -750,6 +729,7 @@ CREATE TABLE `resource_star` (
   `user_id` varchar(255) NOT NULL,
   `resource_id` varchar(48) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_resource_star_user_resource` (`user_id`,`resource_id`),
   KEY `FKe8g40jht9trlg7x979t2v0qm1` (`resource_id`),
   CONSTRAINT `FKe8g40jht9trlg7x979t2v0qm1` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
@@ -826,7 +806,8 @@ CREATE TABLE `storage_resource` (
 CREATE TABLE `tag` (
   `id` varchar(48) NOT NULL,
   `value` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_tag_value` (`value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 CREATE TABLE `task` (
   `TASK_ID` varchar(255) NOT NULL,
@@ -862,7 +843,6 @@ CREATE TABLE `user_configuration_data` (
   `EXPERIMENT_ID` varchar(255) NOT NULL,
   `AIRAVATA_AUTO_SCHEDULE` bit(1) DEFAULT NULL,
   `EXPERIMENT_DATA_DIR` varchar(512) DEFAULT NULL,
-  `GENERATE_CERT` bit(1) DEFAULT NULL,
   `GROUP_RESOURCE_PROFILE_ID` varchar(255) DEFAULT NULL,
   `INPUT_STORAGE_RESOURCE_ID` varchar(255) DEFAULT NULL,
   `NODE_COUNT` int(11) DEFAULT NULL,
@@ -880,7 +860,6 @@ CREATE TABLE `user_configuration_data` (
   `TOTAL_CPU_COUNT` int(11) DEFAULT NULL,
   `TOTAL_PHYSICAL_MEMORY` int(11) DEFAULT NULL,
   `IS_USE_USER_CR_PREF` bit(1) DEFAULT NULL,
-  `USER_DN` varchar(255) DEFAULT NULL,
   `WALL_TIME_LIMIT` int(11) DEFAULT NULL,
   PRIMARY KEY (`EXPERIMENT_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;

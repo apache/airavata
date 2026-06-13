@@ -95,8 +95,6 @@ public class ExperimentModelUtil {
             builder.setInputStorageResourceId(configData.getInputStorageResourceId());
             builder.setOutputStorageResourceId(configData.getOutputStorageResourceId());
             builder.setExperimentDataDir(configData.getExperimentDataDir());
-            builder.setGenerateCert(configData.getGenerateCert());
-            builder.setUserDn(configData.getUserDn());
             ComputationalResourceSchedulingModel scheduling = configData.getComputationalResourceScheduling();
             if (configData.hasComputationalResourceScheduling()) {
                 builder.setProcessResourceSchedule(scheduling);

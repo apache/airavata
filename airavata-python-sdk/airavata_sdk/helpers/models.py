@@ -90,8 +90,6 @@ class UserConfigurationDataCreate(_Base):
     computational_resource_scheduling: Optional[
         ComputationalResourceSchedulingCreate] = None
     throttle_resources: Optional[bool] = None
-    user_dn: Optional[str] = None
-    generate_cert: Optional[bool] = None
     input_storage_resource_id: Optional[str] = None
     output_storage_resource_id: Optional[str] = None
     experiment_data_dir: Optional[str] = None

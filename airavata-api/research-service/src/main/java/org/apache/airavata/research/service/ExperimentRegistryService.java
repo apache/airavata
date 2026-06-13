@@ -38,7 +38,6 @@ import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.experiment.proto.*;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.process.proto.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.proto.*;
 import org.apache.airavata.model.task.proto.TaskModel;
@@ -290,17 +289,6 @@ public class ExperimentRegistryService implements ExperimentRegistry {
         } catch (Exception e) {
             logger.error(processId, "Error while updating process status", e);
             throw new RegistryException("Error while updating process status. More info : " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws Exception {
-        try {
-            executionDataAccess.addProcessWorkflow(processWorkflow, processWorkflow.getProcessId());
-        } catch (Exception e) {
-            logger.error("Error while adding process workflows for process id " + processWorkflow.getProcessId(), e);
-            throw new RegistryException("Error while adding process workflows for process id "
-                    + processWorkflow.getProcessId() + ". More info : " + e.getMessage());
         }
     }
 
@@ -658,15 +646,6 @@ public class ExperimentRegistryService implements ExperimentRegistry {
         }
     }
 
-    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws Exception {
-        try {
-            return executionDataAccess.getProcessWorkflows(processId);
-        } catch (Exception e) {
-            logger.error("Error while retrieving process workflows for process id " + processId, e);
-            throw new RegistryException("Error while retrieving process workflows for process id " + processId
-                    + ". More info : " + e.getMessage());
-        }
-    }
 
     public List<JobModel> getJobDetails(String airavataExperimentId) throws Exception {
         try {

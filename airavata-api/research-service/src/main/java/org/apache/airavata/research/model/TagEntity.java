@@ -24,10 +24,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
-@Table(name = "TAG")
+@Table(
+        name = "TAG",
+        uniqueConstraints = @UniqueConstraint(name = "UK_tag_value", columnNames = "value"))
 public class TagEntity {
 
     @Id

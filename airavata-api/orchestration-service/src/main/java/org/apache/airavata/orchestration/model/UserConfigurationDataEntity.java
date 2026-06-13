@@ -48,12 +48,6 @@ public class UserConfigurationDataEntity implements Serializable {
     @Column(name = "THROTTLE_RESOURCES")
     private boolean throttleResources;
 
-    @Column(name = "USER_DN")
-    private String userDN;
-
-    @Column(name = "GENERATE_CERT")
-    private boolean generateCert;
-
     @Column(name = "RESOURCE_HOST_ID")
     private String resourceHostId;
 
@@ -151,21 +145,6 @@ public class UserConfigurationDataEntity implements Serializable {
         this.throttleResources = throttleResources;
     }
 
-    public String getUserDN() {
-        return userDN;
-    }
-
-    public void setUserDN(String userDN) {
-        this.userDN = userDN;
-    }
-
-    public boolean isGenerateCert() {
-        return generateCert;
-    }
-
-    public void setGenerateCert(boolean generateCert) {
-        this.generateCert = generateCert;
-    }
 
     public String getResourceHostId() {
         return resourceHostId;

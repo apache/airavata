@@ -68,14 +68,12 @@ ONLY_COMPLETED: ExperimentCleanupStrategy
 ONLY_FAILED: ExperimentCleanupStrategy
 
 class UserConfigurationDataModel(_message.Message):
-    __slots__ = ("airavata_auto_schedule", "override_manual_scheduled_params", "share_experiment_publicly", "computational_resource_scheduling", "throttle_resources", "user_dn", "generate_cert", "input_storage_resource_id", "output_storage_resource_id", "experiment_data_dir", "use_user_cr_pref", "group_resource_profile_id", "auto_scheduled_comp_resource_scheduling_list")
+    __slots__ = ("airavata_auto_schedule", "override_manual_scheduled_params", "share_experiment_publicly", "computational_resource_scheduling", "throttle_resources", "input_storage_resource_id", "output_storage_resource_id", "experiment_data_dir", "use_user_cr_pref", "group_resource_profile_id", "auto_scheduled_comp_resource_scheduling_list")
     AIRAVATA_AUTO_SCHEDULE_FIELD_NUMBER: _ClassVar[int]
     OVERRIDE_MANUAL_SCHEDULED_PARAMS_FIELD_NUMBER: _ClassVar[int]
     SHARE_EXPERIMENT_PUBLICLY_FIELD_NUMBER: _ClassVar[int]
     COMPUTATIONAL_RESOURCE_SCHEDULING_FIELD_NUMBER: _ClassVar[int]
     THROTTLE_RESOURCES_FIELD_NUMBER: _ClassVar[int]
-    USER_DN_FIELD_NUMBER: _ClassVar[int]
-    GENERATE_CERT_FIELD_NUMBER: _ClassVar[int]
     INPUT_STORAGE_RESOURCE_ID_FIELD_NUMBER: _ClassVar[int]
     OUTPUT_STORAGE_RESOURCE_ID_FIELD_NUMBER: _ClassVar[int]
     EXPERIMENT_DATA_DIR_FIELD_NUMBER: _ClassVar[int]
@@ -87,15 +85,13 @@ class UserConfigurationDataModel(_message.Message):
     share_experiment_publicly: bool
     computational_resource_scheduling: _scheduling_pb2.ComputationalResourceSchedulingModel
     throttle_resources: bool
-    user_dn: str
-    generate_cert: bool
     input_storage_resource_id: str
     output_storage_resource_id: str
     experiment_data_dir: str
     use_user_cr_pref: bool
     group_resource_profile_id: str
     auto_scheduled_comp_resource_scheduling_list: _containers.RepeatedCompositeFieldContainer[_scheduling_pb2.ComputationalResourceSchedulingModel]
-    def __init__(self, airavata_auto_schedule: bool = ..., override_manual_scheduled_params: bool = ..., share_experiment_publicly: bool = ..., computational_resource_scheduling: _Optional[_Union[_scheduling_pb2.ComputationalResourceSchedulingModel, _Mapping]] = ..., throttle_resources: bool = ..., user_dn: _Optional[str] = ..., generate_cert: bool = ..., input_storage_resource_id: _Optional[str] = ..., output_storage_resource_id: _Optional[str] = ..., experiment_data_dir: _Optional[str] = ..., use_user_cr_pref: bool = ..., group_resource_profile_id: _Optional[str] = ..., auto_scheduled_comp_resource_scheduling_list: _Optional[_Iterable[_Union[_scheduling_pb2.ComputationalResourceSchedulingModel, _Mapping]]] = ...) -> None: ...
+    def __init__(self, airavata_auto_schedule: bool = ..., override_manual_scheduled_params: bool = ..., share_experiment_publicly: bool = ..., computational_resource_scheduling: _Optional[_Union[_scheduling_pb2.ComputationalResourceSchedulingModel, _Mapping]] = ..., throttle_resources: bool = ..., input_storage_resource_id: _Optional[str] = ..., output_storage_resource_id: _Optional[str] = ..., experiment_data_dir: _Optional[str] = ..., use_user_cr_pref: bool = ..., group_resource_profile_id: _Optional[str] = ..., auto_scheduled_comp_resource_scheduling_list: _Optional[_Iterable[_Union[_scheduling_pb2.ComputationalResourceSchedulingModel, _Mapping]]] = ...) -> None: ...
 
 class ExperimentModel(_message.Message):
     __slots__ = ("experiment_id", "project_id", "gateway_id", "experiment_type", "user_name", "experiment_name", "creation_time", "description", "execution_id", "gateway_execution_id", "gateway_instance_id", "enable_email_notification", "email_addresses", "user_configuration_data", "experiment_inputs", "experiment_outputs", "experiment_status", "errors", "processes", "workflow", "clean_up_strategy")

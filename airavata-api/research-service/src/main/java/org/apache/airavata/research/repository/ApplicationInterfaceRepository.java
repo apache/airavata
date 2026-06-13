@@ -31,7 +31,6 @@ import org.apache.airavata.model.appcatalog.appinterface.proto.ApplicationInterf
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.research.mapper.ResearchMapper;
-import org.apache.airavata.research.model.AppModuleMappingEntity;
 import org.apache.airavata.research.model.ApplicationInterfaceEntity;
 import org.apache.airavata.research.model.ApplicationModuleEntity;
 import org.apache.airavata.util.AiravataUtils;
@@ -159,21 +158,6 @@ public class ApplicationInterfaceRepository
             ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId)
             throws AppCatalogException {
         return saveApplicationInterfaceDescriptorData(applicationInterfaceDescription, gatewayId);
-    }
-
-    @Override
-    public void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException {
-        ApplicationModule applicationModule = getApplicationModule(moduleId);
-        ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(interfaceId);
-        ApplicationModuleEntity applicationModuleEntity = ResearchMapper.INSTANCE.appModuleToEntity(applicationModule);
-        ApplicationInterfaceEntity applicationInterfaceEntity =
-                ResearchMapper.INSTANCE.appInterfaceToEntity(applicationInterfaceDescription);
-        AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
-        appModuleMappingEntity.setModuleId(moduleId);
-        appModuleMappingEntity.setInterfaceId(interfaceId);
-        appModuleMappingEntity.setApplicationModule(applicationModuleEntity);
-        appModuleMappingEntity.setApplicationInterface(applicationInterfaceEntity);
-        execute(entityManager -> entityManager.merge(appModuleMappingEntity));
     }
 
     @Override

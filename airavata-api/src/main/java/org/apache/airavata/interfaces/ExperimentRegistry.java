@@ -26,7 +26,6 @@ import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.experiment.proto.*;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.process.proto.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.proto.ExperimentStatus;
 import org.apache.airavata.model.status.proto.JobStatus;
@@ -116,11 +115,7 @@ public interface ExperimentRegistry {
 
     void updateProcessStatus(ProcessStatus processStatus, String processId) throws Exception;
 
-    void addProcessWorkflow(ProcessWorkflow processWorkflow) throws Exception;
-
     List<OutputDataObjectType> getProcessOutputs(String processId) throws Exception;
-
-    List<ProcessWorkflow> getProcessWorkflows(String processId) throws Exception;
 
     // --- Task operations ---
     String addTask(TaskModel taskModel, String processId) throws Exception;
