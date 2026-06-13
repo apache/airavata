@@ -204,18 +204,6 @@ public class AgentManagementService {
         }
     }
 
-    public void terminateApplication(String gatewayId, String experimentId) {
-        try {
-            LOGGER.info("Terminating the application with experiment Id: {}", experimentId);
-            RequestContext ctx = agentExperimentService.requestContext();
-            agentExperimentService.experimentService().terminateExperiment(ctx, experimentId);
-        } catch (Exception e) {
-            LOGGER.error("Error while terminating the application with the experiment Id: {}", experimentId);
-            throw new RuntimeException(
-                    "Error while terminating the application with the experiment Id: " + experimentId, e);
-        }
-    }
-
     public ProcessModel getEnvProcessModel(String expId) {
         try {
             LOGGER.info("Extracting the process model for experiment id: {}", expId);

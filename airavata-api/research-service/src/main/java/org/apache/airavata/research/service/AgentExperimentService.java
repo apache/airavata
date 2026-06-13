@@ -64,10 +64,6 @@ public class AgentExperimentService {
         return experimentService;
     }
 
-    public ProjectService projectService() {
-        return projectService;
-    }
-
     public GroupResourceProfileProvider groupResourceProfileService() {
         return groupResourceProfileService;
     }
