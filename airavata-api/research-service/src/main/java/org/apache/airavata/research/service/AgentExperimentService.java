@@ -24,16 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.config.UserContext;
 import org.apache.airavata.exception.ServiceException;
 import org.apache.airavata.interfaces.GroupResourceProfileProvider;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupResourceProfile;
-import org.apache.airavata.model.experiment.proto.ExperimentSearchFields;
-import org.apache.airavata.model.experiment.proto.ExperimentSummaryModel;
 import org.apache.airavata.model.workspace.proto.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,26 +116,5 @@ public class AgentExperimentService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Could not find a matching Compute Resource Preference in the "
                         + groupProfileName + " group resource profile for the user: " + ctx.getUserId()));
-    }
-
-    public List<String> getUserExperimentIDs() throws ServiceException {
-        RequestContext ctx = requestContext();
-        int limit = 100;
-        String projectId = getProjectId("Default Project");
-        Map<ExperimentSearchFields, String> filters = Map.of(ExperimentSearchFields.PROJECT_ID, projectId);
-
-        return Stream.iterate(0, o -> o + limit)
-                .map(o -> {
-                    try {
-                        return experimentService.searchExperiments(
-                                ctx, ctx.getGatewayId(), ctx.getUserId(), filters, limit, o);
-                    } catch (ServiceException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .takeWhile(list -> !list.isEmpty())
-                .flatMap(List::stream)
-                .map(ExperimentSummaryModel::getExperimentId)
-                .collect(Collectors.toList());
     }
 }

@@ -73,10 +73,4 @@ public class DefaultComputeResourceSelectionPolicy extends ComputeResourceSelect
         }
         return Optional.empty();
     }
-
-    public static void main(String[] args) {
-        DefaultComputeResourceSelectionPolicy defaultComputeResourceSelectionPolicy =
-                new DefaultComputeResourceSelectionPolicy();
-        defaultComputeResourceSelectionPolicy.selectComputeResource("PROCESS_5dd4f56b-f0fd-41d0-9437-693ad25f4a1d");
-    }
 }
