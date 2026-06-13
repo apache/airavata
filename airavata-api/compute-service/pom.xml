@@ -111,6 +111,10 @@ under the License.
             <version>2.12.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-templates</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
