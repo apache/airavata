@@ -23,12 +23,6 @@ import org.apache.airavata.interfaces.AgentAdaptor;
 import org.apache.airavata.interfaces.AgentException;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
 public interface AdaptorSupport {
     void initializeAdaptor();
 

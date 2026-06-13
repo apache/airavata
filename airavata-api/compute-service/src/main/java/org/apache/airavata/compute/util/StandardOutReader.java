@@ -23,12 +23,6 @@ import java.io.*;
 import org.apache.airavata.interfaces.CommandOutput;
 import org.apache.commons.io.IOUtils;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
 public class StandardOutReader implements CommandOutput {
 
     private String stdOut;

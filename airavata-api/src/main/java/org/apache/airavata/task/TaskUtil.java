@@ -26,12 +26,6 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
 public class TaskUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskUtil.class);

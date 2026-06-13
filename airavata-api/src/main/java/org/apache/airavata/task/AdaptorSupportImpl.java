@@ -26,12 +26,6 @@ import org.apache.airavata.interfaces.StorageResourceAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
 public class AdaptorSupportImpl implements AdaptorSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(AdaptorSupportImpl.class);
