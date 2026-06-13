@@ -44,12 +44,4 @@ public class AiravataService {
         }
         return profile;
     }
-
-    public UserProfile getUserProfile(String authzToken, String userId, String gatewayId) {
-        UserProfile profile = userProfileProvider.getUserProfileByIdAndGateWay(userId, gatewayId);
-        if (profile == null) {
-            throw new RuntimeException("User profile not found for id: " + userId + " in gateway: " + gatewayId);
-        }
-        return profile;
-    }
 }
