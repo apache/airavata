@@ -27,7 +27,6 @@ import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.process.proto.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.proto.JobState;
 import org.apache.airavata.model.status.proto.JobStatus;
@@ -101,9 +100,6 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (entity.getTasks() != null) {
             entity.getTasks().forEach(t -> b.addTasks(taskToModel(t)));
         }
-        if (entity.getProcessWorkflows() != null) {
-            entity.getProcessWorkflows().forEach(w -> b.addProcessWorkflows(processWorkflowToModel(w)));
-        }
         return b.build();
     }
 
@@ -131,11 +127,6 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (!model.getTasksList().isEmpty()) {
             entity.setTasks(new java.util.ArrayList<>());
             model.getTasksList().forEach(t -> entity.getTasks().add(taskToEntity(t)));
-        }
-        if (!model.getProcessWorkflowsList().isEmpty()) {
-            entity.setProcessWorkflows(new java.util.ArrayList<>());
-            model.getProcessWorkflowsList()
-                    .forEach(w -> entity.getProcessWorkflows().add(processWorkflowToEntity(w)));
         }
         return entity;
     }
@@ -410,11 +401,6 @@ public interface ExecutionMapper extends CommonMapperConversions {
         return e;
     }
 
-    // --- ProcessWorkflow ---
-    ProcessWorkflow processWorkflowToModel(ProcessWorkflowEntity entity);
-
-    ProcessWorkflowEntity processWorkflowToEntity(ProcessWorkflow model);
-
     // --- UserConfigurationData ---
 
     /**
@@ -443,8 +429,6 @@ public interface ExecutionMapper extends CommonMapperConversions {
                 .setOverrideManualScheduledParams(entity.isOverrideManualScheduledParams())
                 .setShareExperimentPublicly(entity.isShareExperimentPublicly())
                 .setThrottleResources(entity.isThrottleResources())
-                .setUserDn(entity.getUserDN())
-                .setGenerateCert(entity.isGenerateCert())
                 .setExperimentDataDir(entity.getExperimentDataDir())
                 .setGroupResourceProfileId(entity.getGroupResourceProfileId())
                 .setUseUserCrPref(entity.isUseUserCRPref())
@@ -464,8 +448,6 @@ public interface ExecutionMapper extends CommonMapperConversions {
         entity.setOverrideManualScheduledParams(model.getOverrideManualScheduledParams());
         entity.setShareExperimentPublicly(model.getShareExperimentPublicly());
         entity.setThrottleResources(model.getThrottleResources());
-        entity.setUserDN(model.getUserDn());
-        entity.setGenerateCert(model.getGenerateCert());
         entity.setExperimentDataDir(model.getExperimentDataDir());
         entity.setGroupResourceProfileId(model.getGroupResourceProfileId());
         entity.setUseUserCRPref(model.getUseUserCrPref());

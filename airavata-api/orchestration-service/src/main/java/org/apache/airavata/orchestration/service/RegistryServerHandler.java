@@ -57,7 +57,6 @@ import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 import org.apache.airavata.model.experiment.proto.*;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.process.proto.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.proto.*;
 import org.apache.airavata.model.task.proto.TaskModel;
@@ -196,11 +195,6 @@ public class RegistryServerHandler implements RegistryHandler {
     }
 
     @Override
-    public void addProcessWorkflow(ProcessWorkflow processWorkflow) throws Exception {
-        experimentRegistryHandler.addProcessWorkflow(processWorkflow);
-    }
-
-    @Override
     public String addTask(TaskModel taskModel, String processId) throws Exception {
         return experimentRegistryHandler.addTask(taskModel, processId);
     }
@@ -322,10 +316,6 @@ public class RegistryServerHandler implements RegistryHandler {
 
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws Exception {
         return experimentRegistryHandler.getProcessOutputs(processId);
-    }
-
-    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws Exception {
-        return experimentRegistryHandler.getProcessWorkflows(processId);
     }
 
     public List<JobModel> getJobDetails(String airavataExperimentId) throws Exception {

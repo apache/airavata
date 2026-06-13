@@ -43,13 +43,6 @@ public interface ApplicationInterface {
             throws AppCatalogException;
 
     /**
-     * This method will add an application module mapping
-     * @param moduleId unique module Id
-     * @param interfaceId unique interface id
-     */
-    void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException;
-
-    /**
      * This method will update application module
      * @param moduleId unique module Id
      * @param updatedModule updated module

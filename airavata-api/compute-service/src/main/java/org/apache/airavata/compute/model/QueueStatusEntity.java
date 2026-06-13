@@ -48,7 +48,7 @@ public class QueueStatusEntity implements Serializable {
     private boolean queueUp;
 
     @Column(name = "RUNNING_JOBS")
-    private boolean runningJobs;
+    private int runningJobs;
 
     @Column(name = "QUEUED_JOBS")
     private int queuedJobs;
@@ -87,11 +87,11 @@ public class QueueStatusEntity implements Serializable {
         this.queueUp = queueUp;
     }
 
-    public boolean isRunningJobs() {
+    public int getRunningJobs() {
         return runningJobs;
     }
 
-    public void setRunningJobs(boolean runningJobs) {
+    public void setRunningJobs(int runningJobs) {
         this.runningJobs = runningJobs;
     }
 

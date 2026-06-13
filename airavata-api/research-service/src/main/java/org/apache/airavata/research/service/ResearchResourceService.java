@@ -33,7 +33,6 @@ import org.apache.airavata.research.model.ResourceEntity;
 import org.apache.airavata.research.model.ResourceStarEntity;
 import org.apache.airavata.research.model.ResourceTypeEnum;
 import org.apache.airavata.research.model.StateEnum;
-import org.apache.airavata.research.model.StatusEnum;
 import org.apache.airavata.research.model.TagEntity;
 import org.apache.airavata.research.repository.ResearchProjectRepository;
 import org.apache.airavata.research.repository.ResourceRepository;
@@ -41,6 +40,7 @@ import org.apache.airavata.research.repository.ResourceStarRepository;
 import org.apache.airavata.research.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -88,7 +88,12 @@ public class ResearchResourceService {
             String tagValue = t.getValue();
             TagEntity fetchedTag = tagRepository.findByValue(tagValue);
             if (fetchedTag == null) {
-                fetchedTag = tagRepository.save(t);
+                try {
+                    fetchedTag = tagRepository.save(t);
+                } catch (DataIntegrityViolationException e) {
+                    // a concurrent request created the same tag value; reuse the existing row
+                    fetchedTag = tagRepository.findByValue(tagValue);
+                }
             }
             tags.add(fetchedTag);
         }
@@ -135,7 +140,6 @@ public class ResearchResourceService {
         }
         resource.setTags(tagsSet);
         resource.setPrivacy(privacy);
-        resource.setStatus(StatusEnum.NONE);
         resource.setHeaderImage(headerImage);
     }
 
@@ -201,7 +205,11 @@ public class ResearchResourceService {
             ResourceStarEntity resourceStar = new ResourceStarEntity();
             resourceStar.setUserId(userId);
             resourceStar.setResource(resource);
-            resourceStarRepository.save(resourceStar);
+            try {
+                resourceStarRepository.save(resourceStar);
+            } catch (DataIntegrityViolationException e) {
+                // a concurrent request already starred this resource for the user; idempotent
+            }
         } else {
             ResourceStarEntity resourceStar = resourceStars.get(0);
             resourceStarRepository.delete(resourceStar);

@@ -31,7 +31,6 @@
     <class>org.apache.airavata.agent.model.PlanEntity</class>
 
     <!-- compute-service -->
-    <class>org.apache.airavata.compute.model.AgentDeploymentInfoEntity</class>
     <class>org.apache.airavata.compute.model.AWSGroupComputeResourcePrefEntity</class>
     <class>org.apache.airavata.compute.model.BatchQueueEntity</class>
     <class>org.apache.airavata.compute.model.BatchQueueResourcePolicyEntity</class>
@@ -71,7 +70,6 @@
     <class>org.apache.airavata.orchestration.model.ExecStatusEntity</class>
     <class>org.apache.airavata.orchestration.model.JobEntity</class>
     <class>org.apache.airavata.orchestration.model.ProcessEntity</class>
-    <class>org.apache.airavata.orchestration.model.ProcessWorkflowEntity</class>
     <class>org.apache.airavata.orchestration.model.TaskEntity</class>
     <class>org.apache.airavata.orchestration.model.UserConfigurationDataEntity</class>
 
@@ -80,7 +78,6 @@
     <class>org.apache.airavata.research.model.ApplicationDeploymentEntity</class>
     <class>org.apache.airavata.research.model.ApplicationInterfaceEntity</class>
     <class>org.apache.airavata.research.model.ApplicationModuleEntity</class>
-    <class>org.apache.airavata.research.model.AppModuleMappingEntity</class>
     <class>org.apache.airavata.research.model.DataProductEntity</class>
     <class>org.apache.airavata.research.model.DataReplicaLocationEntity</class>
     <class>org.apache.airavata.research.model.DatasetResourceEntity</class>

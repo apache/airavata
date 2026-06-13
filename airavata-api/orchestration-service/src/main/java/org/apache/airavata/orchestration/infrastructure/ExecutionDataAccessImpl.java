@@ -29,7 +29,6 @@ import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.process.proto.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.proto.JobStatus;
 import org.apache.airavata.model.status.proto.ProcessState;
@@ -53,7 +52,6 @@ public class ExecutionDataAccessImpl implements ExecutionDataAccess {
     private final ExecIoParamRepository execIoParamRepository = new ExecIoParamRepository();
     private final ExecStatusRepository execStatusRepository = new ExecStatusRepository();
     private final ExecErrorRepository execErrorRepository = new ExecErrorRepository();
-    private final ProcessWorkflowRepository processWorkflowRepository = new ProcessWorkflowRepository();
     private final JobRepository jobRepository = new JobRepository();
     private final TaskRepository taskRepository = new TaskRepository();
     // --- Process ---
@@ -139,18 +137,6 @@ public class ExecutionDataAccessImpl implements ExecutionDataAccess {
     @Override
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException {
         return execIoParamRepository.getProcessOutputs(processId);
-    }
-
-    // --- Process Workflow ---
-
-    @Override
-    public void addProcessWorkflow(ProcessWorkflow processWorkflow, String processId) throws RegistryException {
-        processWorkflowRepository.addProcessWorkflow(processWorkflow, processId);
-    }
-
-    @Override
-    public List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryException {
-        return processWorkflowRepository.getProcessWorkflows(processId);
     }
 
     // --- Task ---

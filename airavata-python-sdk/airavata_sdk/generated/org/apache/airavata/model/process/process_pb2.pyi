@@ -11,20 +11,8 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class ProcessWorkflow(_message.Message):
-    __slots__ = ("process_id", "workflow_id", "creation_time", "type")
-    PROCESS_ID_FIELD_NUMBER: _ClassVar[int]
-    WORKFLOW_ID_FIELD_NUMBER: _ClassVar[int]
-    CREATION_TIME_FIELD_NUMBER: _ClassVar[int]
-    TYPE_FIELD_NUMBER: _ClassVar[int]
-    process_id: str
-    workflow_id: str
-    creation_time: int
-    type: str
-    def __init__(self, process_id: _Optional[str] = ..., workflow_id: _Optional[str] = ..., creation_time: _Optional[int] = ..., type: _Optional[str] = ...) -> None: ...
-
 class ProcessModel(_message.Message):
-    __slots__ = ("process_id", "experiment_id", "creation_time", "last_update_time", "process_statuses", "process_detail", "application_interface_id", "application_deployment_id", "compute_resource_id", "process_inputs", "process_outputs", "process_resource_schedule", "tasks", "task_dag", "process_errors", "gateway_execution_id", "enable_email_notification", "email_addresses", "input_storage_resource_id", "output_storage_resource_id", "user_dn", "generate_cert", "experiment_data_dir", "user_name", "use_user_cr_pref", "group_resource_profile_id", "process_workflows")
+    __slots__ = ("process_id", "experiment_id", "creation_time", "last_update_time", "process_statuses", "process_detail", "application_interface_id", "application_deployment_id", "compute_resource_id", "process_inputs", "process_outputs", "process_resource_schedule", "tasks", "task_dag", "process_errors", "gateway_execution_id", "enable_email_notification", "email_addresses", "input_storage_resource_id", "output_storage_resource_id", "experiment_data_dir", "user_name", "use_user_cr_pref", "group_resource_profile_id")
     PROCESS_ID_FIELD_NUMBER: _ClassVar[int]
     EXPERIMENT_ID_FIELD_NUMBER: _ClassVar[int]
     CREATION_TIME_FIELD_NUMBER: _ClassVar[int]
@@ -45,13 +33,10 @@ class ProcessModel(_message.Message):
     EMAIL_ADDRESSES_FIELD_NUMBER: _ClassVar[int]
     INPUT_STORAGE_RESOURCE_ID_FIELD_NUMBER: _ClassVar[int]
     OUTPUT_STORAGE_RESOURCE_ID_FIELD_NUMBER: _ClassVar[int]
-    USER_DN_FIELD_NUMBER: _ClassVar[int]
-    GENERATE_CERT_FIELD_NUMBER: _ClassVar[int]
     EXPERIMENT_DATA_DIR_FIELD_NUMBER: _ClassVar[int]
     USER_NAME_FIELD_NUMBER: _ClassVar[int]
     USE_USER_CR_PREF_FIELD_NUMBER: _ClassVar[int]
     GROUP_RESOURCE_PROFILE_ID_FIELD_NUMBER: _ClassVar[int]
-    PROCESS_WORKFLOWS_FIELD_NUMBER: _ClassVar[int]
     process_id: str
     experiment_id: str
     creation_time: int
@@ -72,11 +57,8 @@ class ProcessModel(_message.Message):
     email_addresses: _containers.RepeatedScalarFieldContainer[str]
     input_storage_resource_id: str
     output_storage_resource_id: str
-    user_dn: str
-    generate_cert: bool
     experiment_data_dir: str
     user_name: str
     use_user_cr_pref: bool
     group_resource_profile_id: str
-    process_workflows: _containers.RepeatedCompositeFieldContainer[ProcessWorkflow]
-    def __init__(self, process_id: _Optional[str] = ..., experiment_id: _Optional[str] = ..., creation_time: _Optional[int] = ..., last_update_time: _Optional[int] = ..., process_statuses: _Optional[_Iterable[_Union[_status_pb2.ProcessStatus, _Mapping]]] = ..., process_detail: _Optional[str] = ..., application_interface_id: _Optional[str] = ..., application_deployment_id: _Optional[str] = ..., compute_resource_id: _Optional[str] = ..., process_inputs: _Optional[_Iterable[_Union[_application_io_pb2.InputDataObjectType, _Mapping]]] = ..., process_outputs: _Optional[_Iterable[_Union[_application_io_pb2.OutputDataObjectType, _Mapping]]] = ..., process_resource_schedule: _Optional[_Union[_scheduling_pb2.ComputationalResourceSchedulingModel, _Mapping]] = ..., tasks: _Optional[_Iterable[_Union[_task_pb2.TaskModel, _Mapping]]] = ..., task_dag: _Optional[str] = ..., process_errors: _Optional[_Iterable[_Union[_commons_pb2.ErrorModel, _Mapping]]] = ..., gateway_execution_id: _Optional[str] = ..., enable_email_notification: bool = ..., email_addresses: _Optional[_Iterable[str]] = ..., input_storage_resource_id: _Optional[str] = ..., output_storage_resource_id: _Optional[str] = ..., user_dn: _Optional[str] = ..., generate_cert: bool = ..., experiment_data_dir: _Optional[str] = ..., user_name: _Optional[str] = ..., use_user_cr_pref: bool = ..., group_resource_profile_id: _Optional[str] = ..., process_workflows: _Optional[_Iterable[_Union[ProcessWorkflow, _Mapping]]] = ...) -> None: ...
+    def __init__(self, process_id: _Optional[str] = ..., experiment_id: _Optional[str] = ..., creation_time: _Optional[int] = ..., last_update_time: _Optional[int] = ..., process_statuses: _Optional[_Iterable[_Union[_status_pb2.ProcessStatus, _Mapping]]] = ..., process_detail: _Optional[str] = ..., application_interface_id: _Optional[str] = ..., application_deployment_id: _Optional[str] = ..., compute_resource_id: _Optional[str] = ..., process_inputs: _Optional[_Iterable[_Union[_application_io_pb2.InputDataObjectType, _Mapping]]] = ..., process_outputs: _Optional[_Iterable[_Union[_application_io_pb2.OutputDataObjectType, _Mapping]]] = ..., process_resource_schedule: _Optional[_Union[_scheduling_pb2.ComputationalResourceSchedulingModel, _Mapping]] = ..., tasks: _Optional[_Iterable[_Union[_task_pb2.TaskModel, _Mapping]]] = ..., task_dag: _Optional[str] = ..., process_errors: _Optional[_Iterable[_Union[_commons_pb2.ErrorModel, _Mapping]]] = ..., gateway_execution_id: _Optional[str] = ..., enable_email_notification: bool = ..., email_addresses: _Optional[_Iterable[str]] = ..., input_storage_resource_id: _Optional[str] = ..., output_storage_resource_id: _Optional[str] = ..., experiment_data_dir: _Optional[str] = ..., user_name: _Optional[str] = ..., use_user_cr_pref: bool = ..., group_resource_profile_id: _Optional[str] = ...) -> None: ...

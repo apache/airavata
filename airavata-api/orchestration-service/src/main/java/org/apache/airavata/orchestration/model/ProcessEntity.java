@@ -23,7 +23,6 @@ import jakarta.persistence.*;
 import jakarta.persistence.JoinColumn;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 import org.apache.airavata.compute.model.ProcessResourceScheduleEntity;
 
@@ -80,12 +79,6 @@ public class ProcessEntity implements Serializable {
 
     @Column(name = "OUTPUT_STORAGE_RESOURCE_ID")
     private String outputStorageResourceId;
-
-    @Column(name = "USER_DN")
-    private String userDn;
-
-    @Column(name = "GENERATE_CERT")
-    private boolean generateCert;
 
     @Column(name = "EXPERIMENT_DATA_DIR", length = 512)
     private String experimentDataDir;
@@ -158,13 +151,6 @@ public class ProcessEntity implements Serializable {
             mappedBy = "process",
             fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
-
-    @OneToMany(
-            targetEntity = ProcessWorkflowEntity.class,
-            cascade = CascadeType.ALL,
-            mappedBy = "process",
-            fetch = FetchType.EAGER)
-    private Collection<ProcessWorkflowEntity> processWorkflows;
 
     public ProcessEntity() {}
 
@@ -280,21 +266,6 @@ public class ProcessEntity implements Serializable {
         this.outputStorageResourceId = outputStorageResourceId;
     }
 
-    public String getUserDn() {
-        return userDn;
-    }
-
-    public void setUserDn(String userDn) {
-        this.userDn = userDn;
-    }
-
-    public boolean isGenerateCert() {
-        return generateCert;
-    }
-
-    public void setGenerateCert(boolean generateCert) {
-        this.generateCert = generateCert;
-    }
 
     public String getExperimentDataDir() {
         return experimentDataDir;
@@ -366,14 +337,6 @@ public class ProcessEntity implements Serializable {
 
     public void setProcessResourceSchedule(ProcessResourceScheduleEntity processResourceSchedule) {
         this.processResourceSchedule = processResourceSchedule;
-    }
-
-    public Collection<ProcessWorkflowEntity> getProcessWorkflows() {
-        return processWorkflows;
-    }
-
-    public void setProcessWorkflows(Collection<ProcessWorkflowEntity> processWorkflows) {
-        this.processWorkflows = processWorkflows;
     }
 
     public List<TaskEntity> getTasks() {

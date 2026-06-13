@@ -26,7 +26,6 @@ import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.process.proto.ProcessWorkflow;
 import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.proto.JobStatus;
 import org.apache.airavata.model.status.proto.ProcessState;
@@ -75,11 +74,6 @@ public interface ExecutionDataAccess {
     void addProcessOutputs(List<OutputDataObjectType> outputs, String processId) throws RegistryException;
 
     List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryException;
-
-    // --- Process Workflow ---
-    void addProcessWorkflow(ProcessWorkflow processWorkflow, String processId) throws RegistryException;
-
-    List<ProcessWorkflow> getProcessWorkflows(String processId) throws RegistryException;
 
     // --- Task ---
     String addTask(TaskModel task, String processId) throws RegistryException;

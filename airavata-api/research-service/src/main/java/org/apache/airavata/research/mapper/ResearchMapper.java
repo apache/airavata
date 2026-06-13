@@ -31,6 +31,8 @@ import org.apache.airavata.model.appcatalog.appdeployment.proto.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.proto.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.parser.proto.IOType;
 import org.apache.airavata.model.appcatalog.parser.proto.Parser;
+import org.apache.airavata.model.appcatalog.parser.proto.ParserConnector;
+import org.apache.airavata.model.appcatalog.parser.proto.ParserConnectorInput;
 import org.apache.airavata.model.appcatalog.parser.proto.ParserInput;
 import org.apache.airavata.model.appcatalog.parser.proto.ParserOutput;
 import org.apache.airavata.model.appcatalog.parser.proto.ParsingTemplate;
@@ -677,6 +679,32 @@ public interface ResearchMapper extends CommonMapperConversions {
                 b.addInitialInputs(ib.build());
             }
         }
+        if (entity.getParserConnections() != null) {
+            for (Map<String, Object> c : entity.getParserConnections()) {
+                ParserConnector.Builder cb = ParserConnector.newBuilder();
+                if (c.get("id") != null) cb.setId((String) c.get("id"));
+                if (c.get("parentParserId") != null) cb.setParentParserId((String) c.get("parentParserId"));
+                if (c.get("childParserId") != null) cb.setChildParserId((String) c.get("childParserId"));
+                if (c.get("parsingTemplateId") != null) cb.setParsingTemplateId((String) c.get("parsingTemplateId"));
+                Object inputs = c.get("connectorInputs");
+                if (inputs instanceof List) {
+                    for (Object o : (List<?>) inputs) {
+                        if (!(o instanceof Map)) continue;
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> im = (Map<String, Object>) o;
+                        ParserConnectorInput.Builder cib = ParserConnectorInput.newBuilder();
+                        if (im.get("id") != null) cib.setId((String) im.get("id"));
+                        if (im.get("inputId") != null) cib.setInputId((String) im.get("inputId"));
+                        if (im.get("parentOutputId") != null) cib.setParentOutputId((String) im.get("parentOutputId"));
+                        if (im.get("value") != null) cib.setValue((String) im.get("value"));
+                        if (im.get("parserConnectorId") != null)
+                            cib.setParserConnectorId((String) im.get("parserConnectorId"));
+                        cb.addConnectorInputs(cib.build());
+                    }
+                }
+                b.addParserConnections(cb.build());
+            }
+        }
         return b.build();
     }
 
@@ -698,6 +726,29 @@ public interface ResearchMapper extends CommonMapperConversions {
                 inputs.add(m);
             }
             entity.setInitialInputs(inputs);
+        }
+        if (!model.getParserConnectionsList().isEmpty()) {
+            List<Map<String, Object>> connections = new ArrayList<>();
+            for (ParserConnector pc : model.getParserConnectionsList()) {
+                Map<String, Object> c = new LinkedHashMap<>();
+                c.put("id", pc.getId());
+                c.put("parentParserId", pc.getParentParserId());
+                c.put("childParserId", pc.getChildParserId());
+                c.put("parsingTemplateId", pc.getParsingTemplateId());
+                List<Map<String, Object>> connectorInputs = new ArrayList<>();
+                for (ParserConnectorInput pci : pc.getConnectorInputsList()) {
+                    Map<String, Object> im = new LinkedHashMap<>();
+                    im.put("id", pci.getId());
+                    im.put("inputId", pci.getInputId());
+                    im.put("parentOutputId", pci.getParentOutputId());
+                    im.put("value", pci.getValue());
+                    im.put("parserConnectorId", pci.getParserConnectorId());
+                    connectorInputs.add(im);
+                }
+                c.put("connectorInputs", connectorInputs);
+                connections.add(c);
+            }
+            entity.setParserConnections(connections);
         }
         return entity;
     }

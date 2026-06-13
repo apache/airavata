@@ -48,9 +48,6 @@ public class CredentialEntity {
     @Column(name = "DESCRIPTION", length = 500)
     private String description;
 
-    @Column(name = "CREDENTIAL_OWNER_TYPE", length = 50)
-    private String credentialOwnerType;
-
     public String getGatewayId() {
         return gatewayId;
     }
@@ -97,13 +94,5 @@ public class CredentialEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getCredentialOwnerType() {
-        return credentialOwnerType;
-    }
-
-    public void setCredentialOwnerType(String credentialOwnerType) {
-        this.credentialOwnerType = credentialOwnerType;
     }
 }

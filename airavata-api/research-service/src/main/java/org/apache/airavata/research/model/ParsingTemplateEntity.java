@@ -45,6 +45,11 @@ public class ParsingTemplateEntity implements Serializable {
     @Convert(converter = JsonListConverter.class)
     private List<Map<String, Object>> initialInputs;
 
+    @Lob
+    @Column(name = "PARSER_CONNECTIONS_JSON")
+    @Convert(converter = JsonListConverter.class)
+    private List<Map<String, Object>> parserConnections;
+
     public String getId() {
         return id;
     }
@@ -67,6 +72,14 @@ public class ParsingTemplateEntity implements Serializable {
 
     public void setInitialInputs(List<Map<String, Object>> initialInputs) {
         this.initialInputs = initialInputs;
+    }
+
+    public List<Map<String, Object>> getParserConnections() {
+        return parserConnections;
+    }
+
+    public void setParserConnections(List<Map<String, Object>> parserConnections) {
+        this.parserConnections = parserConnections;
     }
 
     public String getGatewayId() {

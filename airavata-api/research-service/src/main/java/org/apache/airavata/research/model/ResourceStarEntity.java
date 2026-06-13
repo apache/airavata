@@ -27,10 +27,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
-@Table(name = "RESOURCE_STAR")
+@Table(
+        name = "RESOURCE_STAR",
+        uniqueConstraints =
+                @UniqueConstraint(
+                        name = "UK_resource_star_user_resource",
+                        columnNames = {"user_id", "resource_id"}))
 public class ResourceStarEntity {
 
     @Id

@@ -79,10 +79,6 @@ public abstract class ResourceEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private StatusEnum status;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private StateEnum state;
 
     @Column(nullable = false)
@@ -145,14 +141,6 @@ public abstract class ResourceEntity {
 
     public void setTags(Set<TagEntity> tags) {
         this.tags = tags;
-    }
-
-    public StatusEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusEnum status) {
-        this.status = status;
     }
 
     public StateEnum getState() {

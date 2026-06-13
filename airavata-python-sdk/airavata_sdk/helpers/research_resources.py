@@ -504,8 +504,6 @@ def _build_user_configuration_data(data: dict):
         share_experiment_publicly=bool(
             data.get("share_experiment_publicly", False)),
         throttle_resources=bool(data.get("throttle_resources", False)),
-        user_dn=data.get("user_dn") or "",
-        generate_cert=bool(data.get("generate_cert", False)),
         input_storage_resource_id=data.get("input_storage_resource_id") or "",
         output_storage_resource_id=data.get("output_storage_resource_id") or "",
         experiment_data_dir=data.get("experiment_data_dir") or "",

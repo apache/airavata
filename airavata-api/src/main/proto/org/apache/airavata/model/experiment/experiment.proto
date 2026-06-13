@@ -61,8 +61,6 @@ enum ProjectSearchFields {
 // share_experiment_publicly: Whether to share the experiment publicly.
 // computational_resource_scheduling: Computational resource scheduling model.
 // throttle_resources: Whether to throttle resources.
-// user_dn: User DN for certificate generation.
-// generate_cert: Whether to generate a certificate.
 // input_storage_resource_id: Input storage resource id.
 // output_storage_resource_id: Output storage resource id.
 // experiment_data_dir: Experiment data directory.
@@ -75,8 +73,7 @@ message UserConfigurationDataModel {
   bool share_experiment_publicly = 3;
   org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel computational_resource_scheduling = 4;
   bool throttle_resources = 5;
-  string user_dn = 6;
-  bool generate_cert = 7;
+  reserved 6, 7;  // removed: user_dn, generate_cert (grid-cert legacy)
   string input_storage_resource_id = 8;
   string output_storage_resource_id = 9;
   string experiment_data_dir = 10;
