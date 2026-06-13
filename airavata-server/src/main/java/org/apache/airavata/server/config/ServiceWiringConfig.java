@@ -19,9 +19,7 @@
 */
 package org.apache.airavata.server.config;
 
-import org.apache.airavata.agent.service.AiravataFileService;
 import org.apache.airavata.compute.service.GroupResourceProfileService;
-import org.apache.airavata.research.service.AgentExperimentService;
 import org.apache.airavata.research.service.ExperimentService;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,11 +31,7 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceWiringConfig {
 
     public ServiceWiringConfig(
-            ExperimentService experimentService,
-            GroupResourceProfileService groupResourceProfileService,
-            AiravataFileService airavataFileService,
-            AgentExperimentService agentExperimentService) {
+            ExperimentService experimentService, GroupResourceProfileService groupResourceProfileService) {
         experimentService.setGroupResourceProfileListProvider(groupResourceProfileService::getGroupResourceList);
-        airavataFileService.setUserExperimentIdsProvider(agentExperimentService::getUserExperimentIDs);
     }
 }
