@@ -101,6 +101,17 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
             experimentModel = experimentModel.toBuilder()
                     .setCreationTime(System.currentTimeMillis())
                     .build();
+        } else {
+            // creation_time is immutable after create. This update path persists the full model, and
+            // callers may resend it with creation_time cleared — a clone, for instance, re-sends the
+            // experiment via update_experiment with an unset creation_time. longToTimestamp maps 0 to a
+            // NULL column that reads back as epoch 1970 ("56 years ago"). Carry the stored value forward.
+            long existingCreationTime = getExperiment(experimentId).getCreationTime();
+            if (existingCreationTime > 0) {
+                experimentModel = experimentModel.toBuilder()
+                        .setCreationTime(existingCreationTime)
+                        .build();
+            }
         }
         ExperimentEntity experimentEntity = ResearchMapper.INSTANCE.experimentToEntity(experimentModel);
 
