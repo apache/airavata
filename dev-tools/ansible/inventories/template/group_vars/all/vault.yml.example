@@ -104,8 +104,6 @@ research_hub_url: "https://CHANGEME_RESEARCH_HUB"
 research_hub_dev_user: "airavata@apache.org"
 research_hub_admin_api_key: "CHANGEME_API_KEY"
 research_hub_limit: 10
-research_portal_dev_url: "https://CHANGEME_PORTAL"
-research_portal_url: "https://CHANGEME_PORTAL"
 openid_url: "https://CHANGEME_AUTH_SERVER/realms/default/.well-known/openid-configuration"
 user_profile_server_url: "CHANGEME_PROFILE_SERVER"
 user_profile_server_port: 8962
