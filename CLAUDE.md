@@ -54,7 +54,7 @@ no `/etc/hosts` needed):
 | `api.airavata.host` | Airavata server (gRPC + REST) | — |
 | `auth.airavata.host` | Keycloak | `admin` / `admin` |
 | `adminer.airavata.host` | Adminer (`--profile tools`) | — |
-| `gateway.airavata.host` | Django portal (separate `tilt up --port 10351` in `airavata-portals`) | — |
+| `gateway.airavata.host` | Django portal (separate `tilt up --port 10351` in `airavata-portals`) | `default-admin` / `ade4#21242ftfd` |
 
 ### Web portals (separate `tilt up`)
 
@@ -90,6 +90,30 @@ Gotchas:
   `brew link docker` if `which docker` is empty).
 - The mkcert root CA is mounted at `/certs/rootCA.pem` in the server container and imported
   into the JVM truststore at startup (alias `mkcert-airavata`, idempotent).
+
+## Database schema & seeding
+
+Schema and seed data are applied **outside the JVM**, before the server starts — the server
+only validates. There is no Flyway runtime and no Java seeder beans.
+
+- **Schema**: `airavata-server/src/main/resources/db/migration/airavata/V1__Baseline_schema.sql`
+  is a single collapsed baseline (the JPA `@Entity`-derived DDL). The `db` container mounts it as
+  `/docker-entrypoint-initdb.d/01-schema.sql`, so MariaDB builds the schema on a fresh volume.
+- **Seed**: `conf/db/seed.sql` (mounted as `02-seed.sql`) provisions the dev tenant — gateway +
+  sharing groups/memberships, the keystore-encrypted SSH credential, SFTP storage, the docker-SLURM
+  compute resource + queue + group resource profile, the Echo app, the Default Project, and every
+  `SHARING` grant to `default-admin`'s admin groups. It replaced the former Java `Dev*Initializer`
+  beans. Because `gateway_groups` is seeded, `GatewayGroupsInitializer` (still present for non-seeded
+  deployments) never runs, so the seeded group IDs are authoritative.
+- **Validation**: the server runs `spring.jpa.hibernate.ddl-auto=validate` — it asserts the live
+  schema matches the entities and never mutates it. `airavata-server` `depends_on: db: service_healthy`,
+  so initdb finishes before validation.
+- **If entities change**: regenerate V1 from a freshly-migrated DB (`mariadb-dump --no-data`) or
+  `validate` will fail. Re-init a fresh tenant with `./devstack/devstack reset` (or by wiping the
+  `db_data` volume). The dev SSH keypair under `conf/sftp/` is committed and fixed — never regenerate
+  it, or the seeded credential blob no longer decrypts to it.
+- Integration tests are independent of this path: `SharedMariaDB` applies the same V1 baseline as a
+  Testcontainers init script and then reconciles with `hbm2ddl=update`.
 
 ## Module Structure
 
@@ -144,7 +168,6 @@ Example: `ProjectService` proto → `ProjectServiceGrpcImpl` (adapter) → `Proj
 - **Armeria 1.32** — gRPC + REST server, HTTP/JSON transcoding, DocService
 - **gRPC 1.73 / Protobuf 4.29** — API contracts
 - **MapStruct 1.6** — Entity ↔ Protobuf mapping
-- **Flyway** — Schema migration (`V1__Baseline_schema.sql`)
 - **Keycloak 26** — IAM (JWT validation via `GrpcAuthInterceptor`)
 
 ### Background Services

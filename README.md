@@ -89,7 +89,7 @@ graph TB
 
 The unified server hosts gRPC and REST (via Armeria HTTP/JSON transcoding) on a single port, Spring Boot services (Research, Agent, File Server), and background workers in a single JVM. On startup it:
 
-1. Initializes the unified `airavata` database
+1. Validates the `airavata` schema with Hibernate `ddl-auto=validate` (the schema is built and the tenant seeded **outside the JVM** before startup — see [Quick Start](#quick-start-tilt))
 2. Starts Armeria server on port **9090** (gRPC + REST transcoding + DocService at `/docs`)
 3. Starts the DB-transactional `ProcessExecutor` worker pool
 
@@ -145,7 +145,7 @@ stateDiagram-v2
 graph LR
     subgraph "Startup Sequence"
         direction TB
-        A[1. DB Init / Flyway] --> B[2. Armeria Server :9090]
+        A[1. Hibernate validate] --> B[2. Armeria Server :9090]
         B --> C[3. ProcessExecutor worker pool]
         C --> D[4. KafkaProxyService]
     end
@@ -187,7 +187,7 @@ Additional service modules in `airavata-api/`:
 
 ### Quick Start (Tilt)
 
-Tilt orchestrates the full development stack — infrastructure, build, and all services:
+Tilt orchestrates the full development stack — infrastructure, build, and all services — and seeds a ready-to-run tenant. A fresh clone works end to end with no manual setup:
 
 ```bash
 git clone https://github.com/apache/airavata.git
@@ -195,11 +195,23 @@ cd airavata
 tilt up
 ```
 
-This starts:
-- **Infrastructure**: MariaDB, Kafka, Keycloak, SFTP, and a docker-SLURM cluster (via `compose.yml`)
+`tilt up` brings up (via `compose.yml`):
+- **Infrastructure**: MariaDB, Keycloak (realm auto-imported), an SFTP storage server, and a self-contained docker-SLURM cluster
 - **Unified Airavata Server**: gRPC + REST on port 9090, API docs at `/docs`
 
-Open the Tilt UI at `http://localhost:10350` to monitor all resources. Integration tests can be triggered manually from the Tilt UI.
+The dev tenant is **seeded outside the JVM, before the server starts**. On a fresh database volume the `db` container runs its `/docker-entrypoint-initdb.d` scripts — `db/migration/airavata/V1__Baseline_schema.sql` (the schema baseline) followed by `conf/db/seed.sql` (the tenant) — and only then does the server boot and validate that schema (`ddl-auto=validate`; it never mutates the database). The seed provisions a **complete, ready-to-use tenant**: the default gateway + sharing groups, the SFTP storage resource + SSH credential, the SLURM compute resource + `normal` batch queue + group resource profile, the **Echo** application (module, interface, `/bin/echo` deployment), and a **Default Project** — all shared with the `default-admin` account so they appear in the portal out of the box. The dev SSH keypair (`conf/sftp/id_rsa[.pub]`) is a committed, fixed dev-only key that matches the seeded (keystore-encrypted) credential. The init runs once per fresh volume; `./devstack/devstack reset` (or wiping the `db_data` volume) re-runs it from scratch.
+
+Open the Tilt UI at `http://localhost:10350` to watch all resources turn green.
+
+### Run your first experiment (Echo)
+
+The web portal runs from the sibling [`airavata-portals`](https://github.com/apache/airavata-portals) repo (`cd ../airavata-portals && tilt up --port 10351`). Once both stacks are green:
+
+1. Open the portal at `https://gateway.airavata.host` and log in as **`default-admin`** / **`ade4#21242ftfd`**.
+2. Create an experiment: choose the **Echo** application, the **Default Project**, and the **slurm** compute resource (queue `normal`). The `Input_to_Echo` field defaults to `Hello, Airavata!`.
+3. Launch it. The experiment runs on the docker-SLURM cluster (env setup → `sbatch` over SSH → `sacct` monitoring → SFTP output staging) and reaches **COMPLETED**, with `Echo.stdout` containing the echoed input.
+
+Every `tilt down` / `tilt up` reproduces this working state from scratch, so anyone who clones the repos can run Echo from the get-go.
 
 ### Manual Start
 

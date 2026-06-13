@@ -21,7 +21,6 @@ package org.apache.airavata.orchestration.infrastructure;
 
 import org.apache.airavata.orchestration.task.CompletingTask;
 import org.apache.airavata.orchestration.task.JobVerificationTask;
-import org.apache.airavata.orchestration.task.ParsingTriggeringTask;
 import org.apache.airavata.task.AiravataTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,12 +76,6 @@ public class SlurmProvisioningAdapter implements ProvisioningAdapter {
     public AiravataTask createCompletingTask(String processId) {
         LOGGER.info("Creating Slurm CompletingTask for process {}...", processId);
         return new CompletingTask();
-    }
-
-    @Override
-    public AiravataTask createParsingTriggeringTask(String processId) {
-        LOGGER.info("Creating Slurm ParsingTriggeringTask for process {}...", processId);
-        return new ParsingTriggeringTask();
     }
 
     private static AiravataTask createTaskByReflection(String className, String taskName, String moduleName) {

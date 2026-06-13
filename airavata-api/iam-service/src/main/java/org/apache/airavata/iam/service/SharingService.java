@@ -23,12 +23,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.airavata.db.DBInitializer;
-import org.apache.airavata.exception.ApplicationSettingsException;
 import org.apache.airavata.iam.model.*;
 import org.apache.airavata.iam.repository.*;
 import org.apache.airavata.iam.util.DBConstants;
-import org.apache.airavata.iam.util.SharingRegistryDBInitConfig;
 import org.apache.airavata.interfaces.SharingFacade;
 import org.apache.airavata.interfaces.SharingProvider;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
@@ -47,14 +44,6 @@ public class SharingService implements SharingFacade, SharingProvider {
     private static final Logger logger = LoggerFactory.getLogger(SharingService.class);
 
     public static String OWNER_PERMISSION_NAME = "OWNER";
-
-    public SharingService() throws ApplicationSettingsException {
-        this(new SharingRegistryDBInitConfig());
-    }
-
-    public SharingService(SharingRegistryDBInitConfig sharingRegistryDBInitConfig) throws ApplicationSettingsException {
-        DBInitializer.initializeDB(sharingRegistryDBInitConfig);
-    }
 
     public String getAPIVersion() throws SharingRegistryException {
         return "0.1";

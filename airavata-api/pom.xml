@@ -80,11 +80,6 @@ under the License.
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
-    <!-- JSON, Kafka, XML -->
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka-clients</artifactId>
-    </dependency>
     <!-- Other utilities -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

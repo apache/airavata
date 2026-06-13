@@ -22,12 +22,31 @@ package org.apache.airavata.research.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
 
 /**
- * The class for the experiment_summary view.
+ * Read-only experiment summary, derived live from EXPERIMENT plus the latest EXPERIMENT_STATUS and the
+ * process scheduling host. Mapped with {@link Subselect} rather than a physical EXPERIMENT_SUMMARY table:
+ * the upstream summary was a DB view, but nothing populates a table, so the dashboard "recent experiments"
+ * search came back empty. A {@code @Subselect} entity has no table, so it is excluded from {@code ddl-auto}
+ * validation and always reflects current data. {@link Synchronize} flushes the backing tables before reads.
  */
 @Entity
-@Table(name = "EXPERIMENT_SUMMARY")
+@Immutable
+@Synchronize({"EXPERIMENT", "EXPERIMENT_STATUS", "PROCESS", "PROCESS_RESOURCE_SCHEDULE"})
+@Subselect("select e.EXPERIMENT_ID as EXPERIMENT_ID, e.PROJECT_ID as PROJECT_ID,"
+        + " e.GATEWAY_ID as GATEWAY_ID, e.CREATION_TIME as CREATION_TIME, e.USER_NAME as USER_NAME,"
+        + " e.EXPERIMENT_NAME as EXPERIMENT_NAME, e.DESCRIPTION as DESCRIPTION, e.EXECUTION_ID as EXECUTION_ID,"
+        + " (select s.STATE from EXPERIMENT_STATUS s where s.EXPERIMENT_ID = e.EXPERIMENT_ID"
+        + "   order by s.TIME_OF_STATE_CHANGE desc limit 1) as STATE,"
+        + " (select prs.RESOURCE_HOST_ID from PROCESS p"
+        + "   join PROCESS_RESOURCE_SCHEDULE prs on prs.PROCESS_ID = p.PROCESS_ID"
+        + "   where p.EXPERIMENT_ID = e.EXPERIMENT_ID order by p.CREATION_TIME desc limit 1) as RESOURCE_HOST_ID,"
+        + " (select s.TIME_OF_STATE_CHANGE from EXPERIMENT_STATUS s where s.EXPERIMENT_ID = e.EXPERIMENT_ID"
+        + "   order by s.TIME_OF_STATE_CHANGE desc limit 1) as TIME_OF_STATE_CHANGE"
+        + " from EXPERIMENT e")
 public class ExperimentSummaryEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -134,12 +134,12 @@ class Plan(pydantic.BaseModel):
     settings = Settings()
     av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
-    assert az.accessToken is not None
-    assert az.claimsMap is not None
+    assert az.access_token is not None
+    assert az.claims_map is not None
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + az.accessToken,
-        'X-Claims': json.dumps(az.claimsMap)
+        'Authorization': 'Bearer ' + az.access_token,
+        'X-Claims': json.dumps(dict(az.claims_map))
     }
     import requests
     if self.id is None:
@@ -167,12 +167,12 @@ def load(id: str | None) -> Plan:
     assert id is not None
     av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
-    assert az.accessToken is not None
-    assert az.claimsMap is not None
+    assert az.access_token is not None
+    assert az.claims_map is not None
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + az.accessToken,
-        'X-Claims': json.dumps(az.claimsMap)
+        'Authorization': 'Bearer ' + az.access_token,
+        'X-Claims': json.dumps(dict(az.claims_map))
     }
     import requests
     response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plan/{id}", headers=headers)
@@ -188,12 +188,12 @@ def query() -> list[Plan]:
     settings = Settings()
     av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
-    assert az.accessToken is not None
-    assert az.claimsMap is not None
+    assert az.access_token is not None
+    assert az.claims_map is not None
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + az.accessToken,
-        'X-Claims': json.dumps(az.claimsMap)
+        'Authorization': 'Bearer ' + az.access_token,
+        'X-Claims': json.dumps(dict(az.claims_map))
     }
     import requests
     response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plan/user", headers=headers)

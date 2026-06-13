@@ -6,6 +6,12 @@ os.putenv('DOCKER_HOST', 'unix://%s/.colima/%s/docker.sock' % (os.getenv('HOME')
 
 local_resource('devstack-ensure', cmd='./devstack/devstack ensure', labels=['platform'])
 
+# The devstack SSH keypair (conf/sftp/id_rsa[.pub]) is a committed, fixed dev-only key: the
+# server reads the private key via the ./conf bind mount, the sftp and slurm containers mount
+# the public key as authorized_keys, and conf/db/seed.sql carries the matching credential
+# (encrypted with the committed keystore). It must NOT be regenerated, or the seed would no
+# longer decrypt to it.
+
 local_resource('build', cmd='mvn install -DskipTests -Dmaven.test.skip=true -T4 -q',
                deps=['airavata-server/pom.xml'], labels=['build'])
 
@@ -22,7 +28,7 @@ dc_resource('airavata-server', resource_deps=['devstack-ensure', 'build'], label
                    link('https://auth.airavata.host', 'Keycloak')])
 
 if os.getenv('DEVSTACK_MODE') != 'remote':
-    for s in ['db', 'kafka', 'keycloak', 'sftp']:
+    for s in ['db', 'keycloak', 'sftp']:
         dc_resource(s, resource_deps=['devstack-ensure'], labels=['infra'])
     # SLURM cluster resources. slurm-dbmysql has no image to build; the rest share
     # the airavata-slurm:dev image. Grouped under a 'slurm' label for clarity.

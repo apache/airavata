@@ -31,13 +31,13 @@ import os
 import base64
 
 import jwt
-from airavata.model.security.ttypes import AuthzToken
-from airavata.model.experiment.ttypes import ExperimentModel, ExperimentType, UserConfigurationDataModel
-from airavata.model.scheduling.ttypes import ComputationalResourceSchedulingModel
-from airavata.model.data.replica.ttypes import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
-from airavata.model.appcatalog.groupresourceprofile.ttypes import GroupResourceProfile, ResourceType
-from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
-from airavata.model.status.ttypes import JobStatus, JobState, ExperimentStatus, ExperimentState
+from airavata_sdk.generated.org.apache.airavata.model.security.security_pb2 import AuthzToken
+from airavata_sdk.generated.org.apache.airavata.model.experiment.experiment_pb2 import ExperimentModel, ExperimentType, UserConfigurationDataModel
+from airavata_sdk.generated.org.apache.airavata.model.scheduling.scheduling_pb2 import ComputationalResourceSchedulingModel
+from airavata_sdk.generated.org.apache.airavata.model.data.replica.replica_catalog_pb2 import DataProductModel, DataProductType, DataReplicaLocationModel, ReplicaLocationCategory
+from airavata_sdk.generated.org.apache.airavata.model.appcatalog.groupresourceprofile.group_resource_profile_pb2 import GroupResourceProfile, ResourceType
+from airavata_sdk.generated.org.apache.airavata.model.appcatalog.computeresource.compute_resource_pb2 import ComputeResourceDescription
+from airavata_sdk.generated.org.apache.airavata.model.status.status_pb2 import JobStatus, JobState, ExperimentStatus, ExperimentState
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 logger = logging.getLogger("airavata_sdk.clients")
@@ -65,20 +65,20 @@ class AiravataOperator:
   ) -> str:
 
     dataProductModel = DataProductModel(
-      gatewayId=gateway_id,
-      ownerName=self.user_id,
-      productName=file_identifier,
-      dataProductType=DataProductType.FILE,
-      replicaLocations=[
+      gateway_id=gateway_id,
+      owner_name=self.user_id,
+      product_name=file_identifier,
+      data_product_type=DataProductType.FILE,
+      replica_locations=[
         DataReplicaLocationModel(
-        replicaName="{} gateway data store copy".format(input_file_name),
-        replicaLocationCategory=ReplicaLocationCategory.GATEWAY_DATA_STORE,
-        storageResourceId=storageId,
-        filePath="file://{}:{}".format(storage_name, uploaded_storage_path + input_file_name),
+        replica_name="{} gateway data store copy".format(input_file_name),
+        replica_location_category=ReplicaLocationCategory.GATEWAY_DATA_STORE,
+        storage_resource_id=storageId,
+        file_path="file://{}:{}".format(storage_name, uploaded_storage_path + input_file_name),
       )],
     )
 
-    return self.api_server_client.register_data_product(self.airavata_token, dataProductModel) # type: ignore
+    return self.api_server_client.register_data_product(dataProductModel) # type: ignore
 
   def create_experiment_model(
       self,
@@ -92,17 +92,17 @@ class AiravataOperator:
     execution_id = self.get_app_interface_id(application_name)
     project_id = self.get_project_id(project_name)
     return ExperimentModel(
-      experimentName=experiment_name,
-      gatewayId=gateway_id,
-      userName=self.user_id,
+      experiment_name=experiment_name,
+      gateway_id=gateway_id,
+      user_name=self.user_id,
       description=description,
-      projectId=project_id,
-      experimentType=ExperimentType.SINGLE_APPLICATION,
-      executionId=execution_id
+      project_id=project_id,
+      experiment_type=ExperimentType.SINGLE_APPLICATION,
+      execution_id=execution_id
     )
 
   def get_resource_host_id(self, resource_name):
-    resources = self.api_server_client.get_all_compute_resource_names(self.airavata_token)
+    resources = self.api_server_client.get_all_compute_resource_names().compute_resource_names
     resource_id = next((k for k in resources if k.startswith(resource_name)), None)
     assert resource_id is not None, f"Compute resource {resource_name} not found"
     return resource_id
@@ -123,23 +123,23 @@ class AiravataOperator:
   ) -> ExperimentModel:
         resource_host_id = self.get_resource_host_id(computation_resource_name)
         groupResourceProfileId = self.get_group_resource_profile_id(group)
-        computRes = ComputationalResourceSchedulingModel()
-        computRes.resourceHostId = resource_host_id
-        computRes.nodeCount = node_count
-        computRes.totalCPUCount = total_cpu_count
-        computRes.queueName = queue_name
-        computRes.wallTimeLimit = wall_time_limit
+        computRes = ComputationalResourceSchedulingModel(
+            resource_host_id=resource_host_id,
+            node_count=node_count,
+            total_cpu_count=total_cpu_count,
+            queue_name=queue_name,
+            wall_time_limit=wall_time_limit,
+        )
 
-        userConfigData = UserConfigurationDataModel()
-        userConfigData.computationalResourceScheduling = computRes
-
-        userConfigData.groupResourceProfileId = groupResourceProfileId
-        userConfigData.inputStorageResourceId = inputStorageId
-        userConfigData.outputStorageResourceId = outputStorageId
-
-        userConfigData.experimentDataDir = experiment_dir_path
-        userConfigData.airavataAutoSchedule = auto_schedule
-        experiment_model.userConfigurationData = userConfigData
+        userConfigData = UserConfigurationDataModel(
+            computational_resource_scheduling=computRes,
+            group_resource_profile_id=groupResourceProfileId,
+            input_storage_resource_id=inputStorageId,
+            output_storage_resource_id=outputStorageId,
+            experiment_data_dir=experiment_dir_path,
+            airavata_auto_schedule=auto_schedule,
+        )
+        experiment_model.user_configuration_data.CopyFrom(userConfigData)
 
         return experiment_model
 
@@ -147,7 +147,7 @@ class AiravataOperator:
     # store variables
     self.settings = Settings()
     self.access_token = access_token
-    self.api_server_client = APIServerClient()
+    self.api_server_client = APIServerClient(access_token=self.access_token)
     # load gateway settings
     gateway_id = self.default_gateway_id()
     self.airavata_token = self.__airavata_token__(self.access_token, gateway_id)
@@ -178,25 +178,25 @@ class AiravataOperator:
     decode = jwt.decode(access_token, options={"verify_signature": False})
     self.user_id = str(decode["preferred_username"])
     claimsMap = {"userName": self.user_id, "gatewayID": gateway_id}
-    return AuthzToken(accessToken=self.access_token, claimsMap=claimsMap)
+    return AuthzToken(access_token=self.access_token, claims_map=claimsMap)
 
   def get_experiment(self, experiment_id: str):
     """
     Get experiment by id
 
     """
-    return self.api_server_client.get_experiment(self.airavata_token, experiment_id)
+    return self.api_server_client.get_experiment(experiment_id)
 
   def get_process_id(self, experiment_id: str) -> str:
     """
     Get process id by experiment id
 
     """
-    tree = self.api_server_client.get_detailed_experiment_tree(self.airavata_token, experiment_id) # type: ignore
+    tree = self.api_server_client.get_detailed_experiment_tree(experiment_id) # type: ignore
     processModels = tree.processes
     assert processModels is not None, f"No process models found for experiment {experiment_id}"
     assert len(processModels) == 1, f"Expected 1 process model, got {len(processModels)}"
-    return processModels[0].processId
+    return processModels[0].process_id
 
   def get_accessible_apps(self, gateway_id: str | None = None):
     """
@@ -206,7 +206,7 @@ class AiravataOperator:
     # use defaults for missing values
     gateway_id = gateway_id or self.default_gateway_id()
     # logic
-    app_interfaces = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id)
+    app_interfaces = self.api_server_client.get_all_application_interfaces(gateway_id)
     return app_interfaces
 
   def get_preferred_storage(self, gateway_id: str | None = None, sr_hostname: str | None = None):
@@ -218,10 +218,10 @@ class AiravataOperator:
     gateway_id = gateway_id or self.default_gateway_id()
     sr_hostname = sr_hostname or self.default_sr_hostname()
     # logic
-    sr_names: dict[str, str] = self.api_server_client.get_all_storage_resource_names(self.airavata_token) # type: ignore
+    sr_names = self.api_server_client.get_all_storage_resource_names().storage_resource_names # type: ignore
     sr_id = next((str(k) for k, v in sr_names.items() if v == sr_hostname), None)
     assert sr_id is not None, f"Storage resource {sr_hostname} not found"
-    return self.api_server_client.get_gateway_storage_preference(self.airavata_token, gateway_id, sr_id)
+    return self.api_server_client.get_gateway_storage_preference(gateway_id, sr_id)
 
   def get_storage(self, storage_name: str | None = None) -> any:  # type: ignore
     """
@@ -231,10 +231,10 @@ class AiravataOperator:
     # use defaults for missing values
     storage_name = storage_name or self.default_sr_hostname()
     # logic
-    sr_names: dict[str, str] = self.api_server_client.get_all_storage_resource_names(self.airavata_token) # type: ignore
+    sr_names = self.api_server_client.get_all_storage_resource_names().storage_resource_names # type: ignore
     sr_id = next((str(k) for k, v in sr_names.items() if v == storage_name), None)
     assert sr_id is not None, f"Storage resource {storage_name} not found"
-    storage = self.api_server_client.get_storage_resource(self.airavata_token, sr_id)
+    storage = self.api_server_client.get_storage_resource(sr_id)
     return storage
 
   def get_group_resource_profile_id(self, group: str) -> str:
@@ -243,13 +243,13 @@ class AiravataOperator:
 
     """
     # logic
-    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group), None)
+    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list().group_resource_profiles # type: ignore
+    grp_id = next((grp.group_resource_profile_id for grp in grps if grp.group_resource_profile_name == group), None)
     assert grp_id is not None, f"Group resource profile {group} not found"
     return str(grp_id)
 
   def get_group_resource_profile(self, group_id: str):
-    grp = self.api_server_client.get_group_resource_profile(self.airavata_token, group_id) # type: ignore
+    grp = self.api_server_client.get_group_resource_profile(group_id) # type: ignore
     return grp
 
   def get_compatible_deployments(self, app_interface_id: str, group: str):
@@ -258,10 +258,10 @@ class AiravataOperator:
 
     """
     # logic
-    grps: list = self.api_server_client.get_group_resource_list(self.airavata_token, self.default_gateway_id()) # type: ignore
-    grp_id = next((grp.groupResourceProfileId for grp in grps if grp.groupResourceProfileName == group), None)
+    grps: list = self.api_server_client.get_group_resource_list().group_resource_profiles # type: ignore
+    grp_id = next((grp.group_resource_profile_id for grp in grps if grp.group_resource_profile_name == group), None)
     assert grp_id is not None, f"Group resource profile {group} not found"
-    deployments = self.api_server_client.get_application_deployments_for_app_module_and_group_resource_profile(self.airavata_token, app_interface_id, grp_id)
+    deployments = self.api_server_client.get_application_deployments_for_app_module_and_group_resource_profile(app_interface_id, grp_id)
     return deployments
 
   def get_app_interface_id(self, app_name: str, gateway_id: str | None = None):
@@ -270,15 +270,15 @@ class AiravataOperator:
 
     """
     gateway_id = str(gateway_id or self.default_gateway_id())
-    apps: list = self.api_server_client.get_all_application_interfaces(self.airavata_token, gateway_id) # type: ignore
-    app_id = next((app.applicationInterfaceId for app in apps if app.applicationName == app_name), None)
+    apps: list = self.api_server_client.get_all_application_interfaces(gateway_id).application_interfaces # type: ignore
+    app_id = next((app.application_interface_id for app in apps if app.application_name == app_name), None)
     assert app_id is not None, f"Application interface {app_name} not found"
     return str(app_id)
 
   def get_project_id(self, project_name: str, gateway_id: str | None = None):
     gateway_id = str(gateway_id or self.default_gateway_id())
-    projects: list = self.api_server_client.get_user_projects(self.airavata_token, gateway_id, self.user_id, 10, 0) # type: ignore
-    project_id = next((p.projectID for p in projects if p.name == project_name and p.owner == self.user_id), None)
+    projects: list = self.api_server_client.get_user_projects(gateway_id, self.user_id, 10, 0).projects # type: ignore
+    project_id = next((p.project_id for p in projects if p.name == project_name and p.owner == self.user_id), None)
     assert project_id is not None, f"Project {project_name} not found"
     return str(project_id)
 
@@ -287,14 +287,14 @@ class AiravataOperator:
     Get application inputs by id
 
     """
-    return list(self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id))  # type: ignore
+    return list(self.api_server_client.get_application_inputs(app_interface_id).application_inputs)  # type: ignore
 
   def get_compute_resources_by_ids(self, resource_ids: list[str]):
     """
     Get compute resources by ids
 
     """
-    return [self.api_server_client.get_compute_resource(self.airavata_token, resource_id) for resource_id in resource_ids]
+    return [self.api_server_client.get_compute_resource(resource_id) for resource_id in resource_ids]
 
   def make_experiment_dir(self, sr_host: str, project_name: str, experiment_name: str) -> str:
     """
@@ -596,8 +596,8 @@ class AiravataOperator:
     output_storage = self.get_storage(output_sr_host)
     assert input_storage is not None, f"Invalid input_storage: {input_storage}"
     assert output_storage is not None, f"Invalid output_storage: {output_storage}"
-    input_sr_id = input_storage.storageResourceId
-    output_sr_id = output_storage.storageResourceId
+    input_sr_id = input_storage.storage_resource_id
+    output_sr_id = output_storage.storage_resource_id
 
     # setup application interface
     print("[AV] Setting up application interface...")
@@ -616,7 +616,7 @@ class AiravataOperator:
     # setup experiment directory
     print("[AV] Setting up experiment directory...")
     exp_dir = self.make_experiment_dir(
-        sr_host=input_storage.hostName,
+        sr_host=input_storage.host_name,
         project_name=project,
         experiment_name=experiment_name,
     )
@@ -660,7 +660,7 @@ class AiravataOperator:
       else:
         raise ValueError("Invalid file input type")
     experiment_inputs = []
-    for exp_input in self.api_server_client.get_application_inputs(self.airavata_token, app_interface_id):  # type: ignore
+    for exp_input in self.api_server_client.get_application_inputs(app_interface_id).application_inputs:  # type: ignore
       assert exp_input.type is not None, f"Invalid exp_input type for {exp_input.name}: {exp_input.type}"
       if exp_input.type < 3 and exp_input.name in data_inputs:
         value = data_inputs[exp_input.name]
@@ -676,20 +676,22 @@ class AiravataOperator:
         exp_input.value = ','.join(file_refs[exp_input.name])
       experiment_inputs.append(exp_input)
       print(f"[AV] * {exp_input.name}={exp_input.value}")
-    experiment.experimentInputs = experiment_inputs
+    del experiment.experiment_inputs[:]
+    experiment.experiment_inputs.extend(experiment_inputs)
 
     # configure experiment outputs
-    outputs = self.api_server_client.get_application_outputs(self.airavata_token, app_interface_id)
-    experiment.experimentOutputs = outputs
+    outputs = self.api_server_client.get_application_outputs(app_interface_id).application_outputs
+    del experiment.experiment_outputs[:]
+    experiment.experiment_outputs.extend(outputs)
 
     # upload file inputs for experiment
     print(f"[AV] Uploading {len(files_to_upload)} file inputs for experiment...")
-    self.upload_files(None, None, input_storage.hostName, files_to_upload, exp_dir)
+    self.upload_files(None, None, input_storage.host_name, files_to_upload, exp_dir)
 
     # create experiment
     print(f"[AV] Creating experiment...")
     try:
-      ex_id = self.api_server_client.create_experiment(self.airavata_token, gateway_id, experiment)
+      ex_id = self.api_server_client.create_experiment(gateway_id, experiment).experiment_id
     except Exception as e:
       raise Exception(f"[AV] Failed to create experiment: {repr(e)}").with_traceback(e.__traceback__)
 
@@ -698,7 +700,7 @@ class AiravataOperator:
 
     # launch experiment
     try:
-      self.api_server_client.launch_experiment(self.airavata_token, ex_id, gateway_id)
+      self.api_server_client.launch_experiment(ex_id, gateway_id)
     except Exception as e:
       raise Exception(f"[AV] Failed to launch experiment: {repr(e)}").with_traceback(e.__traceback__)
     print(f"[AV] Experiment {experiment_name} STARTED with id: {ex_id}")
@@ -712,10 +714,10 @@ class AiravataOperator:
       # Check experiment status - if failed, raise error
       try:
         status = self.get_experiment_status(ex_id)
-        if status == ExperimentState.FAILED:
+        if status == ExperimentState.EXPERIMENT_STATE_FAILED:
           raise Exception(f"[AV] Experiment {experiment_name} FAILED while waiting for process to begin")
-        if status in [ExperimentState.COMPLETED, ExperimentState.CANCELED]:
-          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {status.name} while waiting for process")
+        if status in [ExperimentState.EXPERIMENT_STATE_COMPLETED, ExperimentState.EXPERIMENT_STATE_CANCELED]:
+          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {ExperimentState.Name(status)} while waiting for process")
       except Exception as status_err:
         if "FAILED" in str(status_err) or "terminal state" in str(status_err):
           raise status_err
@@ -742,10 +744,10 @@ class AiravataOperator:
       # Check experiment status - if failed, raise error
       try:
         status = self.get_experiment_status(ex_id)
-        if status == ExperimentState.FAILED:
+        if status == ExperimentState.EXPERIMENT_STATE_FAILED:
           raise Exception(f"[AV] Experiment {experiment_name} FAILED while waiting for task to begin")
-        if status in [ExperimentState.COMPLETED, ExperimentState.CANCELED]:
-          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {status.name} while waiting for task")
+        if status in [ExperimentState.EXPERIMENT_STATE_COMPLETED, ExperimentState.EXPERIMENT_STATE_CANCELED]:
+          raise Exception(f"[AV] Experiment {experiment_name} reached terminal state {ExperimentState.Name(status)} while waiting for task")
       except Exception as status_err:
         if "FAILED" in str(status_err) or "terminal state" in str(status_err):
           raise status_err
@@ -762,7 +764,7 @@ class AiravataOperator:
     if job_id in [None, "N/A"]:
       raise Exception(f"[AV] Experiment {experiment_name} timeout waiting for task to begin")
     assert job_state is not None, f"Job state is None for job id: {job_id}"
-    print(f"[AV] Experiment {experiment_name} - Task {job_state.name} with id: {job_id}")
+    print(f"[AV] Experiment {experiment_name} - Task {JobState.Name(job_state)} with id: {job_id}")
 
     return LaunchState(
       experiment_id=ex_id,
@@ -770,19 +772,19 @@ class AiravataOperator:
       process_id=process_id,
       mount_point=mount_point,
       experiment_dir=exp_dir,
-      sr_host=input_storage.hostName,
+      sr_host=input_storage.host_name,
     )
 
   def get_experiment_status(self, experiment_id: str) -> ExperimentState:
-    status = self.api_server_client.get_experiment_status(self.airavata_token, experiment_id)
+    status = self.api_server_client.get_experiment_status(experiment_id)
     if status is None:
-      return ExperimentState.CREATED
+      return ExperimentState.EXPERIMENT_STATE_CREATED
     assert isinstance(status, ExperimentStatus)
     return status.state
 
   def stop_experiment(self, experiment_id: str):
     status = self.api_server_client.terminate_experiment(
-        self.airavata_token, experiment_id, self.default_gateway_id())
+        experiment_id, self.default_gateway_id())
     return status
 
   def execute_py(self, project: str, libraries: list[str], code: str, agent_id: str, pid: str, runtime_args: dict, cold_start: bool = True) -> str | None:
@@ -864,48 +866,48 @@ class AiravataOperator:
       print(f"[av] Remote execution failed! {e}")
       return None
 
-  def get_available_groups(self, gateway_id: str = "default"):
-    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list(self.airavata_token, gatewayId=gateway_id)
+  def get_available_groups(self, gateway_id: str = "default") -> list[GroupResourceProfile]:
+    grps: list[GroupResourceProfile] = self.api_server_client.get_group_resource_list().group_resource_profiles
     return grps
 
   def get_available_runtimes(self, group: str, gateway_id: str = "default"):
     grps = self.get_available_groups(gateway_id)
-    grp_id, gcr_prefs, gcr_policies = next(((x.groupResourceProfileId, x.computePreferences, x.computeResourcePolicies) for x in grps if str(x.groupResourceProfileName).strip() == group.strip()), (None, None, None))
+    grp_id, gcr_prefs, gcr_policies = next(((x.group_resource_profile_id, x.compute_preferences, x.compute_resource_policies) for x in grps if str(x.group_resource_profile_name).strip() == group.strip()), (None, None, None))
     assert grp_id is not None, f"Group {group} was not found"
     assert gcr_prefs is not None, f"Compute preferences for group={grp_id} were not found"
     assert gcr_policies is not None, f"Compute policies for group={grp_id} were not found" # type: ignore
     from .runtime import Remote
     runtimes = []
     for pref in gcr_prefs:
-      cr = self.api_server_client.get_compute_resource(self.airavata_token, pref.computeResourceId)
+      cr = self.api_server_client.get_compute_resource(pref.compute_resource_id)
       assert cr is not None, "Compute resource not found"
       assert isinstance(cr, ComputeResourceDescription), "Compute resource is not a ComputeResourceDescription"
-      assert cr.batchQueues is not None, "Compute resource has no batch queues"
-      for queue in cr.batchQueues:
-        if pref.resourceType == ResourceType.SLURM:
-          policy = next((p for p in gcr_policies if p.computeResourceId == pref.computeResourceId), None)
-          assert policy is not None, f"Compute resource policy not found for {pref.computeResourceId}"
-          if queue.queueName not in (policy.allowedBatchQueues or []):
+      assert cr.batch_queues is not None, "Compute resource has no batch queues"
+      for queue in cr.batch_queues:
+        if pref.resource_type == ResourceType.SLURM:
+          policy = next((p for p in gcr_policies if p.compute_resource_id == pref.compute_resource_id), None)
+          assert policy is not None, f"Compute resource policy not found for {pref.compute_resource_id}"
+          if queue.queue_name not in (policy.allowed_batch_queues or []):
             continue
         runtime = Remote(
-          cluster=pref.computeResourceId.split("_")[0],
-          category="GPU" if "gpu" in queue.queueName.lower() else "CPU",
-          queue_name=queue.queueName,
-          node_count=queue.maxNodes or 1,
-          cpu_count=queue.cpuPerNode or 1,
-          gpu_count=1 if "gpu" in queue.queueName.lower() else 0,
-          walltime=queue.maxRunTime or 30,
+          cluster=pref.compute_resource_id.split("_")[0],
+          category="GPU" if "gpu" in queue.queue_name.lower() else "CPU",
+          queue_name=queue.queue_name,
+          node_count=queue.max_nodes or 1,
+          cpu_count=queue.cpu_per_node or 1,
+          gpu_count=1 if "gpu" in queue.queue_name.lower() else 0,
+          walltime=queue.max_run_time or 30,
           group=group,
         )
         runtimes.append(runtime)
     return runtimes
 
   def get_task_status(self, experiment_id: str) -> tuple[str, JobState]:
-    job_details: dict[str, JobStatus] = self.api_server_client.get_job_statuses(self.airavata_token, experiment_id) # type: ignore
+    job_details = self.api_server_client.get_job_statuses(experiment_id).job_statuses # type: ignore
     job_id = job_state = None
     for job_id, v in job_details.items():
-      job_state = v.jobState
-    return job_id or "N/A", job_state or JobState.UNKNOWN
+      job_state = v.job_state
+    return job_id or "N/A", job_state or JobState.JOB_STATE_UNKNOWN
 
   JobState = JobState
 

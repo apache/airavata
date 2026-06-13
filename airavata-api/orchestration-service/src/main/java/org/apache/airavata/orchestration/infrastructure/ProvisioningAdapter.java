@@ -36,6 +36,4 @@ public interface ProvisioningAdapter {
     AiravataTask createJobVerificationTask(String processId);
 
     AiravataTask createCompletingTask(String processId);
-
-    AiravataTask createParsingTriggeringTask(String processId);
 }

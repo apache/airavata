@@ -140,10 +140,15 @@ public interface ComputeMapper extends CommonMapperConversions {
     }
 
     // --- BatchQueue ---
+    // The entity property is defaultCPUCount (acronym "CPU") but the proto property is
+    // defaultCpuCount ("Cpu"); MapStruct's case-sensitive name matching would otherwise drop
+    // it silently (unmappedTargetPolicy=IGNORE), leaving the queue's default core count as 0.
     @Mapping(source = "maxRuntime", target = "maxRunTime")
+    @Mapping(source = "defaultCPUCount", target = "defaultCpuCount")
     BatchQueue batchQueueToModel(BatchQueueEntity entity);
 
     @Mapping(source = "maxRunTime", target = "maxRuntime")
+    @Mapping(source = "defaultCpuCount", target = "defaultCPUCount")
     BatchQueueEntity batchQueueToEntity(BatchQueue model);
 
     // --- ResourceJobManager ---
@@ -155,11 +160,9 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (entity == null) return null;
         ResourceJobManager.Builder b = ResourceJobManager.newBuilder();
         if (entity.getResourceJobManagerId() != null) b.setResourceJobManagerId(entity.getResourceJobManagerId());
-        if (entity.getResourceJobManagerType() != null)
-            b.setResourceJobManagerType(entity.getResourceJobManagerType());
+        if (entity.getResourceJobManagerType() != null) b.setResourceJobManagerType(entity.getResourceJobManagerType());
         if (entity.getJobManagerBinPath() != null) b.setJobManagerBinPath(entity.getJobManagerBinPath());
-        if (entity.getPushMonitoringEndpoint() != null)
-            b.setPushMonitoringEndpoint(entity.getPushMonitoringEndpoint());
+        if (entity.getPushMonitoringEndpoint() != null) b.setPushMonitoringEndpoint(entity.getPushMonitoringEndpoint());
         if (entity.getJobManagerCommands() != null) {
             for (JobManagerCommandEntity cmd : entity.getJobManagerCommands()) {
                 if (cmd.getCommandType() != null && cmd.getCommand() != null) {
@@ -220,8 +223,7 @@ public interface ComputeMapper extends CommonMapperConversions {
     GatewayProfileEntity gatewayProfileToEntity(GatewayResourceProfile model);
 
     @AfterMapping
-    default void afterGatewayProfileToEntity(
-            GatewayResourceProfile model, @MappingTarget GatewayProfileEntity entity) {
+    default void afterGatewayProfileToEntity(GatewayResourceProfile model, @MappingTarget GatewayProfileEntity entity) {
         if (!model.getComputeResourcePreferencesList().isEmpty()) {
             List<ComputeResourcePreferenceEntity> prefs = new ArrayList<>();
             for (ComputeResourcePreference pref : model.getComputeResourcePreferencesList()) {
@@ -370,8 +372,7 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (entity == null) return null;
         GroupComputeResourcePreference.Builder b = GroupComputeResourcePreference.newBuilder();
         if (entity.getComputeResourceId() != null) b.setComputeResourceId(entity.getComputeResourceId());
-        if (entity.getGroupResourceProfileId() != null)
-            b.setGroupResourceProfileId(entity.getGroupResourceProfileId());
+        if (entity.getGroupResourceProfileId() != null) b.setGroupResourceProfileId(entity.getGroupResourceProfileId());
         b.setOverrideByAiravata(entity.getOverridebyAiravata() != 0);
         if (entity.getLoginUserName() != null) b.setLoginUserName(entity.getLoginUserName());
         if (entity.getScratchLocation() != null) b.setScratchLocation(entity.getScratchLocation());
@@ -386,8 +387,7 @@ public interface ComputeMapper extends CommonMapperConversions {
             if (slurm.getQualityOfService() != null) s.setQualityOfService(slurm.getQualityOfService());
             if (slurm.getUsageReportingGatewayId() != null)
                 s.setUsageReportingGatewayId(slurm.getUsageReportingGatewayId());
-            if (slurm.getSshAccountProvisioner() != null)
-                s.setSshAccountProvisioner(slurm.getSshAccountProvisioner());
+            if (slurm.getSshAccountProvisioner() != null) s.setSshAccountProvisioner(slurm.getSshAccountProvisioner());
             if (slurm.getSshAccountProvisionerAdditionalInfo() != null)
                 s.setSshAccountProvisionerAdditionalInfo(slurm.getSshAccountProvisionerAdditionalInfo());
             if (slurm.getGroupSSHAccountProvisionerConfigs() != null) {
@@ -428,7 +428,8 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model.hasSpecificPreferences()
                 && model.getSpecificPreferences().getPreferencesCase()
                         == EnvironmentSpecificPreferences.PreferencesCase.SLURM) {
-            SlurmComputeResourcePreference slurm = model.getSpecificPreferences().getSlurm();
+            SlurmComputeResourcePreference slurm =
+                    model.getSpecificPreferences().getSlurm();
             entity.setAllocationProjectNumber(slurm.getAllocationProjectNumber());
             entity.setPreferredBatchQueue(slurm.getPreferredBatchQueue());
             entity.setQualityOfService(slurm.getQualityOfService());

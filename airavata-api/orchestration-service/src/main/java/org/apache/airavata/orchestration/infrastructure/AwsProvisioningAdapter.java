@@ -28,11 +28,10 @@ public class AwsProvisioningAdapter implements ProvisioningAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsProvisioningAdapter.class);
 
     private static final String CREATE_EC2_INSTANCE_TASK_CLASS =
-            "org.apache.airavata.compute.task.aws.CreateEC2InstanceTask";
-    private static final String NO_OPERATION_TASK_CLASS = "org.apache.airavata.compute.task.aws.NoOperationTask";
-    private static final String AWS_JOB_SUBMISSION_TASK_CLASS =
-            "org.apache.airavata.compute.task.aws.AWSJobSubmissionTask";
-    private static final String AWS_COMPLETING_TASK_CLASS = "org.apache.airavata.compute.task.aws.AWSCompletingTask";
+            "org.apache.airavata.compute.task.CreateEC2InstanceTask";
+    private static final String NO_OPERATION_TASK_CLASS = "org.apache.airavata.compute.task.NoOperationTask";
+    private static final String AWS_JOB_SUBMISSION_TASK_CLASS = "org.apache.airavata.compute.task.AWSJobSubmissionTask";
+    private static final String AWS_COMPLETING_TASK_CLASS = "org.apache.airavata.compute.task.AWSCompletingTask";
 
     @Override
     public AiravataTask createEnvSetupTask(String processId) {
@@ -68,11 +67,6 @@ public class AwsProvisioningAdapter implements ProvisioningAdapter {
     @Override
     public AiravataTask createCompletingTask(String processId) {
         return createTaskByReflection(AWS_COMPLETING_TASK_CLASS, "AWSCompletingTask", "compute-service");
-    }
-
-    @Override
-    public AiravataTask createParsingTriggeringTask(String processId) {
-        return createTaskByReflection(NO_OPERATION_TASK_CLASS, "NoOperationTask", "compute-service");
     }
 
     private static AiravataTask createTaskByReflection(String className, String taskName, String moduleName) {

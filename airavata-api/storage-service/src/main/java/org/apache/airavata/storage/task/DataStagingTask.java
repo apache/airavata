@@ -236,8 +236,15 @@ public abstract class DataStagingTask extends AiravataTask {
             AgentAdaptor srcAdaptor, String sourceFile, AgentAdaptor destAdaptor, String destFile, String tempFile)
             throws TaskOnFailException {
 
-        sourceFile = escapeSpecialCharacters(sourceFile);
-        destFile = escapeSpecialCharacters(destFile);
+        // Only shell-escape paths handed to adaptors that interpret them through a shell (SCP).
+        // StorageResourceAdaptor (SSHJStorageAdaptor) does literal sftp.get/sftp.put with no shell,
+        // so escaping there turns paths containing ( ) [ ] { } $ ^ ? & % into "No such file".
+        if (!(srcAdaptor instanceof StorageResourceAdaptor)) {
+            sourceFile = escapeSpecialCharacters(sourceFile);
+        }
+        if (!(destAdaptor instanceof StorageResourceAdaptor)) {
+            destFile = escapeSpecialCharacters(destFile);
+        }
 
         logger.info("Using naive transfer to transfer " + sourceFile + " to " + destFile);
         try {

@@ -18,7 +18,12 @@ services:
       MYSQL_PASSWORD: 123456
     volumes:
       - db_data:/var/lib/mysql
+      # On a fresh volume MariaDB runs these in order BEFORE the server starts (server
+      # depends_on db: service_healthy). 01 builds the schema, 02 seeds the dev tenant.
+      # The server then runs Hibernate ddl-auto=validate against the result. Skipped on a
+      # persisted volume; ./devstack/devstack reset wipes the volume to re-init from scratch.
       - ./airavata-server/src/main/resources/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./conf/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     ports:
       - "127.0.0.1:3306:3306"
     networks:
@@ -29,31 +34,6 @@ services:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  kafka:
-    image: apache/kafka:3.9.0
-    container_name: airavata-kafka
-    restart: unless-stopped
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CLUSTER_ID: airavata-kafka-cluster-id-01
-    volumes:
-      - kafka_data:/var/lib/kafka/data
-    networks:
-      - airavata-devstack
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
-      interval: 10s
-      timeout: 10s
       retries: 5
       start_period: 30s
 
@@ -127,7 +107,6 @@ services:
     environment:
       JAVA_TOOL_OPTIONS: >-
         -Dspring.datasource.url=jdbc:mariadb://db.airavata.host:3306/airavata
-        -Dkafka.broker.url=kafka:9092
         -Dairavata.security.openid-url=https://auth.airavata.host/realms/default
         -Diam.server.url=https://auth.airavata.host
     volumes:
@@ -137,7 +116,6 @@ services:
       - airavata-devstack
     depends_on:
       db: { condition: service_healthy }
-      kafka: { condition: service_healthy }
       keycloak: { condition: service_healthy }
     labels:
       - traefik.enable=true
@@ -309,7 +287,6 @@ services:
 
 volumes:
   db_data:
-  kafka_data:
   sftp_data:
   slurm_db_data:    # accounting DB storage
   slurm_munge:      # shared munge.key across all slurm daemons

@@ -95,6 +95,12 @@ public interface ResearchMapper extends CommonMapperConversions {
                 builder.addErrors(experimentErrorToModel(error));
             }
         }
+        // emailAddresses is stored as a CSV column; restore the proto repeated field
+        // (MapStruct does not map getEmailAddressesList(), so it would otherwise be dropped on read).
+        if (entity.getEmailAddresses() != null) {
+            java.util.List<String> emails = csvToList(entity.getEmailAddresses());
+            if (emails != null) builder.addAllEmailAddresses(emails);
+        }
     }
 
     @AfterMapping
