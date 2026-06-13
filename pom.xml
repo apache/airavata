@@ -109,11 +109,6 @@ under the License.
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>2.0.16</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>2.0.16</version>
             </dependency>
@@ -164,11 +159,6 @@ under the License.
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.18.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-exec</artifactId>
-                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -222,11 +212,6 @@ under the License.
 
             <!-- Database -->
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-j</artifactId>
-                <version>9.3.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
                 <version>3.5.4</version>
@@ -244,11 +229,6 @@ under the License.
                 <version>2.1.3</version>
             </dependency>
             <!-- Other Libraries -->
-            <dependency>
-                <groupId>com.github.dozermapper</groupId>
-                <artifactId>dozer-core</artifactId>
-                <version>7.0.0</version>
-            </dependency>
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
@@ -284,11 +264,6 @@ under the License.
                         <artifactId>jandex</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.keycloak</groupId>
-                <artifactId>keycloak-authz-client</artifactId>
-                <version>26.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -341,33 +316,8 @@ under the License.
             </dependency>
 
             <!-- Selenium -->
-            <dependency>
-                <groupId>org.seleniumhq.selenium.client-drivers</groupId>
-                <artifactId>selenium-java-client-driver</artifactId>
-                <version>1.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-firefox-driver</artifactId>
-                <version>4.34.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-remote-driver</artifactId>
-                <version>4.34.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-java</artifactId>
-                <version>4.34.0</version>
-            </dependency>
 
             <!-- JSON Simple -->
-            <dependency>
-                <groupId>com.googlecode.json-simple</groupId>
-                <artifactId>json-simple</artifactId>
-                <version>1.1</version>
-            </dependency>
 
             <!-- Jackson BOM — must come before Spring Boot to override its Jackson 2.19.x -->
             <dependency>
@@ -615,11 +565,6 @@ under the License.
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>3.5.12</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>selenium-maven-plugin</artifactId>
-                    <version>2.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
