@@ -300,8 +300,6 @@ class AiravataOperator:
     """
     Make experiment directory on storage resource, and return the remote path
 
-    Return Path: /{project_name}/{experiment_name}
-
     """
     host = sr_host
     port = self.default_sftp_port()
@@ -314,8 +312,6 @@ class AiravataOperator:
     """
     Upload local files to a remote directory of a storage resource
     TODO add data_svc fallback
-
-    Return Path: /{project_name}/{experiment_name}
 
     """
 
@@ -374,8 +370,6 @@ class AiravataOperator:
     List files in a remote directory of a storage resource
     TODO add data_svc fallback
 
-    Return Path: /{project_name}/{experiment_name}
-
     """
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
@@ -409,8 +403,6 @@ class AiravataOperator:
     """
     Download files from a remote directory of a storage resource to a local directory
     TODO add data_svc fallback
-
-    Return Path: /{project_name}/{experiment_name}
 
     """
     import os
@@ -456,8 +448,6 @@ class AiravataOperator:
     Execute a command on a remote directory of a storage resource
     TODO add data_svc fallback
 
-    Return Path: /{project_name}/{experiment_name}
-
     """
     res = requests.post(f"{self.connection_svc_url()}/agent/execute/shell", json={
         "agentId": agent_ref,
@@ -484,8 +474,6 @@ class AiravataOperator:
     """
     Download files from a remote directory of a storage resource to a local directory
     TODO add data_svc fallback
-
-    Return Path: /{project_name}/{experiment_name}
 
     """
     import os
