@@ -84,9 +84,13 @@ def resolve_user_storage_path(
             if experiment.HasField("user_configuration_data")
             else None
         ) or ""
-        base = data_dir.rstrip("/")
+        # The experiment data dir is user-storage-relative. The SDK launch persists it with a
+        # leading '/' that the staging write side (DataStagingTask.buildDestinationFilePath) strips
+        # and anchors under the storage root; strip it here too and anchor under '~/' — otherwise
+        # list_dir/dir_exists resolve against the SFTP chroot root (outside it) and show "no files".
+        base = data_dir.strip("/")
         full = base + ("/" + rel if rel else "")
-        if full.startswith("/") or full.startswith("~/"):
+        if full.startswith("~/"):
             return full
         return "~/" + full
     if rel.startswith("~"):
