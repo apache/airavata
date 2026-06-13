@@ -50,9 +50,17 @@ public class EntityRepository extends AbstractSharingRepository<EntityEntity, En
         for (String groupId : groupIds) groupIdString += groupId + "','";
         groupIdString = groupIdString.substring(0, groupIdString.length() - 2);
 
-        String query =
-                "SELECT ENTITY.* FROM ENTITY WHERE ENTITY.ENTITY_ID IN (SELECT DISTINCT E.ENTITY_ID FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE "
-                        + "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
+        // Explicit column list (not ENTITY.*) so the positional rs[0..12] mapping below is stable
+        // regardless of the table's physical column order. On a fresh DB the JPA-created ENTITY
+        // table orders columns alphabetically, which does NOT match ENTITY.*'s order and would make
+        // e.g. rs[3] a bigint CREATED_TIME cast to a String OWNER_ID (ClassCastException). This order
+        // matches the rs[0..12] reads in the result mapping.
+        String query = "SELECT ENTITY.ENTITY_ID, ENTITY.DOMAIN_ID, ENTITY.ENTITY_TYPE_ID, ENTITY.OWNER_ID, "
+                + "ENTITY.PARENT_ENTITY_ID, ENTITY.NAME, ENTITY.DESCRIPTION, ENTITY.BINARY_DATA, "
+                + "ENTITY.FULL_TEXT, ENTITY.SHARED_COUNT, ENTITY.ORIGINAL_ENTITY_CREATION_TIME, "
+                + "ENTITY.CREATED_TIME, ENTITY.UPDATED_TIME "
+                + "FROM ENTITY WHERE ENTITY.ENTITY_ID IN (SELECT DISTINCT E.ENTITY_ID FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE "
+                + "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
 
         for (SearchCriteria searchCriteria : filters) {
             if (searchCriteria.getSearchField().equals(EntitySearchField.NAME)) {

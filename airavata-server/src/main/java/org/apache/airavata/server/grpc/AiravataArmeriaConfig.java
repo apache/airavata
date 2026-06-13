@@ -35,7 +35,6 @@ import org.apache.airavata.server.file.FileController;
 import org.apache.airavata.server.grpc.config.GrpcAuthInterceptor;
 import org.apache.airavata.server.grpc.config.GrpcLoggingInterceptor;
 import org.apache.airavata.server.grpc.config.HttpAuthDecorator;
-import org.apache.airavata.server.kafka.KafkaProxyService;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -112,13 +111,5 @@ public class AiravataArmeriaConfig {
                 .pathPrefix("/api/v1/files")
                 .decorator(new HttpAuthDecorator())
                 .build(fileController);
-    }
-
-    @Bean
-    public ArmeriaServerConfigurator kafkaServerConfigurator(KafkaProxyService kafkaProxyService) {
-        return builder -> builder.annotatedService()
-                .pathPrefix("/api/v1/kafka")
-                .decorator(new HttpAuthDecorator())
-                .build(kafkaProxyService);
     }
 }

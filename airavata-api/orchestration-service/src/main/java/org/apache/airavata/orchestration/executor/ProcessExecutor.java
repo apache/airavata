@@ -69,9 +69,6 @@ import org.springframework.stereotype.Component;
  * <p>The DB row lock is held only for the short claim transaction (which marks the task
  * {@code TASK_STATE_EXECUTING} as the durable claim marker); the actual work runs outside any
  * transaction so long-running tasks never hold a lock.
- *
- * <p>Phase B drives every task through {@link NoOpDbTask} ({@code orchestration.executor.dry.run=true})
- * to validate the claim/advance machinery end-to-end; real task bodies are wired in later phases.
  */
 @Component
 @ConditionalOnServer("orchestrator")
@@ -103,11 +100,7 @@ public class ProcessExecutor implements SmartLifecycle {
     @Value("${orchestration.executor.max.attempts:3}")
     private int maxAttempts;
 
-    @Value("${orchestration.executor.dry.run:true}")
-    private boolean dryRun;
-
     private final OrchestratorExecutorRepository repo = new OrchestratorExecutorRepository();
-    private final NoOpDbTask noOpTask = new NoOpDbTask();
 
     private volatile boolean running = false;
     private ExecutorService workers;
@@ -129,12 +122,11 @@ public class ProcessExecutor implements SmartLifecycle {
         sweeper = Executors.newSingleThreadScheduledExecutor(namedDaemon("process-executor-sweeper"));
         sweeper.scheduleWithFixedDelay(this::sweep, pollIntervalMs, pollIntervalMs, TimeUnit.MILLISECONDS);
         logger.info(
-                "ProcessExecutor started: {} worker(s), poll {} ms, lease {} ms, maxAttempts {}, dryRun={}",
+                "ProcessExecutor started: {} worker(s), poll {} ms, lease {} ms, maxAttempts {}",
                 threads,
                 pollIntervalMs,
                 leaseTimeoutMs,
-                maxAttempts,
-                dryRun);
+                maxAttempts);
     }
 
     @Override
@@ -200,17 +192,9 @@ public class ProcessExecutor implements SmartLifecycle {
                 claim.taskId,
                 claim.taskType,
                 claim.processId);
-        DbTaskResult result = runTask(claim);
+        DbTaskResult result = runRealTask(claim);
         finishTask(registry, claim, result);
         return true;
-    }
-
-    private DbTaskResult runTask(Claim claim) {
-        if (dryRun) {
-            logger.info("DRY-RUN no-op for task {} ({}) of process {}", claim.taskId, claim.taskType, claim.processId);
-            return noOpTask.run(null);
-        }
-        return runRealTask(claim);
     }
 
     /**
@@ -224,8 +208,7 @@ public class ProcessExecutor implements SmartLifecycle {
         try {
             Class<? extends AiravataTask> taskClass = resolveTask(claim.taskId, claim.taskType);
             if (taskClass == null) {
-                logger.info(
-                        "No real task for {} ({}); treating as no-op COMPLETED", claim.taskId, claim.taskType);
+                logger.info("No real task for {} ({}); treating as no-op COMPLETED", claim.taskId, claim.taskType);
                 return DbTaskResult.completed("no-op for task type " + claim.taskType);
             }
 
@@ -573,12 +556,12 @@ public class ProcessExecutor implements SmartLifecycle {
     }
 
     private boolean shouldRetry(String taskId) {
-        long attempts = repo.execute(em -> ((Number) em.createNativeQuery(
-                                "SELECT COUNT(*) FROM EXEC_STATUS WHERE ENTITY_TYPE = 'TASK' "
+        long attempts = repo.execute(em -> ((Number)
+                        em.createNativeQuery("SELECT COUNT(*) FROM EXEC_STATUS WHERE ENTITY_TYPE = 'TASK' "
                                         + "AND ENTITY_ID = :eid AND STATE = :st")
-                        .setParameter("eid", taskId)
-                        .setParameter("st", TaskState.TASK_STATE_EXECUTING.name())
-                        .getSingleResult())
+                                .setParameter("eid", taskId)
+                                .setParameter("st", TaskState.TASK_STATE_EXECUTING.name())
+                                .getSingleResult())
                 .longValue());
         return attempts < maxAttempts;
     }
@@ -693,9 +676,8 @@ public class ProcessExecutor implements SmartLifecycle {
 
     private String latestStateForTask(EntityManager em, String taskId) {
         @SuppressWarnings("unchecked")
-        List<Object[]> rows = em.createNativeQuery(
-                        "SELECT s.STATE, s.TIME_OF_STATE_CHANGE FROM EXEC_STATUS s "
-                                + "WHERE s.ENTITY_TYPE = 'TASK' AND s.ENTITY_ID = :tid")
+        List<Object[]> rows = em.createNativeQuery("SELECT s.STATE, s.TIME_OF_STATE_CHANGE FROM EXEC_STATUS s "
+                        + "WHERE s.ENTITY_TYPE = 'TASK' AND s.ENTITY_ID = :tid")
                 .setParameter("tid", taskId)
                 .getResultList();
         String best = null;
@@ -715,9 +697,8 @@ public class ProcessExecutor implements SmartLifecycle {
 
     private String latestProcessState(EntityManager em, String pid) {
         @SuppressWarnings("unchecked")
-        List<Object[]> rows = em.createNativeQuery(
-                        "SELECT s.STATE, s.TIME_OF_STATE_CHANGE FROM EXEC_STATUS s "
-                                + "WHERE s.ENTITY_TYPE = 'PROCESS' AND s.ENTITY_ID = :pid")
+        List<Object[]> rows = em.createNativeQuery("SELECT s.STATE, s.TIME_OF_STATE_CHANGE FROM EXEC_STATUS s "
+                        + "WHERE s.ENTITY_TYPE = 'PROCESS' AND s.ENTITY_ID = :pid")
                 .setParameter("pid", pid)
                 .getResultList();
         String best = null;
@@ -734,9 +715,8 @@ public class ProcessExecutor implements SmartLifecycle {
 
     private void insertStatus(
             EntityManager em, String entityType, String entityId, String state, long timeMillis, String reason) {
-        String prefix = "PROCESS".equals(entityType)
-                ? "PROCESS_STATE"
-                : "JOB".equals(entityType) ? "JOB_STATE" : "TASK_STATE";
+        String prefix =
+                "PROCESS".equals(entityType) ? "PROCESS_STATE" : "JOB".equals(entityType) ? "JOB_STATE" : "TASK_STATE";
         em.createNativeQuery("INSERT INTO EXEC_STATUS "
                         + "(STATUS_ID, ENTITY_TYPE, ENTITY_ID, STATE, TIME_OF_STATE_CHANGE, REASON) "
                         + "VALUES (:sid, :etype, :eid, :state, :ts, :reason)")
@@ -781,6 +761,17 @@ public class ProcessExecutor implements SmartLifecycle {
         }
     }
 
+    /**
+     * Tie-break rank for two EXEC_STATUS rows of the same task that share a
+     * TIME_OF_STATE_CHANGE. TIME_OF_STATE_CHANGE is second-precision, so a fast
+     * EXECUTING -> CREATED requeue (finishTask writes CREATED in the same second the
+     * task was claimed EXECUTING) lands on the same timestamp. CREATED must out-rank
+     * EXECUTING so that requeue wins the tie and the task is re-claimed on the next poll
+     * instead of being masked as still-EXECUTING and stalled for a full lease interval.
+     * This is only a same-timestamp tiebreak; the primary ordering is still by time, so
+     * any later EXECUTING (the normal CREATED -> EXECUTING start, written with a fresh
+     * timestamp at claim time) still wins by being strictly newer.
+     */
     private static int stateRank(String state) {
         TaskState s = parseTaskState(state);
         if (s == TaskState.TASK_STATE_COMPLETED
@@ -788,10 +779,10 @@ public class ProcessExecutor implements SmartLifecycle {
                 || s == TaskState.TASK_STATE_CANCELED) {
             return 4;
         }
-        if (s == TaskState.TASK_STATE_EXECUTING) {
+        if (s == TaskState.TASK_STATE_CREATED) {
             return 3;
         }
-        if (s == TaskState.TASK_STATE_CREATED) {
+        if (s == TaskState.TASK_STATE_EXECUTING) {
             return 2;
         }
         return 1;

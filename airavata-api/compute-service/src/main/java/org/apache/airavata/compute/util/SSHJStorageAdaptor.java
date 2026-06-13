@@ -81,21 +81,51 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
         }
     }
 
+    /**
+     * SFTPClient that owns its underlying SSHClient and disconnects it on close.
+     * Callers use {@code try (SFTPClient sftp = openSftp())}; closing the SFTP channel
+     * alone would leak the SSHClient's socket and transport reader thread, so close()
+     * tears down both.
+     */
+    private static final class OwnedSFTPClient extends SFTPClient {
+        private final SSHClient ssh;
+
+        OwnedSFTPClient(SSHClient ssh) throws Exception {
+            super(ssh);
+            this.ssh = ssh;
+        }
+
+        @Override
+        public void close() throws java.io.IOException {
+            try {
+                super.close();
+            } finally {
+                ssh.disconnect();
+            }
+        }
+    }
+
     private SFTPClient openSftp() throws Exception {
         SSHClient ssh = new SSHClient();
         ssh.addHostKeyVerifier(new PromiscuousVerifier());
         ssh.connect(host, port);
 
-        // Write PEM key to temp file since SSHJ loadKeys expects a file path
-        java.io.File keyFile = java.io.File.createTempFile("airavata-ssh-", ".pem");
         try {
-            java.nio.file.Files.writeString(keyFile.toPath(), privateKey);
-            ssh.authPublickey(username, ssh.loadKeys(keyFile.getAbsolutePath()));
-        } finally {
-            keyFile.delete();
+            // Write PEM key to temp file since SSHJ loadKeys expects a file path
+            java.io.File keyFile = java.io.File.createTempFile("airavata-ssh-", ".pem");
+            try {
+                java.nio.file.Files.writeString(keyFile.toPath(), privateKey);
+                ssh.authPublickey(username, ssh.loadKeys(keyFile.getAbsolutePath()));
+            } finally {
+                keyFile.delete();
+            }
+            // The returned client owns ssh and closes it when the caller closes the SFTPClient.
+            return new OwnedSFTPClient(ssh);
+        } catch (Exception e) {
+            // Auth/SFTP-channel setup failed after connect; close ssh so we don't leak it.
+            ssh.disconnect();
+            throw e;
         }
-
-        return ssh.newSFTPClient();
     }
 
     @Override
@@ -285,6 +315,7 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
 
     @Override
     public void destroy() {
-        // No persistent connections to clean up
+        // Each operation opens and closes its own SSH+SFTP connection (see openSftp /
+        // OwnedSFTPClient), so there is no pooled or long-lived connection to tear down here.
     }
 }

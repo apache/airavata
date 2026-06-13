@@ -144,8 +144,8 @@ class DataModelCreationUtil(object):
         assert execution_id is not None
         inputs_response = self.api_server_client.get_application_inputs(execution_id)
 
-        # inputs_response is a protobuf response with repeated fields
-        inputs = list(inputs_response.inputs) if hasattr(inputs_response, 'inputs') else []
+        # inputs_response is a GetApplicationInputsResponse with a repeated application_inputs field
+        inputs = list(inputs_response.application_inputs)
 
         configured_inputs = []
         if len(file_mapping.keys()) == 0:
@@ -173,7 +173,7 @@ class DataModelCreationUtil(object):
         experiment_model.experiment_inputs.extend(configured_inputs)
 
         outputs_response = self.api_server_client.get_application_outputs(execution_id)
-        outputs = list(outputs_response.outputs) if hasattr(outputs_response, 'outputs') else []
+        outputs = list(outputs_response.application_outputs)
 
         del experiment_model.experiment_outputs[:]
         experiment_model.experiment_outputs.extend(outputs)

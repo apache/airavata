@@ -21,16 +21,13 @@ package org.apache.airavata.compute.task;
 
 import java.io.File;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import org.apache.airavata.compute.util.JobSubmissionOutput;
 import org.apache.airavata.config.ServerSettings;
-import org.apache.airavata.exception.ApplicationSettingsException;
 import org.apache.airavata.interfaces.AgentAdaptor;
 import org.apache.airavata.interfaces.AgentException;
 import org.apache.airavata.interfaces.CommandOutput;
 import org.apache.airavata.interfaces.RawCommandInfo;
 import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManagerType;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.status.proto.JobStatus;
 import org.apache.airavata.task.AiravataTask;
@@ -48,10 +45,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
             AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration =
                 JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
-
-        if (getTaskContext().getResourceJobManager().getResourceJobManagerType() != ResourceJobManagerType.HTCONDOR) {
-            addMonitoringCommands(groovyMapData);
-        }
 
         String scriptAsString = groovyMapData.loadFromFile(jobManagerConfiguration.getJobDescriptionTemplateName());
         logger.info("Generated job submission script : " + scriptAsString);
@@ -237,36 +230,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
             getStatusPublisher().publish(msgCtx);*/
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
-        }
-    }
-
-    protected void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
-
-        if (Boolean.parseBoolean(ServerSettings.getSetting("enable.realtime.monitor"))) {
-            if (mapData.getPreJobCommands() == null) {
-                mapData.setPreJobCommands(new ArrayList<>());
-            }
-            mapData.getPreJobCommands()
-                    .add(
-                            0,
-                            "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" "
-                                    + "-H \"Accept: application/vnd.kafka.v2+json\" "
-                                    + "--data '{\"records\":[{\"value\":{\"jobName\":\""
-                                    + mapData.getJobName() + "\", \"status\":\"RUNNING\", \"task\":\""
-                                    + mapData.getTaskId() + "\"}}]}' \""
-                                    + ServerSettings.getSetting("job.status.publish.endpoint")
-                                    + "\" > /dev/null || true");
-
-            if (mapData.getPostJobCommands() == null) {
-                mapData.setPostJobCommands(new ArrayList<>());
-            }
-            mapData.getPostJobCommands()
-                    .add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" "
-                            + "-H \"Accept: application/vnd.kafka.v2+json\" "
-                            + "--data '{\"records\":[{\"value\":{\"jobName\":\""
-                            + mapData.getJobName() + "\", \"status\":\"COMPLETED\", \"task\":\"" + mapData.getTaskId()
-                            + "\"}}]}' \"" + ServerSettings.getSetting("job.status.publish.endpoint")
-                            + "\" > /dev/null || true");
         }
     }
 }

@@ -28,10 +28,6 @@
 
   <logger name="org.apache.airavata" level="INFO" />
   <logger name="org.hibernate" level="ERROR" />
-  <!-- Kafka client config dumps are very verbose; keep them out of normal (INFO) logs. -->
-  <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="WARN" />
-  <logger name="org.apache.kafka.clients.consumer.ConsumerConfig" level="WARN" />
-  <logger name="org.apache.kafka.clients.admin.AdminClientConfig" level="WARN" />
 
   <root level="INFO">
     <appender-ref ref="Console" />

@@ -60,15 +60,17 @@ class Settings:
 
     @property
     def API_SERVER_SECURE(self):
-        return bool(os.getenv("API_SERVER_SECURE", False))
+        # NB: parse the string properly — bool(os.getenv("X", False)) is True for ANY non-empty
+        # string (even "False"), which silently forces TLS against a plaintext endpoint.
+        return str(os.getenv("API_SERVER_SECURE", "false")).strip().lower() in ("1", "true", "yes", "on")
 
     @property
     def VERIFY_SSL(self):
-        return bool(os.getenv("VERIFY_SSL", True))
+        return str(os.getenv("VERIFY_SSL", "true")).strip().lower() in ("1", "true", "yes", "on")
 
     @property
     def MONITOR_STATUS(self):
-        return bool(os.getenv("MONITOR_STATUS", False))
+        return str(os.getenv("MONITOR_STATUS", "false")).strip().lower() in ("1", "true", "yes", "on")
 
     # ------------------------------------------------------------
     # File Service Connection Settings

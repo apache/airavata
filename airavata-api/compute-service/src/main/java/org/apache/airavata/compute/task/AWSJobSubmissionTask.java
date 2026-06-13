@@ -33,12 +33,12 @@ import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.status.proto.JobState;
 import org.apache.airavata.model.status.proto.JobStatus;
 import org.apache.airavata.model.status.proto.ProcessState;
+import org.apache.airavata.task.DbTaskResult;
 import org.apache.airavata.task.TaskContext;
 import org.apache.airavata.task.TaskDef;
 import org.apache.airavata.task.TaskHelper;
 import org.apache.airavata.util.AiravataUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.airavata.task.DbTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -77,7 +77,7 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                         instanceId,
                         sshCredentialToken,
                         getProcessId());
-                onFail(
+                return onFail(
                         "Could not find instanceId: " + instanceId + "or sshCredentialToken: " + sshCredentialToken
                                 + "in the AWS process context: " + getProcessId(),
                         true);
@@ -94,7 +94,6 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
             JobManagerConfiguration jobManagerConfig =
                     JobFactory.getJobManagerConfiguration(getTaskContext().getResourceJobManager());
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
-            addMonitoringCommands(mapData);
             String scriptContent = mapData.loadFromFile(jobManagerConfig.getJobDescriptionTemplateName());
             LOGGER.info("Generated job submission script for AWS:\n{}", scriptContent);
 
@@ -246,6 +245,9 @@ public class AWSJobSubmissionTask extends JobSubmissionTask {
                             "No instance found with ID during verification: " + instanceId + " for the process: "
                                     + getProcessId(),
                             true);
+                    // Abort the wait: falling through would index into the empty reservations list.
+                    throw new Exception("No instance found with ID during verification: " + instanceId
+                            + " for the process: " + getProcessId());
                 }
 
                 Instance instance = response.reservations().get(0).instances().get(0);

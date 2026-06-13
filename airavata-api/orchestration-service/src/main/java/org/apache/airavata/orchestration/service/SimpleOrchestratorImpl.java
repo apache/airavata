@@ -80,6 +80,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
     }
 
     public boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException {
+        if (jobSubmitter == null) {
+            throw new OrchestratorException("launch is not supported on the DB-transactional path");
+        }
         try {
             return jobSubmitter.submit(processModel.getExperimentId(), processModel.getProcessId(), tokenId);
         } catch (Exception e) {
@@ -225,6 +228,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
 
     public void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException {
         logger.info("Terminating experiment " + experiment.getExperimentId());
+        if (jobSubmitter == null) {
+            throw new OrchestratorException("cancellation is not supported on the DB-transactional path");
+        }
         RegistryHandler registryServiceClient = getRegistryHandler();
 
         try {
@@ -646,7 +652,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
         }
     }
 
-    private List<String> createAndSaveSubmissionTasks(RegistryHandler registryClient, ProcessModel processModel, int wallTime)
+    private List<String> createAndSaveSubmissionTasks(
+            RegistryHandler registryClient, ProcessModel processModel, int wallTime)
             throws Exception, OrchestratorException {
 
         // Transport is always SSH; monitoring is derived from the provisioning type.
@@ -811,7 +818,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator {
                 } else {
                     // archive
                     submodelBuilder.setType(DataStageType.ARCHIVE_OUTPUT);
-                    source = new URI(SFTP_SCHEME, loginUserName, computeResource.getHostName(), -1, workingDir, null, null);
+                    source = new URI(
+                            SFTP_SCHEME, loginUserName, computeResource.getHostName(), -1, workingDir, null, null);
                 }
 
             } catch (URISyntaxException e) {
