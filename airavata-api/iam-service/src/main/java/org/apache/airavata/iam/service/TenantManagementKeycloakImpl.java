@@ -131,15 +131,15 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     public static RealmRepresentation createDefaultRoles(RealmRepresentation realmDetails) {
         List<RoleRepresentation> defaultRoles = new ArrayList<RoleRepresentation>();
         RoleRepresentation adminRole = new RoleRepresentation();
-        adminRole.setName("admin");
+        adminRole.setName("admin-rw");
         adminRole.setDescription("Admin role for PGA users");
         defaultRoles.add(adminRole);
         RoleRepresentation adminReadOnlyRole = new RoleRepresentation();
-        adminReadOnlyRole.setName("admin-read-only");
+        adminReadOnlyRole.setName("admin-ro");
         adminReadOnlyRole.setDescription("Read only role for PGA Admin users");
         defaultRoles.add(adminReadOnlyRole);
         RoleRepresentation gatewayUserRole = new RoleRepresentation();
-        gatewayUserRole.setName("gateway-user");
+        gatewayUserRole.setName("user");
         gatewayUserRole.setDescription("default role for PGA users");
         defaultRoles.add(gatewayUserRole);
         RoleRepresentation pendingUserRole = new RoleRepresentation();
@@ -183,9 +183,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                         .users()
                         .get(retrieveCreatedUserList.get(0).getId());
 
-                // Add user to the "admin" role
+                // Add user to the "admin-rw" role
                 RoleResource adminRoleResource =
-                        client.realm(gatewayDetails.getGatewayId()).roles().get("admin");
+                        client.realm(gatewayDetails.getGatewayId()).roles().get("admin-rw");
                 retrievedUser.roles().realmLevel().add(Arrays.asList(adminRoleResource.toRepresentation()));
 
                 CredentialRepresentation credential = new CredentialRepresentation();
