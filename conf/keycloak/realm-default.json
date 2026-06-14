@@ -65,7 +65,8 @@
         "composites": {
           "realm": [
             "offline_access",
-            "uma_authorization"
+            "uma_authorization",
+            "user"
           ],
           "client": {
             "account": [
@@ -89,7 +90,7 @@
       },
       {
         "id": "61fafc5e-96fc-4644-98a9-94f9baf654e6",
-        "name": "admin",
+        "name": "admin-rw",
         "description": "",
         "composite": false,
         "clientRole": false,
@@ -98,7 +99,7 @@
       },
       {
         "id": "1f03206b-d918-491b-a33f-ee96147b310d",
-        "name": "admin-read-only",
+        "name": "admin-ro",
         "description": "",
         "composite": false,
         "clientRole": false,
@@ -125,7 +126,7 @@
       },
       {
         "id": "a2acdfe6-eb2a-4104-bb6a-be961e380d97",
-        "name": "gateway-user",
+        "name": "user",
         "description": "",
         "composite": false,
         "clientRole": false,
@@ -591,7 +592,8 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-10000000"
+        "default-roles-10000000",
+        "admin-rw"
       ],
       "notBefore": 0,
       "groups": []
