@@ -60,10 +60,7 @@ public class HttpAuthDecorator implements DecoratingHttpServiceFunction {
             }
         }
 
-        AuthzToken authzToken = AuthzToken.newBuilder()
-                .setAccessToken(accessToken)
-                .putAllClaimsMap(claimsMap)
-                .build();
+        AuthzToken authzToken = AuthTokenExtractor.buildAuthzToken(accessToken, claimsMap);
         UserContext.setAuthzToken(authzToken);
 
         try {

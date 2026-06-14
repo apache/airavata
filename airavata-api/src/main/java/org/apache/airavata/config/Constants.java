@@ -46,6 +46,12 @@ public final class Constants {
     public static final String USER_NAME = "userName";
     public static final String GATEWAY_ID = "gatewayID";
     public static final String EMAIL = "email";
+    // Server-derived (from the verified access token), CSV-encoded; never client-asserted.
+    public static final String REALM_ROLES = "realmRoles";
+
+    // Keycloak realm roles that map to the coarse gateway-admin capabilities.
+    public static final String ROLE_GATEWAY_ADMIN = "admin-rw";
+    public static final String ROLE_READ_ONLY_ADMIN = "admin-ro";
 
     public static final String ENABLE_STREAMING_TRANSFER = "enable.streaming.transfer";
 }

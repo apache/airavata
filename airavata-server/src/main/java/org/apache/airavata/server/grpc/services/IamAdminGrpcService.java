@@ -32,6 +32,7 @@ import org.apache.airavata.iam.service.TenantManagementKeycloakImpl;
 import org.apache.airavata.model.credential.store.proto.PasswordCredential;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.apache.airavata.model.workspace.proto.Gateway;
+import org.apache.airavata.util.AdminAccess;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -146,6 +147,7 @@ public class IamAdminGrpcService extends IamAdminServiceGrpc.IamAdminServiceImpl
     public void getUsers(GetIamUsersRequest request, StreamObserver<GetIamUsersResponse> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
+            AdminAccess.requireAdminOrReadOnly(ctx);
             List<UserProfile> users = tenantManager.getUsers(
                     ctx.getAccessToken(),
                     ctx.getGatewayId(),

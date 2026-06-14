@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.airavata.config.Constants;
 import org.apache.airavata.model.security.proto.AuthzToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +60,13 @@ public final class AuthTokenExtractor {
         return new HashMap<>();
     }
 
-    /** Builds an AuthzToken from the access token and (possibly augmented) claims map. */
+    /**
+     * Builds an AuthzToken from the access token and (possibly augmented) claims map. The caller's realm roles
+     * are derived from the verified access token (not the client-asserted {@code x-claims}) and written into the
+     * claims map under {@link Constants#REALM_ROLES} as a CSV, overwriting any client-supplied value.
+     */
     public static AuthzToken buildAuthzToken(String accessToken, Map<String, String> claimsMap) {
+        claimsMap.put(Constants.REALM_ROLES, String.join(",", JwtVerifier.verifyAndExtractRoles(accessToken)));
         return AuthzToken.newBuilder()
                 .setAccessToken(accessToken)
                 .putAllClaimsMap(claimsMap)

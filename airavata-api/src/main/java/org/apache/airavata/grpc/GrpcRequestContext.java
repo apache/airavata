@@ -38,6 +38,7 @@ public final class GrpcRequestContext {
             throw new IllegalStateException("No AuthzToken found in UserContext");
         }
         Map<String, String> claims = token.getClaimsMapMap();
-        return new RequestContext(UserContext.userId(), UserContext.gatewayId(), token.getAccessToken(), claims);
+        return new RequestContext(
+                UserContext.userId(), UserContext.gatewayId(), token.getAccessToken(), claims, UserContext.roles());
     }
 }

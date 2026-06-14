@@ -83,13 +83,13 @@ class ExperimentServiceTest {
                 .thenReturn(true);
 
         experimentService = new ExperimentService(
-                experimentRegistry,
-                appCatalogRegistry,
-                projectRegistry,
-                sharingHandler,
-                java.util.Optional.empty());
+                experimentRegistry, appCatalogRegistry, projectRegistry, sharingHandler, java.util.Optional.empty());
         ctx = new RequestContext(
-                "testUser", "testGateway", "token123", Map.of("userName", "testUser", "gatewayId", "testGateway"));
+                "testUser",
+                "testGateway",
+                "token123",
+                Map.of("userName", "testUser", "gatewayId", "testGateway"),
+                java.util.List.of("admin-rw"));
     }
 
     @Test

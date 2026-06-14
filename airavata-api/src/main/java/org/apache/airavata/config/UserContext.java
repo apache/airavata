@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.config;
 
+import java.util.List;
 import java.util.Map;
 import org.apache.airavata.model.security.proto.AuthzToken;
 import org.apache.airavata.model.user.proto.UserProfile;
@@ -58,6 +59,15 @@ public class UserContext {
         if (token == null) return null;
         Map<String, String> claims = token.getClaimsMapMap();
         return claims != null ? claims.get(Constants.GATEWAY_ID) : null;
+    }
+
+    /** Realm roles derived from the verified access token (CSV in the claims map); empty if none/unverified. */
+    public static List<String> roles() {
+        var token = authzToken();
+        if (token == null) return List.of();
+        String csv = token.getClaimsMapMap().get(Constants.REALM_ROLES);
+        if (csv == null || csv.isBlank()) return List.of();
+        return List.of(csv.split(","));
     }
 
     public static boolean isAuthenticated() {
