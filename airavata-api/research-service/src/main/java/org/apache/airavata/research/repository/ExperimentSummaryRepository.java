@@ -487,13 +487,13 @@ public class ExperimentSummaryRepository
             }
         }
 
-        if (userName != null) {
+        if (userName != null && !userName.isEmpty()) {
             logger.debug("Filter Experiments by UserName");
             queryParameters.put(DBConstants.Experiment.USER_NAME, userName);
             query += "ES.userName = :" + DBConstants.Experiment.USER_NAME + " AND ";
         }
 
-        if (applicationName != null) {
+        if (applicationName != null && !applicationName.isEmpty()) {
             logger.debug("Filter Experiments by ApplicationName");
             queryParameters.put(DBConstants.Experiment.EXECUTION_ID, applicationName);
             query += "ES.executionId = :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
@@ -509,7 +509,7 @@ public class ExperimentSummaryRepository
             }
         }
 
-        if (resourceHostName != null) {
+        if (resourceHostName != null && !resourceHostName.isEmpty()) {
             logger.debug("Filter Experiments by ResourceHostName");
             queryParameters.put(DBConstants.Experiment.RESOURCE_HOST_ID, resourceHostName);
             query += "ES.resourceHostId = :" + DBConstants.Experiment.RESOURCE_HOST_ID + " ";
