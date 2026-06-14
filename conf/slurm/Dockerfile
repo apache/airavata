@@ -53,10 +53,13 @@ COPY slurm.conf       /etc/slurm/slurm.conf
 COPY cgroup.conf      /etc/slurm/cgroup.conf
 COPY slurmdbd.conf    /etc/slurm/slurmdbd.conf
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+# Echo application wrapper (sleep <duration> then echo <message>) — the Echo deployment's
+# EXECUTABLE_PATH in conf/db/seed.sql. Baked into the image so it's on every compute node.
+COPY echo_sleep       /usr/local/bin/echo_sleep
 
 # slurmdbd refuses to start unless slurmdbd.conf is 0600 and owned by SlurmUser.
 RUN chown slurm:slurm /etc/slurm/slurmdbd.conf && chmod 0600 /etc/slurm/slurmdbd.conf && \
-    chmod 0755 /usr/local/bin/docker-entrypoint.sh
+    chmod 0755 /usr/local/bin/docker-entrypoint.sh /usr/local/bin/echo_sleep
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["slurmctld"]
