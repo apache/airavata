@@ -55,6 +55,7 @@ import org.apache.airavata.model.workspace.proto.Project;
 import org.apache.airavata.sharing.registry.models.proto.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.proto.SearchCondition;
 import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
+import org.apache.airavata.util.AdminAccess;
 import org.apache.airavata.util.SharingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +193,7 @@ public class ExperimentService {
     }
 
     public ExperimentModel getExperimentByAdmin(RequestContext ctx, String experimentId) throws ServiceException {
+        AdminAccess.requireAdminOrReadOnly(ctx);
         try {
             ExperimentModel experiment = experimentRegistry.getExperiment(experimentId);
             if (ctx.getGatewayId().equals(experiment.getGatewayId())) {
@@ -406,6 +408,7 @@ public class ExperimentService {
             int limit,
             int offset)
             throws ServiceException {
+        AdminAccess.requireAdminOrReadOnly(ctx);
         try {
             return experimentRegistry.getExperimentStatistics(
                     gatewayId, fromTime, toTime, userName, applicationName, resourceHostName, null, limit, offset);
