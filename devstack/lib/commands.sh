@@ -39,5 +39,12 @@ devstack_down() {  # stop the shared ingress + the VM (GLOBAL — affects all pr
 devstack_reset() {  # GLOBAL destructive — wipes ALL projects' state
   echo "WARNING: deletes the shared VM and ALL projects' data on it."
   read -r -p "type the profile name to confirm: " c
-  [ "$c" = "$DEVSTACK_PROFILE" ] && colima delete -p "$DEVSTACK_PROFILE" -f || echo "aborted"
+  if [ "$c" != "$DEVSTACK_PROFILE" ]; then echo "aborted"; return; fi
+  colima delete -p "$DEVSTACK_PROFILE" -f
+  # colima/Lima keeps a persistent data disk under _lima/_disks/<instance> (bind-mounted
+  # to /var/lib/docker) that SURVIVES `colima delete`, so images, volumes and
+  # `restart: unless-stopped` containers resurrect on the next VM start. Remove it so
+  # reset is a true from-scratch wipe.
+  local inst="colima-$DEVSTACK_PROFILE"; [ "$DEVSTACK_PROFILE" = default ] && inst="colima"
+  rm -rf "$HOME/.colima/_lima/_disks/$inst"
 }
