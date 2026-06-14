@@ -49,6 +49,11 @@ public class MonitoringTask extends JobSubmissionTask {
 
     private static final long POLL_INTERVAL_MS = 5000;
     private static final long MAX_WAIT_MS = 30 * 60 * 1000; // 30 minutes
+    // A node/boot failure is only treated as terminal once the job has stayed out of the scheduler
+    // for this many consecutive polls: slurm requeues such failures, and the requeued run re-appears
+    // in the queue, so we ride out a short grace window rather than failing the experiment on a
+    // transient infrastructure hiccup.
+    private static final int INFRA_FAIL_GRACE_POLLS = 6; // ~30s at POLL_INTERVAL_MS
 
     // The job's JobPK is (jobId, owningTaskId) where owningTaskId is the JOB_SUBMISSION task that
     // created the job — NOT this monitoring task. addJobStatus() does em.find(JobEntity, JobPK) and
@@ -79,17 +84,42 @@ public class MonitoringTask extends JobSubmissionTask {
 
             long deadline = System.currentTimeMillis() + MAX_WAIT_MS;
             JobState terminal = null;
+            // Consecutive observations of an infra failure (NODE_FAIL/BOOT_FAIL) with the job no longer
+            // in the scheduler. Slurm requeues such jobs, so the requeued run re-appears in the queue
+            // (resetting this) and we keep tracking it; only a sustained absence is treated as failure.
+            int infraFailStreak = 0;
             while (System.currentTimeMillis() < deadline) {
-                JobState state = pollJobState(adaptor, jobId);
-                if (state == JobState.ACTIVE) {
-                    // Job is running on the resource: record the transition once so the Job
-                    // Submission stage advances past QUEUED to ACTIVE while it executes.
-                    if (!activeStatusPersisted) {
-                        persistJobState(jobId, JobState.ACTIVE);
-                        activeStatusPersisted = true;
-                    }
-                } else if (state != null) {
-                    terminal = state;
+                JobLifecycle obs = observeJob(adaptor, jobId);
+                switch (obs) {
+                    case RUNNING:
+                        // Job is running on the resource: record the transition once so the Job
+                        // Submission stage advances past QUEUED to ACTIVE while it executes.
+                        if (!activeStatusPersisted) {
+                            persistJobState(jobId, JobState.ACTIVE);
+                            activeStatusPersisted = true;
+                        }
+                        infraFailStreak = 0;
+                        break;
+                    case IN_QUEUE:
+                        // Pending / requeued / in transition: still within the job's lifecycle.
+                        infraFailStreak = 0;
+                        break;
+                    case COMPLETED:
+                        terminal = JobState.COMPLETE;
+                        break;
+                    case CANCELED:
+                        terminal = JobState.CANCELED;
+                        break;
+                    case FAILED:
+                        terminal = JobState.FAILED;
+                        break;
+                    case INFRA_FAILURE:
+                        if (++infraFailStreak >= INFRA_FAIL_GRACE_POLLS) {
+                            terminal = JobState.FAILED;
+                        }
+                        break;
+                }
+                if (terminal != null) {
                     break;
                 }
                 Thread.sleep(POLL_INTERVAL_MS);
@@ -165,67 +195,87 @@ public class MonitoringTask extends JobSubmissionTask {
      * sacct} (retains completed jobs); if accounting has no record yet, falls back to the scheduler
      * monitor command ({@code squeue}) and treats its disappearance as completion.
      */
-    private JobState pollJobState(AgentAdaptor adaptor, String jobId) {
+    /** Where a job currently sits in its lifecycle, as observed from the scheduler + accounting. */
+    private enum JobLifecycle {
+        RUNNING, // executing on the resource
+        IN_QUEUE, // pending / requeued / in transition — still within the lifecycle
+        COMPLETED, // finished successfully
+        CANCELED, // cancelled
+        FAILED, // genuine terminal failure (FAILED / TIMEOUT / OUT_OF_MEMORY / DEADLINE)
+        INFRA_FAILURE // NODE_FAIL / BOOT_FAIL — slurm requeues these, so not necessarily terminal
+    }
+
+    /**
+     * Observe where the job is in its lifecycle. Prefers the live scheduler view: a job that is still
+     * queued or running — including one slurm has requeued after a node failure — is still in its
+     * lifecycle and must keep being tracked. Only once the job has left the scheduler do we read the
+     * terminal verdict from {@code sacct} (which retains finished jobs), so a transient NODE_FAIL that
+     * slurm requeues no longer aborts the experiment.
+     */
+    private JobLifecycle observeJob(AgentAdaptor adaptor, String jobId) {
+        try {
+            JobStatus live = getJobStatus(adaptor, jobId);
+            if (live != null && live.getJobState() != JobState.JOB_STATE_UNKNOWN) {
+                JobState s = live.getJobState();
+                if (s == JobState.ACTIVE) {
+                    return JobLifecycle.RUNNING;
+                }
+                if (s == JobState.COMPLETE) {
+                    return JobLifecycle.COMPLETED;
+                }
+                if (s == JobState.CANCELED) {
+                    return JobLifecycle.CANCELED;
+                }
+                if (s == JobState.FAILED) {
+                    return JobLifecycle.FAILED;
+                }
+                return JobLifecycle.IN_QUEUE; // SUBMITTED / QUEUED / in transition
+            }
+        } catch (Exception e) {
+            logger.warn("Scheduler queue poll failed for job {}: {}", jobId, e.getMessage());
+        }
+
+        // Job is no longer in the scheduler queue: read the terminal verdict from accounting.
         try {
             // --duplicates returns every accounting record for this id. slurm reuses job ids across
             // controller restarts (e.g. a devstack reset), so an id can carry stale records from prior
             // sessions; take the State of the most-recently-SUBMITTED record (Submit is ISO-8601, so it
             // sorts chronologically) — otherwise an old CANCELLED/COMPLETED record can masquerade as this
-            // job's state while the current job is still PENDING.
+            // job's state.
             CommandOutput out = adaptor.executeCommand("sacct -X -n -P -o State,Submit --duplicates -j " + jobId, null);
             String state = latestStateBySubmit(out.getStdOut());
-            if (state != null && !state.isEmpty()) {
-                // sacct may suffix cancellations as "CANCELLED by <uid>"
-                if (state.startsWith("CANCELLED")) {
-                    return JobState.CANCELED;
-                }
-                switch (state) {
-                    case "COMPLETED":
-                        return JobState.COMPLETE;
-                    case "FAILED":
-                    case "NODE_FAIL":
-                    case "TIMEOUT":
-                    case "OUT_OF_MEMORY":
-                    case "BOOT_FAIL":
-                    case "DEADLINE":
-                        return JobState.FAILED;
-                    case "RUNNING":
-                    case "COMPLETING":
-                        return JobState.ACTIVE; // running on the resource
-                    case "PENDING":
-                    case "REQUEUED":
-                    case "RESIZING":
-                    case "SUSPENDED":
-                    case "CONFIGURING":
-                        return null; // still queued / in transition
-                    default:
-                        logger.debug("Unrecognized sacct state '{}' for job {}; continuing to poll", state, jobId);
-                        return null;
-                }
+            if (state == null || state.isEmpty()) {
+                // Gone from the queue with no accounting record => it left the queue cleanly.
+                logger.info("Job {} no longer visible in scheduler queue; treating as completed", jobId);
+                return JobLifecycle.COMPLETED;
+            }
+            // sacct may suffix cancellations as "CANCELLED by <uid>"
+            if (state.startsWith("CANCELLED")) {
+                return JobLifecycle.CANCELED;
+            }
+            switch (state) {
+                case "COMPLETED":
+                    return JobLifecycle.COMPLETED;
+                case "RUNNING":
+                case "COMPLETING":
+                    return JobLifecycle.RUNNING; // accounting lag behind the scheduler
+                case "PENDING":
+                case "REQUEUED":
+                case "RESIZING":
+                case "SUSPENDED":
+                case "CONFIGURING":
+                    return JobLifecycle.IN_QUEUE;
+                case "NODE_FAIL":
+                case "BOOT_FAIL":
+                    return JobLifecycle.INFRA_FAILURE; // slurm requeues these — not necessarily terminal
+                default:
+                    // FAILED, TIMEOUT, OUT_OF_MEMORY, DEADLINE, or anything else genuinely terminal.
+                    return JobLifecycle.FAILED;
             }
         } catch (Exception e) {
             logger.warn("sacct poll failed for job {}: {}", jobId, e.getMessage());
         }
-
-        // No accounting record: fall back to the scheduler monitor command. If the job is no longer in
-        // the queue, parseJobStatus returns null, which we read as "left the queue" => completed.
-        try {
-            JobStatus status = getJobStatus(adaptor, jobId);
-            if (status == null || status.getJobState() == JobState.JOB_STATE_UNKNOWN) {
-                logger.info("Job {} no longer visible in scheduler queue; treating as completed", jobId);
-                return JobState.COMPLETE;
-            }
-            JobState s = status.getJobState();
-            if (s == JobState.COMPLETE || s == JobState.FAILED || s == JobState.CANCELED) {
-                return s;
-            }
-            if (s == JobState.ACTIVE) {
-                return JobState.ACTIVE;
-            }
-        } catch (Exception e) {
-            logger.warn("Scheduler queue poll failed for job {}: {}", jobId, e.getMessage());
-        }
-        return null;
+        return JobLifecycle.IN_QUEUE; // transient error: keep tracking rather than abort
     }
 
     private void persistJobState(String jobId, JobState state) {

@@ -35,6 +35,31 @@ wait_for_tcp() {
   log "$name is up"
 }
 
+# slurmctld resolves each node's NodeAddr exactly once, when it reads slurm.conf at
+# startup. In this compose stack the controller can come up before the compute
+# containers are DNS-resolvable (or while a prior run's stale container IPs are still
+# cached), so it can latch onto the wrong address for a node and keep it for its whole
+# lifetime. Batch-job launches are then delivered to the wrong slurmd, which rejects
+# them ("Host cX not in hostlist cY"); slurmctld reads that as a node failure and
+# requeues the job until it is held (JobHoldMaxRequeue) — so jobs never actually run.
+# Once the compute nodes are up, a single `scontrol reconfigure` re-resolves every
+# NodeAddr against current DNS and corrects the routing. Runs in the background since
+# slurmctld is exec'd in the foreground.
+reresolve_node_addrs() {
+  # Wait until our own controller is accepting connections.
+  until scontrol ping >/dev/null 2>&1; do sleep 1; done
+  # Wait until every configured compute node resolves in DNS (its container is up).
+  local node
+  for node in $(grep -oE '^NodeName=[^[:space:]]+' /etc/slurm/slurm.conf | sed 's/NodeName=//' | grep -vx 'DEFAULT'); do
+    until getent hosts "$node" >/dev/null 2>&1; do sleep 1; done
+  done
+  # Let DNS settle, then force a fresh resolve of every NodeAddr.
+  sleep 2
+  if scontrol reconfigure >/dev/null 2>&1; then
+    log "re-resolved compute NodeAddrs (scontrol reconfigure) once nodes were up"
+  fi
+}
+
 # --- ssh login/submit node setup -------------------------------------------
 # Configures sshd so the airavata-server can ssh in as `airavata` (using the
 # devstack id_rsa keypair) to run sbatch/squeue/sacct.
@@ -85,6 +110,8 @@ case "$ROLE" in
     sacctmgr -i add user airavata account=airavata >/dev/null 2>&1 || true
     # slurmctld also doubles as the ssh login/submit node (network alias `slurm`).
     setup_sshd
+    # Self-heal the startup NodeAddr-resolution race once the compute nodes are up.
+    reresolve_node_addrs &
     log "starting slurmctld (foreground)"
     exec gosu slurm /usr/sbin/slurmctld -D
     ;;
