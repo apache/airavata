@@ -1,0 +1,12 @@
+#!/bin/sh
+# echo_sleep <duration_seconds> <message...>
+#
+# Echo application wrapper for the dev SLURM cluster: sleeps for <duration_seconds>
+# (so an experiment runs long enough to observe its progress through the pipeline)
+# and then echoes the message to stdout. Wired up as the Echo application's
+# EXECUTABLE_PATH in conf/db/seed.sql, with the duration passed as the first argument
+# (Experiment_Duration input) and the message as the second (Input_to_Echo input).
+duration="$1"
+shift
+sleep "$duration"
+echo "$@"
