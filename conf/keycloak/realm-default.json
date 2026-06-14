@@ -595,6 +595,11 @@
         "default-roles-10000000",
         "admin-rw"
       ],
+      "clientRoles": {
+        "realm-management": [
+          "realm-admin"
+        ]
+      },
       "notBefore": 0,
       "groups": []
     },
