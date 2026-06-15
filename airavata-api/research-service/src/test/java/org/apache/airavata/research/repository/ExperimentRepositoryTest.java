@@ -306,10 +306,11 @@ public class ExperimentRepositoryTest extends TestBase {
     }
 
     /**
-     * Verify that slashes (forward and backward) are replaced with underscores.
+     * The generated experiment id is a short, readable code (independent of the name), and the
+     * experiment name is preserved verbatim (slashes are no longer mangled into the id).
      */
     @Test
-    public void testSlashesInExperimentName() throws RegistryException {
+    public void testGeneratedExperimentIdAndNamePreservation() throws RegistryException {
 
         // Forward slashes
         ExperimentModel experimentModel =
@@ -327,7 +328,10 @@ public class ExperimentRepositoryTest extends TestBase {
                 .build();
 
         String experimentId = experimentRepository.addExperiment(experimentModel);
-        assertTrue(experimentId.startsWith("name_forward-slash__a"));
+        assertTrue(experimentId.startsWith("EXP-"));
+        assertEquals(
+                "name/forward-slash//a",
+                experimentRepository.getExperiment(experimentId).getExperimentName());
 
         // Backward slashes
         experimentModel = ExperimentModel.newBuilder().setProjectId(projectId).build();
@@ -344,6 +348,9 @@ public class ExperimentRepositoryTest extends TestBase {
                 .build();
 
         experimentId = experimentRepository.addExperiment(experimentModel);
-        assertTrue(experimentId.startsWith("name_backward-slash__a"));
+        assertTrue(experimentId.startsWith("EXP-"));
+        assertEquals(
+                "name\\backward-slash\\\\a",
+                experimentRepository.getExperiment(experimentId).getExperimentName());
     }
 }

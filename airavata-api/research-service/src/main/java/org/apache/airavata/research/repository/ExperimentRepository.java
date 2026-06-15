@@ -164,11 +164,15 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
                 .setState(ExperimentState.EXPERIMENT_STATE_CREATED)
                 .setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime())
                 .build();
-        String expName = experimentModel.getExperimentName();
-        // This is to avoid overflow of experiment id size. Total experiment id length is <= 50 + UUID
+        // experiment_id is a short, human-readable, URL-safe code (e.g. EXP-7QK2F9MX). The experiment
+        // name is kept separately in experiment_name. Regenerate on the rare collision since it's the PK.
+        String experimentId;
+        do {
+            experimentId = AiravataUtils.getReadableId("EXP");
+        } while (isExperimentExist(experimentId));
         experimentModel = experimentModel.toBuilder()
                 .addExperimentStatus(experimentStatus)
-                .setExperimentId(AiravataUtils.getId(expName.substring(0, Math.min(expName.length(), 50))))
+                .setExperimentId(experimentId)
                 .build();
 
         return saveExperimentModelData(experimentModel);

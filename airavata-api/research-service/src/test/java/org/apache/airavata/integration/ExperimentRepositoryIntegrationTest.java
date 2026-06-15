@@ -210,20 +210,24 @@ public class ExperimentRepositoryIntegrationTest extends TestBase {
 
     @Test
     @Order(4)
-    @DisplayName("Slashes in experiment name are replaced with underscores in generated id")
-    void slashesInNameAreNormalized() throws Exception {
+    @DisplayName("experiment_id is a short readable code and the experiment name is preserved verbatim")
+    void experimentIdIsShortCodeAndNamePreserved() throws Exception {
         ExperimentModel experiment = buildExperiment("name/forward-slash//a");
         String experimentId = experimentRepository.addExperiment(experiment);
-        assertTrue(
-                experimentId.startsWith("name_forward-slash__a"),
-                "forward slashes should be replaced with underscores");
+        assertTrue(experimentId.startsWith("EXP-"), "experiment id should be a short EXP- code");
+        assertEquals(
+                "name/forward-slash//a",
+                experimentRepository.getExperiment(experimentId).getExperimentName(),
+                "experiment name should be preserved verbatim");
         experimentRepository.removeExperiment(experimentId);
 
         experiment = buildExperiment("name\\backward-slash\\\\a");
         experimentId = experimentRepository.addExperiment(experiment);
-        assertTrue(
-                experimentId.startsWith("name_backward-slash__a"),
-                "backward slashes should be replaced with underscores");
+        assertTrue(experimentId.startsWith("EXP-"), "experiment id should be a short EXP- code");
+        assertEquals(
+                "name\\backward-slash\\\\a",
+                experimentRepository.getExperiment(experimentId).getExperimentName(),
+                "experiment name should be preserved verbatim");
         experimentRepository.removeExperiment(experimentId);
     }
 }
