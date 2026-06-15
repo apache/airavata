@@ -60,7 +60,11 @@ services:
       - --health-enabled=true
       - --metrics-enabled=true
       - --log-level=INFO
-      - --spi-theme-default=airavata
+      # Don't force "airavata" as the global default theme: it only ships a
+      # `login` variant, so making it the default ACCOUNT/admin/email theme makes
+      # Keycloak's account console 500 (NPE: account theme "airavata" not found).
+      # The realm pins `loginTheme: airavata` explicitly, so login branding is
+      # unaffected; account/admin/email use Keycloak's built-in themes.
     networks:
       - airavata-devstack
     healthcheck:
