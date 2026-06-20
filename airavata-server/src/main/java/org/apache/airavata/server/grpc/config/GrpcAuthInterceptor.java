@@ -25,7 +25,6 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
-import java.util.Map;
 import org.apache.airavata.config.UserContext;
 import org.apache.airavata.model.security.proto.AuthzToken;
 import org.slf4j.Logger;
@@ -39,8 +38,6 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
 
     private static final Metadata.Key<String> AUTHORIZATION_KEY =
             Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
-    private static final Metadata.Key<String> X_CLAIMS_KEY =
-            Metadata.Key.of("x-claims", Metadata.ASCII_STRING_MARSHALLER);
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
@@ -52,8 +49,15 @@ public class GrpcAuthInterceptor implements ServerInterceptor {
             return new ServerCall.Listener<>() {};
         }
 
-        Map<String, String> claimsMap = AuthTokenExtractor.parseClaims(headers.get(X_CLAIMS_KEY));
-        AuthzToken authzToken = AuthTokenExtractor.buildAuthzToken(accessToken, claimsMap);
+        AuthzToken authzToken;
+        try {
+            VerifiedToken verified = JwtVerifier.verify(accessToken);
+            authzToken = AuthTokenExtractor.buildAuthzToken(accessToken, verified);
+        } catch (TokenVerificationException e) {
+            log.debug("Rejecting unauthenticated gRPC call: {}", e.getMessage());
+            call.close(Status.UNAUTHENTICATED.withDescription("Invalid access token"), new Metadata());
+            return new ServerCall.Listener<>() {};
+        }
         UserContext.setAuthzToken(authzToken);
 
         ServerCall.Listener<ReqT> delegate = next.startCall(call, headers);
