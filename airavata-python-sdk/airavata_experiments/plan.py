@@ -135,11 +135,9 @@ class Plan(pydantic.BaseModel):
     av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.access_token is not None
-    assert az.claims_map is not None
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + az.access_token,
-        'X-Claims': json.dumps(dict(az.claims_map))
     }
     import requests
     if self.id is None:
@@ -168,11 +166,9 @@ def load(id: str | None) -> Plan:
     av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.access_token is not None
-    assert az.claims_map is not None
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + az.access_token,
-        'X-Claims': json.dumps(dict(az.claims_map))
     }
     import requests
     response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plan/{id}", headers=headers)
@@ -189,11 +185,9 @@ def query() -> list[Plan]:
     av = AiravataOperator(AuthContext.get_access_token())
     az = av.__airavata_token__(av.access_token, av.default_gateway_id())
     assert az.access_token is not None
-    assert az.claims_map is not None
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + az.access_token,
-        'X-Claims': json.dumps(dict(az.claims_map))
     }
     import requests
     response = requests.get(f"{settings.API_SERVER_URL}/api/v1/plan/user", headers=headers)

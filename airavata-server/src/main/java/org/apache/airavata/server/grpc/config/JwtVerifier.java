@@ -45,9 +45,9 @@ import org.slf4j.LoggerFactory;
  * extracts {@code realm_access.roles}. The issuer is taken from the token's own {@code iss} claim, and a JWKS
  * processor is cached per issuer so multi-tenant (multi-realm) tokens are each verified against their own realm.
  *
- * <p>Verification is fail-closed but non-rejecting: a missing, malformed, expired, or unverifiable token simply
- * yields no roles (logged), so the caller resolves to a non-admin. Roles are therefore only ever trusted when
- * they come from a signature-verified token — a forged token cannot assert admin.
+ * <p>Verification is fail-closed: any missing, malformed, expired, or unverifiable token throws
+ * {@link TokenVerificationException}, and the caller rejects the request. Identity (user + gateway) and roles
+ * are taken solely from the verified token; client-asserted headers are never trusted.
  */
 public final class JwtVerifier {
 
@@ -57,29 +57,56 @@ public final class JwtVerifier {
 
     private JwtVerifier() {}
 
-    /** Verifies the token and returns its realm roles, or an empty list if verification fails. */
-    public static List<String> verifyAndExtractRoles(String accessToken) {
+    /**
+     * Verifies the access token (RS256 signature against the realm JWKS, {@code exp}, and issuer) and returns
+     * the caller's identity and roles. Fail-closed: a missing, malformed, expired, or unverifiable token throws
+     * {@link TokenVerificationException}.
+     */
+    public static VerifiedToken verify(String accessToken) {
         if (accessToken == null || accessToken.isBlank()) {
-            return List.of();
+            throw new TokenVerificationException("Missing access token");
+        }
+        String issuer;
+        try {
+            issuer = unverifiedIssuer(accessToken);
+        } catch (Exception e) {
+            throw new TokenVerificationException("Malformed access token", e);
+        }
+        if (issuer == null) {
+            throw new TokenVerificationException("Access token has no issuer claim");
         }
         try {
-            String issuer = unverifiedIssuer(accessToken);
-            if (issuer == null) {
-                log.warn("Access token has no issuer claim; no realm roles extracted");
-                return List.of();
-            }
             JWTClaimsSet claims = processorFor(issuer).process(accessToken, null);
-            Map<String, Object> realmAccess = claims.getJSONObjectClaim("realm_access");
-            if (realmAccess == null || !(realmAccess.get("roles") instanceof List<?> roles)) {
-                return List.of();
-            }
-            List<String> result = roles.stream().map(String::valueOf).collect(Collectors.toList());
-            log.debug("Verified realm roles from {}: {}", issuer, result);
-            return result;
+            return toVerifiedToken(claims);
         } catch (Exception e) {
-            log.warn("JWT verification failed; no realm roles extracted: {}", e.getMessage());
-            return List.of();
+            throw new TokenVerificationException("Access token verification failed: " + e.getMessage(), e);
         }
+    }
+
+    /** Pure mapping of a signature-verified claims set to identity + roles (no signature work). */
+    static VerifiedToken toVerifiedToken(JWTClaimsSet claims) throws Exception {
+        String userName = claims.getStringClaim("preferred_username");
+        String gatewayId = realmFromIssuer(claims.getIssuer());
+        List<String> roles = List.of();
+        Map<String, Object> realmAccess = claims.getJSONObjectClaim("realm_access");
+        if (realmAccess != null && realmAccess.get("roles") instanceof List<?> r) {
+            roles = r.stream().map(String::valueOf).collect(Collectors.toList());
+        }
+        return new VerifiedToken(userName, gatewayId, roles);
+    }
+
+    /** Parses the realm (gateway id) from a Keycloak issuer URL: {@code .../realms/<realm>} -> {@code <realm>}. */
+    static String realmFromIssuer(String issuer) {
+        if (issuer == null) {
+            return null;
+        }
+        int idx = issuer.indexOf("/realms/");
+        if (idx < 0) {
+            return null;
+        }
+        String realm = issuer.substring(idx + "/realms/".length());
+        int slash = realm.indexOf('/');
+        return slash >= 0 ? realm.substring(0, slash) : realm;
     }
 
     /** Reads the {@code iss} claim from the token payload without verifying the signature. */

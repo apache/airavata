@@ -12,7 +12,7 @@ local_resource('devstack-ensure', cmd='./devstack/devstack ensure', labels=['pla
 # (encrypted with the committed keystore). It must NOT be regenerated, or the seed would no
 # longer decrypt to it.
 
-local_resource('build', cmd='mvn install -DskipTests -Dmaven.test.skip=true -T4 -q',
+local_resource('build', cmd='mvn clean install -DskipTests -Dmaven.test.skip=true -T4 -q',
                deps=['airavata-server/pom.xml'], labels=['build'])
 
 docker_build('airavata-server:dev', '.', dockerfile='Dockerfile',

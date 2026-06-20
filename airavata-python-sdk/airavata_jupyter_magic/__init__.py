@@ -430,16 +430,9 @@ def generate_headers(access_token: str, gateway_id: str) -> dict:
     @returns: the headers
 
     """
-    decode = jwt.decode(access_token, options={"verify_signature": False})
-    user_id = decode['preferred_username']
-    claimsMap = {
-        "userName": user_id,
-        "gatewayID": gateway_id
-    }
     return {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token,
-        'X-Claims': json.dumps(claimsMap)
     }
 
 
@@ -682,18 +675,10 @@ def restart_runtime_kernel(access_token: str, rt_name: str, env_name: str, runti
     settings = Settings()
     url = f"{settings.API_SERVER_URL}/api/v1/agent/setup/restart"
 
-    decode = jwt.decode(access_token, options={"verify_signature": False})
-    user_id = decode['preferred_username']
-    claimsMap = {
-        "userName": user_id,
-        "gatewayID": runtime.gateway_id
-    }
-
     # Headers
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token,
-        'X-Claims': json.dumps(claimsMap)
     }
 
     # Send the POST request
@@ -732,18 +717,10 @@ def stop_agent_job(access_token: str, runtime_name: str, runtime: RuntimeInfo):
     settings = Settings()
     url = f"{settings.API_SERVER_URL}/api/v1/exp/terminate/{runtime.experimentId}"
 
-    decode = jwt.decode(access_token, options={"verify_signature": False})
-    user_id = decode['preferred_username']
-    claimsMap = {
-        "userName": user_id,
-        "gatewayID": runtime.gateway_id
-    }
-
     # Headers
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token,
-        'X-Claims': json.dumps(claimsMap)
     }
 
     # Send the POST request

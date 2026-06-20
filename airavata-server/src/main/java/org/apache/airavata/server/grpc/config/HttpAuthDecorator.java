@@ -25,8 +25,6 @@ import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.server.DecoratingHttpServiceFunction;
 import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
-import java.util.Map;
-import org.apache.airavata.config.Constants;
 import org.apache.airavata.config.UserContext;
 import org.apache.airavata.model.security.proto.AuthzToken;
 import org.slf4j.Logger;
@@ -43,24 +41,14 @@ public class HttpAuthDecorator implements DecoratingHttpServiceFunction {
             return HttpResponse.of(HttpStatus.UNAUTHORIZED);
         }
 
-        Map<String, String> claimsMap =
-                AuthTokenExtractor.parseClaims(req.headers().get("x-claims"));
-
-        // Fall back to individual headers
-        if (!claimsMap.containsKey(Constants.USER_NAME)) {
-            String userName = req.headers().get("x-user-name");
-            if (userName != null) {
-                claimsMap.put(Constants.USER_NAME, userName);
-            }
+        AuthzToken authzToken;
+        try {
+            VerifiedToken verified = JwtVerifier.verify(accessToken);
+            authzToken = AuthTokenExtractor.buildAuthzToken(accessToken, verified);
+        } catch (TokenVerificationException e) {
+            log.debug("Rejecting unauthenticated HTTP request: {}", e.getMessage());
+            return HttpResponse.of(HttpStatus.UNAUTHORIZED);
         }
-        if (!claimsMap.containsKey(Constants.GATEWAY_ID)) {
-            String gatewayId = req.headers().get("x-gateway-id");
-            if (gatewayId != null) {
-                claimsMap.put(Constants.GATEWAY_ID, gatewayId);
-            }
-        }
-
-        AuthzToken authzToken = AuthTokenExtractor.buildAuthzToken(accessToken, claimsMap);
         UserContext.setAuthzToken(authzToken);
 
         try {
