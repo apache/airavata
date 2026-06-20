@@ -51,8 +51,6 @@ class AuthMetadataPlugin(grpc.AuthMetadataPlugin):
 
     def __call__(self, context, callback):
         metadata = [("authorization", f"Bearer {self.access_token}")]
-        if self.claims:
-            metadata.append(("x-claims", json.dumps(self.claims)))
         callback(metadata, None)
 
 
@@ -61,8 +59,6 @@ def build_metadata(access_token: Optional[str] = None, claims: Optional[dict] = 
     metadata = []
     if access_token:
         metadata.append(("authorization", f"Bearer {access_token}"))
-    if claims:
-        metadata.append(("x-claims", json.dumps(claims)))
     return metadata
 
 

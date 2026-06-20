@@ -65,8 +65,6 @@ class APIServerClient:
         self._metadata: list[tuple[str, str]] = []
         if access_token:
             self._metadata.append(("authorization", f"Bearer {access_token}"))
-        if claims:
-            self._metadata.append(("x-claims", json.dumps(claims)))
 
         # Create all service stubs
         self._experiment = create_experiment_service_stub(self.channel)
