@@ -1,10 +1,24 @@
+import base64
 import json
 import logging
-from typing import Optional
 
 import grpc
 
 log = logging.getLogger(__name__)
+
+
+def _decode_jwt_claims(token):
+    """Decode a JWT payload (no signature verification) to read identity claims for convenience.
+
+    Used only to expose ``username``/``gateway_id`` locally; authorization is the token itself,
+    which the server verifies and from which it derives identity.
+    """
+    try:
+        payload = token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        return json.loads(base64.urlsafe_b64decode(payload))
+    except Exception:
+        return {}
 
 
 class AiravataClient:
@@ -24,13 +38,15 @@ class AiravataClient:
         else:
             self._channel = grpc.insecure_channel(target, options=options)
 
-        self.claims = claims or {}
+        # Auth is the Keycloak access token and nothing else: it is sent as a Bearer
+        # credential and the server derives identity (user + gateway) from the verified
+        # token. Client-asserted identity (x-claims) is no longer sent.
+        self._token_claims = _decode_jwt_claims(token) if token else {}
+        self.claims = self._token_claims
 
         self._metadata = []
         if token:
             self._metadata.append(("authorization", f"Bearer {token}"))
-        if claims:
-            self._metadata.append(("x-claims", json.dumps(claims)))
 
         self._gateway_id = gateway_id
 
@@ -49,8 +65,8 @@ class AiravataClient:
 
     @property
     def username(self):
-        """Return the caller's username from JWT claims, or None if unavailable."""
-        return (self.claims or {}).get("userName")
+        """Return the caller's username decoded from the access token, or None."""
+        return self._token_claims.get("preferred_username")
 
     @property
     def gateway_id(self):
