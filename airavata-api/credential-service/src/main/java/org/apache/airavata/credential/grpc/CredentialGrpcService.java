@@ -86,6 +86,20 @@ public class CredentialGrpcService extends CredentialServiceGrpc.CredentialServi
     }
 
     @Override
+    public void getCredentialSummaryWithAccess(
+            GetCredentialSummaryRequest request, StreamObserver<CredentialSummaryWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            CredentialSummaryWithAccess result =
+                    credentialService.getCredentialSummaryWithAccess(ctx, request.getTokenId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void getAllCredentialSummaries(
             GetAllCredentialSummariesRequest request, StreamObserver<GetAllCredentialSummariesResponse> observer) {
         try {

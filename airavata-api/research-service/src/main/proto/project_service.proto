@@ -25,6 +25,7 @@ option java_multiple_files = true;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "org/apache/airavata/model/workspace/workspace.proto";
+import "org/apache/airavata/model/commons/commons.proto";
 
 // ProjectService provides RPCs for managing projects.
 service ProjectService {
@@ -66,6 +67,49 @@ service ProjectService {
       get: "/api/v1/projects"
     };
   }
+
+  // Additive: GetProject plus the caller's server-computed access flags, so a
+  // client does not recompute access from a separate sharing round-trip.
+  rpc GetProjectWithAccess(GetProjectRequest) returns (ProjectWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/projects/{project_id}:withAccess"
+    };
+  }
+
+  // Additive: GetUserProjects plus each project's caller-scoped access flags, so
+  // a client does not recompute access per project from separate sharing round-trips.
+  rpc GetUserProjectsWithAccess(GetUserProjectsRequest) returns (GetUserProjectsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/users/{user_name}/projects:withAccess"
+    };
+  }
+
+  // Additive: the caller's most-recently-created WRITE-accessible project, returned
+  // as a ProjectWithAccess. Lets a client resolve a sensible default target project
+  // without listing all projects and recomputing access client-side.
+  rpc GetMostRecentWritableProject(GetUserProjectsRequest) returns (ProjectWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/projects:mostRecentWritable"
+    };
+  }
+
+  // Additive: CreateProject that returns the new project's caller-scoped access flags
+  // (a ProjectWithAccess), so a client does not chain create -> get -> sharing.
+  rpc CreateProjectWithAccess(CreateProjectRequest) returns (ProjectWithAccess) {
+    option (google.api.http) = {
+      post: "/api/v1/projects:withAccess"
+      body: "project"
+    };
+  }
+
+  // Additive: UpdateProject that returns the project's caller-scoped access flags
+  // (a ProjectWithAccess), so a client does not chain update -> get -> sharing.
+  rpc UpdateProjectWithAccess(UpdateProjectRequest) returns (ProjectWithAccess) {
+    option (google.api.http) = {
+      put: "/api/v1/projects/{project_id}:withAccess"
+      body: "project"
+    };
+  }
 }
 
 // Request/Response messages
@@ -77,6 +121,12 @@ message CreateProjectRequest {
 
 message CreateProjectResponse {
   string project_id = 1;
+}
+
+// A Project unioned with the caller's access flags (see commons.AccessFlags).
+message ProjectWithAccess {
+  org.apache.airavata.model.workspace.Project project = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
 }
 
 message GetProjectRequest {
@@ -101,6 +151,10 @@ message GetUserProjectsRequest {
 
 message GetUserProjectsResponse {
   repeated org.apache.airavata.model.workspace.Project projects = 1;
+}
+
+message GetUserProjectsWithAccessResponse {
+  repeated ProjectWithAccess projects = 1;
 }
 
 message SearchProjectsRequest {

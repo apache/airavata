@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.api.groupprofile.GroupResourceProfileWithAccess;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.iam.service.GatewayGroupsInitializer;
 import org.apache.airavata.interfaces.RegistryHandler;
@@ -178,6 +179,103 @@ class GroupResourceProfileServiceTest {
     }
 
     @Test
+    void getGroupResourceProfileWithAccess_writeAndAllTokenReadsPass_writeTrue() throws Exception {
+        GroupComputeResourcePreference pref = GroupComputeResourcePreference.newBuilder()
+                .setResourceSpecificCredentialStoreToken("resource-token")
+                .build();
+        GroupResourceProfile profile = GroupResourceProfile.newBuilder()
+                .setGroupResourceProfileId("grp-profile-1")
+                .setGatewayId("testGateway")
+                .setDefaultCredentialStoreToken("default-token")
+                .addComputePreferences(pref)
+                .build();
+        when(registryHandler.getGroupResourceProfile("grp-profile-1")).thenReturn(profile);
+        // Caller is not OWNER of the profile or any token (so each token READ check is actually
+        // consulted), holds WRITE on the profile, and READ on every token (lenient default).
+        when(sharingHandler.userHasAccess(anyString(), anyString(), anyString(), endsWith(":OWNER")))
+                .thenReturn(false);
+        when(sharingHandler.userHasAccess(
+                        "testGateway", "testUser@testGateway", "grp-profile-1", "testGateway:WRITE"))
+                .thenReturn(true);
+
+        GroupResourceProfileWithAccess result = service.getGroupResourceProfileWithAccess(ctx, "grp-profile-1");
+
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+        verify(sharingHandler)
+                .userHasAccess("testGateway", "testUser@testGateway", "default-token", "testGateway:READ");
+        verify(sharingHandler)
+                .userHasAccess("testGateway", "testUser@testGateway", "resource-token", "testGateway:READ");
+    }
+
+    @Test
+    void getGroupResourceProfileWithAccess_tokenReadDenied_writeFalse() throws Exception {
+        GroupComputeResourcePreference pref = GroupComputeResourcePreference.newBuilder()
+                .setResourceSpecificCredentialStoreToken("resource-token")
+                .build();
+        GroupResourceProfile profile = GroupResourceProfile.newBuilder()
+                .setGroupResourceProfileId("grp-profile-1")
+                .setGatewayId("testGateway")
+                .setDefaultCredentialStoreToken("default-token")
+                .addComputePreferences(pref)
+                .build();
+        when(registryHandler.getGroupResourceProfile("grp-profile-1")).thenReturn(profile);
+        // Caller has WRITE on the profile but no access (neither OWNER nor READ) to the
+        // resource-specific token, so the composite write flag must be false.
+        when(sharingHandler.userHasAccess(
+                        "testGateway", "testUser@testGateway", "grp-profile-1", "testGateway:WRITE"))
+                .thenReturn(true);
+        when(sharingHandler.userHasAccess(
+                        eq("testGateway"), eq("testUser@testGateway"), eq("resource-token"), anyString()))
+                .thenReturn(false);
+
+        GroupResourceProfileWithAccess result = service.getGroupResourceProfileWithAccess(ctx, "grp-profile-1");
+
+        assertFalse(result.getAccess().getUserHasWriteAccess());
+    }
+
+    @Test
+    void getGroupResourceListWithAccess_perRowFlags_writableAndTokenDenied() throws Exception {
+        // Profile 1: WRITE on the profile + READ on its single token -> writable.
+        GroupResourceProfile p1 = GroupResourceProfile.newBuilder()
+                .setGroupResourceProfileId("grp-profile-1")
+                .setGatewayId("testGateway")
+                .setDefaultCredentialStoreToken("token-1")
+                .build();
+        // Profile 2: WRITE on the profile but READ denied on its token -> not writable.
+        GroupResourceProfile p2 = GroupResourceProfile.newBuilder()
+                .setGroupResourceProfileId("grp-profile-2")
+                .setGatewayId("testGateway")
+                .setDefaultCredentialStoreToken("token-2")
+                .build();
+        when(registryHandler.getGroupResourceList(eq("testGateway"), anyList())).thenReturn(List.of(p1, p2));
+
+        // Caller is OWNER of nothing (SharingHelper.userHasAccess is OWNER-inclusive, so denying
+        // OWNER lets the explicit WRITE/READ stubs decide each row).
+        when(sharingHandler.userHasAccess(anyString(), anyString(), anyString(), endsWith(":OWNER")))
+                .thenReturn(false);
+        // WRITE on both profiles.
+        when(sharingHandler.userHasAccess(
+                        "testGateway", "testUser@testGateway", "grp-profile-1", "testGateway:WRITE"))
+                .thenReturn(true);
+        when(sharingHandler.userHasAccess(
+                        "testGateway", "testUser@testGateway", "grp-profile-2", "testGateway:WRITE"))
+                .thenReturn(true);
+        // READ allowed on profile 1's token, denied on profile 2's token.
+        when(sharingHandler.userHasAccess(eq("testGateway"), eq("testUser@testGateway"), eq("token-1"), anyString()))
+                .thenReturn(true);
+        when(sharingHandler.userHasAccess(eq("testGateway"), eq("testUser@testGateway"), eq("token-2"), anyString()))
+                .thenReturn(false);
+
+        List<GroupResourceProfileWithAccess> result = service.getGroupResourceListWithAccess(ctx, "testGateway");
+
+        assertEquals(2, result.size());
+        assertEquals("grp-profile-1", result.get(0).getGroupResourceProfile().getGroupResourceProfileId());
+        assertTrue(result.get(0).getAccess().getUserHasWriteAccess());
+        assertEquals("grp-profile-2", result.get(1).getGroupResourceProfile().getGroupResourceProfileId());
+        assertFalse(result.get(1).getAccess().getUserHasWriteAccess());
+    }
+
+    @Test
     void getGroupComputeResourcePolicy_sharingDisabled_returnsPolicy() throws Exception {
         ComputeResourcePolicy policy = ComputeResourcePolicy.newBuilder()
                 .setResourcePolicyId("policy-1")
@@ -188,5 +286,46 @@ class GroupResourceProfileServiceTest {
 
         assertNotNull(result);
         assertEquals("policy-1", result.getResourcePolicyId());
+    }
+
+    @Test
+    void updateGroupResourceProfileReconciled_removesOrphansThenUpdatesAndRefetches() throws Exception {
+        GroupResourceProfile original = GroupResourceProfile.newBuilder()
+                .setGroupResourceProfileId("grp-1")
+                .addComputePreferences(GroupComputeResourcePreference.newBuilder()
+                        .setComputeResourceId("c-keep")
+                        .setGroupResourceProfileId("grp-1"))
+                .addComputePreferences(GroupComputeResourcePreference.newBuilder()
+                        .setComputeResourceId("c-drop")
+                        .setGroupResourceProfileId("grp-1"))
+                .addComputeResourcePolicies(
+                        ComputeResourcePolicy.newBuilder().setResourcePolicyId("pol-drop"))
+                .build();
+        GroupResourceProfile incoming = GroupResourceProfile.newBuilder()
+                .setGroupResourceProfileId("grp-1")
+                .addComputePreferences(
+                        GroupComputeResourcePreference.newBuilder().setComputeResourceId("c-keep"))
+                .build();
+        GroupResourceProfileWithAccess refreshed = GroupResourceProfileWithAccess.newBuilder()
+                .setGroupResourceProfile(incoming)
+                .build();
+
+        GroupResourceProfileService spy = spy(service);
+        doReturn(original).when(spy).getGroupResourceProfile(ctx, "grp-1");
+        doReturn(true).when(spy).removeGroupComputePrefs(eq(ctx), anyString(), anyString());
+        doReturn(true).when(spy).removeGroupComputeResourcePolicy(eq(ctx), anyString());
+        doNothing().when(spy).updateGroupResourceProfile(ctx, incoming);
+        doReturn(refreshed).when(spy).getGroupResourceProfileWithAccess(ctx, "grp-1");
+
+        GroupResourceProfileWithAccess result = spy.updateGroupResourceProfileReconciled(ctx, incoming);
+
+        // Orphaned child pref removed; retained one untouched.
+        verify(spy).removeGroupComputePrefs(ctx, "c-drop", "grp-1");
+        verify(spy, never()).removeGroupComputePrefs(ctx, "c-keep", "grp-1");
+        // Orphaned compute resource policy removed.
+        verify(spy).removeGroupComputeResourcePolicy(ctx, "pol-drop");
+        // Update applied + refreshed profile returned.
+        verify(spy).updateGroupResourceProfile(ctx, incoming);
+        assertSame(refreshed, result);
     }
 }

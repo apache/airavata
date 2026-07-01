@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.airavata.api.groupprofile.GroupResourceProfileWithAccess;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.exception.ServiceAuthorizationException;
 import org.apache.airavata.exception.ServiceException;
@@ -35,6 +36,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.BatchQueu
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupResourceProfile;
+import org.apache.airavata.model.commons.proto.AccessFlags;
 import org.apache.airavata.model.group.proto.ResourcePermissionType;
 import org.apache.airavata.model.group.proto.ResourceType;
 import org.apache.airavata.sharing.registry.models.proto.EntitySearchField;
@@ -124,6 +126,58 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
         }
     }
 
+    /**
+     * Reconcile-then-update: removes the child compute preferences / resource policies / batch-queue
+     * policies that are no longer present in the incoming profile, applies the update, and returns the
+     * refreshed profile with the caller's access flags. Composes the existing single-purpose service
+     * methods — the reconcile orchestration the SDK helper did client-side now lives server-side.
+     */
+    public GroupResourceProfileWithAccess updateGroupResourceProfileReconciled(
+            RequestContext ctx, GroupResourceProfile groupResourceProfile) throws ServiceException {
+        String profileId = groupResourceProfile.getGroupResourceProfileId();
+        try {
+            GroupResourceProfile original = getGroupResourceProfile(ctx, profileId);
+
+            Set<String> newPrefIds = new HashSet<>();
+            for (GroupComputeResourcePreference cp : groupResourceProfile.getComputePreferencesList()) {
+                newPrefIds.add(cp.getComputeResourceId());
+            }
+            for (GroupComputeResourcePreference cp : original.getComputePreferencesList()) {
+                if (!newPrefIds.contains(cp.getComputeResourceId())) {
+                    removeGroupComputePrefs(ctx, cp.getComputeResourceId(), cp.getGroupResourceProfileId());
+                }
+            }
+
+            Set<String> newPolicyIds = new HashSet<>();
+            for (ComputeResourcePolicy p : groupResourceProfile.getComputeResourcePoliciesList()) {
+                newPolicyIds.add(p.getResourcePolicyId());
+            }
+            for (ComputeResourcePolicy p : original.getComputeResourcePoliciesList()) {
+                if (!p.getResourcePolicyId().isEmpty() && !newPolicyIds.contains(p.getResourcePolicyId())) {
+                    removeGroupComputeResourcePolicy(ctx, p.getResourcePolicyId());
+                }
+            }
+
+            Set<String> newBqIds = new HashSet<>();
+            for (BatchQueueResourcePolicy p : groupResourceProfile.getBatchQueueResourcePoliciesList()) {
+                newBqIds.add(p.getResourcePolicyId());
+            }
+            for (BatchQueueResourcePolicy p : original.getBatchQueueResourcePoliciesList()) {
+                if (!p.getResourcePolicyId().isEmpty() && !newBqIds.contains(p.getResourcePolicyId())) {
+                    removeGroupBatchQueueResourcePolicy(ctx, p.getResourcePolicyId());
+                }
+            }
+
+            updateGroupResourceProfile(ctx, groupResourceProfile);
+            return getGroupResourceProfileWithAccess(ctx, profileId);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException(
+                    "Error reconciling group resource profile " + profileId + ": " + e.getMessage(), e);
+        }
+    }
+
     public GroupResourceProfile getGroupResourceProfile(RequestContext ctx, String groupResourceProfileId)
             throws ServiceException {
         String userId = ctx.getUserId();
@@ -152,6 +206,90 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
             throw new ServiceException(
                     "Error retrieving group resource profile " + groupResourceProfileId + ": " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * {@link #getGroupResourceProfile} plus the caller's server-computed access flags (additive).
+     * Reuses {@code getGroupResourceProfile} for READ enforcement so a caller can never
+     * self-authorize. {@code GroupResourceProfile} carries no owner field, so ownership is derived
+     * from the sharing OWNER grant established at creation.
+     *
+     * <p>{@code userHasWriteAccess} is a COMPOSITE that mirrors what
+     * {@link #updateGroupResourceProfile} actually enforces: the caller must have sharing WRITE
+     * (or OWNER) on the profile AND READ on every credential token the profile references — the
+     * {@code default_credential_store_token} and each compute preference's
+     * {@code resource_specific_credential_store_token}. {@link #updateGroupResourceProfile}
+     * re-validates those token READs ({@link #validateGroupResourceProfileCredentials}), so a
+     * profile that looks editable but whose update would be rejected is reported as not writable.
+     */
+    public GroupResourceProfileWithAccess getGroupResourceProfileWithAccess(
+            RequestContext ctx, String groupResourceProfileId) throws ServiceException {
+        GroupResourceProfile groupResourceProfile = getGroupResourceProfile(ctx, groupResourceProfileId);
+        if (groupResourceProfile == null) {
+            throw new ServiceAuthorizationException("User does not have permission to access this resource");
+        }
+        try {
+            return computeProfileAccess(ctx, groupResourceProfile);
+        } catch (Exception e) {
+            throw new ServiceException("Error while computing group resource profile access: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Computes the caller's access flags for an already-loaded {@link GroupResourceProfile} and unions
+     * them onto it, without re-fetching the profile or re-enforcing READ (the caller must have already
+     * passed a READ gate before reaching this point). This is the per-profile core shared by
+     * {@link #getGroupResourceProfileWithAccess} and {@link #getGroupResourceListWithAccess}, so the list
+     * variant reuses the exact same token-composite write logic per row without N extra fetches.
+     *
+     * <p>{@code userHasWriteAccess} is a COMPOSITE that mirrors what {@link #updateGroupResourceProfile}
+     * actually enforces: the caller must have sharing WRITE (or OWNER) on the profile AND READ on every
+     * credential token the profile references — the {@code default_credential_store_token} and each
+     * compute preference's {@code resource_specific_credential_store_token}.
+     */
+    private GroupResourceProfileWithAccess computeProfileAccess(
+            RequestContext ctx, GroupResourceProfile groupResourceProfile) {
+        String userId = ctx.getUserId();
+        String gatewayId = ctx.getGatewayId();
+        String groupResourceProfileId = groupResourceProfile.getGroupResourceProfileId();
+        boolean isOwner = false;
+        boolean userHasWriteAccess = false;
+        if (SharingHelper.isSharingEnabled()) {
+            isOwner = SharingHelper.userHasAccess(
+                    sharingHandler, gatewayId, userId, groupResourceProfileId, ResourcePermissionType.OWNER);
+            userHasWriteAccess = isOwner
+                    || SharingHelper.userHasAccess(
+                            sharingHandler, gatewayId, userId, groupResourceProfileId, ResourcePermissionType.WRITE);
+            if (userHasWriteAccess) {
+                // Token READ uses the OWNER-inclusive helper, matching the check
+                // validateGroupResourceProfileCredentials enforces on update, so the write flag
+                // accurately predicts whether an update would be permitted.
+                String defaultToken = groupResourceProfile.getDefaultCredentialStoreToken();
+                if (!defaultToken.isEmpty()
+                        && !SharingHelper.userHasAccess(
+                                sharingHandler, gatewayId, userId, defaultToken, ResourcePermissionType.READ)) {
+                    userHasWriteAccess = false;
+                }
+                if (userHasWriteAccess) {
+                    for (GroupComputeResourcePreference pref : groupResourceProfile.getComputePreferencesList()) {
+                        String token = pref.getResourceSpecificCredentialStoreToken();
+                        if (!token.isEmpty()
+                                && !SharingHelper.userHasAccess(
+                                        sharingHandler, gatewayId, userId, token, ResourcePermissionType.READ)) {
+                            userHasWriteAccess = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return GroupResourceProfileWithAccess.newBuilder()
+                .setGroupResourceProfile(groupResourceProfile)
+                .setAccess(AccessFlags.newBuilder()
+                        .setIsOwner(isOwner)
+                        .setUserHasWriteAccess(userHasWriteAccess)
+                        .build())
+                .build();
     }
 
     public boolean removeGroupResourceProfile(RequestContext ctx, String groupResourceProfileId)
@@ -210,6 +348,32 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
         } catch (Exception e) {
             throw new ServiceException(
                     "Error retrieving group resource profile list for gateway " + gatewayId + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@link #getGroupResourceList} plus the caller's server-computed access flags per profile (additive).
+     * Reuses {@code getGroupResourceList} for READ enforcement (outside the try, so it can never be
+     * self-authorized) and maps each already-loaded profile through {@link #computeProfileAccess}, so
+     * the per-row flags use the exact same token-composite write logic as
+     * {@link #getGroupResourceProfileWithAccess} without re-fetching any profile.
+     */
+    public List<GroupResourceProfileWithAccess> getGroupResourceListWithAccess(RequestContext ctx, String gatewayId)
+            throws ServiceException {
+        List<GroupResourceProfile> profiles = getGroupResourceList(ctx, gatewayId);
+        try {
+            List<GroupResourceProfileWithAccess> result = new ArrayList<>(profiles.size());
+            for (GroupResourceProfile profile : profiles) {
+                result.add(computeProfileAccess(ctx, profile));
+            }
+            logger.debug(
+                    "Computed access flags for {} group resource profiles in gateway {}", result.size(), gatewayId);
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException(
+                    "Error while computing group resource profile list access for gateway " + gatewayId + ": "
+                            + e.getMessage(),
+                    e);
         }
     }
 

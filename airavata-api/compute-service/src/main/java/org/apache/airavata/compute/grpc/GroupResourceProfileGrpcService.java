@@ -76,11 +76,39 @@ public class GroupResourceProfileGrpcService
     }
 
     @Override
+    public void getGroupResourceProfileWithAccess(
+            GetGroupResourceProfileRequest request, StreamObserver<GroupResourceProfileWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GroupResourceProfileWithAccess result = groupResourceProfileService.getGroupResourceProfileWithAccess(
+                    ctx, request.getGroupResourceProfileId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void updateGroupResourceProfile(UpdateGroupResourceProfileRequest request, StreamObserver<Empty> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
             groupResourceProfileService.updateGroupResourceProfile(ctx, request.getGroupResourceProfile());
             observer.onNext(Empty.getDefaultInstance());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void updateGroupResourceProfileReconciled(
+            UpdateGroupResourceProfileRequest request, StreamObserver<GroupResourceProfileWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GroupResourceProfileWithAccess result = groupResourceProfileService.updateGroupResourceProfileReconciled(
+                    ctx, request.getGroupResourceProfile());
+            observer.onNext(result);
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -108,6 +136,22 @@ public class GroupResourceProfileGrpcService
                     groupResourceProfileService.getGroupResourceList(ctx, ctx.getGatewayId());
             observer.onNext(GetGroupResourceListResponse.newBuilder()
                     .addAllGroupResourceProfiles(profiles)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getGroupResourceListWithAccess(
+            GetGroupResourceListRequest request, StreamObserver<GetGroupResourceListWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<GroupResourceProfileWithAccess> profiles =
+                    groupResourceProfileService.getGroupResourceListWithAccess(ctx, ctx.getGatewayId());
+            observer.onNext(GetGroupResourceListWithAccessResponse.newBuilder()
+                    .addAllProfiles(profiles)
                     .build());
             observer.onCompleted();
         } catch (Exception e) {

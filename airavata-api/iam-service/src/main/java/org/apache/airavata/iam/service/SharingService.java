@@ -28,6 +28,7 @@ import org.apache.airavata.iam.repository.*;
 import org.apache.airavata.iam.util.DBConstants;
 import org.apache.airavata.interfaces.SharingFacade;
 import org.apache.airavata.interfaces.SharingProvider;
+import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.proto.GroupChildType;
 import org.apache.airavata.sharing.registry.models.proto.GroupType;
@@ -313,6 +314,90 @@ public class SharingService implements SharingFacade, SharingProvider {
     }
 
     /**
+     * Declaratively reconcile a group's roster to the desired members + admins lists, computing and
+     * applying add/remove deltas server-side. This is the server-side counterpart of the thin client's
+     * former member/admin diffing: {@code added = desired − current}, {@code removed = current − desired}
+     * for both members and admins, and any desired admin that is not also a desired member is promoted to
+     * a member (admins must belong to the group). Each non-empty delta is applied via the existing
+     * add/remove member + admin operations; metadata is not touched here (the caller updates it
+     * separately via updateGroup).
+     *
+     * @param newGroup {@code true} when the group was just created (no current roster, so all desired
+     *     members/admins are added); {@code false} for an update against the existing roster.
+     */
+    public void reconcileGroupMembership(
+            String domainId,
+            String groupId,
+            List<String> desiredMembers,
+            List<String> desiredAdmins,
+            String ownerId,
+            boolean newGroup)
+            throws SharingRegistryException {
+        try {
+            Set<String> desiredMemberSet = new LinkedHashSet<>(desiredMembers);
+            Set<String> desiredAdminSet = new LinkedHashSet<>(desiredAdmins);
+
+            // The owner is managed by createGroup and holds implicit membership/ownership; it is never
+            // a settable member/admin here and must never be added (duplicate) or removed. Exclude it
+            // from both the desired and current sets so the diff never targets the owner.
+            if (ownerId != null && !ownerId.isEmpty()) {
+                desiredMemberSet.remove(ownerId);
+                desiredAdminSet.remove(ownerId);
+            }
+
+            // Admins must belong to the group: any desired admin not already a desired member is
+            // promoted to a member too (mirrors the former client-side _member_admin_diff).
+            Set<String> promotedMembers = new LinkedHashSet<>(desiredAdminSet);
+            promotedMembers.removeAll(desiredMemberSet);
+            Set<String> finalMemberSet = new LinkedHashSet<>(desiredMemberSet);
+            finalMemberSet.addAll(promotedMembers);
+
+            Set<String> currentMembers = new LinkedHashSet<>();
+            Set<String> currentAdmins = new LinkedHashSet<>();
+            if (!newGroup) {
+                getGroupMembersOfTypeUser(domainId, groupId, 0, -1)
+                        .forEach(u -> currentMembers.add(u.getUserId()));
+                UserGroupEntity entity = getGroup(domainId, groupId);
+                if (entity != null && entity.getGroupAdmins() != null) {
+                    entity.getGroupAdmins().forEach(a -> currentAdmins.add(a.getAdminId()));
+                }
+                if (ownerId != null && !ownerId.isEmpty()) {
+                    currentMembers.remove(ownerId);
+                    currentAdmins.remove(ownerId);
+                }
+            }
+
+            List<String> addedMembers = new ArrayList<>(finalMemberSet);
+            addedMembers.removeAll(currentMembers);
+            List<String> removedMembers = new ArrayList<>(currentMembers);
+            removedMembers.removeAll(finalMemberSet);
+
+            List<String> addedAdmins = new ArrayList<>(desiredAdminSet);
+            addedAdmins.removeAll(currentAdmins);
+            List<String> removedAdmins = new ArrayList<>(currentAdmins);
+            removedAdmins.removeAll(desiredAdminSet);
+
+            // Apply member adds before admin adds (an admin must already be a member), and admin
+            // removals before member removals (an owner/member cannot be dropped while still an admin).
+            if (!addedMembers.isEmpty()) {
+                addUsersToGroup(domainId, addedMembers, groupId);
+            }
+            if (!removedAdmins.isEmpty()) {
+                removeGroupAdmins(domainId, groupId, removedAdmins);
+            }
+            if (!addedAdmins.isEmpty()) {
+                addGroupAdmins(domainId, groupId, addedAdmins);
+            }
+            if (!removedMembers.isEmpty()) {
+                removeUsersFromGroup(domainId, removedMembers, groupId);
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    /**
      * API method to check Group Exists
      * @param domainId
      * @param groupId
@@ -521,6 +606,43 @@ public class SharingService implements SharingFacade, SharingProvider {
             logger.error(ex.getMessage(), ex);
             throw new SharingRegistryException(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
+    }
+
+    /** The caller's six group-access flags plus the group's member ids (see GroupAccessFlags). */
+    public record GroupAccess(
+            List<String> memberIds,
+            boolean isAdmin,
+            boolean isOwner,
+            boolean isMember,
+            boolean isGatewayAdminsGroup,
+            boolean isReadOnlyGatewayAdminsGroup,
+            boolean isDefaultGatewayUsersGroup) {}
+
+    /**
+     * Compose the caller's group-access flags server-side, replacing the per-flag round-trips the
+     * client does today. {@code group} is the already-fetched group (its owner id drives is_owner);
+     * the caller id is the qualified {@code user@gateway}.
+     */
+    public GroupAccess getGroupAccessFlags(String domainId, String groupId, String callerId, UserGroupEntity group)
+            throws SharingRegistryException {
+        List<String> memberIds = getGroupMembersOfTypeUser(domainId, groupId, 0, -1).stream()
+                .map(UserEntity::getUserId)
+                .collect(Collectors.toList());
+        GatewayGroups gg = new GatewayGroupsRepository().get(domainId);
+        boolean isAdmin = hasAdminAccess(domainId, groupId, callerId);
+        boolean isOwner = group.getOwnerId() != null && group.getOwnerId().equals(callerId);
+        boolean isMember = memberIds.contains(callerId);
+        boolean isGatewayAdminsGroup = gg != null && groupId.equals(gg.getAdminsGroupId());
+        boolean isReadOnlyGatewayAdminsGroup = gg != null && groupId.equals(gg.getReadOnlyAdminsGroupId());
+        boolean isDefaultGatewayUsersGroup = gg != null && groupId.equals(gg.getDefaultGatewayUsersGroupId());
+        return new GroupAccess(
+                memberIds,
+                isAdmin,
+                isOwner,
+                isMember,
+                isGatewayAdminsGroup,
+                isReadOnlyGatewayAdminsGroup,
+                isDefaultGatewayUsersGroup);
     }
 
     public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException {

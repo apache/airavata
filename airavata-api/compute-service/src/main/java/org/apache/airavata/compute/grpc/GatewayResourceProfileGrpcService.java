@@ -77,6 +77,20 @@ public class GatewayResourceProfileGrpcService
     }
 
     @Override
+    public void getGatewayResourceProfileWithAccess(
+            GetGatewayResourceProfileRequest request, StreamObserver<GatewayResourceProfileWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GatewayResourceProfileWithAccess result =
+                    gatewayResourceProfileService.getGatewayResourceProfileWithAccess(ctx, request.getGatewayId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void updateGatewayResourceProfile(
             UpdateGatewayResourceProfileRequest request, StreamObserver<Empty> observer) {
         try {

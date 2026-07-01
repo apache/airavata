@@ -337,4 +337,116 @@ class ResourceSharingServiceTest {
         assertEquals(1, result.size());
         assertTrue(result.contains("group-manage-1"));
     }
+
+    @Test
+    void setEntitySharing_computesAndAppliesUserDeltas() throws Exception {
+        // Spy the SUT so the delta computation runs for real while the share/revoke delegations can
+        // be verified with the exact per-permission maps. The grant/revoke methods are stubbed to
+        // no-op (they have their own tested behaviour and their own auth gate).
+        ResourceSharingService service = spy(resourceSharingService);
+
+        // Auth gate: caller is the owner (MANAGE_SHARING access is true).
+        doReturn(true).when(service).userHasAccess(ctx, "resource-1", ResourcePermissionType.MANAGE_SHARING);
+
+        // Current DIRECT user grants: u1=READ, u2=WRITE (WRITE also reports the READ list per the
+        // store, but the highest-permission fold yields u1=READ, u2=WRITE).
+        doReturn(List.of("u1", "u2"))
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.READ);
+        doReturn(List.of("u2"))
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.WRITE);
+        doReturn(List.of())
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.MANAGE_SHARING);
+        // No owner among the direct user grants in this scenario.
+        doReturn(List.of())
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.OWNER);
+        // No current group grants.
+        doReturn(List.of())
+                .when(service)
+                .getAllDirectlyAccessibleGroups(eq(ctx), eq("resource-1"), any(ResourcePermissionType.class));
+
+        // Stub the share/revoke delegations to no-op; we verify the maps they receive.
+        doReturn(true).when(service).shareResourceWithUsers(eq(ctx), eq("resource-1"), anyMap());
+        doReturn(true).when(service).revokeSharingOfResourceFromUsers(eq(ctx), eq("resource-1"), anyMap());
+
+        // Desired: u1 -> WRITE (upgrade), u3 -> MANAGE_SHARING (new), u2 omitted (revoke all).
+        Map<String, ResourcePermissionType> desiredUsers = Map.of(
+                "u1", ResourcePermissionType.WRITE,
+                "u3", ResourcePermissionType.MANAGE_SHARING);
+
+        service.setEntitySharing(ctx, "resource-1", desiredUsers, Map.of());
+
+        // Implied-permission diff per id:
+        //   u1: {READ} -> {READ,WRITE}            => grant WRITE
+        //   u2: {READ,WRITE} -> {}                => revoke READ, revoke WRITE
+        //   u3: {} -> {READ,WRITE,MANAGE_SHARING} => grant READ, WRITE, MANAGE_SHARING
+        // Expected grant buckets: READ={u3}, WRITE={u1,u3}, MANAGE_SHARING={u3}.
+        // Expected revoke buckets: READ={u2}, WRITE={u2}.
+        verify(service)
+                .shareResourceWithUsers(ctx, "resource-1", Map.of("u3", ResourcePermissionType.READ));
+        verify(service)
+                .shareResourceWithUsers(
+                        ctx,
+                        "resource-1",
+                        Map.of("u1", ResourcePermissionType.WRITE, "u3", ResourcePermissionType.WRITE));
+        verify(service)
+                .shareResourceWithUsers(
+                        ctx, "resource-1", Map.of("u3", ResourcePermissionType.MANAGE_SHARING));
+        verify(service)
+                .revokeSharingOfResourceFromUsers(ctx, "resource-1", Map.of("u2", ResourcePermissionType.READ));
+        verify(service)
+                .revokeSharingOfResourceFromUsers(ctx, "resource-1", Map.of("u2", ResourcePermissionType.WRITE));
+
+        // Exactly three grant buckets and two revoke buckets for users; no group share/revoke (empty).
+        verify(service, times(3)).shareResourceWithUsers(eq(ctx), eq("resource-1"), anyMap());
+        verify(service, times(2)).revokeSharingOfResourceFromUsers(eq(ctx), eq("resource-1"), anyMap());
+        verify(service, never()).shareResourceWithGroups(eq(ctx), eq("resource-1"), anyMap());
+        verify(service, never()).revokeSharingOfResourceFromGroups(eq(ctx), eq("resource-1"), anyMap());
+    }
+
+    @Test
+    void setEntitySharing_rejectsCallerWithoutManageSharing() throws Exception {
+        ResourceSharingService service = spy(resourceSharingService);
+        doReturn(false).when(service).userHasAccess(ctx, "resource-1", ResourcePermissionType.MANAGE_SHARING);
+
+        assertThrows(
+                ServiceAuthorizationException.class,
+                () -> service.setEntitySharing(
+                        ctx, "resource-1", Map.of("u1", ResourcePermissionType.READ), Map.of()));
+
+        verify(service, never()).shareResourceWithUsers(any(), anyString(), anyMap());
+        verify(service, never()).revokeSharingOfResourceFromUsers(any(), anyString(), anyMap());
+    }
+
+    @Test
+    void setEntitySharing_excludesOwnerFromRevoke() throws Exception {
+        // The OWNER is unioned into every direct accessor list. A desired map that omits the owner
+        // (the read side drops it) must NOT compute a revoke against the owner.
+        ResourceSharingService service = spy(resourceSharingService);
+        doReturn(true).when(service).userHasAccess(ctx, "resource-1", ResourcePermissionType.MANAGE_SHARING);
+        doReturn(List.of("owner@testGateway"))
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.READ);
+        doReturn(List.of("owner@testGateway"))
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.WRITE);
+        doReturn(List.of("owner@testGateway"))
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.MANAGE_SHARING);
+        doReturn(List.of("owner@testGateway"))
+                .when(service)
+                .getAllDirectlyAccessibleUsers(ctx, "resource-1", ResourcePermissionType.OWNER);
+        doReturn(List.of())
+                .when(service)
+                .getAllDirectlyAccessibleGroups(eq(ctx), eq("resource-1"), any(ResourcePermissionType.class));
+
+        // Desired omits the owner; nothing else changes -> no share and no revoke should fire.
+        service.setEntitySharing(ctx, "resource-1", Map.of(), Map.of());
+
+        verify(service, never()).revokeSharingOfResourceFromUsers(eq(ctx), eq("resource-1"), anyMap());
+        verify(service, never()).shareResourceWithUsers(eq(ctx), eq("resource-1"), anyMap());
+    }
 }

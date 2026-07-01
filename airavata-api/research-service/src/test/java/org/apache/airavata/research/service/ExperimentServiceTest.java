@@ -26,16 +26,23 @@ import static org.mockito.Mockito.doNothing;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.api.experiment.ExperimentSummaryWithAccess;
+import org.apache.airavata.api.experiment.ExperimentWithAccess;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.exception.ServiceAuthorizationException;
 import org.apache.airavata.exception.ServiceException;
 import org.apache.airavata.interfaces.AppCatalogRegistry;
+import org.apache.airavata.interfaces.ComputeRegistry;
+import org.apache.airavata.interfaces.DataProductInterface;
+import org.apache.airavata.interfaces.DataReplicaLocationInterface;
 import org.apache.airavata.interfaces.ExperimentRegistry;
 import org.apache.airavata.interfaces.ProjectRegistry;
 import org.apache.airavata.interfaces.SharingFacade;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
+import org.apache.airavata.model.experiment.proto.ExperimentSearchFields;
 import org.apache.airavata.model.experiment.proto.ExperimentStatistics;
+import org.apache.airavata.model.experiment.proto.ExperimentSummaryModel;
 import org.apache.airavata.model.job.proto.JobModel;
 import org.apache.airavata.model.process.proto.ProcessModel;
 import org.apache.airavata.model.status.proto.ExperimentState;
@@ -49,6 +56,7 @@ import org.apache.airavata.model.task.proto.TaskTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -68,7 +76,19 @@ class ExperimentServiceTest {
     ProjectRegistry projectRegistry;
 
     @Mock
+    ComputeRegistry computeRegistry;
+
+    @Mock
+    DataProductInterface dataProductInterface;
+
+    @Mock
+    DataReplicaLocationInterface dataReplicaLocationInterface;
+
+    @Mock
     SharingFacade sharingHandler;
+
+    @Mock
+    ProjectService projectService;
 
     ExperimentService experimentService;
     RequestContext ctx;
@@ -83,7 +103,15 @@ class ExperimentServiceTest {
                 .thenReturn(true);
 
         experimentService = new ExperimentService(
-                experimentRegistry, appCatalogRegistry, projectRegistry, sharingHandler, java.util.Optional.empty());
+                experimentRegistry,
+                appCatalogRegistry,
+                projectRegistry,
+                computeRegistry,
+                dataProductInterface,
+                dataReplicaLocationInterface,
+                sharingHandler,
+                projectService,
+                java.util.Optional.empty());
         ctx = new RequestContext(
                 "testUser",
                 "testGateway",
@@ -105,6 +133,28 @@ class ExperimentServiceTest {
         String result = experimentService.createExperiment(ctx, experiment);
 
         assertEquals("exp-123", result);
+        verify(experimentRegistry).createExperiment("testGateway", experiment);
+    }
+
+    @Test
+    void createExperimentWithAccess_ownerGetsOwnerAndWriteFlags() throws Exception {
+        // Sharing is enabled in this class (see setUp). The caller owns what it just created, so the
+        // flags come from ownership and no sharing WRITE check is needed.
+        ExperimentModel experiment = ExperimentModel.newBuilder()
+                .setExperimentName("test-exp")
+                .setGatewayId("testGateway")
+                .setUserName("testUser")
+                .setProjectId("proj-1")
+                .build();
+
+        when(experimentRegistry.createExperiment("testGateway", experiment)).thenReturn("exp-123");
+        when(experimentRegistry.getExperiment("exp-123")).thenReturn(experiment);
+
+        ExperimentWithAccess result = experimentService.createExperimentWithAccess(ctx, experiment);
+
+        assertEquals("test-exp", result.getExperiment().getExperimentName());
+        assertTrue(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
         verify(experimentRegistry).createExperiment("testGateway", experiment);
     }
 
@@ -215,6 +265,73 @@ class ExperimentServiceTest {
         // Should not throw — owner has implicit WRITE
         assertDoesNotThrow(() -> experimentService.updateExperiment(ctx, "exp-123", updated));
         verify(experimentRegistry).updateExperiment("exp-123", updated);
+    }
+
+    @Test
+    void updateExperimentWithAccess_ownerGetsOwnerAndWriteFlags() throws Exception {
+        // Sharing is enabled in this class (see setUp). The caller owns the experiment, so the update
+        // is allowed by ownership and the returned flags are owner+write by ownership.
+        ExperimentModel existing = ExperimentModel.newBuilder()
+                .setUserName("testUser")
+                .setGatewayId("testGateway")
+                .build();
+        ExperimentModel updated = ExperimentModel.newBuilder()
+                .setExperimentName("new-name")
+                .setProjectId("proj-1")
+                .build();
+
+        // updateExperiment reads the existing row for its WRITE check; getExperimentWithAccess then
+        // re-reads it for the returned model + flags.
+        when(experimentRegistry.getExperiment("exp-123")).thenReturn(existing);
+        doNothing().when(experimentRegistry).updateExperiment("exp-123", updated);
+
+        ExperimentWithAccess result = experimentService.updateExperimentWithAccess(ctx, "exp-123", updated);
+
+        assertEquals("testUser", result.getExperiment().getUserName());
+        assertTrue(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+        verify(experimentRegistry).updateExperiment("exp-123", updated);
+    }
+
+    @Test
+    void searchExperimentsWithAccess_stampsCallerFlags() throws Exception {
+        // Sharing is enabled in this test class (see setUp). The caller owns exp-owned (owner+write
+        // by ownership, no sharing call), and has no sharing grant on the other user's exp-other, so
+        // it is neither owner nor writable.
+        ExperimentSummaryModel owned = ExperimentSummaryModel.newBuilder()
+                .setExperimentId("exp-owned")
+                .setUserName("testUser")
+                .setGatewayId("testGateway")
+                .build();
+        ExperimentSummaryModel other = ExperimentSummaryModel.newBuilder()
+                .setExperimentId("exp-other")
+                .setUserName("otherUser")
+                .setGatewayId("testGateway")
+                .build();
+
+        // The caller has no WRITE/OWNER sharing grant on the other user's experiment.
+        when(sharingHandler.userHasAccess(anyString(), anyString(), eq("exp-other"), anyString()))
+                .thenReturn(false);
+        when(sharingHandler.searchEntityIds(anyString(), anyString(), anyList(), anyInt(), anyInt()))
+                .thenReturn(List.of("exp-owned", "exp-other"));
+        when(experimentRegistry.searchExperiments(
+                        eq("testGateway"), eq("testUser"), anyList(), anyMap(), eq(10), eq(0)))
+                .thenReturn(List.of(owned, other));
+
+        List<ExperimentSummaryWithAccess> results = experimentService.searchExperimentsWithAccess(
+                ctx, "testGateway", "testUser", Map.<ExperimentSearchFields, String>of(), 10, 0);
+
+        assertEquals(2, results.size());
+
+        ExperimentSummaryWithAccess ownedResult = results.get(0);
+        assertEquals("exp-owned", ownedResult.getSummary().getExperimentId());
+        assertTrue(ownedResult.getAccess().getIsOwner());
+        assertTrue(ownedResult.getAccess().getUserHasWriteAccess());
+
+        ExperimentSummaryWithAccess otherResult = results.get(1);
+        assertEquals("exp-other", otherResult.getSummary().getExperimentId());
+        assertFalse(otherResult.getAccess().getIsOwner());
+        assertFalse(otherResult.getAccess().getUserHasWriteAccess());
     }
 
     @Test
@@ -329,5 +446,53 @@ class ExperimentServiceTest {
         ProcessStatus result = experimentService.getIntermediateOutputProcessStatus(ctx, "exp-123", List.of("output1"));
 
         assertEquals(ProcessState.PROCESS_STATE_EXECUTING, result.getState());
+    }
+
+    private ExperimentModel experimentWithEmail(boolean enabled) {
+        return ExperimentModel.newBuilder()
+                .setExperimentName("e")
+                .setGatewayId("testGateway")
+                .setUserName("testUser")
+                .setEnableEmailNotification(enabled)
+                .addEmailAddresses("old@example.com")
+                .build();
+    }
+
+    @Test
+    void launchExperimentWithStorageSetup_overridesRecipientsWhenEnabled() throws Exception {
+        when(experimentRegistry.getExperiment("exp-1")).thenReturn(experimentWithEmail(true));
+        ExperimentService spy = spy(experimentService);
+        doNothing().when(spy).launchExperiment(ctx, "exp-1", "testGateway");
+
+        spy.launchExperimentWithStorageSetup(ctx, "exp-1", "testGateway", "me@example.com");
+
+        ArgumentCaptor<ExperimentModel> captor = ArgumentCaptor.forClass(ExperimentModel.class);
+        verify(experimentRegistry).updateExperiment(eq("exp-1"), captor.capture());
+        assertEquals(List.of("me@example.com"), captor.getValue().getEmailAddressesList());
+        verify(spy).launchExperiment(ctx, "exp-1", "testGateway");
+    }
+
+    @Test
+    void launchExperimentWithStorageSetup_noOverrideWhenNotificationsDisabled() throws Exception {
+        when(experimentRegistry.getExperiment("exp-1")).thenReturn(experimentWithEmail(false));
+        ExperimentService spy = spy(experimentService);
+        doNothing().when(spy).launchExperiment(ctx, "exp-1", "testGateway");
+
+        spy.launchExperimentWithStorageSetup(ctx, "exp-1", "testGateway", "me@example.com");
+
+        verify(experimentRegistry, never()).updateExperiment(anyString(), any());
+        verify(spy).launchExperiment(ctx, "exp-1", "testGateway");
+    }
+
+    @Test
+    void launchExperimentWithStorageSetup_noOverrideWhenEmailBlank() throws Exception {
+        when(experimentRegistry.getExperiment("exp-1")).thenReturn(experimentWithEmail(true));
+        ExperimentService spy = spy(experimentService);
+        doNothing().when(spy).launchExperiment(ctx, "exp-1", "testGateway");
+
+        spy.launchExperimentWithStorageSetup(ctx, "exp-1", "testGateway", "");
+
+        verify(experimentRegistry, never()).updateExperiment(anyString(), any());
+        verify(spy).launchExperiment(ctx, "exp-1", "testGateway");
     }
 }

@@ -25,6 +25,8 @@ option java_multiple_files = true;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "org/apache/airavata/model/sharing/sharing.proto";
+import "org/apache/airavata/model/user/user_profile.proto";
+import "group_manager_service.proto";
 
 // SharingService provides RPCs for managing resource sharing with users and groups,
 // as well as domain, user, group, entity type, permission type, and entity CRUD.
@@ -85,6 +87,37 @@ service SharingService {
   rpc UserHasAccess(UserHasAccessRequest) returns (UserHasAccessResponse) {
     option (google.api.http) = {
       get: "/api/v1/sharing/{resource_id}/users/{user_id}:check"
+    };
+  }
+
+  // Additive: the composed sharing view of an entity (owner + per-user UserProfile and per-group
+  // GroupWithAccess permissions, with is_owner / has_sharing_permission), assembled server-side so
+  // a client does not fan out per-permission accessor RPCs + profile/group lookups. DIRECT-only:
+  // only directly granted permissions (the ones the portal UI can edit).
+  rpc GetSharedEntity(GetSharedEntityRequest) returns (SharedEntity) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/entities/{entity_id}:shared"
+    };
+  }
+
+  // Additive: the accessible-including-inherited analogue of GetSharedEntity (direct + inherited
+  // sharing settings).
+  rpc GetAllSharedEntity(GetSharedEntityRequest) returns (SharedEntity) {
+    option (google.api.http) = {
+      get: "/api/v1/sharing/entities/{entity_id}:sharedAll"
+    };
+  }
+
+  // Additive: declaratively set an entity's direct sharing. The client sends the DESIRED end-state
+  // (which users/groups should hold which permission); the server reads the current DIRECT grants,
+  // computes the grant/revoke diff (READ implies READ; WRITE implies READ+WRITE; MANAGE_SHARING
+  // implies READ+WRITE+MANAGE_SHARING), and applies it. Replaces the Python SDK's client-side diff
+  // (sharing_resources.apply_sharing_update). Map values are permission member NAME strings
+  // (READ / WRITE / MANAGE_SHARING); OWNER is not settable here.
+  rpc SetEntitySharing(SetEntitySharingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sharing/entities/{resource_id}/permissions"
+      body: "*"
     };
   }
 
@@ -530,6 +563,47 @@ message UserHasAccessRequest {
 
 message UserHasAccessResponse {
   bool has_access = 1;
+}
+
+// ===========================================================================
+// Request/Response messages — SharedEntity composite
+// ===========================================================================
+
+// A single user grant: the user's profile plus the permission member NAME (READ / WRITE /
+// MANAGE_SHARING).
+message UserPermission {
+  org.apache.airavata.model.user.UserProfile user = 1;
+  string permission_type = 2;
+}
+
+// A single group grant: the group (with the caller's access flags) plus the permission member
+// NAME (READ / WRITE / MANAGE_SHARING).
+message GroupPermission {
+  org.apache.airavata.api.iam.groupmanager.GroupWithAccess group = 1;
+  string permission_type = 2;
+}
+
+// The composed sharing view of an entity. owner is excluded from user_permissions. is_owner is
+// owner == caller; has_sharing_permission is the caller's MANAGE_SHARING access.
+message SharedEntity {
+  string entity_id = 1;
+  org.apache.airavata.model.user.UserProfile owner = 2;
+  repeated UserPermission user_permissions = 3;
+  repeated GroupPermission group_permissions = 4;
+  bool is_owner = 5;
+  bool has_sharing_permission = 6;
+}
+
+message GetSharedEntityRequest {
+  string entity_id = 1;
+}
+
+// The DESIRED end-state of an entity's direct sharing. Map values are permission member NAME
+// strings (READ / WRITE / MANAGE_SHARING); ids absent from a map have their direct grants revoked.
+message SetEntitySharingRequest {
+  string resource_id = 1;
+  map<string, string> user_permissions = 2;
+  map<string, string> group_permissions = 3;
 }
 
 // ===========================================================================

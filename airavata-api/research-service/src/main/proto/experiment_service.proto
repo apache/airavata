@@ -29,6 +29,12 @@ import "org/apache/airavata/model/status/status.proto";
 import "org/apache/airavata/model/application/io/application_io.proto";
 import "org/apache/airavata/model/job/job.proto";
 import "org/apache/airavata/model/scheduling/scheduling.proto";
+import "org/apache/airavata/model/commons/commons.proto";
+import "org/apache/airavata/model/data/replica/replica_catalog.proto";
+import "org/apache/airavata/model/appcatalog/appinterface/app_interface.proto";
+import "org/apache/airavata/model/appcatalog/appdeployment/app_deployment.proto";
+import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
+import "org/apache/airavata/model/workspace/workspace.proto";
 
 // ExperimentService provides RPCs for managing experiments.
 service ExperimentService {
@@ -40,9 +46,37 @@ service ExperimentService {
     };
   }
 
+  // Additive: CreateExperiment that returns the created experiment joined with the caller's
+  // server-computed access flags, so a client does not chain create -> get -> sharing.
+  rpc CreateExperimentWithAccess(CreateExperimentRequest) returns (ExperimentWithAccess) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments:withAccess"
+      body: "experiment"
+    };
+  }
+
   rpc GetExperiment(GetExperimentRequest) returns (org.apache.airavata.model.experiment.ExperimentModel) {
     option (google.api.http) = {
       get: "/api/v1/experiments/{experiment_id}"
+    };
+  }
+
+  // Additive: GetExperiment plus the caller's server-computed access flags, so a
+  // client does not recompute access from a separate sharing round-trip.
+  rpc GetExperimentWithAccess(GetExperimentRequest) returns (ExperimentWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}:withAccess"
+    };
+  }
+
+  // Additive: the experiment joined with every related entity a viewer needs in one
+  // round-trip — access flags, owning project, application module/interface, compute
+  // resource, resolved input/output data products, and job details. This server-side
+  // composition replaces the multi-RPC join the Python SDK does today, so any client
+  // (Python now, TypeScript later) gets the same shaped result for free.
+  rpc GetFullExperiment(GetExperimentRequest) returns (FullExperiment) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments/{experiment_id}:full"
     };
   }
 
@@ -59,6 +93,15 @@ service ExperimentService {
     };
   }
 
+  // Additive: UpdateExperiment that returns the updated experiment joined with the caller's
+  // server-computed access flags, so a client does not chain update -> get -> sharing.
+  rpc UpdateExperimentWithAccess(UpdateExperimentRequest) returns (ExperimentWithAccess) {
+    option (google.api.http) = {
+      put: "/api/v1/experiments/{experiment_id}:withAccess"
+      body: "experiment"
+    };
+  }
+
   rpc DeleteExperiment(DeleteExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/experiments/{experiment_id}"
@@ -68,6 +111,14 @@ service ExperimentService {
   rpc SearchExperiments(SearchExperimentsRequest) returns (SearchExperimentsResponse) {
     option (google.api.http) = {
       get: "/api/v1/experiments"
+    };
+  }
+
+  // Additive: SearchExperiments plus per-item server-computed access flags for the caller,
+  // so a client does not recompute access from N separate sharing round-trips.
+  rpc SearchExperimentsWithAccess(SearchExperimentsRequest) returns (SearchExperimentsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/experiments:withAccess"
     };
   }
 
@@ -86,6 +137,14 @@ service ExperimentService {
   rpc GetExperimentsInProject(GetExperimentsInProjectRequest) returns (GetExperimentsInProjectResponse) {
     option (google.api.http) = {
       get: "/api/v1/projects/{project_id}/experiments"
+    };
+  }
+
+  // Additive: GetExperimentsInProject plus per-item server-computed access flags for the
+  // caller, so a client does not recompute access from N separate sharing round-trips.
+  rpc GetExperimentsInProjectWithAccess(GetExperimentsInProjectRequest) returns (GetExperimentsInProjectWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/projects/{project_id}/experiments:withAccess"
     };
   }
 
@@ -127,6 +186,19 @@ service ExperimentService {
     };
   }
 
+  // Composite launch for thin clients: when the experiment has email
+  // notifications enabled, override its recipients to the launching user's
+  // address (notification_email) before launching. Storage setup (default
+  // storage ids, data-dir creation, tmp-upload relocation) already runs
+  // server-side inside LaunchExperiment, so this replaces the portal's
+  // get/update/launch round-trip with one call. Mirrors the Python SDK's
+  // experiment_orchestration.launch().
+  rpc LaunchExperimentWithStorageSetup(LaunchExperimentWithStorageSetupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:launch-with-storage"
+    };
+  }
+
   rpc TerminateExperiment(TerminateExperimentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v1/experiments/{experiment_id}:terminate"
@@ -136,6 +208,18 @@ service ExperimentService {
   rpc CloneExperiment(CloneExperimentRequest) returns (CloneExperimentResponse) {
     option (google.api.http) = {
       post: "/api/v1/experiments/{experiment_id}:clone"
+    };
+  }
+
+  // Composite clone for thin clients: clone into a writable project (the given
+  // project, else the source's if writable, else the caller's most-recent
+  // writable), server-side copy each input file into a fresh tmp upload and
+  // rewrite the input value (dropping inputs whose source file is gone), null the
+  // data dir, persist; returns the new experiment joined with the caller's access
+  // flags. Mirrors the Python SDK's experiment_orchestration.clone().
+  rpc CloneExperimentWithInputFiles(CloneExperimentWithInputFilesRequest) returns (ExperimentWithAccess) {
+    option (google.api.http) = {
+      post: "/api/v1/experiments/{experiment_id}:clone-with-files"
     };
   }
 
@@ -168,6 +252,10 @@ service ExperimentService {
       get: "/api/v1/experiment-statistics"
     };
   }
+
+  rpc CreateExperimentFromSpec(CreateExperimentFromSpecRequest) returns (ExperimentWithAccess) {
+    option (google.api.http) = { post: "/api/v1/experiments:fromSpec" body: "spec" };
+  }
 }
 
 // Request/Response messages
@@ -183,6 +271,33 @@ message CreateExperimentResponse {
 
 message GetExperimentRequest {
   string experiment_id = 1;
+}
+
+// An ExperimentModel unioned with the caller's access flags (see commons.AccessFlags).
+message ExperimentWithAccess {
+  org.apache.airavata.model.experiment.ExperimentModel experiment = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+// A DataProductModel unioned with the caller's access flags (see commons.AccessFlags).
+message DataProductWithAccess {
+  org.apache.airavata.model.data.replica.DataProductModel data_product = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+// The experiment joined with every related entity a viewer needs in one round-trip.
+// Related entities are best-effort: an entity that does not apply or cannot be resolved
+// is simply left unset (e.g. an experiment with no execution id has no application_interface).
+message FullExperiment {
+  org.apache.airavata.model.experiment.ExperimentModel experiment = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+  org.apache.airavata.model.workspace.Project project = 3;
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_module = 4;
+  org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription application_interface = 5;
+  org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription compute_resource = 6;
+  repeated DataProductWithAccess input_data_products = 7;
+  repeated DataProductWithAccess output_data_products = 8;
+  repeated org.apache.airavata.model.job.JobModel jobs = 9;
 }
 
 message GetExperimentByAdminRequest {
@@ -210,6 +325,16 @@ message SearchExperimentsResponse {
   repeated org.apache.airavata.model.experiment.ExperimentSummaryModel experiments = 1;
 }
 
+// An ExperimentSummaryModel unioned with the caller's access flags (see commons.AccessFlags).
+message ExperimentSummaryWithAccess {
+  org.apache.airavata.model.experiment.ExperimentSummaryModel summary = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+message SearchExperimentsWithAccessResponse {
+  repeated ExperimentSummaryWithAccess experiments = 1;
+}
+
 message GetExperimentStatusRequest {
   string experiment_id = 1;
 }
@@ -230,6 +355,10 @@ message GetExperimentsInProjectRequest {
 
 message GetExperimentsInProjectResponse {
   repeated org.apache.airavata.model.experiment.ExperimentModel experiments = 1;
+}
+
+message GetExperimentsInProjectWithAccessResponse {
+  repeated ExperimentWithAccess experiments = 1;
 }
 
 message GetUserExperimentsRequest {
@@ -271,6 +400,15 @@ message LaunchExperimentRequest {
   string gateway_id = 2;
 }
 
+message LaunchExperimentWithStorageSetupRequest {
+  string experiment_id = 1;
+  string gateway_id = 2;
+  // The launching user's email; when the experiment has email notifications
+  // enabled the server overrides its recipients to this address. Empty leaves
+  // the experiment's configured recipients unchanged.
+  string notification_email = 3;
+}
+
 message TerminateExperimentRequest {
   string experiment_id = 1;
   string gateway_id = 2;
@@ -284,6 +422,14 @@ message CloneExperimentRequest {
 
 message CloneExperimentResponse {
   string experiment_id = 1;
+}
+
+message CloneExperimentWithInputFilesRequest {
+  string experiment_id = 1;
+  // Optional; when empty the server defaults to "Clone of <source name>".
+  string new_experiment_name = 2;
+  // Optional; when empty the server resolves a writable project for the caller.
+  string new_experiment_project_id = 3;
 }
 
 message GetJobStatusesRequest {
@@ -320,4 +466,27 @@ message GetExperimentStatisticsRequest {
   string resource_host_name = 6;
   int32 limit = 7;
   int32 offset = 8;
+}
+
+message CreateExperimentFromSpecRequest { ExperimentSpec spec = 1; }
+
+message ExperimentSpec {
+  string experiment_name          = 1;
+  string project_id               = 2;
+  string application_interface_id = 3;
+  string description              = 4;
+  map<string, string> inputs      = 5;
+  ResourceSpec resource           = 6;
+}
+
+message ResourceSpec {
+  string compute_resource_id        = 1;
+  string group_resource_profile_id  = 2;
+  int32  node_count                 = 3;
+  int32  total_cpu_count            = 4;
+  string queue_name                 = 5;
+  int32  wall_time_limit            = 6;
+  string input_storage_resource_id  = 7;
+  string output_storage_resource_id = 8;
+  bool   auto_schedule              = 9;
 }

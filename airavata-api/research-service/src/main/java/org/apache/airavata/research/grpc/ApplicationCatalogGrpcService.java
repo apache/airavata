@@ -75,6 +75,20 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
     }
 
     @Override
+    public void getApplicationModuleWithAccess(
+            GetApplicationModuleRequest request, StreamObserver<ApplicationModuleWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ApplicationModuleWithAccess result =
+                    applicationCatalogService.getApplicationModuleWithAccess(ctx, request.getAppModuleId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void updateApplicationModule(UpdateApplicationModuleRequest request, StreamObserver<Empty> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
@@ -106,6 +120,39 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
             List<ApplicationModule> modules = applicationCatalogService.getAllAppModules(ctx, request.getGatewayId());
             observer.onNext(GetAllAppModulesResponse.newBuilder()
                     .addAllApplicationModules(modules)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAllApplicationModulesWithAccess(
+            GetAllAppModulesRequest request, StreamObserver<GetAllApplicationModulesWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ApplicationModuleWithAccess> modules =
+                    applicationCatalogService.getAllApplicationModulesWithAccess(ctx, request.getGatewayId());
+            observer.onNext(GetAllApplicationModulesWithAccessResponse.newBuilder()
+                    .addAllModules(modules)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAccessibleApplicationModulesWithAccess(
+            GetAccessibleAppModulesRequest request,
+            StreamObserver<GetAccessibleApplicationModulesWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ApplicationModuleWithAccess> modules =
+                    applicationCatalogService.getAccessibleApplicationModulesWithAccess(ctx, request.getGatewayId());
+            observer.onNext(GetAccessibleApplicationModulesWithAccessResponse.newBuilder()
+                    .addAllModules(modules)
                     .build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -163,6 +210,36 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
     }
 
     @Override
+    public void getApplicationDeploymentWithAccess(
+            GetApplicationDeploymentRequest request, StreamObserver<ApplicationDeploymentWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ApplicationDeploymentWithAccess result =
+                    applicationCatalogService.getApplicationDeploymentWithAccess(ctx, request.getAppDeploymentId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getApplicationDeploymentQueues(
+            GetApplicationDeploymentRequest request, StreamObserver<GetApplicationDeploymentQueuesResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GetApplicationDeploymentQueuesResponse result = GetApplicationDeploymentQueuesResponse.newBuilder()
+                    .addAllQueues(
+                            applicationCatalogService.getApplicationDeploymentQueues(ctx, request.getAppDeploymentId()))
+                    .build();
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void updateApplicationDeployment(
             UpdateApplicationDeploymentRequest request, StreamObserver<Empty> observer) {
         try {
@@ -207,6 +284,23 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
     }
 
     @Override
+    public void getAllApplicationDeploymentsWithAccess(
+            GetAllApplicationDeploymentsRequest request,
+            StreamObserver<GetAllApplicationDeploymentsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ApplicationDeploymentWithAccess> deployments =
+                    applicationCatalogService.getAllApplicationDeploymentsWithAccess(ctx, request.getGatewayId());
+            observer.onNext(GetAllApplicationDeploymentsWithAccessResponse.newBuilder()
+                    .addAllDeployments(deployments)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void getAccessibleApplicationDeployments(
             GetAccessibleApplicationDeploymentsRequest request,
             StreamObserver<GetAccessibleApplicationDeploymentsResponse> observer) {
@@ -219,6 +313,26 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
                             org.apache.airavata.model.group.proto.ResourcePermissionType.READ);
             observer.onNext(GetAccessibleApplicationDeploymentsResponse.newBuilder()
                     .addAllApplicationDeployments(deployments)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAccessibleApplicationDeploymentsWithAccess(
+            GetAccessibleApplicationDeploymentsRequest request,
+            StreamObserver<GetAccessibleApplicationDeploymentsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ApplicationDeploymentWithAccess> deployments =
+                    applicationCatalogService.getAccessibleApplicationDeploymentsWithAccess(
+                            ctx,
+                            request.getGatewayId(),
+                            org.apache.airavata.model.group.proto.ResourcePermissionType.READ);
+            observer.onNext(GetAccessibleApplicationDeploymentsWithAccessResponse.newBuilder()
+                    .addAllDeployments(deployments)
                     .build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -311,6 +425,20 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
     }
 
     @Override
+    public void getApplicationInterfaceWithAccess(
+            GetApplicationInterfaceRequest request, StreamObserver<ApplicationInterfaceWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ApplicationInterfaceWithAccess result =
+                    applicationCatalogService.getApplicationInterfaceWithAccess(ctx, request.getAppInterfaceId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void updateApplicationInterface(UpdateApplicationInterfaceRequest request, StreamObserver<Empty> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
@@ -361,6 +489,23 @@ public class ApplicationCatalogGrpcService extends ApplicationCatalogServiceGrpc
                     applicationCatalogService.getAllApplicationInterfaces(ctx, request.getGatewayId());
             observer.onNext(GetAllApplicationInterfacesResponse.newBuilder()
                     .addAllApplicationInterfaces(interfaces)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAllApplicationInterfacesWithAccess(
+            GetAllApplicationInterfacesRequest request,
+            StreamObserver<GetAllApplicationInterfacesWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ApplicationInterfaceWithAccess> interfaces =
+                    applicationCatalogService.getAllApplicationInterfacesWithAccess(ctx, request.getGatewayId());
+            observer.onNext(GetAllApplicationInterfacesWithAccessResponse.newBuilder()
+                    .addAllInterfaces(interfaces)
                     .build());
             observer.onCompleted();
         } catch (Exception e) {

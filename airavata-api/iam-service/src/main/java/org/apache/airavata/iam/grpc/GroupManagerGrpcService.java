@@ -22,12 +22,11 @@ package org.apache.airavata.iam.grpc;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.airavata.api.iam.groupmanager.*;
 import org.apache.airavata.config.RequestContext;
+import org.apache.airavata.exception.ServiceNotFoundException;
 import org.apache.airavata.grpc.GrpcRequestContext;
 import org.apache.airavata.grpc.GrpcStatusMapper;
-import org.apache.airavata.iam.model.GroupAdminEntity;
 import org.apache.airavata.iam.model.UserGroupEntity;
 import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.model.group.proto.GroupModel;
@@ -37,9 +36,11 @@ import org.springframework.stereotype.Component;
 public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManagerServiceImplBase {
 
     private final SharingService sharingHandler;
+    private final GroupWithAccessAssembler groupAssembler;
 
-    public GroupManagerGrpcService(SharingService sharingHandler) {
+    public GroupManagerGrpcService(SharingService sharingHandler, GroupWithAccessAssembler groupAssembler) {
         this.sharingHandler = sharingHandler;
+        this.groupAssembler = groupAssembler;
     }
 
     @Override
@@ -71,6 +72,52 @@ public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManage
     }
 
     @Override
+    public void createGroupReconciled(CreateGroupRequest request, StreamObserver<GroupWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GroupModel group = request.getGroup();
+            UserGroupEntity entity = toEntity(group, ctx.getGatewayId());
+            String groupId = sharingHandler.createGroup(entity);
+            // New group: no current roster, so every desired non-owner member/admin is added.
+            sharingHandler.reconcileGroupMembership(
+                    ctx.getGatewayId(), groupId, group.getMembersList(), group.getAdminsList(), group.getOwnerId(), true);
+            UserGroupEntity reloaded = sharingHandler.getGroup(ctx.getGatewayId(), groupId);
+            if (reloaded == null) {
+                throw new ServiceNotFoundException("Group " + groupId + " does not exist");
+            }
+            observer.onNext(groupAssembler.buildGroupWithAccess(ctx, reloaded));
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void updateGroupReconciled(UpdateGroupRequest request, StreamObserver<GroupWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GroupModel group = request.getGroup();
+            sharingHandler.reconcileGroupMembership(
+                    ctx.getGatewayId(),
+                    group.getId(),
+                    group.getMembersList(),
+                    group.getAdminsList(),
+                    group.getOwnerId(),
+                    false);
+            UserGroupEntity entity = toEntity(group, ctx.getGatewayId());
+            sharingHandler.updateGroup(entity);
+            UserGroupEntity reloaded = sharingHandler.getGroup(ctx.getGatewayId(), group.getId());
+            if (reloaded == null) {
+                throw new ServiceNotFoundException("Group " + group.getId() + " does not exist");
+            }
+            observer.onNext(groupAssembler.buildGroupWithAccess(ctx, reloaded));
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<Empty> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
@@ -87,7 +134,25 @@ public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManage
         try {
             RequestContext ctx = GrpcRequestContext.current();
             UserGroupEntity entity = sharingHandler.getGroup(ctx.getGatewayId(), request.getGroupId());
-            observer.onNext(toGroupModel(entity));
+            if (entity == null) {
+                throw new ServiceNotFoundException("Group " + request.getGroupId() + " does not exist");
+            }
+            observer.onNext(GroupWithAccessAssembler.toGroupModel(entity));
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getGroupWithAccess(GetGroupRequest request, StreamObserver<GroupWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            UserGroupEntity entity = sharingHandler.getGroup(ctx.getGatewayId(), request.getGroupId());
+            if (entity == null) {
+                throw new ServiceNotFoundException("Group " + request.getGroupId() + " does not exist");
+            }
+            observer.onNext(groupAssembler.buildGroupWithAccess(ctx, entity));
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -100,7 +165,24 @@ public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManage
             RequestContext ctx = GrpcRequestContext.current();
             List<UserGroupEntity> groups = sharingHandler.getGroups(ctx.getGatewayId(), 0, -1);
             GetGroupsResponse.Builder builder = GetGroupsResponse.newBuilder();
-            groups.forEach(g -> builder.addGroups(toGroupModel(g)));
+            groups.forEach(g -> builder.addGroups(GroupWithAccessAssembler.toGroupModel(g)));
+            observer.onNext(builder.build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getGroupsWithAccess(
+            GetGroupsRequest request, StreamObserver<GetGroupsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<UserGroupEntity> groups = sharingHandler.getGroups(ctx.getGatewayId(), 0, -1);
+            GetGroupsWithAccessResponse.Builder builder = GetGroupsWithAccessResponse.newBuilder();
+            for (UserGroupEntity entity : groups) {
+                builder.addGroups(groupAssembler.buildGroupWithAccess(ctx, entity));
+            }
             observer.onNext(builder.build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -116,7 +198,25 @@ public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManage
             List<UserGroupEntity> groups =
                     sharingHandler.getAllMemberGroupEntitiesForUser(ctx.getGatewayId(), request.getUserName());
             GetAllGroupsUserBelongsResponse.Builder builder = GetAllGroupsUserBelongsResponse.newBuilder();
-            groups.forEach(g -> builder.addGroups(toGroupModel(g)));
+            groups.forEach(g -> builder.addGroups(GroupWithAccessAssembler.toGroupModel(g)));
+            observer.onNext(builder.build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAllGroupsUserBelongsWithAccess(
+            GetAllGroupsUserBelongsRequest request, StreamObserver<GetGroupsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<UserGroupEntity> groups =
+                    sharingHandler.getAllMemberGroupEntitiesForUser(ctx.getGatewayId(), request.getUserName());
+            GetGroupsWithAccessResponse.Builder builder = GetGroupsWithAccessResponse.newBuilder();
+            for (UserGroupEntity entity : groups) {
+                builder.addGroups(groupAssembler.buildGroupWithAccess(ctx, entity));
+            }
             observer.onNext(builder.build());
             observer.onCompleted();
         } catch (Exception e) {
@@ -222,19 +322,5 @@ public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManage
         if (!model.getDescription().isEmpty()) entity.setDescription(model.getDescription());
         if (!model.getOwnerId().isEmpty()) entity.setOwnerId(model.getOwnerId());
         return entity;
-    }
-
-    private static GroupModel toGroupModel(UserGroupEntity entity) {
-        GroupModel.Builder b = GroupModel.newBuilder();
-        if (entity.getGroupId() != null) b.setId(entity.getGroupId());
-        if (entity.getName() != null) b.setName(entity.getName());
-        if (entity.getOwnerId() != null) b.setOwnerId(entity.getOwnerId());
-        if (entity.getDescription() != null) b.setDescription(entity.getDescription());
-        if (entity.getGroupAdmins() != null) {
-            b.addAllAdmins(entity.getGroupAdmins().stream()
-                    .map(GroupAdminEntity::getAdminId)
-                    .collect(Collectors.toList()));
-        }
-        return b.build();
     }
 }

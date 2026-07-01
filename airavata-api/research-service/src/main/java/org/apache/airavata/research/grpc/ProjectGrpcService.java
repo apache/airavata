@@ -67,11 +67,49 @@ public class ProjectGrpcService extends ProjectServiceGrpc.ProjectServiceImplBas
     }
 
     @Override
+    public void getProjectWithAccess(GetProjectRequest request, StreamObserver<ProjectWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ProjectWithAccess result = projectService.getProjectWithAccess(ctx, request.getProjectId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void createProjectWithAccess(CreateProjectRequest request, StreamObserver<ProjectWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ProjectWithAccess result =
+                    projectService.createProjectWithAccess(ctx, request.getGatewayId(), request.getProject());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void updateProject(UpdateProjectRequest request, StreamObserver<Empty> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
             projectService.updateProject(ctx, request.getProjectId(), request.getProject());
             observer.onNext(Empty.getDefaultInstance());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void updateProjectWithAccess(UpdateProjectRequest request, StreamObserver<ProjectWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ProjectWithAccess result =
+                    projectService.updateProjectWithAccess(ctx, request.getProjectId(), request.getProject());
+            observer.onNext(result);
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -98,6 +136,36 @@ public class ProjectGrpcService extends ProjectServiceGrpc.ProjectServiceImplBas
                     ctx, request.getGatewayId(), request.getUserName(), request.getLimit(), request.getOffset());
             observer.onNext(
                     GetUserProjectsResponse.newBuilder().addAllProjects(results).build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getUserProjectsWithAccess(
+            GetUserProjectsRequest request, StreamObserver<GetUserProjectsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ProjectWithAccess> results = projectService.getUserProjectsWithAccess(
+                    ctx, request.getGatewayId(), request.getUserName(), request.getLimit(), request.getOffset());
+            observer.onNext(GetUserProjectsWithAccessResponse.newBuilder()
+                    .addAllProjects(results)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getMostRecentWritableProject(
+            GetUserProjectsRequest request, StreamObserver<ProjectWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ProjectWithAccess result = projectService.getMostRecentWritableProject(
+                    ctx, request.getGatewayId(), request.getUserName());
+            observer.onNext(result);
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));

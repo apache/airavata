@@ -28,6 +28,7 @@ import "org/apache/airavata/model/appcatalog/appdeployment/app_deployment.proto"
 import "org/apache/airavata/model/appcatalog/appinterface/app_interface.proto";
 import "org/apache/airavata/model/appcatalog/computeresource/compute_resource.proto";
 import "org/apache/airavata/model/application/io/application_io.proto";
+import "org/apache/airavata/model/commons/commons.proto";
 
 // ApplicationCatalogService provides RPCs for managing application modules,
 // deployments, and interfaces.
@@ -45,6 +46,15 @@ service ApplicationCatalogService {
   rpc GetApplicationModule(GetApplicationModuleRequest) returns (org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule) {
     option (google.api.http) = {
       get: "/api/v1/app-modules/{app_module_id}"
+    };
+  }
+
+  // Additive: GetApplicationModule plus the caller's server-computed access flags, so a client
+  // does not recompute access from a separate round-trip. Application modules are gateway-admin-
+  // managed catalog entries (no sharing entity), so the flags reflect gateway-admin status.
+  rpc GetApplicationModuleWithAccess(GetApplicationModuleRequest) returns (ApplicationModuleWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules/{app_module_id}:withAccess"
     };
   }
 
@@ -67,9 +77,23 @@ service ApplicationCatalogService {
     };
   }
 
+  // Additive: GetAllAppModules plus each module's caller-scoped access flags (see above).
+  rpc GetAllApplicationModulesWithAccess(GetAllAppModulesRequest) returns (GetAllApplicationModulesWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules:withAccess"
+    };
+  }
+
   rpc GetAccessibleAppModules(GetAccessibleAppModulesRequest) returns (GetAccessibleAppModulesResponse) {
     option (google.api.http) = {
       get: "/api/v1/app-modules:accessible"
+    };
+  }
+
+  // Additive: GetAccessibleAppModules plus each module's caller-scoped access flags.
+  rpc GetAccessibleApplicationModulesWithAccess(GetAccessibleAppModulesRequest) returns (GetAccessibleApplicationModulesWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-modules:accessibleWithAccess"
     };
   }
 
@@ -85,6 +109,23 @@ service ApplicationCatalogService {
   rpc GetApplicationDeployment(GetApplicationDeploymentRequest) returns (org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription) {
     option (google.api.http) = {
       get: "/api/v1/app-deployments/{app_deployment_id}"
+    };
+  }
+
+  // Additive: GetApplicationDeployment plus the caller's server-computed access
+  // flags, so a client does not recompute access from a separate sharing round-trip.
+  rpc GetApplicationDeploymentWithAccess(GetApplicationDeploymentRequest) returns (ApplicationDeploymentWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments/{app_deployment_id}:withAccess"
+    };
+  }
+
+  // The effective batch queues for this deployment: the deployment's compute resource's
+  // queues, with the deployment's default queue flagged and its default node/cpu/walltime
+  // overrides applied. Moves the queue-shaping join the portal does today onto the server.
+  rpc GetApplicationDeploymentQueues(GetApplicationDeploymentRequest) returns (GetApplicationDeploymentQueuesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments/{app_deployment_id}/queues"
     };
   }
 
@@ -107,9 +148,26 @@ service ApplicationCatalogService {
     };
   }
 
+  // Additive: GetAllApplicationDeployments plus each deployment's caller-scoped access flags (see
+  // GetApplicationDeploymentWithAccess). Deployments are sharing entities, so the per-item flags
+  // reflect the caller's sharing OWNER/WRITE grants on each deployment.
+  rpc GetAllApplicationDeploymentsWithAccess(GetAllApplicationDeploymentsRequest) returns (GetAllApplicationDeploymentsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments:withAccess"
+    };
+  }
+
   rpc GetAccessibleApplicationDeployments(GetAccessibleApplicationDeploymentsRequest) returns (GetAccessibleApplicationDeploymentsResponse) {
     option (google.api.http) = {
       get: "/api/v1/app-deployments:accessible"
+    };
+  }
+
+  // Additive: GetAccessibleApplicationDeployments plus each deployment's caller-scoped access flags
+  // (see above).
+  rpc GetAccessibleApplicationDeploymentsWithAccess(GetAccessibleApplicationDeploymentsRequest) returns (GetAccessibleApplicationDeploymentsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-deployments:accessibleWithAccess"
     };
   }
 
@@ -146,6 +204,15 @@ service ApplicationCatalogService {
     };
   }
 
+  // Additive: GetApplicationInterface plus the caller's server-computed access flags, so a client
+  // does not recompute access from a separate round-trip. Application interfaces are gateway-admin-
+  // managed catalog entries (no sharing entity), so the flags reflect gateway-admin status.
+  rpc GetApplicationInterfaceWithAccess(GetApplicationInterfaceRequest) returns (ApplicationInterfaceWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces/{app_interface_id}:withAccess"
+    };
+  }
+
   rpc UpdateApplicationInterface(UpdateApplicationInterfaceRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/app-interfaces/{app_interface_id}"
@@ -168,6 +235,13 @@ service ApplicationCatalogService {
   rpc GetAllApplicationInterfaces(GetAllApplicationInterfacesRequest) returns (GetAllApplicationInterfacesResponse) {
     option (google.api.http) = {
       get: "/api/v1/app-interfaces"
+    };
+  }
+
+  // Additive: GetAllApplicationInterfaces plus each interface's caller-scoped access flags (see above).
+  rpc GetAllApplicationInterfacesWithAccess(GetAllApplicationInterfacesRequest) returns (GetAllApplicationInterfacesWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/app-interfaces:withAccess"
     };
   }
 
@@ -222,6 +296,20 @@ message GetAllAppModulesResponse {
   repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_modules = 1;
 }
 
+// An ApplicationModule unioned with the caller's access flags (see commons.AccessFlags).
+message ApplicationModuleWithAccess {
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule application_module = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+message GetAllApplicationModulesWithAccessResponse {
+  repeated ApplicationModuleWithAccess modules = 1;
+}
+
+message GetAccessibleApplicationModulesWithAccessResponse {
+  repeated ApplicationModuleWithAccess modules = 1;
+}
+
 message GetAccessibleAppModulesRequest {
   string gateway_id = 1;
 }
@@ -245,6 +333,18 @@ message GetApplicationDeploymentRequest {
   string app_deployment_id = 1;
 }
 
+// An ApplicationDeploymentDescription unioned with the caller's access flags (see commons.AccessFlags).
+message ApplicationDeploymentWithAccess {
+  org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployment = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+// The deployment's effective batch queues (the compute resource's queues, with the
+// deployment's default queue flagged and its default node/cpu/walltime overrides applied).
+message GetApplicationDeploymentQueuesResponse {
+  repeated org.apache.airavata.model.appcatalog.computeresource.BatchQueue queues = 1;
+}
+
 message UpdateApplicationDeploymentRequest {
   string app_deployment_id = 1;
   org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployment = 2;
@@ -262,12 +362,20 @@ message GetAllApplicationDeploymentsResponse {
   repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployments = 1;
 }
 
+message GetAllApplicationDeploymentsWithAccessResponse {
+  repeated ApplicationDeploymentWithAccess deployments = 1;
+}
+
 message GetAccessibleApplicationDeploymentsRequest {
   string gateway_id = 1;
 }
 
 message GetAccessibleApplicationDeploymentsResponse {
   repeated org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription application_deployments = 1;
+}
+
+message GetAccessibleApplicationDeploymentsWithAccessResponse {
+  repeated ApplicationDeploymentWithAccess deployments = 1;
 }
 
 message GetAppModuleDeployedResourcesRequest {
@@ -335,6 +443,16 @@ message GetAllApplicationInterfacesRequest {
 
 message GetAllApplicationInterfacesResponse {
   repeated org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription application_interfaces = 1;
+}
+
+// An ApplicationInterfaceDescription unioned with the caller's access flags (see commons.AccessFlags).
+message ApplicationInterfaceWithAccess {
+  org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription application_interface = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+message GetAllApplicationInterfacesWithAccessResponse {
+  repeated ApplicationInterfaceWithAccess interfaces = 1;
 }
 
 message GetApplicationInputsRequest {

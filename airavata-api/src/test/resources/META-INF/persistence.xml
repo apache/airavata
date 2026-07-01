@@ -83,6 +83,8 @@
     <class>org.apache.airavata.research.model.DatasetResourceEntity</class>
     <class>org.apache.airavata.research.model.ExperimentEntity</class>
     <class>org.apache.airavata.research.model.ExperimentErrorEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentSetEntity</class>
+    <class>org.apache.airavata.research.model.ExperimentSetMemberEntity</class>
     <class>org.apache.airavata.research.model.ExperimentStatusEntity</class>
     <class>org.apache.airavata.research.model.ExperimentSummaryEntity</class>
     <class>org.apache.airavata.research.model.NotificationEntity</class>

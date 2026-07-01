@@ -30,6 +30,7 @@ import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.grpc.GrpcRequestContext;
 import org.apache.airavata.grpc.GrpcStatusMapper;
 import org.apache.airavata.iam.service.ResourceSharingService;
+import org.apache.airavata.iam.service.SharedEntityService;
 import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.model.group.proto.ResourcePermissionType;
 import org.springframework.stereotype.Component;
@@ -39,10 +40,15 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
 
     private final ResourceSharingService resourceSharingService;
     private final SharingService sharingHandler;
+    private final SharedEntityService sharedEntityService;
 
-    public SharingGrpcService(ResourceSharingService resourceSharingService, SharingService sharingHandler) {
+    public SharingGrpcService(
+            ResourceSharingService resourceSharingService,
+            SharingService sharingHandler,
+            SharedEntityService sharedEntityService) {
         this.resourceSharingService = resourceSharingService;
         this.sharingHandler = sharingHandler;
+        this.sharedEntityService = sharedEntityService;
     }
 
     // ========================================================================
@@ -177,6 +183,45 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
             boolean hasAccess = resourceSharingService.userHasAccess(ctx, request.getResourceId(), permType);
             observer.onNext(
                     UserHasAccessResponse.newBuilder().setHasAccess(hasAccess).build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getSharedEntity(GetSharedEntityRequest request, StreamObserver<SharedEntity> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            observer.onNext(sharedEntityService.loadSharedEntity(ctx, request.getEntityId(), true));
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAllSharedEntity(GetSharedEntityRequest request, StreamObserver<SharedEntity> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            observer.onNext(sharedEntityService.loadSharedEntity(ctx, request.getEntityId(), false));
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void setEntitySharing(SetEntitySharingRequest request, StreamObserver<Empty> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            Map<String, ResourcePermissionType> userPermissions =
+                    toResourcePermissionMap(request.getUserPermissionsMap());
+            Map<String, ResourcePermissionType> groupPermissions =
+                    toResourcePermissionMap(request.getGroupPermissionsMap());
+            resourceSharingService.setEntitySharing(
+                    ctx, request.getResourceId(), userPermissions, groupPermissions);
+            observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));

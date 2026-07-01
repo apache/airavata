@@ -43,6 +43,28 @@ service GroupManagerService {
     };
   }
 
+  // Additive declarative create: the client sends the desired full members + admins lists in
+  // GroupModel and the server reconciles (computes add/remove deltas) in one call. Unlike CreateGroup
+  // (which persists only metadata and ignores members/admins), this rpc also applies the roster, so a
+  // thin client need not diff and fan out the membership/admin mutator rpcs itself.
+  rpc CreateGroupReconciled(CreateGroupRequest) returns (GroupWithAccess) {
+    option (google.api.http) = {
+      post: "/api/v1/groups:reconcile"
+      body: "group"
+    };
+  }
+
+  // Additive declarative update: the client sends the desired full members + admins lists in
+  // GroupModel and the server reconciles current vs desired (add/remove members and admins, promoting
+  // admins-not-yet-members to members) plus the metadata, in one call. Unlike UpdateGroup (which
+  // persists only metadata and ignores members/admins), this rpc reconciles the roster server-side.
+  rpc UpdateGroupReconciled(UpdateGroupRequest) returns (GroupWithAccess) {
+    option (google.api.http) = {
+      put: "/api/v1/groups/{group.id}:reconcile"
+      body: "group"
+    };
+  }
+
   rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/groups/{group_id}"
@@ -55,15 +77,43 @@ service GroupManagerService {
     };
   }
 
+  // Additive: GetGroup plus the caller's six server-computed group-access flags (and the
+  // group's members), so a client does not recompute group access from separate
+  // GroupManager / gateway-groups round-trips.
+  rpc GetGroupWithAccess(GetGroupRequest) returns (GroupWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/groups/{group_id}:withAccess"
+    };
+  }
+
   rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse) {
     option (google.api.http) = {
       get: "/api/v1/groups"
     };
   }
 
+  // Additive: the list analogue of GetGroupWithAccess. Each group is unioned with the
+  // caller's six server-computed group-access flags; members/admins are populated only for
+  // insiders (see GetGroupWithAccess) so non-members do not see the roster.
+  rpc GetGroupsWithAccess(GetGroupsRequest) returns (GetGroupsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/groups:withAccess"
+    };
+  }
+
   rpc GetAllGroupsUserBelongs(GetAllGroupsUserBelongsRequest) returns (GetAllGroupsUserBelongsResponse) {
     option (google.api.http) = {
       get: "/api/v1/groups/user/{user_name}"
+    };
+  }
+
+  // Additive: the with-access analogue of GetAllGroupsUserBelongs. Each group the
+  // user belongs to is unioned with the caller's six server-computed group-access
+  // flags (members/admins populated for insiders, as GetGroupsWithAccess), so the
+  // portal no longer fans out per-group HasAdminAccess / GetGatewayGroups lookups.
+  rpc GetAllGroupsUserBelongsWithAccess(GetAllGroupsUserBelongsRequest) returns (GetGroupsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/groups/user/{user_name}:withAccess"
     };
   }
 
@@ -136,11 +186,33 @@ message GetGroupRequest {
   string group_id = 1;
 }
 
+// The caller's six cross-context group-access flags. A group needs more than the
+// two-flag commons.AccessFlags: an admin lookup, ownership, membership, and whether the
+// group is one of the three gateway-identity groups (admins / read-only admins / default users).
+message GroupAccessFlags {
+  bool is_admin = 1;
+  bool is_owner = 2;
+  bool is_member = 3;
+  bool is_gateway_admins_group = 4;
+  bool is_read_only_gateway_admins_group = 5;
+  bool is_default_gateway_users_group = 6;
+}
+
+// A GroupModel (members populated) unioned with the caller's group-access flags.
+message GroupWithAccess {
+  org.apache.airavata.model.group.GroupModel group = 1;
+  GroupAccessFlags access = 2;
+}
+
 message GetGroupsRequest {
 }
 
 message GetGroupsResponse {
   repeated org.apache.airavata.model.group.GroupModel groups = 1;
+}
+
+message GetGroupsWithAccessResponse {
+  repeated GroupWithAccess groups = 1;
 }
 
 message GetAllGroupsUserBelongsRequest {

@@ -25,9 +25,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.api.project.ProjectWithAccess;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.exception.ServiceAuthorizationException;
 import org.apache.airavata.exception.ServiceException;
+import org.apache.airavata.exception.ServiceNotFoundException;
 import org.apache.airavata.interfaces.ProjectRegistry;
 import org.apache.airavata.interfaces.SharingFacade;
 import org.apache.airavata.model.workspace.proto.Project;
@@ -148,6 +150,161 @@ class ProjectServiceTest {
         List<Project> result = projectService.getUserProjects(ctx, "testGateway", "testUser", 10, 0);
 
         assertEquals(2, result.size());
+    }
+
+    @Test
+    void getMostRecentWritableProject_picksNewestWritable() throws Exception {
+        // Caller-bound candidate set (sharing enabled path: searchEntityIds + searchProjects).
+        when(sharingHandler.searchEntityIds(eq("testGateway"), eq("testUser@testGateway"), anyList(), eq(0), eq(-1)))
+                .thenReturn(List.of("proj-old", "proj-new"));
+
+        Project older = Project.newBuilder()
+                .setProjectId("proj-old")
+                .setOwner("testUser")
+                .setGatewayId("testGateway")
+                .setCreationTime(1000L)
+                .build();
+        Project newer = Project.newBuilder()
+                .setProjectId("proj-new")
+                .setOwner("testUser")
+                .setGatewayId("testGateway")
+                .setCreationTime(2000L)
+                .build();
+        when(projectRegistry.searchProjects(eq("testGateway"), eq("testUser"), anyList(), anyMap(), anyInt(), anyInt()))
+                .thenReturn(List.of(older, newer));
+
+        ProjectWithAccess result = projectService.getMostRecentWritableProject(ctx, "testGateway", "testUser");
+
+        assertEquals("proj-new", result.getProject().getProjectId());
+        assertTrue(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+    }
+
+    @Test
+    void getMostRecentWritableProject_usesWriteGrantForNonOwner() throws Exception {
+        when(sharingHandler.searchEntityIds(eq("testGateway"), eq("testUser@testGateway"), anyList(), eq(0), eq(-1)))
+                .thenReturn(List.of("proj-shared"));
+
+        Project shared = Project.newBuilder()
+                .setProjectId("proj-shared")
+                .setOwner("otherUser")
+                .setGatewayId("testGateway")
+                .setCreationTime(5000L)
+                .build();
+        when(projectRegistry.searchProjects(eq("testGateway"), eq("testUser"), anyList(), anyMap(), anyInt(), anyInt()))
+                .thenReturn(List.of(shared));
+        // Sharing enabled: non-owner holds a WRITE grant.
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "proj-shared", "testGateway:WRITE"))
+                .thenReturn(true);
+
+        ProjectWithAccess result = projectService.getMostRecentWritableProject(ctx, "testGateway", "testUser");
+
+        assertEquals("proj-shared", result.getProject().getProjectId());
+        assertFalse(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+    }
+
+    @Test
+    void getMostRecentWritableProject_throwsWhenNoneWritable() throws Exception {
+        // Empty caller-accessible set -> getUserProjects returns empty -> NOT_FOUND.
+        when(sharingHandler.searchEntityIds(eq("testGateway"), eq("testUser@testGateway"), anyList(), eq(0), eq(-1)))
+                .thenReturn(List.of());
+
+        assertThrows(
+                ServiceNotFoundException.class,
+                () -> projectService.getMostRecentWritableProject(ctx, "testGateway", "testUser"));
+    }
+
+    @Test
+    void createProjectWithAccess_ownerGetsFullAccess() throws Exception {
+        Project project = Project.newBuilder()
+                .setName("test-proj")
+                .setGatewayId("testGateway")
+                .setOwner("testUser")
+                .build();
+
+        when(projectRegistry.createProject("testGateway", project)).thenReturn("proj-123");
+        // getProjectWithAccess re-reads the new project to derive flags from a single source of truth.
+        Project created = project.toBuilder().setProjectId("proj-123").build();
+        when(projectRegistry.getProject("proj-123")).thenReturn(created);
+
+        ProjectWithAccess result = projectService.createProjectWithAccess(ctx, "testGateway", project);
+
+        assertEquals("proj-123", result.getProject().getProjectId());
+        assertTrue(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+        verify(projectRegistry).createProject("testGateway", project);
+    }
+
+    @Test
+    void updateProjectWithAccess_ownerGetsFullAccess() throws Exception {
+        Project existing = Project.newBuilder()
+                .setProjectId("proj-123")
+                .setOwner("testUser")
+                .setGatewayId("testGateway")
+                .build();
+        Project updated = Project.newBuilder()
+                .setProjectId("proj-123")
+                .setOwner("testUser")
+                .setGatewayId("testGateway")
+                .setName("renamed")
+                .build();
+
+        when(projectRegistry.getProject("proj-123")).thenReturn(existing);
+
+        ProjectWithAccess result = projectService.updateProjectWithAccess(ctx, "proj-123", updated);
+
+        assertEquals("proj-123", result.getProject().getProjectId());
+        assertTrue(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+        verify(projectRegistry).updateProject("proj-123", updated);
+    }
+
+    @Test
+    void updateProjectWithAccess_nonOwnerWithWriteGrant() throws Exception {
+        Project existing = Project.newBuilder()
+                .setProjectId("proj-123")
+                .setOwner("otherUser")
+                .setGatewayId("testGateway")
+                .build();
+        Project updated = Project.newBuilder()
+                .setProjectId("proj-123")
+                .setOwner("otherUser")
+                .setGatewayId("testGateway")
+                .setName("renamed")
+                .build();
+
+        when(projectRegistry.getProject("proj-123")).thenReturn(existing);
+        // Sharing enabled: non-owner holds a WRITE grant on this project.
+        when(sharingHandler.userHasAccess("testGateway", "testUser@testGateway", "proj-123", "testGateway:WRITE"))
+                .thenReturn(true);
+
+        ProjectWithAccess result = projectService.updateProjectWithAccess(ctx, "proj-123", updated);
+
+        assertEquals("proj-123", result.getProject().getProjectId());
+        assertFalse(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+        verify(projectRegistry).updateProject("proj-123", updated);
+    }
+
+    @Test
+    void updateProjectWithAccess_rejectsOwnerChange() throws Exception {
+        Project existing = Project.newBuilder()
+                .setProjectId("proj-123")
+                .setOwner("testUser")
+                .setGatewayId("testGateway")
+                .build();
+        Project updated = Project.newBuilder()
+                .setProjectId("proj-123")
+                .setOwner("newOwner")
+                .setGatewayId("testGateway")
+                .build();
+
+        when(projectRegistry.getProject("proj-123")).thenReturn(existing);
+
+        assertThrows(
+                ServiceException.class, () -> projectService.updateProjectWithAccess(ctx, "proj-123", updated));
+        verify(projectRegistry, never()).updateProject(anyString(), any());
     }
 
     @Test

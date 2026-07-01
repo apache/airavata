@@ -26,6 +26,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "org/apache/airavata/model/appcatalog/gatewayprofile/gateway_profile.proto";
 import "org/apache/airavata/model/appcatalog/accountprovisioning/account_provisioning.proto";
+import "org/apache/airavata/model/commons/commons.proto";
 
 // GatewayResourceProfileService provides RPCs for managing gateway resource profiles,
 // compute preferences, storage preferences, and SSH account provisioners.
@@ -43,6 +44,14 @@ service GatewayResourceProfileService {
   rpc GetGatewayResourceProfile(GetGatewayResourceProfileRequest) returns (org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile) {
     option (google.api.http) = {
       get: "/api/v1/gateway-profiles/{gateway_id}"
+    };
+  }
+
+  // Additive: GetGatewayResourceProfile plus the caller's server-computed access
+  // flags, so a client does not recompute access from a separate sharing round-trip.
+  rpc GetGatewayResourceProfileWithAccess(GetGatewayResourceProfileRequest) returns (GatewayResourceProfileWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/gateway-profiles/{gateway_id}:withAccess"
     };
   }
 
@@ -154,6 +163,14 @@ message RegisterGatewayResourceProfileResponse {
 
 message GetGatewayResourceProfileRequest {
   string gateway_id = 1;
+}
+
+// A GatewayResourceProfile unioned with the caller's access flags (see commons.AccessFlags).
+// A gateway resource profile is a gateway-level entity with no owner and no sharing entity,
+// so is_owner is always false and user_has_write_access reflects gateway-admin (admin-rw).
+message GatewayResourceProfileWithAccess {
+  org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gateway_resource_profile = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
 }
 
 message UpdateGatewayResourceProfileRequest {

@@ -63,10 +63,47 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
     }
 
     @Override
+    public void createExperimentWithAccess(
+            CreateExperimentRequest request, StreamObserver<ExperimentWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ExperimentWithAccess result = experimentService.createExperimentWithAccess(ctx, request.getExperiment());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void getExperiment(GetExperimentRequest request, StreamObserver<ExperimentModel> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
             ExperimentModel result = experimentService.getExperiment(ctx, request.getExperimentId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getExperimentWithAccess(GetExperimentRequest request, StreamObserver<ExperimentWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ExperimentWithAccess result = experimentService.getExperimentWithAccess(ctx, request.getExperimentId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getFullExperiment(GetExperimentRequest request, StreamObserver<FullExperiment> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            FullExperiment result = experimentService.getFullExperiment(ctx, request.getExperimentId());
             observer.onNext(result);
             observer.onCompleted();
         } catch (Exception e) {
@@ -92,6 +129,20 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
             RequestContext ctx = GrpcRequestContext.current();
             experimentService.updateExperiment(ctx, request.getExperimentId(), request.getExperiment());
             observer.onNext(Empty.getDefaultInstance());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void updateExperimentWithAccess(
+            UpdateExperimentRequest request, StreamObserver<ExperimentWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ExperimentWithAccess result = experimentService.updateExperimentWithAccess(
+                    ctx, request.getExperimentId(), request.getExperiment());
+            observer.onNext(result);
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -137,6 +188,32 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
     }
 
     @Override
+    public void searchExperimentsWithAccess(
+            SearchExperimentsRequest request, StreamObserver<SearchExperimentsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            // TODO: Map string filter keys to ExperimentSearchFields enum — needs mapper
+            Map<ExperimentSearchFields, String> filters = new HashMap<>();
+            for (Map.Entry<String, String> entry : request.getFiltersMap().entrySet()) {
+                filters.put(ExperimentSearchFields.valueOf(entry.getKey()), entry.getValue());
+            }
+            List<ExperimentSummaryWithAccess> results = experimentService.searchExperimentsWithAccess(
+                    ctx,
+                    request.getGatewayId(),
+                    request.getUserName(),
+                    filters,
+                    request.getLimit(),
+                    request.getOffset());
+            observer.onNext(SearchExperimentsWithAccessResponse.newBuilder()
+                    .addAllExperiments(results)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void getExperimentStatus(GetExperimentStatusRequest request, StreamObserver<ExperimentStatus> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
@@ -171,6 +248,23 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
             List<ExperimentModel> results = experimentService.getExperimentsInProject(
                     ctx, request.getProjectId(), request.getLimit(), request.getOffset());
             observer.onNext(GetExperimentsInProjectResponse.newBuilder()
+                    .addAllExperiments(results)
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getExperimentsInProjectWithAccess(
+            GetExperimentsInProjectRequest request,
+            StreamObserver<GetExperimentsInProjectWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            List<ExperimentWithAccess> results = experimentService.getExperimentsInProjectWithAccess(
+                    ctx, request.getProjectId(), request.getLimit(), request.getOffset());
+            observer.onNext(GetExperimentsInProjectWithAccessResponse.newBuilder()
                     .addAllExperiments(results)
                     .build());
             observer.onCompleted();
@@ -260,6 +354,20 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
     }
 
     @Override
+    public void launchExperimentWithStorageSetup(
+            LaunchExperimentWithStorageSetupRequest request, StreamObserver<Empty> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            experimentService.launchExperimentWithStorageSetup(
+                    ctx, request.getExperimentId(), request.getGatewayId(), request.getNotificationEmail());
+            observer.onNext(Empty.getDefaultInstance());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
     public void terminateExperiment(TerminateExperimentRequest request, StreamObserver<Empty> observer) {
         try {
             RequestContext ctx = GrpcRequestContext.current();
@@ -283,6 +391,23 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
                     false);
             observer.onNext(
                     CloneExperimentResponse.newBuilder().setExperimentId(newId).build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void cloneExperimentWithInputFiles(
+            CloneExperimentWithInputFilesRequest request, StreamObserver<ExperimentWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ExperimentWithAccess result = experimentService.cloneExperimentWithInputFiles(
+                    ctx,
+                    request.getExperimentId(),
+                    request.getNewExperimentName(),
+                    request.getNewExperimentProjectId());
+            observer.onNext(result);
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));
@@ -359,6 +484,19 @@ public class ExperimentGrpcService extends ExperimentServiceGrpc.ExperimentServi
                     request.getLimit(),
                     request.getOffset());
             observer.onNext(stats);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void createExperimentFromSpec(
+            CreateExperimentFromSpecRequest request, StreamObserver<ExperimentWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            ExperimentWithAccess r = experimentService.createExperimentFromSpec(ctx, request.getSpec());
+            observer.onNext(r);
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));

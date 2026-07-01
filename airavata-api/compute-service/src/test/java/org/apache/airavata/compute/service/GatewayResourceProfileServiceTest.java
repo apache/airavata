@@ -24,6 +24,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.airavata.api.gatewayprofile.GatewayResourceProfileWithAccess;
+import org.apache.airavata.config.Constants;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.exception.ServiceException;
 import org.apache.airavata.interfaces.ResourceProfileRegistry;
@@ -77,6 +79,41 @@ class GatewayResourceProfileServiceTest {
 
         assertNotNull(result);
         assertEquals("testGateway", result.getGatewayId());
+    }
+
+    @Test
+    void getGatewayResourceProfileWithAccess_adminCallerHasWriteAccess() throws Exception {
+        GatewayResourceProfile profile =
+                GatewayResourceProfile.newBuilder().setGatewayId("testGateway").build();
+        when(registryHandler.getGatewayResourceProfile("testGateway")).thenReturn(profile);
+        // admin-rw role -> ctx.isGatewayAdmin() == true
+        RequestContext adminCtx = new RequestContext(
+                "admin",
+                "testGateway",
+                "token123",
+                Map.of("userName", "admin", "gatewayId", "testGateway"),
+                List.of(Constants.ROLE_GATEWAY_ADMIN));
+
+        GatewayResourceProfileWithAccess result = service.getGatewayResourceProfileWithAccess(adminCtx, "testGateway");
+
+        assertEquals("testGateway", result.getGatewayResourceProfile().getGatewayId());
+        // gateway resource profile has no owner and no sharing entity
+        assertFalse(result.getAccess().getIsOwner());
+        assertTrue(result.getAccess().getUserHasWriteAccess());
+    }
+
+    @Test
+    void getGatewayResourceProfileWithAccess_nonAdminCallerHasNoWriteAccess() throws Exception {
+        GatewayResourceProfile profile =
+                GatewayResourceProfile.newBuilder().setGatewayId("testGateway").build();
+        when(registryHandler.getGatewayResourceProfile("testGateway")).thenReturn(profile);
+        // no roles -> ctx.isGatewayAdmin() == false
+
+        GatewayResourceProfileWithAccess result = service.getGatewayResourceProfileWithAccess(ctx, "testGateway");
+
+        assertEquals("testGateway", result.getGatewayResourceProfile().getGatewayId());
+        assertFalse(result.getAccess().getIsOwner());
+        assertFalse(result.getAccess().getUserHasWriteAccess());
     }
 
     @Test

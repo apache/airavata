@@ -228,6 +228,24 @@ public class SSHJStorageAdaptor implements StorageResourceAdaptor {
     }
 
     @Override
+    public void copyFile(String sourcePath, String destinationPath) throws AgentException {
+        // SFTP has no server-side copy primitive, so stage the source through a local temp
+        // file and re-upload to the destination (same get/put mechanism used by download/upload).
+        // Unlike moveFile, the source is left in place.
+        try (SFTPClient sftp = openSftp()) {
+            java.io.File tempFile = java.io.File.createTempFile("airavata-copy-", ".tmp");
+            try {
+                sftp.get(sourcePath, tempFile.getAbsolutePath());
+                sftp.put(tempFile.getAbsolutePath(), destinationPath);
+            } finally {
+                tempFile.delete();
+            }
+        } catch (Exception e) {
+            throw new AgentException("Failed to copy file: " + sourcePath + " -> " + destinationPath, e);
+        }
+    }
+
+    @Override
     public void createSymlink(String targetPath, String linkPath) throws AgentException {
         try (SFTPClient sftp = openSftp()) {
             sftp.symlink(linkPath, targetPath);

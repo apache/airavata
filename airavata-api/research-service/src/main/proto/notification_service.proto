@@ -25,6 +25,7 @@ option java_multiple_files = true;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "org/apache/airavata/model/workspace/workspace.proto";
+import "org/apache/airavata/model/commons/commons.proto";
 
 // NotificationService provides RPCs for managing notifications.
 service NotificationService {
@@ -58,6 +59,24 @@ service NotificationService {
   rpc GetAllNotifications(GetAllNotificationsRequest) returns (GetAllNotificationsResponse) {
     option (google.api.http) = {
       get: "/api/v1/gateways/{gateway_id}/notifications"
+    };
+  }
+
+  // Additive: GetNotification plus the caller's server-computed access flags, so a
+  // client does not recompute access from a separate round-trip. Notifications are
+  // gateway-level broadcast entities with no owner/sharing, so is_owner is always
+  // false and user_has_write_access reflects the caller's gateway-admin role.
+  rpc GetNotificationWithAccess(GetNotificationRequest) returns (NotificationWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/notifications/{notification_id}:withAccess"
+    };
+  }
+
+  // Additive: GetAllNotifications plus each notification's caller-scoped access flags,
+  // so a client does not recompute access per notification from separate round-trips.
+  rpc GetAllNotificationsWithAccess(GetAllNotificationsRequest) returns (GetAllNotificationsWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/gateways/{gateway_id}/notifications:withAccess"
     };
   }
 }
@@ -94,4 +113,14 @@ message GetAllNotificationsRequest {
 
 message GetAllNotificationsResponse {
   repeated org.apache.airavata.model.workspace.Notification notifications = 1;
+}
+
+// A Notification unioned with the caller's access flags (see commons.AccessFlags).
+message NotificationWithAccess {
+  org.apache.airavata.model.workspace.Notification notification = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
+message GetAllNotificationsWithAccessResponse {
+  repeated NotificationWithAccess notifications = 1;
 }

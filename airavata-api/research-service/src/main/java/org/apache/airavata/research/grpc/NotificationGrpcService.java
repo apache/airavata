@@ -105,4 +105,32 @@ public class NotificationGrpcService extends NotificationServiceGrpc.Notificatio
             observer.onError(GrpcStatusMapper.toStatusException(e));
         }
     }
+
+    @Override
+    public void getNotificationWithAccess(
+            GetNotificationRequest request, StreamObserver<NotificationWithAccess> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            NotificationWithAccess result = notificationService.getNotificationWithAccess(
+                    ctx, request.getGatewayId(), request.getNotificationId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getAllNotificationsWithAccess(
+            GetAllNotificationsRequest request, StreamObserver<GetAllNotificationsWithAccessResponse> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            GetAllNotificationsWithAccessResponse result =
+                    notificationService.getAllNotificationsWithAccess(ctx, request.getGatewayId());
+            observer.onNext(result);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
 }

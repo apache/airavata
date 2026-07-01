@@ -26,6 +26,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "org/apache/airavata/model/appcatalog/groupresourceprofile/group_resource_profile.proto";
 import "org/apache/airavata/model/appcatalog/gatewaygroups/gateway_groups.proto";
+import "org/apache/airavata/model/commons/commons.proto";
 
 // GroupResourceProfileService provides RPCs for managing group resource profiles,
 // compute preferences, compute resource policies, and batch queue policies.
@@ -46,9 +47,28 @@ service GroupResourceProfileService {
     };
   }
 
+  // Additive: GetGroupResourceProfile plus the caller's server-computed access
+  // flags, so a client does not recompute access from a separate sharing round-trip.
+  rpc GetGroupResourceProfileWithAccess(GetGroupResourceProfileRequest) returns (GroupResourceProfileWithAccess) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles/{group_resource_profile_id}:withAccess"
+    };
+  }
+
   rpc UpdateGroupResourceProfile(UpdateGroupResourceProfileRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/group-profiles/{group_resource_profile_id}"
+      body: "group_resource_profile"
+    };
+  }
+
+  // Reconcile-then-update for thin clients: removes the child compute preferences /
+  // resource policies / batch-queue policies absent from the incoming profile, applies
+  // the update, and returns the refreshed profile with the caller's access flags —
+  // replacing the SDK helper's client-side reconcile loop.
+  rpc UpdateGroupResourceProfileReconciled(UpdateGroupResourceProfileRequest) returns (GroupResourceProfileWithAccess) {
+    option (google.api.http) = {
+      put: "/api/v1/group-profiles/{group_resource_profile_id}:reconciled"
       body: "group_resource_profile"
     };
   }
@@ -62,6 +82,14 @@ service GroupResourceProfileService {
   rpc GetGroupResourceList(GetGroupResourceListRequest) returns (GetGroupResourceListResponse) {
     option (google.api.http) = {
       get: "/api/v1/group-profiles"
+    };
+  }
+
+  // Additive: GetGroupResourceList plus each profile's server-computed access flags
+  // for the caller, so a client does not recompute access from a separate sharing round-trip.
+  rpc GetGroupResourceListWithAccess(GetGroupResourceListRequest) returns (GetGroupResourceListWithAccessResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/group-profiles:withAccess"
     };
   }
 
@@ -144,6 +172,12 @@ message GetGroupResourceProfileRequest {
   string group_resource_profile_id = 1;
 }
 
+// A GroupResourceProfile unioned with the caller's access flags (see commons.AccessFlags).
+message GroupResourceProfileWithAccess {
+  org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile group_resource_profile = 1;
+  org.apache.airavata.model.commons.AccessFlags access = 2;
+}
+
 message UpdateGroupResourceProfileRequest {
   string group_resource_profile_id = 1;
   org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile group_resource_profile = 2;
@@ -157,6 +191,10 @@ message GetGroupResourceListRequest {}
 
 message GetGroupResourceListResponse {
   repeated org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile group_resource_profiles = 1;
+}
+
+message GetGroupResourceListWithAccessResponse {
+  repeated GroupResourceProfileWithAccess profiles = 1;
 }
 
 // --- Group Compute Preference Request/Response messages ---

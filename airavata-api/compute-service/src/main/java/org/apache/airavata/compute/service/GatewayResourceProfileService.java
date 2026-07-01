@@ -21,8 +21,10 @@ package org.apache.airavata.compute.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.api.gatewayprofile.GatewayResourceProfileWithAccess;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.exception.ServiceException;
+import org.apache.airavata.exception.ServiceNotFoundException;
 import org.apache.airavata.interfaces.ConfigParam;
 import org.apache.airavata.interfaces.ResourceProfileRegistry;
 import org.apache.airavata.interfaces.SSHAccountProvisionerFactory;
@@ -33,6 +35,7 @@ import org.apache.airavata.model.appcatalog.accountprovisioning.proto.SSHAccount
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
+import org.apache.airavata.model.commons.proto.AccessFlags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -66,6 +69,32 @@ public class GatewayResourceProfileService {
             return registryHandler.getGatewayResourceProfile(gatewayId);
         } catch (Exception e) {
             throw new ServiceException("Error while retrieving gateway resource profile: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@link #getGatewayResourceProfile} plus the caller's server-computed access flags (additive).
+     * Reuses {@code getGatewayResourceProfile} for READ enforcement so a caller can never
+     * self-authorize. A gateway resource profile is a gateway-level entity with no owner and no
+     * sharing entity, so {@code is_owner} is always false and {@code user_has_write_access} reflects
+     * the gateway-admin (admin-rw) role of the caller.
+     */
+    public GatewayResourceProfileWithAccess getGatewayResourceProfileWithAccess(RequestContext ctx, String gatewayId)
+            throws ServiceException {
+        GatewayResourceProfile profile = getGatewayResourceProfile(ctx, gatewayId);
+        if (profile == null) {
+            throw new ServiceNotFoundException("Gateway resource profile " + gatewayId + " does not exist");
+        }
+        try {
+            return GatewayResourceProfileWithAccess.newBuilder()
+                    .setGatewayResourceProfile(profile)
+                    .setAccess(AccessFlags.newBuilder()
+                            .setIsOwner(false)
+                            .setUserHasWriteAccess(ctx.isGatewayAdmin())
+                            .build())
+                    .build();
+        } catch (Exception e) {
+            throw new ServiceException("Error while computing gateway resource profile access: " + e.getMessage(), e);
         }
     }
 

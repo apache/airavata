@@ -42,6 +42,12 @@ service UserStorageService {
     };
   }
 
+  rpc DownloadDataProduct(DownloadDataProductRequest) returns (DownloadFileResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user-storage/data-products:download"
+    };
+  }
+
   rpc FileExists(FileExistsRequest) returns (FileExistsResponse) {
     option (google.api.http) = {
       get: "/api/v1/user-storage/files:exists"
@@ -75,6 +81,13 @@ service UserStorageService {
   rpc MoveFile(MoveFileRequest) returns (org.apache.airavata.model.data.replica.DataProductModel) {
     option (google.api.http) = {
       post: "/api/v1/user-storage/files:move"
+      body: "*"
+    };
+  }
+
+  rpc CopyFile(CopyFileRequest) returns (org.apache.airavata.model.data.replica.DataProductModel) {
+    option (google.api.http) = {
+      post: "/api/v1/user-storage/files:copy"
       body: "*"
     };
   }
@@ -147,6 +160,10 @@ message DownloadFileRequest {
   string path = 2;
 }
 
+message DownloadDataProductRequest {
+  string product_uri = 1;
+}
+
 message DownloadFileResponse {
   bytes content = 1;
   string name = 2;
@@ -192,6 +209,12 @@ message DeleteDirRequest {
 }
 
 message MoveFileRequest {
+  string storage_resource_id = 1;
+  string source_path = 2;
+  string destination_path = 3;
+}
+
+message CopyFileRequest {
   string storage_resource_id = 1;
   string source_path = 2;
   string destination_path = 3;

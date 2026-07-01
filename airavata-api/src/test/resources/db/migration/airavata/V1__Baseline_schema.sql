@@ -942,4 +942,32 @@ CREATE TABLE `user_storage_preference` (
   PRIMARY KEY (`GATEWAY_ID`,`STORAGE_RESOURCE_ID`,`USER_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
+CREATE TABLE `experiment_set` (
+  `id` varchar(48) NOT NULL,
+  `createdAt` datetime(6) NOT NULL,
+  `gatewayId` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL,
+  `setName` varchar(255) NOT NULL,
+  `sweepSpecJson` longtext DEFAULT NULL,
+  `updatedAt` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+CREATE TABLE `experiment_set_member` (
+  `id` varchar(48) NOT NULL,
+  `experimentId` varchar(255) NOT NULL,
+  `ordinal` int(11) NOT NULL,
+  `experiment_set_id` varchar(48) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK7jxgcnx5bslj9v24wr47r5j38` (`experiment_set_id`),
+  CONSTRAINT `FK7jxgcnx5bslj9v24wr47r5j38` FOREIGN KEY (`experiment_set_id`) REFERENCES `experiment_set` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+CREATE TABLE `user_preferences` (
+  `gatewayId` varchar(255) NOT NULL,
+  `userId` varchar(255) NOT NULL,
+  `preferencesJson` text DEFAULT NULL,
+  `createdAt` datetime(6) DEFAULT NULL,
+  `updatedAt` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`gatewayId`,`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
 SET FOREIGN_KEY_CHECKS=1;

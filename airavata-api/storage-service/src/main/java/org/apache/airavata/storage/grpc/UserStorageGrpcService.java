@@ -37,9 +37,10 @@ import org.apache.airavata.interfaces.StorageProvider;
 import org.apache.airavata.interfaces.StorageResourceAdaptor;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
+import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
-import org.apache.airavata.task.AdaptorSupport;
+import org.apache.airavata.storage.StoragePathResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -49,20 +50,20 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
 
     private static final Logger logger = LoggerFactory.getLogger(UserStorageGrpcService.class);
 
-    private final AdaptorSupport adaptorSupport;
     private final ExperimentRegistry experimentRegistry;
     private final GatewayStoragePreferenceProvider gatewayStoragePreferenceProvider;
     private final StorageProvider storageProvider;
+    private final StoragePathResolver storagePathResolver;
 
     public UserStorageGrpcService(
-            AdaptorSupport adaptorSupport,
             ExperimentRegistry experimentRegistry,
             GatewayStoragePreferenceProvider gatewayStoragePreferenceProvider,
-            StorageProvider storageProvider) {
-        this.adaptorSupport = adaptorSupport;
+            StorageProvider storageProvider,
+            StoragePathResolver storagePathResolver) {
         this.experimentRegistry = experimentRegistry;
         this.gatewayStoragePreferenceProvider = gatewayStoragePreferenceProvider;
         this.storageProvider = storageProvider;
+        this.storagePathResolver = storagePathResolver;
     }
 
     /**
@@ -85,89 +86,17 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         }
     }
 
-    private StoragePreference resolveStoragePreference(String storageResourceId) throws Exception {
-        RequestContext ctx = GrpcRequestContext.current();
-        var prefs = gatewayStoragePreferenceProvider.getAllGatewayStoragePreferences(ctx.getGatewayId());
-        if (prefs == null || prefs.isEmpty()) {
-            return null;
-        }
-        String resolvedId = (storageResourceId != null && !storageResourceId.isEmpty())
-                ? storageResourceId
-                : prefs.get(0).getStorageResourceId();
-        for (var pref : prefs) {
-            if (pref.getStorageResourceId().equals(resolvedId)) {
-                return pref;
-            }
-        }
-        return prefs.get(0);
-    }
-
     /** Resolve the effective storage resource id: the request's, else the gateway default. */
     private String resolveStorageResourceId(String storageResourceId) throws Exception {
-        if (storageResourceId != null && !storageResourceId.isEmpty()) {
-            return storageResourceId;
-        }
-        StoragePreference pref = resolveStoragePreference(storageResourceId);
-        return pref != null ? pref.getStorageResourceId() : "";
+        return storagePathResolver.resolveStorageResourceId(storageResourceId);
     }
 
     private StorageResourceAdaptor getStorageAdaptor(String storageResourceId) throws Exception {
-        RequestContext ctx = GrpcRequestContext.current();
-        String resolvedId = storageResourceId;
-        String credentialToken = ctx.getAccessToken(); // fallback
-        String loginUser = ctx.getUserId(); // fallback
-
-        // Resolve storage resource, credential, and login user from gateway preferences
-        StoragePreference pref = resolveStoragePreference(storageResourceId);
-        if (pref != null) {
-            if (resolvedId == null || resolvedId.isEmpty()) {
-                resolvedId = pref.getStorageResourceId();
-            }
-            String csToken = pref.getResourceSpecificCredentialStoreToken();
-            if (csToken != null && !csToken.isEmpty()) {
-                credentialToken = csToken;
-            }
-            String prefUser = pref.getLoginUserName();
-            if (prefUser != null && !prefUser.isEmpty()) {
-                loginUser = prefUser;
-            }
-        }
-        if (resolvedId == null || resolvedId.isEmpty()) {
-            throw new IllegalStateException("No storage resource configured for gateway " + ctx.getGatewayId());
-        }
-        return adaptorSupport.fetchStorageAdaptor(ctx.getGatewayId(), resolvedId, credentialToken, loginUser);
+        return storagePathResolver.getStorageAdaptor(storageResourceId);
     }
 
-    /**
-     * Resolve paths like "~/" or "~" to the storage preference's fileSystemRootLocation.
-     * SFTP doesn't support shell tilde expansion.
-     */
     private String resolvePath(String path, String storageResourceId) throws Exception {
-        if (path == null || path.isEmpty()) {
-            path = "~";
-        }
-        // Absolute paths are honored as-is. The home shortcut (~) and bare relative
-        // paths both resolve against the storage resource's filesystem root: the SFTP
-        // session is chrooted and its starting directory (the chroot root) is not
-        // writable, so a bare "project/experiment" must be anchored under the root
-        // (e.g. /storage) rather than left to resolve against the chroot root.
-        if (path.startsWith("/")) {
-            return path;
-        }
-        StoragePreference pref = resolveStoragePreference(storageResourceId);
-        String root = (pref != null && !pref.getFileSystemRootLocation().isEmpty())
-                ? pref.getFileSystemRootLocation()
-                : "/";
-        if (!root.endsWith("/")) root += "/";
-        String suffix;
-        if (path.startsWith("~/")) {
-            suffix = path.substring(2);
-        } else if (path.equals("~")) {
-            suffix = "";
-        } else {
-            suffix = path;
-        }
-        return root + suffix;
+        return storagePathResolver.resolvePath(path, storageResourceId);
     }
 
     @Override
@@ -204,6 +133,55 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
         try {
             StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
             String remotePath = resolvePath(request.getPath(), request.getStorageResourceId());
+
+            FileMetadata metadata = adaptor.getFileMetadata(remotePath);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            adaptor.downloadFile(remotePath, outputStream, metadata);
+
+            observer.onNext(DownloadFileResponse.newBuilder()
+                    .setContent(com.google.protobuf.ByteString.copyFrom(outputStream.toByteArray()))
+                    .setName(metadata.getName())
+                    .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void downloadDataProduct(
+            DownloadDataProductRequest request, StreamObserver<DownloadFileResponse> observer) {
+        try {
+            DataProductModel product = storageProvider.getDataProduct(request.getProductUri());
+            if (product == null) {
+                observer.onError(Status.NOT_FOUND
+                        .withDescription("Data product " + request.getProductUri() + " does not exist")
+                        .asRuntimeException());
+                return;
+            }
+            if (product.getReplicaLocationsCount() == 0) {
+                observer.onError(Status.NOT_FOUND
+                        .withDescription("No replica locations for data product " + request.getProductUri())
+                        .asRuntimeException());
+                return;
+            }
+            DataReplicaLocationModel replica = product.getReplicaLocations(0);
+            String filePath = replica.getFilePath();
+            if (filePath == null || filePath.isEmpty()) {
+                observer.onError(Status.NOT_FOUND
+                        .withDescription("No replica file path for data product " + request.getProductUri())
+                        .asRuntimeException());
+                return;
+            }
+            // Mirror the SDK's data_product_file_path: the storage facade expects a full path
+            // (absolute or ~/-prefixed); a bare relative replica path is anchored to the home root.
+            if (!filePath.startsWith("/") && !filePath.startsWith("~/")) {
+                filePath = "~/" + filePath;
+            }
+
+            String storageResourceId = replica.getStorageResourceId();
+            StorageResourceAdaptor adaptor = getStorageAdaptor(storageResourceId);
+            String remotePath = resolvePath(filePath, storageResourceId);
 
             FileMetadata metadata = adaptor.getFileMetadata(remotePath);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -318,6 +296,26 @@ public class UserStorageGrpcService extends UserStorageServiceGrpc.UserStorageSe
             String src = resolvePath(request.getSourcePath(), request.getStorageResourceId());
             String dst = resolvePath(request.getDestinationPath(), request.getStorageResourceId());
             adaptor.moveFile(src, dst);
+
+            DataProductModel product = DataProductModel.newBuilder()
+                    .setProductName(Paths.get(request.getDestinationPath())
+                            .getFileName()
+                            .toString())
+                    .build();
+            observer.onNext(product);
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void copyFile(CopyFileRequest request, StreamObserver<DataProductModel> observer) {
+        try {
+            StorageResourceAdaptor adaptor = getStorageAdaptor(request.getStorageResourceId());
+            String src = resolvePath(request.getSourcePath(), request.getStorageResourceId());
+            String dst = resolvePath(request.getDestinationPath(), request.getStorageResourceId());
+            adaptor.copyFile(src, dst);
 
             DataProductModel product = DataProductModel.newBuilder()
                     .setProductName(Paths.get(request.getDestinationPath())

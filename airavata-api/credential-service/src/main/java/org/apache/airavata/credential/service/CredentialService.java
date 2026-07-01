@@ -21,10 +21,12 @@ package org.apache.airavata.credential.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.api.credential.CredentialSummaryWithAccess;
 import org.apache.airavata.config.RequestContext;
 import org.apache.airavata.exception.ServiceAuthorizationException;
 import org.apache.airavata.exception.ServiceException;
 import org.apache.airavata.interfaces.SharingFacade;
+import org.apache.airavata.model.commons.proto.AccessFlags;
 import org.apache.airavata.model.credential.store.proto.CredentialSummary;
 import org.apache.airavata.model.credential.store.proto.PasswordCredential;
 import org.apache.airavata.model.credential.store.proto.SSHCredential;
@@ -147,6 +149,38 @@ public class CredentialService {
                     "Error retrieving credential summary for token " + tokenId + ". GatewayId: " + gatewayId
                             + " More info : " + e.getMessage(),
                     e);
+        }
+    }
+
+    /**
+     * {@link #getCredentialSummary} plus the caller's server-computed access flags (additive). Reuses
+     * {@code getCredentialSummary} for READ enforcement so a caller can never self-authorize; the flags
+     * are derived from the credential's owner (token {@code username}) and the same sharing WRITE check
+     * the delete operations use.
+     */
+    public CredentialSummaryWithAccess getCredentialSummaryWithAccess(RequestContext ctx, String tokenId)
+            throws ServiceException {
+        CredentialSummary credentialSummary = getCredentialSummary(ctx, tokenId);
+        if (credentialSummary == null) {
+            throw new ServiceAuthorizationException("User does not have permission to access this resource");
+        }
+        try {
+            boolean isOwner = ctx.getUserId().equals(credentialSummary.getUsername())
+                    && ctx.getGatewayId().equals(credentialSummary.getGatewayId());
+            boolean userHasWriteAccess = isOwner;
+            if (!isOwner && SharingHelper.isSharingEnabled()) {
+                userHasWriteAccess = SharingHelper.userHasAccess(
+                        sharingHandler, ctx.getGatewayId(), ctx.getUserId(), tokenId, ResourcePermissionType.WRITE);
+            }
+            return CredentialSummaryWithAccess.newBuilder()
+                    .setCredentialSummary(credentialSummary)
+                    .setAccess(AccessFlags.newBuilder()
+                            .setIsOwner(isOwner)
+                            .setUserHasWriteAccess(userHasWriteAccess)
+                            .build())
+                    .build();
+        } catch (Exception e) {
+            throw new ServiceException("Error while computing credential access: " + e.getMessage(), e);
         }
     }
 

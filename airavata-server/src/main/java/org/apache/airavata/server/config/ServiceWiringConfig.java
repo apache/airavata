@@ -20,6 +20,7 @@
 package org.apache.airavata.server.config;
 
 import org.apache.airavata.compute.service.GroupResourceProfileService;
+import org.apache.airavata.interfaces.ExperimentStoragePrep;
 import org.apache.airavata.research.service.ExperimentService;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,7 +32,10 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceWiringConfig {
 
     public ServiceWiringConfig(
-            ExperimentService experimentService, GroupResourceProfileService groupResourceProfileService) {
+            ExperimentService experimentService,
+            GroupResourceProfileService groupResourceProfileService,
+            ExperimentStoragePrep experimentStoragePrep) {
         experimentService.setGroupResourceProfileListProvider(groupResourceProfileService::getGroupResourceList);
+        experimentService.setExperimentStoragePrep(experimentStoragePrep);
     }
 }

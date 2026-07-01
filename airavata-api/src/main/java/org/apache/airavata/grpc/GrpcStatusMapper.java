@@ -38,7 +38,7 @@ public final class GrpcStatusMapper {
 
         Status status =
                 switch (className) {
-                    case "EntityNotFoundException" -> Status.NOT_FOUND;
+                    case "EntityNotFoundException", "ServiceNotFoundException" -> Status.NOT_FOUND;
                     case "AuthorizationException", "ServiceAuthorizationException" -> Status.PERMISSION_DENIED;
                     case "AuthenticationException" -> Status.UNAUTHENTICATED;
                     case "ValidationException" -> Status.INVALID_ARGUMENT;

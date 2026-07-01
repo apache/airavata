@@ -44,3 +44,12 @@ message ValidationResults {
   bool validation_state = 1;
   repeated ValidatorResult validation_result_list = 2;
 }
+
+// The caller's sharing-access to a resource, computed and enforced server-side.
+// Reused by every *WithAccess wrapper so clients never recompute access from
+// extra sharing round-trips. is_owner = the caller owns the resource;
+// user_has_write_access = is_owner OR the caller holds a WRITE sharing grant.
+message AccessFlags {
+  bool is_owner = 1;
+  bool user_has_write_access = 2;
+}
