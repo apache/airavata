@@ -1644,7 +1644,7 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
-      "authorizationServicesEnabled": true,
+      "authorizationServicesEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
@@ -1663,7 +1663,7 @@
       "nodeReRegistrationTimeout": -1,
       "protocolMappers": [
         {
-          "id": "f15a7de0-0c1e-40d8-bd05-c1aaf0deb3e1",
+          "id": "0192199a-880f-4e03-a109-dbf8656603de",
           "name": "Client IP Address",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usersessionmodel-note-mapper",
@@ -1679,7 +1679,7 @@
           }
         },
         {
-          "id": "a0956d0b-e5c4-4d9a-aebf-89efa6881438",
+          "id": "6a05d416-5476-478e-905d-9f5fd1f027f6",
           "name": "Client ID",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usersessionmodel-note-mapper",
@@ -1695,7 +1695,7 @@
           }
         },
         {
-          "id": "6863299e-7d4f-43f4-8d0e-fc8cd4a8ceac",
+          "id": "4e9c2726-5cc0-4605-be1c-b8481f9989f2",
           "name": "Client Host",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usersessionmodel-note-mapper",
@@ -1724,15 +1724,7 @@
         "offline_access",
         "preferred_username",
         "microprofile-jwt"
-      ],
-      "authorizationSettings": {
-        "allowRemoteResourceManagement": true,
-        "policyEnforcementMode": "ENFORCING",
-        "resources": [],
-        "policies": [],
-        "scopes": [],
-        "decisionStrategy": "UNANIMOUS"
-      }
+      ]
     }
   ],
   "clientScopes": [
