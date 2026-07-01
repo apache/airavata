@@ -37,9 +37,8 @@ notebook = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["airavata_sdk*"]
+include = ["airavata*"]
 exclude = ["*.egg-info"]
 
 [tool.setuptools.package-data]
-"airavata_sdk.transport" = ["*.ini"]
-"airavata_sdk.samples.resources" = ["*.pem"]
+"airavata.samples.resources" = ["*.pem"]

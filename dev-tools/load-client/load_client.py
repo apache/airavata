@@ -34,8 +34,8 @@ os.environ.setdefault('API_SERVER_HOSTNAME', "api.dev.cybershuttle.org")
 os.environ.setdefault('GATEWAY_URL', "https://gateway.dev.cybershuttle.org")
 os.environ.setdefault('STORAGE_RESOURCE_HOST', "gateway.dev.cybershuttle.org")
 
-from airavata_auth.device_auth import AuthContext
-from airavata_experiments.airavata import AiravataOperator
+from airavata.auth.device_auth import AuthContext
+from airavata.experiments.airavata import AiravataOperator
 from airavata.model.status.ttypes import ExperimentState
 
 logging.basicConfig(

@@ -1,93 +1,83 @@
 #!/usr/bin/env python3
-"""
-Integration test for Python SDK against running Armeria gRPC server.
-Prerequisites: server running on localhost:9090, Keycloak at localhost:18080
+"""Integration smoke test for the Python SDK against a running Armeria gRPC server.
+
+The SDK is generated-only: there is no hand-written client wrapper. This script
+talks to the server exactly the way the portal and airavata.experiments do —
+raw protoc-generated stubs over an airavata.auth ``authenticated_channel``.
+
+Prerequisites: server running on localhost:9090 (e.g. via ``tilt up``).
 
 Usage:
-    python3 scripts/test_python_sdk.py [--host localhost] [--port 9090]
+    python3 scripts/test_python_sdk.py [--host localhost] [--port 9090] [--token <jwt>]
 """
-import sys
-import os
 import argparse
+import os
+import sys
 
-# Add SDK to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'airavata-python-sdk'))
+# Add the SDK to the path so the generated stubs + airavata.auth import.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "airavata-python-sdk"))
+
 
 def test_imports():
-    """Test all SDK modules can be imported."""
+    """The generated stubs + the auth channel helper import cleanly."""
     print("Testing imports...")
-    from airavata_sdk.clients.api_server_client import APIServerClient
-    from airavata_sdk.clients.credential_store_client import CredentialStoreClient
-    from airavata_sdk.clients.sharing_registry_client import SharingRegistryClient
-    from airavata_sdk.clients.group_manager_client import GroupManagerClient
-    from airavata_sdk.clients.iam_admin_client import IAMAdminClient
-    from airavata_sdk.clients.user_profile_client import UserProfileClient
-    from airavata_sdk.clients.tenant_profile_client import TenantProfileClient
-    from airavata_sdk.clients.keycloak_token_fetcher import Authenticator
+    from airavata.auth import authenticated_channel  # noqa: F401
+    from airavata.services import (  # noqa: F401
+        experiment_service_pb2,
+        experiment_service_pb2_grpc,
+        project_service_pb2,
+        project_service_pb2_grpc,
+        resource_service_pb2,
+        resource_service_pb2_grpc,
+    )
     print("  All imports OK")
 
-def test_channel_creation(host, port):
-    """Test gRPC channel can be created."""
-    print("Testing gRPC channel creation...")
-    import grpc
-    channel = grpc.insecure_channel(f"{host}:{port}")
 
-    # Try to get channel state
+def test_channel_creation(host, port):
+    """An authenticated channel can be created and reports connectivity."""
+    print("Testing authenticated_channel creation...")
+    from airavata.auth import authenticated_channel
+    channel = authenticated_channel(host, port, "test-token")
     state = channel.check_connectivity_state(True)
     print(f"  Channel state: {state}")
-    channel.close()
     print("  Channel OK")
 
-def test_api_client(host, port, token=None):
-    """Test APIServerClient methods."""
-    print("Testing APIServerClient...")
-    os.environ['API_SERVER_HOSTNAME'] = host
-    os.environ['API_SERVER_PORT'] = str(port)
 
-    from airavata_sdk.clients.api_server_client import APIServerClient
+def test_reads(host, port, token=None):
+    """A couple of read RPCs over raw stubs (auth errors are fine — the point is wiring)."""
+    print("Testing reads over raw stubs...")
+    from airavata.auth import authenticated_channel
+    from airavata.services import (
+        project_service_pb2,
+        project_service_pb2_grpc,
+        resource_service_pb2,
+        resource_service_pb2_grpc,
+    )
 
-    client = APIServerClient(access_token=token or "test-token")
+    channel = authenticated_channel(host, port, token or "test-token")
 
-    # Test gateway operations (should work or return auth error)
+    resource = resource_service_pb2_grpc.ResourceServiceStub(channel)
     try:
-        gateways = client.get_all_gateways()
-        print(f"  get_all_gateways: {len(gateways)} gateways")
+        resp = resource.GetAllComputeResourceNames(
+            resource_service_pb2.GetAllComputeResourceNamesRequest()
+        )
+        print(f"  GetAllComputeResourceNames: {len(resp.compute_resource_names)} resources")
     except Exception as e:
-        print(f"  get_all_gateways: {type(e).__name__}: {e}")
+        print(f"  GetAllComputeResourceNames: {type(e).__name__}: {e}")
 
-    # Test project listing
+    projects = project_service_pb2_grpc.ProjectServiceStub(channel)
     try:
-        projects = client.get_user_projects("default", "admin", 10, 0)
-        print(f"  get_user_projects: {len(projects)} projects")
+        resp = projects.GetUserProjects(
+            project_service_pb2.GetUserProjectsRequest(
+                gateway_id="default", user_name="admin", limit=10, offset=0
+            )
+        )
+        print(f"  GetUserProjects: {len(resp.projects)} projects")
     except Exception as e:
-        print(f"  get_user_projects: {type(e).__name__}: {e}")
+        print(f"  GetUserProjects: {type(e).__name__}: {e}")
 
-    # Test experiment search
-    try:
-        experiments = client.search_experiments("default", "admin", {}, 10, 0)
-        print(f"  search_experiments: {len(experiments)} experiments")
-    except Exception as e:
-        print(f"  search_experiments: {type(e).__name__}: {e}")
+    print("  Read tests done")
 
-    print("  APIServerClient tests done")
-
-def test_sharing_client(host, port, token=None):
-    """Test SharingRegistryClient."""
-    print("Testing SharingRegistryClient...")
-    os.environ['API_SERVER_HOSTNAME'] = host
-    os.environ['API_SERVER_PORT'] = str(port)
-
-    from airavata_sdk.clients.sharing_registry_client import SharingRegistryClient
-
-    client = SharingRegistryClient(access_token=token or "test-token")
-
-    try:
-        domains = client.get_domains(0, -1)
-        print(f"  get_domains: {len(domains)} domains")
-    except Exception as e:
-        print(f"  get_domains: {type(e).__name__}: {e}")
-
-    print("  SharingRegistryClient tests done")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -100,7 +90,6 @@ if __name__ == "__main__":
 
     test_imports()
     test_channel_creation(args.host, args.port)
-    test_api_client(args.host, args.port, args.token)
-    test_sharing_client(args.host, args.port, args.token)
+    test_reads(args.host, args.port, args.token)
 
     print("\n=== Done ===")

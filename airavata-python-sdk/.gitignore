@@ -13,3 +13,5 @@ results*/
 plan.json
 settings*.ini
 auth.state
+# uv lock — dev artifact; this is a distributed library, deps resolve from pyproject
+uv.lock
