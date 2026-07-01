@@ -23,8 +23,11 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
 import org.apache.airavata.api.iam.userprofile.*;
+import org.apache.airavata.config.RequestContext;
+import org.apache.airavata.grpc.GrpcRequestContext;
 import org.apache.airavata.grpc.GrpcStatusMapper;
 import org.apache.airavata.iam.repository.UserProfileRepository;
+import org.apache.airavata.iam.service.UserPreferencesService;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.springframework.stereotype.Component;
 
@@ -32,9 +35,11 @@ import org.springframework.stereotype.Component;
 public class UserProfileGrpcService extends UserProfileServiceGrpc.UserProfileServiceImplBase {
 
     private final UserProfileRepository userProfileRepository;
+    private final UserPreferencesService userPreferencesService;
 
-    public UserProfileGrpcService() {
+    public UserProfileGrpcService(UserPreferencesService userPreferencesService) {
         this.userProfileRepository = new UserProfileRepository();
+        this.userPreferencesService = userPreferencesService;
     }
 
     @Override
@@ -131,6 +136,28 @@ public class UserProfileGrpcService extends UserProfileServiceGrpc.UserProfileSe
             observer.onNext(DoesUserExistResponse.newBuilder()
                     .setExists(profile != null)
                     .build());
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void getUserPreferences(Empty request, StreamObserver<UserPreferences> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            observer.onNext(userPreferencesService.getUserPreferences(ctx));
+            observer.onCompleted();
+        } catch (Exception e) {
+            observer.onError(GrpcStatusMapper.toStatusException(e));
+        }
+    }
+
+    @Override
+    public void updateUserPreferences(UserPreferences request, StreamObserver<UserPreferences> observer) {
+        try {
+            RequestContext ctx = GrpcRequestContext.current();
+            observer.onNext(userPreferencesService.updateUserPreferences(ctx, request));
             observer.onCompleted();
         } catch (Exception e) {
             observer.onError(GrpcStatusMapper.toStatusException(e));

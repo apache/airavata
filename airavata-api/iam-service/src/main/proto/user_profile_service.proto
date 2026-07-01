@@ -72,6 +72,28 @@ service UserProfileService {
       get: "/api/v1/gateways/{gateway_id}/user-profiles/{user_name}:exists"
     };
   }
+
+  // Per-user workspace preferences, scoped to the authenticated caller
+  // (gateway + user from the request context, not the request body).
+  rpc GetUserPreferences(google.protobuf.Empty) returns (UserPreferences) {
+    option (google.api.http) = {
+      get: "/api/v1/user/preferences"
+    };
+  }
+
+  rpc UpdateUserPreferences(UserPreferences) returns (UserPreferences) {
+    option (google.api.http) = {
+      put: "/api/v1/user/preferences"
+      body: "*"
+    };
+  }
+}
+
+message UserPreferences {
+  string most_recent_project_id = 1;
+  string most_recent_group_resource_profile_id = 2;
+  string most_recent_compute_resource_id = 3;
+  map<string, bool> application_favorites = 4;
 }
 
 // Request/Response messages
