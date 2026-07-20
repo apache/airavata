@@ -1,0 +1,29 @@
+# Binaries
+/airavata
+/cli/airavata
+/bin/
+
+# Generated Thrift code
+/gen-go/
+
+# Go build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Config files (contains tokens)
+config.yaml
+.airavata-cli/
