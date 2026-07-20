@@ -1,0 +1,114 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Build directory
+build/
+bin/
+
+# Generated protobuf files
+core/dto/*.pb.go
+core/dto/*_grpc.pb.go
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+logs/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Coverage reports
+coverage.out
+coverage-unit.out
+coverage.html
+coverage-summary.txt
+
+# Test output
+test-output.log
+test_output.txt
+final_test_results.txt
+*_output.txt
+
+# Temporary files
+tmp/
+temp/
+
+# Database files (if using local SQLite for testing)
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker volumes
+docker-data/
+
+# Backup files
+*.bak
+*.backup
+
+# Certificate files (should be in secure location)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Configuration files with secrets
+config.local.*
+secrets.*
+
+# Node modules (if any frontend components)
+node_modules/
+
+# Python cache (if any Python scripts)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Java build artifacts (if any Java components)
+target/
+*.class
+*.jar
+*.war
+
+# Rust build artifacts (if any Rust components)
+target/
+Cargo.lock
+
+# Compiled binaries in root directory (legacy cleanup)
+/build
+
+.cursor/

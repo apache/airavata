@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package apache.airavata.scheduler.common;
+
+option go_package = "github.com/apache/airavata/scheduler/core/dto";
+
+import "google/protobuf/timestamp.proto";
+
+// Common status enumeration
+enum Status {
+  STATUS_CREATED = 0;
+  STATUS_PENDING = 1;
+  STATUS_RUNNING = 2;
+  STATUS_COMPLETED = 3;
+  STATUS_FAILED = 4;
+  STATUS_CANCELLED = 5;
+  STATUS_RETRYING = 6;
+}
+
+// Error information
+message Error {
+  string code = 1;
+  string message = 2;
+  string details = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  map<string, string> context = 5;
+}
+
+// File metadata
+message FileMetadata {
+  string file_name = 1;
+  string path = 2;
+  string storage_type = 3;
+  int64 size = 4;
+  string checksum = 5;
+  google.protobuf.Timestamp last_modified = 6;
+  map<string, string> metadata = 7;
+}
+
+// Resource credentials
+message Credentials {
+  map<string, string> credentials = 1;
+  google.protobuf.Timestamp expires_at = 2;
+  bool encrypted = 3;
+}
+
+// Validation result
+message ValidationResult {
+  bool valid = 1;
+  repeated Error errors = 2;
+  repeated string warnings = 3;
+}
+
+// Pagination request
+message PaginationRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string sort_by = 3;
+  bool sort_descending = 4;
+}
+
+// Pagination response
+message PaginationResponse {
+  int32 page = 1;
+  int32 page_size = 2;
+  int32 total_pages = 3;
+  int32 total_items = 4;
+  bool has_next = 5;
+  bool has_previous = 6;
+}
+
+// Typed JSON structure
+message TypedJSON {
+  string type = 1;
+  string version = 2;
+  bytes data = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  map<string, string> metadata = 5;
+}

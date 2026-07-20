@@ -1,0 +1,285 @@
+syntax = "proto3";
+
+package apache.airavata.scheduler.worker;
+
+option go_package = "github.com/apache/airavata/scheduler/core/dto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "common.proto";
+import "experiment.proto";
+
+// Worker service for bidirectional communication between workers and scheduler
+service WorkerService {
+  // Register a worker with the scheduler
+  rpc RegisterWorker(WorkerRegistrationRequest) returns (WorkerRegistrationResponse);
+  
+  // Bidirectional streaming for task polling and assignment
+  rpc PollForTask(stream WorkerMessage) returns (stream ServerMessage);
+  
+  // Report task status updates (progress, completion, failure)
+  rpc ReportTaskStatus(TaskStatusUpdateRequest) returns (TaskStatusUpdateResponse);
+  
+  // Send periodic heartbeat
+  rpc SendHeartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  
+  // Request data staging for a task
+  rpc RequestDataStaging(WorkerDataStagingRequest) returns (WorkerDataStagingResponse);
+}
+
+// Worker registration request
+message WorkerRegistrationRequest {
+  string worker_id = 1;
+  string experiment_id = 2;
+  string compute_resource_id = 3;
+  WorkerCapabilities capabilities = 4;
+  map<string, string> metadata = 5;
+}
+
+// Worker registration response
+message WorkerRegistrationResponse {
+  bool success = 1;
+  string message = 2;
+  WorkerConfig config = 3;
+  apache.airavata.scheduler.common.ValidationResult validation = 4;
+}
+
+// Worker capabilities
+message WorkerCapabilities {
+  int32 max_cpu_cores = 1;
+  int32 max_memory_mb = 2;
+  int32 max_disk_gb = 3;
+  int32 max_gpus = 4;
+  repeated string supported_runtimes = 5;
+  map<string, string> metadata = 6;
+}
+
+// Worker configuration
+message WorkerConfig {
+  string worker_id = 1;
+  google.protobuf.Duration heartbeat_interval = 2;
+  google.protobuf.Duration task_timeout = 3;
+  string working_directory = 4;
+  map<string, string> environment = 5;
+  map<string, string> metadata = 6;
+}
+
+// Worker message types
+message WorkerMessage {
+  oneof message {
+    Heartbeat heartbeat = 1;
+    TaskRequest task_request = 2;
+    TaskStatusUpdateRequest task_status = 3;
+    TaskOutput task_output = 4;
+    WorkerMetrics worker_metrics = 5;
+    DataStagingStatus staging_status = 6;
+  }
+}
+
+// Server message types
+message ServerMessage {
+  oneof message {
+    TaskAssignment task_assignment = 1;
+    TaskCancellation task_cancellation = 2;
+    WorkerShutdown worker_shutdown = 3;
+    ConfigUpdate config_update = 4;
+    OutputUploadRequest output_upload_request = 5;
+  }
+}
+
+// Heartbeat message - for health monitoring only
+message Heartbeat {
+  string worker_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  apache.airavata.scheduler.worker.WorkerStatus status = 3;
+  string current_task_id = 4;
+  map<string, string> metadata = 5;
+}
+
+// TaskRequest message - for requesting tasks
+message TaskRequest {
+  string worker_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  string experiment_id = 3;
+  map<string, string> metadata = 4;
+}
+
+// Worker status
+enum WorkerStatus {
+  WORKER_STATUS_UNKNOWN = 0;
+  WORKER_STATUS_IDLE = 1;
+  WORKER_STATUS_BUSY = 2;
+  WORKER_STATUS_STAGING = 3;
+  WORKER_STATUS_ERROR = 4;
+}
+
+// Task assignment message
+message TaskAssignment {
+  string task_id = 1;
+  string experiment_id = 2;
+  string command = 3;
+  string execution_script = 4;
+  repeated string dependencies = 5;
+  repeated SignedFileURL input_files = 6;  // Changed from FileMetadata
+  repeated apache.airavata.scheduler.common.FileMetadata output_files = 7;
+  map<string, string> environment = 8;
+  google.protobuf.Duration timeout = 9;
+  map<string, string> metadata = 10;
+}
+
+message SignedFileURL {
+  string source_path = 1;
+  string url = 2;
+  string local_path = 3;  // Where worker should save it
+  int64 expires_at = 4;
+}
+
+// Task status update request
+message TaskStatusUpdateRequest {
+  string task_id = 1;
+  string worker_id = 2;
+  apache.airavata.scheduler.experiment.TaskStatus status = 3;
+  string message = 4;
+  repeated string errors = 5;
+  TaskMetrics metrics = 6;
+  map<string, string> metadata = 7;
+}
+
+// Task status update response
+message TaskStatusUpdateResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+
+// Task output streaming
+message TaskOutput {
+  string task_id = 1;
+  string worker_id = 2;
+  OutputType type = 3;
+  bytes data = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+// Output type
+enum OutputType {
+  OUTPUT_TYPE_UNKNOWN = 0;
+  OUTPUT_TYPE_STDOUT = 1;
+  OUTPUT_TYPE_STDERR = 2;
+  OUTPUT_TYPE_LOG = 3;
+}
+
+// Task metrics
+message TaskMetrics {
+  float cpu_usage_percent = 1;
+  float memory_usage_percent = 2;
+  int64 disk_usage_bytes = 3;
+  google.protobuf.Duration elapsed_time = 4;
+  map<string, string> custom_metrics = 5;
+}
+
+// Worker metrics
+message WorkerMetrics {
+  string worker_id = 1;
+  float cpu_usage_percent = 2;
+  float memory_usage_percent = 3;
+  int64 disk_usage_bytes = 4;
+  int32 tasks_completed = 5;
+  int32 tasks_failed = 6;
+  google.protobuf.Duration uptime = 7;
+  map<string, string> custom_metrics = 8;
+  google.protobuf.Timestamp timestamp = 9;
+}
+
+// Worker data staging request
+message WorkerDataStagingRequest {
+  string task_id = 1;
+  string worker_id = 2;
+  string compute_resource_id = 3;
+  repeated apache.airavata.scheduler.common.FileMetadata files = 4;
+  bool force_refresh = 5;
+  map<string, string> options = 6;
+}
+
+// Worker data staging response
+message WorkerDataStagingResponse {
+  string staging_id = 1;
+  bool success = 2;
+  string message = 3;
+  repeated string staged_files = 4;
+  repeated string failed_files = 5;
+  apache.airavata.scheduler.common.ValidationResult validation = 6;
+}
+
+// Data staging status
+message DataStagingStatus {
+  string staging_id = 1;
+  string task_id = 2;
+  StagingStatus status = 3;
+  int32 total_files = 4;
+  int32 completed_files = 5;
+  int32 failed_files = 6;
+  int64 total_bytes = 7;
+  int64 transferred_bytes = 8;
+  double transfer_rate = 9;
+  google.protobuf.Duration estimated_remaining = 10;
+  repeated string errors = 11;
+  map<string, string> metadata = 12;
+}
+
+// Staging status
+enum StagingStatus {
+  STAGING_STATUS_UNKNOWN = 0;
+  STAGING_STATUS_PENDING = 1;
+  STAGING_STATUS_IN_PROGRESS = 2;
+  STAGING_STATUS_COMPLETED = 3;
+  STAGING_STATUS_FAILED = 4;
+  STAGING_STATUS_CANCELLED = 5;
+}
+
+// Task cancellation
+message TaskCancellation {
+  string task_id = 1;
+  string reason = 2;
+  bool force = 3;
+  google.protobuf.Duration grace_period = 4;
+}
+
+// Worker shutdown
+message WorkerShutdown {
+  string worker_id = 1;
+  string reason = 2;
+  bool graceful = 3;
+  google.protobuf.Duration timeout = 4;
+}
+
+// Configuration update
+message ConfigUpdate {
+  string worker_id = 1;
+  WorkerConfig config = 2;
+  map<string, string> metadata = 3;
+}
+
+// Heartbeat request
+message HeartbeatRequest {
+  string worker_id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  apache.airavata.scheduler.worker.WorkerStatus status = 3;
+  string current_task_id = 4;
+  WorkerMetrics metrics = 5;
+  map<string, string> metadata = 6;
+}
+
+// Heartbeat response
+message HeartbeatResponse {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Timestamp server_time = 3;
+  map<string, string> metadata = 4;
+}
+
+// Output upload request
+message OutputUploadRequest {
+  string task_id = 1;
+  repeated SignedFileURL upload_urls = 2;
+}

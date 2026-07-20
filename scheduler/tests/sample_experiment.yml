@@ -1,0 +1,68 @@
+parameters:
+  MESSAGE:
+    description: "The message to print"
+    type: string
+    default: "hello world"
+  SLEEP_TIME:
+    description: "The time to sleep"
+    type: int
+    default: 10
+  OUTPUT_FILE:
+    description: "The output file path for step 1"
+    type: path
+    default: "./output.1.txt"
+scripts:
+  STEP_1: |
+    #!/bin/bash
+    echo "sleeping $SLEEP_TIME seconds..."
+    sleep $SLEEP_TIME
+    echo "$MESSAGE" > $OUTPUT_FILE
+    echo "STEP_1 completed"
+    exit
+  STEP_2: |
+    #!/bin/bash
+    echo "content of INPUT_FILE: $INPUT_FILE"
+    echo "--------------------------------"
+    cat $INPUT_FILE
+    echo "--------------------------------"
+    echo "read file: $INPUT_FILE" >> $OUTPUT_FILE
+    echo "STEP_2 completed"
+    exit
+tasks:
+  task1:
+    script: STEP_1
+    task_inputs:
+      MESSAGE: ["hello", "this", "is", "a", "test"]
+      SLEEP_TIME: 1..100
+    task_outputs:
+      OUTPUT_FILE: "output.1.txt"
+  task2:
+    script: STEP_2
+    foreach: [ "task1" ]
+    task_inputs:
+      INPUT_FILE: "${task1.OUTPUT_FILE}"
+    task_outputs:
+      OUTPUT_FILE: "output.2.txt"
+resources:
+  compute:
+    node: 1
+    cpu: 16
+    gpu: 0
+    disk_gb: 1
+    ram_gb: 16
+    vram_gb: 0
+    time: "0:05:00"
+  storage:
+    - "global-scratch:/assets/example.txt:./example.txt"
+    - "global-scratch:/datasets/mnist/:./mnist/"
+  conda:
+    - python=3.12
+    - pip
+    - numpy
+    - pandas
+  pip:
+    - tqdm
+  environment:
+    - "PATH=/usr/local/bin:$PATH"
+    - "LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH"
+    - "PYTHONPATH=/usr/local/lib/python3.10/site-packages:$PYTHONPATH"

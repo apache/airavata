@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package apache.airavata.scheduler.data;
+
+option go_package = "github.com/apache/airavata/scheduler/core/dto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "common.proto";
+
+// Data transfer status enumeration
+enum DataTransferStatus {
+  DATA_TRANSFER_STATUS_CREATED = 0;
+  DATA_TRANSFER_STATUS_PENDING = 1;
+  DATA_TRANSFER_STATUS_IN_PROGRESS = 2;
+  DATA_TRANSFER_STATUS_COMPLETED = 3;
+  DATA_TRANSFER_STATUS_FAILED = 4;
+  DATA_TRANSFER_STATUS_CANCELLED = 5;
+}
+
+// Data transfer operation
+message DataTransfer {
+  string id = 1;
+  string experiment_id = 2;
+  string task_id = 3;
+  string source_resource_id = 4;
+  string destination_resource_id = 5;
+  DataTransferStatus status = 6;
+  string source_path = 7;
+  string destination_path = 8;
+  int64 total_size = 9;
+  int64 transferred_size = 10;
+  double transfer_rate = 11;
+  google.protobuf.Duration estimated_remaining = 12;
+  google.protobuf.Timestamp started_at = 13;
+  google.protobuf.Timestamp completed_at = 14;
+  string error = 15;
+  int32 retry_count = 16;
+  int32 max_retries = 17;
+  map<string, string> metadata = 18;
+}
+
+// Data staging request
+message DataStagingRequest {
+  string experiment_id = 1;
+  string task_id = 2;
+  string source_resource_id = 3;
+  string destination_resource_id = 4;
+  repeated apache.airavata.scheduler.common.FileMetadata files = 5;
+  bool parallel = 6;
+  int32 max_concurrent_transfers = 7;
+  google.protobuf.Duration timeout = 8;
+  map<string, string> options = 9;
+}
+
+// Data staging response
+message DataStagingResponse {
+  string staging_id = 1;
+  DataTransferStatus status = 2;
+  repeated DataTransfer transfers = 3;
+  apache.airavata.scheduler.common.ValidationResult validation = 4;
+}
+
+// Data retrieval request
+message DataRetrievalRequest {
+  string experiment_id = 1;
+  string task_id = 2;
+  string source_resource_id = 3;
+  string destination_resource_id = 4;
+  repeated apache.airavata.scheduler.common.FileMetadata files = 5;
+  bool parallel = 6;
+  int32 max_concurrent_transfers = 7;
+  google.protobuf.Duration timeout = 8;
+  map<string, string> options = 9;
+}
+
+// Data retrieval response
+message DataRetrievalResponse {
+  string retrieval_id = 1;
+  DataTransferStatus status = 2;
+  repeated DataTransfer transfers = 3;
+  apache.airavata.scheduler.common.ValidationResult validation = 4;
+}
+
+// Get transfer status request
+message GetTransferStatusRequest {
+  string transfer_id = 1;
+  bool include_metadata = 2;
+}
+
+// Get transfer status response
+message GetTransferStatusResponse {
+  DataTransfer transfer = 1;
+  bool found = 2;
+}
+
+// List transfers request
+message ListTransfersRequest {
+  string experiment_id = 1;
+  string task_id = 2;
+  DataTransferStatus status = 3;
+  apache.airavata.scheduler.common.PaginationRequest pagination = 4;
+}
+
+// List transfers response
+message ListTransfersResponse {
+  repeated DataTransfer transfers = 1;
+  apache.airavata.scheduler.common.PaginationResponse pagination = 2;
+}
+
+// Cancel transfer request
+message CancelTransferRequest {
+  string transfer_id = 1;
+  string reason = 2;
+  bool force = 3;
+}
+
+// Cancel transfer response
+message CancelTransferResponse {
+  bool cancelled = 1;
+  DataTransferStatus status = 2;
+  string message = 3;
+}
+
+// Data service status
+message DataServiceStatus {
+  string service_id = 1;
+  bool healthy = 2;
+  int32 active_transfers = 3;
+  int32 queued_transfers = 4;
+  int32 completed_transfers = 5;
+  int32 failed_transfers = 6;
+  double average_transfer_rate = 7;
+  google.protobuf.Timestamp last_activity = 8;
+  repeated string errors = 9;
+  map<string, string> metadata = 10;
+}
+
+// Get data service status request
+message GetDataServiceStatusRequest {
+  string service_id = 1;
+  bool include_metrics = 2;
+}
+
+// Get data service status response
+message GetDataServiceStatusResponse {
+  DataServiceStatus status = 1;
+  map<string, double> metrics = 2;
+}

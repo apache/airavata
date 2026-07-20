@@ -1,0 +1,433 @@
+services:
+  # =============================================================================
+  # CORE SERVICES
+  # =============================================================================
+
+  # Main Scheduler Service
+  scheduler:
+    build: .
+    ports:
+      - "8080:8080"
+      - "50051:50051" # gRPC port
+    environment:
+      SERVER_PORT: 8080
+      DATABASE_URL: postgres://user:password@postgres:5432/airavata?sslmode=disable
+      SPICEDB_ENDPOINT: spicedb:50051
+      SPICEDB_PRESHARED_KEY: somerandomkeyhere
+      VAULT_ENDPOINT: http://openbao:8200
+      VAULT_TOKEN: dev-token
+    depends_on:
+      postgres:
+        condition: service_healthy
+      spicedb:
+        condition: service_healthy
+      openbao:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v2/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Core Database
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: airavata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d airavata"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SpiceDB PostgreSQL backend
+  spicedb-postgres:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: spicedb
+      POSTGRES_PASSWORD: spicedb
+      POSTGRES_DB: spicedb
+    volumes:
+      - spicedb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spicedb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SpiceDB migration (runs once to set up database)
+  spicedb-migrate:
+    image: authzed/spicedb:latest
+    command: datastore migrate --datastore-engine postgres --datastore-conn-uri "postgres://spicedb:spicedb@spicedb-postgres:5432/spicedb?sslmode=disable" head
+    depends_on:
+      spicedb-postgres:
+        condition: service_healthy
+    restart: "no"
+
+  # SpiceDB for authorization
+  spicedb:
+    image: authzed/spicedb:latest
+    command: serve --grpc-preshared-key "somerandomkeyhere" --datastore-engine postgres --datastore-conn-uri "postgres://spicedb:spicedb@spicedb-postgres:5432/spicedb?sslmode=disable"
+    ports:
+      - "50052:50051" # Changed to avoid conflict with scheduler
+      - "50053:50052"
+    environment:
+      SPICEDB_GRPC_PRESHARED_KEY: "somerandomkeyhere"
+      SPICEDB_LOG_LEVEL: "info"
+      SPICEDB_DATABASE_ENGINE: "postgres"
+      SPICEDB_DATABASE_CONN_URI: "postgres://spicedb:spicedb@spicedb-postgres:5432/spicedb?sslmode=disable"
+    depends_on:
+      spicedb-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=localhost:50051"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # OpenBao for credential storage
+  openbao:
+    image: hashicorp/vault:latest
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "dev-token"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - openbao_data:/vault/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "vault status -address=http://localhost:8200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # =============================================================================
+  # STORAGE SERVICES
+  # =============================================================================
+
+  # MinIO S3-compatible storage
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_DISK_USAGE_QUOTA: 90%
+      MINIO_DISK_USAGE_QUOTA_WARN: 80%
+    volumes:
+      - minio_data_fresh:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SFTP storage
+  sftp:
+    image: atmoz/sftp:latest
+    ports:
+      - "2222:22"
+    volumes:
+      - sftp_data:/home/testuser/upload
+      - ./tests/fixtures/master_ssh_key.pub:/tmp/master_ssh_key.pub:ro
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep sshd"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    entrypoint: |
+      sh -c '
+        install -o 1001 -g 100 -d /home/testuser/upload /home/testuser/.ssh &&
+        install -o 1001 -g 100 -m 600 /tmp/master_ssh_key.pub /home/testuser/.ssh/authorized_keys &&
+        exec /entrypoint testuser:testpass:1001:100:upload
+      '
+
+  # NFS storage
+  nfs-server:
+    image: itsthenetwork/nfs-server-alpine:latest
+    privileged: true
+    ports:
+      - "2049:2049"
+    environment:
+      SHARED_DIRECTORY: /nfsshare
+    volumes:
+      - nfs_data:/nfsshare
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -ln | grep :2049 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # =============================================================================
+  # COMPUTE SERVICES FOR INTEGRATION TESTS
+  # =============================================================================
+
+  # SLURM Cluster 1
+  slurm-cluster-01:
+    profiles: ["test"]
+    build:
+      context: ./tests/docker/slurm
+      dockerfile: Dockerfile
+    hostname: slurmctl1
+    ports:
+      - "6817:6817" # slurmctld
+      - "2223:22" # SSH
+    environment:
+      SLURM_CLUSTER_NAME: prod-cluster-1
+      SLURM_CONTROL_HOST: slurmctl1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - slurm_cluster1_data:/var/spool/slurm
+      - ./tests/docker/slurm/slurm-cluster1.conf:/etc/slurm/slurm.conf:ro
+      - ./tests/docker/slurm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+      - ./tests/docker/slurm/shared-munge.key:/etc/munge/munge.key.ro:ro
+      - ./tests/fixtures/master_ssh_key.pub:/tmp/master_ssh_key.pub:ro
+    healthcheck:
+      test: ["CMD-SHELL", "scontrol ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    entrypoint: |
+      sh -c '
+        echo "testuser:testpass" | chpasswd &&
+        mkdir -p /home/testuser/.ssh &&
+        cp /tmp/master_ssh_key.pub /home/testuser/.ssh/authorized_keys &&
+        chown -R testuser:testuser /home/testuser/.ssh &&
+        chmod 700 /home/testuser/.ssh &&
+        chmod 600 /home/testuser/.ssh/authorized_keys &&
+        install -o munge -g munge -m 400 /etc/munge/munge.key.ro /etc/munge/munge.key &&
+        exec /start.sh
+      '
+
+  slurm-node-01-01:
+    profiles: ["test"]
+    build:
+      context: ./tests/docker/slurm
+      dockerfile: Dockerfile
+    hostname: slurm-node-01-01
+    environment:
+      SLURM_CLUSTER_NAME: prod-cluster-1
+      SLURM_CONTROL_HOST: slurmctl1
+    extra_hosts:
+      - "slurmctl1:172.18.0.9"
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - slurm_cluster1_data:/var/spool/slurm
+      - ./tests/docker/slurm/slurm-cluster1.conf:/etc/slurm/slurm.conf:ro
+      - ./tests/docker/slurm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+      - ./tests/docker/slurm/shared-munge.key:/etc/munge/munge.key.ro:ro
+    depends_on:
+      slurm-cluster-01:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f slurmd && nc -z localhost 6818"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # SLURM Cluster 2
+  slurm-cluster-02:
+    profiles: ["test"]
+    build:
+      context: ./tests/docker/slurm
+      dockerfile: Dockerfile
+    hostname: slurmctl2
+    ports:
+      - "6819:6817" # slurmctld
+      - "2224:22" # SSH
+    environment:
+      SLURM_CLUSTER_NAME: prod-cluster-2
+      SLURM_CONTROL_HOST: slurmctl2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - slurm_cluster2_data:/var/spool/slurm
+      - ./tests/docker/slurm/slurm-cluster2.conf:/etc/slurm/slurm.conf:ro
+      - ./tests/docker/slurm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+      - ./tests/docker/slurm/shared-munge.key:/etc/munge/munge.key.ro:ro
+      - ./tests/fixtures/master_ssh_key.pub:/tmp/master_ssh_key.pub:ro
+    healthcheck:
+      test: ["CMD-SHELL", "scontrol ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    entrypoint: |
+      sh -c '
+        echo "testuser:testpass" | chpasswd &&
+        mkdir -p /home/testuser/.ssh &&
+        cp /tmp/master_ssh_key.pub /home/testuser/.ssh/authorized_keys &&
+        chown -R testuser:testuser /home/testuser/.ssh &&
+        chmod 700 /home/testuser/.ssh &&
+        chmod 600 /home/testuser/.ssh/authorized_keys &&
+        install -o munge -g munge -m 400 /etc/munge/munge.key.ro /etc/munge/munge.key &&
+        exec /start.sh
+      '
+
+  slurm-node-02-01:
+    profiles: ["test"]
+    build:
+      context: ./tests/docker/slurm
+      dockerfile: Dockerfile
+    hostname: slurm-node-02-01
+    environment:
+      SLURM_CLUSTER_NAME: prod-cluster-2
+      SLURM_CONTROL_HOST: slurmctl2
+    extra_hosts:
+      - "slurmctl2:172.18.0.16"
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - slurm_cluster2_data:/var/spool/slurm
+      - ./tests/docker/slurm/slurm-cluster2.conf:/etc/slurm/slurm.conf:ro
+      - ./tests/docker/slurm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+      - ./tests/docker/slurm/shared-munge.key:/etc/munge/munge.key.ro:ro
+    depends_on:
+      slurm-cluster-02:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f slurmd && nc -z localhost 6818"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # Bare Metal Node 1
+  baremetal-node-1:
+    profiles: ["test"]
+    image: linuxserver/openssh-server:latest
+    hostname: baremetal-1
+    ports:
+      - "2225:2222"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      PASSWORD_ACCESS: "true"
+      USER_PASSWORD: testpass
+      USER_NAME: testuser
+      SUDO_ACCESS: "true"
+    volumes:
+      - baremetal_data_1:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro # For Docker-in-Docker
+      - ./tests/fixtures/master_ssh_key.pub:/tmp/master_ssh_key.pub:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2222"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    entrypoint: |
+      sh -c '
+        install -o 1000 -g 1000 -m 700 -d /home/testuser/.ssh &&
+        install -o 1000 -g 1000 -m 600 /tmp/master_ssh_key.pub /home/testuser/.ssh/authorized_keys &&
+        exec /init
+      '
+
+  # Bare Metal Node 2
+  baremetal-node-2:
+    profiles: ["test"]
+    image: linuxserver/openssh-server:latest
+    hostname: baremetal-2
+    ports:
+      - "2226:2222"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      PASSWORD_ACCESS: "true"
+      USER_PASSWORD: testpass
+      USER_NAME: testuser
+      SUDO_ACCESS: "true"
+    volumes:
+      - baremetal_data_2:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./tests/fixtures/master_ssh_key.pub:/tmp/master_ssh_key.pub:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2222"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    entrypoint: |
+      sh -c '
+        install -o 1000 -g 1000 -m 700 -d /home/testuser/.ssh &&
+        install -o 1000 -g 1000 -m 600 /tmp/master_ssh_key.pub /home/testuser/.ssh/authorized_keys &&
+        exec /init
+      '
+
+  # Kubernetes Cluster
+  kind-cluster:
+    profiles: ["test"]
+    image: kindest/node:v1.27.0
+    privileged: true
+    environment:
+      KUBECONFIG: /etc/kubernetes/admin.conf
+    volumes:
+      - kind_data:/var/lib/docker
+    entrypoint: |
+      sh -c '
+        # Install kind binary
+        curl -Lo /tmp/kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+        chmod +x /tmp/kind
+        mv /tmp/kind /usr/local/bin/kind
+        
+        # Initialize kind cluster with default config
+        kind create cluster --name kind
+        
+        # Wait for cluster to be ready
+        kubectl wait --for=condition=Ready nodes --all --timeout=300s
+        
+        # Keep container running
+        exec tail -f /dev/null
+      '
+    healthcheck:
+      test: ["CMD", "kubectl", "get", "nodes", "--no-headers"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  # Core service volumes
+  postgres_data:
+  spicedb_data:
+  openbao_data:
+
+  # Storage volumes
+  minio_data_fresh:
+  sftp_data:
+  nfs_data:
+
+  # Production compute volumes
+  slurm_cluster1_data:
+  slurm_cluster2_data:
+  baremetal_data_1:
+  baremetal_data_2:
+  kind_data:
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  default:
+    name: airavata-scheduler
+    driver: bridge

@@ -1,0 +1,1315 @@
+openapi: 3.0.3
+info:
+  title: Airavata Scheduler API
+  description: Production-ready distributed task execution system for computational experiments
+  version: 2.0.0
+  contact:
+    name: Airavata Scheduler Team
+    email: support@airavata.org
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: https://api.airavata-scheduler.org/v1
+    description: Production server
+  - url: https://staging-api.airavata-scheduler.org/v1
+    description: Staging server
+  - url: http://localhost:8080/api/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # Health and Monitoring
+  /health:
+    get:
+      summary: Basic health check
+      description: Returns basic system health status
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /health/detailed:
+    get:
+      summary: Detailed health check
+      description: Returns detailed health status of all system components
+      security: []
+      responses:
+        '200':
+          description: Detailed health information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedHealthResponse'
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: Returns Prometheus-formatted metrics
+      security: []
+      responses:
+        '200':
+          description: Metrics in Prometheus format
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # Worker Binary Distribution
+  /api/worker-binary:
+    get:
+      summary: Download worker binary
+      description: Downloads the worker binary for deployment to compute resources
+      security: []
+      responses:
+        '200':
+          description: Worker binary file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Attachment filename
+              schema:
+                type: string
+                example: "attachment; filename=worker"
+        '404':
+          description: Worker binary not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Experiments
+  /experiments:
+    get:
+      summary: List experiments
+      description: Retrieve a paginated list of experiments
+      parameters:
+        - name: project_id
+          in: query
+          description: Filter by project ID
+          schema:
+            type: string
+        - name: owner_id
+          in: query
+          description: Filter by owner ID
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/ExperimentStatus'
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: List of experiments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentListResponse'
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create experiment
+      description: Create a new experiment with parameter sets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExperimentRequest'
+      responses:
+        '201':
+          description: Experiment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid request data
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/search:
+    get:
+      summary: Advanced experiment search
+      description: Search experiments with advanced filtering and sorting
+      parameters:
+        - name: project_id
+          in: query
+          description: Filter by project ID
+          schema:
+            type: string
+        - name: owner_id
+          in: query
+          description: Filter by owner ID
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/ExperimentStatus'
+        - name: parameter_filter
+          in: query
+          description: JSONB parameter filter (e.g., "param1>0.5")
+          schema:
+            type: string
+        - name: created_after
+          in: query
+          description: Filter by creation date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: created_before
+          in: query
+          description: Filter by creation date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: tags
+          in: query
+          description: Comma-separated list of tags
+          schema:
+            type: string
+        - name: sort_by
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [created_at, updated_at, name, status]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentSearchResponse'
+        '400':
+          description: Invalid search parameters
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}:
+    get:
+      summary: Get experiment
+      description: Retrieve a specific experiment by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update experiment
+      description: Update an existing experiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExperimentRequest'
+      responses:
+        '200':
+          description: Experiment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete experiment
+      description: Delete an experiment and all associated tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Experiment deleted successfully
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/submit:
+    post:
+      summary: Submit experiment
+      description: Submit an experiment for execution
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid experiment state
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/cancel:
+    post:
+      summary: Cancel experiment
+      description: Cancel a running experiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+        '400':
+          description: Invalid experiment state
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/summary:
+    get:
+      summary: Get experiment summary
+      description: Get aggregated statistics and summary for an experiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentSummary'
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/failed-tasks:
+    get:
+      summary: Get failed tasks
+      description: Retrieve all failed tasks for an experiment with error details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of failed tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FailedTaskInfo'
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/timeline:
+    get:
+      summary: Get experiment timeline
+      description: Get chronological timeline of experiment execution events
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment timeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentTimeline'
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/progress:
+    get:
+      summary: Get experiment progress
+      description: Get real-time progress information for an experiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Experiment ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentProgress'
+        '404':
+          description: Experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /experiments/{id}/derive:
+    post:
+      summary: Create derivative experiment
+      description: Create a new experiment based on results from an existing experiment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Source experiment ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DerivativeExperimentRequest'
+      responses:
+        '201':
+          description: Derivative experiment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DerivativeExperimentResponse'
+        '400':
+          description: Invalid request data
+        '404':
+          description: Source experiment not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  # Tasks
+  /tasks/aggregate:
+    get:
+      summary: Get task aggregation
+      description: Get aggregated statistics for tasks with optional grouping
+      parameters:
+        - name: experiment_id
+          in: query
+          required: true
+          description: Experiment ID to aggregate tasks for
+          schema:
+            type: string
+        - name: group_by
+          in: query
+          description: Group results by field
+          schema:
+            type: string
+            enum: [status, worker, compute_resource, parameter_value]
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+        - name: offset
+          in: query
+          description: Number of results to skip
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Task aggregation results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskAggregationResponse'
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /tasks/{id}/progress:
+    get:
+      summary: Get task progress
+      description: Get real-time progress information for a specific task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Task ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskProgress'
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  # WebSocket endpoints
+  /ws/experiments/{experimentId}:
+    get:
+      summary: WebSocket connection for experiment updates
+      description: Establish WebSocket connection to receive real-time updates for a specific experiment
+      parameters:
+        - name: experimentId
+          in: path
+          required: true
+          description: Experiment ID to subscribe to
+          schema:
+            type: string
+      responses:
+        '101':
+          description: WebSocket connection established
+        '400':
+          description: Invalid experiment ID
+        '401':
+          description: Unauthorized
+        '404':
+          description: Experiment not found
+
+  /ws/tasks/{taskId}:
+    get:
+      summary: WebSocket connection for task updates
+      description: Establish WebSocket connection to receive real-time updates for a specific task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: Task ID to subscribe to
+          schema:
+            type: string
+      responses:
+        '101':
+          description: WebSocket connection established
+        '400':
+          description: Invalid task ID
+        '401':
+          description: Unauthorized
+        '404':
+          description: Task not found
+
+  /ws/projects/{projectId}:
+    get:
+      summary: WebSocket connection for project updates
+      description: Establish WebSocket connection to receive real-time updates for all experiments in a project
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project ID to subscribe to
+          schema:
+            type: string
+      responses:
+        '101':
+          description: WebSocket connection established
+        '400':
+          description: Invalid project ID
+        '401':
+          description: Unauthorized
+        '404':
+          description: Project not found
+
+  /ws/user:
+    get:
+      summary: WebSocket connection for user updates
+      description: Establish WebSocket connection to receive real-time updates for all user's experiments
+      responses:
+        '101':
+          description: WebSocket connection established
+        '401':
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    # Core Types
+    Experiment:
+      type: object
+      required:
+        - id
+        - name
+        - project_id
+        - owner_id
+        - status
+        - command_template
+      properties:
+        id:
+          type: string
+          description: Unique experiment identifier
+        name:
+          type: string
+          description: Experiment name
+        description:
+          type: string
+          description: Experiment description
+        project_id:
+          type: string
+          description: Project identifier
+        owner_id:
+          type: string
+          description: User identifier of experiment owner
+        status:
+          $ref: '#/components/schemas/ExperimentStatus'
+        command_template:
+          type: string
+          description: Command template with parameter placeholders
+        output_pattern:
+          type: string
+          description: Output file pattern with parameter placeholders
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterSet'
+        compute_requirements:
+          type: object
+          description: Compute resource requirements
+        data_requirements:
+          type: object
+          description: Data staging requirements
+        allowed_compute_resources:
+          type: array
+          items:
+            type: string
+          description: Allowed compute resource IDs
+        denied_compute_resources:
+          type: array
+          items:
+            type: string
+          description: Denied compute resource IDs
+        allowed_compute_types:
+          type: array
+          items:
+            type: string
+          description: Allowed compute types
+        cost_weights:
+          type: object
+          description: Cost optimization weights
+        deadline:
+          type: string
+          format: date-time
+          description: Experiment deadline
+        task_template:
+          type: object
+          description: Task generation template
+        execution_summary:
+          type: object
+          description: Execution summary statistics
+        generated_tasks:
+          type: object
+          description: Generated task definitions
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          description: Additional metadata
+
+    ExperimentStatus:
+      type: string
+      enum:
+        - CREATED
+        - SUBMITTED
+        - RUNNING
+        - COMPLETED
+        - FAILED
+        - CANCELLED
+        - ARCHIVED
+
+    ParameterSet:
+      type: object
+      required:
+        - id
+        - values
+      properties:
+        id:
+          type: string
+          description: Parameter set identifier
+        values:
+          type: object
+          additionalProperties:
+            type: string
+          description: Parameter values
+        metadata:
+          type: object
+          description: Additional parameter metadata
+
+    Task:
+      type: object
+      required:
+        - id
+        - experiment_id
+        - name
+        - command
+        - status
+      properties:
+        id:
+          type: string
+          description: Unique task identifier
+        experiment_id:
+          type: string
+          description: Parent experiment identifier
+        name:
+          type: string
+          description: Task name
+        description:
+          type: string
+          description: Task description
+        command:
+          type: string
+          description: Task command
+        output_path:
+          type: string
+          description: Task output path
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        assigned_worker_id:
+          type: string
+          description: Assigned worker identifier
+        assigned_at:
+          type: string
+          format: date-time
+        claimed_at:
+          type: string
+          format: date-time
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        retry_count:
+          type: integer
+          minimum: 0
+        max_retries:
+          type: integer
+          minimum: 0
+        error_message:
+          type: string
+        input_files:
+          type: array
+          items:
+            type: string
+        output_files:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+        result_summary:
+          type: object
+          description: Task result summary
+        execution_metrics:
+          type: object
+          description: Execution performance metrics
+        worker_assignment_history:
+          type: array
+          items:
+            type: object
+          description: Worker assignment history
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    TaskStatus:
+      type: string
+      enum:
+        - CREATED
+        - PENDING
+        - QUEUED
+        - ASSIGNED
+        - RUNNING
+        - STAGING
+        - COMPLETED
+        - FAILED
+        - CANCELLED
+        - ARCHIVED
+
+    # Request/Response Types
+    CreateExperimentRequest:
+      type: object
+      required:
+        - name
+        - project_id
+        - command_template
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        project_id:
+          type: string
+        command_template:
+          type: string
+        output_pattern:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterSet'
+        compute_requirements:
+          type: object
+        data_requirements:
+          type: object
+        allowed_compute_resources:
+          type: array
+          items:
+            type: string
+        denied_compute_resources:
+          type: array
+          items:
+            type: string
+        allowed_compute_types:
+          type: array
+          items:
+            type: string
+        cost_weights:
+          type: object
+        deadline:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+
+    UpdateExperimentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        command_template:
+          type: string
+        output_pattern:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterSet'
+        compute_requirements:
+          type: object
+        data_requirements:
+          type: object
+        allowed_compute_resources:
+          type: array
+          items:
+            type: string
+        denied_compute_resources:
+          type: array
+          items:
+            type: string
+        allowed_compute_types:
+          type: array
+          items:
+            type: string
+        cost_weights:
+          type: object
+        deadline:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+
+    ExperimentListResponse:
+      type: object
+      properties:
+        experiments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experiment'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    ExperimentSearchResponse:
+      type: object
+      properties:
+        experiments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experiment'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    ExperimentSummary:
+      type: object
+      properties:
+        experiment_id:
+          type: string
+        total_tasks:
+          type: integer
+        completed_tasks:
+          type: integer
+        failed_tasks:
+          type: integer
+        running_tasks:
+          type: integer
+        success_rate:
+          type: number
+          minimum: 0
+          maximum: 1
+        avg_duration_sec:
+          type: number
+        total_cost:
+          type: number
+        resource_usage:
+          type: object
+        parameter_summary:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    FailedTaskInfo:
+      type: object
+      properties:
+        task_id:
+          type: string
+        experiment_id:
+          type: string
+        name:
+          type: string
+        error:
+          type: string
+        retry_count:
+          type: integer
+        max_retries:
+          type: integer
+        suggested_fix:
+          type: string
+        failed_at:
+          type: string
+          format: date-time
+        parameters:
+          type: object
+
+    ExperimentTimeline:
+      type: object
+      properties:
+        experiment_id:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+
+    TimelineEvent:
+      type: object
+      properties:
+        event_type:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        task_id:
+          type: string
+        worker_id:
+          type: string
+        details:
+          type: object
+
+    ExperimentProgress:
+      type: object
+      properties:
+        experiment_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/ExperimentStatus'
+        progress_percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+        estimated_completion:
+          type: string
+          format: date-time
+        current_phase:
+          type: string
+        active_tasks:
+          type: integer
+        queued_tasks:
+          type: integer
+
+    TaskProgress:
+      type: object
+      properties:
+        task_id:
+          type: string
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        progress_percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+        estimated_completion:
+          type: string
+          format: date-time
+        current_phase:
+          type: string
+        worker_id:
+          type: string
+
+    DerivativeExperimentRequest:
+      type: object
+      required:
+        - new_experiment_name
+      properties:
+        new_experiment_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        task_filter:
+          type: string
+          enum:
+            - all
+            - only_successful
+            - only_failed
+        parameter_modifications:
+          type: object
+          additionalProperties:
+            type: string
+        options:
+          type: object
+          properties:
+            preserve_compute_resources:
+              type: boolean
+            preserve_data_requirements:
+              type: boolean
+
+    DerivativeExperimentResponse:
+      type: object
+      properties:
+        new_experiment_id:
+          type: string
+        task_count:
+          type: integer
+        validation:
+          type: object
+          properties:
+            valid:
+              type: boolean
+            warnings:
+              type: array
+              items:
+                type: string
+            errors:
+              type: array
+              items:
+                type: string
+
+    TaskAggregationRequest:
+      type: object
+      required:
+        - experiment_id
+      properties:
+        experiment_id:
+          type: string
+        group_by:
+          type: string
+          enum:
+            - status
+            - worker
+            - compute_resource
+            - parameter_value
+        limit:
+          type: integer
+          default: 100
+          maximum: 1000
+        offset:
+          type: integer
+          default: 0
+          minimum: 0
+
+    TaskAggregationResponse:
+      type: object
+      properties:
+        experiment_id:
+          type: string
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskGroup'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    TaskGroup:
+      type: object
+      properties:
+        group_key:
+          type: string
+        count:
+          type: integer
+        success_rate:
+          type: number
+        avg_duration_sec:
+          type: number
+        total_cost:
+          type: number
+
+    # Health and Monitoring
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+
+    DetailedHealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - unhealthy
+            - degraded
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        components:
+          type: object
+          properties:
+            database:
+              $ref: '#/components/schemas/ComponentHealth'
+            scheduler_daemon:
+              $ref: '#/components/schemas/ComponentHealth'
+            workers:
+              $ref: '#/components/schemas/ComponentHealth'
+            storage_resources:
+              $ref: '#/components/schemas/ComponentHealth'
+            compute_resources:
+              $ref: '#/components/schemas/ComponentHealth'
+
+    ComponentHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - unhealthy
+            - degraded
+        latency_ms:
+          type: number
+        details:
+          type: object
+
+    # WebSocket
+    WebSocketMessage:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Message type
+        data:
+          type: object
+          description: Message payload
+        timestamp:
+          type: string
+          format: date-time
+
+    # Error Response
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
