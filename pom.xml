@@ -29,55 +29,12 @@ under the License.
 
     <groupId>org.apache.airavata</groupId>
     <artifactId>airavata</artifactId>
-    <packaging>pom</packaging>
     <name>Airavata</name>
     <version>0.21-SNAPSHOT</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
 
-    <scm>
-        <connection>scm:git:https://github.com/apache/airavata.git</connection>
-        <developerConnection>scm:git:https://github.com/apache/airavata.git</developerConnection>
-        <url>https://github.com/apache/airavata</url>
-        <tag>HEAD</tag>
-    </scm>
-
-    <mailingLists>
-
-        <mailingList>
-            <name>Airavata Developer List</name>
-            <subscribe>dev-subscribe@airavata.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@airavata.apache.org</unsubscribe>
-            <post>mailto:dev@airavata.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/airavata-dev/</archive>
-        </mailingList>
-
-        <mailingList>
-            <name>Airavata Users List</name>
-            <subscribe>users-subscribe@airavata.apache.org</subscribe>
-            <unsubscribe>users-unsubscribe@airavata.apache.org</unsubscribe>
-            <post>mailto:users@airavata.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/airavata-users/</archive>
-        </mailingList>
-
-    </mailingLists>
-
-    <issueManagement>
-        <url>https://issues.apache.org/jira/browse/AIRAVATA</url>
-    </issueManagement>
-
-    <modules>
-        <module>airavata-api</module>
-        <module>airavata-api/iam-service</module>
-        <module>airavata-api/credential-service</module>
-        <module>airavata-api/compute-service</module>
-        <module>airavata-api/research-service</module>
-        <module>airavata-api/storage-service</module>
-        <module>airavata-api/orchestration-service</module>
-        <module>airavata-api/agent-service</module>
-        <module>airavata-server</module>
-    </modules>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -360,6 +317,37 @@ under the License.
         </dependencies>
     </dependencyManagement>
 
+    <scm>
+        <connection>scm:git:https://github.com/apache/airavata.git</connection>
+        <developerConnection>scm:git:https://github.com/apache/airavata.git</developerConnection>
+        <url>https://github.com/apache/airavata</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <mailingLists>
+
+        <mailingList>
+            <name>Airavata Developer List</name>
+            <subscribe>dev-subscribe@airavata.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@airavata.apache.org</unsubscribe>
+            <post>mailto:dev@airavata.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/airavata-dev/</archive>
+        </mailingList>
+
+        <mailingList>
+            <name>Airavata Users List</name>
+            <subscribe>users-subscribe@airavata.apache.org</subscribe>
+            <unsubscribe>users-unsubscribe@airavata.apache.org</unsubscribe>
+            <post>mailto:users@airavata.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/airavata-users/</archive>
+        </mailingList>
+
+    </mailingLists>
+
+    <issueManagement>
+        <url>https://issues.apache.org/jira/browse/AIRAVATA</url>
+    </issueManagement>
+    
     <build>
         <plugins>
             <plugin>
