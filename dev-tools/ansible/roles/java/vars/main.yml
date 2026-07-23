@@ -22,8 +22,8 @@
 #Variables associated with this role
 
 # Default Java home (used for CentOS/Rocky)
-java_home: "/usr/lib/jvm/java-17"
-java_home_ubuntu: "/usr/lib/jvm/java-17-openjdk-amd64"
-openjdk_version: "java-17-openjdk-devel"
-openjdk_version_rocky: "java-17-openjdk-devel"
+java_home: "/usr/lib/jvm/java-25"
+java_home_ubuntu: "/usr/lib/jvm/java-25-openjdk-amd64"
+openjdk_version: "java-25-openjdk-devel"
+openjdk_version_rocky: "java-25-openjdk-devel"
 ...

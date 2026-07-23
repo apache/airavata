@@ -19,7 +19,7 @@
 #
 
 ---
-- name: Install OpenJDK 17 (CentOS)
+- name: Install OpenJDK 25 (CentOS)
   yum:
     name: "{{ openjdk_version }}"
     state: present
@@ -29,16 +29,16 @@
     - always
   when: ansible_distribution == "CentOS"
 
-- name: Install OpenJDK 17 (Rocky)
+- name: Install OpenJDK 25 (Rocky)
   dnf: name="{{ openjdk_version_rocky }}"
   become: yes
   tags:
     - always
   when: ansible_distribution == "Rocky"
 
-- name: Install OpenJDK 17 (Ubuntu/Debian)
+- name: Install OpenJDK 25 (Ubuntu/Debian)
   apt:
-    name: openjdk-17-jdk
+    name: openjdk-25-jdk
     state: present
     update_cache: yes
   become: yes

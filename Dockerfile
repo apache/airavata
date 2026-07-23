@@ -2,7 +2,7 @@
 # Unified Airavata Server container
 # =============================================================================
 
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:25-jre-noble
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -20,7 +20,7 @@ COPY airavata-server/target/airavata-server-0.21-SNAPSHOT.jar ./airavata-server.
 RUN mkdir -p logs keystores
 
 # Environment
-ENV JAVA_HOME=/usr/lib/jvm/temurin-17-jre
+ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # JVM tuning for production
