@@ -1,0 +1,103 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// This file describes the definitions of the Data Structures related to
+// deployment of Application on computational resources.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.appcatalog.appdeployment;
+
+option java_package = "org.apache.airavata.model.appcatalog.appdeployment.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/parallelism/parallelism.proto";
+
+// Key Value pairs to be used to set environments.
+//
+// name: Name of the environment variable such as PATH, LD_LIBRARY_PATH, NETCDF_HOME.
+// value: Value of the environment variable to set.
+// env_path_order: The order of the setting of the env variables when there are
+//   multiple env variables.
+message SetEnvPaths {
+  string name = 1;
+  string value = 2;
+  int32 env_path_order = 3;
+}
+
+// Job commands to be used in Pre Job, Post Job and Module Load Commands.
+//
+// command: The actual command in string format.
+// command_order: Order of the command in the multiple command situation.
+message CommandObject {
+  string command = 1;
+  int32 command_order = 2;
+}
+
+// Application Module Information. A module has to be registered before
+// registering a deployment.
+//
+// app_module_id: Airavata Internal Unique Job ID. This is set by the registry.
+// app_module_name: Name of the application module.
+// app_module_version: Version of the application.
+// app_module_description: Description of the Module.
+message ApplicationModule {
+  string app_module_id = 1;
+  string app_module_name = 2;
+  string app_module_version = 3;
+  string app_module_description = 4;
+}
+
+// Application Deployment Description.
+//
+// app_deployment_id: Airavata Internal Unique Job ID. This is set by the registry.
+// app_module_id: Application Module Id.
+// compute_host_id: This ID maps application deployment to a particular resource
+//   previously described within Airavata.
+// executable_path: Path to the executable.
+// parallelism: Parallelism type of the application.
+// app_deployment_description: Description of the deployment.
+// module_load_cmds: Command string to load modules.
+// lib_prepend_paths: Prepend to a path variable the value.
+// lib_append_paths: Append to a path variable the value.
+// set_environment: Assigns to the environment variable "NAME" the value.
+// pre_job_commands: Commands to run before the job.
+// post_job_commands: Commands to run after the job.
+// default_queue_name: Default queue name.
+// default_node_count: Default node count.
+// default_cpu_count: Default CPU count.
+// default_walltime: Default walltime.
+// editable_by_user: Whether the deployment is editable by the user.
+message ApplicationDeploymentDescription {
+  string app_deployment_id = 1;
+  string app_module_id = 2;
+  string compute_host_id = 3;
+  string executable_path = 4;
+  org.apache.airavata.model.parallelism.ApplicationParallelismType parallelism = 5;
+  string app_deployment_description = 6;
+  repeated CommandObject module_load_cmds = 7;
+  repeated SetEnvPaths lib_prepend_paths = 8;
+  repeated SetEnvPaths lib_append_paths = 9;
+  repeated SetEnvPaths set_environment = 10;
+  repeated CommandObject pre_job_commands = 11;
+  repeated CommandObject post_job_commands = 12;
+  string default_queue_name = 13;
+  int32 default_node_count = 14;
+  int32 default_cpu_count = 15;
+  int32 default_walltime = 16;
+  bool editable_by_user = 17;
+}

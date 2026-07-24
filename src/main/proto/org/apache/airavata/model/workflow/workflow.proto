@@ -1,0 +1,162 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax = "proto3";
+
+package org.apache.airavata.model.workflow;
+
+option java_package = "org.apache.airavata.model.workflow.proto";
+option java_multiple_files = true;
+
+import "org/apache/airavata/model/commons/commons.proto";
+import "org/apache/airavata/model/application/io/application_io.proto";
+
+enum ApplicationState {
+  APPLICATION_STATE_UNKNOWN = 0;
+  APPLICATION_STATE_CREATED = 1;
+  APPLICATION_STATE_VALIDATED = 2;
+  APPLICATION_STATE_SCHEDULED = 3;
+  APPLICATION_STATE_LAUNCHED = 4;
+  APPLICATION_STATE_EXECUTING = 5;
+  APPLICATION_STATE_CANCELING = 6;
+  APPLICATION_STATE_CANCELED = 7;
+  APPLICATION_STATE_COMPLETED = 8;
+  APPLICATION_STATE_FAILED = 9;
+}
+
+message ApplicationStatus {
+  string id = 1;
+  ApplicationState state = 2;
+  string description = 3;
+  int64 updated_at = 4;
+}
+
+message WorkflowApplication {
+  string id = 1;
+  string process_id = 2;
+  string application_interface_id = 3;
+  string compute_resource_id = 4;
+  string queue_name = 5;
+  int32 node_count = 6;
+  int32 core_count = 7;
+  int32 wall_time_limit = 8;
+  int32 physical_memory = 9;
+  repeated ApplicationStatus statuses = 10;
+  repeated org.apache.airavata.model.commons.ErrorModel errors = 11;
+  int64 created_at = 12;
+  int64 updated_at = 13;
+}
+
+message DataBlock {
+  string id = 1;
+  string value = 2;
+  org.apache.airavata.model.application.io.DataType type = 3;
+  int64 created_at = 4;
+  int64 updated_at = 5;
+}
+
+enum ComponentType {
+  COMPONENT_TYPE_UNKNOWN = 0;
+  APPLICATION = 1;
+  HANDLER = 2;
+}
+
+message WorkflowConnection {
+  string id = 1;
+  DataBlock data_block = 2;
+  ComponentType from_type = 3;
+  string from_id = 4;
+  string from_output_name = 5;
+  ComponentType to_type = 6;
+  string to_id = 7;
+  string to_input_name = 8;
+  int64 created_at = 9;
+  int64 updated_at = 10;
+}
+
+enum HandlerType {
+  HANDLER_TYPE_UNKNOWN = 0;
+  FLOW_STARTER = 1;
+  FLOW_TERMINATOR = 2;
+}
+
+enum HandlerState {
+  HANDLER_STATE_UNKNOWN = 0;
+  HANDLER_STATE_CREATED = 1;
+  HANDLER_STATE_VALIDATED = 2;
+  HANDLER_STATE_SCHEDULED = 3;
+  HANDLER_STATE_LAUNCHED = 4;
+  HANDLER_STATE_EXECUTING = 5;
+  HANDLER_STATE_CANCELING = 6;
+  HANDLER_STATE_CANCELED = 7;
+  HANDLER_STATE_COMPLETED = 8;
+  HANDLER_STATE_FAILED = 9;
+}
+
+message HandlerStatus {
+  string id = 1;
+  HandlerState state = 2;
+  string description = 3;
+  int64 updated_at = 4;
+}
+
+message WorkflowHandler {
+  string id = 1;
+  HandlerType type = 2;
+  repeated org.apache.airavata.model.application.io.InputDataObjectType inputs = 3;
+  repeated org.apache.airavata.model.application.io.OutputDataObjectType outputs = 4;
+  repeated HandlerStatus statuses = 5;
+  repeated org.apache.airavata.model.commons.ErrorModel errors = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+enum WorkflowState {
+  WORKFLOW_STATE_UNKNOWN = 0;
+  WORKFLOW_STATE_CREATED = 1;
+  WORKFLOW_STATE_VALIDATED = 2;
+  WORKFLOW_STATE_SCHEDULED = 3;
+  WORKFLOW_STATE_LAUNCHED = 4;
+  WORKFLOW_STATE_EXECUTING = 5;
+  WORKFLOW_STATE_PAUSING = 6;
+  WORKFLOW_STATE_PAUSED = 7;
+  WORKFLOW_STATE_RESTARTING = 8;
+  WORKFLOW_STATE_CANCELING = 9;
+  WORKFLOW_STATE_CANCELED = 10;
+  WORKFLOW_STATE_COMPLETED = 11;
+  WORKFLOW_STATE_FAILED = 12;
+}
+
+message WorkflowStatus {
+  string id = 1;
+  WorkflowState state = 2;
+  string description = 3;
+  int64 updated_at = 4;
+}
+
+message AiravataWorkflow {
+  string id = 1;
+  string experiment_id = 2;
+  string description = 3;
+  repeated WorkflowApplication applications = 4;
+  repeated WorkflowHandler handlers = 5;
+  repeated WorkflowConnection connections = 6;
+  repeated WorkflowStatus statuses = 7;
+  repeated org.apache.airavata.model.commons.ErrorModel errors = 8;
+  int64 created_at = 9;
+  int64 updated_at = 10;
+}
