@@ -28,6 +28,7 @@ import org.apache.airavata.common.IAMDBConstants;
 import org.apache.airavata.iam.model.*;
 import org.apache.airavata.iam.repository.*;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
+import org.apache.airavata.sharing.SharingConstants;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.proto.GroupChildType;
 import org.apache.airavata.sharing.registry.models.proto.GroupType;
@@ -41,8 +42,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SharingService {
     private static final Logger logger = LoggerFactory.getLogger(SharingService.class);
-
-    public static String OWNER_PERMISSION_NAME = "OWNER";
 
     /**
      * * Domain Operations
@@ -59,9 +58,9 @@ public class SharingService {
 
             // create the global permission for the domain
             PermissionTypeEntity permissionType = new PermissionTypeEntity();
-            permissionType.setPermissionTypeId(domain.getDomainId() + ":" + OWNER_PERMISSION_NAME);
+            permissionType.setPermissionTypeId(domain.getDomainId() + ":" + SharingConstants.OWNER_PERMISSION_NAME);
             permissionType.setDomainId(domain.getDomainId());
-            permissionType.setName(OWNER_PERMISSION_NAME);
+            permissionType.setName(SharingConstants.OWNER_PERMISSION_NAME);
             permissionType.setDescription("GLOBAL permission to " + domain.getDomainId());
             permissionType.setCreatedTime(System.currentTimeMillis());
             permissionType.setUpdatedTime(System.currentTimeMillis());
@@ -1232,7 +1231,8 @@ public class SharingService {
             throws Exception {
         try {
             if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
-                throw new Exception(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
+                throw new Exception(
+                        SharingConstants.OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
 
             List<SharingEntity> sharings = new ArrayList<>();
@@ -1302,7 +1302,8 @@ public class SharingService {
             throws Exception {
         try {
             if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
-                throw new Exception(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
+                throw new Exception(
+                        SharingConstants.OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
             return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
         } catch (Exception ex) {
@@ -1316,7 +1317,8 @@ public class SharingService {
             throws Exception {
         try {
             if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
-                throw new Exception(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
+                throw new Exception(
+                        SharingConstants.OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
             return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
         } catch (Exception ex) {
@@ -1353,7 +1355,7 @@ public class SharingService {
             throws Exception {
         try {
             if (permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))) {
-                throw new Exception(OWNER_PERMISSION_NAME + " permission cannot be removed");
+                throw new Exception(SharingConstants.OWNER_PERMISSION_NAME + " permission cannot be removed");
             }
 
             // revoking permission for the entity

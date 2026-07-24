@@ -19,8 +19,6 @@
 */
 package org.apache.airavata.storage.model;
 
-import org.apache.airavata.interfaces.FileMetadata;
-
 public class AiravataFile {
     private String fileName;
     private long fileSize;

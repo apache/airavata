@@ -21,13 +21,12 @@ package org.apache.airavata.storage.service;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.interfaces.AppCatalogException;
-import org.apache.airavata.interfaces.RegistryException;
-import org.apache.airavata.interfaces.StorageProvider;
-import org.apache.airavata.interfaces.StorageRegistry;
 import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
+import org.apache.airavata.storage.repository.DataProductRepository;
+import org.apache.airavata.storage.repository.DataReplicaLocationRepository;
+import org.apache.airavata.storage.repository.StorageResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
@@ -35,154 +34,142 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Primary
-public class StorageRegistryService implements StorageRegistry {
+public class StorageRegistryService {
     private static final Logger logger = LoggerFactory.getLogger(StorageRegistryService.class);
 
-    @org.springframework.beans.factory.annotation.Autowired
-    private StorageProvider storageProvider;
+    private final DataProductRepository storageProvider;
+    private final DataReplicaLocationRepository dataReplicaLocationRepository;
+    private final StorageResourceRepository storageResourceRepository;
+
+    public StorageRegistryService(DataProductRepository storageProvider,
+            DataReplicaLocationRepository dataReplicaLocationRepository,
+            StorageResourceRepository storageResourceRepository) {
+        this.storageProvider = storageProvider;
+        this.dataReplicaLocationRepository = dataReplicaLocationRepository;
+        this.storageResourceRepository = storageResourceRepository;
+    }
 
     // =========================================================================
     // StorageRegistry interface methods
     // =========================================================================
 
-    @Override
     public StorageResourceDescription getStorageResource(String storageResourceId) throws Exception {
         try {
-            StorageResourceDescription storageResource = storageProvider.getStorageResource(storageResourceId);
-            logger.debug("Airavata retrieved storage resource with storage resource Id : " + storageResourceId);
+            StorageResourceDescription storageResource = storageResourceRepository
+                    .getStorageResource(storageResourceId);
+            logger.debug("Retrieved storage resource {}", storageResourceId);
             return storageResource;
-        } catch (AppCatalogException e) {
-            logger.error(storageResourceId, "Error while retrieving storage resource...", e);
-            throw new RegistryException("Error while retrieving storage resource. More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving storage resource {}: {}", storageResourceId, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public String registerDataProduct(DataProductModel dataProductModel) throws Exception {
         try {
             String productUrl = storageProvider.registerDataProduct(dataProductModel);
             return productUrl;
-        } catch (RegistryException e) {
-            String msg = "Error in registering the data resource" + dataProductModel.getProductName() + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error registering data product {}: {}", dataProductModel.getProductName(), e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public DataProductModel getDataProduct(String productUri) throws Exception {
         try {
             DataProductModel dataProductModel = storageProvider.getDataProduct(productUri);
             return dataProductModel;
-        } catch (RegistryException e) {
-            String msg = "Error in retreiving the data product " + productUri + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving data product {}: {}", productUri, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public DataProductModel getParentDataProduct(String productUri) throws Exception {
         try {
             DataProductModel dataProductModel = storageProvider.getParentDataProduct(productUri);
             return dataProductModel;
-        } catch (RegistryException e) {
-            String msg = "Error in retreiving the parent data product for " + productUri + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving parent data product for {}: {}", productUri, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public List<DataProductModel> getChildDataProducts(String productUri) throws Exception {
         try {
             List<DataProductModel> dataProductModels = storageProvider.getChildDataProducts(productUri);
             return dataProductModels;
-        } catch (RegistryException e) {
-            String msg = "Error in retreiving the child products for " + productUri + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving child products for {}: {}", productUri, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws Exception {
         try {
-            String replicaId = storageProvider.registerReplicaLocation(replicaLocationModel);
+            String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
             return replicaId;
-        } catch (RegistryException e) {
-            String msg = "Error in retreiving the replica " + replicaLocationModel.getReplicaName() + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error registering replica {}: {}", replicaLocationModel.getReplicaName(), e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public List<DataProductModel> searchDataProductsByName(
             String gatewayId, String userId, String productName, int limit, int offset) throws Exception {
         try {
-            List<DataProductModel> dataProductModels =
-                    storageProvider.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+            List<DataProductModel> dataProductModels = storageProvider.searchDataProductsByName(gatewayId, userId,
+                    productName, limit, offset);
             return dataProductModels;
-        } catch (RegistryException e) {
-            String msg = "Error in searching the data products for name " + productName + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error searching data products for name {}: {}", productName, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public boolean updateDataProduct(DataProductModel dataProductModel) throws Exception {
         try {
             return storageProvider.updateDataProduct(dataProductModel);
-        } catch (RegistryException e) {
-            String msg = "Error in updating the data product " + dataProductModel.getProductUri() + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating data product {}: {}", dataProductModel.getProductUri(), e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public boolean removeDataProduct(String productUri) throws Exception {
         try {
             return storageProvider.removeDataProduct(productUri);
-        } catch (RegistryException e) {
-            String msg = "Error in removing the data product " + productUri + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error removing data product {}: {}", productUri, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public DataReplicaLocationModel getReplicaLocation(String replicaId) throws Exception {
         try {
-            return storageProvider.getReplicaLocation(replicaId);
-        } catch (RegistryException e) {
-            String msg = "Error in retrieving the replica location " + replicaId + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+            return dataReplicaLocationRepository.getReplicaLocation(replicaId);
+        } catch (Exception e) {
+            logger.error("Error retrieving replica location {}: {}", replicaId, e.getMessage(), e);
+            throw e;
         }
     }
 
-    @Override
     public boolean updateReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws Exception {
         try {
-            return storageProvider.updateReplicaLocation(replicaLocationModel);
-        } catch (RegistryException e) {
-            String msg = "Error in updating the replica location " + replicaLocationModel.getReplicaId() + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+            return dataReplicaLocationRepository.updateReplicaLocation(replicaLocationModel);
+        } catch (Exception e) {
+            logger.error("Error updating replica location {}: {}", replicaLocationModel.getReplicaId(), e.getMessage(),
+                    e);
+            throw e;
         }
     }
 
-    @Override
     public boolean removeReplicaLocation(String replicaId) throws Exception {
         try {
-            return storageProvider.removeReplicaLocation(replicaId);
-        } catch (RegistryException e) {
-            String msg = "Error in removing the replica location " + replicaId + ".";
-            logger.error(msg, e);
-            throw new RegistryException(msg + " More info : " + e.getMessage());
+            return dataReplicaLocationRepository.removeReplicaLocation(replicaId);
+        } catch (Exception e) {
+            logger.error("Error removing replica location {}: {}", replicaId, e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -192,36 +179,40 @@ public class StorageRegistryService implements StorageRegistry {
 
     public Map<String, String> getAllStorageResourceNames() throws Exception {
         try {
-            return storageProvider.getAllStorageResourceNames();
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while retrieving storage resource. More info : " + e.getMessage());
+            return storageResourceRepository.getAllStorageResourceIdList();
+        } catch (Exception e) {
+            logger.error("Error retrieving storage resource names: {}", e.getMessage(), e);
+            throw e;
         }
     }
 
     public boolean deleteStorageResource(String storageResourceId) throws Exception {
         try {
-            storageProvider.removeStorageResource(storageResourceId);
+            storageResourceRepository.removeStorageResource(storageResourceId);
             return true;
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while deleting storage resource. More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error deleting storage resource {}: {}", storageResourceId, e.getMessage(), e);
+            throw e;
         }
     }
 
     public boolean updateStorageResource(
             String storageResourceId, StorageResourceDescription storageResourceDescription) throws Exception {
         try {
-            storageProvider.updateStorageResource(storageResourceId, storageResourceDescription);
+            storageResourceRepository.updateStorageResource(storageResourceId, storageResourceDescription);
             return true;
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while updaing storage resource. More info : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating storage resource {}: {}", storageResourceId, e.getMessage(), e);
+            throw e;
         }
     }
 
     public String registerStorageResource(StorageResourceDescription storageResourceDescription) throws Exception {
         try {
-            return storageProvider.addStorageResource(storageResourceDescription);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while saving storage resource. More info : " + e.getMessage());
+            return storageResourceRepository.addStorageResource(storageResourceDescription);
+        } catch (Exception e) {
+            logger.error("Error saving storage resource: {}", e.getMessage(), e);
+            throw e;
         }
     }
 }

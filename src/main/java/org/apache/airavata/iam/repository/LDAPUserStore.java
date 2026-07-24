@@ -26,7 +26,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import org.apache.airavata.iam.util.PasswordDigester;
 import org.apache.airavata.iam.util.UserStore;
-import org.apache.airavata.iam.util.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -34,7 +33,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * A user store which talks to LDAP server. User credentials and user information are stored in a LDAP server.
+ * A user store which talks to LDAP server. User credentials and user
+ * information are stored in a LDAP server.
  * Uses standard JNDI to perform LDAP bind authentication.
  */
 public class LDAPUserStore implements UserStore {
@@ -46,7 +46,7 @@ public class LDAPUserStore implements UserStore {
     private PasswordDigester passwordDigester;
 
     @Override
-    public boolean authenticate(String userName, Object credentials) throws UserStoreException {
+    public boolean authenticate(String userName, Object credentials) throws Exception {
         String hashedPassword = passwordDigester.getPasswordHashValue((String) credentials);
         String userDn = userDnTemplate.replace("{0}", userName);
 
@@ -74,11 +74,13 @@ public class LDAPUserStore implements UserStore {
         }
     }
 
-    public void configure(Node specificConfigurationNode) throws UserStoreException {
+    public void configure(Node specificConfigurationNode) throws Exception {
 
         /**
-         * <specificConfiguration> <ldap> <url>ldap://localhost:10389</url> <systemUser>admin</systemUser>
-         * <systemUserPassword>secret</systemUserPassword> <userDNTemplate>uid={0},ou=system</userDNTemplate> </ldap>
+         * <specificConfiguration> <ldap> <url>ldap://localhost:10389</url>
+         * <systemUser>admin</systemUser>
+         * <systemUserPassword>secret</systemUserPassword>
+         * <userDNTemplate>uid={0},ou=system</userDNTemplate> </ldap>
          * </specificConfiguration>
          */
         Node configurationNode = null;

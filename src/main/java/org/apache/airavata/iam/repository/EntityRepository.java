@@ -21,7 +21,7 @@ package org.apache.airavata.iam.repository;
 
 import java.util.*;
 import org.apache.airavata.iam.model.*;
-import org.apache.airavata.iam.util.DBConstants;
+import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.sharing.registry.models.proto.EntitySearchField;
 import org.apache.airavata.sharing.registry.models.proto.SearchCondition;
 import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
@@ -47,13 +47,18 @@ public class EntityRepository extends AbstractSharingRepository<EntityEntity, En
             String domainId, List<String> groupIds, List<SearchCriteria> filters, int offset, int limit)
             throws SharingRegistryException {
         String groupIdString = "'";
-        for (String groupId : groupIds) groupIdString += groupId + "','";
+        for (String groupId : groupIds)
+            groupIdString += groupId + "','";
         groupIdString = groupIdString.substring(0, groupIdString.length() - 2);
 
-        // Explicit column list (not ENTITY.*) so the positional rs[0..12] mapping below is stable
-        // regardless of the table's physical column order. On a fresh DB the JPA-created ENTITY
-        // table orders columns alphabetically, which does NOT match ENTITY.*'s order and would make
-        // e.g. rs[3] a bigint CREATED_TIME cast to a String OWNER_ID (ClassCastException). This order
+        // Explicit column list (not ENTITY.*) so the positional rs[0..12] mapping below
+        // is stable
+        // regardless of the table's physical column order. On a fresh DB the
+        // JPA-created ENTITY
+        // table orders columns alphabetically, which does NOT match ENTITY.*'s order
+        // and would make
+        // e.g. rs[3] a bigint CREATED_TIME cast to a String OWNER_ID
+        // (ClassCastException). This order
         // matches the rs[0..12] reads in the result mapping.
         String query = "SELECT ENTITY.ENTITY_ID, ENTITY.DOMAIN_ID, ENTITY.ENTITY_TYPE_ID, ENTITY.OWNER_ID, "
                 + "ENTITY.PARENT_ENTITY_ID, ENTITY.NAME, ENTITY.DESCRIPTION, ENTITY.BINARY_DATA, "
@@ -83,8 +88,7 @@ public class EntityRepository extends AbstractSharingRepository<EntityEntity, En
             } else if (searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)) {
                 // FULL TEXT Search with Query Expansion (MariaDB)
                 String queryTerms = "";
-                for (String word :
-                        searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
+                for (String word : searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
                     queryTerms += queryTerms + " +" + word;
                 }
                 queryTerms = queryTerms.trim();
@@ -168,7 +172,8 @@ public class EntityRepository extends AbstractSharingRepository<EntityEntity, En
             entity.setCreatedTime(rs[11] != null ? ((Number) rs[11]).longValue() : 0L);
             entity.setUpdatedTime(rs[12] != null ? ((Number) rs[12]).longValue() : 0L);
 
-            // Removing duplicates. Another option is to change the query to remove duplicates.
+            // Removing duplicates. Another option is to change the query to remove
+            // duplicates.
             if (!keys.containsKey(entity + domainId + "," + entity.getEntityId())) {
                 resultSet.add(entity);
                 keys.put(entity + domainId + "," + entity.getEntityId(), null);

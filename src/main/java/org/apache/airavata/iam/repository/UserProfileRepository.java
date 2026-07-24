@@ -25,18 +25,17 @@ import static org.apache.airavata.db.QueryConstants.FIND_USER_PROFILE_BY_USER_ID
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.iam.mapper.ProfileMapper;
 import org.apache.airavata.iam.model.UserProfileEntity;
-import org.apache.airavata.iam.util.QueryConstants;
-import org.apache.airavata.interfaces.UserProfileProvider;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserProfileRepository extends AbstractRepository<UserProfile, UserProfileEntity, String>
-        implements UserProfileProvider {
+public class UserProfileRepository extends AbstractRepository<UserProfile, UserProfileEntity, String> {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileRepository.class);
 
     public UserProfileRepository() {
@@ -61,7 +60,8 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         queryParam.put(QueryConstants.GATEWAY_ID, gatewayId);
         List<UserProfile> resultList = select(FIND_USER_PROFILE_BY_USER_ID, 1, 0, queryParam);
 
-        if (resultList != null && resultList.size() > 0) userProfile = resultList.get(0);
+        if (resultList != null && resultList.size() > 0)
+            userProfile = resultList.get(0);
 
         return userProfile;
     }
@@ -101,22 +101,22 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         return ProfileMapper.INSTANCE.userProfileToModel(persistedCopy);
     }
 
-    //    public static void main(String args[]) {
+    // public static void main(String args[]) {
     //
-    //        UserProfile up = new UserProfile();
-    //        up.setAiravataInternalUserId("asd");
-    //        up.setComments("asd");
-    //        up.setCountry("sd");
-    //        up.setCreationTime("ad");
-    //        up.setGatewayId("asd");
+    // UserProfile up = new UserProfile();
+    // up.setAiravataInternalUserId("asd");
+    // up.setComments("asd");
+    // up.setCountry("sd");
+    // up.setCreationTime("ad");
+    // up.setGatewayId("asd");
     //
-    //        UserProfileEntity upe = new UserProfileEntity();
-    //        upe.setGatewayId("bl");
-    //        upe.setCreationTime(new Date());
+    // UserProfileEntity upe = new UserProfileEntity();
+    // upe.setGatewayId("bl");
+    // upe.setCreationTime(new Date());
     //
-    //        Class t = UserProfile.class;
-    //        Class e = UserProfileEntity.class;
-    //        Object o = mapper.map(upe, t);
-    //        System.out.println(o);
-    //    }
+    // Class t = UserProfile.class;
+    // Class e = UserProfileEntity.class;
+    // Object o = mapper.map(upe, t);
+    // System.out.println(o);
+    // }
 }

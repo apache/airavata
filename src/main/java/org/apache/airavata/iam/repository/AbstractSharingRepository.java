@@ -28,7 +28,7 @@ import java.util.Map;
 import org.apache.airavata.db.Committer;
 import org.apache.airavata.db.EntityManagerFactoryHolder;
 import org.apache.airavata.iam.model.SharingRegistryException;
-import org.apache.airavata.iam.util.DBConstants;
+import org.apache.airavata.db.DBConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,8 @@ public abstract class AbstractSharingRepository<E, Id> {
 
     public List<E> update(List<E> entities) throws SharingRegistryException {
         List<E> returnList = new ArrayList<>();
-        for (E entity : entities) returnList.add(update(entity));
+        for (E entity : entities)
+            returnList.add(update(entity));
         return returnList;
     }
 
@@ -70,7 +71,8 @@ public abstract class AbstractSharingRepository<E, Id> {
     }
 
     public boolean delete(List<Id> idList) throws SharingRegistryException {
-        for (Id id : idList) delete(id);
+        for (Id id : idList)
+            delete(id);
         return true;
     }
 
@@ -89,7 +91,8 @@ public abstract class AbstractSharingRepository<E, Id> {
 
     public List<E> get(List<Id> idList) throws SharingRegistryException {
         List<E> returnList = new ArrayList<>();
-        for (Id id : idList) returnList.add(get(id));
+        for (Id id : idList)
+            returnList.add(get(id));
         return returnList;
     }
 
@@ -164,7 +167,8 @@ public abstract class AbstractSharingRepository<E, Id> {
     }
 
     /**
-     * Returns the JPA entity name, respecting any explicit {@code @Entity(name = "...")} annotation.
+     * Returns the JPA entity name, respecting any explicit
+     * {@code @Entity(name = "...")} annotation.
      * Falls back to the simple class name when no explicit name is set.
      */
     private String getEntityName() {

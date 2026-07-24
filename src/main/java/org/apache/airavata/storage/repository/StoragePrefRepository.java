@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.interfaces.GatewayStoragePreferenceProvider;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
 import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.StoragePreferenceEntity;
@@ -34,8 +33,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StoragePrefRepository
-        extends AbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK>
-        implements GatewayStoragePreferenceProvider {
+        extends AbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK> {
 
     public StoragePrefRepository() {
         super(StoragePreference.class, StoragePreferenceEntity.class);
@@ -51,7 +49,6 @@ public class StoragePrefRepository
         return StorageMapper.INSTANCE.storagePrefToEntity(model);
     }
 
-    @Override
     public StoragePreference getGatewayStoragePreference(String gatewayId, String storageResourceId) throws Exception {
         StoragePreferencePK pk = new StoragePreferencePK();
         pk.setGatewayId(gatewayId);
@@ -59,14 +56,12 @@ public class StoragePrefRepository
         return get(pk);
     }
 
-    @Override
     public List<StoragePreference> getAllGatewayStoragePreferences(String gatewayId) throws Exception {
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put(DBConstants.StorageResourcePreference.GATEWAY_ID, gatewayId);
         return select(QueryConstants.GET_ALL_GATEWAY_STORAGE_PREFERENCES, -1, 0, queryParams);
     }
 
-    @Override
     public boolean addGatewayStoragePreference(
             String gatewayId, String storageResourceId, StoragePreference storagePreference) throws Exception {
         StoragePreferenceEntity entity = toEntity(storagePreference);
@@ -76,13 +71,11 @@ public class StoragePrefRepository
         return true;
     }
 
-    @Override
     public boolean updateGatewayStoragePreference(
             String gatewayId, String storageResourceId, StoragePreference storagePreference) throws Exception {
         return addGatewayStoragePreference(gatewayId, storageResourceId, storagePreference);
     }
 
-    @Override
     public boolean deleteGatewayStoragePreference(String gatewayId, String storageResourceId) throws Exception {
         StoragePreferencePK pk = new StoragePreferencePK();
         pk.setGatewayId(gatewayId);

@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.airavata.db.DBUtil;
 import org.apache.airavata.iam.util.PasswordDigester;
-import org.apache.airavata.iam.util.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -46,7 +45,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     private PasswordDigester passwordDigester;
 
     @Override
-    public boolean authenticate(String userName, Object credentials) throws UserStoreException {
+    public boolean authenticate(String userName, Object credentials) throws Exception {
         String hashedPassword = passwordDigester.getPasswordHashValue((String) credentials);
 
         try (Connection conn = dataSource.getConnection();
@@ -66,7 +65,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
     }
 
     @Override
-    public void configure(Node node) throws UserStoreException {
+    public void configure(Node node) throws Exception {
 
         super.configure(node);
 
@@ -123,7 +122,7 @@ public class JDBCUserStore extends AbstractJDBCUserStore {
             initializeDatabaseLookup(passwordColumn, userTable, userNameColumn);
         } catch (Exception e) {
             log.error("Error while initializing database configurations.", e);
-            throw new UserStoreException("Error while initializing database configurations.", e);
+            throw new Exception("Error while initializing database configurations.", e);
         }
 
         StringBuilder stringBuilder =

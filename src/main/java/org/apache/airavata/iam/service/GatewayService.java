@@ -21,11 +21,11 @@ package org.apache.airavata.iam.service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.apache.airavata.compute.repository.GwyResourceProfileRepository;
 import org.apache.airavata.iam.repository.GatewayGroupsRepository;
 import org.apache.airavata.iam.repository.GatewayRepository;
 import org.apache.airavata.iam.repository.UserProfileRepository;
-import org.apache.airavata.interfaces.GatewayRegistry;
-import org.apache.airavata.interfaces.GwyResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
 import org.apache.airavata.model.user.proto.UserProfile;
@@ -41,12 +41,21 @@ import org.springframework.stereotype.Component;
 public class GatewayService {
     private static final Logger logger = LoggerFactory.getLogger(GatewayService.class);
 
-    private final GatewayRepository gatewayRepository = new GatewayRepository();
-    private final GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
-    private final UserProfileRepository userProfileRepository = new UserProfileRepository();
+    private final GatewayRepository gatewayRepository;
+    private final GatewayGroupsRepository gatewayGroupsRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final GwyResourceProfileRepository gwyResourceProfileRepository;
 
     @Autowired
-    private GwyResourceProfile gwyResourceProfile;
+    public GatewayService(GatewayRepository gatewayRepository,
+            GatewayGroupsRepository gatewayGroupsRepository,
+            UserProfileRepository userProfileRepository,
+            GwyResourceProfileRepository gwyResourceProfileRepository) {
+        this.gatewayRepository = gatewayRepository;
+        this.gatewayGroupsRepository = gatewayGroupsRepository;
+        this.userProfileRepository = userProfileRepository;
+        this.gwyResourceProfileRepository = gwyResourceProfileRepository;
+    }
 
     // =========================================================================
     // GatewayRegistry interface methods
@@ -62,7 +71,7 @@ public class GatewayService {
                 throw new Exception(
                         "Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
             }
-            if (gwyResourceProfile.isGatewayResourceProfileExists(gateway.getGatewayId())) {
+            if (gwyResourceProfileRepository.isGatewayResourceProfileExists(gateway.getGatewayId())) {
                 throw new Exception("GatewayResourceProfile with gatewayId: " + gateway.getGatewayId()
                         + ", already exists in AppCatalog.");
             }
@@ -74,7 +83,7 @@ public class GatewayService {
                     .setIdentityServerTenant(gatewayId)
                     .setIdentityServerPwdCredToken(gateway.getIdentityServerPasswordToken())
                     .build();
-            gwyResourceProfile.addGatewayResourceProfile(gatewayResourceProfile);
+            gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
             logger.debug("Airavata added gateway with gateway id : " + gateway.getGatewayId());
             return gatewayId;
         } catch (Exception e) {
@@ -117,7 +126,8 @@ public class GatewayService {
             }
             gatewayRepository.updateGateway(gatewayId, updatedGateway);
 
-            GatewayResourceProfile existingGwyResourceProfile = gwyResourceProfile.getGatewayProfile(gatewayId);
+            GatewayResourceProfile existingGwyResourceProfile = gwyResourceProfileRepository
+                    .getGatewayProfile(gatewayId);
             if (existingGwyResourceProfile.getIdentityServerPwdCredToken().isEmpty()
                     || !existingGwyResourceProfile
                             .getIdentityServerPwdCredToken()
@@ -125,7 +135,7 @@ public class GatewayService {
                 GatewayResourceProfile updatedProfile = existingGwyResourceProfile.toBuilder()
                         .setIdentityServerPwdCredToken(updatedGateway.getIdentityServerPasswordToken())
                         .build();
-                gwyResourceProfile.updateGatewayResourceProfile(gatewayId, updatedProfile);
+                gwyResourceProfileRepository.updateGatewayResourceProfile(gatewayId, updatedProfile);
             }
             logger.debug("Airavata update gateway with gateway id : " + gatewayId);
             return true;

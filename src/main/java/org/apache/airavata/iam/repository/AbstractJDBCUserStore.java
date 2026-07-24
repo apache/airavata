@@ -20,6 +20,7 @@
 package org.apache.airavata.iam.repository;
 
 import org.apache.airavata.common.ServerSettings;
+import org.apache.airavata.iam.util.UserStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -30,7 +31,7 @@ import org.w3c.dom.NodeList;
  * An abstract implementation of the UserStore. This will encapsulate JDBC
  * configurations reading code.
  */
-public abstract class AbstractJDBCUserStore {
+public abstract class AbstractJDBCUserStore implements UserStore {
 
     protected static Logger log = LoggerFactory.getLogger(AbstractJDBCUserStore.class);
 

@@ -1,18 +1,16 @@
 package org.apache.airavata.iam;
 
-
-import org.apache.airavata.config.ServerSettings;
-import org.apache.airavata.interfaces.CredentialProvider;
-import org.apache.airavata.interfaces.GatewayGroupsProvider;
-import org.apache.airavata.interfaces.RegistryProvider;
-import org.apache.airavata.interfaces.SharingProvider;
+import org.apache.airavata.common.ServerSettings;
+import org.apache.airavata.compute.service.GatewayResourceProfileService;
+import org.apache.airavata.compute.service.ResourceProfileRegistryService;
+import org.apache.airavata.iam.service.GatewayService;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
-import org.apache.airavata.model.credential.store.proto.PasswordCredential;
+import org.apache.airavata.security.service.CredentialStoreService;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.proto.GroupType;
 import org.apache.airavata.sharing.registry.models.proto.UserGroup;
-import org.apache.airavata.util.AiravataUtils;
+import org.apache.airavata.sharing.service.SharingService;
+import org.apache.airavata.common.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,19 +19,17 @@ import org.springframework.stereotype.Component;
  * Create and save an initial set of user management groups for a gateway.
  */
 @Component
-public class GatewayGroupsInitializer  {
+public class GatewayGroupsInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayGroupsInitializer.class);
 
-    private final RegistryProvider registryClient;
-    private final SharingProvider sharingClient;
-    private final CredentialProvider credentialStoreClient;
+    private final SharingService sharingService;
+    private final GatewayService gatewayService;
 
     public GatewayGroupsInitializer(
-            RegistryProvider registryClient, SharingProvider sharingClient, CredentialProvider credentialStoreClient) {
-        this.registryClient = registryClient;
-        this.sharingClient = sharingClient;
-        this.credentialStoreClient = credentialStoreClient;
+            SharingService sharingService, GatewayService gatewayService) {
+        this.sharingService = sharingService;
+        this.gatewayService = gatewayService;
     }
 
     public synchronized GatewayGroups initializeGatewayGroups(String gatewayId) {
@@ -53,25 +49,25 @@ public class GatewayGroupsInitializer  {
 
         String adminOwnerUsername = getAdminOwnerUsername(gatewayId);
         String ownerId = adminOwnerUsername + "@" + gatewayId;
-        if (!sharingClient.isUserExists(gatewayId, ownerId)) {
-            sharingClient.createUser(ownerId, gatewayId, adminOwnerUsername);
+        if (!sharingService.isUserExists(gatewayId, ownerId)) {
+            sharingService.createUser(ownerId, gatewayId, adminOwnerUsername);
         }
 
         // Gateway Users
-        UserGroup gatewayUsersGroup =
-                createGroup(gatewayId, ownerId, "Gateway Users", "Default group for users of the gateway.");
+        UserGroup gatewayUsersGroup = createGroup(gatewayId, ownerId, "Gateway Users",
+                "Default group for users of the gateway.");
         gatewayGroupsBuilder.setDefaultGatewayUsersGroupId(gatewayUsersGroup.getGroupId());
         // Admin Users
         UserGroup adminUsersGroup = createGroup(gatewayId, ownerId, "Admin Users", "Admin users group.");
         gatewayGroupsBuilder.setAdminsGroupId(adminUsersGroup.getGroupId());
         // Read Only Admin Users
-        UserGroup readOnlyAdminsGroup =
-                createGroup(gatewayId, ownerId, "Read Only Admin Users", "Group of admin users with read-only access.");
+        UserGroup readOnlyAdminsGroup = createGroup(gatewayId, ownerId, "Read Only Admin Users",
+                "Group of admin users with read-only access.");
         gatewayGroupsBuilder.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.getGroupId());
         GatewayGroups gatewayGroups = gatewayGroupsBuilder.build();
 
         try {
-            registryClient.createGatewayGroups(gatewayGroups);
+            gatewayService.createGatewayGroups(gatewayGroups);
         } catch (Exception e) {
             logger.error(
                     "Gateway groups created in Sharing Catalog failed to save GatewayGroups entity in Registry", e);
@@ -95,35 +91,13 @@ public class GatewayGroupsInitializer  {
                 .setOwnerId(ownerId)
                 .setGroupType(GroupType.DOMAIN_LEVEL_GROUP)
                 .build();
-        sharingClient.createGroup(userGroup);
+        sharingService.createGroup(userGroup);
 
         return userGroup;
     }
 
     private String getAdminOwnerUsername(String gatewayId) throws Exception {
-
-        GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(gatewayId);
-        String credToken = gatewayResourceProfile.getIdentityServerPwdCredToken();
-        if (credToken != null && !credToken.isEmpty()) {
-            PasswordCredential credential =
-                    credentialStoreClient.getPasswordCredential(credToken, gatewayResourceProfile.getGatewayId());
-            if (credential != null
-                    && credential.getLoginUserName() != null
-                    && !credential.getLoginUserName().isEmpty()) {
-                return credential.getLoginUserName();
-            }
-        }
-        // Cold-start fallback: no identity-server password credential has been seeded for this
-        // gateway (blank token / missing credential), so resolve the gateway admin owner from the
-        // configured default registry user instead of NPE-ing on a null credential. This lets
-        // GatewayGroups initialize on a fresh cold start with no manual seeding step.
         String defaultUser = ServerSettings.getDefaultUser();
-        logger.warn(
-                "No identity-server password credential for gateway {} (token='{}'); falling back to "
-                        + "default admin owner '{}' for GatewayGroups initialization.",
-                gatewayId,
-                credToken,
-                defaultUser);
         return defaultUser;
     }
 }

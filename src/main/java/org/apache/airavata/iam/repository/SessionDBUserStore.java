@@ -21,7 +21,6 @@ package org.apache.airavata.iam.repository;
 
 import java.sql.SQLException;
 import org.apache.airavata.db.DBUtil;
-import org.apache.airavata.iam.util.UserStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -42,7 +41,7 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
     protected static Logger log = LoggerFactory.getLogger(SessionDBUserStore.class);
 
     @Override
-    public boolean authenticate(Object credentials) throws UserStoreException {
+    public boolean authenticate(Object credentials) throws Exception {
 
         String sessionTicket = (String) credentials;
 
@@ -50,12 +49,12 @@ public class SessionDBUserStore extends AbstractJDBCUserStore {
             String sessionString = dbUtil.getMatchingColumnValue(sessionTable, sessionColumn, sessionTicket);
             return (sessionString != null);
         } catch (SQLException e) {
-            throw new UserStoreException("Error querying database for session information.", e);
+            throw new Exception("Error querying database for session information.", e);
         }
     }
 
     @Override
-    public void configure(Node node) throws UserStoreException {
+    public void configure(Node node) throws Exception {
 
         super.configure(node);
         /**

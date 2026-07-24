@@ -24,8 +24,8 @@ import java.util.List;
 import org.apache.airavata.iam.model.PermissionTypeEntity;
 import org.apache.airavata.iam.model.PermissionTypePK;
 import org.apache.airavata.iam.model.SharingRegistryException;
-import org.apache.airavata.iam.service.SharingService;
-import org.apache.airavata.iam.util.DBConstants;
+import org.apache.airavata.db.DBConstants;
+import org.apache.airavata.sharing.SharingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -41,11 +41,11 @@ public class PermissionTypeRepository extends AbstractSharingRepository<Permissi
     public String getOwnerPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
         HashMap<String, String> filters = new HashMap<>();
         filters.put(DBConstants.PermissionTypeTable.DOMAIN_ID, domainId);
-        filters.put(DBConstants.PermissionTypeTable.NAME, SharingService.OWNER_PERMISSION_NAME);
+        filters.put(DBConstants.PermissionTypeTable.NAME, SharingConstants.OWNER_PERMISSION_NAME);
         List<PermissionTypeEntity> permissionTypeList = select(filters, 0, -1);
         if (permissionTypeList.size() != 1) {
             throw new SharingRegistryException("GLOBAL Permission inconsistency. Found " + permissionTypeList.size()
-                    + " records with " + SharingService.OWNER_PERMISSION_NAME + " name");
+                    + " records with " + SharingConstants.OWNER_PERMISSION_NAME + " name");
         }
         return permissionTypeList.get(0).getPermissionTypeId();
     }

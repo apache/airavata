@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.airavata.iam.model.*;
-import org.apache.airavata.iam.util.DBConstants;
+import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.sharing.registry.models.proto.SharingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +63,8 @@ public class UserRepository extends AbstractSharingRepository<UserEntity, UserPK
             String domainId, String entityId, String permissionTypeId, SharingType... sharingTypes)
             throws SharingRegistryException {
         Map<String, Object> queryParameters = new HashMap<>();
-        String query =
-                "SELECT DISTINCT u from " + "SharingUserEntity" + " u, " + SharingEntity.class.getSimpleName() + " s";
+        String query = "SELECT DISTINCT u from " + "SharingUserEntity" + " u, " + SharingEntity.class.getSimpleName()
+                + " s";
         query += " WHERE ";
         query += "u." + DBConstants.UserTable.USER_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "u." + DBConstants.UserTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
@@ -77,8 +77,8 @@ public class UserRepository extends AbstractSharingRepository<UserEntity, UserPK
         queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, permissionTypeId);
 
         if (!Arrays.asList(sharingTypes).isEmpty()) {
-            query +=
-                    " AND s." + DBConstants.SharingTable.SHARING_TYPE + " IN :" + DBConstants.SharingTable.SHARING_TYPE;
+            query += " AND s." + DBConstants.SharingTable.SHARING_TYPE + " IN :"
+                    + DBConstants.SharingTable.SHARING_TYPE;
             queryParameters.put(
                     DBConstants.SharingTable.SHARING_TYPE,
                     Arrays.asList(sharingTypes).stream().map(s -> s.name()).collect(Collectors.toList()));
