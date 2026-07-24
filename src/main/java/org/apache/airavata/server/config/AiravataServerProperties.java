@@ -17,3 +17,25 @@
 * specific language governing permissions and limitations
 * under the License.
 */
+package org.apache.airavata.server.config;
+
+import java.util.List;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * Binds the {@code airavata.servers} list property.
+ * Consumers must register via
+ * {@code @EnableConfigurationProperties(AiravataServerProperties.class)}.
+ */
+@ConfigurationProperties(prefix = "airavata")
+public class AiravataServerProperties {
+    private List<String> servers = List.of("grpc");
+
+    public List<String> getServers() {
+        return servers;
+    }
+
+    public void setServers(List<String> servers) {
+        this.servers = servers;
+    }
+}
