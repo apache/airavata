@@ -1,297 +1,55 @@
-name: airavata
-
-networks:
-  airavata-devstack:
-    external: true
-
 services:
-
-  db:
-    image: mariadb:11.8
-    container_name: airavata-db
+  mariadb:
+    image: mariadb:11
+    container_name: mariadb
     restart: unless-stopped
-    command: --lower-case-table-names=1
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: airavata
-      MYSQL_USER: airavata
-      MYSQL_PASSWORD: 123456
-    volumes:
-      - db_data:/var/lib/mysql
-      # On a fresh volume MariaDB runs these in order BEFORE the server starts (server
-      # depends_on db: service_healthy). 01 builds the schema, 02 seeds the dev tenant.
-      # The server then runs Hibernate ddl-auto=validate against the result. Skipped on a
-      # persisted volume; ./devstack/devstack reset wipes the volume to re-init from scratch.
-      - ./airavata-server/src/main/resources/db/migration/airavata/V1__Baseline_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./conf/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      MARIADB_ROOT_PASSWORD: 123456
+      MARIADB_DATABASE: airavata
+      MARIADB_USER: airavata
+      MARIADB_PASSWORD: 123456
     ports:
-      - "127.0.0.1:3306:3306"
-    networks:
-      airavata-devstack:
-        aliases:
-          - db.airavata.host
+      - "13306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
-
-  keycloak:
-    image: keycloak/keycloak:26.1
-    container_name: airavata-keycloak
-    restart: unless-stopped
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: auth.airavata.host
-      KC_PROXY_HEADERS: xforwarded
-      KC_HTTP_ENABLED: "true"
-    volumes:
-      - ./conf/keycloak/realm-default.json:/opt/keycloak/data/import/realm-default.json:ro
-      - ./conf/keycloak/themes/airavata:/opt/keycloak/themes/airavata:ro
-    command:
-      - start-dev
-      - --import-realm
-      - --db=dev-mem
-      - --http-port=18080
-      - --proxy-headers=xforwarded
-      - --hostname-strict=false
-      - --health-enabled=true
-      - --metrics-enabled=true
-      - --log-level=INFO
-      # Don't force "airavata" as the global default theme: it only ships a
-      # `login` variant, so making it the default ACCOUNT/admin/email theme makes
-      # Keycloak's account console 500 (NPE: account theme "airavata" not found).
-      # The realm pins `loginTheme: airavata` explicitly, so login branding is
-      # unaffected; account/admin/email use Keycloak's built-in themes.
-    networks:
-      - airavata-devstack
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.airavata-auth.rule=Host(`auth.airavata.host`)
-      - traefik.http.routers.airavata-auth.entrypoints=web,websecure
-      - traefik.http.routers.airavata-auth.tls=true
-      - traefik.http.services.airavata-auth.loadbalancer.server.port=18080
-      - traefik.docker.network=airavata-devstack
-
-  sftp:
-    image: atmoz/sftp:latest
-    container_name: airavata-sftp
-    restart: unless-stopped
-    volumes:
-      - ./conf/sftp/id_rsa.pub:/home/airavata/.ssh/keys/id_rsa.pub:ro
-      - ./conf/sftp/chown-storage.sh:/etc/sftp.d/chown-storage.sh:ro
-      - sftp_data:/home/airavata/storage
-    command: "airavata::1000"
-    networks:
-      - airavata-devstack
-    healthcheck:
-      test: ["CMD-SHELL", "cat /proc/1/cmdline | tr '\\0' ' ' | grep -q sshd || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  # --- Airavata server (image built by Tilt's docker_build; no build: block here) ---
-  airavata-server:
-    image: airavata-server:dev
-    container_name: airavata-server
-    restart: unless-stopped
-    # Connection settings are read by Airavata's ApplicationSettings (resolution order:
-    # system-property > env-var-with-exact-dotted-key > properties file) and by Spring
-    # @Value. SCREAMING_SNAKE env vars do NOT override the dotted keys, so inject -D
-    # system properties via JAVA_TOOL_OPTIONS (auto-read by the JVM, honored by both).
-    environment:
-      JAVA_TOOL_OPTIONS: >-
-        -Dspring.datasource.url=jdbc:mariadb://db.airavata.host:3306/airavata
-        -Dairavata.security.openid-url=https://auth.airavata.host/realms/default
-        -Diam.server.url=https://auth.airavata.host
-    volumes:
-      - ${HOME}/.airavata-devstack/certs/rootCA.pem:/certs/rootCA.pem:ro
-      - ./conf:/opt/airavata/conf:ro   # SSH key, credential keystore, TLS read from conf/
-    networks:
-      - airavata-devstack
-    depends_on:
-      db: { condition: service_healthy }
-      keycloak: { condition: service_healthy }
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.airavata-api.rule=Host(`api.airavata.host`)
-      - traefik.http.routers.airavata-api.entrypoints=web,websecure
-      - traefik.http.routers.airavata-api.tls=true
-      - traefik.http.services.airavata-api.loadbalancer.server.port=9090
-      - traefik.http.services.airavata-api.loadbalancer.server.scheme=h2c
-      - traefik.docker.network=airavata-devstack
-    # Spring Actuator is bridged onto Armeria (armeria-spring-boot3-actuator-autoconfigure),
-    # Health is Spring Boot defaults (DB ping); orchestration messaging/ZK removed.
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 40s
-
-  # Dev tools (start with: docker compose --profile tools up -d)
 
   adminer:
-    profiles: [tools]
-    image: adminer:4
-    container_name: airavata-adminer
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - airavata-devstack
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.airavata-adminer.rule=Host(`adminer.airavata.host`)
-      - traefik.http.routers.airavata-adminer.entrypoints=web,websecure
-      - traefik.http.routers.airavata-adminer.tls=true
-      - traefik.http.services.airavata-adminer.loadbalancer.server.port=8080
-      - traefik.docker.network=airavata-devstack
-
-  # --- SLURM cluster (image built by Tilt's docker_build; no build: block here) ---
-  # A real multi-node SLURM cluster: a controller/login node (slurmctld, also the
-  # ssh submit host reachable as `slurm`), two compute nodes (c1, c2 running
-  # slurmd), the accounting daemon (slurmdbd) and its dedicated MariaDB. munge
-  # provides shared auth via the slurm_munge volume; jobs share /home/airavata via
-  # the slurm_scratch volume across the submit node and every compute node.
-
-  # Dedicated accounting DB so `sacct` returns job state/history. Kept separate
-  # from the Airavata `db` to avoid coupling SLURM's schema to Airavata's.
-  slurm-dbmysql:
-    image: mariadb:11.8
-    container_name: airavata-slurm-dbmysql
+    image: adminer:latest
+    container_name: adminer
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: slurm_acct_db
-      MYSQL_USER: slurm
-      MYSQL_PASSWORD: slurm
+      ADMINER_DEFAULT_SERVER: mariadb
+    ports:
+      - "18080:8080"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_STANDALONE_ENABLED: "true"
+      ZOO_4LW_COMMANDS_WHITELIST: "ruok,stat"
+    ports:
+      - "12181:2181"
     volumes:
-      - slurm_db_data:/var/lib/mysql
-    networks:
-      - airavata-devstack
+      - zookeeper_data:/data
+      - zookeeper_datalog:/datalog
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
-
-  slurmdbd:
-    image: airavata-slurm:dev
-    container_name: airavata-slurmdbd
-    hostname: slurmdbd
-    restart: unless-stopped
-    command: ["slurmdbd"]
-    volumes:
-      - slurm_munge:/etc/munge
-    networks:
-      airavata-devstack:
-        aliases:
-          - slurmdbd
-    depends_on:
-      slurm-dbmysql: { condition: service_healthy }
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/6819' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
-  # Controller + ssh login/submit node. The airavata-server ssh-es into this as
-  # `airavata` (via the devstack id_rsa keypair) to run sbatch/squeue/sacct.
-  slurmctld:
-    image: airavata-slurm:dev
-    container_name: airavata-slurmctld
-    hostname: slurmctld
-    restart: unless-stopped
-    command: ["slurmctld"]
-    volumes:
-      - slurm_munge:/etc/munge
-      - slurm_scratch:/home/airavata
-      - ./conf/sftp/id_rsa.pub:/etc/airavata/authorized_keys:ro
-    networks:
-      airavata-devstack:
-        aliases:
-          - slurmctld
-          - slurm          # ssh submit-host alias the airavata-server connects to
-    depends_on:
-      slurmdbd: { condition: service_healthy }
-    healthcheck:
-      # Ready only when both compute nodes have registered and are idle/available.
-      test: ["CMD-SHELL", "sinfo -h -t idle,alloc,mix -o '%n' | grep -q c1 && sinfo -h -t idle,alloc,mix -o '%n' | grep -q c2"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 25s
-
-  c1:
-    image: airavata-slurm:dev
-    container_name: airavata-slurm-c1
-    hostname: c1
-    restart: unless-stopped
-    command: ["slurmd"]
-    # slurmd (23.11) always initializes a cgroup plugin for the slurmstepd scope.
-    # The host /sys/fs/cgroup is read-only here, so we give slurmd a private
-    # writable tmpfs the cgroup/v1 plugin (see cgroup.conf) can populate.
-    tmpfs:
-      - /sys/fs/cgroup:rw,mode=0755
-    volumes:
-      - slurm_munge:/etc/munge
-      - slurm_scratch:/home/airavata
-      - ./conf/sftp/id_rsa.pub:/etc/airavata/authorized_keys:ro
-    networks:
-      airavata-devstack:
-        aliases:
-          - c1
-    depends_on:
-      slurmdbd: { condition: service_healthy }
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/6818' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
-  c2:
-    image: airavata-slurm:dev
-    container_name: airavata-slurm-c2
-    hostname: c2
-    restart: unless-stopped
-    command: ["slurmd"]
-    # See c1: writable cgroup tmpfs for slurmd's cgroup/v1 stepd scope.
-    tmpfs:
-      - /sys/fs/cgroup:rw,mode=0755
-    volumes:
-      - slurm_munge:/etc/munge
-      - slurm_scratch:/home/airavata
-      - ./conf/sftp/id_rsa.pub:/etc/airavata/authorized_keys:ro
-    networks:
-      airavata-devstack:
-        aliases:
-          - c2
-    depends_on:
-      slurmdbd: { condition: service_healthy }
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/6818' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
 
 volumes:
-  db_data:
-  sftp_data:
-  slurm_db_data:    # accounting DB storage
-  slurm_munge:      # shared munge.key across all slurm daemons
-  slurm_scratch:    # shared /home/airavata job scratch across submit + compute nodes
+  mariadb_data:
+  zookeeper_data:
+  zookeeper_datalog:
