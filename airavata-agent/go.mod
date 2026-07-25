@@ -6,8 +6,8 @@ require (
 	github.com/cyber-shuttle/cybershuttle-tunnels v0.0.0-20250505072337-4314f6e407c4
 	github.com/fatedier/frp v0.68.1
 	github.com/google/uuid v1.6.0
-	google.golang.org/grpc v1.79.3
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/grpc v1.82.1
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
@@ -48,12 +48,12 @@ require (
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
 	github.com/xtaci/kcp-go/v5 v5.6.13 // indirect
-	golang.org/x/crypto v0.49.0 // indirect
-	golang.org/x/net v0.52.0 // indirect
-	golang.org/x/oauth2 v0.34.0 // indirect
+	golang.org/x/crypto v0.50.0 // indirect
+	golang.org/x/net v0.53.0 // indirect
+	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.42.0 // indirect
-	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20231211153847-12269c276173 // indirect
