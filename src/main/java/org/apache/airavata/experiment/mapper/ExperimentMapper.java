@@ -28,6 +28,7 @@ import org.apache.airavata.model.commons.proto.ErrorModel;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.experiment.proto.ExperimentSummaryModel;
 import org.apache.airavata.model.status.proto.ExperimentStatus;
+import org.apache.airavata.model.workspace.proto.Project;
 import org.apache.airavata.experiment.model.*;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -40,6 +41,13 @@ import org.mapstruct.factory.Mappers;
 public interface ExperimentMapper extends CommonMapperConversions {
 
     ExperimentMapper INSTANCE = Mappers.getMapper(ExperimentMapper.class);
+
+    // --- Project ---
+    @Mapping(target = "projectId", source = "projectID")
+    Project projectToModel(ProjectEntity entity);
+
+    @Mapping(target = "projectID", source = "projectId")
+    ProjectEntity projectToEntity(Project model);
 
     // --- Experiment ---
     @Mapping(target = "emailAddressesList", ignore = true)
