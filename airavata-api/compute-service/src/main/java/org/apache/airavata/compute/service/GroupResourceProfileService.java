@@ -127,10 +127,14 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
     }
 
     /**
-     * Reconcile-then-update: removes the child compute preferences / resource policies / batch-queue
-     * policies that are no longer present in the incoming profile, applies the update, and returns the
-     * refreshed profile with the caller's access flags. Composes the existing single-purpose service
-     * methods — the reconcile orchestration the SDK helper did client-side now lives server-side.
+     * Reconcile-then-update: removes the child compute preferences / resource
+     * policies / batch-queue
+     * policies that are no longer present in the incoming profile, applies the
+     * update, and returns the
+     * refreshed profile with the caller's access flags. Composes the existing
+     * single-purpose service
+     * methods — the reconcile orchestration the SDK helper did client-side now
+     * lives server-side.
      */
     public GroupResourceProfileWithAccess updateGroupResourceProfileReconciled(
             RequestContext ctx, GroupResourceProfile groupResourceProfile) throws ServiceException {
@@ -209,18 +213,27 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
     }
 
     /**
-     * {@link #getGroupResourceProfile} plus the caller's server-computed access flags (additive).
-     * Reuses {@code getGroupResourceProfile} for READ enforcement so a caller can never
-     * self-authorize. {@code GroupResourceProfile} carries no owner field, so ownership is derived
+     * {@link #getGroupResourceProfile} plus the caller's server-computed access
+     * flags (additive).
+     * Reuses {@code getGroupResourceProfile} for READ enforcement so a caller can
+     * never
+     * self-authorize. {@code GroupResourceProfile} carries no owner field, so
+     * ownership is derived
      * from the sharing OWNER grant established at creation.
      *
-     * <p>{@code userHasWriteAccess} is a COMPOSITE that mirrors what
-     * {@link #updateGroupResourceProfile} actually enforces: the caller must have sharing WRITE
-     * (or OWNER) on the profile AND READ on every credential token the profile references — the
+     * <p>
+     * {@code userHasWriteAccess} is a COMPOSITE that mirrors what
+     * {@link #updateGroupResourceProfile} actually enforces: the caller must have
+     * sharing WRITE
+     * (or OWNER) on the profile AND READ on every credential token the profile
+     * references — the
      * {@code default_credential_store_token} and each compute preference's
-     * {@code resource_specific_credential_store_token}. {@link #updateGroupResourceProfile}
-     * re-validates those token READs ({@link #validateGroupResourceProfileCredentials}), so a
-     * profile that looks editable but whose update would be rejected is reported as not writable.
+     * {@code resource_specific_credential_store_token}.
+     * {@link #updateGroupResourceProfile}
+     * re-validates those token READs
+     * ({@link #validateGroupResourceProfileCredentials}), so a
+     * profile that looks editable but whose update would be rejected is reported as
+     * not writable.
      */
     public GroupResourceProfileWithAccess getGroupResourceProfileWithAccess(
             RequestContext ctx, String groupResourceProfileId) throws ServiceException {
@@ -236,15 +249,24 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
     }
 
     /**
-     * Computes the caller's access flags for an already-loaded {@link GroupResourceProfile} and unions
-     * them onto it, without re-fetching the profile or re-enforcing READ (the caller must have already
-     * passed a READ gate before reaching this point). This is the per-profile core shared by
-     * {@link #getGroupResourceProfileWithAccess} and {@link #getGroupResourceListWithAccess}, so the list
-     * variant reuses the exact same token-composite write logic per row without N extra fetches.
+     * Computes the caller's access flags for an already-loaded
+     * {@link GroupResourceProfile} and unions
+     * them onto it, without re-fetching the profile or re-enforcing READ (the
+     * caller must have already
+     * passed a READ gate before reaching this point). This is the per-profile core
+     * shared by
+     * {@link #getGroupResourceProfileWithAccess} and
+     * {@link #getGroupResourceListWithAccess}, so the list
+     * variant reuses the exact same token-composite write logic per row without N
+     * extra fetches.
      *
-     * <p>{@code userHasWriteAccess} is a COMPOSITE that mirrors what {@link #updateGroupResourceProfile}
-     * actually enforces: the caller must have sharing WRITE (or OWNER) on the profile AND READ on every
-     * credential token the profile references — the {@code default_credential_store_token} and each
+     * <p>
+     * {@code userHasWriteAccess} is a COMPOSITE that mirrors what
+     * {@link #updateGroupResourceProfile}
+     * actually enforces: the caller must have sharing WRITE (or OWNER) on the
+     * profile AND READ on every
+     * credential token the profile references — the
+     * {@code default_credential_store_token} and each
      * compute preference's {@code resource_specific_credential_store_token}.
      */
     private GroupResourceProfileWithAccess computeProfileAccess(
@@ -340,8 +362,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
                 accessibleGroupResProfileIds.addAll(
                         sharingHandler.searchEntityIds(gatewayId, userId + "@" + gatewayId, filters, 0, -1));
             }
-            List<GroupResourceProfile> groupResourceProfileList =
-                    registryHandler.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+            List<GroupResourceProfile> groupResourceProfileList = registryHandler.getGroupResourceList(gatewayId,
+                    accessibleGroupResProfileIds);
             logger.debug(
                     "Retrieved {} group resource profiles for gateway {}", groupResourceProfileList.size(), gatewayId);
             return groupResourceProfileList;
@@ -352,9 +374,12 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
     }
 
     /**
-     * {@link #getGroupResourceList} plus the caller's server-computed access flags per profile (additive).
-     * Reuses {@code getGroupResourceList} for READ enforcement (outside the try, so it can never be
-     * self-authorized) and maps each already-loaded profile through {@link #computeProfileAccess}, so
+     * {@link #getGroupResourceList} plus the caller's server-computed access flags
+     * per profile (additive).
+     * Reuses {@code getGroupResourceList} for READ enforcement (outside the try, so
+     * it can never be
+     * self-authorized) and maps each already-loaded profile through
+     * {@link #computeProfileAccess}, so
      * the per-row flags use the exact same token-composite write logic as
      * {@link #getGroupResourceProfileWithAccess} without re-fetching any profile.
      */
@@ -419,8 +444,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    ComputeResourcePolicy computeResourcePolicy =
-                            registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
+                    ComputeResourcePolicy computeResourcePolicy = registryHandler
+                            .getGroupComputeResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
@@ -454,8 +479,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    BatchQueueResourcePolicy batchQueueResourcePolicy =
-                            registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
+                    BatchQueueResourcePolicy batchQueueResourcePolicy = registryHandler
+                            .getBatchQueueResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
@@ -501,8 +526,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
                             "User does not have permission to access group resource profile");
                 }
             }
-            GroupComputeResourcePreference result =
-                    registryHandler.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
+            GroupComputeResourcePreference result = registryHandler.getGroupComputeResourcePreference(computeResourceId,
+                    groupResourceProfileId);
             logger.debug(
                     "Retrieved group compute resource preference for resource {} in profile {}",
                     computeResourceId,
@@ -525,8 +550,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    ComputeResourcePolicy computeResourcePolicy =
-                            registryHandler.getGroupComputeResourcePolicy(resourcePolicyId);
+                    ComputeResourcePolicy computeResourcePolicy = registryHandler
+                            .getGroupComputeResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
@@ -560,8 +585,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
         try {
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    BatchQueueResourcePolicy batchQueueResourcePolicy =
-                            registryHandler.getBatchQueueResourcePolicy(resourcePolicyId);
+                    BatchQueueResourcePolicy batchQueueResourcePolicy = registryHandler
+                            .getBatchQueueResourcePolicy(resourcePolicyId);
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
@@ -607,8 +632,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
                             "User does not have permission to access group resource profile");
                 }
             }
-            List<GroupComputeResourcePreference> result =
-                    registryHandler.getGroupComputeResourcePrefList(groupResourceProfileId);
+            List<GroupComputeResourcePreference> result = registryHandler
+                    .getGroupComputeResourcePrefList(groupResourceProfileId);
             logger.debug(
                     "Retrieved {} compute prefs for group resource profile {}", result.size(), groupResourceProfileId);
             return result;
@@ -641,8 +666,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
                             "User does not have permission to access group resource profile");
                 }
             }
-            List<BatchQueueResourcePolicy> result =
-                    registryHandler.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
+            List<BatchQueueResourcePolicy> result = registryHandler
+                    .getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
             logger.debug(
                     "Retrieved {} batch queue policies for group resource profile {}",
                     result.size(),
@@ -677,8 +702,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
                             "User does not have permission to access group resource profile");
                 }
             }
-            List<ComputeResourcePolicy> result =
-                    registryHandler.getGroupComputeResourcePolicyList(groupResourceProfileId);
+            List<ComputeResourcePolicy> result = registryHandler
+                    .getGroupComputeResourcePolicyList(groupResourceProfileId);
             logger.debug(
                     "Retrieved {} compute resource policies for group resource profile {}",
                     result.size(),
@@ -697,8 +722,8 @@ public class GroupResourceProfileService implements GroupResourceProfileProvider
     public GatewayGroups getGatewayGroups(RequestContext ctx) throws ServiceException {
         String gatewayId = ctx.getGatewayId();
         try {
-            GatewayGroups gatewayGroups =
-                    SharingHelper.retrieveGatewayGroups(registryHandler, gatewayGroupsInitializer, gatewayId);
+            GatewayGroups gatewayGroups = SharingHelper.retrieveGatewayGroups(registryHandler, gatewayGroupsInitializer,
+                    gatewayId);
             logger.debug("Retrieved GatewayGroups for gateway {}", gatewayId);
             return gatewayGroups;
         } catch (Exception e) {

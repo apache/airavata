@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing.service;
+package org.apache.airavata.iam.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -25,10 +25,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.airavata.common.IAMDBConstants;
+import org.apache.airavata.iam.SharingConstants;
 import org.apache.airavata.iam.model.*;
 import org.apache.airavata.iam.repository.*;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.sharing.SharingConstants;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.proto.GroupChildType;
 import org.apache.airavata.sharing.registry.models.proto.GroupType;
@@ -200,13 +200,6 @@ public class SharingService {
         }
     }
 
-    /**
-     * <p>
-     * API method to check User Exists
-     * </p>
-     *
-     * @param userId
-     */
     public boolean isUserExists(String domainId, String userId) throws Exception {
         try {
             UserPK userPK = new UserPK();

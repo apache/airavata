@@ -1,15 +1,12 @@
 package org.apache.airavata.iam;
 
 import org.apache.airavata.common.ServerSettings;
-import org.apache.airavata.compute.service.GatewayResourceProfileService;
-import org.apache.airavata.compute.service.ResourceProfileRegistryService;
 import org.apache.airavata.iam.service.GatewayService;
+import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.security.service.CredentialStoreService;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.proto.GroupType;
 import org.apache.airavata.sharing.registry.models.proto.UserGroup;
-import org.apache.airavata.sharing.service.SharingService;
 import org.apache.airavata.common.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

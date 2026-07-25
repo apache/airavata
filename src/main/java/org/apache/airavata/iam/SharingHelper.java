@@ -17,16 +17,15 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.sharing;
+package org.apache.airavata.iam;
 
 import java.util.Arrays;
 
 import org.apache.airavata.common.ServerSettings;
-import org.apache.airavata.iam.GatewayGroupsInitializer;
 import org.apache.airavata.iam.service.GatewayService;
+import org.apache.airavata.iam.service.SharingService;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
 import org.apache.airavata.model.group.proto.ResourcePermissionType;
-import org.apache.airavata.sharing.service.SharingService;
 
 /**
  * Utility methods for sharing operations, decoupled from the sharing-service
