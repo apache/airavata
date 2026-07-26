@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.iam.mapper.ProfileMapper;
 import org.apache.airavata.iam.model.UserProfileEntity;
-import org.apache.airavata.model.user.proto.UserProfile;
+import org.apache.airavata.models.user.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

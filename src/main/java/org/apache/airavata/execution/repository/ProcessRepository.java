@@ -27,11 +27,11 @@ import java.util.Map;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
-import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.proto.ProcessState;
-import org.apache.airavata.model.status.proto.ProcessStatus;
+import org.apache.airavata.models.experiment.UserConfigurationDataModel;
+import org.apache.airavata.models.process.ProcessModel;
+import org.apache.airavata.models.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.models.status.ProcessState;
+import org.apache.airavata.models.status.ProcessStatus;
 import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.compute.model.ComputationalResourceSchedulingEntity;
@@ -68,20 +68,20 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
     }
 
     protected ProcessEntity saveProcess(ProcessModel processModel) throws Exception {
-        if (processModel.getProcessId().isEmpty() || processModel.getProcessId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (processModel.processId().isEmpty() || processModel.processId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug("Setting the Process's ProcessId");
             processModel = processModel.toBuilder()
                     .setProcessId(AiravataUtils.getId("PROCESS"))
                     .build();
         }
 
-        String processId = processModel.getProcessId();
+        String processId = processModel.processId();
 
-        if (!processModel.getProcessStatusesList().isEmpty()) {
+        if (!processModel.processStatuses().isEmpty()) {
             logger.debug("Populating the status id of ProcessStatus objects for the Process");
             ProcessModel.Builder pmBuilder = processModel.toBuilder().clearProcessStatuses();
-            for (ProcessStatus ps : processModel.getProcessStatusesList()) {
-                if (ps.getStatusId().isEmpty()) {
+            for (ProcessStatus ps : processModel.processStatuses()) {
+                if (ps.statusId().isEmpty()) {
                     ps = ps.toBuilder()
                             .setStatusId(AiravataUtils.getId("PROCESS_STATE"))
                             .build();
@@ -213,7 +213,7 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
 
     public ComputationalResourceSchedulingModel getProcessResourceSchedule(String processId) throws Exception {
         ProcessModel processModel = getProcess(processId);
-        return processModel.getProcessResourceSchedule();
+        return processModel.processResourceSchedule();
     }
 
     public List<ProcessModel> getProcessList(String fieldName, Object value) throws Exception {
@@ -237,7 +237,7 @@ public class ProcessRepository extends AbstractRepository<ProcessModel, ProcessE
         List<String> processIds = new ArrayList<>();
         List<ProcessModel> processModelList = getProcessList(fieldName, value);
         for (ProcessModel processModel : processModelList) {
-            processIds.add(processModel.getProcessId());
+            processIds.add(processModel.processId());
         }
         return processIds;
     }

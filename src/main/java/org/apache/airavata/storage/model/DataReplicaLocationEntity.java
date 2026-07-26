@@ -23,8 +23,8 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Map;
-import org.apache.airavata.model.data.replica.proto.ReplicaLocationCategory;
-import org.apache.airavata.model.data.replica.proto.ReplicaPersistentType;
+import org.apache.airavata.models.data.replica.ReplicaLocationCategory;
+import org.apache.airavata.models.data.replica.ReplicaPersistentType;
 
 /**
  * The persistent class for the data_replica_location database table.

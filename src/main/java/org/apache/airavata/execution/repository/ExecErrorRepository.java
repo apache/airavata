@@ -21,7 +21,7 @@ package org.apache.airavata.execution.repository;
 
 import java.util.List;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.commons.proto.ErrorModel;
+import org.apache.airavata.models.commons.ErrorModel;
 import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExecErrorEntity;
 import org.apache.airavata.execution.model.ProcessEntity;
@@ -52,7 +52,7 @@ public class ExecErrorRepository extends AbstractRepository<ExecErrorEntity, Exe
     // --- Process Error methods ---
 
     public String addProcessError(ErrorModel processError, String processId) throws Exception {
-        if (processError.getErrorId().isEmpty()) {
+        if (processError.errorId().isEmpty()) {
             processError = processError.toBuilder()
                     .setErrorId(AiravataUtils.getId("ERROR"))
                     .build();
@@ -96,13 +96,13 @@ public class ExecErrorRepository extends AbstractRepository<ExecErrorEntity, Exe
 
     public List<ErrorModel> getProcessError(String processId) throws Exception {
         ProcessRepository processRepository = new ProcessRepository();
-        return processRepository.getProcess(processId).getProcessErrorsList();
+        return processRepository.getProcess(processId).processErrors();
     }
 
     // --- Task Error methods ---
 
     public String addTaskError(ErrorModel taskError, String taskId) throws Exception {
-        if (taskError.getErrorId().isEmpty()) {
+        if (taskError.errorId().isEmpty()) {
             taskError = taskError.toBuilder()
                     .setErrorId(AiravataUtils.getId("ERROR"))
                     .build();
@@ -146,6 +146,6 @@ public class ExecErrorRepository extends AbstractRepository<ExecErrorEntity, Exe
 
     public List<ErrorModel> getTaskError(String taskId) throws Exception {
         TaskRepository taskRepository = new TaskRepository();
-        return taskRepository.getTask(taskId).getTaskErrorsList();
+        return taskRepository.getTask(taskId).taskErrors();
     }
 }

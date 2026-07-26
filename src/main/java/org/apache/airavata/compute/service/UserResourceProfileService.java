@@ -21,10 +21,10 @@ package org.apache.airavata.compute.service;
 
 import java.util.List;
 import org.apache.airavata.common.RequestContext;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserStoragePreference;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.models.status.QueueStatusModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

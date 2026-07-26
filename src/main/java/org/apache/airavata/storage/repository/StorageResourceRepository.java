@@ -27,7 +27,7 @@ import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
+import org.apache.airavata.models.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.StorageResourceEntity;
 import org.slf4j.Logger;
@@ -59,24 +59,24 @@ public class StorageResourceRepository
 
     public String addStorageResource(StorageResourceDescription description) throws Exception {
         try {
-            final String storageResourceId = AiravataUtils.getId(description.getHostName());
+            final String storageResourceId = AiravataUtils.getId(description.hostName());
             StorageResourceDescription.Builder descBuilder = description.toBuilder();
-            if (description.getStorageResourceId().isEmpty()
-                    || "DO_NOT_SET_AT_CLIENTS".equals(description.getStorageResourceId())) {
+            if (description.storageResourceId().isEmpty()
+                    || "DO_NOT_SET_AT_CLIENTS".equals(description.storageResourceId())) {
                 descBuilder.setStorageResourceId(storageResourceId);
             }
             descBuilder.setCreationTime(System.currentTimeMillis());
             description = descBuilder.build();
             StorageResourceDescription storageResourceDescription = create(description);
-            return storageResourceDescription.getStorageResourceId();
+            return storageResourceDescription.storageResourceId();
         } catch (Exception e) {
             logger.error(
-                    "Error while saving storage resource. StorageResourceId : " + description.getStorageResourceId()
-                            + "" + " HostName : " + description.getHostName(),
+                    "Error while saving storage resource. StorageResourceId : " + description.storageResourceId()
+                            + "" + " HostName : " + description.hostName(),
                     e);
             throw new Exception(
-                    "Error while saving storage resource. StorageResourceId : " + description.getStorageResourceId()
-                            + "" + " HostName : " + description.getHostName(),
+                    "Error while saving storage resource. StorageResourceId : " + description.storageResourceId()
+                            + "" + " HostName : " + description.hostName(),
                     e);
         }
     }
@@ -90,13 +90,13 @@ public class StorageResourceRepository
         } catch (Exception e) {
             logger.error(
                     "Error while updating storage resource. StorageResourceId : "
-                            + updatedStorageResource.getStorageResourceId() + "" + " HostName : "
-                            + updatedStorageResource.getHostName(),
+                            + updatedStorageResource.storageResourceId() + "" + " HostName : "
+                            + updatedStorageResource.hostName(),
                     e);
             throw new Exception(
                     "Error while updating storage resource. StorageResourceId : "
-                            + updatedStorageResource.getStorageResourceId() + "" + " HostName : "
-                            + updatedStorageResource.getHostName(),
+                            + updatedStorageResource.storageResourceId() + "" + " HostName : "
+                            + updatedStorageResource.hostName(),
                     e);
         }
     }
@@ -192,7 +192,7 @@ public class StorageResourceRepository
         if (storageResourceDescriptionList != null) {
             for (StorageResourceDescription storageResourceDescription : storageResourceDescriptionList) {
                 storageResourceMap.put(
-                        storageResourceDescription.getStorageResourceId(), storageResourceDescription.getHostName());
+                        storageResourceDescription.storageResourceId(), storageResourceDescription.hostName());
             }
         }
         return storageResourceMap;

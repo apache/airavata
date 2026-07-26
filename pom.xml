@@ -76,27 +76,6 @@ under the License.
             <version>3.3.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>4.35.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-stub</artifactId>
-            <version>1.81.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
-            <version>1.81.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.api.grpc</groupId>
-            <artifactId>proto-google-common-protos</artifactId>
-            <version>2.73.0</version>
-        </dependency>
-
 
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -176,32 +155,6 @@ under the License.
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>io.github.ascopes</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-proto-sources</id>
-                        <goals>
-                        <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                        <protocVersion>4.29.5</protocVersion>
-                        <sourceDirectories>
-                            <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
-                        </sourceDirectories>
-                        <binaryMavenPlugins>
-                            <binaryMavenPlugin>
-                            <groupId>io.grpc</groupId>
-                            <artifactId>protoc-gen-grpc-java</artifactId>
-                            <version>1.73.0</version>
-                            </binaryMavenPlugin>
-                        </binaryMavenPlugins>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

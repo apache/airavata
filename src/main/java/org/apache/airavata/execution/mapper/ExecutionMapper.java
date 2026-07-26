@@ -21,20 +21,20 @@ package org.apache.airavata.execution.mapper;
 
 import java.sql.Timestamp;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.application.io.proto.InputDataObjectType;
-import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
-import org.apache.airavata.model.commons.proto.ErrorModel;
-import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
-import org.apache.airavata.model.job.proto.JobModel;
-import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.scheduling.proto.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.proto.JobState;
-import org.apache.airavata.model.status.proto.JobStatus;
-import org.apache.airavata.model.status.proto.ProcessState;
-import org.apache.airavata.model.status.proto.ProcessStatus;
-import org.apache.airavata.model.status.proto.TaskState;
-import org.apache.airavata.model.status.proto.TaskStatus;
-import org.apache.airavata.model.task.proto.TaskModel;
+import org.apache.airavata.models.experiment.UserConfigurationDataModel;
+import org.apache.airavata.models.application.io.InputDataObjectType;
+import org.apache.airavata.models.application.io.OutputDataObjectType;
+import org.apache.airavata.models.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.models.commons.ErrorModel;
+import org.apache.airavata.models.job.JobModel;
+import org.apache.airavata.models.process.ProcessModel;
+import org.apache.airavata.models.status.JobState;
+import org.apache.airavata.models.status.JobStatus;
+import org.apache.airavata.models.status.ProcessState;
+import org.apache.airavata.models.status.ProcessStatus;
+import org.apache.airavata.models.status.TaskState;
+import org.apache.airavata.models.status.TaskStatus;
+import org.apache.airavata.models.task.TaskModel;
 import org.apache.airavata.execution.model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -47,14 +47,14 @@ public interface ExecutionMapper extends CommonMapperConversions {
     ExecutionMapper INSTANCE = Mappers.getMapper(ExecutionMapper.class);
 
     // --- Process (MapStruct abstract) ---
-    @Mapping(target = "emailAddressesList", ignore = true)
-    @Mapping(target = "processStatusesList", ignore = true)
-    @Mapping(target = "processErrorsList", ignore = true)
-    @Mapping(target = "processInputsList", ignore = true)
-    @Mapping(target = "processOutputsList", ignore = true)
+    @Mapping(target = "emailAddresses", ignore = true)
+    @Mapping(target = "processStatuses", ignore = true)
+    @Mapping(target = "processErrors", ignore = true)
+    @Mapping(target = "processInputs", ignore = true)
+    @Mapping(target = "processOutputs", ignore = true)
     ProcessModel processToModelBase(ProcessEntity entity);
 
-    @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.getEmailAddressesList()))")
+    @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.emailAddresses()))")
     @Mapping(target = "processStatuses", ignore = true)
     @Mapping(target = "processErrors", ignore = true)
     @Mapping(target = "processInputs", ignore = true)
@@ -62,8 +62,8 @@ public interface ExecutionMapper extends CommonMapperConversions {
     ProcessEntity processToEntityBase(ProcessModel model);
 
     // --- Task (MapStruct abstract) ---
-    @Mapping(target = "taskStatusesList", ignore = true)
-    @Mapping(target = "taskErrorsList", ignore = true)
+    @Mapping(target = "taskStatuses", ignore = true)
+    @Mapping(target = "taskErrors", ignore = true)
     TaskModel taskToModelBase(TaskEntity entity);
 
     @Mapping(target = "taskStatuses", ignore = true)
@@ -71,7 +71,7 @@ public interface ExecutionMapper extends CommonMapperConversions {
     TaskEntity taskToEntityBase(TaskModel model);
 
     // --- Job (MapStruct abstract) ---
-    @Mapping(target = "jobStatusesList", ignore = true)
+    @Mapping(target = "jobStatuses", ignore = true)
     JobModel jobToModelBase(JobEntity entity);
 
     @Mapping(target = "jobStatuses", ignore = true)
@@ -109,27 +109,25 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ProcessEntity entity = processToEntityBase(model);
-        if (!model.getProcessStatusesList().isEmpty()) {
+        if (!model.processStatuses().isEmpty()) {
             entity.setProcessStatuses(new java.util.ArrayList<>());
-            model.getProcessStatusesList()
-                    .forEach(s -> entity.getProcessStatuses().add(processStatusToEntity(s)));
+            model.processStatuses().forEach(s -> entity.getProcessStatuses().add(processStatusToEntity(s)));
         }
-        if (!model.getProcessErrorsList().isEmpty()) {
+        if (!model.processErrors().isEmpty()) {
             entity.setProcessErrors(new java.util.ArrayList<>());
-            model.getProcessErrorsList().forEach(e -> entity.getProcessErrors().add(processErrorToEntity(e)));
+            model.processErrors().forEach(e -> entity.getProcessErrors().add(processErrorToEntity(e)));
         }
-        if (!model.getProcessInputsList().isEmpty()) {
+        if (!model.processInputs().isEmpty()) {
             entity.setProcessInputs(new java.util.ArrayList<>());
-            model.getProcessInputsList().forEach(i -> entity.getProcessInputs().add(processInputToEntity(i)));
+            model.processInputs().forEach(i -> entity.getProcessInputs().add(processInputToEntity(i)));
         }
-        if (!model.getProcessOutputsList().isEmpty()) {
+        if (!model.processOutputs().isEmpty()) {
             entity.setProcessOutputs(new java.util.ArrayList<>());
-            model.getProcessOutputsList()
-                    .forEach(o -> entity.getProcessOutputs().add(processOutputToEntity(o)));
+            model.processOutputs().forEach(o -> entity.getProcessOutputs().add(processOutputToEntity(o)));
         }
-        if (!model.getTasksList().isEmpty()) {
+        if (!model.tasks().isEmpty()) {
             entity.setTasks(new java.util.ArrayList<>());
-            model.getTasksList().forEach(t -> entity.getTasks().add(taskToEntity(t)));
+            model.tasks().forEach(t -> entity.getTasks().add(taskToEntity(t)));
         }
         return entity;
     }
@@ -155,17 +153,17 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         TaskEntity entity = taskToEntityBase(model);
-        if (!model.getTaskStatusesList().isEmpty()) {
+        if (!model.taskStatuses().isEmpty()) {
             entity.setTaskStatuses(new java.util.ArrayList<>());
-            model.getTaskStatusesList().forEach(s -> entity.getTaskStatuses().add(taskStatusToEntity(s)));
+            model.taskStatuses().forEach(s -> entity.getTaskStatuses().add(taskStatusToEntity(s)));
         }
-        if (!model.getTaskErrorsList().isEmpty()) {
+        if (!model.taskErrors().isEmpty()) {
             entity.setTaskErrors(new java.util.ArrayList<>());
-            model.getTaskErrorsList().forEach(e -> entity.getTaskErrors().add(taskErrorToEntity(e)));
+            model.taskErrors().forEach(e -> entity.getTaskErrors().add(taskErrorToEntity(e)));
         }
-        if (!model.getJobsList().isEmpty()) {
+        if (!model.jobs().isEmpty()) {
             entity.setJobs(new java.util.ArrayList<>());
-            model.getJobsList().forEach(j -> entity.getJobs().add(jobToEntity(j)));
+            model.jobs().forEach(j -> entity.getJobs().add(jobToEntity(j)));
         }
         return entity;
     }
@@ -185,9 +183,9 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         JobEntity entity = jobToEntityBase(model);
-        if (!model.getJobStatusesList().isEmpty()) {
+        if (!model.jobStatuses().isEmpty()) {
             entity.setJobStatuses(new java.util.ArrayList<>());
-            model.getJobStatusesList().forEach(s -> entity.getJobStatuses().add(jobStatusToEntity(s)));
+            model.jobStatuses().forEach(s -> entity.getJobStatuses().add(jobStatusToEntity(s)));
         }
         return entity;
     }
@@ -216,14 +214,14 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ExecStatusEntity e = new ExecStatusEntity();
-        if (!model.getStatusId().isEmpty())
-            e.setStatusId(model.getStatusId());
-        if (model.getState() != ProcessState.PROCESS_STATE_UNKNOWN)
-            e.setState(model.getState().name());
-        if (model.getTimeOfStateChange() != 0)
-            e.setTimeOfStateChange(new Timestamp(model.getTimeOfStateChange()));
-        if (!model.getReason().isEmpty())
-            e.setReason(model.getReason());
+        if (!model.statusId().isEmpty())
+            e.setStatusId(model.statusId());
+        if (model.state() != ProcessState.PROCESS_STATE_UNKNOWN)
+            e.setState(model.state().name());
+        if (model.timeOfStateChange() != 0)
+            e.setTimeOfStateChange(new Timestamp(model.timeOfStateChange()));
+        if (!model.reason().isEmpty())
+            e.setReason(model.reason());
         return e;
     }
 
@@ -251,14 +249,14 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ExecStatusEntity e = new ExecStatusEntity();
-        if (!model.getStatusId().isEmpty())
-            e.setStatusId(model.getStatusId());
-        if (model.getState() != TaskState.TASK_STATE_UNKNOWN)
-            e.setState(model.getState().name());
-        if (model.getTimeOfStateChange() != 0)
-            e.setTimeOfStateChange(new Timestamp(model.getTimeOfStateChange()));
-        if (!model.getReason().isEmpty())
-            e.setReason(model.getReason());
+        if (!model.statusId().isEmpty())
+            e.setStatusId(model.statusId());
+        if (model.state() != TaskState.TASK_STATE_UNKNOWN)
+            e.setState(model.state().name());
+        if (model.timeOfStateChange() != 0)
+            e.setTimeOfStateChange(new Timestamp(model.timeOfStateChange()));
+        if (!model.reason().isEmpty())
+            e.setReason(model.reason());
         return e;
     }
 
@@ -287,14 +285,14 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ExecStatusEntity e = new ExecStatusEntity();
-        if (!model.getStatusId().isEmpty())
-            e.setStatusId(model.getStatusId());
-        if (model.getJobState() != JobState.JOB_STATE_UNKNOWN)
-            e.setState(model.getJobState().name());
-        if (model.getTimeOfStateChange() != 0)
-            e.setTimeOfStateChange(new Timestamp(model.getTimeOfStateChange()));
-        if (!model.getReason().isEmpty())
-            e.setReason(model.getReason());
+        if (!model.statusId().isEmpty())
+            e.setStatusId(model.statusId());
+        if (model.jobState() != JobState.JOB_STATE_UNKNOWN)
+            e.setState(model.jobState().name());
+        if (model.timeOfStateChange() != 0)
+            e.setTimeOfStateChange(new Timestamp(model.timeOfStateChange()));
+        if (!model.reason().isEmpty())
+            e.setReason(model.reason());
         return e;
     }
 
@@ -342,17 +340,17 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ExecErrorEntity e = new ExecErrorEntity();
-        if (!model.getErrorId().isEmpty())
-            e.setErrorId(model.getErrorId());
-        if (!model.getActualErrorMessage().isEmpty())
-            e.setActualErrorMessage(model.getActualErrorMessage());
-        if (!model.getUserFriendlyMessage().isEmpty())
-            e.setUserFriendlyMessage(model.getUserFriendlyMessage());
-        e.setTransientOrPersistent(model.getTransientOrPersistent());
-        if (model.getCreationTime() != 0)
-            e.setCreationTime(new Timestamp(model.getCreationTime()));
-        if (!model.getRootCauseErrorIdListList().isEmpty()) {
-            e.setRootCauseErrorIdList(String.join(",", model.getRootCauseErrorIdListList()));
+        if (!model.errorId().isEmpty())
+            e.setErrorId(model.errorId());
+        if (!model.actualErrorMessage().isEmpty())
+            e.setActualErrorMessage(model.actualErrorMessage());
+        if (!model.userFriendlyMessage().isEmpty())
+            e.setUserFriendlyMessage(model.userFriendlyMessage());
+        e.setTransientOrPersistent(model.transientOrPersistent());
+        if (model.creationTime() != 0)
+            e.setCreationTime(new Timestamp(model.creationTime()));
+        if (!model.rootCauseErrorIdList().isEmpty()) {
+            e.setRootCauseErrorIdList(String.join(",", model.rootCauseErrorIdList()));
         }
         return e;
     }
@@ -392,27 +390,27 @@ public interface ExecutionMapper extends CommonMapperConversions {
             return null;
         ExecIoParamEntity e = new ExecIoParamEntity();
         e.setDirection("INPUT");
-        if (!model.getName().isEmpty())
-            e.setName(model.getName());
-        if (!model.getValue().isEmpty())
-            e.setValue(model.getValue());
-        e.setType(model.getType());
-        if (!model.getApplicationArgument().isEmpty())
-            e.setApplicationArgument(model.getApplicationArgument());
-        e.setIsRequired(model.getIsRequired());
-        e.setRequiredToAddedToCommandLine(model.getRequiredToAddedToCommandLine());
-        e.setStandardInput(model.getStandardInput());
-        if (!model.getUserFriendlyDescription().isEmpty())
-            e.setUserFriendlyDescription(model.getUserFriendlyDescription());
-        if (!model.getMetaData().isEmpty())
-            e.setMetaData(model.getMetaData());
-        e.setInputOrder(model.getInputOrder());
-        e.setDataStaged(model.getDataStaged());
-        e.setReadOnly(model.getIsReadOnly());
-        if (!model.getOverrideFilename().isEmpty())
-            e.setOverrideFilename(model.getOverrideFilename());
-        if (!model.getStorageResourceId().isEmpty())
-            e.setStorageResourceId(model.getStorageResourceId());
+        if (!model.name().isEmpty())
+            e.setName(model.name());
+        if (!model.value().isEmpty())
+            e.setValue(model.value());
+        e.setType(model.type());
+        if (!model.applicationArgument().isEmpty())
+            e.setApplicationArgument(model.applicationArgument());
+        e.setIsRequired(model.isRequired());
+        e.setRequiredToAddedToCommandLine(model.requiredToAddedToCommandLine());
+        e.setStandardInput(model.standardInput());
+        if (!model.userFriendlyDescription().isEmpty())
+            e.setUserFriendlyDescription(model.userFriendlyDescription());
+        if (!model.metaData().isEmpty())
+            e.setMetaData(model.metaData());
+        e.setInputOrder(model.inputOrder());
+        e.setDataStaged(model.dataStaged());
+        e.setReadOnly(model.isReadOnly());
+        if (!model.overrideFilename().isEmpty())
+            e.setOverrideFilename(model.overrideFilename());
+        if (!model.storageResourceId().isEmpty())
+            e.setStorageResourceId(model.storageResourceId());
         return e;
     }
 
@@ -449,25 +447,25 @@ public interface ExecutionMapper extends CommonMapperConversions {
             return null;
         ExecIoParamEntity e = new ExecIoParamEntity();
         e.setDirection("OUTPUT");
-        if (!model.getName().isEmpty())
-            e.setName(model.getName());
-        if (!model.getValue().isEmpty())
-            e.setValue(model.getValue());
-        e.setType(model.getType());
-        if (!model.getApplicationArgument().isEmpty())
-            e.setApplicationArgument(model.getApplicationArgument());
-        e.setIsRequired(model.getIsRequired());
-        e.setRequiredToAddedToCommandLine(model.getRequiredToAddedToCommandLine());
-        e.setDataMovement(model.getDataMovement());
-        if (!model.getLocation().isEmpty())
-            e.setLocation(model.getLocation());
-        if (!model.getSearchQuery().isEmpty())
-            e.setSearchQuery(model.getSearchQuery());
-        e.setOutputStreaming(model.getOutputStreaming());
-        if (!model.getStorageResourceId().isEmpty())
-            e.setStorageResourceId(model.getStorageResourceId());
-        if (!model.getMetaData().isEmpty())
-            e.setMetaData(model.getMetaData());
+        if (!model.name().isEmpty())
+            e.setName(model.name());
+        if (!model.value().isEmpty())
+            e.setValue(model.value());
+        e.setType(model.type());
+        if (!model.applicationArgument().isEmpty())
+            e.setApplicationArgument(model.applicationArgument());
+        e.setIsRequired(model.isRequired());
+        e.setRequiredToAddedToCommandLine(model.requiredToAddedToCommandLine());
+        e.setDataMovement(model.dataMovement());
+        if (!model.location().isEmpty())
+            e.setLocation(model.location());
+        if (!model.searchQuery().isEmpty())
+            e.setSearchQuery(model.searchQuery());
+        e.setOutputStreaming(model.outputStreaming());
+        if (!model.storageResourceId().isEmpty())
+            e.setStorageResourceId(model.storageResourceId());
+        if (!model.metaData().isEmpty())
+            e.setMetaData(model.metaData());
         return e;
     }
 
@@ -517,29 +515,29 @@ public interface ExecutionMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         UserConfigurationDataEntity entity = new UserConfigurationDataEntity();
-        entity.setAiravataAutoSchedule(model.getAiravataAutoSchedule());
-        entity.setOverrideManualScheduledParams(model.getOverrideManualScheduledParams());
-        entity.setShareExperimentPublicly(model.getShareExperimentPublicly());
-        entity.setThrottleResources(model.getThrottleResources());
-        entity.setExperimentDataDir(model.getExperimentDataDir());
-        entity.setGroupResourceProfileId(model.getGroupResourceProfileId());
-        entity.setUseUserCRPref(model.getUseUserCrPref());
-        entity.setInputStorageResourceId(model.getInputStorageResourceId());
-        entity.setOutputStorageResourceId(model.getOutputStorageResourceId());
+        entity.setAiravataAutoSchedule(model.airavataAutoSchedule());
+        entity.setOverrideManualScheduledParams(model.overrideManualScheduledParams());
+        entity.setShareExperimentPublicly(model.shareExperimentPublicly());
+        entity.setThrottleResources(model.throttleResources());
+        entity.setExperimentDataDir(model.experimentDataDir());
+        entity.setGroupResourceProfileId(model.groupResourceProfileId());
+        entity.setUseUserCRPref(model.useUserCrPref());
+        entity.setInputStorageResourceId(model.inputStorageResourceId());
+        entity.setOutputStorageResourceId(model.outputStorageResourceId());
 
         if (model.hasComputationalResourceScheduling()) {
-            ComputationalResourceSchedulingModel scheduling = model.getComputationalResourceScheduling();
-            entity.setResourceHostId(scheduling.getResourceHostId());
-            entity.setTotalCPUCount(scheduling.getTotalCpuCount());
-            entity.setNodeCount(scheduling.getNodeCount());
-            entity.setNumberOfThreads(scheduling.getNumberOfThreads());
-            entity.setQueueName(scheduling.getQueueName());
-            entity.setWallTimeLimit(scheduling.getWallTimeLimit());
-            entity.setTotalPhysicalMemory(scheduling.getTotalPhysicalMemory());
-            entity.setStaticWorkingDir(scheduling.getStaticWorkingDir());
-            entity.setOverrideLoginUserName(scheduling.getOverrideLoginUserName());
-            entity.setOverrideScratchLocation(scheduling.getOverrideScratchLocation());
-            entity.setOverrideAllocationProjectNumber(scheduling.getOverrideAllocationProjectNumber());
+            ComputationalResourceSchedulingModel scheduling = model.computationalResourceScheduling();
+            entity.setResourceHostId(scheduling.resourceHostId());
+            entity.setTotalCPUCount(scheduling.totalCpuCount());
+            entity.setNodeCount(scheduling.nodeCount());
+            entity.setNumberOfThreads(scheduling.numberOfThreads());
+            entity.setQueueName(scheduling.queueName());
+            entity.setWallTimeLimit(scheduling.wallTimeLimit());
+            entity.setTotalPhysicalMemory(scheduling.totalPhysicalMemory());
+            entity.setStaticWorkingDir(scheduling.staticWorkingDir());
+            entity.setOverrideLoginUserName(scheduling.overrideLoginUserName());
+            entity.setOverrideScratchLocation(scheduling.overrideScratchLocation());
+            entity.setOverrideAllocationProjectNumber(scheduling.overrideAllocationProjectNumber());
         }
 
         return entity;

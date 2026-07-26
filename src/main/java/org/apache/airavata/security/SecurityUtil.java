@@ -15,7 +15,7 @@ import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.common.KeyType;
 
 import org.apache.airavata.common.ApplicationSettings;
-import org.apache.airavata.model.credential.store.proto.SSHCredential;
+import org.apache.airavata.models.credential.store.SSHCredential;
 import org.bouncycastle.openssl.jcajce.JcaMiscPEMGenerator;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.slf4j.Logger;

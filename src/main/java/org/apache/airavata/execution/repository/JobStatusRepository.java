@@ -20,7 +20,7 @@
 package org.apache.airavata.execution.repository;
 
 import java.util.List;
-import org.apache.airavata.model.status.proto.JobStatus;
+import org.apache.airavata.models.status.JobStatus;
 import org.apache.airavata.execution.model.JobPK;
 import org.springframework.stereotype.Component;
 

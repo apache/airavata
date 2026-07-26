@@ -22,7 +22,7 @@ package org.apache.airavata.experiment.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.model.status.proto.ExperimentState;
+import org.apache.airavata.models.status.ExperimentState;
 
 /**
  * The persistent class for the experiment_status database table.

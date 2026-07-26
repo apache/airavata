@@ -23,7 +23,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.model.task.proto.TaskTypes;
+import org.apache.airavata.models.task.TaskTypes;
 
 /**
  * The persistent class for the task database table.

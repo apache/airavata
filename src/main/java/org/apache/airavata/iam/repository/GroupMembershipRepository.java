@@ -22,8 +22,8 @@ package org.apache.airavata.iam.repository;
 import java.util.*;
 import org.apache.airavata.iam.model.*;
 import org.apache.airavata.db.DBConstants;
-import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
-import org.apache.airavata.sharing.registry.models.proto.GroupChildType;
+import org.apache.airavata.models.sharing.registry.GroupCardinality;
+import org.apache.airavata.models.sharing.registry.GroupChildType;
 import org.springframework.stereotype.Component;
 
 @Component

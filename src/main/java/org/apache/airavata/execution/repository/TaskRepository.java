@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.task.proto.TaskModel;
+import org.apache.airavata.models.task.TaskModel;
 import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ProcessEntity;
 import org.apache.airavata.execution.model.TaskEntity;
@@ -61,20 +61,20 @@ public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, St
     }
 
     protected TaskEntity saveTask(TaskModel taskModel) throws Exception {
-        if (taskModel.getTaskId().isEmpty() || taskModel.getTaskId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (taskModel.taskId().isEmpty() || taskModel.taskId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug("Setting the Task's TaskId");
             taskModel = taskModel.toBuilder()
                     .setTaskId(AiravataUtils.getId("TASK"))
                     .build();
         }
 
-        String taskId = taskModel.getTaskId();
+        String taskId = taskModel.taskId();
 
-        if (!taskModel.getTaskStatusesList().isEmpty()) {
+        if (!taskModel.taskStatuses().isEmpty()) {
             logger.debug("Populating the status id of TaskStatus objects for the Task");
             TaskModel.Builder tmBuilder = taskModel.toBuilder().clearTaskStatuses();
-            for (org.apache.airavata.model.status.proto.TaskStatus ts : taskModel.getTaskStatusesList()) {
-                if (ts.getStatusId().isEmpty()) {
+            for (org.apache.airavata.models.status.TaskStatus ts : taskModel.taskStatuses()) {
+                if (ts.statusId().isEmpty()) {
                     ts = ts.toBuilder()
                             .setStatusId(AiravataUtils.getId("TASK_STATE"))
                             .build();
@@ -179,7 +179,7 @@ public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, St
         List<String> taskIds = new ArrayList<>();
         List<TaskModel> taskModelList = getTaskList(fieldName, value);
         for (TaskModel taskModel : taskModelList) {
-            taskIds.add(taskModel.getTaskId());
+            taskIds.add(taskModel.taskId());
         }
         return taskIds;
     }
@@ -199,7 +199,7 @@ public class TaskRepository extends AbstractRepository<TaskModel, TaskEntity, St
         List<TaskModel> taskModelList = taskRepository.select(QueryConstants.GET_TASK_FOR_PARENT_PROCESS_ID, -1, 0,
                 queryParameters);
         for (TaskModel taskModel : taskModelList) {
-            delete(taskModel.getTaskId());
+            delete(taskModel.taskId());
         }
     }
 }

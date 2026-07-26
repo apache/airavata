@@ -20,7 +20,7 @@
 package org.apache.airavata.execution.repository;
 
 import java.util.List;
-import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
+import org.apache.airavata.models.application.io.OutputDataObjectType;
 import org.springframework.stereotype.Component;
 
 /**

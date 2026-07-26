@@ -28,14 +28,17 @@ import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.iam.repository.GatewayRepository;
 import org.apache.airavata.iam.repository.UserProfileRepository;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.*;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserStoragePreference;
-import org.apache.airavata.model.workspace.proto.GatewayUsageReportingCommand;
+import org.apache.airavata.models.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.models.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.models.workspace.GatewayUsageReportingCommand;
 import org.apache.airavata.storage.repository.StoragePrefRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +126,7 @@ public class ResourceProfileRegistryService {
                 throw new RuntimeException("Gateway does not exist");
             }
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
-            return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getComputeResourcePreferencesList();
+            return gwyResourceProfileRepository.getGatewayProfile(gatewayID).computeResourcePreferences();
         } catch (Exception e) {
             logger.error("Error reading gateway compute resource preferences for {}: {}", gatewayID, e.getMessage(), e);
             throw e;
@@ -431,9 +434,9 @@ public class ResourceProfileRegistryService {
             GwyResourceProfileRepository r = new GwyResourceProfileRepository();
             GatewayResourceProfile profile = r.getGatewayProfile(gatewayID);
             GatewayResourceProfile.Builder b = profile.toBuilder();
-            java.util.List<ComputeResourcePreference> prefs = profile.getComputeResourcePreferencesList();
+            java.util.List<ComputeResourcePreference> prefs = profile.computeResourcePreferences();
             for (int i = 0; i < prefs.size(); i++) {
-                if (prefs.get(i).getComputeResourceId().equals(computeResourceId)) {
+                if (prefs.get(i).computeResourceId().equals(computeResourceId)) {
                     b.removeComputeResourcePreferences(i);
                     break;
                 }
@@ -502,17 +505,17 @@ public class ResourceProfileRegistryService {
 
     public String registerGatewayResourceProfile(GatewayResourceProfile grp) throws Exception {
         try {
-            if (!validateString(grp.getGatewayId())) {
+            if (!validateString(grp.gatewayId())) {
                 logger.error("Gateway ID is empty");
                 throw new RuntimeException("Cannot create gateway profile with empty gateway id");
             }
-            if (!isGatewayExistInternal(grp.getGatewayId())) {
-                logger.error("Gateway {} does not exist", grp.getGatewayId());
+            if (!isGatewayExistInternal(grp.gatewayId())) {
+                logger.error("Gateway {} does not exist", grp.gatewayId());
                 throw new RuntimeException("Gateway does not exist");
             }
             return new GwyResourceProfileRepository().addGatewayResourceProfile(grp);
         } catch (Exception e) {
-            logger.error("Error registering gateway resource profile {}: {}", grp.getGatewayId(), e.getMessage(), e);
+            logger.error("Error registering gateway resource profile {}: {}", grp.gatewayId(), e.getMessage(), e);
             throw e;
         }
     }
@@ -521,13 +524,13 @@ public class ResourceProfileRegistryService {
 
     public String createGroupResourceProfile(GroupResourceProfile grp) throws Exception {
         try {
-            if (!isGatewayExistInternal(grp.getGatewayId())) {
-                logger.error("Gateway {} does not exist", grp.getGatewayId());
+            if (!isGatewayExistInternal(grp.gatewayId())) {
+                logger.error("Gateway {} does not exist", grp.gatewayId());
                 throw new RuntimeException("Gateway does not exist");
             }
             return new GroupResourceProfileRepository().addGroupResourceProfile(grp);
         } catch (Exception e) {
-            logger.error("Error creating group resource profile for gateway {}: {}", grp.getGatewayId(), e.getMessage(),
+            logger.error("Error creating group resource profile for gateway {}: {}", grp.gatewayId(), e.getMessage(),
                     e);
             throw e;
         }
@@ -536,13 +539,13 @@ public class ResourceProfileRegistryService {
     public void updateGroupResourceProfile(GroupResourceProfile grp) throws Exception {
         try {
             GroupResourceProfileRepository r = new GroupResourceProfileRepository();
-            if (!r.isGroupResourceProfileExists(grp.getGroupResourceProfileId())) {
-                logger.error("Group resource profile {} not found", grp.getGroupResourceProfileId());
+            if (!r.isGroupResourceProfileExists(grp.groupResourceProfileId())) {
+                logger.error("Group resource profile {} not found", grp.groupResourceProfileId());
                 throw new RuntimeException("Group resource profile not found");
             }
             r.updateGroupResourceProfile(grp);
         } catch (Exception e) {
-            logger.error("Error updating group resource profile {}: {}", grp.getGroupResourceProfileId(),
+            logger.error("Error updating group resource profile {}: {}", grp.groupResourceProfileId(),
                     e.getMessage(), e);
             throw e;
         }
@@ -650,18 +653,18 @@ public class ResourceProfileRegistryService {
 
     public String registerUserResourceProfile(UserResourceProfile urp) throws Exception {
         try {
-            if (!validateString(urp.getUserId()) || !validateString(urp.getGatewayId())) {
+            if (!validateString(urp.userId()) || !validateString(urp.gatewayId())) {
                 logger.error("User ID or gateway ID is empty");
                 throw new RuntimeException("Cannot create user resource profile with empty user/gateway id");
             }
-            if (userProfileProvider.getUserProfileByIdAndGateWay(urp.getUserId(), urp.getGatewayId()) == null) {
-                logger.error("User {} does not exist in gateway {}", urp.getUserId(), urp.getGatewayId());
+            if (userProfileProvider.getUserProfileByIdAndGateWay(urp.userId(), urp.gatewayId()) == null) {
+                logger.error("User {} does not exist in gateway {}", urp.userId(), urp.gatewayId());
                 throw new RuntimeException("User does not exist");
             }
             return userResourceProfileRepository.addUserResourceProfile(urp);
         } catch (Exception e) {
-            logger.error("Error registering user resource profile for user {} gateway {}: {}", urp.getUserId(),
-                    urp.getGatewayId(), e.getMessage(), e);
+            logger.error("Error registering user resource profile for user {} gateway {}: {}", urp.userId(),
+                    urp.gatewayId(), e.getMessage(), e);
             throw e;
         }
     }
@@ -780,7 +783,7 @@ public class ResourceProfileRegistryService {
             }
             return userResourceProfileRepository
                     .getUserResourceProfile(userId, gatewayID)
-                    .getUserComputeResourcePreferencesList();
+                    .userComputeResourcePreferences();
         } catch (Exception e) {
             logger.error("Error reading user compute resource preferences for user {} gateway {}: {}", userId,
                     gatewayID, e.getMessage(), e);
@@ -815,10 +818,10 @@ public class ResourceProfileRegistryService {
                 throw new RuntimeException("User does not exist");
             }
             UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
-            java.util.List<UserComputeResourcePreference> prefs = profile.getUserComputeResourcePreferencesList();
+            java.util.List<UserComputeResourcePreference> prefs = profile.userComputeResourcePreferences();
             UserResourceProfile.Builder b = profile.toBuilder();
             for (int i = 0; i < prefs.size(); i++) {
-                if (prefs.get(i).getComputeResourceId().equals(computeResourceId)) {
+                if (prefs.get(i).computeResourceId().equals(computeResourceId)) {
                     b.removeUserComputeResourcePreferences(i);
                     break;
                 }
@@ -841,10 +844,10 @@ public class ResourceProfileRegistryService {
                 throw new RuntimeException("User does not exist");
             }
             UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
-            java.util.List<UserStoragePreference> prefs = profile.getUserStoragePreferencesList();
+            java.util.List<UserStoragePreference> prefs = profile.userStoragePreferences();
             UserResourceProfile.Builder b = profile.toBuilder();
             for (int i = 0; i < prefs.size(); i++) {
-                if (prefs.get(i).getStorageResourceId().equals(storageId)) {
+                if (prefs.get(i).storageResourceId().equals(storageId)) {
                     b.removeUserStoragePreferences(i);
                     break;
                 }
@@ -899,8 +902,8 @@ public class ResourceProfileRegistryService {
         try {
             usageReportingProvider.addGatewayUsageReportingCommand(command);
         } catch (Exception e) {
-            logger.error("Error adding reporting information for gateway {} resource {}: {}", command.getGatewayId(),
-                    command.getComputeResourceId(), e.getMessage(), e);
+            logger.error("Error adding reporting information for gateway {} resource {}: {}", command.gatewayId(),
+                    command.computeResourceId(), e.getMessage(), e);
             throw e;
         }
     }

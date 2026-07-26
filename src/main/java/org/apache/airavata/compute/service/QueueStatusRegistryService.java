@@ -22,7 +22,7 @@ package org.apache.airavata.compute.service;
 import java.util.List;
 import java.util.Optional;
 import org.apache.airavata.compute.repository.QueueStatusRepository;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
+import org.apache.airavata.models.status.QueueStatusModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;

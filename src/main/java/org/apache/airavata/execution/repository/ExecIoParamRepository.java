@@ -22,8 +22,8 @@ package org.apache.airavata.execution.repository;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.application.io.proto.InputDataObjectType;
-import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
+import org.apache.airavata.models.application.io.InputDataObjectType;
+import org.apache.airavata.models.application.io.OutputDataObjectType;
 import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExecIoParamEntity;
 import org.apache.airavata.execution.model.ProcessEntity;
@@ -102,7 +102,7 @@ public class ExecIoParamRepository extends AbstractRepository<ExecIoParamEntity,
 
     public List<InputDataObjectType> getProcessInputs(String processId) throws Exception {
         ProcessRepository processRepository = new ProcessRepository();
-        return processRepository.getProcess(processId).getProcessInputsList();
+        return processRepository.getProcess(processId).processInputs();
     }
 
     // --- Process Output methods ---
@@ -156,6 +156,6 @@ public class ExecIoParamRepository extends AbstractRepository<ExecIoParamEntity,
 
     public List<OutputDataObjectType> getProcessOutputs(String processId) throws Exception {
         ProcessRepository processRepository = new ProcessRepository();
-        return processRepository.getProcess(processId).getProcessOutputsList();
+        return processRepository.getProcess(processId).processOutputs();
     }
 }

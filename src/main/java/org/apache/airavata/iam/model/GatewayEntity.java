@@ -22,7 +22,7 @@ package org.apache.airavata.iam.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.apache.airavata.model.workspace.proto.GatewayApprovalStatus;
+import org.apache.airavata.models.workspace.GatewayApprovalStatus;
 
 /**
  * The persistent class for the gateway database table.

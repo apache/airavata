@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.execution.repository;
 
-import org.apache.airavata.model.status.proto.TaskStatus;
+import org.apache.airavata.models.status.TaskStatus;
 import org.springframework.stereotype.Component;
 
 /**

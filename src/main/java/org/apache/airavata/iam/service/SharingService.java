@@ -28,13 +28,13 @@ import org.apache.airavata.common.IAMDBConstants;
 import org.apache.airavata.iam.SharingConstants;
 import org.apache.airavata.iam.model.*;
 import org.apache.airavata.iam.repository.*;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
-import org.apache.airavata.sharing.registry.models.proto.GroupChildType;
-import org.apache.airavata.sharing.registry.models.proto.GroupType;
-import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
-import org.apache.airavata.sharing.registry.models.proto.SharingType;
-import org.apache.airavata.sharing.registry.models.proto.UserGroup;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.models.sharing.registry.GroupCardinality;
+import org.apache.airavata.models.sharing.registry.GroupChildType;
+import org.apache.airavata.models.sharing.registry.GroupType;
+import org.apache.airavata.models.sharing.registry.SearchCriteria;
+import org.apache.airavata.models.sharing.registry.SharingType;
+import org.apache.airavata.models.sharing.registry.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -644,9 +644,9 @@ public class SharingService {
         boolean isAdmin = hasAdminAccess(domainId, groupId, callerId);
         boolean isOwner = group.getOwnerId() != null && group.getOwnerId().equals(callerId);
         boolean isMember = memberIds.contains(callerId);
-        boolean isGatewayAdminsGroup = gg != null && groupId.equals(gg.getAdminsGroupId());
-        boolean isReadOnlyGatewayAdminsGroup = gg != null && groupId.equals(gg.getReadOnlyAdminsGroupId());
-        boolean isDefaultGatewayUsersGroup = gg != null && groupId.equals(gg.getDefaultGatewayUsersGroupId());
+        boolean isGatewayAdminsGroup = gg != null && groupId.equals(gg.adminsGroupId());
+        boolean isReadOnlyGatewayAdminsGroup = gg != null && groupId.equals(gg.readOnlyAdminsGroupId());
+        boolean isDefaultGatewayUsersGroup = gg != null && groupId.equals(gg.defaultGatewayUsersGroupId());
         return new GroupAccess(
                 memberIds,
                 isAdmin,
@@ -1519,15 +1519,15 @@ public class SharingService {
 
     public String createGroup(UserGroup group) throws Exception {
         UserGroupEntity entity = new UserGroupEntity();
-        entity.setGroupId(group.getGroupId());
-        entity.setDomainId(group.getDomainId());
-        entity.setGroupCardinality(group.getGroupCardinality().name());
-        entity.setCreatedTime(group.getCreatedTime());
-        entity.setUpdatedTime(group.getUpdatedTime());
-        entity.setName(group.getName());
-        entity.setDescription(group.getDescription());
-        entity.setOwnerId(group.getOwnerId());
-        entity.setGroupType(group.getGroupType().name());
+        entity.setGroupId(group.groupId());
+        entity.setDomainId(group.domainId());
+        entity.setGroupCardinality(group.groupCardinality().name());
+        entity.setCreatedTime(group.createdTime());
+        entity.setUpdatedTime(group.updatedTime());
+        entity.setName(group.name());
+        entity.setDescription(group.description());
+        entity.setOwnerId(group.ownerId());
+        entity.setGroupType(group.groupType().name());
         createGroup(entity);
         return entity.getGroupId();
     }

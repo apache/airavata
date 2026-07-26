@@ -22,13 +22,13 @@ package org.apache.airavata.experiment.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.application.io.proto.InputDataObjectType;
-import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
-import org.apache.airavata.model.commons.proto.ErrorModel;
-import org.apache.airavata.model.experiment.proto.ExperimentModel;
-import org.apache.airavata.model.experiment.proto.ExperimentSummaryModel;
-import org.apache.airavata.model.status.proto.ExperimentStatus;
-import org.apache.airavata.model.workspace.proto.Project;
+import org.apache.airavata.models.application.io.InputDataObjectType;
+import org.apache.airavata.models.application.io.OutputDataObjectType;
+import org.apache.airavata.models.commons.ErrorModel;
+import org.apache.airavata.models.experiment.ExperimentModel;
+import org.apache.airavata.models.experiment.ExperimentSummaryModel;
+import org.apache.airavata.models.status.ExperimentStatus;
+import org.apache.airavata.models.workspace.Project;
 import org.apache.airavata.experiment.model.*;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -50,10 +50,10 @@ public interface ExperimentMapper extends CommonMapperConversions {
     ProjectEntity projectToEntity(Project model);
 
     // --- Experiment ---
-    @Mapping(target = "emailAddressesList", ignore = true)
+    @Mapping(target = "emailAddresses", ignore = true)
     ExperimentModel experimentToModel(ExperimentEntity entity);
 
-    @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.getEmailAddressesList()))")
+    @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.emailAddresses()))")
     ExperimentEntity experimentToEntity(ExperimentModel model);
 
     // MapStruct does not match protobuf's repeated accessors
@@ -94,23 +94,23 @@ public interface ExperimentMapper extends CommonMapperConversions {
 
     @AfterMapping
     default void afterExperimentToEntity(ExperimentModel model, @MappingTarget ExperimentEntity entity) {
-        if (!model.getExperimentInputsList().isEmpty()) {
+        if (!model.experimentInputs().isEmpty()) {
             List<ResearchIoParamEntity> inputs = new ArrayList<>();
-            for (InputDataObjectType input : model.getExperimentInputsList()) {
+            for (InputDataObjectType input : model.experimentInputs()) {
                 inputs.add(experimentInputToEntity(input));
             }
             entity.setExperimentInputs(inputs);
         }
-        if (!model.getExperimentOutputsList().isEmpty()) {
+        if (!model.experimentOutputs().isEmpty()) {
             List<ResearchIoParamEntity> outputs = new ArrayList<>();
-            for (OutputDataObjectType output : model.getExperimentOutputsList()) {
+            for (OutputDataObjectType output : model.experimentOutputs()) {
                 outputs.add(experimentOutputToEntity(output));
             }
             entity.setExperimentOutputs(outputs);
         }
-        if (!model.getExperimentStatusList().isEmpty()) {
+        if (!model.experimentStatus().isEmpty()) {
             List<ExperimentStatusEntity> statuses = new ArrayList<>();
-            for (ExperimentStatus status : model.getExperimentStatusList()) {
+            for (ExperimentStatus status : model.experimentStatus()) {
                 ExperimentStatusEntity statusEntity = experimentStatusToEntity(status);
                 // Set the @ManyToOne back-reference so the child persists with its parent.
                 statusEntity.setExperiment(entity);
@@ -118,9 +118,9 @@ public interface ExperimentMapper extends CommonMapperConversions {
             }
             entity.setExperimentStatus(statuses);
         }
-        if (!model.getErrorsList().isEmpty()) {
+        if (!model.errors().isEmpty()) {
             List<ExperimentErrorEntity> errors = new ArrayList<>();
-            for (ErrorModel error : model.getErrorsList()) {
+            for (ErrorModel error : model.errors()) {
                 ExperimentErrorEntity errorEntity = experimentErrorToEntity(error);
                 // Set the @ManyToOne back-reference so the child persists with its parent.
                 errorEntity.setExperiment(entity);
@@ -159,7 +159,7 @@ public interface ExperimentMapper extends CommonMapperConversions {
 
     @AfterMapping
     default void afterExperimentErrorToEntity(ErrorModel model, @MappingTarget ExperimentErrorEntity entity) {
-        entity.setRootCauseErrorIdList(listToCsv(model.getRootCauseErrorIdListList()));
+        entity.setRootCauseErrorIdList(listToCsv(model.rootCauseErrorIdList()));
     }
 
     // --- ExperimentInput ---

@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
+import org.apache.airavata.models.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.storage.mapper.StorageMapper;
 import org.apache.airavata.storage.model.StoragePreferenceEntity;
 import org.apache.airavata.storage.model.StoragePreferencePK;

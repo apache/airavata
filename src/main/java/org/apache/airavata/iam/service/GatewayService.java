@@ -26,10 +26,10 @@ import org.apache.airavata.compute.repository.GwyResourceProfileRepository;
 import org.apache.airavata.iam.repository.GatewayGroupsRepository;
 import org.apache.airavata.iam.repository.GatewayRepository;
 import org.apache.airavata.iam.repository.UserProfileRepository;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
-import org.apache.airavata.model.user.proto.UserProfile;
-import org.apache.airavata.model.workspace.proto.Gateway;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.models.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.models.user.UserProfile;
+import org.apache.airavata.models.workspace.Gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,16 +63,16 @@ public class GatewayService {
 
     public String addGateway(Gateway gateway) throws Exception {
         try {
-            if (!validateString(gateway.getGatewayId())) {
+            if (!validateString(gateway.gatewayId())) {
                 logger.error("Gateway id cannot be empty...");
                 throw new Exception("Internal error");
             }
-            if (isGatewayExist(gateway.getGatewayId())) {
+            if (isGatewayExist(gateway.gatewayId())) {
                 throw new Exception(
-                        "Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
+                        "Gateway with gatewayId: " + gateway.gatewayId() + ", already exists in ExperimentCatalog.");
             }
-            if (gwyResourceProfileRepository.isGatewayResourceProfileExists(gateway.getGatewayId())) {
-                throw new Exception("GatewayResourceProfile with gatewayId: " + gateway.getGatewayId()
+            if (gwyResourceProfileRepository.isGatewayResourceProfileExists(gateway.gatewayId())) {
+                throw new Exception("GatewayResourceProfile with gatewayId: " + gateway.gatewayId()
                         + ", already exists in AppCatalog.");
             }
 
@@ -81,10 +81,10 @@ public class GatewayService {
             GatewayResourceProfile gatewayResourceProfile = GatewayResourceProfile.newBuilder()
                     .setGatewayId(gatewayId)
                     .setIdentityServerTenant(gatewayId)
-                    .setIdentityServerPwdCredToken(gateway.getIdentityServerPasswordToken())
+                    .setIdentityServerPwdCredToken(gateway.identityServerPasswordToken())
                     .build();
             gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
-            logger.debug("Airavata added gateway with gateway id : " + gateway.getGatewayId());
+            logger.debug("Airavata added gateway with gateway id : " + gateway.gatewayId());
             return gatewayId;
         } catch (Exception e) {
             logger.error("Error while adding gateway", e);
@@ -100,7 +100,7 @@ public class GatewayService {
                         "Gateway does not exist in the system. Please provide a valid gateway ID...");
             }
             Gateway gateway = gatewayRepository.getGateway(gatewayId);
-            logger.debug("Airavata retrieved gateway with gateway id : " + gateway.getGatewayId());
+            logger.debug("Airavata retrieved gateway with gateway id : " + gateway.gatewayId());
             return gateway;
         } catch (Exception e) {
             logger.error("Error while getting the gateway", e);
@@ -128,12 +128,12 @@ public class GatewayService {
 
             GatewayResourceProfile existingGwyResourceProfile = gwyResourceProfileRepository
                     .getGatewayProfile(gatewayId);
-            if (existingGwyResourceProfile.getIdentityServerPwdCredToken().isEmpty()
+            if (existingGwyResourceProfile.identityServerPwdCredToken().isEmpty()
                     || !existingGwyResourceProfile
-                            .getIdentityServerPwdCredToken()
-                            .equals(updatedGateway.getIdentityServerPasswordToken())) {
+                            .identityServerPwdCredToken()
+                            .equals(updatedGateway.identityServerPasswordToken())) {
                 GatewayResourceProfile updatedProfile = existingGwyResourceProfile.toBuilder()
-                        .setIdentityServerPwdCredToken(updatedGateway.getIdentityServerPasswordToken())
+                        .setIdentityServerPwdCredToken(updatedGateway.identityServerPasswordToken())
                         .build();
                 gwyResourceProfileRepository.updateGatewayResourceProfile(gatewayId, updatedProfile);
             }
@@ -184,7 +184,7 @@ public class GatewayService {
     public List<String> getAllUsersInGateway(String gatewayId) throws Exception {
         try {
             return userProfileRepository.getAllUserProfilesInGateway(gatewayId, 0, -1).stream()
-                    .map(up -> up.getUserId())
+                    .map(up -> up.userId())
                     .collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("Error while retrieving users", e);
@@ -195,12 +195,12 @@ public class GatewayService {
     public String addUser(UserProfile userProfile) throws Exception {
         try {
             logger.info("Adding User in Registry: " + userProfile);
-            if (isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
-                throw new Exception("User already exists, with userId: " + userProfile.getUserId()
-                        + ", and gatewayId: " + userProfile.getGatewayId());
+            if (isUserExists(userProfile.gatewayId(), userProfile.userId())) {
+                throw new Exception("User already exists, with userId: " + userProfile.userId()
+                        + ", and gatewayId: " + userProfile.gatewayId());
             }
             UserProfile savedUser = userProfileRepository.createUserProfile(userProfile);
-            return savedUser.getUserId();
+            return savedUser.userId();
         } catch (Exception ex) {
             logger.error("Error while adding user in registry: " + ex, ex);
             throw new Exception("Error while adding user in registry: " + ex.getMessage());
@@ -234,15 +234,15 @@ public class GatewayService {
 
     public void createGatewayGroups(GatewayGroups gatewayGroups) throws Exception {
         try {
-            if (gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
-                logger.error("GatewayGroups already exists for " + gatewayGroups.getGatewayId());
+            if (gatewayGroupsRepository.isExists(gatewayGroups.gatewayId())) {
+                logger.error("GatewayGroups already exists for " + gatewayGroups.gatewayId());
                 throw new Exception(
-                        "GatewayGroups for gatewayId: " + gatewayGroups.getGatewayId() + " already exists.");
+                        "GatewayGroups for gatewayId: " + gatewayGroups.gatewayId() + " already exists.");
             }
             gatewayGroupsRepository.create(gatewayGroups);
         } catch (Exception e) {
             final String message = "Error while creating a GatewayGroups entry for gateway "
-                    + gatewayGroups.getGatewayId() + ".";
+                    + gatewayGroups.gatewayId() + ".";
             logger.error(message, e);
             throw new Exception(message + " More info: " + e.getMessage());
         }
@@ -250,13 +250,13 @@ public class GatewayService {
 
     public void updateGatewayGroups(GatewayGroups gatewayGroups) throws Exception {
         try {
-            if (!gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
-                throw new Exception("No GatewayGroups entry exists for " + gatewayGroups.getGatewayId());
+            if (!gatewayGroupsRepository.isExists(gatewayGroups.gatewayId())) {
+                throw new Exception("No GatewayGroups entry exists for " + gatewayGroups.gatewayId());
             }
             gatewayGroupsRepository.update(gatewayGroups);
         } catch (Exception e) {
             throw new Exception("Error while updating the GatewayGroups entry for gateway "
-                    + gatewayGroups.getGatewayId() + ". More info: " + e.getMessage());
+                    + gatewayGroups.gatewayId() + ". More info: " + e.getMessage());
         }
     }
 

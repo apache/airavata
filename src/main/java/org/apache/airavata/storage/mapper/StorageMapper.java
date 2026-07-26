@@ -20,8 +20,8 @@
 package org.apache.airavata.storage.mapper;
 
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
-import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
+import org.apache.airavata.models.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.models.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.storage.model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

@@ -29,11 +29,11 @@ import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.execution.repository.ProcessRepository;
 import org.apache.airavata.common.ResultOrderType;
-import org.apache.airavata.model.experiment.proto.ExperimentModel;
-import org.apache.airavata.model.experiment.proto.UserConfigurationDataModel;
-import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.status.proto.ExperimentState;
-import org.apache.airavata.model.status.proto.ExperimentStatus;
+import org.apache.airavata.models.experiment.ExperimentModel;
+import org.apache.airavata.models.experiment.UserConfigurationDataModel;
+import org.apache.airavata.models.process.ProcessModel;
+import org.apache.airavata.models.status.ExperimentState;
+import org.apache.airavata.models.status.ExperimentStatus;
 import org.apache.airavata.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.experiment.model.ExperimentEntity;
 import org.slf4j.Logger;
@@ -67,13 +67,13 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
     }
 
     protected ExperimentEntity saveExperiment(ExperimentModel experimentModel) throws Exception {
-        String experimentId = experimentModel.getExperimentId();
+        String experimentId = experimentModel.experimentId();
 
-        if (!experimentModel.getExperimentStatusList().isEmpty()) {
+        if (!experimentModel.experimentStatus().isEmpty()) {
             logger.debug("Populating the status id of ExperimentStatus objects for the Experiment");
             ExperimentModel.Builder expBuilder = experimentModel.toBuilder().clearExperimentStatus();
-            for (ExperimentStatus es : experimentModel.getExperimentStatusList()) {
-                if (es.getStatusId().isEmpty()) {
+            for (ExperimentStatus es : experimentModel.experimentStatus()) {
+                if (es.statusId().isEmpty()) {
                     es = es.toBuilder()
                             .setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"))
                             .build();
@@ -83,10 +83,10 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
             experimentModel = expBuilder.build();
         }
 
-        if (!experimentModel.getProcessesList().isEmpty()) {
+        if (!experimentModel.processes().isEmpty()) {
             logger.debug("Populating the Process objects' Experiment ID for the Experiment");
             ExperimentModel.Builder expBuilder2 = experimentModel.toBuilder().clearProcesses();
-            for (ProcessModel pm : experimentModel.getProcessesList()) {
+            for (ProcessModel pm : experimentModel.processes()) {
                 expBuilder2.addProcesses(
                         pm.toBuilder().setExperimentId(experimentId).build());
             }
@@ -107,7 +107,7 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
             // maps 0 to a
             // NULL column that reads back as epoch 1970 ("56 years ago"). Carry the stored
             // value forward.
-            long existingCreationTime = getExperiment(experimentId).getCreationTime();
+            long existingCreationTime = getExperiment(experimentId).creationTime();
             if (existingCreationTime > 0) {
                 experimentModel = experimentModel.toBuilder()
                         .setCreationTime(existingCreationTime)
@@ -158,7 +158,7 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
         // row exists, since
         // user_configuration_data.EXPERIMENT_ID is a FK to experiment.EXPERIMENT_ID.
         if (experimentModel.hasUserConfigurationData()) {
-            processRepository.saveUserConfigurationData(experimentModel.getUserConfigurationData(), experimentId);
+            processRepository.saveUserConfigurationData(experimentModel.userConfigurationData(), experimentId);
         }
         return savedEntity;
     }
@@ -223,7 +223,7 @@ public class ExperimentRepository extends AbstractRepository<ExperimentModel, Ex
 
     public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws Exception {
         ExperimentModel experimentModel = getExperiment(experimentId);
-        return experimentModel.getUserConfigurationData();
+        return experimentModel.userConfigurationData();
     }
 
     public List<ExperimentModel> getExperimentList(

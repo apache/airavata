@@ -21,9 +21,9 @@ package org.apache.airavata.storage.service;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourceDescription;
-import org.apache.airavata.model.data.replica.proto.DataProductModel;
-import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
+import org.apache.airavata.models.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.models.data.replica.DataProductModel;
+import org.apache.airavata.models.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.storage.repository.DataProductRepository;
 import org.apache.airavata.storage.repository.DataReplicaLocationRepository;
 import org.apache.airavata.storage.repository.StorageResourceRepository;
@@ -70,7 +70,7 @@ public class StorageRegistryService {
             String productUrl = storageProvider.registerDataProduct(dataProductModel);
             return productUrl;
         } catch (Exception e) {
-            logger.error("Error registering data product {}: {}", dataProductModel.getProductName(), e.getMessage(), e);
+            logger.error("Error registering data product {}: {}", dataProductModel.productName(), e.getMessage(), e);
             throw e;
         }
     }
@@ -110,7 +110,7 @@ public class StorageRegistryService {
             String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
             return replicaId;
         } catch (Exception e) {
-            logger.error("Error registering replica {}: {}", replicaLocationModel.getReplicaName(), e.getMessage(), e);
+            logger.error("Error registering replica {}: {}", replicaLocationModel.replicaName(), e.getMessage(), e);
             throw e;
         }
     }
@@ -131,7 +131,7 @@ public class StorageRegistryService {
         try {
             return storageProvider.updateDataProduct(dataProductModel);
         } catch (Exception e) {
-            logger.error("Error updating data product {}: {}", dataProductModel.getProductUri(), e.getMessage(), e);
+            logger.error("Error updating data product {}: {}", dataProductModel.productUri(), e.getMessage(), e);
             throw e;
         }
     }
@@ -158,7 +158,7 @@ public class StorageRegistryService {
         try {
             return dataReplicaLocationRepository.updateReplicaLocation(replicaLocationModel);
         } catch (Exception e) {
-            logger.error("Error updating replica location {}: {}", replicaLocationModel.getReplicaId(), e.getMessage(),
+            logger.error("Error updating replica location {}: {}", replicaLocationModel.replicaId(), e.getMessage(),
                     e);
             throw e;
         }

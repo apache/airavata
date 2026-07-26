@@ -21,7 +21,6 @@ package org.apache.airavata.security.service;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,13 @@ import org.apache.airavata.security.model.CredentialPK;
 import org.apache.airavata.security.repository.CredentialRepository;
 import org.apache.airavata.common.TokenGenerator;
 import org.apache.airavata.iam.service.CommunityUserService;
-import org.apache.airavata.model.credential.store.proto.*;
+import org.apache.airavata.models.credential.store.CertificateCredential;
+import org.apache.airavata.models.credential.store.CommunityUser;
+import org.apache.airavata.models.credential.store.CredentialSummary;
+import org.apache.airavata.models.credential.store.PasswordCredential;
+import org.apache.airavata.models.credential.store.SSHCredential;
+import org.apache.airavata.models.credential.store.StoredCredential;
+import org.apache.airavata.models.credential.store.SummaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,17 +58,17 @@ public class CredentialStoreService {
 
     public String addSSHCredential(SSHCredential sshCredential) throws Exception {
         try {
-            String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
+            String token = TokenGenerator.generateToken(sshCredential.gatewayId(), null);
             SSHCredential.Builder builder = sshCredential.toBuilder().setToken(token)
                     .setPassphrase(String.valueOf(UUID.randomUUID()));
 
             SSHCredential credential = builder.build();
-            if (sshCredential.getPublicKey().isEmpty()
-                    || sshCredential.getPrivateKey().isEmpty()) {
+            if (sshCredential.publicKey().isEmpty()
+                    || sshCredential.privateKey().isEmpty()) {
                 credential = SecurityUtil.generateKeyPair(credential);
             }
-            StoredCredential stored = StoredCredential.newBuilder().setSshCredential(credential).build();
-            saveCredential(credential.getGatewayId(), stored);
+            StoredCredential stored = new StoredCredential.Ssh(credential);
+            saveCredential(credential.gatewayId(), stored);
             return token;
         } catch (Exception e) {
             log.error("Error occurred while saving SSH Credentials.", e);
@@ -75,18 +80,16 @@ public class CredentialStoreService {
             throws Exception {
         try {
             String token = TokenGenerator.generateToken(
-                    certificateCredential.getCommunityUser().getGatewayName(), null);
+                    certificateCredential.communityUser().gatewayName(), null);
             CertificateCredential credential = certificateCredential.toBuilder().setToken(token).build();
-            StoredCredential stored = StoredCredential.newBuilder()
-                    .setCertificateCredential(credential)
-                    .build();
+            StoredCredential stored = new StoredCredential.Certificate(credential);
 
             // Save community user
-            CommunityUser communityUser = credential.getCommunityUser();
+            CommunityUser communityUser = credential.communityUser();
             saveCommunityUserToken(communityUser, token);
 
             // Save credential
-            saveCredential(communityUser.getGatewayName(), stored);
+            saveCredential(communityUser.gatewayName(), stored);
             return token;
         } catch (Exception e) {
             log.error("Error occurred while saving Certificate Credentials.", e);
@@ -96,12 +99,10 @@ public class CredentialStoreService {
 
     public String addPasswordCredential(PasswordCredential passwordCredential) throws Exception {
         try {
-            String token = TokenGenerator.generateToken(passwordCredential.getGatewayId(), null);
+            String token = TokenGenerator.generateToken(passwordCredential.gatewayId(), null);
             PasswordCredential credential = passwordCredential.toBuilder().setToken(token).build();
-            StoredCredential stored = StoredCredential.newBuilder()
-                    .setPasswordCredential(credential)
-                    .build();
-            saveCredential(credential.getGatewayId(), stored);
+            StoredCredential stored = new StoredCredential.Password(credential);
+            saveCredential(credential.gatewayId(), stored);
             return token;
         } catch (Exception e) {
             log.error("Error occurred while saving PWD Credentials.", e);
@@ -110,12 +111,22 @@ public class CredentialStoreService {
     }
 
     public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws Exception {
-        return getTypedCredential(
-                tokenId,
-                gatewayId,
-                "SSH",
-                StoredCredential.CredentialCase.SSH_CREDENTIAL,
-                StoredCredential::getSshCredential);
+        try {
+            StoredCredential stored = getCredential(gatewayId, tokenId);
+            if (stored instanceof StoredCredential.Ssh ssh) {
+                return ssh.sshCredential();
+            }
+            log.info("Could not find SSH credentials for token - {} and gateway id - {}", tokenId, gatewayId);
+            return null;
+        } catch (Exception e) {
+            log.error(
+                    "Error occurred while retrieving SSH credential for token - {} and gateway id - {}",
+                    tokenId,
+                    gatewayId,
+                    e);
+            throw new Exception("Error occurred while retrieving SSH credential for token - "
+                    + tokenId + " and gateway id - " + gatewayId);
+        }
     }
 
     public CredentialSummary getCredentialSummary(String tokenId, String gatewayId) throws Exception {
@@ -137,9 +148,8 @@ public class CredentialStoreService {
             SummaryType type, List<String> accessibleTokenIds, String gatewayId) throws Exception {
         try {
             List<StoredCredential> credentials = getAllAccessibleCredentialsPerGateway(gatewayId, accessibleTokenIds);
-            StoredCredential.CredentialCase targetCase = summaryTypeToCredentialCase(type);
             return credentials.stream()
-                    .filter(c -> c.getCredentialCase() == targetCase)
+                    .filter(c -> matchesSummaryType(c, type))
                     .map(this::convertToCredentialSummary)
                     .collect(Collectors.toList());
         } catch (Exception e) {
@@ -150,72 +160,73 @@ public class CredentialStoreService {
         }
     }
 
-    private StoredCredential.CredentialCase summaryTypeToCredentialCase(SummaryType type) {
-        switch (type) {
-            case SSH:
-                return StoredCredential.CredentialCase.SSH_CREDENTIAL;
-            case PASSWD:
-                return StoredCredential.CredentialCase.PASSWORD_CREDENTIAL;
-            case CERT:
-                return StoredCredential.CredentialCase.CERTIFICATE_CREDENTIAL;
-            default:
-                throw new RuntimeException("Summary Type " + type + " is not supported.");
-        }
+    private boolean matchesSummaryType(StoredCredential stored, SummaryType type) {
+        return switch (type) {
+            case SSH -> stored instanceof StoredCredential.Ssh;
+            case PASSWD -> stored instanceof StoredCredential.Password;
+            case CERT -> stored instanceof StoredCredential.Certificate;
+            default -> throw new RuntimeException("Summary Type " + type + " is not supported.");
+        };
     }
 
     private CredentialSummary convertToCredentialSummary(StoredCredential stored) {
-        switch (stored.getCredentialCase()) {
-            case SSH_CREDENTIAL: {
-                var cred = stored.getSshCredential();
-                CredentialSummary.Builder builder = CredentialSummary.newBuilder()
-                        .setType(SummaryType.SSH)
-                        .setUsername(cred.getUsername())
-                        .setGatewayId(cred.getGatewayId())
-                        .setPublicKey(cred.getPublicKey())
-                        .setToken(cred.getToken())
-                        .setPersistedTime(cred.getPersistedTime());
-                if (!cred.getDescription().isEmpty()) {
-                    builder.setDescription(cred.getDescription());
-                }
-                return builder.build();
+        if (stored instanceof StoredCredential.Ssh ssh) {
+            var cred = ssh.sshCredential();
+            CredentialSummary.Builder builder = CredentialSummary.newBuilder()
+                    .setType(SummaryType.SSH)
+                    .setUsername(cred.username())
+                    .setGatewayId(cred.gatewayId())
+                    .setPublicKey(cred.publicKey())
+                    .setToken(cred.token())
+                    .setPersistedTime(cred.persistedTime());
+            if (!cred.description().isEmpty()) {
+                builder.setDescription(cred.description());
             }
-            case PASSWORD_CREDENTIAL: {
-                var cred = stored.getPasswordCredential();
-                CredentialSummary.Builder builder = CredentialSummary.newBuilder()
-                        .setType(SummaryType.PASSWD)
-                        .setUsername(cred.getPortalUserName())
-                        .setGatewayId(cred.getGatewayId())
-                        .setToken(cred.getToken())
-                        .setPersistedTime(cred.getPersistedTime());
-                if (!cred.getDescription().isEmpty()) {
-                    builder.setDescription(cred.getDescription());
-                }
-                return builder.build();
+            return builder.build();
+        } else if (stored instanceof StoredCredential.Password password) {
+            var cred = password.passwordCredential();
+            CredentialSummary.Builder builder = CredentialSummary.newBuilder()
+                    .setType(SummaryType.PASSWD)
+                    .setUsername(cred.portalUserName())
+                    .setGatewayId(cred.gatewayId())
+                    .setToken(cred.token())
+                    .setPersistedTime(cred.persistedTime());
+            if (!cred.description().isEmpty()) {
+                builder.setDescription(cred.description());
             }
-            case CERTIFICATE_CREDENTIAL: {
-                var cred = stored.getCertificateCredential();
-                CredentialSummary.Builder builder = CredentialSummary.newBuilder()
-                        .setType(SummaryType.CERT)
-                        .setUsername(cred.getCommunityUser().getUsername())
-                        // FIXME: need to get gatewayId for CertificateCredentials
-                        .setGatewayId("")
-                        .setToken(cred.getToken())
-                        .setPersistedTime(cred.getPersistedTime());
-                return builder.build();
-            }
-            default:
-                throw new RuntimeException("Unrecognized credential type: " + stored.getCredentialCase());
+            return builder.build();
+        } else if (stored instanceof StoredCredential.Certificate certificate) {
+            var cred = certificate.certificateCredential();
+            CredentialSummary.Builder builder = CredentialSummary.newBuilder()
+                    .setType(SummaryType.CERT)
+                    .setUsername(cred.communityUser().username())
+                    // FIXME: need to get gatewayId for CertificateCredentials
+                    .setGatewayId("")
+                    .setToken(cred.token())
+                    .setPersistedTime(cred.persistedTime());
+            return builder.build();
         }
+        throw new RuntimeException("Unrecognized credential type: " + stored);
     }
 
     public CertificateCredential getCertificateCredential(String tokenId, String gatewayId)
             throws Exception {
-        return getTypedCredential(
-                tokenId,
-                gatewayId,
-                "Certificate",
-                StoredCredential.CredentialCase.CERTIFICATE_CREDENTIAL,
-                StoredCredential::getCertificateCredential);
+        try {
+            StoredCredential stored = getCredential(gatewayId, tokenId);
+            if (stored instanceof StoredCredential.Certificate certificate) {
+                return certificate.certificateCredential();
+            }
+            log.info("Could not find Certificate credentials for token - {} and gateway id - {}", tokenId, gatewayId);
+            return null;
+        } catch (Exception e) {
+            log.error(
+                    "Error occurred while retrieving Certificate credential for token - {} and gateway id - {}",
+                    tokenId,
+                    gatewayId,
+                    e);
+            throw new Exception("Error occurred while retrieving Certificate credential for token - "
+                    + tokenId + " and gateway id - " + gatewayId);
+        }
     }
 
     public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId)
@@ -231,7 +242,7 @@ public class CredentialStoreService {
     public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(
             SummaryType type, String gatewayId, String userId) throws Exception {
         if (type.equals(SummaryType.SSH)) {
-            return collectSshSummaries(gatewayId, ssh -> userId.equals(ssh.getUsername()));
+            return collectSshSummaries(gatewayId, ssh -> userId.equals(ssh.username()));
         } else {
             log.info("Summary type {} not supported for user id - {} and gateway id - {}", type, userId, gatewayId);
             return Collections.emptyList();
@@ -260,7 +271,7 @@ public class CredentialStoreService {
 
     private void saveCommunityUserToken(CommunityUser communityUser, String token) {
         communityUserService.saveCommunityUser(
-                communityUser.getGatewayName(), token, communityUser.getUsername(), communityUser.getUserEmail());
+                communityUser.gatewayName(), token, communityUser.username(), communityUser.userEmail());
     }
 
     private StoredCredential getCredential(String gatewayId, String tokenId) throws Exception {
@@ -270,33 +281,6 @@ public class CredentialStoreService {
                 .orElse(null);
     }
 
-    private <T> T getTypedCredential(
-            String tokenId,
-            String gatewayId,
-            String label,
-            StoredCredential.CredentialCase expectedCase,
-            Function<StoredCredential, T> accessor)
-            throws Exception {
-        try {
-            StoredCredential stored = getCredential(gatewayId, tokenId);
-            if (stored != null && stored.getCredentialCase() == expectedCase) {
-                return accessor.apply(stored);
-            } else {
-                log.info("Could not find {} credentials for token - {} and gateway id - {}", label, tokenId, gatewayId);
-                return null;
-            }
-        } catch (Exception e) {
-            log.error(
-                    "Error occurred while retrieving {} credential for token - {} and gateway id - {}",
-                    label,
-                    tokenId,
-                    gatewayId,
-                    e);
-            throw new Exception("Error occurred while retrieving " + label + " credential for token - "
-                    + tokenId + " and gateway id - " + gatewayId);
-        }
-    }
-
     private List<CredentialSummary> collectSshSummaries(String gatewayId, Predicate<SSHCredential> filter)
             throws Exception {
         List<CredentialSummary> summaryList = new ArrayList<>();
@@ -304,8 +288,7 @@ public class CredentialStoreService {
             List<StoredCredential> allCredentials = getAllCredentialsPerGateway(gatewayId);
             if (allCredentials != null && !allCredentials.isEmpty()) {
                 for (StoredCredential stored : allCredentials) {
-                    if (stored.getCredentialCase() == StoredCredential.CredentialCase.SSH_CREDENTIAL
-                            && filter.test(stored.getSshCredential())) {
+                    if (stored instanceof StoredCredential.Ssh ssh && filter.test(ssh.sshCredential())) {
                         summaryList.add(convertToCredentialSummary(stored));
                     }
                 }

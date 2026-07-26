@@ -24,8 +24,8 @@ import java.util.Arrays;
 import org.apache.airavata.common.ServerSettings;
 import org.apache.airavata.iam.service.GatewayService;
 import org.apache.airavata.iam.service.SharingService;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.model.group.proto.ResourcePermissionType;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.models.group.ResourcePermissionType;
 
 /**
  * Utility methods for sharing operations, decoupled from the sharing-service
@@ -80,15 +80,15 @@ public class SharingHelper {
         sharingHandler.shareEntityWithGroups(
                 domainId,
                 entityId,
-                Arrays.asList(gatewayGroups.getAdminsGroupId()),
+                Arrays.asList(gatewayGroups.adminsGroupId()),
                 domainId + ":MANAGE_SHARING",
                 true);
         sharingHandler.shareEntityWithGroups(
-                domainId, entityId, Arrays.asList(gatewayGroups.getAdminsGroupId()), domainId + ":WRITE", true);
+                domainId, entityId, Arrays.asList(gatewayGroups.adminsGroupId()), domainId + ":WRITE", true);
         sharingHandler.shareEntityWithGroups(
                 domainId,
                 entityId,
-                Arrays.asList(gatewayGroups.getAdminsGroupId(), gatewayGroups.getReadOnlyAdminsGroupId()),
+                Arrays.asList(gatewayGroups.adminsGroupId(), gatewayGroups.readOnlyAdminsGroupId()),
                 domainId + ":READ",
                 true);
     }

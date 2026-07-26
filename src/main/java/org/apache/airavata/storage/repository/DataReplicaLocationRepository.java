@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.data.replica.proto.DataProductModel;
-import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
+import org.apache.airavata.models.data.replica.DataProductModel;
+import org.apache.airavata.models.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.storage.mapper.DataMapper;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.model.DataReplicaLocationEntity;
@@ -69,14 +69,14 @@ public class DataReplicaLocationRepository
     private DataReplicaLocationEntity saveDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel)
             throws Exception {
 
-        if (dataReplicaLocationModel.getReplicaId().isEmpty()) {
+        if (dataReplicaLocationModel.replicaId().isEmpty()) {
             logger.debug("Setting the Replica ID for the new Data Replica Location");
             dataReplicaLocationModel = dataReplicaLocationModel.toBuilder()
                     .setReplicaId(UUID.randomUUID().toString())
                     .build();
         }
 
-        String replicaId = dataReplicaLocationModel.getReplicaId();
+        String replicaId = dataReplicaLocationModel.replicaId();
         DataReplicaLocationEntity dataReplicaLocationEntity = DataMapper.INSTANCE
                 .dataReplicaToEntity(dataReplicaLocationModel);
 
@@ -116,7 +116,7 @@ public class DataReplicaLocationRepository
     public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws Exception {
         DataProductRepository dataProductRepository = new DataProductRepository();
         DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
-        List<DataReplicaLocationModel> dataReplicaLocationModelList = dataProductModel.getReplicaLocationsList();
+        List<DataReplicaLocationModel> dataReplicaLocationModelList = dataProductModel.replicaLocations();
         return dataReplicaLocationModelList;
     }
 

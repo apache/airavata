@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.data.replica.proto.DataProductModel;
-import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
+import org.apache.airavata.models.data.replica.DataProductModel;
+import org.apache.airavata.models.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.model.DataReplicaLocationEntity;
 import org.mapstruct.Mapper;
@@ -84,21 +84,21 @@ public interface DataMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         DataProductEntity entity = new DataProductEntity();
-        entity.setProductUri(model.getProductUri());
-        entity.setGatewayId(model.getGatewayId());
-        entity.setProductName(model.getProductName());
-        entity.setProductDescription(model.getProductDescription());
-        entity.setOwnerName(model.getOwnerName());
-        entity.setParentProductUri(model.getParentProductUri());
-        entity.setProductSize(model.getProductSize());
-        entity.setCreationTime(longToTimestamp(model.getCreationTime()));
-        entity.setLastModifiedTime(longToTimestamp(model.getLastModifiedTime()));
-        entity.setDataProductType(model.getDataProductType());
-        if (model.getProductMetadataMap() != null) {
-            entity.setProductMetadata(new LinkedHashMap<>(model.getProductMetadataMap()));
+        entity.setProductUri(model.productUri());
+        entity.setGatewayId(model.gatewayId());
+        entity.setProductName(model.productName());
+        entity.setProductDescription(model.productDescription());
+        entity.setOwnerName(model.ownerName());
+        entity.setParentProductUri(model.parentProductUri());
+        entity.setProductSize(model.productSize());
+        entity.setCreationTime(longToTimestamp(model.creationTime()));
+        entity.setLastModifiedTime(longToTimestamp(model.lastModifiedTime()));
+        entity.setDataProductType(model.dataProductType());
+        if (model.productMetadata() != null) {
+            entity.setProductMetadata(new LinkedHashMap<>(model.productMetadata()));
         }
         List<DataReplicaLocationEntity> replicas = new ArrayList<>();
-        for (DataReplicaLocationModel replica : model.getReplicaLocationsList()) {
+        for (DataReplicaLocationModel replica : model.replicaLocations()) {
             replicas.add(dataReplicaToEntity(replica));
         }
         entity.setReplicaLocations(replicas);

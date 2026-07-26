@@ -3,10 +3,10 @@ package org.apache.airavata.iam;
 import org.apache.airavata.common.ServerSettings;
 import org.apache.airavata.iam.service.GatewayService;
 import org.apache.airavata.iam.service.SharingService;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
-import org.apache.airavata.sharing.registry.models.proto.GroupType;
-import org.apache.airavata.sharing.registry.models.proto.UserGroup;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.models.sharing.registry.GroupCardinality;
+import org.apache.airavata.models.sharing.registry.GroupType;
+import org.apache.airavata.models.sharing.registry.UserGroup;
 import org.apache.airavata.common.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,14 +53,14 @@ public class GatewayGroupsInitializer {
         // Gateway Users
         UserGroup gatewayUsersGroup = createGroup(gatewayId, ownerId, "Gateway Users",
                 "Default group for users of the gateway.");
-        gatewayGroupsBuilder.setDefaultGatewayUsersGroupId(gatewayUsersGroup.getGroupId());
+        gatewayGroupsBuilder.setDefaultGatewayUsersGroupId(gatewayUsersGroup.groupId());
         // Admin Users
         UserGroup adminUsersGroup = createGroup(gatewayId, ownerId, "Admin Users", "Admin users group.");
-        gatewayGroupsBuilder.setAdminsGroupId(adminUsersGroup.getGroupId());
+        gatewayGroupsBuilder.setAdminsGroupId(adminUsersGroup.groupId());
         // Read Only Admin Users
         UserGroup readOnlyAdminsGroup = createGroup(gatewayId, ownerId, "Read Only Admin Users",
                 "Group of admin users with read-only access.");
-        gatewayGroupsBuilder.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.getGroupId());
+        gatewayGroupsBuilder.setReadOnlyAdminsGroupId(readOnlyAdminsGroup.groupId());
         GatewayGroups gatewayGroups = gatewayGroupsBuilder.build();
 
         try {

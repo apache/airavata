@@ -24,9 +24,9 @@ import java.util.List;
 
 import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.experiment.proto.ExperimentModel;
-import org.apache.airavata.model.status.proto.ExperimentState;
-import org.apache.airavata.model.status.proto.ExperimentStatus;
+import org.apache.airavata.models.experiment.ExperimentModel;
+import org.apache.airavata.models.status.ExperimentState;
+import org.apache.airavata.models.status.ExperimentStatus;
 import org.apache.airavata.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.experiment.model.ExperimentStatusEntity;
 import org.apache.airavata.experiment.model.ExperimentStatusPK;
@@ -59,10 +59,10 @@ public class ExperimentStatusRepository
     protected String saveExperimentStatus(ExperimentStatus experimentStatus, String experimentId)
             throws Exception {
 
-        if (experimentStatus.getStatusId().isEmpty()) {
+        if (experimentStatus.statusId().isEmpty()) {
 
             ExperimentStatus currentExperimentStatus = getExperimentStatus(experimentId);
-            if (currentExperimentStatus == null || currentExperimentStatus.getState() != experimentStatus.getState()) {
+            if (currentExperimentStatus == null || currentExperimentStatus.state() != experimentStatus.state()) {
                 experimentStatus = experimentStatus.toBuilder()
                         .setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"))
                         .build();
@@ -70,7 +70,7 @@ public class ExperimentStatusRepository
                 // Update the existing current status if experimentStatus has no status id and
                 // the same state
                 experimentStatus = experimentStatus.toBuilder()
-                        .setStatusId(currentExperimentStatus.getStatusId())
+                        .setStatusId(currentExperimentStatus.statusId())
                         .build();
             }
         }
@@ -88,7 +88,7 @@ public class ExperimentStatusRepository
 
     public String addExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws Exception {
 
-        if (experimentStatus.getStatusId().isEmpty()) {
+        if (experimentStatus.statusId().isEmpty()) {
             logger.debug("Setting the ExperimentStatus's StatusId");
             experimentStatus = experimentStatus.toBuilder()
                     .setStatusId(AiravataUtils.getId("EXPERIMENT_STATE"))
@@ -108,7 +108,7 @@ public class ExperimentStatusRepository
 
     public ExperimentStatus getExperimentStatus(String experimentId) throws Exception {
         ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
-        List<ExperimentStatus> experimentStatusList = experimentModel.getExperimentStatusList();
+        List<ExperimentStatus> experimentStatusList = experimentModel.experimentStatus();
 
         if (experimentStatusList.size() == 0) {
             logger.debug("ExperimentStatus list is empty");
@@ -117,24 +117,20 @@ public class ExperimentStatusRepository
             ExperimentStatus latestExperimentStatus = experimentStatusList.get(0);
 
             for (int i = 1; i < experimentStatusList.size(); i++) {
-                Timestamp timeOfStateChange = new Timestamp(experimentStatusList.get(i).getTimeOfStateChange());
+                Timestamp timeOfStateChange = new Timestamp(experimentStatusList.get(i).timeOfStateChange());
 
                 if (timeOfStateChange != null) {
 
-                    if (timeOfStateChange.after(new Timestamp(latestExperimentStatus.getTimeOfStateChange()))
-                            || (timeOfStateChange.equals(latestExperimentStatus.getTimeOfStateChange())
-                                    && experimentStatusList
-                                            .get(i)
-                                            .getState()
-                                            .equals(ExperimentState.EXPERIMENT_STATE_COMPLETED.toString()))
-                            || (timeOfStateChange.equals(latestExperimentStatus.getTimeOfStateChange())
-                                    && experimentStatusList.get(i)
-                                            .getState() == ExperimentState.EXPERIMENT_STATE_FAILED)
-                            || (timeOfStateChange.equals(latestExperimentStatus.getTimeOfStateChange())
-                                    && experimentStatusList
-                                            .get(i)
-                                            .getState()
-                                            .equals(ExperimentState.EXPERIMENT_STATE_CANCELED.toString()))) {
+                    if (timeOfStateChange.after(new Timestamp(latestExperimentStatus.timeOfStateChange()))
+                            || (timeOfStateChange.equals(latestExperimentStatus.timeOfStateChange())
+                                    && experimentStatusList.get(i).state()
+                                            == ExperimentState.EXPERIMENT_STATE_COMPLETED)
+                            || (timeOfStateChange.equals(latestExperimentStatus.timeOfStateChange())
+                                    && experimentStatusList.get(i).state()
+                                            == ExperimentState.EXPERIMENT_STATE_FAILED)
+                            || (timeOfStateChange.equals(latestExperimentStatus.timeOfStateChange())
+                                    && experimentStatusList.get(i).state()
+                                            == ExperimentState.EXPERIMENT_STATE_CANCELED)) {
                         latestExperimentStatus = experimentStatusList.get(i);
                     }
                 }

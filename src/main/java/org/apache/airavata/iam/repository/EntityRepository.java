@@ -22,9 +22,9 @@ package org.apache.airavata.iam.repository;
 import java.util.*;
 import org.apache.airavata.iam.model.*;
 import org.apache.airavata.db.DBConstants;
-import org.apache.airavata.sharing.registry.models.proto.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.proto.SearchCondition;
-import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
+import org.apache.airavata.models.sharing.registry.EntitySearchField;
+import org.apache.airavata.models.sharing.registry.SearchCondition;
+import org.apache.airavata.models.sharing.registry.SearchCriteria;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -68,75 +68,75 @@ public class EntityRepository extends AbstractSharingRepository<EntityEntity, En
                 + "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
 
         for (SearchCriteria searchCriteria : filters) {
-            if (searchCriteria.getSearchField().equals(EntitySearchField.NAME)) {
-                if (searchCriteria.getSearchCondition() != null
-                        && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
-                    query += "E.NAME != '" + searchCriteria.getValue() + "' AND ";
+            if (searchCriteria.searchField().equals(EntitySearchField.NAME)) {
+                if (searchCriteria.searchCondition() != null
+                        && searchCriteria.searchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.NAME != '" + searchCriteria.value() + "' AND ";
                 } else {
-                    query += "E.NAME LIKE '%" + searchCriteria.getValue() + "%' AND ";
+                    query += "E.NAME LIKE '%" + searchCriteria.value() + "%' AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.DESCRIPTION)) {
-                query += "E.DESCRIPTION LIKE '%" + searchCriteria.getValue() + "%' AND ";
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.PERMISSION_TYPE_ID)) {
-                if (searchCriteria.getSearchCondition() != null
-                        && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
-                    query += "S.PERMISSION_TYPE_ID != '" + searchCriteria.getValue() + "' AND ";
+            } else if (searchCriteria.searchField().equals(EntitySearchField.DESCRIPTION)) {
+                query += "E.DESCRIPTION LIKE '%" + searchCriteria.value() + "%' AND ";
+            } else if (searchCriteria.searchField().equals(EntitySearchField.PERMISSION_TYPE_ID)) {
+                if (searchCriteria.searchCondition() != null
+                        && searchCriteria.searchCondition().equals(SearchCondition.NOT)) {
+                    query += "S.PERMISSION_TYPE_ID != '" + searchCriteria.value() + "' AND ";
                 } else {
-                    query += "S.PERMISSION_TYPE_ID IN ('" + searchCriteria.getValue() + "', '"
+                    query += "S.PERMISSION_TYPE_ID IN ('" + searchCriteria.value() + "', '"
                             + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "') AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)) {
+            } else if (searchCriteria.searchField().equals(EntitySearchField.FULL_TEXT)) {
                 // FULL TEXT Search with Query Expansion (MariaDB)
                 String queryTerms = "";
-                for (String word : searchCriteria.getValue().trim().replaceAll(" +", " ").split(" ")) {
+                for (String word : searchCriteria.value().trim().replaceAll(" +", " ").split(" ")) {
                     queryTerms += queryTerms + " +" + word;
                 }
                 queryTerms = queryTerms.trim();
                 query += "MATCH(E.FULL_TEXT) AGAINST ('" + queryTerms + "' IN BOOLEAN MODE) AND ";
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)) {
-                if (searchCriteria.getSearchCondition() != null
-                        && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
-                    query += "E.PARENT_ENTITY_ID != '" + searchCriteria.getValue() + "' AND ";
+            } else if (searchCriteria.searchField().equals(EntitySearchField.PARRENT_ENTITY_ID)) {
+                if (searchCriteria.searchCondition() != null
+                        && searchCriteria.searchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.PARENT_ENTITY_ID != '" + searchCriteria.value() + "' AND ";
                 } else {
-                    query += "E.PARENT_ENTITY_ID = '" + searchCriteria.getValue() + "' AND ";
+                    query += "E.PARENT_ENTITY_ID = '" + searchCriteria.value() + "' AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.OWNER_ID)) {
-                if (searchCriteria.getSearchCondition() != null
-                        && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
-                    query += "E.OWNER_ID != '" + searchCriteria.getValue() + "' AND ";
+            } else if (searchCriteria.searchField().equals(EntitySearchField.OWNER_ID)) {
+                if (searchCriteria.searchCondition() != null
+                        && searchCriteria.searchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.OWNER_ID != '" + searchCriteria.value() + "' AND ";
                 } else {
-                    query += "E.OWNER_ID = '" + searchCriteria.getValue() + "' AND ";
+                    query += "E.OWNER_ID = '" + searchCriteria.value() + "' AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.ENTITY_TYPE_ID)) {
-                if (searchCriteria.getSearchCondition() != null
-                        && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
-                    query += "E.ENTITY_TYPE_ID != '" + searchCriteria.getValue() + "' AND ";
+            } else if (searchCriteria.searchField().equals(EntitySearchField.ENTITY_TYPE_ID)) {
+                if (searchCriteria.searchCondition() != null
+                        && searchCriteria.searchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.ENTITY_TYPE_ID != '" + searchCriteria.value() + "' AND ";
                 } else {
-                    query += "E.ENTITY_TYPE_ID = '" + searchCriteria.getValue() + "' AND ";
+                    query += "E.ENTITY_TYPE_ID = '" + searchCriteria.value() + "' AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)) {
-                if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
+            } else if (searchCriteria.searchField().equals(EntitySearchField.CREATED_TIME)) {
+                if (searchCriteria.searchCondition().equals(SearchCondition.GTE)) {
                     query += "E.CREATED_TIME >= "
-                            + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
+                            + Long.parseLong(searchCriteria.value().trim()) + " AND ";
                 } else {
                     query += "E.CREATED_TIME <= "
-                            + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
+                            + Long.parseLong(searchCriteria.value().trim()) + " AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.UPDATED_TIME)) {
-                if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
+            } else if (searchCriteria.searchField().equals(EntitySearchField.UPDATED_TIME)) {
+                if (searchCriteria.searchCondition().equals(SearchCondition.GTE)) {
                     query += "E.UPDATED_TIME >= "
-                            + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
+                            + Long.parseLong(searchCriteria.value().trim()) + " AND ";
                 } else {
                     query += "E.UPDATED_TIME <= "
-                            + Long.parseLong(searchCriteria.getValue().trim()) + " AND ";
+                            + Long.parseLong(searchCriteria.value().trim()) + " AND ";
                 }
-            } else if (searchCriteria.getSearchField().equals(EntitySearchField.SHARED_COUNT)) {
-                if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
+            } else if (searchCriteria.searchField().equals(EntitySearchField.SHARED_COUNT)) {
+                if (searchCriteria.searchCondition().equals(SearchCondition.GTE)) {
                     query += "E.SHARED_COUNT >= "
-                            + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                            + Integer.parseInt(searchCriteria.value().trim()) + " AND ";
                 } else {
                     query += "E.SHARED_COUNT <= "
-                            + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                            + Integer.parseInt(searchCriteria.value().trim()) + " AND ";
                 }
             }
         }

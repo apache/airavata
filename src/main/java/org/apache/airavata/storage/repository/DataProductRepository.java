@@ -27,8 +27,8 @@ import java.util.HashMap;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.data.replica.proto.DataProductModel;
-import org.apache.airavata.model.data.replica.proto.DataProductType;
+import org.apache.airavata.models.data.replica.DataProductModel;
+import org.apache.airavata.models.data.replica.DataProductType;
 import org.apache.airavata.storage.model.DataProductEntity;
 import org.apache.airavata.storage.StorageConst;
 import org.apache.airavata.storage.mapper.DataMapper;
@@ -79,7 +79,7 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
 
     protected DataProductEntity saveDataProduct(DataProductModel dataProductModel) throws Exception {
 
-        if (dataProductModel.getProductUri().isEmpty()) {
+        if (dataProductModel.productUri().isEmpty()) {
             logger.debug("Setting the Product URI for the new Data Product");
             dataProductModel = dataProductModel.toBuilder()
                     .setProductUri(StorageConst.SCHEMA + "://"
@@ -87,7 +87,7 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
                     .build();
         }
 
-        String productUri = dataProductModel.getProductUri();
+        String productUri = dataProductModel.productUri();
         DataProductEntity dataProductEntity = DataMapper.INSTANCE.dataProductToEntity(dataProductModel);
 
         if (dataProductEntity.getOwnerName() == null || dataProductEntity.getGatewayId() == null) {
@@ -103,7 +103,7 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
                 && !dataProductEntity.getParentProductUri().isEmpty()
                 && (!isExists(dataProductEntity.getParentProductUri())
                         || !getDataProduct(dataProductEntity.getParentProductUri())
-                                .getDataProductType()
+                                .dataProductType()
                                 .equals(DataProductType.COLLECTION))) {
             logger.error("Parent product does not exist and/or parent type is not Collection");
             throw new Exception("Parent product does not exist or parent type is not Collection");
@@ -164,7 +164,7 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
 
     public DataProductModel getParentDataProduct(String productUri) throws Exception {
         DataProductModel dataProductModel = getDataProduct(productUri);
-        return get(dataProductModel.getParentProductUri());
+        return get(dataProductModel.parentProductUri());
     }
 
     public List<DataProductModel> getChildDataProducts(String parentProductUri) throws Exception {

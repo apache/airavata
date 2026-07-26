@@ -20,8 +20,8 @@
 package org.apache.airavata.execution.repository;
 
 import java.util.List;
-import org.apache.airavata.model.status.proto.ProcessState;
-import org.apache.airavata.model.status.proto.ProcessStatus;
+import org.apache.airavata.models.status.ProcessState;
+import org.apache.airavata.models.status.ProcessStatus;
 import org.springframework.stereotype.Component;
 
 /**

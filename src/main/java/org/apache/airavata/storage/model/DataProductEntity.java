@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-import org.apache.airavata.model.data.replica.proto.DataProductType;
+import org.apache.airavata.models.data.replica.DataProductType;
 
 /**
  * The persistent class for the data_product database table.

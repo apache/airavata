@@ -23,23 +23,23 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.airavata.api.groupprofile.GroupResourceProfileWithAccess;
 import org.apache.airavata.common.RequestContext;
 import org.apache.airavata.iam.GatewayGroupsInitializer;
 import org.apache.airavata.iam.SharingHelper;
 import org.apache.airavata.iam.service.GatewayService;
 import org.apache.airavata.iam.service.SharingService;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupResourceProfile;
-import org.apache.airavata.model.commons.proto.AccessFlags;
-import org.apache.airavata.model.group.proto.ResourcePermissionType;
-import org.apache.airavata.model.group.proto.ResourceType;
-import org.apache.airavata.sharing.registry.models.proto.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.proto.SearchCondition;
-import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupResourceProfileWithAccess;
+import org.apache.airavata.models.commons.AccessFlags;
+import org.apache.airavata.models.group.ResourcePermissionType;
+import org.apache.airavata.models.group.ResourceType;
+import org.apache.airavata.models.sharing.registry.EntitySearchField;
+import org.apache.airavata.models.sharing.registry.SearchCondition;
+import org.apache.airavata.models.sharing.registry.SearchCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,13 +75,13 @@ public class GroupResourceProfileService {
                     .createGroupResourceProfile(groupResourceProfile);
             if (SharingHelper.isSharingEnabled()) {
                 try {
-                    final String domainId = groupResourceProfile.getGatewayId();
+                    final String domainId = groupResourceProfile.gatewayId();
                     sharingHandler.createEntity(
                             groupResourceProfileId,
                             domainId,
                             domainId + ":" + "GROUP_RESOURCE_PROFILE",
                             userId + "@" + domainId,
-                            groupResourceProfile.getGroupResourceProfileName(),
+                            groupResourceProfile.groupResourceProfileName(),
                             null,
                             null);
                     SharingHelper.shareEntityWithAdminGatewayGroups(
@@ -114,7 +114,7 @@ public class GroupResourceProfileService {
             throws Exception {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
-        String profileId = groupResourceProfile.getGroupResourceProfileId();
+        String profileId = groupResourceProfile.groupResourceProfileId();
         try {
             validateGroupResourceProfileCredentials(ctx, groupResourceProfile);
             if (SharingHelper.isSharingEnabled()
@@ -143,37 +143,37 @@ public class GroupResourceProfileService {
      */
     public GroupResourceProfileWithAccess updateGroupResourceProfileReconciled(
             RequestContext ctx, GroupResourceProfile groupResourceProfile) throws Exception {
-        String profileId = groupResourceProfile.getGroupResourceProfileId();
+        String profileId = groupResourceProfile.groupResourceProfileId();
         try {
             GroupResourceProfile original = getGroupResourceProfile(ctx, profileId);
 
             Set<String> newPrefIds = new HashSet<>();
-            for (GroupComputeResourcePreference cp : groupResourceProfile.getComputePreferencesList()) {
-                newPrefIds.add(cp.getComputeResourceId());
+            for (GroupComputeResourcePreference cp : groupResourceProfile.computePreferences()) {
+                newPrefIds.add(cp.computeResourceId());
             }
-            for (GroupComputeResourcePreference cp : original.getComputePreferencesList()) {
-                if (!newPrefIds.contains(cp.getComputeResourceId())) {
-                    removeGroupComputePrefs(ctx, cp.getComputeResourceId(), cp.getGroupResourceProfileId());
+            for (GroupComputeResourcePreference cp : original.computePreferences()) {
+                if (!newPrefIds.contains(cp.computeResourceId())) {
+                    removeGroupComputePrefs(ctx, cp.computeResourceId(), cp.groupResourceProfileId());
                 }
             }
 
             Set<String> newPolicyIds = new HashSet<>();
-            for (ComputeResourcePolicy p : groupResourceProfile.getComputeResourcePoliciesList()) {
-                newPolicyIds.add(p.getResourcePolicyId());
+            for (ComputeResourcePolicy p : groupResourceProfile.computeResourcePolicies()) {
+                newPolicyIds.add(p.resourcePolicyId());
             }
-            for (ComputeResourcePolicy p : original.getComputeResourcePoliciesList()) {
-                if (!p.getResourcePolicyId().isEmpty() && !newPolicyIds.contains(p.getResourcePolicyId())) {
-                    removeGroupComputeResourcePolicy(ctx, p.getResourcePolicyId());
+            for (ComputeResourcePolicy p : original.computeResourcePolicies()) {
+                if (!p.resourcePolicyId().isEmpty() && !newPolicyIds.contains(p.resourcePolicyId())) {
+                    removeGroupComputeResourcePolicy(ctx, p.resourcePolicyId());
                 }
             }
 
             Set<String> newBqIds = new HashSet<>();
-            for (BatchQueueResourcePolicy p : groupResourceProfile.getBatchQueueResourcePoliciesList()) {
-                newBqIds.add(p.getResourcePolicyId());
+            for (BatchQueueResourcePolicy p : groupResourceProfile.batchQueueResourcePolicies()) {
+                newBqIds.add(p.resourcePolicyId());
             }
-            for (BatchQueueResourcePolicy p : original.getBatchQueueResourcePoliciesList()) {
-                if (!p.getResourcePolicyId().isEmpty() && !newBqIds.contains(p.getResourcePolicyId())) {
-                    removeGroupBatchQueueResourcePolicy(ctx, p.getResourcePolicyId());
+            for (BatchQueueResourcePolicy p : original.batchQueueResourcePolicies()) {
+                if (!p.resourcePolicyId().isEmpty() && !newBqIds.contains(p.resourcePolicyId())) {
+                    removeGroupBatchQueueResourcePolicy(ctx, p.resourcePolicyId());
                 }
             }
 
@@ -275,7 +275,7 @@ public class GroupResourceProfileService {
             RequestContext ctx, GroupResourceProfile groupResourceProfile) {
         String userId = ctx.getUserId();
         String gatewayId = ctx.getGatewayId();
-        String groupResourceProfileId = groupResourceProfile.getGroupResourceProfileId();
+        String groupResourceProfileId = groupResourceProfile.groupResourceProfileId();
         boolean isOwner = false;
         boolean userHasWriteAccess = false;
         if (SharingHelper.isSharingEnabled()) {
@@ -288,15 +288,15 @@ public class GroupResourceProfileService {
                 // Token READ uses the OWNER-inclusive helper, matching the check
                 // validateGroupResourceProfileCredentials enforces on update, so the write flag
                 // accurately predicts whether an update would be permitted.
-                String defaultToken = groupResourceProfile.getDefaultCredentialStoreToken();
+                String defaultToken = groupResourceProfile.defaultCredentialStoreToken();
                 if (!defaultToken.isEmpty()
                         && !SharingHelper.userHasAccess(
                                 sharingHandler, gatewayId, userId, defaultToken, ResourcePermissionType.READ)) {
                     userHasWriteAccess = false;
                 }
                 if (userHasWriteAccess) {
-                    for (GroupComputeResourcePreference pref : groupResourceProfile.getComputePreferencesList()) {
-                        String token = pref.getResourceSpecificCredentialStoreToken();
+                    for (GroupComputeResourcePreference pref : groupResourceProfile.computePreferences()) {
+                        String token = pref.resourceSpecificCredentialStoreToken();
                         if (!token.isEmpty()
                                 && !SharingHelper.userHasAccess(
                                         sharingHandler, gatewayId, userId, token, ResourcePermissionType.READ)) {
@@ -445,7 +445,7 @@ public class GroupResourceProfileService {
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
-                            computeResourcePolicy.getGroupResourceProfileId(),
+                            computeResourcePolicy.groupResourceProfileId(),
                             gatewayId + ":WRITE")) {
                         throw new RuntimeException(
                                 "User does not have permission to remove group compute resource policy");
@@ -477,7 +477,7 @@ public class GroupResourceProfileService {
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
-                            batchQueueResourcePolicy.getGroupResourceProfileId(),
+                            batchQueueResourcePolicy.groupResourceProfileId(),
                             gatewayId + ":WRITE")) {
                         throw new RuntimeException(
                                 "User does not have permission to remove batch queue resource policy");
@@ -542,7 +542,7 @@ public class GroupResourceProfileService {
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
-                            computeResourcePolicy.getGroupResourceProfileId(),
+                            computeResourcePolicy.groupResourceProfileId(),
                             gatewayId + ":READ")) {
                         throw new RuntimeException(
                                 "User does not have permission to access group resource profile");
@@ -575,7 +575,7 @@ public class GroupResourceProfileService {
                     if (!sharingHandler.userHasAccess(
                             gatewayId,
                             userId + "@" + gatewayId,
-                            batchQueueResourcePolicy.getGroupResourceProfileId(),
+                            batchQueueResourcePolicy.groupResourceProfileId(),
                             gatewayId + ":READ")) {
                         throw new RuntimeException(
                                 "User does not have permission to access group resource profile");
@@ -710,15 +710,15 @@ public class GroupResourceProfileService {
         String gatewayId = ctx.getGatewayId();
         String userId = ctx.getUserId();
         Set<String> tokenIds = new HashSet<>();
-        if (groupResourceProfile.getComputePreferencesList() != null) {
-            for (GroupComputeResourcePreference pref : groupResourceProfile.getComputePreferencesList()) {
-                if (pref.getResourceSpecificCredentialStoreToken() != null) {
-                    tokenIds.add(pref.getResourceSpecificCredentialStoreToken());
+        if (groupResourceProfile.computePreferences() != null) {
+            for (GroupComputeResourcePreference pref : groupResourceProfile.computePreferences()) {
+                if (pref.resourceSpecificCredentialStoreToken() != null) {
+                    tokenIds.add(pref.resourceSpecificCredentialStoreToken());
                 }
             }
         }
-        if (groupResourceProfile.getDefaultCredentialStoreToken() != null) {
-            tokenIds.add(groupResourceProfile.getDefaultCredentialStoreToken());
+        if (groupResourceProfile.defaultCredentialStoreToken() != null) {
+            tokenIds.add(groupResourceProfile.defaultCredentialStoreToken());
         }
         for (String tokenId : tokenIds) {
             if (!SharingHelper.userHasAccess(sharingHandler, gatewayId, userId, tokenId, ResourcePermissionType.READ)) {

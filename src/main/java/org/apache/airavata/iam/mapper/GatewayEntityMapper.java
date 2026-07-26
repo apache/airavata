@@ -21,7 +21,7 @@ package org.apache.airavata.iam.mapper;
 
 import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.workspace.proto.Gateway;
+import org.apache.airavata.models.workspace.Gateway;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;

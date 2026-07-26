@@ -26,7 +26,7 @@ import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.common.Constants;
 import org.apache.airavata.common.ResultOrderType;
-import org.apache.airavata.model.workspace.proto.Project;
+import org.apache.airavata.models.workspace.Project;
 import org.apache.airavata.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.experiment.model.ProjectEntity;
 import org.apache.airavata.common.AiravataUtils;
@@ -58,15 +58,15 @@ public class ProjectRepository extends AbstractRepository<Project, ProjectEntity
     }
 
     protected ProjectEntity saveProject(Project project, String gatewayId) throws Exception {
-        if (project.getProjectId().isEmpty() || project.getProjectId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (project.projectId().isEmpty() || project.projectId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug("Setting the Project's ProjectId");
             project = project.toBuilder()
-                    .setProjectId(AiravataUtils.getId(project.getName()))
+                    .setProjectId(AiravataUtils.getId(project.name()))
                     .build();
         }
         ProjectEntity projectEntity = ExperimentMapper.INSTANCE.projectToEntity(project);
 
-        if (project.getGatewayId().isEmpty()) {
+        if (project.gatewayId().isEmpty()) {
             logger.debug("Setting the Project's GatewayId");
             projectEntity.setGatewayId(gatewayId);
         }
@@ -85,7 +85,7 @@ public class ProjectRepository extends AbstractRepository<Project, ProjectEntity
 
     public void updateProject(Project project, String projectId) throws Exception {
         project = project.toBuilder().setProjectId(projectId).build();
-        saveProjectData(project, project.getGatewayId());
+        saveProjectData(project, project.gatewayId());
     }
 
     public Project getProject(String projectId) throws Exception {
@@ -132,7 +132,7 @@ public class ProjectRepository extends AbstractRepository<Project, ProjectEntity
         if (projectList != null && !projectList.isEmpty()) {
             logger.debug("The retrieved list is not empty or null");
             for (Project project : projectList) {
-                projectIds.add(project.getProjectId());
+                projectIds.add(project.projectId());
             }
         }
 

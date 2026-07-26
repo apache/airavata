@@ -27,7 +27,7 @@ import org.apache.airavata.iam.model.SharingEntity;
 import org.apache.airavata.iam.model.SharingPK;
 import org.apache.airavata.iam.model.SharingRegistryException;
 import org.apache.airavata.db.DBConstants;
-import org.apache.airavata.sharing.registry.models.proto.SharingType;
+import org.apache.airavata.models.sharing.registry.SharingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

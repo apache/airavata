@@ -30,15 +30,15 @@ import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.job.proto.JobModel;
-import org.apache.airavata.model.process.proto.ProcessModel;
-import org.apache.airavata.model.status.proto.JobState;
-import org.apache.airavata.model.status.proto.JobStatus;
-import org.apache.airavata.model.status.proto.ProcessState;
-import org.apache.airavata.model.status.proto.ProcessStatus;
-import org.apache.airavata.model.status.proto.TaskState;
-import org.apache.airavata.model.status.proto.TaskStatus;
-import org.apache.airavata.model.task.proto.TaskModel;
+import org.apache.airavata.models.job.JobModel;
+import org.apache.airavata.models.process.ProcessModel;
+import org.apache.airavata.models.status.JobState;
+import org.apache.airavata.models.status.JobStatus;
+import org.apache.airavata.models.status.ProcessState;
+import org.apache.airavata.models.status.ProcessStatus;
+import org.apache.airavata.models.status.TaskState;
+import org.apache.airavata.models.status.TaskStatus;
+import org.apache.airavata.models.task.TaskModel;
 import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.ExecStatusEntity;
 import org.apache.airavata.execution.model.JobEntity;
@@ -75,7 +75,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     // ==========================================================================
 
     public String addProcessStatus(ProcessStatus processStatus, String processId) throws Exception {
-        if (processStatus.getStatusId().isEmpty()) {
+        if (processStatus.statusId().isEmpty()) {
             processStatus = processStatus.toBuilder()
                     .setStatusId(AiravataUtils.getId("PROCESS_STATE"))
                     .build();
@@ -88,15 +88,15 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     }
 
     public String updateProcessStatus(ProcessStatus processStatus, String processId) throws Exception {
-        if (processStatus.getStatusId().isEmpty()) {
+        if (processStatus.statusId().isEmpty()) {
             ProcessStatus current = getProcessStatus(processId);
-            if (current == null || current.getState() != processStatus.getState()) {
+            if (current == null || current.state() != processStatus.state()) {
                 processStatus = processStatus.toBuilder()
                         .setStatusId(AiravataUtils.getId("PROCESS_STATE"))
                         .build();
             } else {
                 processStatus = processStatus.toBuilder()
-                        .setStatusId(current.getStatusId())
+                        .setStatusId(current.statusId())
                         .build();
             }
         }
@@ -152,17 +152,17 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     public ProcessStatus getProcessStatus(String processId) throws Exception {
         ProcessRepository processRepository = new ProcessRepository();
         ProcessModel processModel = processRepository.getProcess(processId);
-        List<ProcessStatus> list = processModel.getProcessStatusesList();
+        List<ProcessStatus> list = processModel.processStatuses();
         if (list.isEmpty())
             return null;
         ProcessStatus latest = list.get(0);
         for (int i = 1; i < list.size(); i++) {
-            Timestamp t = new Timestamp(list.get(i).getTimeOfStateChange());
-            Timestamp tLatest = new Timestamp(latest.getTimeOfStateChange());
+            Timestamp t = new Timestamp(list.get(i).timeOfStateChange());
+            Timestamp tLatest = new Timestamp(latest.timeOfStateChange());
             if (t.after(tLatest)
-                    || (t.equals(tLatest) && list.get(i).getState() == ProcessState.PROCESS_STATE_COMPLETED)
-                    || (t.equals(tLatest) && list.get(i).getState() == ProcessState.PROCESS_STATE_FAILED)
-                    || (t.equals(tLatest) && list.get(i).getState() == ProcessState.PROCESS_STATE_CANCELED)) {
+                    || (t.equals(tLatest) && list.get(i).state() == ProcessState.PROCESS_STATE_COMPLETED)
+                    || (t.equals(tLatest) && list.get(i).state() == ProcessState.PROCESS_STATE_FAILED)
+                    || (t.equals(tLatest) && list.get(i).state() == ProcessState.PROCESS_STATE_CANCELED)) {
                 latest = list.get(i);
             }
         }
@@ -171,7 +171,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
 
     public List<ProcessStatus> getProcessStatusList(String processId) throws Exception {
         ProcessRepository processRepository = new ProcessRepository();
-        return processRepository.getProcess(processId).getProcessStatusesList();
+        return processRepository.getProcess(processId).processStatuses();
     }
 
     public List<ProcessStatus> getProcessStatusList(ProcessState processState, int offset, int limit)
@@ -188,7 +188,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     // ==========================================================================
 
     public String addTaskStatus(TaskStatus taskStatus, String taskId) throws Exception {
-        if (taskStatus.getStatusId().isEmpty()) {
+        if (taskStatus.statusId().isEmpty()) {
             taskStatus = taskStatus.toBuilder()
                     .setStatusId(AiravataUtils.getId("TASK_STATE"))
                     .build();
@@ -196,7 +196,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
         ExecStatusEntity entity = ExecutionMapper.INSTANCE.taskStatusToEntity(taskStatus);
         entity.setEntityType("TASK");
         entity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
-        final String statusId = taskStatus.getStatusId();
+        final String statusId = taskStatus.statusId();
         execute(em -> {
             TaskEntity taskEntity = em.find(TaskEntity.class, taskId);
             if (taskEntity != null) {
@@ -212,7 +212,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     }
 
     public String updateTaskStatus(TaskStatus taskStatus, String taskId) throws Exception {
-        if (taskStatus.getStatusId().isEmpty()) {
+        if (taskStatus.statusId().isEmpty()) {
             taskStatus = taskStatus.toBuilder()
                     .setStatusId(AiravataUtils.getId("TASK_STATE"))
                     .build();
@@ -222,7 +222,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
         if (entity.getTimeOfStateChange() == null) {
             entity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
         }
-        final String statusId = taskStatus.getStatusId();
+        final String statusId = taskStatus.statusId();
         execute(em -> {
             TaskEntity taskEntity = em.find(TaskEntity.class, taskId);
             if (taskEntity != null) {
@@ -252,17 +252,17 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     public TaskStatus getTaskStatus(String taskId) throws Exception {
         TaskRepository taskRepository = new TaskRepository();
         TaskModel taskModel = taskRepository.getTask(taskId);
-        List<TaskStatus> list = taskModel.getTaskStatusesList();
+        List<TaskStatus> list = taskModel.taskStatuses();
         if (list.isEmpty())
             return null;
         TaskStatus latest = list.get(0);
         for (int i = 1; i < list.size(); i++) {
-            Timestamp t = new Timestamp(list.get(i).getTimeOfStateChange());
-            Timestamp tLatest = new Timestamp(latest.getTimeOfStateChange());
+            Timestamp t = new Timestamp(list.get(i).timeOfStateChange());
+            Timestamp tLatest = new Timestamp(latest.timeOfStateChange());
             if (t.after(tLatest)
-                    || (t.equals(tLatest) && list.get(i).getState() == TaskState.TASK_STATE_COMPLETED)
-                    || (t.equals(tLatest) && list.get(i).getState() == TaskState.TASK_STATE_FAILED)
-                    || (t.equals(tLatest) && list.get(i).getState() == TaskState.TASK_STATE_CANCELED)) {
+                    || (t.equals(tLatest) && list.get(i).state() == TaskState.TASK_STATE_COMPLETED)
+                    || (t.equals(tLatest) && list.get(i).state() == TaskState.TASK_STATE_FAILED)
+                    || (t.equals(tLatest) && list.get(i).state() == TaskState.TASK_STATE_CANCELED)) {
                 latest = list.get(i);
             }
         }
@@ -274,7 +274,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     // ==========================================================================
 
     public String addJobStatus(JobStatus jobStatus, JobPK jobPK) throws Exception {
-        if (jobStatus.getStatusId().isEmpty()) {
+        if (jobStatus.statusId().isEmpty()) {
             jobStatus = jobStatus.toBuilder()
                     .setStatusId(AiravataUtils.getId("JOB_STATE"))
                     .build();
@@ -282,7 +282,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
         ExecStatusEntity entity = ExecutionMapper.INSTANCE.jobStatusToEntity(jobStatus);
         entity.setEntityType("JOB");
         entity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
-        final String statusId = jobStatus.getStatusId();
+        final String statusId = jobStatus.statusId();
         execute(em -> {
             JobEntity jobEntity = em.find(JobEntity.class, jobPK);
             if (jobEntity != null) {
@@ -298,7 +298,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
     }
 
     public String updateJobStatus(JobStatus jobStatus, JobPK jobPK) throws Exception {
-        if (jobStatus.getStatusId().isEmpty()) {
+        if (jobStatus.statusId().isEmpty()) {
             jobStatus = jobStatus.toBuilder()
                     .setStatusId(AiravataUtils.getId("JOB_STATE"))
                     .build();
@@ -308,7 +308,7 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
         if (entity.getTimeOfStateChange() == null) {
             entity.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp());
         }
-        final String statusId = jobStatus.getStatusId();
+        final String statusId = jobStatus.statusId();
         execute(em -> {
             JobEntity jobEntity = em.find(JobEntity.class, jobPK);
             if (jobEntity != null) {
@@ -337,17 +337,17 @@ public class ExecStatusRepository extends AbstractRepository<ExecStatusEntity, E
 
     public JobStatus getJobStatus(JobPK jobPK) throws Exception {
         JobModel jobModel = jobRepository.getJob(jobPK);
-        List<JobStatus> list = jobModel.getJobStatusesList();
+        List<JobStatus> list = jobModel.jobStatuses();
         if (list.isEmpty())
             return null;
         JobStatus latest = list.get(0);
         for (int i = 1; i < list.size(); i++) {
-            Timestamp t = new Timestamp(list.get(i).getTimeOfStateChange());
-            Timestamp tLatest = new Timestamp(latest.getTimeOfStateChange());
+            Timestamp t = new Timestamp(list.get(i).timeOfStateChange());
+            Timestamp tLatest = new Timestamp(latest.timeOfStateChange());
             if (t.after(tLatest)
-                    || (t.equals(tLatest) && list.get(i).getJobState() == JobState.COMPLETE)
-                    || (t.equals(tLatest) && list.get(i).getJobState() == JobState.FAILED)
-                    || (t.equals(tLatest) && list.get(i).getJobState() == JobState.CANCELED)) {
+                    || (t.equals(tLatest) && list.get(i).jobState() == JobState.COMPLETE)
+                    || (t.equals(tLatest) && list.get(i).jobState() == JobState.FAILED)
+                    || (t.equals(tLatest) && list.get(i).jobState() == JobState.CANCELED)) {
                 latest = list.get(i);
             }
         }

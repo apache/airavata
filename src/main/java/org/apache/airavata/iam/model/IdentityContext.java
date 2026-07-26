@@ -19,7 +19,7 @@
 */
 package org.apache.airavata.iam.model;
 
-import org.apache.airavata.model.security.proto.AuthzToken;
+import org.apache.airavata.models.security.AuthzToken;
 
 /**
  * This provides a thread local container for AuthzToken through out the execution of a particular thread.

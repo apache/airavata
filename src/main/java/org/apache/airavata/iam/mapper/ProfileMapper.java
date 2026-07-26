@@ -23,9 +23,9 @@ import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.iam.model.GatewayGroupsEntity;
 import org.apache.airavata.iam.model.UserProfileEntity;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.model.user.proto.UserProfile;
-import org.apache.airavata.model.workspace.proto.Gateway;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
+import org.apache.airavata.models.user.UserProfile;
+import org.apache.airavata.models.workspace.Gateway;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -63,14 +63,14 @@ public interface ProfileMapper extends CommonMapperConversions {
 
     @AfterMapping
     default void userProfileRepeatedToEntity(UserProfile model, @MappingTarget UserProfileEntity entity) {
-        if (!model.getEmailsList().isEmpty())
-            entity.setEmails(new java.util.ArrayList<>(model.getEmailsList()));
-        if (!model.getPhonesList().isEmpty())
-            entity.setPhones(new java.util.ArrayList<>(model.getPhonesList()));
-        if (!model.getNationalityList().isEmpty())
-            entity.setNationality(new java.util.ArrayList<>(model.getNationalityList()));
-        if (!model.getLabeledUriList().isEmpty())
-            entity.setLabeledURI(new java.util.ArrayList<>(model.getLabeledUriList()));
+        if (!model.emails().isEmpty())
+            entity.setEmails(new java.util.ArrayList<>(model.emails()));
+        if (!model.phones().isEmpty())
+            entity.setPhones(new java.util.ArrayList<>(model.phones()));
+        if (!model.nationality().isEmpty())
+            entity.setNationality(new java.util.ArrayList<>(model.nationality()));
+        if (!model.labeledUri().isEmpty())
+            entity.setLabeledURI(new java.util.ArrayList<>(model.labeledUri()));
     }
 
     // --- Gateway (tenant profile) ---

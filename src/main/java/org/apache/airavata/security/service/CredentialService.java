@@ -24,16 +24,16 @@ import java.util.List;
 import org.apache.airavata.common.RequestContext;
 import org.apache.airavata.iam.SharingHelper;
 import org.apache.airavata.iam.service.SharingService;
-import org.apache.airavata.model.commons.proto.AccessFlags;
-import org.apache.airavata.model.credential.store.proto.CredentialSummary;
-import org.apache.airavata.model.credential.store.proto.CredentialSummaryWithAccess;
-import org.apache.airavata.model.credential.store.proto.SSHCredential;
-import org.apache.airavata.model.credential.store.proto.SummaryType;
-import org.apache.airavata.model.group.proto.ResourcePermissionType;
-import org.apache.airavata.model.group.proto.ResourceType;
-import org.apache.airavata.sharing.registry.models.proto.EntitySearchField;
-import org.apache.airavata.sharing.registry.models.proto.SearchCondition;
-import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
+import org.apache.airavata.models.commons.AccessFlags;
+import org.apache.airavata.models.credential.store.CredentialSummary;
+import org.apache.airavata.models.credential.store.CredentialSummaryWithAccess;
+import org.apache.airavata.models.credential.store.SSHCredential;
+import org.apache.airavata.models.credential.store.SummaryType;
+import org.apache.airavata.models.group.ResourcePermissionType;
+import org.apache.airavata.models.group.ResourceType;
+import org.apache.airavata.models.sharing.registry.EntitySearchField;
+import org.apache.airavata.models.sharing.registry.SearchCondition;
+import org.apache.airavata.models.sharing.registry.SearchCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -125,8 +125,8 @@ public class CredentialService {
             throw new Exception("User does not have permission to access this resource");
         }
         try {
-            boolean isOwner = ctx.getUserId().equals(credentialSummary.getUsername())
-                    && ctx.getGatewayId().equals(credentialSummary.getGatewayId());
+            boolean isOwner = ctx.getUserId().equals(credentialSummary.username())
+                    && ctx.getGatewayId().equals(credentialSummary.gatewayId());
             boolean userHasWriteAccess = isOwner;
             if (!isOwner && SharingHelper.isSharingEnabled()) {
                 userHasWriteAccess = SharingHelper.userHasAccess(

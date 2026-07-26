@@ -23,8 +23,8 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.airavata.model.experiment.proto.ExperimentCleanupStrategy;
-import org.apache.airavata.model.experiment.proto.ExperimentType;
+import org.apache.airavata.models.experiment.ExperimentCleanupStrategy;
+import org.apache.airavata.models.experiment.ExperimentType;
 import org.hibernate.annotations.SQLRestriction;
 
 /**

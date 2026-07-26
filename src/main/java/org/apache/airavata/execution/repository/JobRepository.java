@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.job.proto.JobModel;
+import org.apache.airavata.models.job.JobModel;
 import org.apache.airavata.execution.mapper.ExecutionMapper;
 import org.apache.airavata.execution.model.JobEntity;
 import org.apache.airavata.execution.model.JobPK;
@@ -59,16 +59,16 @@ public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK
     }
 
     protected JobEntity saveJob(JobModel jobModel, JobPK jobPK) throws Exception {
-        if (jobModel.getJobId().isEmpty() || jobModel.getJobId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (jobModel.jobId().isEmpty() || jobModel.jobId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug("Setting the Job's JobId");
             jobModel = jobModel.toBuilder().setJobId(jobPK.getJobId()).build();
         }
 
-        if (!jobModel.getJobStatusesList().isEmpty()) {
+        if (!jobModel.jobStatuses().isEmpty()) {
             logger.debug("Populating the status ids of JobStatus objects for the Job");
             JobModel.Builder jobBuilder = jobModel.toBuilder().clearJobStatuses();
-            for (org.apache.airavata.model.status.proto.JobStatus jobStatus : jobModel.getJobStatusesList()) {
-                if (jobStatus.getStatusId().isEmpty()) {
+            for (org.apache.airavata.models.status.JobStatus jobStatus : jobModel.jobStatuses()) {
+                if (jobStatus.statusId().isEmpty()) {
                     jobStatus = jobStatus.toBuilder()
                             .setStatusId(AiravataUtils.getId("JOB_STATE"))
                             .build();
@@ -105,8 +105,8 @@ public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK
 
     public String addJob(JobModel job, String processId) throws Exception {
         JobPK jobPK = new JobPK();
-        jobPK.setJobId(job.getJobId());
-        jobPK.setTaskId(job.getTaskId());
+        jobPK.setJobId(job.jobId());
+        jobPK.setTaskId(job.taskId());
         String jobId = saveJobModelData(job, jobPK);
         return jobId;
     }
@@ -150,7 +150,7 @@ public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK
         List<String> jobIds = new ArrayList<>();
         List<JobModel> jobModelList = getJobList(fieldName, value);
         for (JobModel jobModel : jobModelList) {
-            jobIds.add(jobModel.getJobId());
+            jobIds.add(jobModel.jobId());
         }
         return jobIds;
     }
@@ -164,6 +164,6 @@ public class JobRepository extends AbstractRepository<JobModel, JobEntity, JobPK
     }
 
     public void removeJob(JobModel jobModel) throws Exception {
-        executeWithNativeQuery(QueryConstants.DELETE_JOB_NATIVE_QUERY, jobModel.getJobId(), jobModel.getTaskId());
+        executeWithNativeQuery(QueryConstants.DELETE_JOB_NATIVE_QUERY, jobModel.jobId(), jobModel.taskId());
     }
 }

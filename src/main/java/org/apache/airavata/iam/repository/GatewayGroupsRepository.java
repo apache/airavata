@@ -21,7 +21,7 @@ package org.apache.airavata.iam.repository;
 
 import org.apache.airavata.iam.mapper.ProfileMapper;
 import org.apache.airavata.iam.model.GatewayGroupsEntity;
-import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
+import org.apache.airavata.models.appcatalog.gatewaygroups.GatewayGroups;
 import org.springframework.stereotype.Component;
 
 @Component

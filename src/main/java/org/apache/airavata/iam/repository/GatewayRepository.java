@@ -30,8 +30,8 @@ import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.iam.mapper.GatewayEntityMapper;
 import org.apache.airavata.iam.model.GatewayEntity;
-import org.apache.airavata.model.workspace.proto.Gateway;
-import org.apache.airavata.model.workspace.proto.GatewayApprovalStatus;
+import org.apache.airavata.models.workspace.Gateway;
+import org.apache.airavata.models.workspace.GatewayApprovalStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -58,7 +58,7 @@ public class GatewayRepository extends AbstractRepository<Gateway, GatewayEntity
     }
 
     protected GatewayEntity saveGateway(Gateway gateway) throws Exception {
-        String gatewayId = gateway.getGatewayId();
+        String gatewayId = gateway.gatewayId();
         GatewayEntity gatewayEntity = GatewayEntityMapper.INSTANCE.gatewayToEntity(gateway);
 
         if (!isGatewayExist(gatewayId)) {

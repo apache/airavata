@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.commons.proto.ErrorModel;
-import org.apache.airavata.model.experiment.proto.ExperimentModel;
+import org.apache.airavata.models.commons.ErrorModel;
+import org.apache.airavata.models.experiment.ExperimentModel;
 import org.apache.airavata.experiment.mapper.ExperimentMapper;
 import org.apache.airavata.experiment.model.ExperimentErrorEntity;
 import org.apache.airavata.experiment.model.ExperimentErrorPK;
@@ -68,7 +68,7 @@ public class ExperimentErrorRepository
 
     public String addExperimentError(ErrorModel experimentError, String experimentId) throws Exception {
 
-        if (experimentError.getErrorId().isEmpty()) {
+        if (experimentError.errorId().isEmpty()) {
             logger.debug("Setting the ExperimentError's ErrorId");
             experimentError = experimentError.toBuilder()
                     .setErrorId(AiravataUtils.getId("ERROR"))
@@ -85,6 +85,6 @@ public class ExperimentErrorRepository
 
     public List<ErrorModel> getExperimentErrors(String experimentId) throws Exception {
         ExperimentModel experimentModel = experimentRepository.getExperiment(experimentId);
-        return experimentModel.getErrorsList();
+        return experimentModel.errors();
     }
 }
