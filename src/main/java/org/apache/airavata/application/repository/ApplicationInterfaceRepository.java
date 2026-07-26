@@ -110,56 +110,10 @@ public class ApplicationInterfaceRepository
         return execute(entityManager -> entityManager.merge(applicationInterfaceEntity));
     }
 
-    protected String saveApplicationModuleData(ApplicationModule applicationModule, String gatewayId)
-            throws Exception {
-        ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule, gatewayId);
-        return applicationModuleEntity.getAppModuleId();
-    }
-
-    protected ApplicationModuleEntity saveApplicationModule(ApplicationModule applicationModule, String gatewayId)
-            throws Exception {
-
-        if (applicationModule.appModuleId().trim().equals("")
-                || applicationModule.appModuleId().equals("DO_NOT_SET_AT_CLIENTS")) {
-            logger.debug(
-                    "If Application Module ID is empty or DEFAULT, set it as the Application Module Name plus random UUID");
-            applicationModule = applicationModule.toBuilder()
-                    .setAppModuleId(AiravataUtils.getId(applicationModule.appModuleName()))
-                    .build();
-        }
-
-        String applicationModuleId = applicationModule.appModuleId();
-        ApplicationModuleEntity applicationModuleEntity = ApplicationMapper.INSTANCE
-                .appModuleToEntity(applicationModule);
-
-        if (gatewayId != null) {
-            logger.debug("Setting the gateway ID of the Application Module");
-            applicationModuleEntity.setGatewayId(gatewayId);
-        }
-
-        if (!isApplicationModuleExists(applicationModuleId)) {
-            logger.debug("Checking if the Application Module already exists");
-            applicationModuleEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
-        }
-
-        applicationModuleEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-        return execute(entityManager -> entityManager.merge(applicationModuleEntity));
-    }
-
-    public String addApplicationModule(ApplicationModule applicationModule, String gatewayId)
-            throws Exception {
-        return saveApplicationModuleData(applicationModule, gatewayId);
-    }
-
     public String addApplicationInterface(
             ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId)
             throws Exception {
         return saveApplicationInterfaceDescriptorData(applicationInterfaceDescription, gatewayId);
-    }
-
-    public void updateApplicationModule(String moduleId, ApplicationModule updatedApplicationModule)
-            throws Exception {
-        saveApplicationModuleData(updatedApplicationModule, null);
     }
 
     public void updateApplicationInterface(
@@ -168,39 +122,8 @@ public class ApplicationInterfaceRepository
         saveApplicationInterfaceDescriptorData(updatedApplicationInterfaceDescription, null);
     }
 
-    public ApplicationModule getApplicationModule(String moduleId) throws Exception {
-        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        return applicationModuleRepository.get(moduleId);
-    }
-
     public ApplicationInterfaceDescription getApplicationInterface(String interfaceId) throws Exception {
         return get(interfaceId);
-    }
-
-    public List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws Exception {
-        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        if (filters.containsKey(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME)) {
-            logger.debug("Fetching Application Modules for given Application Module Name");
-            Map<String, Object> queryParameters = new HashMap<>();
-            queryParameters.put(
-                    DBConstants.ApplicationModule.APPLICATION_MODULE_NAME,
-                    filters.get(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME));
-            List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(
-                    QueryConstants.FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME, -1, 0, queryParameters);
-            return applicationModuleList;
-        } else {
-            logger.error("Unsupported field name for app module.");
-            throw new IllegalArgumentException("Unsupported field name for app module.");
-        }
-    }
-
-    public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws Exception {
-        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
-        List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(
-                QueryConstants.FIND_APPLICATION_MODULES_FOR_GATEWAY_ID, -1, 0, queryParameters);
-        return applicationModuleList;
     }
 
     public List<ApplicationInterfaceDescription> getApplicationInterfaces(Map<String, String> filters)
@@ -227,22 +150,6 @@ public class ApplicationInterfaceRepository
         List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(
                 QueryConstants.FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID, -1, 0, queryParameters);
         return applicationInterfaceDescriptionList;
-    }
-
-    public List<ApplicationModule> getAccessibleApplicationModules(
-            String gatewayId, List<String> accessibleAppIds, List<String> accessibleCompHostIds)
-            throws Exception {
-        if (accessibleAppIds.isEmpty() || accessibleCompHostIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
-        queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
-        queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleCompHostIds);
-        List<ApplicationModule> accessibleApplicationModules = applicationModuleRepository.select(
-                QueryConstants.FIND_ACCESSIBLE_APPLICATION_MODULES, -1, 0, queryParameters);
-        return accessibleApplicationModules;
     }
 
     public List<String> getAllApplicationInterfaceIds() throws Exception {
@@ -292,17 +199,8 @@ public class ApplicationInterfaceRepository
         return delete(interfaceId);
     }
 
-    public boolean removeApplicationModule(String moduleId) throws Exception {
-        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        return applicationModuleRepository.delete(moduleId);
-    }
-
     public boolean isApplicationInterfaceExists(String interfaceId) throws Exception {
         return isExists(interfaceId);
     }
 
-    public boolean isApplicationModuleExists(String moduleId) throws Exception {
-        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        return applicationModuleRepository.isExists(moduleId);
-    }
 }

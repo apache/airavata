@@ -19,27 +19,9 @@
 */
 package org.apache.airavata.application.repository;
 
-import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.models.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.application.mapper.ApplicationMapper;
 import org.apache.airavata.application.model.ApplicationModuleEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.data.repository.CrudRepository;
 
-@Component
-public class ApplicationModuleRepository
-        extends AbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {
+public interface ApplicationModuleRepository extends CrudRepository<ApplicationModuleEntity, String> {
 
-    public ApplicationModuleRepository() {
-        super(ApplicationModule.class, ApplicationModuleEntity.class);
-    }
-
-    @Override
-    protected ApplicationModule toModel(ApplicationModuleEntity entity) {
-        return ApplicationMapper.INSTANCE.appModuleToModel(entity);
-    }
-
-    @Override
-    protected ApplicationModuleEntity toEntity(ApplicationModule model) {
-        return ApplicationMapper.INSTANCE.appModuleToEntity(model);
-    }
 }

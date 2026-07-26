@@ -50,10 +50,15 @@ public interface ExperimentMapper extends CommonMapperConversions {
     ProjectEntity projectToEntity(Project model);
 
     // --- Experiment ---
-    @Mapping(target = "emailAddresses", ignore = true)
+    // emailAddresses is a builder add()/addAll()-only property on ExperimentModel.Builder,
+    // which MapStruct's automatic property matching does not pick up as a mapping target —
+    // it's populated manually in afterExperimentToModel() below, so no @Mapping is needed
+    // (or valid) here.
     ExperimentModel experimentToModel(ExperimentEntity entity);
 
     @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.emailAddresses()))")
+    @Mapping(target = "experimentInputs", ignore = true)
+    @Mapping(target = "experimentOutputs", ignore = true)
     ExperimentEntity experimentToEntity(ExperimentModel model);
 
     // MapStruct does not match protobuf's repeated accessors

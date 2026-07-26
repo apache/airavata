@@ -47,11 +47,10 @@ public interface ExecutionMapper extends CommonMapperConversions {
     ExecutionMapper INSTANCE = Mappers.getMapper(ExecutionMapper.class);
 
     // --- Process (MapStruct abstract) ---
-    @Mapping(target = "emailAddresses", ignore = true)
-    @Mapping(target = "processStatuses", ignore = true)
-    @Mapping(target = "processErrors", ignore = true)
-    @Mapping(target = "processInputs", ignore = true)
-    @Mapping(target = "processOutputs", ignore = true)
+    // emailAddresses/processStatuses/processErrors/processInputs/processOutputs are
+    // builder add()/addAll()-only properties on ProcessModel.Builder, which MapStruct's
+    // automatic property matching does not pick up as mapping targets — they're populated
+    // manually in processToModel() below, so no @Mapping is needed (or valid) here.
     ProcessModel processToModelBase(ProcessEntity entity);
 
     @Mapping(target = "emailAddresses", expression = "java(listToCsv(model.emailAddresses()))")
@@ -59,19 +58,22 @@ public interface ExecutionMapper extends CommonMapperConversions {
     @Mapping(target = "processErrors", ignore = true)
     @Mapping(target = "processInputs", ignore = true)
     @Mapping(target = "processOutputs", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
     ProcessEntity processToEntityBase(ProcessModel model);
 
     // --- Task (MapStruct abstract) ---
-    @Mapping(target = "taskStatuses", ignore = true)
-    @Mapping(target = "taskErrors", ignore = true)
+    // taskStatuses/taskErrors are builder add()/addAll()-only properties on TaskModel.Builder;
+    // populated manually in taskToModel() below.
     TaskModel taskToModelBase(TaskEntity entity);
 
     @Mapping(target = "taskStatuses", ignore = true)
     @Mapping(target = "taskErrors", ignore = true)
+    @Mapping(target = "jobs", ignore = true)
     TaskEntity taskToEntityBase(TaskModel model);
 
     // --- Job (MapStruct abstract) ---
-    @Mapping(target = "jobStatuses", ignore = true)
+    // jobStatuses is a builder add()/addAll()-only property on JobModel.Builder;
+    // populated manually in jobToModel() below.
     JobModel jobToModelBase(JobEntity entity);
 
     @Mapping(target = "jobStatuses", ignore = true)
