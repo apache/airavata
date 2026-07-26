@@ -22,7 +22,7 @@ package org.apache.airavata.compute.repository;
 import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ComputeResourcePolicyEntity;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.springframework.stereotype.Component;
 
 /**

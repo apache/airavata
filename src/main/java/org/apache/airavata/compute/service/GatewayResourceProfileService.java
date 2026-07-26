@@ -20,12 +20,12 @@
 package org.apache.airavata.compute.service;
 
 import java.util.List;
-import org.apache.airavata.api.gatewayprofile.GatewayResourceProfileWithAccess;
 import org.apache.airavata.common.RequestContext;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.StoragePreference;
-import org.apache.airavata.model.commons.proto.AccessFlags;
+import org.apache.airavata.models.commons.AccessFlags;
+import org.apache.airavata.models.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.models.appcatalog.gatewayprofile.GatewayResourceProfileWithAccess;
+import org.apache.airavata.models.appcatalog.gatewayprofile.StoragePreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -26,10 +26,10 @@ import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
 import org.apache.airavata.application.mapper.ApplicationMapper;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appinterface.proto.ApplicationInterfaceDescription;
-import org.apache.airavata.model.application.io.proto.InputDataObjectType;
-import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
+import org.apache.airavata.models.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.models.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.models.application.io.InputDataObjectType;
+import org.apache.airavata.models.application.io.OutputDataObjectType;
 import org.apache.airavata.application.model.ApplicationInterfaceEntity;
 import org.apache.airavata.application.model.ApplicationModuleEntity;
 import org.apache.airavata.common.AiravataUtils;
@@ -68,17 +68,17 @@ public class ApplicationInterfaceRepository
             ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId)
             throws Exception {
 
-        if (applicationInterfaceDescription.getApplicationInterfaceId().trim().equals("")
-                || applicationInterfaceDescription.getApplicationInterfaceId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (applicationInterfaceDescription.applicationInterfaceId().trim().equals("")
+                || applicationInterfaceDescription.applicationInterfaceId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug(
                     "If Application Interface ID is empty or DEFAULT, set it as the Application Interface Name plus random UUID");
             applicationInterfaceDescription = applicationInterfaceDescription.toBuilder()
                     .setApplicationInterfaceId(
-                            AiravataUtils.getId(applicationInterfaceDescription.getApplicationName()))
+                            AiravataUtils.getId(applicationInterfaceDescription.applicationName()))
                     .build();
         }
 
-        String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
+        String applicationInterfaceId = applicationInterfaceDescription.applicationInterfaceId();
         ApplicationInterfaceEntity applicationInterfaceEntity = ApplicationMapper.INSTANCE
                 .appInterfaceToEntity(applicationInterfaceDescription);
 
@@ -119,16 +119,16 @@ public class ApplicationInterfaceRepository
     protected ApplicationModuleEntity saveApplicationModule(ApplicationModule applicationModule, String gatewayId)
             throws Exception {
 
-        if (applicationModule.getAppModuleId().trim().equals("")
-                || applicationModule.getAppModuleId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (applicationModule.appModuleId().trim().equals("")
+                || applicationModule.appModuleId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug(
                     "If Application Module ID is empty or DEFAULT, set it as the Application Module Name plus random UUID");
             applicationModule = applicationModule.toBuilder()
-                    .setAppModuleId(AiravataUtils.getId(applicationModule.getAppModuleName()))
+                    .setAppModuleId(AiravataUtils.getId(applicationModule.appModuleName()))
                     .build();
         }
 
-        String applicationModuleId = applicationModule.getAppModuleId();
+        String applicationModuleId = applicationModule.appModuleId();
         ApplicationModuleEntity applicationModuleEntity = ApplicationMapper.INSTANCE
                 .appModuleToEntity(applicationModule);
 
@@ -253,7 +253,7 @@ public class ApplicationInterfaceRepository
         if (applicationInterfaceDescriptionList != null && !applicationInterfaceDescriptionList.isEmpty()) {
             logger.debug("The fetched list of Application Interfaces is not NULL or empty");
             for (ApplicationInterfaceDescription applicationDeploymentDescription : applicationInterfaceDescriptionList) {
-                applicationInterfaceIds.add(applicationDeploymentDescription.getApplicationInterfaceId());
+                applicationInterfaceIds.add(applicationDeploymentDescription.applicationInterfaceId());
             }
         }
 

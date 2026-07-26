@@ -21,7 +21,7 @@ package org.apache.airavata.application.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.apache.airavata.model.application.io.proto.DataType;
+import org.apache.airavata.models.application.io.DataType;
 
 @Entity
 @Table(name = "APP_IO_PARAM")

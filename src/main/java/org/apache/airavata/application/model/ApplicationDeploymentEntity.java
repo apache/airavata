@@ -25,7 +25,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.JsonListConverter;
-import org.apache.airavata.model.parallelism.proto.ApplicationParallelismType;
+import org.apache.airavata.models.parallelism.ApplicationParallelismType;
 
 /**
  * The persistent class for the application_deployment database table.

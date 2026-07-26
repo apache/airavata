@@ -23,7 +23,7 @@ import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.UserStoragePreferenceEntity;
 import org.apache.airavata.compute.model.UserStoragePreferencePK;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserStoragePreference;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserStoragePreference;
 import org.springframework.stereotype.Component;
 
 @Component

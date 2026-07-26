@@ -26,7 +26,7 @@ import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.ComputeResourcePreferenceEntity;
 import org.apache.airavata.compute.model.ComputeResourcePreferencePK;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.springframework.stereotype.Component;
 
 @Component

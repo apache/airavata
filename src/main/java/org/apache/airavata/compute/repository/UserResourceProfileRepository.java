@@ -28,8 +28,8 @@ import org.apache.airavata.compute.model.UserResourceProfilePK;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserResourceProfile;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserResourceProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -60,8 +60,8 @@ public class UserResourceProfileRepository
 
     protected UserResourceProfileEntity saveUserResourceProfile(UserResourceProfile userResourceProfile)
             throws Exception {
-        String userId = userResourceProfile.getUserId();
-        String gatewayId = userResourceProfile.getGatewayId();
+        String userId = userResourceProfile.userId();
+        String gatewayId = userResourceProfile.gatewayId();
         UserResourceProfileEntity userResourceProfileEntity =
                 ComputeMapper.INSTANCE.userResourceProfileToEntity(userResourceProfile);
 
@@ -140,7 +140,7 @@ public class UserResourceProfileRepository
                 select(QueryConstants.GET_ALL_GATEWAY_ID, -1, 0, queryParameters);
         List<String> gatewayIdList = new ArrayList<>();
         for (UserResourceProfile userResourceProfile : userResourceProfileList) {
-            gatewayIdList.add(userResourceProfile.getGatewayId());
+            gatewayIdList.add(userResourceProfile.gatewayId());
         }
         return gatewayIdList;
     }

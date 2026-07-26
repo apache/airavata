@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManagerType;
+import org.apache.airavata.models.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.common.AiravataUtils;
 
 /**

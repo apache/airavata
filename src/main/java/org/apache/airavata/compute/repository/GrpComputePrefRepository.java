@@ -27,13 +27,13 @@ import org.apache.airavata.compute.model.GroupComputeResourcePrefEntity;
 import org.apache.airavata.compute.model.GroupComputeResourcePrefPK;
 import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.AwsComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourceReservation;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.EnvironmentSpecificPreferences;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupAccountSSHProvisionerConfig;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.SlurmComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourceReservation;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupAccountSSHProvisionerConfig;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.springframework.stereotype.Component;
 
 /**
@@ -108,9 +108,7 @@ public class GrpComputePrefRepository
                 }
             }
 
-            EnvironmentSpecificPreferences esp = EnvironmentSpecificPreferences.newBuilder()
-                    .setSlurm(scrpBuilder.build())
-                    .build();
+            EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences.Slurm(scrpBuilder.build());
             pref = pref.toBuilder()
                     .setResourceType(ResourceType.SLURM)
                     .setSpecificPreferences(esp)
@@ -123,9 +121,7 @@ public class GrpComputePrefRepository
             if (aws.getPreferredInstanceType() != null)
                 awsPrefBuilder.setPreferredInstanceType(aws.getPreferredInstanceType());
 
-            EnvironmentSpecificPreferences esp = EnvironmentSpecificPreferences.newBuilder()
-                    .setAws(awsPrefBuilder.build())
-                    .build();
+            EnvironmentSpecificPreferences esp = new EnvironmentSpecificPreferences.Aws(awsPrefBuilder.build());
             pref = pref.toBuilder()
                     .setResourceType(ResourceType.AWS)
                     .setSpecificPreferences(esp)

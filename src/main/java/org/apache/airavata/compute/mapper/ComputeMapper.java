@@ -25,26 +25,27 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.compute.model.*;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.appcatalog.computeresource.proto.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourceReservation;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.EnvironmentSpecificPreferences;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupAccountSSHProvisionerConfig;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.SlurmComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserStoragePreference;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
-import org.apache.airavata.model.workspace.proto.GatewayUsageReportingCommand;
+import org.apache.airavata.models.appcatalog.computeresource.BatchQueue;
+import org.apache.airavata.models.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.models.appcatalog.computeresource.FileSystems;
+import org.apache.airavata.models.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.models.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.models.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourceReservation;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupAccountSSHProvisionerConfig;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.models.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.models.status.QueueStatusModel;
+import org.apache.airavata.models.workspace.GatewayUsageReportingCommand;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -113,33 +114,33 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ComputeResourceEntity entity = new ComputeResourceEntity();
-        entity.setComputeResourceId(model.getComputeResourceId());
-        entity.setHostName(model.getHostName());
-        entity.setResourceDescription(model.getResourceDescription());
-        entity.setEnabled(model.getEnabled() ? (short) 1 : (short) 0);
-        entity.setMaxMemoryPerNode(model.getMaxMemoryPerNode());
-        entity.setGatewayUsageReporting(model.getGatewayUsageReporting());
-        entity.setSshPort(model.getSshPort());
+        entity.setComputeResourceId(model.computeResourceId());
+        entity.setHostName(model.hostName());
+        entity.setResourceDescription(model.resourceDescription());
+        entity.setEnabled(model.enabled() ? (short) 1 : (short) 0);
+        entity.setMaxMemoryPerNode(model.maxMemoryPerNode());
+        entity.setGatewayUsageReporting(model.gatewayUsageReporting());
+        entity.setSshPort(model.sshPort());
         if (model.hasResourceJobManager())
-            entity.setResourceJobManager(resourceJobManagerToEntity(model.getResourceJobManager()));
-        entity.setGatewayUsageModuleLoadCommand(model.getGatewayUsageModuleLoadCommand());
-        entity.setGatewayUsageExecutable(model.getGatewayUsageExecutable());
-        entity.setCpusPerNode(model.getCpusPerNode());
-        entity.setDefaultNodeCount(model.getDefaultNodeCount());
-        entity.setDefaultCPUCount(model.getDefaultCpuCount());
-        entity.setDefaultWalltime(model.getDefaultWalltime());
-        if (!model.getHostAliasesList().isEmpty())
-            entity.setHostAliases(model.getHostAliasesList());
-        if (!model.getIpAddressesList().isEmpty())
-            entity.setIpAddresses(model.getIpAddressesList());
-        if (!model.getBatchQueuesList().isEmpty()) {
-            entity.setBatchQueues(model.getBatchQueuesList().stream()
+            entity.setResourceJobManager(resourceJobManagerToEntity(model.resourceJobManager()));
+        entity.setGatewayUsageModuleLoadCommand(model.gatewayUsageModuleLoadCommand());
+        entity.setGatewayUsageExecutable(model.gatewayUsageExecutable());
+        entity.setCpusPerNode(model.cpusPerNode());
+        entity.setDefaultNodeCount(model.defaultNodeCount());
+        entity.setDefaultCPUCount(model.defaultCpuCount());
+        entity.setDefaultWalltime(model.defaultWalltime());
+        if (!model.hostAliases().isEmpty())
+            entity.setHostAliases(model.hostAliases());
+        if (!model.ipAddresses().isEmpty())
+            entity.setIpAddresses(model.ipAddresses());
+        if (!model.batchQueues().isEmpty()) {
+            entity.setBatchQueues(model.batchQueues().stream()
                     .map(this::batchQueueToEntity)
                     .toList());
         }
-        if (!model.getFileSystemsMap().isEmpty()) {
+        if (!model.fileSystems().isEmpty()) {
             List<Map<String, Object>> fsList = new ArrayList<>();
-            model.getFileSystemsMap().forEach((fsNumber, path) -> {
+            model.fileSystems().forEach((fsNumber, path) -> {
                 FileSystems fs = FileSystems.forNumber(fsNumber);
                 if (fs != null) {
                     Map<String, Object> entry = new LinkedHashMap<>();
@@ -203,21 +204,19 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ResourceJobManagerEntity entity = new ResourceJobManagerEntity();
-        String rjmId = model.getResourceJobManagerId();
+        String rjmId = model.resourceJobManagerId();
         if (rjmId == null || rjmId.isEmpty()) {
             rjmId = "RJM_" + java.util.UUID.randomUUID();
         }
         entity.setResourceJobManagerId(rjmId);
-        if (model.getResourceJobManagerType() != null)
-            entity.setResourceJobManagerType(model.getResourceJobManagerType());
-        entity.setJobManagerBinPath(model.getJobManagerBinPath());
-        entity.setPushMonitoringEndpoint(model.getPushMonitoringEndpoint());
-        if (!model.getJobManagerCommandsMap().isEmpty()) {
+        if (model.resourceJobManagerType() != null)
+            entity.setResourceJobManagerType(model.resourceJobManagerType());
+        entity.setJobManagerBinPath(model.jobManagerBinPath());
+        entity.setPushMonitoringEndpoint(model.pushMonitoringEndpoint());
+        if (!model.jobManagerCommands().isEmpty()) {
             List<JobManagerCommandEntity> cmds = new ArrayList<>();
-            for (Map.Entry<Integer, String> e : model.getJobManagerCommandsMap().entrySet()) {
-                org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand type = org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand
-                        .forNumber(
-                                e.getKey());
+            for (Map.Entry<Integer, String> e : model.jobManagerCommands().entrySet()) {
+                JobManagerCommand type = JobManagerCommand.forNumber(e.getKey());
                 if (type == null)
                     continue;
                 JobManagerCommandEntity cmd = new JobManagerCommandEntity();
@@ -255,9 +254,9 @@ public interface ComputeMapper extends CommonMapperConversions {
 
     @AfterMapping
     default void afterGatewayProfileToEntity(GatewayResourceProfile model, @MappingTarget GatewayProfileEntity entity) {
-        if (!model.getComputeResourcePreferencesList().isEmpty()) {
+        if (!model.computeResourcePreferences().isEmpty()) {
             List<ComputeResourcePreferenceEntity> prefs = new ArrayList<>();
-            for (ComputeResourcePreference pref : model.getComputeResourcePreferencesList()) {
+            for (ComputeResourcePreference pref : model.computeResourcePreferences()) {
                 prefs.add(computeResourcePrefToEntity(pref));
             }
             entity.setComputeResourcePreferences(prefs);
@@ -309,24 +308,24 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ComputeResourcePreferenceEntity entity = new ComputeResourcePreferenceEntity();
-        entity.setComputeResourceId(model.getComputeResourceId());
-        entity.setLoginUserName(model.getLoginUserName());
-        entity.setOverridebyAiravata(model.getOverrideByAiravata());
-        entity.setPreferredBatchQueue(model.getPreferredBatchQueue());
-        entity.setQualityOfService(model.getQualityOfService());
-        entity.setReservation(model.getReservation());
-        if (model.getReservationStartTime() != 0)
-            entity.setReservationStartTime(new java.sql.Timestamp(model.getReservationStartTime()));
-        if (model.getReservationEndTime() != 0)
-            entity.setReservationEndTime(new java.sql.Timestamp(model.getReservationEndTime()));
-        entity.setResourceSpecificCredentialStoreToken(model.getResourceSpecificCredentialStoreToken());
-        entity.setScratchLocation(model.getScratchLocation());
-        entity.setUsageReportingGatewayId(model.getUsageReportingGatewayId());
-        entity.setSshAccountProvisioner(model.getSshAccountProvisioner());
-        entity.setSshAccountProvisionerAdditionalInfo(model.getSshAccountProvisionerAdditionalInfo());
-        if (!model.getSshAccountProvisionerConfigMap().isEmpty()) {
+        entity.setComputeResourceId(model.computeResourceId());
+        entity.setLoginUserName(model.loginUserName());
+        entity.setOverridebyAiravata(model.overrideByAiravata());
+        entity.setPreferredBatchQueue(model.preferredBatchQueue());
+        entity.setQualityOfService(model.qualityOfService());
+        entity.setReservation(model.reservation());
+        if (model.reservationStartTime() != 0)
+            entity.setReservationStartTime(new java.sql.Timestamp(model.reservationStartTime()));
+        if (model.reservationEndTime() != 0)
+            entity.setReservationEndTime(new java.sql.Timestamp(model.reservationEndTime()));
+        entity.setResourceSpecificCredentialStoreToken(model.resourceSpecificCredentialStoreToken());
+        entity.setScratchLocation(model.scratchLocation());
+        entity.setUsageReportingGatewayId(model.usageReportingGatewayId());
+        entity.setSshAccountProvisioner(model.sshAccountProvisioner());
+        entity.setSshAccountProvisionerAdditionalInfo(model.sshAccountProvisionerAdditionalInfo());
+        if (!model.sshAccountProvisionerConfig().isEmpty()) {
             List<Map<String, Object>> configs = new ArrayList<>();
-            model.getSshAccountProvisionerConfigMap().forEach((name, value) -> {
+            model.sshAccountProvisionerConfig().forEach((name, value) -> {
                 Map<String, Object> entry = new LinkedHashMap<>();
                 entry.put("configName", name);
                 entry.put("configValue", value);
@@ -382,29 +381,29 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         GroupResourceProfileEntity entity = new GroupResourceProfileEntity();
-        entity.setGatewayId(model.getGatewayId());
-        entity.setGroupResourceProfileId(model.getGroupResourceProfileId());
-        entity.setGroupResourceProfileName(model.getGroupResourceProfileName());
-        entity.setCreationTime(model.getCreationTime());
-        entity.setUpdatedTime(model.getUpdatedTime());
-        entity.setDefaultCredentialStoreToken(model.getDefaultCredentialStoreToken());
-        if (!model.getComputePreferencesList().isEmpty()) {
+        entity.setGatewayId(model.gatewayId());
+        entity.setGroupResourceProfileId(model.groupResourceProfileId());
+        entity.setGroupResourceProfileName(model.groupResourceProfileName());
+        entity.setCreationTime(model.creationTime());
+        entity.setUpdatedTime(model.updatedTime());
+        entity.setDefaultCredentialStoreToken(model.defaultCredentialStoreToken());
+        if (!model.computePreferences().isEmpty()) {
             List<GroupComputeResourcePrefEntity> prefs = new ArrayList<>();
-            for (GroupComputeResourcePreference pref : model.getComputePreferencesList()) {
+            for (GroupComputeResourcePreference pref : model.computePreferences()) {
                 prefs.add(groupComputePrefToEntity(pref));
             }
             entity.setComputePreferences(prefs);
         }
-        if (!model.getComputeResourcePoliciesList().isEmpty()) {
+        if (!model.computeResourcePolicies().isEmpty()) {
             List<ComputeResourcePolicyEntity> policies = new ArrayList<>();
-            for (ComputeResourcePolicy policy : model.getComputeResourcePoliciesList()) {
+            for (ComputeResourcePolicy policy : model.computeResourcePolicies()) {
                 policies.add(computeResourcePolicyToEntity(policy));
             }
             entity.setComputeResourcePolicies(policies);
         }
-        if (!model.getBatchQueueResourcePoliciesList().isEmpty()) {
+        if (!model.batchQueueResourcePolicies().isEmpty()) {
             List<BatchQueueResourcePolicyEntity> policies = new ArrayList<>();
-            for (BatchQueueResourcePolicy policy : model.getBatchQueueResourcePoliciesList()) {
+            for (BatchQueueResourcePolicy policy : model.batchQueueResourcePolicies()) {
                 policies.add(batchQueuePolicyToEntity(policy));
             }
             entity.setBatchQueueResourcePolicies(policies);
@@ -474,8 +473,7 @@ public interface ComputeMapper extends CommonMapperConversions {
                     s.addReservations(reservationToModel(r));
                 }
             }
-            b.setSpecificPreferences(
-                    EnvironmentSpecificPreferences.newBuilder().setSlurm(s).build());
+            b.setSpecificPreferences(new EnvironmentSpecificPreferences.Slurm(s.build()));
         }
         return b.build();
     }
@@ -485,37 +483,36 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         SlurmGroupComputeResourcePrefEntity entity = new SlurmGroupComputeResourcePrefEntity();
-        entity.setComputeResourceId(model.getComputeResourceId());
-        entity.setGroupResourceProfileId(model.getGroupResourceProfileId());
-        entity.setOverridebyAiravata(model.getOverrideByAiravata() ? (short) 1 : (short) 0);
-        entity.setLoginUserName(model.getLoginUserName());
-        entity.setScratchLocation(model.getScratchLocation());
-        entity.setResourceSpecificCredentialStoreToken(model.getResourceSpecificCredentialStoreToken());
+        entity.setComputeResourceId(model.computeResourceId());
+        entity.setGroupResourceProfileId(model.groupResourceProfileId());
+        entity.setOverridebyAiravata(model.overrideByAiravata() ? (short) 1 : (short) 0);
+        entity.setLoginUserName(model.loginUserName());
+        entity.setScratchLocation(model.scratchLocation());
+        entity.setResourceSpecificCredentialStoreToken(model.resourceSpecificCredentialStoreToken());
         if (model.hasSpecificPreferences()
-                && model.getSpecificPreferences()
-                        .getPreferencesCase() == EnvironmentSpecificPreferences.PreferencesCase.SLURM) {
-            SlurmComputeResourcePreference slurm = model.getSpecificPreferences().getSlurm();
-            entity.setAllocationProjectNumber(slurm.getAllocationProjectNumber());
-            entity.setPreferredBatchQueue(slurm.getPreferredBatchQueue());
-            entity.setQualityOfService(slurm.getQualityOfService());
-            entity.setUsageReportingGatewayId(slurm.getUsageReportingGatewayId());
-            entity.setSshAccountProvisioner(slurm.getSshAccountProvisioner());
-            entity.setSshAccountProvisionerAdditionalInfo(slurm.getSshAccountProvisionerAdditionalInfo());
-            if (!slurm.getGroupSshAccountProvisionerConfigsList().isEmpty()) {
+                && model.specificPreferences() instanceof EnvironmentSpecificPreferences.Slurm slurmVariant) {
+            SlurmComputeResourcePreference slurm = slurmVariant.slurm();
+            entity.setAllocationProjectNumber(slurm.allocationProjectNumber());
+            entity.setPreferredBatchQueue(slurm.preferredBatchQueue());
+            entity.setQualityOfService(slurm.qualityOfService());
+            entity.setUsageReportingGatewayId(slurm.usageReportingGatewayId());
+            entity.setSshAccountProvisioner(slurm.sshAccountProvisioner());
+            entity.setSshAccountProvisionerAdditionalInfo(slurm.sshAccountProvisionerAdditionalInfo());
+            if (!slurm.groupSshAccountProvisionerConfigs().isEmpty()) {
                 List<Map<String, Object>> configs = new ArrayList<>();
-                for (GroupAccountSSHProvisionerConfig c : slurm.getGroupSshAccountProvisionerConfigsList()) {
+                for (GroupAccountSSHProvisionerConfig c : slurm.groupSshAccountProvisionerConfigs()) {
                     Map<String, Object> entry = new LinkedHashMap<>();
-                    entry.put("resourceId", c.getResourceId());
-                    entry.put("groupResourceProfileId", c.getGroupResourceProfileId());
-                    entry.put("configName", c.getConfigName());
-                    entry.put("configValue", c.getConfigValue());
+                    entry.put("resourceId", c.resourceId());
+                    entry.put("groupResourceProfileId", c.groupResourceProfileId());
+                    entry.put("configName", c.configName());
+                    entry.put("configValue", c.configValue());
                     configs.add(entry);
                 }
                 entity.setGroupSSHAccountProvisionerConfigs(configs);
             }
-            if (!slurm.getReservationsList().isEmpty()) {
+            if (!slurm.reservations().isEmpty()) {
                 List<ComputeResourceReservationEntity> reservations = new ArrayList<>();
-                for (ComputeResourceReservation r : slurm.getReservationsList()) {
+                for (ComputeResourceReservation r : slurm.reservations()) {
                     reservations.add(reservationToEntity(r));
                 }
                 entity.setReservations(reservations);
@@ -546,14 +543,11 @@ public interface ComputeMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ComputeResourceReservationEntity entity = new ComputeResourceReservationEntity();
-        entity.setReservationId(model.getReservationId());
-        entity.setReservationName(model.getReservationName());
-        if (!model.getQueueNamesList().isEmpty())
-            entity.setQueueNames(new ArrayList<>(model.getQueueNamesList()));
-        if (model.getStartTime() != 0)
-            entity.setStartTime(new java.sql.Timestamp(model.getStartTime()));
-        if (model.getEndTime() != 0)
-            entity.setEndTime(new java.sql.Timestamp(model.getEndTime()));
+        entity.setReservationId(model.reservationId());
+        entity.setReservationName(model.reservationName());
+        if (!model.queueNames().isEmpty()) entity.setQueueNames(new ArrayList<>(model.queueNames()));
+        if (model.startTime() != 0) entity.setStartTime(new java.sql.Timestamp(model.startTime()));
+        if (model.endTime() != 0) entity.setEndTime(new java.sql.Timestamp(model.endTime()));
         return entity;
     }
 
@@ -577,8 +571,8 @@ public interface ComputeMapper extends CommonMapperConversions {
     @AfterMapping
     default void afterComputeResourcePolicyToEntity(
             ComputeResourcePolicy model, @MappingTarget ComputeResourcePolicyEntity entity) {
-        if (!model.getAllowedBatchQueuesList().isEmpty()) {
-            entity.setAllowedBatchQueues(new ArrayList<>(model.getAllowedBatchQueuesList()));
+        if (!model.allowedBatchQueues().isEmpty()) {
+            entity.setAllowedBatchQueues(new ArrayList<>(model.allowedBatchQueues()));
         }
     }
 
@@ -611,9 +605,9 @@ public interface ComputeMapper extends CommonMapperConversions {
     @AfterMapping
     default void afterUserResourceProfileToEntity(
             UserResourceProfile model, @MappingTarget UserResourceProfileEntity entity) {
-        if (!model.getUserComputeResourcePreferencesList().isEmpty()) {
+        if (!model.userComputeResourcePreferences().isEmpty()) {
             List<UserComputeResourcePreferenceEntity> prefs = new ArrayList<>();
-            for (UserComputeResourcePreference pref : model.getUserComputeResourcePreferencesList()) {
+            for (UserComputeResourcePreference pref : model.userComputeResourcePreferences()) {
                 prefs.add(userComputeResourcePrefToEntity(pref));
             }
             entity.setUserComputeResourcePreferences(prefs);

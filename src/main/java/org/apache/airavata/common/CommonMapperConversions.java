@@ -1,6 +1,5 @@
 package org.apache.airavata.common;
 
-import com.google.protobuf.ByteString;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
@@ -42,14 +41,6 @@ public interface CommonMapperConversions {
 
     default short booleanToShort(boolean value) {
         return (short) (value ? 1 : 0);
-    }
-
-    default byte[] byteStringToBytes(ByteString value) {
-        return value != null ? value.toByteArray() : null;
-    }
-
-    default ByteString bytesToByteString(byte[] value) {
-        return value != null ? ByteString.copyFrom(value) : ByteString.EMPTY;
     }
 
     default List<String> csvToList(String csv) {

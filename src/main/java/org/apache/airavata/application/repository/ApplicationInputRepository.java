@@ -20,7 +20,7 @@
 package org.apache.airavata.application.repository;
 
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.application.io.proto.InputDataObjectType;
+import org.apache.airavata.models.application.io.InputDataObjectType;
 import org.apache.airavata.application.mapper.ApplicationMapper;
 import org.apache.airavata.application.model.AppIoParamEntity;
 import org.springframework.stereotype.Component;

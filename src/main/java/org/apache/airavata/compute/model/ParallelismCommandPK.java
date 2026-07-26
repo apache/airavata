@@ -20,7 +20,7 @@
 package org.apache.airavata.compute.model;
 
 import java.io.Serializable;
-import org.apache.airavata.model.parallelism.proto.ApplicationParallelismType;
+import org.apache.airavata.models.parallelism.ApplicationParallelismType;
 
 /**
  * The primary key class for the parallelism_command database table.

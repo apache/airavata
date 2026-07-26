@@ -28,7 +28,7 @@ import org.apache.airavata.compute.model.QueueStatusEntity;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
+import org.apache.airavata.models.status.QueueStatusModel;
 import org.springframework.stereotype.Component;
 
 @Component

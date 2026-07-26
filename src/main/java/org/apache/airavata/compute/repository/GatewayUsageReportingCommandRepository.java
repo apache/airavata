@@ -23,7 +23,7 @@ import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.GatewayUsageReportingCommandEntity;
 import org.apache.airavata.compute.model.GatewayUsageReportingPK;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.workspace.proto.GatewayUsageReportingCommand;
+import org.apache.airavata.models.workspace.GatewayUsageReportingCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -50,11 +50,11 @@ public class GatewayUsageReportingCommandRepository
     }
 
     public void addGatewayUsageReportingCommand(GatewayUsageReportingCommand command) throws Exception {
-        String gatewayId = command.getGatewayId();
+        String gatewayId = command.gatewayId();
         GatewayUsageReportingCommandEntity reportingEntity = ComputeMapper.INSTANCE
                 .gatewayUsageReportingCommandToEntity(command);
         execute(entityManager -> entityManager.merge(reportingEntity));
-        logger.info("Added gateway usage reporting command for gateway {} to the database", command.getGatewayId());
+        logger.info("Added gateway usage reporting command for gateway {} to the database", command.gatewayId());
     }
 
     public GatewayUsageReportingCommand getGatewayUsageReportingCommand(String gatewayId, String computeResourceId) {

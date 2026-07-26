@@ -20,7 +20,7 @@
 package org.apache.airavata.application.repository;
 
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationModule;
+import org.apache.airavata.models.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.application.mapper.ApplicationMapper;
 import org.apache.airavata.application.model.ApplicationModuleEntity;
 import org.springframework.stereotype.Component;

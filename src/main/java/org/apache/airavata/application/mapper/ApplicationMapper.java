@@ -24,13 +24,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.common.CommonMapperConversions;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.CommandObject;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.appinterface.proto.ApplicationInterfaceDescription;
-import org.apache.airavata.model.application.io.proto.InputDataObjectType;
-import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
+import org.apache.airavata.models.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.models.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.models.appcatalog.appdeployment.CommandObject;
+import org.apache.airavata.models.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.models.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.models.application.io.DataType;
+import org.apache.airavata.models.application.io.InputDataObjectType;
+import org.apache.airavata.models.application.io.OutputDataObjectType;
 import org.apache.airavata.application.model.AppIoParamEntity;
 import org.apache.airavata.application.model.ApplicationDeploymentEntity;
 import org.apache.airavata.application.model.ApplicationInterfaceEntity;
@@ -76,19 +77,19 @@ public interface ApplicationMapper extends CommonMapperConversions {
     @AfterMapping
     default void afterAppInterfaceToEntity(
             ApplicationInterfaceDescription model, @MappingTarget ApplicationInterfaceEntity entity) {
-        if (!model.getApplicationModulesList().isEmpty()) {
-            entity.setApplicationModules(new ArrayList<>(model.getApplicationModulesList()));
+        if (!model.applicationModules().isEmpty()) {
+            entity.setApplicationModules(new ArrayList<>(model.applicationModules()));
         }
-        if (!model.getApplicationInputsList().isEmpty()) {
+        if (!model.applicationInputs().isEmpty()) {
             List<AppIoParamEntity> inputs = new ArrayList<>();
-            for (InputDataObjectType input : model.getApplicationInputsList()) {
+            for (InputDataObjectType input : model.applicationInputs()) {
                 inputs.add(appInputToEntity(input));
             }
             entity.setApplicationInputs(inputs);
         }
-        if (!model.getApplicationOutputsList().isEmpty()) {
+        if (!model.applicationOutputs().isEmpty()) {
             List<AppIoParamEntity> outputs = new ArrayList<>();
-            for (OutputDataObjectType output : model.getApplicationOutputsList()) {
+            for (OutputDataObjectType output : model.applicationOutputs()) {
                 outputs.add(appOutputToEntity(output));
             }
             entity.setApplicationOutputs(outputs);
@@ -181,76 +182,76 @@ public interface ApplicationMapper extends CommonMapperConversions {
         if (model == null)
             return null;
         ApplicationDeploymentEntity entity = new ApplicationDeploymentEntity();
-        entity.setAppDeploymentId(model.getAppDeploymentId());
-        entity.setAppDeploymentDescription(model.getAppDeploymentDescription());
-        entity.setExecutablePath(model.getExecutablePath());
-        entity.setComputeHostId(model.getComputeHostId());
-        entity.setAppModuleId(model.getAppModuleId());
-        entity.setParallelism(model.getParallelism());
-        entity.setDefaultQueueName(model.getDefaultQueueName());
-        entity.setDefaultNodeCount(model.getDefaultNodeCount());
-        entity.setDefaultCPUCount(model.getDefaultCpuCount());
-        entity.setDefaultWallTime(model.getDefaultWalltime());
-        entity.setEditableByUser(model.getEditableByUser());
-        if (!model.getModuleLoadCmdsList().isEmpty()) {
-            entity.setModuleLoadCmds(model.getModuleLoadCmdsList().stream()
+        entity.setAppDeploymentId(model.appDeploymentId());
+        entity.setAppDeploymentDescription(model.appDeploymentDescription());
+        entity.setExecutablePath(model.executablePath());
+        entity.setComputeHostId(model.computeHostId());
+        entity.setAppModuleId(model.appModuleId());
+        entity.setParallelism(model.parallelism());
+        entity.setDefaultQueueName(model.defaultQueueName());
+        entity.setDefaultNodeCount(model.defaultNodeCount());
+        entity.setDefaultCPUCount(model.defaultCpuCount());
+        entity.setDefaultWallTime(model.defaultWalltime());
+        entity.setEditableByUser(model.editableByUser());
+        if (!model.moduleLoadCmds().isEmpty()) {
+            entity.setModuleLoadCmds(model.moduleLoadCmds().stream()
                     .map(cmd -> {
                         Map<String, Object> m = new LinkedHashMap<>();
-                        m.put("command", cmd.getCommand());
-                        m.put("commandOrder", cmd.getCommandOrder());
+                        m.put("command", cmd.command());
+                        m.put("commandOrder", cmd.commandOrder());
                         return m;
                     })
                     .toList());
         }
-        if (!model.getPreJobCommandsList().isEmpty()) {
-            entity.setPreJobCommands(model.getPreJobCommandsList().stream()
+        if (!model.preJobCommands().isEmpty()) {
+            entity.setPreJobCommands(model.preJobCommands().stream()
                     .map(cmd -> {
                         Map<String, Object> m = new LinkedHashMap<>();
-                        m.put("command", cmd.getCommand());
-                        m.put("commandOrder", cmd.getCommandOrder());
+                        m.put("command", cmd.command());
+                        m.put("commandOrder", cmd.commandOrder());
                         return m;
                     })
                     .toList());
         }
-        if (!model.getPostJobCommandsList().isEmpty()) {
-            entity.setPostJobCommands(model.getPostJobCommandsList().stream()
+        if (!model.postJobCommands().isEmpty()) {
+            entity.setPostJobCommands(model.postJobCommands().stream()
                     .map(cmd -> {
                         Map<String, Object> m = new LinkedHashMap<>();
-                        m.put("command", cmd.getCommand());
-                        m.put("commandOrder", cmd.getCommandOrder());
+                        m.put("command", cmd.command());
+                        m.put("commandOrder", cmd.commandOrder());
                         return m;
                     })
                     .toList());
         }
-        if (!model.getLibPrependPathsList().isEmpty()) {
-            entity.setLibPrependPaths(model.getLibPrependPathsList().stream()
+        if (!model.libPrependPaths().isEmpty()) {
+            entity.setLibPrependPaths(model.libPrependPaths().stream()
                     .map(p -> {
                         Map<String, Object> m = new LinkedHashMap<>();
-                        m.put("name", p.getName());
-                        m.put("value", p.getValue());
-                        m.put("envPathOrder", p.getEnvPathOrder());
+                        m.put("name", p.name());
+                        m.put("value", p.value());
+                        m.put("envPathOrder", p.envPathOrder());
                         return m;
                     })
                     .toList());
         }
-        if (!model.getLibAppendPathsList().isEmpty()) {
-            entity.setLibAppendPaths(model.getLibAppendPathsList().stream()
+        if (!model.libAppendPaths().isEmpty()) {
+            entity.setLibAppendPaths(model.libAppendPaths().stream()
                     .map(p -> {
                         Map<String, Object> m = new LinkedHashMap<>();
-                        m.put("name", p.getName());
-                        m.put("value", p.getValue());
-                        m.put("envPathOrder", p.getEnvPathOrder());
+                        m.put("name", p.name());
+                        m.put("value", p.value());
+                        m.put("envPathOrder", p.envPathOrder());
                         return m;
                     })
                     .toList());
         }
-        if (!model.getSetEnvironmentList().isEmpty()) {
-            entity.setSetEnvironment(model.getSetEnvironmentList().stream()
+        if (!model.setEnvironment().isEmpty()) {
+            entity.setSetEnvironment(model.setEnvironment().stream()
                     .map(p -> {
                         Map<String, Object> m = new LinkedHashMap<>();
-                        m.put("name", p.getName());
-                        m.put("value", p.getValue());
-                        m.put("envPathOrder", p.getEnvPathOrder());
+                        m.put("name", p.name());
+                        m.put("value", p.value());
+                        m.put("envPathOrder", p.envPathOrder());
                         return m;
                     })
                     .toList());
@@ -265,10 +266,7 @@ public interface ApplicationMapper extends CommonMapperConversions {
         return InputDataObjectType.newBuilder()
                 .setName(entity.getName() != null ? entity.getName() : "")
                 .setValue(entity.getValue() != null ? entity.getValue() : "")
-                .setType(
-                        entity.getType() != null
-                                ? entity.getType()
-                                : org.apache.airavata.model.application.io.proto.DataType.DATA_TYPE_UNKNOWN)
+                .setType(entity.getType() != null ? entity.getType() : DataType.DATA_TYPE_UNKNOWN)
                 .setApplicationArgument(entity.getApplicationArgument() != null ? entity.getApplicationArgument() : "")
                 .setStandardInput(entity.isStandardInput())
                 .setUserFriendlyDescription(
@@ -288,19 +286,19 @@ public interface ApplicationMapper extends CommonMapperConversions {
             return null;
         AppIoParamEntity entity = new AppIoParamEntity();
         entity.setDirection("INPUT");
-        entity.setName(model.getName());
-        entity.setValue(model.getValue());
-        entity.setType(model.getType());
-        entity.setApplicationArgument(model.getApplicationArgument());
-        entity.setStandardInput(model.getStandardInput());
-        entity.setUserFriendlyDescription(model.getUserFriendlyDescription());
-        entity.setMetaData(model.getMetaData());
-        entity.setInputOrder(model.getInputOrder());
-        entity.setIsRequired(model.getIsRequired());
-        entity.setRequiredToAddedToCommandLine(model.getRequiredToAddedToCommandLine());
-        entity.setDataStaged(model.getDataStaged());
-        entity.setReadOnly(model.getIsReadOnly());
-        entity.setOverrideFilename(model.getOverrideFilename());
+        entity.setName(model.name());
+        entity.setValue(model.value());
+        entity.setType(model.type());
+        entity.setApplicationArgument(model.applicationArgument());
+        entity.setStandardInput(model.standardInput());
+        entity.setUserFriendlyDescription(model.userFriendlyDescription());
+        entity.setMetaData(model.metaData());
+        entity.setInputOrder(model.inputOrder());
+        entity.setIsRequired(model.isRequired());
+        entity.setRequiredToAddedToCommandLine(model.requiredToAddedToCommandLine());
+        entity.setDataStaged(model.dataStaged());
+        entity.setReadOnly(model.isReadOnly());
+        entity.setOverrideFilename(model.overrideFilename());
         return entity;
     }
 
@@ -311,10 +309,7 @@ public interface ApplicationMapper extends CommonMapperConversions {
         return OutputDataObjectType.newBuilder()
                 .setName(entity.getName() != null ? entity.getName() : "")
                 .setValue(entity.getValue() != null ? entity.getValue() : "")
-                .setType(
-                        entity.getType() != null
-                                ? entity.getType()
-                                : org.apache.airavata.model.application.io.proto.DataType.DATA_TYPE_UNKNOWN)
+                .setType(entity.getType() != null ? entity.getType() : DataType.DATA_TYPE_UNKNOWN)
                 .setApplicationArgument(entity.getApplicationArgument() != null ? entity.getApplicationArgument() : "")
                 .setIsRequired(entity.isIsRequired())
                 .setRequiredToAddedToCommandLine(entity.isRequiredToAddedToCommandLine())
@@ -331,17 +326,17 @@ public interface ApplicationMapper extends CommonMapperConversions {
             return null;
         AppIoParamEntity entity = new AppIoParamEntity();
         entity.setDirection("OUTPUT");
-        entity.setName(model.getName());
-        entity.setValue(model.getValue());
-        entity.setType(model.getType());
-        entity.setApplicationArgument(model.getApplicationArgument());
-        entity.setIsRequired(model.getIsRequired());
-        entity.setRequiredToAddedToCommandLine(model.getRequiredToAddedToCommandLine());
-        entity.setDataMovement(model.getDataMovement());
-        entity.setLocation(model.getLocation());
-        entity.setSearchQuery(model.getSearchQuery());
-        entity.setOutputStreaming(model.getOutputStreaming());
-        entity.setMetaData(model.getMetaData());
+        entity.setName(model.name());
+        entity.setValue(model.value());
+        entity.setType(model.type());
+        entity.setApplicationArgument(model.applicationArgument());
+        entity.setIsRequired(model.isRequired());
+        entity.setRequiredToAddedToCommandLine(model.requiredToAddedToCommandLine());
+        entity.setDataMovement(model.dataMovement());
+        entity.setLocation(model.location());
+        entity.setSearchQuery(model.searchQuery());
+        entity.setOutputStreaming(model.outputStreaming());
+        entity.setMetaData(model.metaData());
         return entity;
     }
 }

@@ -22,7 +22,7 @@ package org.apache.airavata.compute.repository;
 import org.apache.airavata.compute.mapper.ComputeMapper;
 import org.apache.airavata.compute.model.BatchQueueResourcePolicyEntity;
 import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.BatchQueueResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
 import org.springframework.stereotype.Component;
 
 /**

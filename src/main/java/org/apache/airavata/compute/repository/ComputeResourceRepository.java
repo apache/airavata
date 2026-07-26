@@ -29,10 +29,10 @@ import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.parallelism.proto.ApplicationParallelismType;
+import org.apache.airavata.models.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.models.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.models.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.models.parallelism.ApplicationParallelismType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -58,10 +58,10 @@ public class ComputeResourceRepository
     }
 
     public String addComputeResource(ComputeResourceDescription description) throws Exception {
-        if (description.getComputeResourceId().equals("")
-                || description.getComputeResourceId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (description.computeResourceId().equals("")
+                || description.computeResourceId().equals("DO_NOT_SET_AT_CLIENTS")) {
             description = description.toBuilder()
-                    .setComputeResourceId(AiravataUtils.getId(description.getHostName()))
+                    .setComputeResourceId(AiravataUtils.getId(description.hostName()))
                     .build();
         }
         return saveComputeResourceDescriptorData(description);
@@ -75,7 +75,7 @@ public class ComputeResourceRepository
 
     protected ComputeResourceEntity saveComputeResource(ComputeResourceDescription description)
             throws Exception {
-        String computeResourceId = description.getComputeResourceId();
+        String computeResourceId = description.computeResourceId();
         ComputeResourceEntity computeResourceEntity = ComputeMapper.INSTANCE.computeResourceToEntity(description);
         if (computeResourceEntity.getBatchQueues() != null) {
             computeResourceEntity
@@ -118,7 +118,7 @@ public class ComputeResourceRepository
         if (computeResourceDescriptionList != null && !computeResourceDescriptionList.isEmpty()) {
             for (ComputeResourceDescription computeResourceDescription : computeResourceDescriptionList) {
                 computeResourceMap.put(
-                        computeResourceDescription.getComputeResourceId(), computeResourceDescription.getHostName());
+                        computeResourceDescription.computeResourceId(), computeResourceDescription.hostName());
             }
         }
         return computeResourceMap;
@@ -130,10 +130,10 @@ public class ComputeResourceRepository
                 QueryConstants.FIND_ALL_COMPUTE_RESOURCES, 0);
         if (computeResourceDescriptionList != null && !computeResourceDescriptionList.isEmpty()) {
             for (ComputeResourceDescription computeResourceDescription : computeResourceDescriptionList) {
-                if (computeResourceDescription.getEnabled()) {
+                if (computeResourceDescription.enabled()) {
                     computeResourceMap.put(
-                            computeResourceDescription.getComputeResourceId(),
-                            computeResourceDescription.getHostName());
+                            computeResourceDescription.computeResourceId(),
+                            computeResourceDescription.hostName());
                 }
             }
         }
@@ -156,16 +156,16 @@ public class ComputeResourceRepository
         resourceJobManagerRepository.create(resourceJobManager);
         ResourceJobManagerEntity resourceJobManagerEntity = ComputeMapper.INSTANCE
                 .resourceJobManagerToEntity(resourceJobManager);
-        Map<Integer, String> jobManagerCommands = resourceJobManager.getJobManagerCommandsMap();
+        Map<Integer, String> jobManagerCommands = resourceJobManager.jobManagerCommands();
         if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
             resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
         }
 
-        Map<Integer, String> parallelismPrefix = resourceJobManager.getParallelismPrefixMap();
+        Map<Integer, String> parallelismPrefix = resourceJobManager.parallelismPrefix();
         if (parallelismPrefix != null && parallelismPrefix.size() != 0) {
             resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, resourceJobManagerEntity);
         }
-        return resourceJobManager.getResourceJobManagerId();
+        return resourceJobManager.resourceJobManagerId();
     }
 
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
@@ -177,12 +177,12 @@ public class ComputeResourceRepository
         ResourceJobManager resourceJobManager = resourceJobManagerRepository.create(updatedResourceJobManager);
         ResourceJobManagerEntity resourceJobManagerEntity = ComputeMapper.INSTANCE
                 .resourceJobManagerToEntity(resourceJobManager);
-        Map<Integer, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommandsMap();
+        Map<Integer, String> jobManagerCommands = updatedResourceJobManager.jobManagerCommands();
         if (jobManagerCommands != null && jobManagerCommands.size() != 0) {
             resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
         }
 
-        Map<Integer, String> parallelismPrefix = updatedResourceJobManager.getParallelismPrefixMap();
+        Map<Integer, String> parallelismPrefix = updatedResourceJobManager.parallelismPrefix();
         if (parallelismPrefix != null && parallelismPrefix.size() != 0) {
             resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, resourceJobManagerEntity);
         }

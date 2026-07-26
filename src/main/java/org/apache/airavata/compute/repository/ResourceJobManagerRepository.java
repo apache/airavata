@@ -28,9 +28,9 @@ import org.apache.airavata.compute.model.*;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ResourceJobManager;
-import org.apache.airavata.model.parallelism.proto.ApplicationParallelismType;
+import org.apache.airavata.models.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.models.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.models.parallelism.ApplicationParallelismType;
 import org.springframework.stereotype.Component;
 
 @Component

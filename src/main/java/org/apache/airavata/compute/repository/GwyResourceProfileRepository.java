@@ -27,8 +27,8 @@ import org.apache.airavata.compute.model.*;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
+import org.apache.airavata.models.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.common.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class GwyResourceProfileRepository
     }
 
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
-        String gatewayId = gatewayResourceProfile.getGatewayId();
+        String gatewayId = gatewayResourceProfile.gatewayId();
         GatewayProfileEntity gatewayProfileEntity = ComputeMapper.INSTANCE
                 .gatewayProfileToEntity(gatewayResourceProfile);
         // Explicitly set gatewayId since Dozer mapping does not handle gatewayID ->

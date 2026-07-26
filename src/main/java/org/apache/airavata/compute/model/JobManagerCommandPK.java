@@ -20,7 +20,7 @@
 package org.apache.airavata.compute.model;
 
 import java.io.Serializable;
-import org.apache.airavata.model.appcatalog.computeresource.proto.JobManagerCommand;
+import org.apache.airavata.models.appcatalog.computeresource.JobManagerCommand;
 
 /**
  * The primary key class for the job_manager_command database table.

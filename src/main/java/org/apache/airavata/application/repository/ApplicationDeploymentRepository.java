@@ -24,8 +24,8 @@ import java.util.*;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.computeresource.proto.ComputeResourceDescription;
+import org.apache.airavata.models.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.models.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.application.mapper.ApplicationMapper;
 import org.apache.airavata.application.model.ApplicationDeploymentEntity;
 import org.apache.airavata.compute.repository.ComputeResourceRepository;
@@ -67,19 +67,19 @@ public class ApplicationDeploymentRepository
             ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId)
             throws Exception {
 
-        if (applicationDeploymentDescription.getAppDeploymentId().trim().isEmpty()
-                || applicationDeploymentDescription.getAppDeploymentId().equals("DO_NOT_SET_AT_CLIENTS")) {
+        if (applicationDeploymentDescription.appDeploymentId().trim().isEmpty()
+                || applicationDeploymentDescription.appDeploymentId().equals("DO_NOT_SET_AT_CLIENTS")) {
             logger.debug(
                     "If Application Deployment ID is empty or DEFAULT, set it as the compute host name plus the App Module ID");
             ComputeResourceDescription computeResourceDescription = computeResource
-                    .getComputeResource(applicationDeploymentDescription.getComputeHostId());
+                    .getComputeResource(applicationDeploymentDescription.computeHostId());
             applicationDeploymentDescription = applicationDeploymentDescription.toBuilder()
-                    .setAppDeploymentId(computeResourceDescription.getHostName() + "_"
-                            + applicationDeploymentDescription.getAppModuleId())
+                    .setAppDeploymentId(computeResourceDescription.hostName() + "_"
+                            + applicationDeploymentDescription.appModuleId())
                     .build();
         }
 
-        String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
+        String applicationDeploymentId = applicationDeploymentDescription.appDeploymentId();
         ApplicationDeploymentEntity applicationDeploymentEntity = ApplicationMapper.INSTANCE
                 .appDeploymentToEntity(applicationDeploymentDescription);
 
@@ -167,11 +167,11 @@ public class ApplicationDeploymentRepository
                 } else {
                     List<String> ids = new ArrayList<>();
                     for (ApplicationDeploymentDescription applicationDeploymentDescription : deploymentDescriptions) {
-                        ids.add(applicationDeploymentDescription.getAppDeploymentId());
+                        ids.add(applicationDeploymentDescription.appDeploymentId());
                     }
                     List<ApplicationDeploymentDescription> tmp2Descriptions = new ArrayList<>();
                     for (ApplicationDeploymentDescription applicationDeploymentDescription : tmpDescriptions) {
-                        if (ids.contains(applicationDeploymentDescription.getAppDeploymentId())) {
+                        if (ids.contains(applicationDeploymentDescription.appDeploymentId())) {
                             tmp2Descriptions.add(applicationDeploymentDescription);
                         }
                     }
@@ -232,7 +232,7 @@ public class ApplicationDeploymentRepository
         if (applicationDeploymentDescriptionList != null && !applicationDeploymentDescriptionList.isEmpty()) {
             logger.debug("The fetched list of Application Deployment is not NULL or empty");
             for (ApplicationDeploymentDescription applicationDeploymentDescription : applicationDeploymentDescriptionList) {
-                applicationDeploymentIds.add(applicationDeploymentDescription.getAppDeploymentId());
+                applicationDeploymentIds.add(applicationDeploymentDescription.appDeploymentId());
             }
         }
         return applicationDeploymentIds;

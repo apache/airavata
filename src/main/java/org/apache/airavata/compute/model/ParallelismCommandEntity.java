@@ -21,7 +21,7 @@ package org.apache.airavata.compute.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import org.apache.airavata.model.parallelism.proto.ApplicationParallelismType;
+import org.apache.airavata.models.parallelism.ApplicationParallelismType;
 
 /**
  * The persistent class for the parallelism_command database table.

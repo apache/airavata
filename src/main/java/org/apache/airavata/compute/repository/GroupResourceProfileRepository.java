@@ -36,15 +36,16 @@ import org.apache.airavata.compute.model.SlurmGroupComputeResourcePrefEntity;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.AwsComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ComputeResourceReservation;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupAccountSSHProvisionerConfig;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.GroupResourceProfile;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.ResourceType;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.proto.SlurmComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.AwsComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourcePolicy;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ComputeResourceReservation;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.EnvironmentSpecificPreferences;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupAccountSSHProvisionerConfig;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.ResourceType;
+import org.apache.airavata.models.appcatalog.groupresourceprofile.SlurmComputeResourcePreference;
 import org.apache.airavata.common.AiravataUtils;
 import org.springframework.stereotype.Component;
 
@@ -84,23 +85,23 @@ public class GroupResourceProfileRepository
             GroupResourceProfile groupResourceProfile, String groupResourceProfileId) {
         GroupResourceProfile.Builder profileBuilder = groupResourceProfile.toBuilder();
 
-        if (groupResourceProfile.getComputePreferencesList() != null) {
+        if (groupResourceProfile.computePreferences() != null) {
             List<GroupComputeResourcePreference> updatedPrefs = new ArrayList<>();
-            for (GroupComputeResourcePreference gcrPref : groupResourceProfile.getComputePreferencesList()) {
+            for (GroupComputeResourcePreference gcrPref : groupResourceProfile.computePreferences()) {
                 GroupComputeResourcePreference.Builder prefBuilder = gcrPref.toBuilder()
                         .setGroupResourceProfileId(groupResourceProfileId);
 
-                if (gcrPref.getResourceType() == ResourceType.SLURM
+                if (gcrPref.resourceType() == ResourceType.SLURM
                         && gcrPref.hasSpecificPreferences()
-                        && gcrPref.getSpecificPreferences().hasSlurm()) {
+                        && gcrPref.specificPreferences() instanceof EnvironmentSpecificPreferences.Slurm slurmVariant) {
 
-                    SlurmComputeResourcePreference slurm = gcrPref.getSpecificPreferences().getSlurm();
+                    SlurmComputeResourcePreference slurm = slurmVariant.slurm();
                     SlurmComputeResourcePreference.Builder slurmBuilder = slurm.toBuilder();
 
                     // update SSH provisioner configs
-                    if (slurm.getGroupSshAccountProvisionerConfigsList() != null) {
+                    if (slurm.groupSshAccountProvisionerConfigs() != null) {
                         List<GroupAccountSSHProvisionerConfig> updatedConfigs = new ArrayList<>();
-                        for (GroupAccountSSHProvisionerConfig gssh : slurm.getGroupSshAccountProvisionerConfigsList()) {
+                        for (GroupAccountSSHProvisionerConfig gssh : slurm.groupSshAccountProvisionerConfigs()) {
                             updatedConfigs.add(gssh.toBuilder()
                                     .setGroupResourceProfileId(groupResourceProfileId)
                                     .build());
@@ -111,13 +112,13 @@ public class GroupResourceProfileRepository
                     }
 
                     // update reservations
-                    if (slurm.getReservationsList() != null) {
+                    if (slurm.reservations() != null) {
                         List<ComputeResourceReservation> updatedRes = new ArrayList<>();
-                        for (ComputeResourceReservation res : slurm.getReservationsList()) {
-                            if (res.getReservationId().trim().isEmpty()
-                                    || res.getReservationId().equals("DO_NOT_SET_AT_CLIENTS")) {
+                        for (ComputeResourceReservation res : slurm.reservations()) {
+                            if (res.reservationId().trim().isEmpty()
+                                    || res.reservationId().equals("DO_NOT_SET_AT_CLIENTS")) {
                                 updatedRes.add(res.toBuilder()
-                                        .setReservationId(AiravataUtils.getId(res.getReservationName()))
+                                        .setReservationId(AiravataUtils.getId(res.reservationName()))
                                         .build());
                             } else {
                                 updatedRes.add(res);
@@ -126,21 +127,19 @@ public class GroupResourceProfileRepository
                         slurmBuilder.clearReservations().addAllReservations(updatedRes);
                     }
 
-                    prefBuilder.setSpecificPreferences(gcrPref.getSpecificPreferences().toBuilder()
-                            .setSlurm(slurmBuilder.build())
-                            .build());
+                    prefBuilder.setSpecificPreferences(new EnvironmentSpecificPreferences.Slurm(slurmBuilder.build()));
                 }
                 updatedPrefs.add(prefBuilder.build());
             }
             profileBuilder.clearComputePreferences().addAllComputePreferences(updatedPrefs);
         }
 
-        if (groupResourceProfile.getBatchQueueResourcePoliciesList() != null) {
+        if (groupResourceProfile.batchQueueResourcePolicies() != null) {
             List<BatchQueueResourcePolicy> updatedBqs = new ArrayList<>();
-            for (BatchQueueResourcePolicy bq : groupResourceProfile.getBatchQueueResourcePoliciesList()) {
+            for (BatchQueueResourcePolicy bq : groupResourceProfile.batchQueueResourcePolicies()) {
                 BatchQueueResourcePolicy.Builder bqBuilder = bq.toBuilder();
-                if (bq.getResourcePolicyId().trim().isEmpty()
-                        || bq.getResourcePolicyId().equals("DO_NOT_SET_AT_CLIENTS")) {
+                if (bq.resourcePolicyId().trim().isEmpty()
+                        || bq.resourcePolicyId().equals("DO_NOT_SET_AT_CLIENTS")) {
                     bqBuilder.setResourcePolicyId(UUID.randomUUID().toString());
                 }
                 bqBuilder.setGroupResourceProfileId(groupResourceProfileId);
@@ -149,12 +148,12 @@ public class GroupResourceProfileRepository
             profileBuilder.clearBatchQueueResourcePolicies().addAllBatchQueueResourcePolicies(updatedBqs);
         }
 
-        if (groupResourceProfile.getComputeResourcePoliciesList() != null) {
+        if (groupResourceProfile.computeResourcePolicies() != null) {
             List<ComputeResourcePolicy> updatedCrs = new ArrayList<>();
-            for (ComputeResourcePolicy cr : groupResourceProfile.getComputeResourcePoliciesList()) {
+            for (ComputeResourcePolicy cr : groupResourceProfile.computeResourcePolicies()) {
                 ComputeResourcePolicy.Builder crBuilder = cr.toBuilder();
-                if (cr.getResourcePolicyId().trim().isEmpty()
-                        || cr.getResourcePolicyId().equals("DO_NOT_SET_AT_CLIENTS")) {
+                if (cr.resourcePolicyId().trim().isEmpty()
+                        || cr.resourcePolicyId().equals("DO_NOT_SET_AT_CLIENTS")) {
                     crBuilder.setResourcePolicyId(UUID.randomUUID().toString());
                 }
                 crBuilder.setGroupResourceProfileId(groupResourceProfileId);
@@ -172,12 +171,12 @@ public class GroupResourceProfileRepository
                 .setUpdatedTime(System.currentTimeMillis())
                 .build();
         updatedGroupResourceProfile = updateChildren(updatedGroupResourceProfile,
-                updatedGroupResourceProfile.getGroupResourceProfileId());
+                updatedGroupResourceProfile.groupResourceProfileId());
         GroupResourceProfileEntity groupResourceProfileEntity = mapToEntity(updatedGroupResourceProfile);
         patchComputePrefEntities(groupResourceProfileEntity, updatedGroupResourceProfile);
         updateChildrenEntities(groupResourceProfileEntity);
         GroupResourceProfile groupResourceProfile = mergeEntity(groupResourceProfileEntity);
-        return groupResourceProfile.getGroupResourceProfileId();
+        return groupResourceProfile.groupResourceProfileId();
     }
 
     private void updateChildrenEntities(GroupResourceProfileEntity groupResourceProfileEntity) {
@@ -199,12 +198,12 @@ public class GroupResourceProfileRepository
     }
 
     private void patchComputePrefEntities(GroupResourceProfileEntity destEntity, GroupResourceProfile sourceModel) {
-        if (destEntity.getComputePreferences() == null || sourceModel.getComputePreferencesList() == null) {
+        if (destEntity.getComputePreferences() == null || sourceModel.computePreferences() == null) {
             return;
         }
         Map<String, GroupComputeResourcePreference> sourcePrefs = new HashMap<>();
-        for (GroupComputeResourcePreference pref : sourceModel.getComputePreferencesList()) {
-            sourcePrefs.put(pref.getComputeResourceId(), pref);
+        for (GroupComputeResourcePreference pref : sourceModel.computePreferences()) {
+            sourcePrefs.put(pref.computeResourceId(), pref);
         }
 
         for (GroupComputeResourcePrefEntity prefEntity : destEntity.getComputePreferences()) {
@@ -213,22 +212,22 @@ public class GroupResourceProfileRepository
                 continue;
             }
             if (prefEntity instanceof SlurmGroupComputeResourcePrefEntity slurmEntity) {
-                if (sourcePref.getSpecificPreferences().hasSlurm()) {
-                    SlurmComputeResourcePreference slurm = sourcePref.getSpecificPreferences().getSlurm();
-                    slurmEntity.setAllocationProjectNumber(slurm.getAllocationProjectNumber());
-                    slurmEntity.setPreferredBatchQueue(slurm.getPreferredBatchQueue());
-                    slurmEntity.setQualityOfService(slurm.getQualityOfService());
-                    slurmEntity.setUsageReportingGatewayId(slurm.getUsageReportingGatewayId());
-                    slurmEntity.setSshAccountProvisioner(slurm.getSshAccountProvisioner());
-                    slurmEntity.setSshAccountProvisionerAdditionalInfo(slurm.getSshAccountProvisionerAdditionalInfo());
-                    if (!slurm.getGroupSshAccountProvisionerConfigsList().isEmpty()) {
+                if (sourcePref.specificPreferences() instanceof EnvironmentSpecificPreferences.Slurm slurmVariant) {
+                    SlurmComputeResourcePreference slurm = slurmVariant.slurm();
+                    slurmEntity.setAllocationProjectNumber(slurm.allocationProjectNumber());
+                    slurmEntity.setPreferredBatchQueue(slurm.preferredBatchQueue());
+                    slurmEntity.setQualityOfService(slurm.qualityOfService());
+                    slurmEntity.setUsageReportingGatewayId(slurm.usageReportingGatewayId());
+                    slurmEntity.setSshAccountProvisioner(slurm.sshAccountProvisioner());
+                    slurmEntity.setSshAccountProvisionerAdditionalInfo(slurm.sshAccountProvisionerAdditionalInfo());
+                    if (!slurm.groupSshAccountProvisionerConfigs().isEmpty()) {
                         List<Map<String, Object>> cfgList = new ArrayList<>();
-                        for (GroupAccountSSHProvisionerConfig cfg : slurm.getGroupSshAccountProvisionerConfigsList()) {
+                        for (GroupAccountSSHProvisionerConfig cfg : slurm.groupSshAccountProvisionerConfigs()) {
                             Map<String, Object> m = new LinkedHashMap<>();
-                            m.put("resourceId", cfg.getResourceId());
-                            m.put("groupResourceProfileId", cfg.getGroupResourceProfileId());
-                            m.put("configName", cfg.getConfigName());
-                            m.put("configValue", cfg.getConfigValue());
+                            m.put("resourceId", cfg.resourceId());
+                            m.put("groupResourceProfileId", cfg.groupResourceProfileId());
+                            m.put("configName", cfg.configName());
+                            m.put("configValue", cfg.configValue());
                             cfgList.add(m);
                         }
                         slurmEntity.setGroupSSHAccountProvisionerConfigs(cfgList);
@@ -237,11 +236,11 @@ public class GroupResourceProfileRepository
                     }
                 }
             } else if (prefEntity instanceof AWSGroupComputeResourcePrefEntity awsEntity) {
-                if (sourcePref.getSpecificPreferences().hasAws()) {
-                    AwsComputeResourcePreference aws = sourcePref.getSpecificPreferences().getAws();
-                    awsEntity.setRegion(aws.getRegion());
-                    awsEntity.setPreferredAmiId(aws.getPreferredAmiId());
-                    awsEntity.setPreferredInstanceType(aws.getPreferredInstanceType());
+                if (sourcePref.specificPreferences() instanceof EnvironmentSpecificPreferences.Aws awsVariant) {
+                    AwsComputeResourcePreference aws = awsVariant.aws();
+                    awsEntity.setRegion(aws.region());
+                    awsEntity.setPreferredAmiId(aws.preferredAmiId());
+                    awsEntity.setPreferredInstanceType(aws.preferredInstanceType());
                 }
             }
         }
@@ -252,10 +251,10 @@ public class GroupResourceProfileRepository
 
         GrpComputePrefRepository prefRepo = new GrpComputePrefRepository();
         List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
-        for (GroupComputeResourcePreference raw : groupResourceProfile.getComputePreferencesList()) {
+        for (GroupComputeResourcePreference raw : groupResourceProfile.computePreferences()) {
             GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
-            pk.setComputeResourceId(raw.getComputeResourceId());
-            pk.setGroupResourceProfileId(raw.getGroupResourceProfileId());
+            pk.setComputeResourceId(raw.computeResourceId());
+            pk.setGroupResourceProfileId(raw.groupResourceProfileId());
             decoratedPrefs.add(prefRepo.get(pk));
         }
         groupResourceProfile = groupResourceProfile.toBuilder()
@@ -292,10 +291,10 @@ public class GroupResourceProfileRepository
             for (GroupResourceProfile profile : profiles) {
                 List<GroupComputeResourcePreference> decoratedPrefs = new ArrayList<>();
 
-                for (GroupComputeResourcePreference rawPref : profile.getComputePreferencesList()) {
+                for (GroupComputeResourcePreference rawPref : profile.computePreferences()) {
                     GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
-                    pk.setComputeResourceId(rawPref.getComputeResourceId());
-                    pk.setGroupResourceProfileId(rawPref.getGroupResourceProfileId());
+                    pk.setComputeResourceId(rawPref.computeResourceId());
+                    pk.setGroupResourceProfileId(rawPref.groupResourceProfileId());
 
                     GroupComputeResourcePreference fullPref = prefRepo.get(pk);
                     decoratedPrefs.add(fullPref);
@@ -366,8 +365,8 @@ public class GroupResourceProfileRepository
         List<GroupComputeResourcePreference> decorated = new ArrayList<>();
         for (GroupComputeResourcePreference raw : rawPrefs) {
             GroupComputeResourcePrefPK pk = new GroupComputeResourcePrefPK();
-            pk.setComputeResourceId(raw.getComputeResourceId());
-            pk.setGroupResourceProfileId(raw.getGroupResourceProfileId());
+            pk.setComputeResourceId(raw.computeResourceId());
+            pk.setGroupResourceProfileId(raw.groupResourceProfileId());
             // this .get(...) will load the entity, detect SLURM, set resourceType, and
             // populate the specificPreferences
             // union
