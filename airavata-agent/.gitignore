@@ -1,6 +1,0 @@
-/airavata-agent*
-/jupyter/
-go.sum
-*.egg-info
-*.ipynb_checkpoints
-*.sif

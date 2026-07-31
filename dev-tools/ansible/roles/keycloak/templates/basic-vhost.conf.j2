@@ -1,9 +1,0 @@
-<VirtualHost *:80>
-    ServerName {{ keycloak_vhost_servername }}
-    DocumentRoot "/var/www/html"
-
-    <Directory /var/www/html>
-        Options -Indexes +FollowSymLinks
-        AllowOverride All
-    </Directory>
-</VirtualHost>
