@@ -17,11 +17,16 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.application.repository;
+package org.apache.airavata.server.auth;
 
-import org.springframework.data.repository.CrudRepository;
-import org.apache.airavata.application.model.AppIoParamEntity;
+import java.util.Set;
 
-public interface ApplicationOutputRepository extends CrudRepository<AppIoParamEntity, String> {
+/**
+ * Resolves the authorities granted to an authenticated username.
+ * {@link MockUserRoleLookupService} is the current implementation; a database-backed
+ * implementation is expected to replace it once a user/role schema exists.
+ */
+public interface UserRoleLookupService {
 
+    Set<String> getRoles(String username);
 }

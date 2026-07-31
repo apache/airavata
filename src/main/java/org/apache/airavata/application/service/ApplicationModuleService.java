@@ -9,6 +9,7 @@ import org.apache.airavata.application.model.ApplicationModuleEntity;
 import org.apache.airavata.application.repository.ApplicationModuleRepository;
 import org.apache.airavata.common.AiravataUtils;
 import org.apache.airavata.common.RequestContext;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.apache.airavata.models.appcatalog.appdeployment.ApplicationModule;
 
@@ -57,6 +58,9 @@ public class ApplicationModuleService {
         return toModel(savedEntity);
     }
 
+    // Demo of the JWT -> role-lookup -> @PreAuthorize wiring: deleting a module now
+    // requires the caller's bearer token to resolve to the ADMIN authority.
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteApplicationModule(RequestContext requestContext, String moduleId) throws Exception {
         if (!applicationModuleRepository.existsById(moduleId)) {
             throw new Exception("Application module not found: " + moduleId);

@@ -19,26 +19,11 @@
 */
 package org.apache.airavata.application.repository;
 
-import org.apache.airavata.db.AbstractRepository;
-import org.apache.airavata.models.application.io.InputDataObjectType;
-import org.apache.airavata.application.mapper.ApplicationMapper;
+import org.springframework.data.repository.CrudRepository;
 import org.apache.airavata.application.model.AppIoParamEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationInputRepository extends AbstractRepository<InputDataObjectType, AppIoParamEntity, String> {
+public interface ApplicationInputRepository extends CrudRepository<AppIoParamEntity, String> {
 
-    public ApplicationInputRepository() {
-        super(InputDataObjectType.class, AppIoParamEntity.class);
-    }
-
-    @Override
-    protected InputDataObjectType toModel(AppIoParamEntity entity) {
-        return ApplicationMapper.INSTANCE.appInputToModel(entity);
-    }
-
-    @Override
-    protected AppIoParamEntity toEntity(InputDataObjectType model) {
-        return ApplicationMapper.INSTANCE.appInputToEntity(model);
-    }
 }

@@ -21,27 +21,17 @@ package org.apache.airavata.common;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class RequestContext {
 
     private final String userId;
     private final String gatewayId;
-    private final String accessToken;
-    private final Map<String, String> claims;
     private final List<String> roles;
 
-    public RequestContext(String userId, String gatewayId, String accessToken, Map<String, String> claims) {
-        this(userId, gatewayId, accessToken, claims, List.of());
-    }
-
-    public RequestContext(
-            String userId, String gatewayId, String accessToken, Map<String, String> claims, List<String> roles) {
+    public RequestContext(String userId, String gatewayId, List<String> roles) {
         this.userId = userId;
         this.gatewayId = gatewayId;
-        this.accessToken = accessToken;
-        this.claims = Collections.unmodifiableMap(claims);
-        this.roles = roles == null ? List.of() : List.copyOf(roles);
+        this.roles = roles != null ? Collections.unmodifiableList(roles) : Collections.emptyList();
     }
 
     public String getUserId() {
@@ -50,14 +40,6 @@ public class RequestContext {
 
     public String getGatewayId() {
         return gatewayId;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public Map<String, String> getClaims() {
-        return claims;
     }
 
     /** Realm roles from the verified access token. */

@@ -17,11 +17,28 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.application.repository;
+package org.apache.airavata.server.auth;
 
-import org.springframework.data.repository.CrudRepository;
-import org.apache.airavata.application.model.AppIoParamEntity;
+import java.util.Map;
+import java.util.Set;
+import org.springframework.stereotype.Service;
 
-public interface ApplicationOutputRepository extends CrudRepository<AppIoParamEntity, String> {
+/**
+ * Hardcoded stand-in for a database-backed user/role lookup.
+ * TODO: replace with a repository-backed {@link UserRoleLookupService} once a
+ * user/role schema exists.
+ */
+@Service
+public class MockUserRoleLookupService implements UserRoleLookupService {
 
+    private static final Map<String, Set<String>> USER_ROLES = Map.of(
+            "admin", Set.of("ADMIN"),
+            "default-admin", Set.of("ADMIN"));
+
+    private static final Set<String> DEFAULT_ROLES = Set.of("USER");
+
+    @Override
+    public Set<String> getRoles(String username) {
+        return USER_ROLES.getOrDefault(username, DEFAULT_ROLES);
+    }
 }

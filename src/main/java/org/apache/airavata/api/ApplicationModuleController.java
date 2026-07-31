@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.service.annotation.DeleteExchange;
 
 @Controller
-public class ApplicationController {
+public class ApplicationModuleController {
 
     private final ApplicationModuleService applicationModuleService;
 
-    public ApplicationController(ApplicationModuleService applicationModuleService) {
+    public ApplicationModuleController(ApplicationModuleService applicationModuleService) {
         this.applicationModuleService = applicationModuleService;
     }
 
