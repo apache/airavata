@@ -1,0 +1,23 @@
+{
+  "name": "airavata-web-api-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 8082",
+    "build": "next build",
+    "start": "next start -p 8082",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "jose": "^6.2.7",
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.4"
+  }
+}
