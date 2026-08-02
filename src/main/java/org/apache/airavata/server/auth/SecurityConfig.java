@@ -28,17 +28,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestClient;
 
 /**
  * Validates bearer tokens issued by CILogon and populates the security context
- * with authorities resolved via {@link UserRoleOpaqueTokenIntrospector} (looked
- * up by username, not trusted from the token), so that {@code @PreAuthorize(...)}
- * works on service methods.
+ * with profile claims and authorities resolved via {@link UserRoleOpaqueTokenIntrospector}
+ * (authorities looked up by username, not trusted from the token), so that
+ * {@code @PreAuthorize(...)} works on service methods and controllers can read
+ * the caller's email/name off the principal.
  *
  * <p>CILogon access tokens for standard (non "Full Service") OAuth clients are
  * opaque strings rather than self-contained JWTs, so tokens are validated via
  * CILogon's introspection endpoint (RFC 7662) rather than by decoding a JWT
- * locally against a JWK set.
+ * locally against a JWK set; profile attributes come from a second call to
+ * CILogon's userinfo endpoint, since introspection alone only returns a small,
+ * fixed claim set.
  *
  * <p>The filter chain itself permits all requests — enforcement happens at the
  * method level via {@code @PreAuthorize}, so unannotated endpoints remain
@@ -49,6 +53,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final String introspectionUri;
+    private final String userInfoUri;
     private final String clientId;
     private final String clientSecret;
     private final UserRoleLookupService userRoleLookupService;
@@ -56,10 +61,13 @@ public class SecurityConfig {
     public SecurityConfig(
             @Value("${airavata.security.cilogon.introspection-uri:https://cilogon.org/oauth2/introspect}")
                     String introspectionUri,
+            @Value("${airavata.security.cilogon.userinfo-uri:https://cilogon.org/oauth2/userinfo}")
+                    String userInfoUri,
             @Value("${airavata.security.cilogon.client-id}") String clientId,
             @Value("${airavata.security.cilogon.client-secret}") String clientSecret,
             UserRoleLookupService userRoleLookupService) {
         this.introspectionUri = introspectionUri;
+        this.userInfoUri = userInfoUri;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.userRoleLookupService = userRoleLookupService;
@@ -71,7 +79,8 @@ public class SecurityConfig {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .build();
-        return new UserRoleOpaqueTokenIntrospector(delegate, userRoleLookupService);
+        CILogonUserInfoClient userInfoClient = new CILogonUserInfoClient(RestClient.create(), userInfoUri);
+        return new UserRoleOpaqueTokenIntrospector(delegate, userRoleLookupService, userInfoClient);
     }
 
     @Bean
