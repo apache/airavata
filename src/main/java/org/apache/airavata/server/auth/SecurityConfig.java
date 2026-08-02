@@ -25,21 +25,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Validates bearer JWTs issued by Keycloak and populates the security context with
- * authorities resolved via {@link JwtRoleAuthoritiesConverter} (looked up by
- * username, not trusted from the token), so that {@code @PreAuthorize(...)} works
- * on service methods.
+ * Validates bearer tokens issued by CILogon and populates the security context
+ * with authorities resolved via {@link UserRoleOpaqueTokenIntrospector} (looked
+ * up by username, not trusted from the token), so that {@code @PreAuthorize(...)}
+ * works on service methods.
  *
- * <p>The JWK set is fetched lazily on first token verification (rather than via
- * Spring Boot's {@code issuer-uri} auto-configuration, which eagerly calls the
- * OIDC discovery endpoint at startup) so the server still starts when Keycloak
- * isn't running locally; only requests bearing a token fail until it is.
+ * <p>CILogon access tokens for standard (non "Full Service") OAuth clients are
+ * opaque strings rather than self-contained JWTs, so tokens are validated via
+ * CILogon's introspection endpoint (RFC 7662) rather than by decoding a JWT
+ * locally against a JWK set.
  *
  * <p>The filter chain itself permits all requests — enforcement happens at the
  * method level via {@code @PreAuthorize}, so unannotated endpoints remain
@@ -49,32 +48,40 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String jwkSetUri;
-    private final JwtRoleAuthoritiesConverter jwtRoleAuthoritiesConverter;
+    private final String introspectionUri;
+    private final String clientId;
+    private final String clientSecret;
+    private final UserRoleLookupService userRoleLookupService;
 
     public SecurityConfig(
-            @Value("${airavata.security.openid-url}") String openIdUrl,
-            JwtRoleAuthoritiesConverter jwtRoleAuthoritiesConverter) {
-        this.jwkSetUri = openIdUrl + "/protocol/openid-connect/certs";
-        this.jwtRoleAuthoritiesConverter = jwtRoleAuthoritiesConverter;
+            @Value("${airavata.security.cilogon.introspection-uri:https://cilogon.org/oauth2/introspect}")
+                    String introspectionUri,
+            @Value("${airavata.security.cilogon.client-id}") String clientId,
+            @Value("${airavata.security.cilogon.client-secret}") String clientSecret,
+            UserRoleLookupService userRoleLookupService) {
+        this.introspectionUri = introspectionUri;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.userRoleLookupService = userRoleLookupService;
     }
 
     @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+    public OpaqueTokenIntrospector opaqueTokenIntrospector() {
+        OpaqueTokenIntrospector delegate = SpringOpaqueTokenIntrospector.withIntrospectionUri(introspectionUri)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build();
+        return new UserRoleOpaqueTokenIntrospector(delegate, userRoleLookupService);
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
-        authenticationConverter.setJwtGrantedAuthoritiesConverter(jwtRoleAuthoritiesConverter);
-        authenticationConverter.setPrincipalClaimName("preferred_username");
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, OpaqueTokenIntrospector opaqueTokenIntrospector)
+            throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter)));
+                .oauth2ResourceServer(
+                        oauth2 -> oauth2.opaqueToken(opaque -> opaque.introspector(opaqueTokenIntrospector)));
 
         return http.build();
     }

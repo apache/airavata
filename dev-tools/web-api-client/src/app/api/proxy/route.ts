@@ -31,6 +31,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Only http/https URLs are allowed" }, { status: 400 });
   }
 
+  console.log(`Access token: ${session.accessToken}`);
+
   const outgoingHeaders: Record<string, string> = {
     ...(headers ?? {}),
     Authorization: `Bearer ${session.accessToken}`,
