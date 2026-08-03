@@ -22,6 +22,7 @@ package org.apache.airavata.server.auth;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
@@ -30,17 +31,23 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 
 /**
  * Wraps CILogon's token introspection response, enriches it with profile claims
- * (email, name, etc.) from CILogon's userinfo endpoint, and populates authorities
- * resolved via {@link UserRoleLookupService} (looked up by username, not trusted
+ * (email, name, etc.) from CILogon's userinfo endpoint, and populates
+ * authorities
+ * resolved via {@link UserRoleLookupService} (looked up by username, not
+ * trusted
  * from the token), so that {@code @PreAuthorize(...)} works on service methods.
  *
- * <p>CILogon access tokens for standard (non "Full Service") OAuth clients are
+ * <p>
+ * CILogon access tokens for standard (non "Full Service") OAuth clients are
  * opaque, not self-contained JWTs, so tokens are validated by calling CILogon's
- * introspection endpoint rather than by decoding a JWT locally against a JWK set.
- * Introspection alone only returns a small, fixed claim set — profile attributes
+ * introspection endpoint rather than by decoding a JWT locally against a JWK
+ * set.
+ * Introspection alone only returns a small, fixed claim set — profile
+ * attributes
  * come from a second call to userinfo, using the same bearer token.
  *
- * <p>Not a Spring bean itself (it implements the same interface as the delegate
+ * <p>
+ * Not a Spring bean itself (it implements the same interface as the delegate
  * it wraps, which would make component-scanning it ambiguous/circular) —
  * {@link SecurityConfig} constructs it explicitly around the real introspector.
  */
@@ -49,22 +56,30 @@ public class UserRoleOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
     private final OpaqueTokenIntrospector delegate;
     private final UserRoleLookupService userRoleLookupService;
     private final CILogonUserInfoClient userInfoClient;
+    private final Optional<RootAccountTokenProvider> rootAccountTokenProvider;
 
     public UserRoleOpaqueTokenIntrospector(
             OpaqueTokenIntrospector delegate,
             UserRoleLookupService userRoleLookupService,
-            CILogonUserInfoClient userInfoClient) {
+            CILogonUserInfoClient userInfoClient,
+            Optional<RootAccountTokenProvider> rootAccountTokenProvider) {
         this.delegate = delegate;
         this.userRoleLookupService = userRoleLookupService;
         this.userInfoClient = userInfoClient;
+        this.rootAccountTokenProvider = rootAccountTokenProvider;
     }
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
+        if (rootAccountTokenProvider.isPresent() && rootAccountTokenProvider.get().isRootToken(token)) {
+            return rootAccountTokenProvider.get().createRootPrincipal();
+        }
+
         OAuth2AuthenticatedPrincipal principal = delegate.introspect(token);
 
         Map<String, Object> attributes = new LinkedHashMap<>(principal.getAttributes());
-        // Introspection claims (active, scope, exp, sub, ...) win on conflict; userinfo only fills in gaps.
+        // Introspection claims (active, scope, exp, sub, ...) win on conflict; userinfo
+        // only fills in gaps.
         userInfoClient.fetchUserInfo(token).forEach(attributes::putIfAbsent);
 
         String username = (String) attributes.get("username");

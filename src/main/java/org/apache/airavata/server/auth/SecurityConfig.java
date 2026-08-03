@@ -19,6 +19,7 @@
 */
 package org.apache.airavata.server.auth;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,6 +58,7 @@ public class SecurityConfig {
     private final String clientId;
     private final String clientSecret;
     private final UserRoleLookupService userRoleLookupService;
+    private final Optional<RootAccountTokenProvider> rootAccountTokenProvider;
 
     public SecurityConfig(
             @Value("${airavata.security.cilogon.introspection-uri:https://cilogon.org/oauth2/introspect}")
@@ -65,12 +67,14 @@ public class SecurityConfig {
                     String userInfoUri,
             @Value("${airavata.security.cilogon.client-id}") String clientId,
             @Value("${airavata.security.cilogon.client-secret}") String clientSecret,
-            UserRoleLookupService userRoleLookupService) {
+            UserRoleLookupService userRoleLookupService,
+            Optional<RootAccountTokenProvider> rootAccountTokenProvider) {
         this.introspectionUri = introspectionUri;
         this.userInfoUri = userInfoUri;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.userRoleLookupService = userRoleLookupService;
+        this.rootAccountTokenProvider = rootAccountTokenProvider;
     }
 
     @Bean
@@ -80,7 +84,7 @@ public class SecurityConfig {
                 .clientSecret(clientSecret)
                 .build();
         CILogonUserInfoClient userInfoClient = new CILogonUserInfoClient(RestClient.create(), userInfoUri);
-        return new UserRoleOpaqueTokenIntrospector(delegate, userRoleLookupService, userInfoClient);
+        return new UserRoleOpaqueTokenIntrospector(delegate, userRoleLookupService, userInfoClient, rootAccountTokenProvider);
     }
 
     @Bean
