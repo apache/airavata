@@ -1,4 +1,4 @@
-package org.apache.airavata.dto.iam;
+package org.apache.airavata.iam.dto;
 
 import org.apache.airavata.iam.model.enums.AuthMethod;
 

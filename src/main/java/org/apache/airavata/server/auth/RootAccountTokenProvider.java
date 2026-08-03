@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,9 +47,17 @@ public class RootAccountTokenProvider {
 
     private final String rootAccountToken;
 
-    public RootAccountTokenProvider() {
-        this.rootAccountToken = generateRandomToken();
+
+    public RootAccountTokenProvider(
+            @Value("${airavata.security.root-account.token:}") String configuredToken) {
+        this.rootAccountToken = initializeToken(configuredToken);
         printToken();
+    }
+
+    private String initializeToken(String configuredToken) {
+        return configuredToken != null && !configuredToken.isEmpty()
+                ? configuredToken
+                : generateRandomToken();
     }
 
     private String generateRandomToken() {

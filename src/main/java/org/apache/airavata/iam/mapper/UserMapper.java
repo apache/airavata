@@ -1,7 +1,7 @@
 package org.apache.airavata.iam.mapper;
 
-import org.apache.airavata.dto.iam.UserRegistrationDto;
-import org.apache.airavata.dto.iam.UserResponseDto;
+import org.apache.airavata.iam.dto.UserRegistrationDto;
+import org.apache.airavata.iam.dto.UserResponseDto;
 import org.apache.airavata.iam.model.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
