@@ -1,41 +1,44 @@
-/**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
 package org.apache.airavata.iam.model;
 
-import jakarta.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity(name = "SharingUserEntity")
-@Table(name = "SHARING_USER", schema = "") // USER is a reserved term in derby
-@IdClass(UserPK.class)
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+import org.apache.airavata.iam.model.enums.AuthMethod;
+import org.apache.airavata.iam.model.enums.UserStatus;
+
+@Entity(name = "users")
 public class UserEntity {
-    private static final Logger logger = LoggerFactory.getLogger(UserEntity.class);
-    private String userId;
-    private String domainId;
-    private String userName;
-    private Long createdTime;
-    private Long updatedTime;
 
     @Id
-    @Column(name = "USER_ID")
+    private String userId; // Unique identifier for the user. CILogon users will have a CILogon subject
+                           // identifier, while system users will have a UUID.
+
+    @Enumerated(EnumType.STRING)
+    private AuthMethod authMethod; // CILogon, System
+
+    private String email;
+    private String firstName;
+    private String lastName;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status; // Active, Inactive, Suspended
+
+    private long createdAt; // Timestamp of user creation
+
+    // Deleting a user deletes their role rows too (cascade + orphanRemoval), rather
+    // than relying on every caller to remember to clean up user_roles separately.
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UserRoleEntity> roles = new ArrayList<>();
+
+    // Getters and Setters
     public String getUserId() {
         return userId;
     }
@@ -44,64 +47,59 @@ public class UserEntity {
         this.userId = userId;
     }
 
-    @Id
-    @Column(name = "DOMAIN_ID")
-    public String getDomainId() {
-        return domainId;
+    public AuthMethod getAuthMethod() {
+        return authMethod;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
+    public void setAuthMethod(AuthMethod authMethod) {
+        this.authMethod = authMethod;
     }
 
-    @Basic
-    @Column(name = "USER_NAME")
-    public String getUserName() {
-        return userName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @Basic
-    @Column(name = "CREATED_TIME")
-    public Long getCreatedTime() {
-        return createdTime;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setCreatedTime(Long createdTime) {
-        this.createdTime = createdTime;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    @Basic
-    @Column(name = "UPDATED_TIME")
-    public Long getUpdatedTime() {
-        return updatedTime;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setUpdatedTime(Long updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserEntity that = (UserEntity) o;
-
-        if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) return false;
-        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
-            return false;
-
-        return true;
+    public UserStatus getStatus() {
+        return status;
     }
 
-    @Override
-    public int hashCode() {
-        int result = getUserId() != null ? getUserId().hashCode() : 0;
-        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
-        return result;
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public List<UserRoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserRoleEntity> roles) {
+        this.roles = roles;
     }
 }
