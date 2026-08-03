@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserResponseDto getUserById(@PathVariable String userId) {
+    public UserResponseDto getUserById(@PathVariable String userId) throws Exception {
         return userService.getUserById(userId);
     }
 

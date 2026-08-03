@@ -20,6 +20,8 @@ public class UserEntity {
     @Id
     private String userId; // Unique identifier for the user. CILogon users will have a CILogon subject
                            // identifier, while system users will have a UUID.
+                           // CILogon user ids are normalized to "cilogon:12345" format for consistency and
+                           // easier lookup.
 
     @Enumerated(EnumType.STRING)
     private AuthMethod authMethod; // CILogon, System

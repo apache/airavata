@@ -90,11 +90,22 @@ public class UserRoleOpaqueTokenIntrospector implements OpaqueTokenIntrospector 
             username = principal.getName();
         }
 
+        // CILogon usernames are sometimes full URIs (e.g.
+        // "http://cilogon.org/serverE/users/12345")
+        // rather than simple identifiers; normalize to "cilogon:12345" for user lookup.
+
+        if (username.startsWith("http://cilogon.org")) {
+            int lastSlash = username.lastIndexOf('/');
+            if (lastSlash >= 0 && lastSlash < username.length() - 1) {
+                username = "cilogon:" + username.substring(lastSlash + 1);
+            }
+        }
+
         Collection<GrantedAuthority> authorities = userRoleLookupService.getRoles(username).stream()
                 .map(SimpleGrantedAuthority::new)
                 .map(GrantedAuthority.class::cast)
                 .toList();
 
-        return new DefaultOAuth2AuthenticatedPrincipal(principal.getName(), attributes, authorities);
+        return new DefaultOAuth2AuthenticatedPrincipal(username, attributes, authorities);
     }
 }

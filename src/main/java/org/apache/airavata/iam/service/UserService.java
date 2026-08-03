@@ -45,7 +45,7 @@ public class UserService {
         return responseDto;
     }
 
-    public UserResponseDto getUserById(String userId) {
+    public UserResponseDto getUserById(String userId) throws Exception {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -59,7 +59,7 @@ public class UserService {
         }
 
         UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+                .orElseThrow(() -> new Exception("User not found with ID: " + userId));
         return userMapper.toResponseDto(userEntity);
     }
 
