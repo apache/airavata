@@ -1,10 +1,12 @@
 package org.apache.airavata.application.model.template;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.airavata.application.model.deployment.SlurmApplicationDeploymentEntity;
 
@@ -17,11 +19,14 @@ public class ApplicationTemplateEntity {
     private String templateName;
     private String templateDescription;
 
-    @OneToMany(mappedBy = "applicationTemplate")
-    private List<ApplicationTemplateInputEntity> inputs;
+    // Inputs and outputs are owned by the template: they are created, replaced and
+    // deleted with it. Deployments are not — they outlive individual edits and are
+    // managed through their own endpoints.
+    @OneToMany(mappedBy = "applicationTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ApplicationTemplateInputEntity> inputs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "applicationTemplate")
-    private List<ApplicationTemplateOutputEntity> outputs;
+    @OneToMany(mappedBy = "applicationTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ApplicationTemplateOutputEntity> outputs = new ArrayList<>();
 
     @OneToMany(mappedBy = "applicationTemplate")
     private List<SlurmApplicationDeploymentEntity> deployments;
