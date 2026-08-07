@@ -8,6 +8,8 @@ import org.apache.airavata.application.model.deployment.SlurmApplicationDeployme
 import org.apache.airavata.application.model.template.ApplicationTemplateEntity;
 import org.apache.airavata.application.repository.ApplicationTemplateRepository;
 import org.apache.airavata.application.repository.SlurmApplicationDeploymentRepository;
+import org.apache.airavata.compute.model.SlurmClusterEntity;
+import org.apache.airavata.compute.repository.SlurmClusterRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,17 @@ public class SlurmApplicationDeploymentService {
 
     private final SlurmApplicationDeploymentRepository deploymentRepository;
     private final ApplicationTemplateRepository templateRepository;
+    private final SlurmClusterRepository clusterRepository;
     private final SlurmApplicationDeploymentMapper mapper;
 
     public SlurmApplicationDeploymentService(
             SlurmApplicationDeploymentRepository deploymentRepository,
             ApplicationTemplateRepository templateRepository,
+            SlurmClusterRepository clusterRepository,
             SlurmApplicationDeploymentMapper mapper) {
         this.deploymentRepository = deploymentRepository;
         this.templateRepository = templateRepository;
+        this.clusterRepository = clusterRepository;
         this.mapper = mapper;
     }
 
@@ -53,6 +58,7 @@ public class SlurmApplicationDeploymentService {
     public SlurmApplicationDeploymentResponseDto createDeployment(SlurmApplicationDeploymentRequestDto request) {
         SlurmApplicationDeploymentEntity entity = mapper.toEntity(request);
         entity.setApplicationTemplate(resolveTemplate(request.getTemplateId()));
+        entity.setSlurmCluster(resolveCluster(request.getSlurmClusterId()));
         return mapper.toResponseDto(deploymentRepository.save(entity));
     }
 
@@ -63,6 +69,7 @@ public class SlurmApplicationDeploymentService {
         SlurmApplicationDeploymentEntity entity = findOrThrow(deploymentId);
         mapper.updateEntity(request, entity);
         entity.setApplicationTemplate(resolveTemplate(request.getTemplateId()));
+        entity.setSlurmCluster(resolveCluster(request.getSlurmClusterId()));
         return mapper.toResponseDto(deploymentRepository.save(entity));
     }
 
@@ -84,5 +91,18 @@ public class SlurmApplicationDeploymentService {
                 .findById(templateId)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Template not found: " + templateId));
+    }
+
+    /**
+     * The cluster reference is optional — the column is nullable, so an absent id leaves
+     * the deployment unattached rather than failing. A supplied id must resolve.
+     */
+    private SlurmClusterEntity resolveCluster(String clusterId) {
+        if (clusterId == null || clusterId.isBlank()) {
+            return null;
+        }
+        return clusterRepository
+                .findById(clusterId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cluster not found: " + clusterId));
     }
 }

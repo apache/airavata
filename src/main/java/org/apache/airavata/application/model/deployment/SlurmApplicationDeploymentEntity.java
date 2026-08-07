@@ -1,6 +1,7 @@
 package org.apache.airavata.application.model.deployment;
 
 import org.apache.airavata.application.model.template.ApplicationTemplateEntity;
+import org.apache.airavata.compute.model.SlurmClusterEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,11 +20,9 @@ public class SlurmApplicationDeploymentEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String deploymentId;
 
-    /*
-     * TODO: This should be a foreign key to a SlurmClusterEntity, but we don't have
-     * that yet.
-     */
-    private String slurmClusterId;
+    @ManyToOne
+    @JoinColumn(name = "cluster_id", foreignKey = @ForeignKey(name = "fk_dep_slurm_cluster"))
+    private SlurmClusterEntity slurmCluster;
 
     @ManyToOne
     @JoinColumn(name = "template_id", foreignKey = @ForeignKey(name = "fk_dep_app_template"))
@@ -90,12 +89,12 @@ public class SlurmApplicationDeploymentEntity {
         this.deploymentId = deploymentId;
     }
 
-    public String getSlurmClusterId() {
-        return slurmClusterId;
+    public SlurmClusterEntity getSlurmCluster() {
+        return slurmCluster;
     }
 
-    public void setSlurmClusterId(String slurmClusterId) {
-        this.slurmClusterId = slurmClusterId;
+    public void setSlurmCluster(SlurmClusterEntity slurmCluster) {
+        this.slurmCluster = slurmCluster;
     }
 
     public ApplicationTemplateEntity getApplicationTemplate() {
