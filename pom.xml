@@ -232,7 +232,7 @@ under the License.
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
-                <version>1.15.10</version>
+                <version>1.15.12</version>
             </dependency>
             <dependency>
                 <groupId>com.hierynomus</groupId>
