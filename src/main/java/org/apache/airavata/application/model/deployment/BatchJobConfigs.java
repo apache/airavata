@@ -1,41 +1,22 @@
 package org.apache.airavata.application.model.deployment;
 
-import org.apache.airavata.application.model.template.ApplicationTemplateEntity;
-import org.apache.airavata.compute.model.SlurmClusterEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
 
+/**
+ * Batch-scheduler resource request for a {@link BatchApplicationDeploymentEntity}. Owned
+ * by its deployment — created, replaced and deleted with it — rather than a shareable
+ * aggregate like {@code ApplicationTemplateEntity} or {@code SlurmClusterEntity}.
+ */
 @Entity
-public class SlurmApplicationDeploymentEntity {
+public class BatchJobConfigs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String deploymentId;
-
-    @ManyToOne
-    @JoinColumn(name = "cluster_id", foreignKey = @ForeignKey(name = "fk_dep_slurm_cluster"))
-    private SlurmClusterEntity slurmCluster;
-
-    @ManyToOne
-    @JoinColumn(name = "template_id", foreignKey = @ForeignKey(name = "fk_dep_app_template"))
-    private ApplicationTemplateEntity applicationTemplate;
-
-    /*
-     * All execution commands go into this. This includes module loads, clean up
-     * commands, actual run command. Script can be parameterized using jinja
-     * template
-     */
-    @Lob
-    @Column(nullable = false)
-    private String slurmRunSection;
+    private String batchJobConfigId;
 
     // Slurm resource allocation parameters
     @Column(nullable = true)
@@ -73,44 +54,13 @@ public class SlurmApplicationDeploymentEntity {
 
     @Column(nullable = false)
     private String allocation;
-    @Column(nullable = false)
-    private String user; // User who will submit the job
-    @Column(nullable = true)
-    private String workDir; // Additional subdir for execution will be created inside this
-    @Column(nullable = true)
-    private String partition;
 
-    // Getters and Setters
-    public String getDeploymentId() {
-        return deploymentId;
+    public String getBatchJobConfigId() {
+        return batchJobConfigId;
     }
 
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
-    public SlurmClusterEntity getSlurmCluster() {
-        return slurmCluster;
-    }
-
-    public void setSlurmCluster(SlurmClusterEntity slurmCluster) {
-        this.slurmCluster = slurmCluster;
-    }
-
-    public ApplicationTemplateEntity getApplicationTemplate() {
-        return applicationTemplate;
-    }
-
-    public void setApplicationTemplate(ApplicationTemplateEntity applicationTemplate) {
-        this.applicationTemplate = applicationTemplate;
-    }
-
-    public String getSlurmRunSection() {
-        return slurmRunSection;
-    }
-
-    public void setSlurmRunSection(String slurmRunSection) {
-        this.slurmRunSection = slurmRunSection;
+    public void setBatchJobConfigId(String batchJobConfigId) {
+        this.batchJobConfigId = batchJobConfigId;
     }
 
     public Integer getCpus() {
@@ -231,29 +181,5 @@ public class SlurmApplicationDeploymentEntity {
 
     public void setAllocation(String allocation) {
         this.allocation = allocation;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getWorkDir() {
-        return workDir;
-    }
-
-    public void setWorkDir(String workDir) {
-        this.workDir = workDir;
-    }
-
-    public String getPartition() {
-        return partition;
-    }
-
-    public void setPartition(String partition) {
-        this.partition = partition;
     }
 }

@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.application.model.deployment.SlurmApplicationDeploymentEntity;
+import org.apache.airavata.application.model.deployment.BatchApplicationDeploymentEntity;
 
 @Entity
 public class ApplicationTemplateEntity {
@@ -29,7 +29,7 @@ public class ApplicationTemplateEntity {
     private List<ApplicationTemplateOutputEntity> outputs = new ArrayList<>();
 
     @OneToMany(mappedBy = "applicationTemplate")
-    private List<SlurmApplicationDeploymentEntity> deployments;
+    private List<BatchApplicationDeploymentEntity> deployments;
 
     public String getTemplateId() {
         return templateId;
@@ -71,11 +71,11 @@ public class ApplicationTemplateEntity {
         this.outputs = outputs;
     }
 
-    public List<SlurmApplicationDeploymentEntity> getDeployments() {
+    public List<BatchApplicationDeploymentEntity> getDeployments() {
         return deployments;
     }
 
-    public void setDeployments(List<SlurmApplicationDeploymentEntity> deployments) {
+    public void setDeployments(List<BatchApplicationDeploymentEntity> deployments) {
         this.deployments = deployments;
     }
 }

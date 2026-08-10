@@ -10,7 +10,7 @@ import org.apache.airavata.application.model.template.ApplicationTemplateEntity;
 import org.apache.airavata.application.model.template.ApplicationTemplateInputEntity;
 import org.apache.airavata.application.model.template.ApplicationTemplateOutputEntity;
 import org.apache.airavata.application.repository.ApplicationTemplateRepository;
-import org.apache.airavata.application.repository.SlurmApplicationDeploymentRepository;
+import org.apache.airavata.application.repository.BatchApplicationDeploymentRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -28,12 +28,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class ApplicationTemplateService {
 
     private final ApplicationTemplateRepository templateRepository;
-    private final SlurmApplicationDeploymentRepository deploymentRepository;
+    private final BatchApplicationDeploymentRepository deploymentRepository;
     private final ApplicationTemplateMapper mapper;
 
     public ApplicationTemplateService(
             ApplicationTemplateRepository templateRepository,
-            SlurmApplicationDeploymentRepository deploymentRepository,
+            BatchApplicationDeploymentRepository deploymentRepository,
             ApplicationTemplateMapper mapper) {
         this.templateRepository = templateRepository;
         this.deploymentRepository = deploymentRepository;

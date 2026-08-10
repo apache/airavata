@@ -1,15 +1,18 @@
 package org.apache.airavata.application.dto.deployment;
 
-/** Read view of a Slurm deployment; the owning template is referenced by id only. */
-public class SlurmApplicationDeploymentResponseDto {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-    private String deploymentId;
-    private String templateId;
-    private String slurmClusterId;
-    private String slurmRunSection;
+/** Create/update payload for a deployment's batch-scheduler resource request. */
+public class BatchJobConfigRequestDto {
+
+    @NotNull(message = "Wall time cannot be null")
+    @Positive(message = "Wall time must be positive")
     private Long wallTimeMinutes;
+
+    @NotBlank(message = "Allocation cannot be blank")
     private String allocation;
-    private String user;
 
     // Slurm resource allocation parameters
     private Integer cpus;
@@ -28,40 +31,6 @@ public class SlurmApplicationDeploymentResponseDto {
     private Integer gpusPerNode;
 
     private String constraints;
-    private String workDir;
-    private String partition;
-
-    public String getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
-    }
-
-    public String getSlurmClusterId() {
-        return slurmClusterId;
-    }
-
-    public void setSlurmClusterId(String slurmClusterId) {
-        this.slurmClusterId = slurmClusterId;
-    }
-
-    public String getSlurmRunSection() {
-        return slurmRunSection;
-    }
-
-    public void setSlurmRunSection(String slurmRunSection) {
-        this.slurmRunSection = slurmRunSection;
-    }
 
     public Long getWallTimeMinutes() {
         return wallTimeMinutes;
@@ -77,14 +46,6 @@ public class SlurmApplicationDeploymentResponseDto {
 
     public void setAllocation(String allocation) {
         this.allocation = allocation;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
     }
 
     public Integer getCpus() {
@@ -189,21 +150,5 @@ public class SlurmApplicationDeploymentResponseDto {
 
     public void setConstraints(String constraints) {
         this.constraints = constraints;
-    }
-
-    public String getWorkDir() {
-        return workDir;
-    }
-
-    public void setWorkDir(String workDir) {
-        this.workDir = workDir;
-    }
-
-    public String getPartition() {
-        return partition;
-    }
-
-    public void setPartition(String partition) {
-        this.partition = partition;
     }
 }

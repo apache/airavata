@@ -1,32 +1,11 @@
 package org.apache.airavata.application.dto.deployment;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+/** Read view of a deployment's batch-scheduler resource request. */
+public class BatchJobConfigResponseDto {
 
-/**
- * Create/update payload for a Slurm deployment of an application template.
- * Required fields mirror the {@code nullable = false} columns on the entity.
- */
-public class SlurmApplicationDeploymentRequestDto {
-
-    @NotBlank(message = "Template id cannot be blank")
-    private String templateId;
-
-    private String slurmClusterId;
-
-    @NotBlank(message = "Slurm run section cannot be blank")
-    private String slurmRunSection;
-
-    @NotNull(message = "Wall time cannot be null")
-    @Positive(message = "Wall time must be positive")
+    private String batchJobConfigId;
     private Long wallTimeMinutes;
-
-    @NotBlank(message = "Allocation cannot be blank")
     private String allocation;
-
-    @NotBlank(message = "User cannot be blank")
-    private String user;
 
     // Slurm resource allocation parameters
     private Integer cpus;
@@ -45,31 +24,13 @@ public class SlurmApplicationDeploymentRequestDto {
     private Integer gpusPerNode;
 
     private String constraints;
-    private String workDir;
-    private String partition;
 
-    public String getTemplateId() {
-        return templateId;
+    public String getBatchJobConfigId() {
+        return batchJobConfigId;
     }
 
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
-    }
-
-    public String getSlurmClusterId() {
-        return slurmClusterId;
-    }
-
-    public void setSlurmClusterId(String slurmClusterId) {
-        this.slurmClusterId = slurmClusterId;
-    }
-
-    public String getSlurmRunSection() {
-        return slurmRunSection;
-    }
-
-    public void setSlurmRunSection(String slurmRunSection) {
-        this.slurmRunSection = slurmRunSection;
+    public void setBatchJobConfigId(String batchJobConfigId) {
+        this.batchJobConfigId = batchJobConfigId;
     }
 
     public Long getWallTimeMinutes() {
@@ -86,14 +47,6 @@ public class SlurmApplicationDeploymentRequestDto {
 
     public void setAllocation(String allocation) {
         this.allocation = allocation;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
     }
 
     public Integer getCpus() {
@@ -198,21 +151,5 @@ public class SlurmApplicationDeploymentRequestDto {
 
     public void setConstraints(String constraints) {
         this.constraints = constraints;
-    }
-
-    public String getWorkDir() {
-        return workDir;
-    }
-
-    public void setWorkDir(String workDir) {
-        this.workDir = workDir;
-    }
-
-    public String getPartition() {
-        return partition;
-    }
-
-    public void setPartition(String partition) {
-        this.partition = partition;
     }
 }
