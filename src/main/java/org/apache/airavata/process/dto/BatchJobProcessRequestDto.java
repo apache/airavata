@@ -1,6 +1,9 @@
 package org.apache.airavata.process.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.apache.airavata.application.dto.deployment.BatchJobConfigRequestDto;
 
 /**
  * Create/update payload for a batch job process.
@@ -14,8 +17,9 @@ public class BatchJobProcessRequestDto {
     @NotBlank(message = "Deployment id cannot be blank")
     private String deploymentId;
 
-    /** Optional; defaults to the deployment's default submission credential when omitted. */
-    private String sshCredentialId;
+    @NotNull(message = "Batch job config cannot be null")
+    @Valid
+    private BatchJobConfigRequestDto batchJobConfig;
 
     public String getDeploymentId() {
         return deploymentId;
@@ -25,11 +29,11 @@ public class BatchJobProcessRequestDto {
         this.deploymentId = deploymentId;
     }
 
-    public String getSshCredentialId() {
-        return sshCredentialId;
+    public BatchJobConfigRequestDto getBatchJobConfig() {
+        return batchJobConfig;
     }
 
-    public void setSshCredentialId(String sshCredentialId) {
-        this.sshCredentialId = sshCredentialId;
+    public void setBatchJobConfig(BatchJobConfigRequestDto batchJobConfig) {
+        this.batchJobConfig = batchJobConfig;
     }
 }

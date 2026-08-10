@@ -12,7 +12,6 @@ public class BatchJobProcessResponseDto {
     private String processId;
     private String deploymentId;
     private String userId;
-    private String sshCredentialId;
     private BatchJobConfigResponseDto batchJobConfig;
 
     public String getProcessId() {
@@ -37,14 +36,6 @@ public class BatchJobProcessResponseDto {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getSshCredentialId() {
-        return sshCredentialId;
-    }
-
-    public void setSshCredentialId(String sshCredentialId) {
-        this.sshCredentialId = sshCredentialId;
     }
 
     public BatchJobConfigResponseDto getBatchJobConfig() {
