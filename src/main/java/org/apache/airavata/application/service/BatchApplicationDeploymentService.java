@@ -8,8 +8,8 @@ import org.apache.airavata.application.model.deployment.BatchApplicationDeployme
 import org.apache.airavata.application.model.template.ApplicationTemplateEntity;
 import org.apache.airavata.application.repository.ApplicationTemplateRepository;
 import org.apache.airavata.application.repository.BatchApplicationDeploymentRepository;
-import org.apache.airavata.compute.model.SlurmClusterEntity;
-import org.apache.airavata.compute.repository.SlurmClusterRepository;
+import org.apache.airavata.compute.model.ClusterEntity;
+import org.apache.airavata.compute.repository.ClusterRepository;
 import org.apache.airavata.credentials.model.SSHUserCredential;
 import org.apache.airavata.credentials.repository.SSHUserCredentialRepository;
 import org.springframework.http.HttpStatus;
@@ -24,14 +24,14 @@ public class BatchApplicationDeploymentService {
 
     private final BatchApplicationDeploymentRepository deploymentRepository;
     private final ApplicationTemplateRepository templateRepository;
-    private final SlurmClusterRepository clusterRepository;
+    private final ClusterRepository clusterRepository;
     private final SSHUserCredentialRepository credentialRepository;
     private final BatchApplicationDeploymentMapper mapper;
 
     public BatchApplicationDeploymentService(
             BatchApplicationDeploymentRepository deploymentRepository,
             ApplicationTemplateRepository templateRepository,
-            SlurmClusterRepository clusterRepository,
+            ClusterRepository clusterRepository,
             SSHUserCredentialRepository credentialRepository,
             BatchApplicationDeploymentMapper mapper) {
         this.deploymentRepository = deploymentRepository;
@@ -104,7 +104,7 @@ public class BatchApplicationDeploymentService {
      * The cluster reference is optional — the column is nullable, so an absent id leaves
      * the deployment unattached rather than failing. A supplied id must resolve.
      */
-    private SlurmClusterEntity resolveCluster(String clusterId) {
+    private ClusterEntity resolveCluster(String clusterId) {
         if (clusterId == null || clusterId.isBlank()) {
             return null;
         }

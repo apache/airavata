@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 /**
  * Batch-scheduler resource request for a {@link BatchApplicationDeploymentEntity}. Owned
  * by its deployment — created, replaced and deleted with it — rather than a shareable
- * aggregate like {@code ApplicationTemplateEntity} or {@code SlurmClusterEntity}.
+ * aggregate like {@code ApplicationTemplateEntity} or {@code ClusterEntity}.
  */
 @Entity
 public class BatchJobConfigs {

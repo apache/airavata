@@ -1,8 +1,8 @@
 package org.apache.airavata.compute.mapper;
 
-import org.apache.airavata.compute.dto.SlurmClusterRequestDto;
-import org.apache.airavata.compute.dto.SlurmClusterResponseDto;
-import org.apache.airavata.compute.model.SlurmClusterEntity;
+import org.apache.airavata.compute.dto.ClusterRequestDto;
+import org.apache.airavata.compute.dto.ClusterResponseDto;
+import org.apache.airavata.compute.model.ClusterEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -14,17 +14,17 @@ import org.mapstruct.ReportingPolicy;
  */
 @Mapper(
         componentModel = "spring",
-        uses = SlurmPartitionMapper.class,
+        uses = ClusterPartitionMapper.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SlurmClusterMapper {
+public interface ClusterMapper {
 
-    SlurmClusterResponseDto toResponseDto(SlurmClusterEntity entity);
-
-    @Mapping(target = "clusterId", ignore = true)
-    @Mapping(target = "partitions", ignore = true)
-    SlurmClusterEntity toEntity(SlurmClusterRequestDto dto);
+    ClusterResponseDto toResponseDto(ClusterEntity entity);
 
     @Mapping(target = "clusterId", ignore = true)
     @Mapping(target = "partitions", ignore = true)
-    void updateEntity(SlurmClusterRequestDto dto, @MappingTarget SlurmClusterEntity entity);
+    ClusterEntity toEntity(ClusterRequestDto dto);
+
+    @Mapping(target = "clusterId", ignore = true)
+    @Mapping(target = "partitions", ignore = true)
+    void updateEntity(ClusterRequestDto dto, @MappingTarget ClusterEntity entity);
 }

@@ -12,15 +12,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class SlurmClusterCredentialEntity {
+public class ClusterCredentialEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String slurmClusterCredentialId;
+    private String clusterCredentialId;
 
     @ManyToOne
     @JoinColumn(name = "cluster_id", foreignKey = @ForeignKey(name = "fk_cluster_credential_cluster"))
-    private SlurmClusterEntity slurmCluster;
+    private ClusterEntity slurmCluster;
 
     @ManyToOne
     @JoinColumn(name = "ssh_credential_id", foreignKey = @ForeignKey(name = "fk_cluster_credential_ssh_credential"))
@@ -30,19 +30,19 @@ public class SlurmClusterCredentialEntity {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_cluster_credential_user"))
     private UserEntity user;
 
-    public String getSlurmClusterCredentialId() {
-        return slurmClusterCredentialId;
+    public String getClusterCredentialId() {
+        return clusterCredentialId;
     }
 
-    public void setSlurmClusterCredentialId(String slurmClusterCredentialId) {
-        this.slurmClusterCredentialId = slurmClusterCredentialId;
+    public void setClusterCredentialId(String clusterCredentialId) {
+        this.clusterCredentialId = clusterCredentialId;
     }
 
-    public SlurmClusterEntity getSlurmCluster() {
+    public ClusterEntity getSlurmCluster() {
         return slurmCluster;
     }
 
-    public void setSlurmCluster(SlurmClusterEntity slurmCluster) {
+    public void setSlurmCluster(ClusterEntity slurmCluster) {
         this.slurmCluster = slurmCluster;
     }
 

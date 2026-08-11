@@ -3,7 +3,7 @@ package org.apache.airavata.compute.dto;
 import jakarta.validation.constraints.NotBlank;
 
 /** Create/update payload for a partition of a Slurm cluster. */
-public class SlurmPartitionRequestDto {
+public class ClusterPartitionRequestDto {
 
     @NotBlank(message = "Partition name cannot be blank")
     private String name;

@@ -3,14 +3,14 @@ package org.apache.airavata.compute.dto;
 import java.util.List;
 
 /** Read view of a Slurm cluster, including its partitions. */
-public class SlurmClusterResponseDto {
+public class ClusterResponseDto {
 
     private String clusterId;
     private String clusterName;
     private String clusterDescription;
     private String hostName;
     private String slurmHome;
-    private List<SlurmPartitionResponseDto> partitions;
+    private List<ClusterPartitionResponseDto> partitions;
 
     public String getClusterId() {
         return clusterId;
@@ -52,11 +52,11 @@ public class SlurmClusterResponseDto {
         this.slurmHome = slurmHome;
     }
 
-    public List<SlurmPartitionResponseDto> getPartitions() {
+    public List<ClusterPartitionResponseDto> getPartitions() {
         return partitions;
     }
 
-    public void setPartitions(List<SlurmPartitionResponseDto> partitions) {
+    public void setPartitions(List<ClusterPartitionResponseDto> partitions) {
         this.partitions = partitions;
     }
 }

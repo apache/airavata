@@ -1,19 +1,19 @@
 package org.apache.airavata.compute.dto;
 
 /** Read view of a per-user SSH credential binding on a Slurm cluster. */
-public class SlurmClusterCredentialResponseDto {
+public class ClusterCredentialResponseDto {
 
-    private String slurmClusterCredentialId;
+    private String clusterCredentialId;
     private String clusterId;
     private String sshCredentialId;
     private String userId;
 
-    public String getSlurmClusterCredentialId() {
-        return slurmClusterCredentialId;
+    public String getClusterCredentialId() {
+        return clusterCredentialId;
     }
 
-    public void setSlurmClusterCredentialId(String slurmClusterCredentialId) {
-        this.slurmClusterCredentialId = slurmClusterCredentialId;
+    public void setClusterCredentialId(String clusterCredentialId) {
+        this.clusterCredentialId = clusterCredentialId;
     }
 
     public String getClusterId() {

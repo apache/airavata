@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 
 /**
  * Create/update payload for a Slurm cluster. Partitions are not accepted here — they are
- * managed through {@code /api/v1/slurm-clusters/{clusterId}/partitions} so that updating
+ * managed through {@code /api/v1/clusters/{clusterId}/partitions} so that updating
  * a cluster cannot silently drop them.
  */
-public class SlurmClusterRequestDto {
+public class ClusterRequestDto {
 
     @NotBlank(message = "Cluster name cannot be blank")
     private String clusterName;

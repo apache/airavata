@@ -1,69 +1,24 @@
-package org.apache.airavata.compute.model;
+package org.apache.airavata.compute.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+/** Read view of a partition; the owning cluster is referenced by id only. */
+public class ClusterPartitionResponseDto {
 
-@Entity
-public class SlurmPartitionEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String partitionId;
-
-    @ManyToOne
-    @JoinColumn(name = "cluster_id", foreignKey = @ForeignKey(name = "fk_partition_cluster"))
-    private SlurmClusterEntity slurmCluster;
-
-    @Column(nullable = false)
+    private String clusterId;
     private String name;
-
-    @Column(nullable = true)
     private String description;
-
-    @Column(nullable = true)
     private Integer maxRunTime;
-
-    @Column(nullable = true)
     private Integer maxNodes;
-
-    @Column(nullable = true)
     private Integer maxProcessors;
-
-    @Column(nullable = true)
     private Integer maxJobsInQueue;
-
-    @Column(nullable = true)
     private Long maxMemory;
-
-    @Column(nullable = true)
     private Integer cpuPerNode;
-
-    @Column(nullable = true)
     private Integer defaultNodeCount;
-
-    @Column(nullable = true)
     private Integer defaultCpuCount;
-
-    @Column(nullable = true)
     private Long defaultWalltime;
-
-    @Column(nullable = true)
-    private String gres; // Comma-separated list of generic resources (GRES) associated with the
-                         // partition
-
-    @Column(nullable = true)
-    private String nodes; // Comma-separated list of nodes associated with the partition
-
-    @Column(nullable = true)
+    private String gres;
+    private String nodes;
     private Boolean isDefaultQueue;
-
-    @Column(nullable = true)
     private Boolean isCheckpointable;
 
     public String getPartitionId() {
@@ -74,12 +29,12 @@ public class SlurmPartitionEntity {
         this.partitionId = partitionId;
     }
 
-    public SlurmClusterEntity getSlurmCluster() {
-        return slurmCluster;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setSlurmCluster(SlurmClusterEntity slurmCluster) {
-        this.slurmCluster = slurmCluster;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public String getName() {

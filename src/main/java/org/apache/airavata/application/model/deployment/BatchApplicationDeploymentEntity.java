@@ -1,7 +1,7 @@
 package org.apache.airavata.application.model.deployment;
 
 import org.apache.airavata.application.model.template.ApplicationTemplateEntity;
-import org.apache.airavata.compute.model.SlurmClusterEntity;
+import org.apache.airavata.compute.model.ClusterEntity;
 import org.apache.airavata.credentials.model.SSHUserCredential;
 
 import jakarta.persistence.CascadeType;
@@ -25,7 +25,7 @@ public class BatchApplicationDeploymentEntity {
 
     @ManyToOne
     @JoinColumn(name = "cluster_id", foreignKey = @ForeignKey(name = "fk_dep_slurm_cluster"))
-    private SlurmClusterEntity slurmCluster;
+    private ClusterEntity slurmCluster;
 
     @ManyToOne
     @JoinColumn(name = "template_id", foreignKey = @ForeignKey(name = "fk_dep_app_template"))
@@ -70,11 +70,11 @@ public class BatchApplicationDeploymentEntity {
         this.deploymentId = deploymentId;
     }
 
-    public SlurmClusterEntity getSlurmCluster() {
+    public ClusterEntity getSlurmCluster() {
         return slurmCluster;
     }
 
-    public void setSlurmCluster(SlurmClusterEntity slurmCluster) {
+    public void setSlurmCluster(ClusterEntity slurmCluster) {
         this.slurmCluster = slurmCluster;
     }
 

@@ -1,11 +1,11 @@
 package org.apache.airavata.compute.service;
 
 import java.util.List;
-import org.apache.airavata.compute.dto.SlurmClusterRequestDto;
-import org.apache.airavata.compute.dto.SlurmClusterResponseDto;
-import org.apache.airavata.compute.mapper.SlurmClusterMapper;
-import org.apache.airavata.compute.model.SlurmClusterEntity;
-import org.apache.airavata.compute.repository.SlurmClusterRepository;
+import org.apache.airavata.compute.dto.ClusterRequestDto;
+import org.apache.airavata.compute.dto.ClusterResponseDto;
+import org.apache.airavata.compute.mapper.ClusterMapper;
+import org.apache.airavata.compute.model.ClusterEntity;
+import org.apache.airavata.compute.repository.ClusterRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -22,37 +22,37 @@ import org.springframework.web.server.ResponseStatusException;
  * <p>Deleting a cluster cascades to its partitions, which are owned by it.
  */
 @Service
-public class SlurmClusterService {
+public class ClusterService {
 
-    private final SlurmClusterRepository clusterRepository;
-    private final SlurmClusterMapper mapper;
+    private final ClusterRepository clusterRepository;
+    private final ClusterMapper mapper;
 
-    public SlurmClusterService(SlurmClusterRepository clusterRepository, SlurmClusterMapper mapper) {
+    public ClusterService(ClusterRepository clusterRepository, ClusterMapper mapper) {
         this.clusterRepository = clusterRepository;
         this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
-    public List<SlurmClusterResponseDto> getAllClusters() {
+    public List<ClusterResponseDto> getAllClusters() {
         return clusterRepository.findAll().stream().map(mapper::toResponseDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public SlurmClusterResponseDto getCluster(String clusterId) {
+    public ClusterResponseDto getCluster(String clusterId) {
         return mapper.toResponseDto(findOrThrow(clusterId));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
     @Transactional
-    public SlurmClusterResponseDto createCluster(SlurmClusterRequestDto request) {
-        SlurmClusterEntity entity = mapper.toEntity(request);
+    public ClusterResponseDto createCluster(ClusterRequestDto request) {
+        ClusterEntity entity = mapper.toEntity(request);
         return mapper.toResponseDto(clusterRepository.save(entity));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
     @Transactional
-    public SlurmClusterResponseDto updateCluster(String clusterId, SlurmClusterRequestDto request) {
-        SlurmClusterEntity entity = findOrThrow(clusterId);
+    public ClusterResponseDto updateCluster(String clusterId, ClusterRequestDto request) {
+        ClusterEntity entity = findOrThrow(clusterId);
         mapper.updateEntity(request, entity);
         return mapper.toResponseDto(clusterRepository.save(entity));
     }
@@ -63,7 +63,7 @@ public class SlurmClusterService {
         clusterRepository.delete(findOrThrow(clusterId));
     }
 
-    private SlurmClusterEntity findOrThrow(String clusterId) {
+    private ClusterEntity findOrThrow(String clusterId) {
         return clusterRepository
                 .findById(clusterId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cluster not found: " + clusterId));

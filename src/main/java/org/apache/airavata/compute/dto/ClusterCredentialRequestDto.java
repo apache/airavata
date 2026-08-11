@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
  * token, never from client input, so a caller cannot bind a credential on another user's
  * behalf.
  */
-public class SlurmClusterCredentialRequestDto {
+public class ClusterCredentialRequestDto {
 
     @NotBlank(message = "Cluster id cannot be blank")
     private String clusterId;

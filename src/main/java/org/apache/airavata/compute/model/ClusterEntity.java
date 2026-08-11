@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class SlurmClusterEntity {
+public class ClusterEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,7 +29,7 @@ public class SlurmClusterEntity {
     // Partitions are owned by the cluster: they are created, replaced and deleted
     // with it, and have no meaning outside of it.
     @OneToMany(mappedBy = "slurmCluster", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SlurmPartitionEntity> partitions = new ArrayList<>();
+    private List<ClusterPartitionEntity> partitions = new ArrayList<>();
 
     public String getClusterId() {
         return clusterId;
@@ -71,11 +71,11 @@ public class SlurmClusterEntity {
         this.slurmHome = slurmHome;
     }
 
-    public List<SlurmPartitionEntity> getPartitions() {
+    public List<ClusterPartitionEntity> getPartitions() {
         return partitions;
     }
 
-    public void setPartitions(List<SlurmPartitionEntity> partitions) {
+    public void setPartitions(List<ClusterPartitionEntity> partitions) {
         this.partitions = partitions;
     }
 }

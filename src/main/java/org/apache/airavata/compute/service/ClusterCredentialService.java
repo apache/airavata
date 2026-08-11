@@ -1,13 +1,13 @@
 package org.apache.airavata.compute.service;
 
 import java.util.List;
-import org.apache.airavata.compute.dto.SlurmClusterCredentialRequestDto;
-import org.apache.airavata.compute.dto.SlurmClusterCredentialResponseDto;
-import org.apache.airavata.compute.mapper.SlurmClusterCredentialMapper;
-import org.apache.airavata.compute.model.SlurmClusterCredentialEntity;
-import org.apache.airavata.compute.model.SlurmClusterEntity;
-import org.apache.airavata.compute.repository.SlurmClusterCredentialRepository;
-import org.apache.airavata.compute.repository.SlurmClusterRepository;
+import org.apache.airavata.compute.dto.ClusterCredentialRequestDto;
+import org.apache.airavata.compute.dto.ClusterCredentialResponseDto;
+import org.apache.airavata.compute.mapper.ClusterCredentialMapper;
+import org.apache.airavata.compute.model.ClusterCredentialEntity;
+import org.apache.airavata.compute.model.ClusterEntity;
+import org.apache.airavata.compute.repository.ClusterCredentialRepository;
+import org.apache.airavata.compute.repository.ClusterRepository;
 import org.apache.airavata.credentials.model.SSHUserCredential;
 import org.apache.airavata.credentials.repository.SSHUserCredentialRepository;
 import org.apache.airavata.iam.model.UserEntity;
@@ -32,20 +32,20 @@ import org.springframework.web.server.ResponseStatusException;
  * organization-level resources those other services expose.
  */
 @Service
-public class SlurmClusterCredentialService {
+public class ClusterCredentialService {
 
-    private final SlurmClusterCredentialRepository credentialBindingRepository;
-    private final SlurmClusterRepository clusterRepository;
+    private final ClusterCredentialRepository credentialBindingRepository;
+    private final ClusterRepository clusterRepository;
     private final SSHUserCredentialRepository credentialRepository;
     private final UserRepository userRepository;
-    private final SlurmClusterCredentialMapper mapper;
+    private final ClusterCredentialMapper mapper;
 
-    public SlurmClusterCredentialService(
-            SlurmClusterCredentialRepository credentialBindingRepository,
-            SlurmClusterRepository clusterRepository,
+    public ClusterCredentialService(
+            ClusterCredentialRepository credentialBindingRepository,
+            ClusterRepository clusterRepository,
             SSHUserCredentialRepository credentialRepository,
             UserRepository userRepository,
-            SlurmClusterCredentialMapper mapper) {
+            ClusterCredentialMapper mapper) {
         this.credentialBindingRepository = credentialBindingRepository;
         this.clusterRepository = clusterRepository;
         this.credentialRepository = credentialRepository;
@@ -56,8 +56,8 @@ public class SlurmClusterCredentialService {
     /** Lists every binding across every user, optionally scoped to one cluster. */
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
     @Transactional(readOnly = true)
-    public List<SlurmClusterCredentialResponseDto> getAllCredentials(String clusterId) {
-        List<SlurmClusterCredentialEntity> entities = clusterId == null
+    public List<ClusterCredentialResponseDto> getAllCredentials(String clusterId) {
+        List<ClusterCredentialEntity> entities = clusterId == null
                 ? credentialBindingRepository.findAll()
                 : credentialBindingRepository.findBySlurmCluster_ClusterId(clusterId);
         return entities.stream().map(mapper::toResponseDto).toList();
@@ -66,17 +66,17 @@ public class SlurmClusterCredentialService {
     /** Lists the caller's own bindings, optionally scoped to one cluster. */
     @PreAuthorize("isAuthenticated()")
     @Transactional(readOnly = true)
-    public List<SlurmClusterCredentialResponseDto> getMyCredentials(String clusterId) {
+    public List<ClusterCredentialResponseDto> getMyCredentials(String clusterId) {
         String userId = resolveCurrentUser().getUserId();
-        List<SlurmClusterCredentialEntity> entities = clusterId == null
+        List<ClusterCredentialEntity> entities = clusterId == null
                 ? credentialBindingRepository.findByUser_UserId(userId)
                 : credentialBindingRepository.findByUser_UserIdAndSlurmCluster_ClusterId(userId, clusterId);
         return entities.stream().map(mapper::toResponseDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public SlurmClusterCredentialResponseDto getCredential(String id) {
-        SlurmClusterCredentialEntity entity = findOrThrow(id);
+    public ClusterCredentialResponseDto getCredential(String id) {
+        ClusterCredentialEntity entity = findOrThrow(id);
         requireSelfOrAdmin(entity);
         return mapper.toResponseDto(entity);
     }
@@ -84,8 +84,8 @@ public class SlurmClusterCredentialService {
     /** Any authenticated caller may bind a credential — this is a self-service setting. */
     @PreAuthorize("isAuthenticated()")
     @Transactional
-    public SlurmClusterCredentialResponseDto createCredential(SlurmClusterCredentialRequestDto request) {
-        SlurmClusterCredentialEntity entity = new SlurmClusterCredentialEntity();
+    public ClusterCredentialResponseDto createCredential(ClusterCredentialRequestDto request) {
+        ClusterCredentialEntity entity = new ClusterCredentialEntity();
         entity.setSlurmCluster(resolveCluster(request.getClusterId()));
         entity.setSshUserCredential(resolveCredential(request.getSshCredentialId()));
         entity.setUser(resolveCurrentUser());
@@ -94,8 +94,8 @@ public class SlurmClusterCredentialService {
 
     /** Ownership is immutable — only the cluster/credential references can change. */
     @Transactional
-    public SlurmClusterCredentialResponseDto updateCredential(String id, SlurmClusterCredentialRequestDto request) {
-        SlurmClusterCredentialEntity entity = findOrThrow(id);
+    public ClusterCredentialResponseDto updateCredential(String id, ClusterCredentialRequestDto request) {
+        ClusterCredentialEntity entity = findOrThrow(id);
         requireSelfOrAdmin(entity);
         entity.setSlurmCluster(resolveCluster(request.getClusterId()));
         entity.setSshUserCredential(resolveCredential(request.getSshCredentialId()));
@@ -104,19 +104,19 @@ public class SlurmClusterCredentialService {
 
     @Transactional
     public void deleteCredential(String id) {
-        SlurmClusterCredentialEntity entity = findOrThrow(id);
+        ClusterCredentialEntity entity = findOrThrow(id);
         requireSelfOrAdmin(entity);
         credentialBindingRepository.delete(entity);
     }
 
-    private SlurmClusterCredentialEntity findOrThrow(String id) {
+    private ClusterCredentialEntity findOrThrow(String id) {
         return credentialBindingRepository
                 .findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Cluster credential binding not found: " + id));
     }
 
-    private SlurmClusterEntity resolveCluster(String clusterId) {
+    private ClusterEntity resolveCluster(String clusterId) {
         return clusterRepository
                 .findById(clusterId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cluster not found: " + clusterId));
@@ -144,7 +144,7 @@ public class SlurmClusterCredentialService {
                         HttpStatus.NOT_FOUND, "No user record found for authenticated principal: " + username));
     }
 
-    private void requireSelfOrAdmin(SlurmClusterCredentialEntity entity) {
+    private void requireSelfOrAdmin(ClusterCredentialEntity entity) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isSelf = entity.getUser() != null && authentication.getName().equals(entity.getUser().getUserId());
         boolean isAdmin = authentication.getAuthorities().stream()
