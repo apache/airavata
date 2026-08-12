@@ -70,3 +70,6 @@ docs/superpowers/
 
 # Dev TLS material (mkcert-generated; never commit)
 conf/traefik/certs/
+
+# Go build output
+/bin/
