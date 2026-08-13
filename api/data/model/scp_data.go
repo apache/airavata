@@ -51,10 +51,7 @@ type SCPData struct {
 	DataName        *string `gorm:"column:data_name;type:varchar(255)" json:"dataName,omitempty"`
 	DataDescription *string `gorm:"column:data_description;type:varchar(2048)" json:"dataDescription,omitempty"`
 
-	// IsFile is a string, not a bool, in the Java model, and the request DTO validates
-	// it as a non-blank string. Kept as-is so the API contract is unchanged; tightening
-	// it to a bool should be a deliberate, separately-versioned change.
-	IsFile *string `gorm:"column:is_file;type:varchar(16)" json:"isFile,omitempty"`
+	IsFile bool `gorm:"column:is_file;not null" json:"isFile"`
 
 	Path *string `gorm:"column:path;type:varchar(2048)" json:"path,omitempty"`
 

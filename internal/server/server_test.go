@@ -540,7 +540,7 @@ func TestSCPDataProvisionStatusIsForced(t *testing.T) {
 	}, http.StatusCreated)
 
 	created := h.mustDo(http.MethodPost, "/api/v1/scp-data", tokenAlice, map[string]any{
-		"dataName": "inputs", "isFile": "true", "path": "/scratch/in",
+		"dataName": "inputs", "isFile": true, "path": "/scratch/in",
 		"slurmClusterCredentialId": binding["clusterCredentialId"],
 		"provisionStatus":          "PROVISIONED",
 	}, http.StatusCreated)

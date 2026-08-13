@@ -16,9 +16,7 @@ type SCPDataRequest struct {
 	DataName        string  `json:"dataName"`
 	DataDescription *string `json:"dataDescription"`
 
-	// IsFile is a string rather than a bool, matching the Java DTO, which validates it
-	// as non-blank text.
-	IsFile string `json:"isFile"`
+	IsFile bool `json:"isFile"`
 
 	Path                     string `json:"path"`
 	SlurmClusterCredentialID string `json:"slurmClusterCredentialId"`
@@ -28,7 +26,6 @@ type SCPDataRequest struct {
 func (r *SCPDataRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("dataName", "Data name cannot be blank", r.DataName)
-	c.NotBlank("isFile", "isFile cannot be blank", r.IsFile)
 	c.NotBlank("path", "Path cannot be blank", r.Path)
 	c.NotBlank("slurmClusterCredentialId", "Slurm cluster credential id cannot be blank", r.SlurmClusterCredentialID)
 	return c.Fields()
@@ -41,7 +38,7 @@ type SCPDataResponse struct {
 	DataID                   string                 `json:"dataId"`
 	DataName                 *string                `json:"dataName"`
 	DataDescription          *string                `json:"dataDescription"`
-	IsFile                   *string                `json:"isFile"`
+	IsFile                   bool                   `json:"isFile"`
 	Path                     *string                `json:"path"`
 	SlurmClusterCredentialID *string                `json:"slurmClusterCredentialId"`
 	ProvisionStatus          *model.ProvisionStatus `json:"provisionStatus"`
@@ -51,10 +48,10 @@ type SCPDataResponse struct {
 // applySCPDataRequest copies the client-writable fields onto an entity. The owner and
 // the provision status are deliberately absent: neither is ever taken from a request.
 func ApplySCPDataRequest(dst *model.SCPData, src *SCPDataRequest) {
-	name, isFile, path := src.DataName, src.IsFile, src.Path
+	name, path := src.DataName, src.Path
 	dst.DataName = &name
 	dst.DataDescription = src.DataDescription
-	dst.IsFile = &isFile
+	dst.IsFile = src.IsFile
 	dst.Path = &path
 }
 
