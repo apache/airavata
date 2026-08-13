@@ -180,12 +180,28 @@ export AIRAVATA_DB_PASSWORD='a-strong-password'
 With `AIRAVATA_DB_AUTO_MIGRATE=true` (the default) the server creates and updates
 tables from the entity model on startup. Like Hibernate's `ddl-auto=update`, it only
 adds tables, columns and indexes — it never drops or narrows anything, so it cannot
-remove a column that is no longer mapped.
+remove a column that is no longer mapped. This is a development convenience; the
+schema is defined by the entities listed in `internal/db/migrate.go`.
 
-For production, generate the DDL once, review it, and apply it through your own
-migration tooling with `AIRAVATA_DB_AUTO_MIGRATE=false`.
+For production, set `AIRAVATA_DB_AUTO_MIGRATE=false` and apply schema changes as
+versioned migrations instead:
 
-The schema is defined by the entities listed in `internal/db/migrate.go`.
+```bash
+airavata-server migrate status   # what has and has not been applied
+airavata-server migrate up       # apply every pending migration, in order
+```
+
+Both read the same `AIRAVATA_DB_DSN` (and related `AIRAVATA_DB_*`) variables as the
+server, connect, and exit — they never start the HTTP server. Applied versions are
+tracked in a `schema_migrations` table the migrator creates on first use.
+
+Migrations live as plain `.sql` files in `internal/db/migrations/`, named
+`NNNN_description.sql`. `0001_baseline.sql` is the full schema captured from
+`AutoMigrate`, so a fresh production database ends up identical to a fresh
+development one. Add a new file with the next number for any later schema change —
+there are no down migrations: like `ddl-auto`, this framework never rewrites or drops
+history, so a mistake is corrected with a further migration rather than a rollback
+script.
 
 ---
 
@@ -289,7 +305,9 @@ caller lacking the required role returns `403`.
 - **Set a real database password.** The `123456` default exists only to match the
   development compose file.
 - **Narrow CORS** from `*` to the portal origins that actually need it.
-- **Turn off auto-migration** and manage schema changes through reviewed migrations.
+- **Turn off auto-migration** (`AIRAVATA_DB_AUTO_MIGRATE=false`) and run
+  `airavata-server migrate up` as a reviewed deploy step instead — see "Schema
+  management" above.
 - **Terminate TLS in front of the server.** It speaks plain HTTP; bearer tokens must
   not cross an untrusted network unencrypted.
 

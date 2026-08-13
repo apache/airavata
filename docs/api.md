@@ -412,10 +412,12 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
+The example below captures `templateId` from the response into `$TEMPLATE_ID` (requires `jq`), for use when creating a batch deployment further down.
+
 ```bash
 TOKEN='<the token printed at startup>'
 
-curl -s -X POST localhost:9095/api/v1/application-templates \
+TEMPLATE_ID=$(curl -s -X POST localhost:9095/api/v1/application-templates \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -453,7 +455,9 @@ curl -s -X POST localhost:9095/api/v1/application-templates \
         "outputType": "FILE"
       }
     ]
-  }'
+  }' | jq -r '.templateId')
+
+echo "$TEMPLATE_ID"
 ```
 
 **Request body**
@@ -587,7 +591,7 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$CLUSTER_ID` from [Create Cluster](#create-cluster) and `$CLUSTER_CREDENTIAL_ID` from [Create Cluster Credential](#create-cluster-credential) above.
+Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template), `$CLUSTER_ID` from [Create Cluster](#create-cluster), and `$CLUSTER_CREDENTIAL_ID` from [Create Cluster Credential](#create-cluster-credential) above.
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -596,7 +600,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "templateId": "ceebace0-b0fe-443d-bf6e-5ef5d4e19b2c",
+    "templateId": "'"$TEMPLATE_ID"'",
     "slurmClusterId": "'"$CLUSTER_ID"'",
     "slurmRunSection": "module load alphafold\nrun_alphafold.sh --fasta_paths=$fastaFile --model_preset=$modelPreset",
     "batchJobConfig": {

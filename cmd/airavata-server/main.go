@@ -26,7 +26,73 @@ func main() {
 	}
 }
 
+// run dispatches to the migrate subcommand when invoked as
+// "airavata-migrate migrate <up|status>", or otherwise starts the server. Keeping
+// migrations behind an explicit subcommand rather than a flag on the server itself
+// matches INSTALL.md's production guidance to disable AIRAVATA_DB_AUTO_MIGRATE and
+// apply schema changes as a reviewed, separate step.
 func run() error {
+	if len(os.Args) > 1 && os.Args[1] == "migrate" {
+		return runMigrate(os.Args[2:])
+	}
+	return runServer()
+}
+
+// runMigrate applies or reports on versioned migrations (internal/db/migrations)
+// against the configured database, then exits — it does not start the HTTP server.
+func runMigrate(args []string) error {
+	action := "up"
+	if len(args) > 0 {
+		action = args[0]
+	}
+
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	gdb, err := db.Open(db.DefaultConfig(cfg.DSN))
+	if err != nil {
+		return err
+	}
+
+	migrator := db.NewMigrator(gdb, db.Migrations())
+	ctx := context.Background()
+
+	switch action {
+	case "up":
+		applied, err := migrator.Up(ctx)
+		if err != nil {
+			return fmt.Errorf("migrate up: %w", err)
+		}
+		if len(applied) == 0 {
+			slog.Info("no pending migrations")
+			return nil
+		}
+		for _, m := range applied {
+			slog.Info("applied migration", "version", m.Version, "description", m.Description)
+		}
+		return nil
+
+	case "status":
+		status, err := migrator.Status(ctx)
+		if err != nil {
+			return fmt.Errorf("migrate status: %w", err)
+		}
+		for _, s := range status {
+			state := "pending"
+			if s.Applied {
+				state = fmt.Sprintf("applied at %s", s.AppliedAt.Format(time.RFC3339))
+			}
+			fmt.Printf("%04d  %-30s %s\n", s.Version, s.Description, state)
+		}
+		return nil
+
+	default:
+		return fmt.Errorf(`unknown migrate subcommand %q (want "up" or "status")`, action)
+	}
+}
+
+func runServer() error {
 	slog.Info("starting Airavata server")
 
 	cfg, err := config.Load()
