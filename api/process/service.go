@@ -35,6 +35,7 @@ type Service struct {
 	processes   *Repository
 	deployments *application.BatchDeploymentRepository
 	users       *iam.UserRepository
+	statuses    *StatusService
 }
 
 // NewService returns a batch job process service.
@@ -43,8 +44,9 @@ func NewService(
 	processes *Repository,
 	deployments *application.BatchDeploymentRepository,
 	users *iam.UserRepository,
+	statuses *StatusService,
 ) *Service {
-	return &Service{db: db, processes: processes, deployments: deployments, users: users}
+	return &Service{db: db, processes: processes, deployments: deployments, users: users, statuses: statuses}
 }
 
 // List returns every process across every user. Admin only.
@@ -116,6 +118,13 @@ func (s *Service) Create(ctx context.Context, req *dto.Request) (*dto.Response, 
 		if err := processes.Save(ctx, proc); err != nil {
 			return err
 		}
+
+		// Recorded in the same transaction as the process itself, so a caller never
+		// observes a process that exists but has no status yet.
+		if _, err := s.statuses.RecordTx(ctx, tx, proc.ID, model.BatchProcessStatusTypeCreated, nil); err != nil {
+			return err
+		}
+
 		out = dto.ToResponse(proc)
 		return nil
 	})

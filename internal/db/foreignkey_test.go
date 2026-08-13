@@ -38,6 +38,8 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"batch_job_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
 		{"batch_job_processes", "user_id", "users", "user_id"},
 		{"batch_job_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
+		{"batch_job_process_statuses", "process_id", "batch_job_processes", "process_id"},
+		{"batch_job_processes", "last_status_id", "batch_job_process_statuses", "process_status_id"},
 	}
 
 	// Collect what the schema actually declares.

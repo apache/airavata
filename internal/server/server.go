@@ -35,6 +35,7 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	deployments := application.NewBatchDeploymentRepository(db)
 	datasets := data.NewSCPDataRepository(db)
 	processes := process.NewRepository(db)
+	statuses := process.NewStatusRepository(db)
 
 	// Services.
 	userSvc := iam.NewService(db, users)
@@ -46,7 +47,8 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	templateSvc := application.NewTemplateService(db, templates, deployments)
 	deploymentSvc := application.NewBatchDeploymentService(db, deployments, templates, clusters, bindings)
 	dataSvc := data.NewService(db, datasets, bindings, users)
-	processSvc := process.NewService(db, processes, deployments, users)
+	statusSvc := process.NewStatusService(db, statuses, processes)
+	processSvc := process.NewService(db, processes, deployments, users, statusSvc)
 
 	mux := http.NewServeMux()
 	iam.NewController(userSvc).Register(mux)
@@ -59,6 +61,7 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	application.NewBatchDeploymentController(deploymentSvc).Register(mux)
 	data.NewController(dataSvc).Register(mux)
 	process.NewController(processSvc).Register(mux)
+	process.NewStatusController(statusSvc).Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})

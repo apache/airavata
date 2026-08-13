@@ -616,6 +616,138 @@ func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 	}
 }
 
+// The two tables reference each other — a status names its process, and a process
+// points at its most recent status — so deleting a process must clear that backward
+// reference before removing its statuses, or the RESTRICT constraints deadlock.
+func TestDeletingProcessRemovesItsStatuses(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedClusterCredential("status-cleanup")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "status-cleanup"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultSubmissionCredentialId": bindingID,
+		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+	}, http.StatusCreated)
+	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	}, http.StatusCreated)
+	processID := proc["processId"].(string)
+
+	h.mustDo(http.MethodDelete, "/api/v1/batch-job-processes/"+processID, tokenAdmin, nil, http.StatusNoContent)
+
+	var remaining int64
+	h.db.Table("batch_job_process_statuses").Where("process_id = ?", processID).Count(&remaining)
+	if remaining != 0 {
+		t.Error("the process's statuses survived the delete")
+	}
+}
+
+// Submitting a process records an initial CREATED status in the same transaction, so
+// a caller never observes a process that exists but has no status history yet.
+func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedClusterCredential("initial-status")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "initial-status"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultSubmissionCredentialId": bindingID,
+		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+	}, http.StatusCreated)
+	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	}, http.StatusCreated)
+	processID := proc["processId"].(string)
+
+	var statuses []map[string]any
+	rec := h.do(http.MethodGet, "/api/v1/batch-job-processes/"+processID+"/statuses", "", nil)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("list statuses: status = %d, want 200\nbody: %s", rec.Code, rec.Body.String())
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &statuses); err != nil {
+		t.Fatalf("decode statuses: %v", err)
+	}
+	if len(statuses) != 1 {
+		t.Fatalf("statuses = %+v, want exactly one (CREATED)", statuses)
+	}
+	if statuses[0]["status"] != "CREATED" {
+		t.Errorf("status = %v, want CREATED", statuses[0]["status"])
+	}
+	if statuses[0]["processId"] != processID {
+		t.Errorf("processId = %v, want %s", statuses[0]["processId"], processID)
+	}
+
+	statusID := statuses[0]["processStatusId"].(string)
+	h.mustDo(http.MethodGet,
+		"/api/v1/batch-job-processes/"+processID+"/statuses/"+statusID, "", nil, http.StatusOK)
+}
+
+// There is no way to create or update a status through the REST API — only to read
+// it — so the two write methods on the same path must fail, not silently succeed.
+func TestProcessStatusWritesAreNotExposed(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedClusterCredential("status-readonly")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "status-readonly"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultSubmissionCredentialId": bindingID,
+		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+	}, http.StatusCreated)
+	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	}, http.StatusCreated)
+	processID := proc["processId"].(string)
+
+	body := map[string]any{"status": "RUNNING"}
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/statuses", tokenAdmin, body); rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST statuses: status = %d, want 405", rec.Code)
+	}
+	if rec := h.do(http.MethodPut, "/api/v1/batch-job-processes/"+processID+"/statuses", tokenAdmin, body); rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("PUT statuses: status = %d, want 405", rec.Code)
+	}
+}
+
+// A status id from one process must not be reachable through another process's path,
+// the same scoping ClusterPartition already applies to its cluster.
+func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedClusterCredential("status-scope")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "status-scope"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultSubmissionCredentialId": bindingID,
+		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+	}, http.StatusCreated)
+
+	procA := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	}, http.StatusCreated)
+	procB := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	}, http.StatusCreated)
+
+	var statusesA []map[string]any
+	rec := h.do(http.MethodGet, "/api/v1/batch-job-processes/"+procA["processId"].(string)+"/statuses", "", nil)
+	if err := json.Unmarshal(rec.Body.Bytes(), &statusesA); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	statusID := statusesA[0]["processStatusId"].(string)
+
+	if rec := h.do(http.MethodGet,
+		"/api/v1/batch-job-processes/"+procB["processId"].(string)+"/statuses/"+statusID, "", nil,
+	); rec.Code != http.StatusNotFound {
+		t.Errorf("cross-process status read: status = %d, want 404", rec.Code)
+	}
+}
+
 // A caller whose token is valid but who has no users row cannot own anything.
 func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 	h := newHarness(t)

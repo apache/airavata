@@ -37,6 +37,10 @@ func Entities() []any {
 		&applicationmodel.BatchDeployment{},
 		&datamodel.SCPData{},
 		&processmodel.BatchJobProcess{},
+
+		// References BatchJobProcess, which in turn references it back through
+		// LastStatusID — the one circular pair in the schema.
+		&processmodel.BatchJobProcessStatus{},
 	}
 }
 
