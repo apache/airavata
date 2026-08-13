@@ -156,6 +156,14 @@ func TestDeletingDeploymentRemovesOwnedBatchJobConfig(t *testing.T) {
 	if err := gdb.Create(cred).Error; err != nil {
 		t.Fatalf("create ssh credential: %v", err)
 	}
+	cluster := &computemodel.Cluster{ClusterName: "anvil", HostName: "anvil.rcac.edu", SlurmHome: "/usr/bin"}
+	if err := gdb.Create(cluster).Error; err != nil {
+		t.Fatalf("create cluster: %v", err)
+	}
+	binding := &computemodel.ClusterCredential{ClusterID: &cluster.ID, SSHCredentialID: &cred.ID}
+	if err := gdb.Create(binding).Error; err != nil {
+		t.Fatalf("create cluster credential: %v", err)
+	}
 	tmpl := &applicationmodel.Template{TemplateName: ptr.To("gromacs")}
 	if err := gdb.Create(tmpl).Error; err != nil {
 		t.Fatalf("create template: %v", err)
@@ -169,7 +177,7 @@ func TestDeletingDeploymentRemovesOwnedBatchJobConfig(t *testing.T) {
 		TemplateID:                    &tmpl.ID,
 		SlurmRunSection:               "module load gromacs\ngmx mdrun",
 		BatchJobConfigID:              cfg.ID,
-		DefaultSubmissionCredentialID: cred.ID,
+		DefaultSubmissionCredentialID: binding.ID,
 	}
 	if err := gdb.Create(dep).Error; err != nil {
 		t.Fatalf("create deployment: %v", err)

@@ -44,7 +44,7 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	partitionSvc := compute.NewClusterPartitionService(db, partitions, clusters)
 	bindingSvc := compute.NewClusterCredentialService(db, bindings, clusters, sshCreds, users)
 	templateSvc := application.NewTemplateService(db, templates, deployments)
-	deploymentSvc := application.NewBatchDeploymentService(db, deployments, templates, clusters, sshCreds)
+	deploymentSvc := application.NewBatchDeploymentService(db, deployments, templates, clusters, bindings)
 	dataSvc := data.NewService(db, datasets, bindings, users)
 	processSvc := process.NewService(db, processes, deployments, users)
 

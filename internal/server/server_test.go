@@ -159,6 +159,19 @@ func (h *harness) seedSSHKeyAndCredential(name string) (keyID, credentialID stri
 	return keyID, cred["sshCredentialId"].(string)
 }
 
+// seedClusterCredential creates a cluster, an SSH credential, and a binding between
+// them, returning the binding's id — what a deployment's defaultSubmissionCredentialId
+// points at.
+func (h *harness) seedClusterCredential(name string) (clusterID, bindingID string) {
+	h.t.Helper()
+	clusterID = h.seedCluster(name)
+	_, credentialID := h.seedSSHKeyAndCredential(name)
+	binding := h.mustDo(http.MethodPost, "/api/v1/cluster-credentials", tokenAdmin, map[string]any{
+		"clusterId": clusterID, "sshCredentialId": credentialID,
+	}, http.StatusCreated)
+	return clusterID, binding["clusterCredentialId"].(string)
+}
+
 func TestHealthIsOpen(t *testing.T) {
 	h := newHarness(t)
 	h.mustDo(http.MethodGet, "/health", "", nil, http.StatusOK)
@@ -341,7 +354,7 @@ func TestDeletingSSHKeyInUseConflicts(t *testing.T) {
 
 func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
 	h := newHarness(t)
-	_, credentialID := h.seedSSHKeyAndCredential("deploy")
+	_, bindingID := h.seedClusterCredential("deploy")
 
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin, map[string]any{
 		"templateName": "gromacs",
@@ -353,7 +366,7 @@ func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
 
 	h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": templateID, "slurmRunSection": "gmx mdrun",
-		"defaultSubmissionCredentialId": credentialID,
+		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "TG-1"},
 	}, http.StatusCreated)
 
@@ -414,13 +427,13 @@ func TestDuplicateTemplateInputNamesAreRejected(t *testing.T) {
 // unknown is an error rather than silently ignored.
 func TestDeploymentClusterIsOptionalButValidatedWhenPresent(t *testing.T) {
 	h := newHarness(t)
-	_, credentialID := h.seedSSHKeyAndCredential("optional-cluster")
+	_, bindingID := h.seedClusterCredential("optional-cluster")
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "t"}, http.StatusCreated)
 
 	base := map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": credentialID,
+		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 30, "allocation": "TG-2"},
 	}
 
@@ -548,12 +561,12 @@ func TestSCPDataProvisionStatusIsForced(t *testing.T) {
 // the resources come from the request rather than the deployment's default.
 func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	h := newHarness(t)
-	_, credentialID := h.seedSSHKeyAndCredential("proc")
+	_, bindingID := h.seedClusterCredential("proc")
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "proc"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": credentialID,
+		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 
@@ -579,12 +592,12 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 // outward and the database cannot cascade in that direction.
 func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 	h := newHarness(t)
-	_, credentialID := h.seedSSHKeyAndCredential("cleanup")
+	_, bindingID := h.seedClusterCredential("cleanup")
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "cleanup"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": credentialID,
+		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{

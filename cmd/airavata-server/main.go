@@ -54,6 +54,9 @@ func run() error {
 	if cfg.RootAccountEnabled {
 		root = auth.NewRootTokenProvider(cfg.RootAccountToken)
 		fmt.Print(root.Banner())
+		if err := iam.EnsureRootUser(context.Background(), gdb); err != nil {
+			return fmt.Errorf("ensure root user: %w", err)
+		}
 	}
 	introspector := auth.NewCILogonIntrospector(
 		cfg.IntrospectionURI, cfg.UserInfoURI, cfg.ClientID, cfg.ClientSecret, roles, root)

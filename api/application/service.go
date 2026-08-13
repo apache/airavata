@@ -8,13 +8,12 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/api/compute"
-	"github.com/apache/airavata/api/credentials"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/application/dto"
 	model "github.com/apache/airavata/api/application/model"
-	credentialsmodel "github.com/apache/airavata/api/credentials/model"
+	computemodel "github.com/apache/airavata/api/compute/model"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -163,11 +162,11 @@ func (s *TemplateService) Delete(ctx context.Context, id string) error {
 
 // BatchDeploymentService manages deployments: a template made runnable somewhere.
 type BatchDeploymentService struct {
-	db          *gorm.DB
-	deployments *BatchDeploymentRepository
-	templates   *TemplateRepository
-	clusters    *compute.ClusterRepository
-	sshCreds    *credentials.SSHUserCredentialRepository
+	db           *gorm.DB
+	deployments  *BatchDeploymentRepository
+	templates    *TemplateRepository
+	clusters     *compute.ClusterRepository
+	clusterCreds *compute.ClusterCredentialRepository
 }
 
 // NewBatchDeploymentService returns a deployment service.
@@ -176,9 +175,9 @@ func NewBatchDeploymentService(
 	deployments *BatchDeploymentRepository,
 	templates *TemplateRepository,
 	clusters *compute.ClusterRepository,
-	sshCreds *credentials.SSHUserCredentialRepository,
+	clusterCreds *compute.ClusterCredentialRepository,
 ) *BatchDeploymentService {
-	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, sshCreds: sshCreds}
+	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, clusterCreds: clusterCreds}
 }
 
 // List returns every deployment, or only those of templateID when it is non-empty.
@@ -222,7 +221,7 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		deployments := s.deployments.WithTx(tx)
 
-		template, cluster, sshCred, err := s.resolveReferences(ctx, tx, req)
+		template, cluster, clusterCred, err := s.resolveReferences(ctx, tx, req)
 		if err != nil {
 			return err
 		}
@@ -239,7 +238,7 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 			SlurmRunSection:               req.SlurmRunSection,
 			BatchJobConfigID:              config.ID,
 			BatchJobConfig:                config,
-			DefaultSubmissionCredentialID: sshCred.ID,
+			DefaultSubmissionCredentialID: clusterCred.ID,
 			WorkDir:                       req.WorkDir,
 			Partition:                     req.Partition,
 		}
@@ -270,7 +269,7 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		if err != nil {
 			return notFoundAs(err, "Deployment not found: %s", id)
 		}
-		template, cluster, sshCred, err := s.resolveReferences(ctx, tx, req)
+		template, cluster, clusterCred, err := s.resolveReferences(ctx, tx, req)
 		if err != nil {
 			return err
 		}
@@ -289,7 +288,7 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		deployment.SlurmRunSection = req.SlurmRunSection
 		deployment.BatchJobConfigID = config.ID
 		deployment.BatchJobConfig = config
-		deployment.DefaultSubmissionCredentialID = sshCred.ID
+		deployment.DefaultSubmissionCredentialID = clusterCred.ID
 		deployment.WorkDir = req.WorkDir
 		deployment.Partition = req.Partition
 
@@ -323,7 +322,7 @@ func (s *BatchDeploymentService) Delete(ctx context.Context, id string) error {
 // The cluster is the only optional one: an absent or blank id is legitimate and
 // leaves the deployment unbound to a cluster, while an id that is supplied but
 // unknown is an error. Conflating those would let a typo silently unbind a deployment.
-func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *credentialsmodel.SSHUserCredential, error) {
+func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *computemodel.ClusterCredential, error) {
 	template, err := s.templates.WithTx(tx).FindByID(ctx, req.TemplateID)
 	if err != nil {
 		return nil, nil, nil, notFoundAs(err, "Template not found: %s", req.TemplateID)
@@ -338,10 +337,10 @@ func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm
 		clusterID = &cluster.ID
 	}
 
-	sshCred, err := s.sshCreds.WithTx(tx).FindByID(ctx, req.DefaultSubmissionCredentialID)
+	clusterCred, err := s.clusterCreds.WithTx(tx).FindByID(ctx, req.DefaultSubmissionCredentialID)
 	if err != nil {
-		return nil, nil, nil, notFoundAs(err, "SSH credential not found: %s", req.DefaultSubmissionCredentialID)
+		return nil, nil, nil, notFoundAs(err, "Cluster credential not found: %s", req.DefaultSubmissionCredentialID)
 	}
 
-	return template, clusterID, sshCred, nil
+	return template, clusterID, clusterCred, nil
 }

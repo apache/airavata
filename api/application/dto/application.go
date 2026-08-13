@@ -276,13 +276,18 @@ func ToBatchJobConfigResponse(c *model.BatchJobConfig) *BatchJobConfigResponse {
 //
 // Java: org.apache.airavata.application.dto.deployment.BatchApplicationDeploymentRequestDto
 type BatchDeploymentRequest struct {
-	TemplateID                    string                 `json:"templateId"`
-	SlurmClusterID                *string                `json:"slurmClusterId"`
-	SlurmRunSection               string                 `json:"slurmRunSection"`
-	BatchJobConfig                *BatchJobConfigRequest `json:"batchJobConfig"`
-	DefaultSubmissionCredentialID string                 `json:"defaultSubmissionCredentialId"`
-	WorkDir                       *string                `json:"workDir"`
-	Partition                     *string                `json:"partition"`
+	TemplateID      string                 `json:"templateId"`
+	SlurmClusterID  *string                `json:"slurmClusterId"`
+	SlurmRunSection string                 `json:"slurmRunSection"`
+	BatchJobConfig  *BatchJobConfigRequest `json:"batchJobConfig"`
+
+	// DefaultSubmissionCredentialID names a cluster credential binding (the id
+	// returned by POST /api/v1/cluster-credentials), not a bare SSH credential — a
+	// binding ties the submitting identity to both a cluster and an owner.
+	DefaultSubmissionCredentialID string `json:"defaultSubmissionCredentialId"`
+
+	WorkDir   *string `json:"workDir"`
+	Partition *string `json:"partition"`
 }
 
 // Validate implements httpx.Validator.

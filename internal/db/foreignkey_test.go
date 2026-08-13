@@ -32,7 +32,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"batch_application_deployments", "cluster_id", "clusters", "cluster_id"},
 		{"batch_application_deployments", "template_id", "application_templates", "template_id"},
 		{"batch_application_deployments", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
-		{"batch_application_deployments", "default_submission_credential_id", "ssh_user_credentials", "ssh_credential_id"},
+		{"batch_application_deployments", "default_submission_credential_id", "cluster_credentials", "cluster_credential_id"},
 		{"scp_data", "slurm_cluster_credential_id", "cluster_credentials", "cluster_credential_id"},
 		{"scp_data", "user_id", "users", "user_id"},
 		{"batch_job_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
