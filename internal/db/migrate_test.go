@@ -42,7 +42,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 	gdb := newTestDB(t)
 
 	want := []string{
-		"users", "user_roles",
+		"users", "user_roles", "groups", "group_members",
 		"ssh_keys", "ssh_user_credentials",
 		"clusters", "cluster_partitions", "cluster_credentials",
 		"application_templates", "application_template_inputs", "application_template_outputs",
@@ -111,6 +111,71 @@ func TestDeletingUserCascadesToRoles(t *testing.T) {
 	gdb.Model(&iammodel.UserRole{}).Where("user_id = ?", "cilogon:99").Count(&remaining)
 	if remaining != 0 {
 		t.Errorf("%d role rows survived the user delete, want 0", remaining)
+	}
+}
+
+// Memberships are owned by their group: deleting a group must take them with it,
+// rather than leaving rows that grant access through a group that no longer exists.
+func TestDeletingGroupCascadesToMembers(t *testing.T) {
+	gdb := newTestDB(t)
+
+	owner := &iammodel.User{ID: "cilogon:7", CreatedAt: 1}
+	if err := gdb.Create(owner).Error; err != nil {
+		t.Fatalf("create user: %v", err)
+	}
+	group := &iammodel.Group{Name: ptr.To("collab"), OwnerID: &owner.ID, CreatedAt: 1}
+	if err := gdb.Create(group).Error; err != nil {
+		t.Fatalf("create group: %v", err)
+	}
+	member := &iammodel.GroupMember{
+		GroupID:           group.ID,
+		UserID:            owner.ID,
+		GroupRole:         iammodel.GroupRoleAdmin,
+		GroupMemberStatus: iammodel.GroupMemberStatusActive,
+	}
+	if err := gdb.Create(member).Error; err != nil {
+		t.Fatalf("create membership: %v", err)
+	}
+
+	if err := gdb.Delete(&iammodel.Group{}, "group_id = ?", group.ID).Error; err != nil {
+		t.Fatalf("delete group: %v", err)
+	}
+
+	var remaining int64
+	gdb.Model(&iammodel.GroupMember{}).Where("group_id = ?", group.ID).Count(&remaining)
+	if remaining != 0 {
+		t.Errorf("%d membership rows survived the group delete, want 0", remaining)
+	}
+}
+
+// The role and status columns are plain varchars, so BeforeSave is the only thing
+// keeping an unrecognised constant out of the table.
+func TestGroupMemberRejectsUnknownRoleAndStatus(t *testing.T) {
+	gdb := newTestDB(t)
+
+	owner := &iammodel.User{ID: "cilogon:8", CreatedAt: 1}
+	if err := gdb.Create(owner).Error; err != nil {
+		t.Fatalf("create user: %v", err)
+	}
+	group := &iammodel.Group{OwnerID: &owner.ID, CreatedAt: 1}
+	if err := gdb.Create(group).Error; err != nil {
+		t.Fatalf("create group: %v", err)
+	}
+
+	bad := &iammodel.GroupMember{
+		GroupID:           group.ID,
+		UserID:            owner.ID,
+		GroupRole:         iammodel.GroupRole("OVERLORD"),
+		GroupMemberStatus: iammodel.GroupMemberStatusActive,
+	}
+	if err := gdb.Create(bad).Error; err == nil {
+		t.Error("an unrecognised group role was accepted")
+	}
+
+	bad.GroupRole = iammodel.GroupRoleMember
+	bad.GroupMemberStatus = iammodel.GroupMemberStatus("LURKING")
+	if err := gdb.Create(bad).Error; err == nil {
+		t.Error("an unrecognised membership status was accepted")
 	}
 }
 

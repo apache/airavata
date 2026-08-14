@@ -26,12 +26,14 @@ func Entities() []any {
 
 		// One level in.
 		&iammodel.UserRole{},
+		&iammodel.Group{},
 		&credentialsmodel.SSHUserCredential{},
 		&computemodel.ClusterPartition{},
 		&applicationmodel.TemplateInput{},
 		&applicationmodel.TemplateOutput{},
 
 		// Depend on the above.
+		&iammodel.GroupMember{},
 		&computemodel.ClusterCredential{},
 		&applicationmodel.BatchDeployment{},
 		&processmodel.BatchJobProcess{},

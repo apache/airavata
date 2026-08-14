@@ -796,6 +796,240 @@ func TestUserResponseDoesNotLeakEmail(t *testing.T) {
 	}
 }
 
+// seedGroup creates a group owned by the caller of token and returns its id.
+func (h *harness) seedGroup(name, token string) string {
+	h.t.Helper()
+	out := h.mustDo(http.MethodPost, "/api/v1/groups", token, map[string]any{
+		"groupName": name,
+	}, http.StatusCreated)
+	return out["groupId"].(string)
+}
+
+// list issues a GET and decodes the array response.
+func (h *harness) list(path, token string) []map[string]any {
+	h.t.Helper()
+	rec := h.do(http.MethodGet, path, token, nil)
+	if rec.Code != http.StatusOK {
+		h.t.Fatalf("GET %s: status = %d, want 200\nbody: %s", path, rec.Code, rec.Body.String())
+	}
+	var out []map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &out); err != nil {
+		h.t.Fatalf("decode %s: %v", path, err)
+	}
+	return out
+}
+
+// A group belongs to whoever created it, and the owner is admitted as an ADMIN member
+// in the same transaction so the group is never left with nobody able to administer it.
+func TestGroupCreationAdmitsTheOwnerAsAdmin(t *testing.T) {
+	h := newHarness(t)
+
+	created := h.mustDo(http.MethodPost, "/api/v1/groups", tokenAlice, map[string]any{
+		"groupName": "molecular-dynamics",
+		"ownerId":   "bob", // ignored: ownership comes from the token
+	}, http.StatusCreated)
+
+	if got := created["ownerId"]; got != "alice" {
+		t.Errorf("ownerId = %v, want it taken from the token (alice)", got)
+	}
+	if created["createdAt"].(float64) <= 0 {
+		t.Error("createdAt was not stamped")
+	}
+
+	groupID := created["groupId"].(string)
+	members := h.list("/api/v1/groups/"+groupID+"/members", tokenAlice)
+	if len(members) != 1 {
+		t.Fatalf("members = %d, want the owner's own membership", len(members))
+	}
+	if members[0]["userId"] != "alice" || members[0]["groupRole"] != "ADMIN" || members[0]["groupMemberStatus"] != "ACTIVE" {
+		t.Errorf("owner membership = %v, want alice as an ACTIVE ADMIN", members[0])
+	}
+}
+
+// Group names say who is working with whom, so an outsider must not be able to confirm
+// that a group id exists at all.
+func TestGroupIsInvisibleToOutsiders(t *testing.T) {
+	h := newHarness(t)
+	groupID := h.seedGroup("private", tokenAlice)
+
+	for _, path := range []string{
+		"/api/v1/groups/" + groupID,
+		"/api/v1/groups/" + groupID + "/members",
+		"/api/v1/groups/" + groupID + "/members/alice",
+	} {
+		if rec := h.do(http.MethodGet, path, tokenBob, nil); rec.Code != http.StatusNotFound {
+			t.Errorf("GET %s as an outsider: status = %d, want 404", path, rec.Code)
+		}
+	}
+
+	if mine := h.list("/api/v1/groups/me", tokenBob); len(mine) != 0 {
+		t.Errorf("bob's groups = %d, want 0", len(mine))
+	}
+	if mine := h.list("/api/v1/groups/me", tokenAlice); len(mine) != 1 {
+		t.Errorf("alice's groups = %d, want the one she owns", len(mine))
+	}
+}
+
+// Plain members may read the group; only the owner, group ADMINs and MODERATORs may
+// change who is in it.
+func TestGroupMemberManagementFollowsGroupRole(t *testing.T) {
+	h := newHarness(t)
+	groupID := h.seedGroup("collab", tokenAlice)
+
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+
+	// Admitted as a plain member by default: he can read, but not admit anyone else.
+	h.mustDo(http.MethodGet, "/api/v1/groups/"+groupID, tokenBob, nil, http.StatusOK)
+	if rec := h.do(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenBob,
+		map[string]any{"userId": "admin-user"}); rec.Code != http.StatusForbidden {
+		t.Errorf("member admitting another user: status = %d, want 403", rec.Code)
+	}
+
+	// Promoted to MODERATOR, he can.
+	updated := h.mustDo(http.MethodPut, "/api/v1/groups/"+groupID+"/members/bob", tokenAlice,
+		map[string]any{"groupRole": "MODERATOR"}, http.StatusOK)
+	if updated["groupRole"] != "MODERATOR" {
+		t.Errorf("groupRole = %v, want MODERATOR", updated["groupRole"])
+	}
+	if updated["groupMemberStatus"] != "ACTIVE" {
+		t.Errorf("groupMemberStatus = %v, want it left as ACTIVE by a role-only update", updated["groupMemberStatus"])
+	}
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenBob,
+		map[string]any{"userId": "admin-user", "groupRole": "MEMBER"}, http.StatusCreated)
+
+	// Re-submitting the values a membership already holds is a no-op update, not a
+	// failed insert.
+	h.mustDo(http.MethodPut, "/api/v1/groups/"+groupID+"/members/bob", tokenAlice,
+		map[string]any{"groupRole": "MODERATOR"}, http.StatusOK)
+
+	// Renaming and deleting stay with the owner even so.
+	if rec := h.do(http.MethodPut, "/api/v1/groups/"+groupID, tokenBob,
+		map[string]any{"groupName": "hijacked"}); rec.Code != http.StatusForbidden {
+		t.Errorf("rename by a moderator: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodDelete, "/api/v1/groups/"+groupID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("delete by a moderator: status = %d, want 403", rec.Code)
+	}
+}
+
+// A moderator must not be able to suspend the owner out of their own group.
+func TestGroupOwnerMembershipIsProtected(t *testing.T) {
+	h := newHarness(t)
+	groupID := h.seedGroup("protected", tokenAlice)
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob", "groupRole": "MODERATOR"}, http.StatusCreated)
+
+	if rec := h.do(http.MethodPut, "/api/v1/groups/"+groupID+"/members/alice", tokenBob,
+		map[string]any{"groupMemberStatus": "INACTIVE"}); rec.Code != http.StatusForbidden {
+		t.Errorf("moderator suspending the owner: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodDelete, "/api/v1/groups/"+groupID+"/members/alice", tokenBob, nil); rec.Code != http.StatusConflict {
+		t.Errorf("moderator removing the owner: status = %d, want 409", rec.Code)
+	}
+	// Not even the owner, who must delete the group instead.
+	if rec := h.do(http.MethodDelete, "/api/v1/groups/"+groupID+"/members/alice", tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("owner removing their own membership: status = %d, want 409", rec.Code)
+	}
+}
+
+// Leaving a group needs nobody's permission, and works from a suspended membership.
+func TestMemberMayLeaveGroup(t *testing.T) {
+	h := newHarness(t)
+	groupID := h.seedGroup("leavers", tokenAlice)
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob", "groupMemberStatus": "INACTIVE"}, http.StatusCreated)
+
+	// A suspended member cannot read through the group...
+	if rec := h.do(http.MethodGet, "/api/v1/groups/"+groupID, tokenBob, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("read by a suspended member: status = %d, want 404", rec.Code)
+	}
+	// ...but can still walk out.
+	h.mustDo(http.MethodDelete, "/api/v1/groups/"+groupID+"/members/bob", tokenBob, nil, http.StatusNoContent)
+
+	if members := h.list("/api/v1/groups/"+groupID+"/members", tokenAlice); len(members) != 1 {
+		t.Errorf("members = %d, want only the owner left", len(members))
+	}
+}
+
+// The unfiltered listing exposes every group in the deployment, so it is admin only;
+// /me is what an ordinary caller uses.
+func TestGroupListingIsAdminOnly(t *testing.T) {
+	h := newHarness(t)
+	h.seedGroup("alices", tokenAlice)
+	h.seedGroup("bobs", tokenBob)
+
+	if rec := h.do(http.MethodGet, "/api/v1/groups", tokenAlice, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("listing by a non-admin: status = %d, want 403", rec.Code)
+	}
+	if all := h.list("/api/v1/groups", tokenAdmin); len(all) != 2 {
+		t.Errorf("admin listing = %d groups, want 2", len(all))
+	}
+	if mine := h.list("/api/v1/groups/me", tokenAlice); len(mine) != 1 {
+		t.Errorf("alice's groups = %d, want 1", len(mine))
+	}
+}
+
+// Deleting a group takes its membership rows with it rather than leaving rows that
+// grant access through a group that no longer exists.
+func TestDeletingGroupRemovesMemberships(t *testing.T) {
+	h := newHarness(t)
+	groupID := h.seedGroup("doomed", tokenAlice)
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+
+	h.mustDo(http.MethodDelete, "/api/v1/groups/"+groupID, tokenAlice, nil, http.StatusNoContent)
+
+	var remaining int64
+	h.db.Model(&iammodel.GroupMember{}).Where("group_id = ?", groupID).Count(&remaining)
+	if remaining != 0 {
+		t.Errorf("%d membership rows survived the group delete, want 0", remaining)
+	}
+	if rec := h.do(http.MethodGet, "/api/v1/groups/"+groupID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("read after delete: status = %d, want 404", rec.Code)
+	}
+}
+
+func TestGroupMembershipRejectsBadRequests(t *testing.T) {
+	h := newHarness(t)
+	groupID := h.seedGroup("validation", tokenAlice)
+
+	// An unknown user is a 404 rather than an opaque foreign key failure.
+	if rec := h.do(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "nobody"}); rec.Code != http.StatusNotFound {
+		t.Errorf("admitting an unknown user: status = %d, want 404", rec.Code)
+	}
+	// An unrecognised role is rejected before it reaches the write.
+	if rec := h.do(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob", "groupRole": "OVERLORD"}); rec.Code != http.StatusBadRequest {
+		t.Errorf("unrecognised role: status = %d, want 400", rec.Code)
+	}
+	// Admitting the same user twice collides rather than silently rewriting their role.
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob", "groupRole": "MEMBER"}, http.StatusCreated)
+	if rec := h.do(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob", "groupRole": "ADMIN"}); rec.Code != http.StatusConflict {
+		t.Errorf("duplicate membership: status = %d, want 409", rec.Code)
+	}
+	// A blank name is rejected on the group itself.
+	if rec := h.do(http.MethodPost, "/api/v1/groups", tokenAlice,
+		map[string]any{"groupName": "   "}); rec.Code != http.StatusBadRequest {
+		t.Errorf("blank group name: status = %d, want 400", rec.Code)
+	}
+}
+
+// Group writes are the one place an ordinary user creates a resource of their own, so
+// anonymous callers must still be turned away.
+func TestGroupWritesRequireAuthentication(t *testing.T) {
+	h := newHarness(t)
+	if rec := h.do(http.MethodPost, "/api/v1/groups", "", map[string]any{"groupName": "anon"}); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous create: status = %d, want 401", rec.Code)
+	}
+	if rec := h.do(http.MethodGet, "/api/v1/groups/me", "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous /me: status = %d, want 401", rec.Code)
+	}
+}
+
 func TestUnknownResourcesReportNotFound(t *testing.T) {
 	h := newHarness(t)
 	for _, path := range []string{
@@ -804,6 +1038,7 @@ func TestUnknownResourcesReportNotFound(t *testing.T) {
 		"/api/v1/application-templates/nope",
 		"/api/v1/slurm-deployments/nope",
 		"/api/v1/batch-job-processes/nope",
+		"/api/v1/groups/nope",
 	} {
 		rec := h.do(http.MethodGet, path, tokenAdmin, nil)
 		if rec.Code != http.StatusNotFound {

@@ -2,7 +2,47 @@
 
 Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via the `SERVER_PORT` env var).
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [Groups](#groups) are the exception on both counts — they are owned by ordinary users, so any authenticated caller may create one and none of them are readable anonymously. See INSTALL.md for how to obtain the root token.
+
+## Error responses
+
+Every failure — validation, authorization, missing record — comes back in the same envelope:
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "Cluster not found: c1d2e3f4-5678-4abc-9def-0123456789ab"
+}
+```
+
+`error` is the standard reason phrase for `status`, and `message` is the human-readable detail. Request-body validation adds a `fieldErrors` array listing every constraint that failed, so a client can report all of them at once rather than one per round trip:
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
+    { "field": "clusterName", "message": "Cluster name cannot be blank" }
+  ]
+}
+```
+
+`fieldErrors` is omitted on every other kind of failure. Field names are the JSON paths of the request body, including indexes and nesting — `inputs[0].inputType`, `batchJobConfig.wallTimeMinutes`.
+
+The statuses in use:
+
+| Status | Meaning |
+|---|---|
+| `400 Bad Request` | malformed JSON, or a body that failed its constraints |
+| `401 Unauthorized` | no token where one is required, or a token that is present but unusable — the caller can fix this by presenting credentials. An invalid token also carries `WWW-Authenticate: Bearer error="invalid_token"` |
+| `403 Forbidden` | authenticated, but lacking the authority for this call |
+| `404 Not Found` | no such record — or, for [groups](#groups), a record the caller has no standing to know exists |
+| `409 Conflict` | the request collides with existing state, e.g. deleting an SSH key still in use |
+| `502 Bad Gateway` | the identity provider could not be reached to validate the token; not the caller's fault |
+
+Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
 ## Clusters
 
@@ -75,7 +115,10 @@ Returned when `clusterName`, `hostName` or `slurmHome` is blank.
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "clusterName", "message": "Cluster name cannot be blank" },
     { "field": "hostName", "message": "Host name cannot be blank" }
   ]
@@ -189,7 +232,10 @@ Returned when `name` is blank.
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "name", "message": "Partition name cannot be blank" }
   ]
 }
@@ -257,7 +303,10 @@ Returned when `sshKeyName` or `publicKey` is blank.
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "sshKeyName", "message": "SSH key name cannot be blank" },
     { "field": "publicKey", "message": "Public key cannot be blank" }
   ]
@@ -324,7 +373,10 @@ Returned when `username` or `sshKeyId` is blank. An `sshKeyId` that does not res
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "username", "message": "Username cannot be blank" },
     { "field": "sshKeyId", "message": "SSH key id cannot be blank" }
   ]
@@ -391,7 +443,10 @@ echo "$CLUSTER_CREDENTIAL_ID"
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "clusterId", "message": "Cluster id cannot be blank" },
     { "field": "sshCredentialId", "message": "SSH credential id cannot be blank" }
   ]
@@ -570,7 +625,10 @@ Returned when e.g. `templateName` is blank, an `inputType`/`outputType` is missi
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "templateName", "message": "Template name cannot be blank" },
     { "field": "inputs[0].inputType", "message": "Input type cannot be null" }
   ]
@@ -707,7 +765,10 @@ Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredenti
 
 ```json
 {
-  "errors": [
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
     { "field": "templateId", "message": "Template id cannot be blank" },
     { "field": "batchJobConfig.wallTimeMinutes", "message": "Wall time must be positive" }
   ]
@@ -715,3 +776,157 @@ Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredenti
 ```
 
 
+## Groups
+
+A group is a named collection of users that resources can be shared with. Unlike the catalogs above, a group belongs to the user who created it rather than to the deployment: any authenticated caller may create one, and what a caller may then do with it comes from the group's own owner field and membership rows, not from platform roles.
+
+| Standing | Who holds it | May do |
+|---|---|---|
+| Reader | the owner, any `ACTIVE` member, and platform admins | read the group and its membership list |
+| Member manager | the owner, members holding `ADMIN` or `MODERATOR`, and platform admins | add, change and remove memberships |
+| Owner | the owner and platform admins | rename and delete the group |
+
+A caller with no standing at all gets `404 Not Found` rather than `403 Forbidden`: group names are chosen by users and may say who is working with whom, so an outsider cannot confirm that a given group id exists.
+
+Two rules keep a group from being taken over through its own membership list. The owner's membership can only be changed by the owner (or a platform admin), so a moderator cannot suspend them out of their own group; and the owner's membership cannot be removed at all — delete the group instead.
+
+### Create Group
+
+```
+POST /api/v1/groups
+```
+
+Requires any authenticated principal. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards.
+
+**curl example**
+
+The example below captures `groupId` into `$GROUP_ID` (requires `jq`), so it can be reused when managing members further down.
+
+```bash
+TOKEN='<a user token>'
+
+GROUP_ID=$(curl -s -X POST localhost:9095/api/v1/groups \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "groupName": "molecular-dynamics" }' | jq -r '.groupId')
+
+echo "$GROUP_ID"
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `groupName` | string | required, cannot be blank |
+
+**Response — `201 Created`**
+
+`groupId` is server-generated (UUID) and `createdAt` is epoch milliseconds. The creator is admitted as an `ACTIVE` member with group role `ADMIN` in the same transaction, so a group is never left with nobody able to administer it.
+
+```json
+{
+  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
+  "groupName": "molecular-dynamics",
+  "ownerId": "cilogon:12345",
+  "createdAt": 1755043200000
+}
+```
+
+**Validation errors — `400 Bad Request`**
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
+    { "field": "groupName", "message": "Group name cannot be blank" }
+  ]
+}
+```
+
+### Read and Update Groups
+
+```
+GET    /api/v1/groups
+GET    /api/v1/groups/me
+GET    /api/v1/groups/{groupId}
+PUT    /api/v1/groups/{groupId}
+DELETE /api/v1/groups/{groupId}
+```
+
+`GET /api/v1/groups` lists every group in the deployment and requires `ADMIN` or `SUPER_ADMIN`; `GET /api/v1/groups/me` is the ordinary caller's equivalent and returns the groups they own or hold a membership in (including suspended ones — a suspended member can still see that the group exists).
+
+`PUT` takes the same body as create and renames the group; `DELETE` returns `204 No Content` and takes the group's membership rows with it.
+
+```bash
+curl -s localhost:9095/api/v1/groups/me -H "Authorization: Bearer $TOKEN"
+```
+
+### Add Group Member
+
+```
+POST /api/v1/groups/{groupId}/members
+```
+
+Requires member-manager standing. The user must already be registered.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/groups/"$GROUP_ID"/members \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "cilogon:67890",
+    "groupRole": "MEMBER"
+  }'
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `userId` | string | required, must reference a registered user |
+| `groupRole` | string \| null | optional, one of `ADMIN`, `MODERATOR`, `MEMBER`; defaults to `MEMBER` |
+| `groupMemberStatus` | string \| null | optional, one of `ACTIVE`, `INACTIVE`; defaults to `ACTIVE` |
+
+**Response — `201 Created`**
+
+```json
+{
+  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
+  "userId": "cilogon:67890",
+  "groupRole": "MEMBER",
+  "groupMemberStatus": "ACTIVE"
+}
+```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `userId` blank, or an unrecognised `groupRole`/`groupMemberStatus` |
+| `404 Not Found` | the group is not visible to the caller, or `userId` names no registered user |
+| `409 Conflict` | the user is already a member — change the existing membership instead of re-adding it |
+
+### Read, Update and Remove Group Members
+
+```
+GET    /api/v1/groups/{groupId}/members
+GET    /api/v1/groups/{groupId}/members/{userId}
+PUT    /api/v1/groups/{groupId}/members/{userId}
+DELETE /api/v1/groups/{groupId}/members/{userId}
+```
+
+Reads need reader standing; `PUT` and `DELETE` need member-manager standing, except that any member may remove themselves — leaving a group needs nobody's permission, and works from a suspended membership too.
+
+`PUT` accepts `groupRole` and `groupMemberStatus`, both optional; an omitted field is left as it stands, so a member can be suspended without restating their role. The membership's user comes from the path, so a membership can be changed but never moved to another user.
+
+```bash
+# Promote a member to moderator, leaving their status alone.
+curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "groupRole": "MODERATOR" }'
+```
+
+`DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.

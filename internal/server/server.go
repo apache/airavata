@@ -25,6 +25,8 @@ import (
 func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Handler {
 	// Repositories.
 	users := iam.NewUserRepository(db)
+	groups := iam.NewGroupRepository(db)
+	groupMembers := iam.NewGroupMemberRepository(db)
 	sshKeys := credentials.NewSSHKeyRepository(db)
 	sshCreds := credentials.NewSSHUserCredentialRepository(db)
 	clusters := compute.NewClusterRepository(db)
@@ -37,6 +39,8 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 
 	// Services.
 	userSvc := iam.NewService(db, users)
+	groupSvc := iam.NewGroupService(db, groups, groupMembers, users)
+	groupMemberSvc := iam.NewGroupMemberService(db, groups, groupMembers, users)
 	sshKeySvc := credentials.NewSSHKeyService(db, sshKeys, sshCreds)
 	sshCredSvc := credentials.NewSSHUserCredentialService(db, sshCreds, sshKeys)
 	clusterSvc := compute.NewClusterService(db, clusters)
@@ -49,6 +53,8 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 
 	mux := http.NewServeMux()
 	iam.NewController(userSvc).Register(mux)
+	iam.NewGroupController(groupSvc).Register(mux)
+	iam.NewGroupMemberController(groupMemberSvc).Register(mux)
 	credentials.NewSSHKeyController(sshKeySvc).Register(mux)
 	credentials.NewSSHUserCredentialController(sshCredSvc).Register(mux)
 	compute.NewClusterController(clusterSvc).Register(mux)

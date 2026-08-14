@@ -35,6 +35,11 @@ type User struct {
 	// Roles are owned by the user: deleting a user deletes its role rows, rather than
 	// relying on every caller to clean up user_roles separately.
 	Roles []UserRole `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"roles,omitempty"`
+
+	// Memberships are owned by the user the same way roles are: a membership is a
+	// statement about this account, so deleting the account withdraws it. Owning a
+	// group is a different matter and is deliberately RESTRICT — see Group.OwnerID.
+	Memberships []GroupMember `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-"`
 }
 
 // TableName pins the table name, matching the Java @Entity(name = "users").
