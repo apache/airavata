@@ -223,9 +223,8 @@ curl -s -X POST localhost:9095/api/v1/clusters \
 
 **1. Owning resources requires a matching `users` row.**
 
-Endpoints that create *owned* resources — cluster credentials, SCP data
-registrations, batch job processes — resolve the caller to a user record and refuse
-if none exists:
+Endpoints that create *owned* resources — cluster credentials, batch job processes —
+resolve the caller to a user record and refuse if none exists:
 
 ```
 404  No user record found for authenticated principal: root
@@ -279,14 +278,12 @@ curl -s localhost:9095/api/v1/clusters      # readable without a token
 Catalogue reads — clusters, partitions, SSH keys, SSH credentials, templates and
 deployments — are open to anonymous callers. Beyond those:
 
-- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating cluster credentials,
-  SCP data and batch job processes, which any authenticated caller may do for
-  themselves.
-- **Owner-scoped reads** (`/cluster-credentials/{id}`, `/scp-data/{id}`,
-  `/users/{id}`) require authentication and are refused unless the caller owns the
-  record or is an admin.
-- **Unfiltered listings** of cluster credentials, SCP data, batch job processes and
-  users require `ADMIN`, because they expose who holds access to what.
+- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating cluster credentials
+  and batch job processes, which any authenticated caller may do for themselves.
+- **Owner-scoped reads** (`/cluster-credentials/{id}`, `/users/{id}`) require
+  authentication and are refused unless the caller owns the record or is an admin.
+- **Unfiltered listings** of cluster credentials, batch job processes and users
+  require `ADMIN`, because they expose who holds access to what.
 
 A request with no token to a guarded endpoint returns `401`, while an authenticated
 caller lacking the required role returns `403`.

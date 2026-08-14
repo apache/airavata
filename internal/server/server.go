@@ -10,7 +10,6 @@ import (
 	"github.com/apache/airavata/api/application"
 	"github.com/apache/airavata/api/compute"
 	"github.com/apache/airavata/api/credentials"
-	"github.com/apache/airavata/api/data"
 	"github.com/apache/airavata/api/iam"
 	"github.com/apache/airavata/api/process"
 	"github.com/apache/airavata/internal/auth"
@@ -33,7 +32,6 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	bindings := compute.NewClusterCredentialRepository(db)
 	templates := application.NewTemplateRepository(db)
 	deployments := application.NewBatchDeploymentRepository(db)
-	datasets := data.NewSCPDataRepository(db)
 	processes := process.NewRepository(db)
 	statuses := process.NewStatusRepository(db)
 
@@ -46,7 +44,6 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	bindingSvc := compute.NewClusterCredentialService(db, bindings, clusters, sshCreds, users)
 	templateSvc := application.NewTemplateService(db, templates, deployments)
 	deploymentSvc := application.NewBatchDeploymentService(db, deployments, templates, clusters, bindings)
-	dataSvc := data.NewService(db, datasets, bindings, users)
 	statusSvc := process.NewStatusService(db, statuses, processes)
 	processSvc := process.NewService(db, processes, deployments, users, statusSvc)
 
@@ -59,7 +56,6 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	compute.NewClusterCredentialController(bindingSvc).Register(mux)
 	application.NewTemplateController(templateSvc).Register(mux)
 	application.NewBatchDeploymentController(deploymentSvc).Register(mux)
-	data.NewController(dataSvc).Register(mux)
 	process.NewController(processSvc).Register(mux)
 	process.NewStatusController(statusSvc).Register(mux)
 

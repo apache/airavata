@@ -13,7 +13,6 @@ import (
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	credentialsmodel "github.com/apache/airavata/api/credentials/model"
-	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
 )
@@ -48,7 +47,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"clusters", "cluster_partitions", "cluster_credentials",
 		"application_templates", "application_template_inputs", "application_template_outputs",
 		"batch_application_deployments", "batch_job_configs",
-		"scp_data", "batch_job_processes",
+		"batch_job_processes",
 	}
 	for _, table := range want {
 		if !gdb.Migrator().HasTable(table) {
@@ -264,11 +263,6 @@ func TestOwnedByRejectsUnownedRows(t *testing.T) {
 	}
 	if cred.OwnedBy("cilogon:2") {
 		t.Error("a different user was reported as the owner")
-	}
-
-	dataset := &datamodel.SCPData{}
-	if dataset.OwnedBy("") {
-		t.Error("a dataset with no owner reported ownership by the empty user id")
 	}
 
 	proc := &processmodel.BatchJobProcess{}

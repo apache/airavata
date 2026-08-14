@@ -13,7 +13,7 @@ import (
 // generates its key in BeforeCreate.
 //
 // Every service that resolves ownership assumes the authenticated principal's name is
-// exactly this ID. That assumption is load-bearing in ClusterCredential, SCPData and
+// exactly this ID. That assumption is load-bearing in ClusterCredential and
 // BatchJobProcess authorisation.
 //
 // Java: org.apache.airavata.iam.model.UserEntity (@Entity(name = "users"))

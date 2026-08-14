@@ -7,7 +7,6 @@ import (
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	credentialsmodel "github.com/apache/airavata/api/credentials/model"
-	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
 )
@@ -35,7 +34,6 @@ func Entities() []any {
 		// Depend on the above.
 		&computemodel.ClusterCredential{},
 		&applicationmodel.BatchDeployment{},
-		&datamodel.SCPData{},
 		&processmodel.BatchJobProcess{},
 
 		// References BatchJobProcess, which in turn references it back through

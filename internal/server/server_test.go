@@ -529,34 +529,6 @@ func TestUpdatingClusterCredentialKeepsItsOwner(t *testing.T) {
 	}
 }
 
-// Lifecycle state belongs to the service, not the client.
-func TestSCPDataProvisionStatusIsForced(t *testing.T) {
-	h := newHarness(t)
-	clusterID := h.seedCluster("scp")
-	_, credentialID := h.seedSSHKeyAndCredential("scp")
-
-	binding := h.mustDo(http.MethodPost, "/api/v1/cluster-credentials", tokenAlice, map[string]any{
-		"clusterId": clusterID, "sshCredentialId": credentialID,
-	}, http.StatusCreated)
-
-	created := h.mustDo(http.MethodPost, "/api/v1/scp-data", tokenAlice, map[string]any{
-		"dataName": "inputs", "isFile": true, "path": "/scratch/in",
-		"slurmClusterCredentialId": binding["clusterCredentialId"],
-		"provisionStatus":          "PROVISIONED",
-	}, http.StatusCreated)
-
-	if got := created["provisionStatus"]; got != "REGISTERD" {
-		t.Errorf("provisionStatus = %v, want REGISTERD regardless of what the client sent", got)
-	}
-	if got := created["ownerId"]; got != "alice" {
-		t.Errorf("ownerId = %v, want it taken from the token", got)
-	}
-
-	if rec := h.do(http.MethodGet, "/api/v1/scp-data/"+created["dataId"].(string), tokenBob, nil); rec.Code != http.StatusForbidden {
-		t.Errorf("read by another user: status = %d, want 403", rec.Code)
-	}
-}
-
 // Submitting is self-service: a plain user may create a process for themselves, and
 // the resources come from the request rather than the deployment's default.
 func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
