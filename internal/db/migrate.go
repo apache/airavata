@@ -7,6 +7,7 @@ import (
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	credentialsmodel "github.com/apache/airavata/api/credentials/model"
+	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
 )
@@ -29,6 +30,8 @@ func Entities() []any {
 		&iammodel.Group{},
 		&credentialsmodel.SSHUserCredential{},
 		&computemodel.Cluster{},
+		&datamodel.SCPDataStorage{},
+		&datamodel.DataProduct{},
 		&applicationmodel.TemplateInput{},
 		&applicationmodel.TemplateOutput{},
 
@@ -39,9 +42,13 @@ func Entities() []any {
 		&applicationmodel.BatchDeployment{},
 		&processmodel.BatchJobProcess{},
 
-		// Sharing rows reference a credential, and a group or a user.
+		// Sharing rows reference the record they open up, and a group or a user.
 		&computemodel.SSHEndpointCredentialGroupSharing{},
 		&computemodel.SSHEndpointCredentialUserSharing{},
+		&datamodel.SCPDataStorageGroupSharing{},
+		&datamodel.SCPDataStorageUserSharing{},
+		&datamodel.DataProductGroupSharing{},
+		&datamodel.DataProductUserSharing{},
 
 		// References BatchJobProcess, which in turn references it back through
 		// LastStatusID — the one circular pair in the schema.

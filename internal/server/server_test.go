@@ -20,6 +20,7 @@ import (
 	"github.com/apache/airavata/internal/server"
 
 	computemodel "github.com/apache/airavata/api/compute/model"
+	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
@@ -811,6 +812,401 @@ func TestDeletingEndpointCredentialRemovesItsShares(t *testing.T) {
 		Where("ssh_endpoint_credential_id = ?", bindingID).Count(&remaining)
 	if remaining != 0 {
 		t.Errorf("%d group shares survived the delete, want 0", remaining)
+	}
+}
+
+// seedStorage registers an SCP data storage owned by the caller of token.
+func (h *harness) seedStorage(name, token string) (endpointID, storageID string) {
+	h.t.Helper()
+	endpointID = h.seedSSHEndpoint(name)
+	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", token, map[string]any{
+		"dataName": name, "sshEndpointId": endpointID,
+	}, http.StatusCreated)
+	return endpointID, out["dataId"].(string)
+}
+
+// seedProduct registers a dataset owned by the caller of token, on a storage shared
+// with them.
+func (h *harness) seedProduct(name, token string) (storageID, productID string) {
+	h.t.Helper()
+	_, storageID = h.seedStorage(name, token)
+	out := h.mustDo(http.MethodPost, "/api/v1/data-products", token, map[string]any{
+		"dataName": name, "isFile": true, "path": "/scratch/" + name, "dataStorageId": storageID,
+	}, http.StatusCreated)
+	return storageID, out["dataId"].(string)
+}
+
+// shareStorageWithUser grants one user access to a storage, as its owner.
+func (h *harness) shareStorageWithUser(storageID, userID, permission, ownerToken string) string {
+	h.t.Helper()
+	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages/"+storageID+"/user-shares", ownerToken,
+		map[string]any{"userId": userID, "permission": permission}, http.StatusCreated)
+	return out["dataStorageUserSharingId"].(string)
+}
+
+// principalOf maps a test token to the user id it authenticates as.
+func principalOf(token string) string {
+	switch token {
+	case tokenAdmin:
+		return "admin-user"
+	case tokenAlice:
+		return "alice"
+	case tokenBob:
+		return "bob"
+	}
+	return ""
+}
+
+// A storage belongs to whoever registered it; everyone else needs a sharing rule, and
+// no share confers control.
+func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
+	h := newHarness(t)
+	endpointID, storageID := h.seedStorage("staging", tokenAlice)
+	base := "/api/v1/scp-data-storages/" + storageID
+
+	created := h.mustDo(http.MethodGet, base, tokenAlice, nil, http.StatusOK)
+	if created["ownerId"] != "alice" {
+		t.Errorf("ownerId = %v, want it taken from the token", created["ownerId"])
+	}
+	if created["sshEndpoint"] == nil {
+		t.Error("storage response did not inline its endpoint")
+	}
+
+	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read before sharing: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodGet, "/api/v1/scp-data-storages", tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("listing by a non-admin: status = %d, want 403", rec.Code)
+	}
+	if mine := h.list("/api/v1/scp-data-storages/me", tokenAlice); len(mine) != 1 {
+		t.Errorf("alice's own storages = %d, want 1", len(mine))
+	}
+	if shared := h.list("/api/v1/scp-data-storages/shared-with-me", tokenBob); len(shared) != 0 {
+		t.Errorf("shared-with-me before sharing = %d, want 0", len(shared))
+	}
+
+	sharingID := h.shareStorageWithUser(storageID, "bob", "READ", tokenAlice)
+
+	got := h.mustDo(http.MethodGet, base, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "READ" {
+		t.Errorf("permission = %v, want READ", got["permission"])
+	}
+	if shared := h.list("/api/v1/scp-data-storages/shared-with-me", tokenBob); len(shared) != 1 {
+		t.Errorf("shared-with-me = %d, want the one storage", len(shared))
+	}
+	// A share is not ownership: /me stays empty for the grantee.
+	if mine := h.list("/api/v1/scp-data-storages/me", tokenBob); len(mine) != 0 {
+		t.Errorf("bob's own storages = %d, want 0", len(mine))
+	}
+
+	// READ is not WRITE, and no share confers control.
+	repoint := map[string]any{"dataName": "renamed", "sshEndpointId": endpointID}
+	if rec := h.do(http.MethodPut, base, tokenBob, repoint); rec.Code != http.StatusForbidden {
+		t.Errorf("update with READ: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodGet, base+"/user-shares", tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee listing the shares: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee deleting the storage: status = %d, want 403", rec.Code)
+	}
+
+	// Widened to WRITE the update goes through, but control still does not.
+	h.mustDo(http.MethodPut, base+"/user-shares/"+sharingID, tokenAlice,
+		map[string]any{"permission": "WRITE"}, http.StatusOK)
+	updated := h.mustDo(http.MethodPut, base, tokenBob, repoint, http.StatusOK)
+	if updated["ownerId"] != "alice" {
+		t.Errorf("owner after a grantee update = %v, want alice", updated["ownerId"])
+	}
+	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee deleting with WRITE: status = %d, want 403", rec.Code)
+	}
+
+	// Revoked, the access goes with it.
+	h.mustDo(http.MethodDelete, base+"/user-shares/"+sharingID, tokenAlice, nil, http.StatusNoContent)
+	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read after revoke: status = %d, want 403", rec.Code)
+	}
+}
+
+// A group share reaches every active member of the group, and stops at a suspended one.
+func TestStorageGroupSharing(t *testing.T) {
+	h := newHarness(t)
+	_, storageID := h.seedStorage("group-staging", tokenAlice)
+	groupID := h.seedGroup("data-team", tokenAlice)
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+
+	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages/"+storageID+"/group-shares", tokenAlice,
+		map[string]any{"groupId": groupID, "permission": "WRITE"}, http.StatusCreated)
+
+	got := h.mustDo(http.MethodGet, "/api/v1/scp-data-storages/"+storageID, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "WRITE" {
+		t.Errorf("permission through the group = %v, want WRITE", got["permission"])
+	}
+
+	h.mustDo(http.MethodPut, "/api/v1/groups/"+groupID+"/members/bob", tokenAlice,
+		map[string]any{"groupMemberStatus": "INACTIVE"}, http.StatusOK)
+	if rec := h.do(http.MethodGet, "/api/v1/scp-data-storages/"+storageID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read by a suspended member: status = %d, want 403", rec.Code)
+	}
+}
+
+// Registering a dataset means having the platform touch a host, so the storage it
+// names has to be one the caller can already reach.
+func TestProductRegistrationRequiresReachableStorage(t *testing.T) {
+	h := newHarness(t)
+	_, storageID := h.seedStorage("closed", tokenBob)
+
+	body := map[string]any{
+		"dataName": "run-1", "isFile": true, "path": "/scratch/run-1", "dataStorageId": storageID,
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body); rec.Code != http.StatusForbidden {
+		t.Errorf("registering into an unshared storage: status = %d, want 403", rec.Code)
+	}
+
+	h.shareStorageWithUser(storageID, "alice", "READ", tokenBob)
+	created := h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, body, http.StatusCreated)
+
+	if got := created["ownerId"]; got != "alice" {
+		t.Errorf("ownerId = %v, want it taken from the token", got)
+	}
+	if got := created["provisionStatus"]; got != "REGISTERD" {
+		t.Errorf("provisionStatus = %v, want the server-set initial status", got)
+	}
+	if created["createdAt"].(float64) <= 0 {
+		t.Error("createdAt was not stamped")
+	}
+	if got := created["dataStorageType"]; got != "SCP" {
+		t.Errorf("dataStorageType = %v, want the SCP default", got)
+	}
+
+	// An unknown storage is a 404 rather than a dangling reference.
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, map[string]any{
+		"dataName": "ghost", "isFile": true, "path": "/x", "dataStorageId": "nope",
+	}); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown storage: status = %d, want 404", rec.Code)
+	}
+}
+
+// A product is reachable by its owner and by whoever a share names — nobody else, and
+// no listing leaks it.
+func TestProductIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
+	h := newHarness(t)
+	storageID, productID := h.seedProduct("dataset", tokenAlice)
+	base := "/api/v1/data-products/" + productID
+
+	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read by an outsider: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodGet, "/api/v1/data-products", tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("listing by a non-admin: status = %d, want 403", rec.Code)
+	}
+	if mine := h.list("/api/v1/data-products/me", tokenBob); len(mine) != 0 {
+		t.Errorf("bob's own products = %d, want 0", len(mine))
+	}
+	if mine := h.list("/api/v1/data-products/me", tokenAlice); len(mine) != 1 {
+		t.Errorf("alice's own products = %d, want 1", len(mine))
+	}
+
+	share := h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+	if share["permission"] != "READ" {
+		t.Errorf("permission = %v, want READ by default", share["permission"])
+	}
+
+	got := h.mustDo(http.MethodGet, base, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "READ" {
+		t.Errorf("reported permission = %v, want READ", got["permission"])
+	}
+	if shared := h.list("/api/v1/data-products/shared-with-me", tokenBob); len(shared) != 1 {
+		t.Errorf("shared-with-me = %d, want the one product", len(shared))
+	}
+
+	// READ is not WRITE, and no share confers control.
+	update := map[string]any{"dataName": "renamed", "isFile": true, "path": "/scratch/dataset", "dataStorageId": storageID}
+	if rec := h.do(http.MethodPut, base, tokenBob, update); rec.Code != http.StatusForbidden {
+		t.Errorf("update with READ: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodGet, base+"/user-shares", tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee listing the shares: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee deleting the product: status = %d, want 403", rec.Code)
+	}
+
+	// Widened to WRITE the update goes through, but only once bob can reach the
+	// storage it is registered on.
+	h.mustDo(http.MethodPut, base+"/user-shares/"+share["dataProductUserSharingId"].(string), tokenAlice,
+		map[string]any{"permission": "WRITE"}, http.StatusOK)
+	if rec := h.do(http.MethodPut, base, tokenBob, update); rec.Code != http.StatusForbidden {
+		t.Errorf("update by a grantee with no access to the storage: status = %d, want 403", rec.Code)
+	}
+	h.shareStorageWithUser(storageID, "bob", "READ", tokenAlice)
+	h.mustDo(http.MethodPut, base, tokenBob, update, http.StatusOK)
+	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee deleting with WRITE: status = %d, want 403", rec.Code)
+	}
+}
+
+// A product's credential is the binding its data was staged under. It carries no
+// foreign key, so the service is the only thing keeping the reference honest: it must
+// exist, be usable by the caller, and be for the storage's own host.
+func TestProductCredentialMustBeUsableAndOnTheSameHost(t *testing.T) {
+	h := newHarness(t)
+	endpointID, storageID := h.seedStorage("staged", tokenAlice)
+	_, credentialID := h.seedSSHKeyAndCredential("staged")
+
+	// Alice's own binding on the storage's endpoint.
+	aliceBinding := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
+	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
+
+	body := func(credential string) map[string]any {
+		return map[string]any{
+			"dataName": "run-1", "isFile": true, "path": "/scratch/run-1",
+			"dataStorageId": storageID, "credentialId": credential,
+		}
+	}
+
+	created := h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, body(aliceBinding), http.StatusCreated)
+	if created["credentialId"] != aliceBinding {
+		t.Errorf("credentialId = %v, want %s", created["credentialId"], aliceBinding)
+	}
+
+	// An unknown binding is a 404 rather than a dangling reference.
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body("nope")); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown credential: status = %d, want 404", rec.Code)
+	}
+
+	// Someone else's binding is a 403 — staging under a credential nobody shared with
+	// the caller would let them act as its owner.
+	_, bobsBinding := h.seedEndpointCredential("bobs", tokenBob)
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(bobsBinding)); rec.Code != http.StatusForbidden {
+		t.Errorf("someone else's credential: status = %d, want 403", rec.Code)
+	}
+
+	// A binding for a different host cannot move this data.
+	otherEndpoint := h.seedSSHEndpoint("elsewhere")
+	elsewhere := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
+		"sshEndpointId": otherEndpoint, "sshCredentialId": credentialID,
+	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(elsewhere)); rec.Code != http.StatusBadRequest {
+		t.Errorf("credential for another host: status = %d, want 400", rec.Code)
+	}
+
+	// Sharing bob's binding with alice makes it usable, once it is on the right host.
+	h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials/"+bobsBinding+"/user-shares", tokenBob,
+		map[string]any{"userId": "alice", "permission": "READ"}, http.StatusCreated)
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(bobsBinding)); rec.Code != http.StatusBadRequest {
+		t.Errorf("shared credential on the wrong host: status = %d, want 400", rec.Code)
+	}
+
+	// Omitting the credential is allowed: not every dataset has been staged yet.
+	noCredential := h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, map[string]any{
+		"dataName": "unstaged", "isFile": false, "path": "/scratch/unstaged", "dataStorageId": storageID,
+	}, http.StatusCreated)
+	if noCredential["credentialId"] != nil {
+		t.Errorf("credentialId = %v, want null", noCredential["credentialId"])
+	}
+}
+
+// Ownership is immutable: an admin editing someone's product must not acquire it.
+func TestUpdatingProductKeepsItsOwner(t *testing.T) {
+	h := newHarness(t)
+	storageID, productID := h.seedProduct("owned-dataset", tokenAlice)
+
+	updated := h.mustDo(http.MethodPut, "/api/v1/data-products/"+productID, tokenAdmin, map[string]any{
+		"dataName": "admin-touched", "isFile": true, "path": "/scratch/x", "dataStorageId": storageID,
+		"ownerId": "admin-user", "provisionStatus": "PROVISIONED",
+	}, http.StatusOK)
+
+	if got := updated["ownerId"]; got != "alice" {
+		t.Errorf("owner after an admin update = %v, want alice", got)
+	}
+	if got := updated["provisionStatus"]; got != "REGISTERD" {
+		t.Errorf("provisionStatus = %v, want it unchanged — the body must not set it", got)
+	}
+}
+
+// A storage with products on it cannot be deleted: the reference carries no foreign
+// key, so nothing at the database level would stop it from orphaning them.
+func TestStorageInUseCannotBeDeleted(t *testing.T) {
+	h := newHarness(t)
+	storageID, productID := h.seedProduct("busy-storage", tokenAlice)
+
+	if rec := h.do(http.MethodDelete, "/api/v1/scp-data-storages/"+storageID, tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("delete with a product on it: status = %d, want 409", rec.Code)
+	}
+
+	h.mustDo(http.MethodDelete, "/api/v1/data-products/"+productID, tokenAlice, nil, http.StatusNoContent)
+	h.mustDo(http.MethodDelete, "/api/v1/scp-data-storages/"+storageID, tokenAlice, nil, http.StatusNoContent)
+}
+
+// Shares point at the record with RESTRICT, so deleting one has to take its shares
+// with it rather than tripping over them.
+func TestDeletingProductRemovesItsShares(t *testing.T) {
+	h := newHarness(t)
+	_, productID := h.seedProduct("doomed-dataset", tokenAlice)
+	groupID := h.seedGroup("doomed-data-group", tokenAlice)
+	base := "/api/v1/data-products/" + productID
+
+	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/group-shares", tokenAlice, map[string]any{"groupId": groupID}, http.StatusCreated)
+
+	h.mustDo(http.MethodDelete, base, tokenAlice, nil, http.StatusNoContent)
+
+	var remaining int64
+	h.db.Model(&datamodel.DataProductUserSharing{}).Where("data_product_id = ?", productID).Count(&remaining)
+	if remaining != 0 {
+		t.Errorf("%d user shares survived the delete, want 0", remaining)
+	}
+	h.db.Model(&datamodel.DataProductGroupSharing{}).Where("data_product_id = ?", productID).Count(&remaining)
+	if remaining != 0 {
+		t.Errorf("%d group shares survived the delete, want 0", remaining)
+	}
+}
+
+func TestDataSharingRejectsBadRequests(t *testing.T) {
+	h := newHarness(t)
+	_, productID := h.seedProduct("validation-dataset", tokenAlice)
+	base := "/api/v1/data-products/" + productID
+
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "nobody"}); rec.Code != http.StatusNotFound {
+		t.Errorf("sharing with an unknown user: status = %d, want 404", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, base+"/group-shares", tokenAlice,
+		map[string]any{"groupId": "nope"}); rec.Code != http.StatusNotFound {
+		t.Errorf("sharing with an unknown group: status = %d, want 404", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob", "permission": "ROOT"}); rec.Code != http.StatusBadRequest {
+		t.Errorf("unrecognised permission: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "alice"}); rec.Code != http.StatusConflict {
+		t.Errorf("sharing with the owner: status = %d, want 409", rec.Code)
+	}
+	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob", "permission": "WRITE"}); rec.Code != http.StatusConflict {
+		t.Errorf("duplicate share: status = %d, want 409", rec.Code)
+	}
+
+	// A product body must still validate.
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice,
+		map[string]any{"dataName": "  ", "path": "", "dataStorageId": ""}); rec.Code != http.StatusBadRequest {
+		t.Errorf("blank product fields: status = %d, want 400", rec.Code)
+	}
+
+	// A sharing id from one product is not reachable through another's path.
+	_, otherID := h.seedProduct("other-dataset", tokenAlice)
+	shares := h.list(base+"/user-shares", tokenAlice)
+	sharingID := shares[0]["dataProductUserSharingId"].(string)
+	if rec := h.do(http.MethodDelete,
+		"/api/v1/data-products/"+otherID+"/user-shares/"+sharingID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("cross-product share delete: status = %d, want 404", rec.Code)
 	}
 }
 

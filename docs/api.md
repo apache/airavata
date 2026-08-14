@@ -2,7 +2,7 @@
 
 Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via the `SERVER_PORT` env var).
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [Groups](#groups) are the exception on both counts — they are owned by ordinary users, so any authenticated caller may create one and none of them are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [Groups](#groups), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership and sharing rules rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -914,6 +914,225 @@ Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredenti
 }
 ```
 
+
+## SCP Data Storages
+
+An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) and belongs to whoever registered it.
+
+| Standing | May do |
+|---|---|
+| `READ` share | read the storage, and register data products on it |
+| `WRITE` share | the above, and edit the storage |
+| Owner (or admin) | the above, and delete it, and manage its shares |
+
+`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [data products](#data-products) and [SSH endpoint credentials](#share-an-ssh-endpoint-credential). A group share applies only while the member's group membership is `ACTIVE`.
+
+Anyone else gets `403 Forbidden` on every read, including the unfiltered listing: `GET /api/v1/scp-data-storages` is admin-only, `/me` returns what the caller owns, and `/shared-with-me` what has been shared with them.
+
+```
+GET    /api/v1/scp-data-storages                                   (admin)
+GET    /api/v1/scp-data-storages/me
+GET    /api/v1/scp-data-storages/shared-with-me
+POST   /api/v1/scp-data-storages
+GET    /api/v1/scp-data-storages/{dataStorageId}                   (READ)
+PUT    /api/v1/scp-data-storages/{dataStorageId}                   (WRITE)
+DELETE /api/v1/scp-data-storages/{dataStorageId}                   (owner)
+
+GET    /api/v1/scp-data-storages/{dataStorageId}/group-shares      (owner)
+POST   /api/v1/scp-data-storages/{dataStorageId}/group-shares      (owner)
+PUT    /api/v1/scp-data-storages/{dataStorageId}/group-shares/{sharingId}
+DELETE /api/v1/scp-data-storages/{dataStorageId}/group-shares/{sharingId}
+
+GET    /api/v1/scp-data-storages/{dataStorageId}/user-shares       (owner)
+POST   /api/v1/scp-data-storages/{dataStorageId}/user-shares       (owner)
+PUT    /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}
+DELETE /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}
+```
+
+### Create SCP Data Storage
+
+```
+POST /api/v1/scp-data-storages
+```
+
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint).
+
+```bash
+STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "expanse-scratch",
+    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'"
+  }' | jq -r '.dataId')
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `dataName` | string | required, cannot be blank |
+| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
+
+**Response — `201 Created`**
+
+The endpoint is inlined, for the same reason a cluster inlines it. `permission` is what the calling principal may do with the storage.
+
+```json
+{
+  "dataId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+  "dataName": "expanse-scratch",
+  "ownerId": "cilogon:12345",
+  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+  "sshEndpoint": {
+    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+    "name": "expanse-login",
+    "hostName": "login.expanse.sdsc.edu",
+    "port": 22
+  },
+  "permission": "WRITE"
+}
+```
+
+`DELETE` returns `204 No Content`, or `409 Conflict` when data products are still registered on the storage. Deleting one takes its shares with it.
+
+### Share an SCP Data Storage
+
+```
+POST /api/v1/scp-data-storages/{dataStorageId}/user-shares
+POST /api/v1/scp-data-storages/{dataStorageId}/group-shares
+```
+
+Bodies and errors match [Share a Data Product](#share-a-data-product) below: `userId`/`groupId` plus an optional `permission` defaulting to `READ`, restricted to the storage's owner and platform admins.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/scp-data-storages/"$STORAGE_ID"/group-shares \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "groupId": "'"$GROUP_ID"'", "permission": "READ" }'
+```
+
+## Data Products
+
+A data product is a registered dataset: a path on an [SCP data storage](#scp-data-storages), owned by whoever registered it.
+
+| Standing | May do |
+|---|---|
+| `READ` share | read the product, and see it under `/shared-with-me` |
+| `WRITE` share | the above, and edit the product |
+| Owner (or admin) | the above, and delete it, and manage its shares |
+
+`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [SSH endpoint credentials](#share-an-ssh-endpoint-credential). A group share applies only while the member's group membership is `ACTIVE`.
+
+Anyone else gets `403 Forbidden`, and no listing leaks a product: `GET /api/v1/data-products` is admin-only, `/me` returns what the caller owns, and `/shared-with-me` what has been shared with them.
+
+### Create Data Product
+
+```
+POST /api/v1/data-products
+```
+
+Requires an authenticated principal with a `users` row. **The storage it names must already be reachable by the caller** — registering data into a storage nobody shared with them would be a way to have the platform touch a host they have no standing on.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/data-products \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "alphafold-run-1",
+    "dataDescription": "Predicted structures for run 1",
+    "isFile": false,
+    "path": "/scratch/alphafold/run-1",
+    "dataStorageId": "'"$STORAGE_ID"'",
+    "credentialId": "'"$ENDPOINT_CREDENTIAL_ID"'"
+  }'
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `dataName` | string | required, cannot be blank |
+| `dataDescription` | string \| null | optional |
+| `isFile` | boolean | required; `false` for a directory |
+| `path` | string | required, cannot be blank |
+| `dataStorageId` | string | required, must reference a storage the caller can reach |
+| `dataStorageType` | string \| null | optional, `SCP`; defaults to `SCP` |
+| `credentialId` | string \| null | optional; the [SSH endpoint credential](#create-ssh-endpoint-credential) the data was staged under. Must be one the caller may use, and must be for the same host the storage stages through |
+
+There is no `ownerId` and no `provisionStatus`: ownership comes from the token, and the lifecycle state is the server's to move. A body carrying either is accepted and ignored.
+
+**Response — `201 Created`**
+
+```json
+{
+  "dataId": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+  "dataName": "alphafold-run-1",
+  "dataDescription": "Predicted structures for run 1",
+  "isFile": false,
+  "path": "/scratch/alphafold/run-1",
+  "provisionStatus": "REGISTERD",
+  "ownerId": "cilogon:12345",
+  "dataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+  "dataStorageType": "SCP",
+  "credentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+  "createdAt": 1755043200000,
+  "permission": "WRITE"
+}
+```
+
+`PUT` takes the same body and needs `WRITE` **plus** access to the storage and credential it names; the owner, provision status and creation time are never rewritten from a request.
+
+Neither `dataStorageId` nor `credentialId` carries a foreign key — the storage id is qualified by `dataStorageType` — so both are resolved by the service: an unknown id is `404`, one the caller cannot reach is `403`, and a credential for the wrong host is `400`.
+
+`DELETE` returns `204 No Content`, is refused for anyone but the owner and admins, and takes the product's shares with it.
+
+### Share a Data Product
+
+```
+GET    /api/v1/data-products/{dataProductId}/group-shares
+POST   /api/v1/data-products/{dataProductId}/group-shares
+PUT    /api/v1/data-products/{dataProductId}/group-shares/{sharingId}
+DELETE /api/v1/data-products/{dataProductId}/group-shares/{sharingId}
+
+GET    /api/v1/data-products/{dataProductId}/user-shares
+POST   /api/v1/data-products/{dataProductId}/user-shares
+PUT    /api/v1/data-products/{dataProductId}/user-shares/{sharingId}
+DELETE /api/v1/data-products/{dataProductId}/user-shares/{sharingId}
+```
+
+Every one of these — reads included — is restricted to the owner and platform admins: the share list names who holds a dataset, which is more than a grantee needs to know.
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `groupId` / `userId` | string | required; must reference an existing record |
+| `permission` | string \| null | optional, `READ` or `WRITE`; defaults to `READ` |
+
+`PUT` takes only `permission`, which is required there — the subject of a share is fixed at creation.
+
+**Response — `201 Created`**
+
+```json
+{
+  "dataProductUserSharingId": "2b3c4d5e-6f70-4a8b-9c0d-1e2f3a4b5c6d",
+  "dataProductId": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+  "userId": "cilogon:67890",
+  "permission": "READ"
+}
+```
+
+A group share is the same shape with `dataProductGroupSharingId` and `groupId`.
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `groupId`/`userId` blank, or an unrecognised `permission` |
+| `403 Forbidden` | the caller is not the owner |
+| `404 Not Found` | no such product, group or user; or a `sharingId` belonging to a different product |
+| `409 Conflict` | already shared with that group or user, or shared with the owner |
 
 ## Groups
 

@@ -147,6 +147,41 @@ func verbFor(want model.SSHEndpointCredentialPermission) string {
 	return "read"
 }
 
+// CredentialAccess answers "may this caller act under this binding?" for services
+// outside the compute package.
+//
+// The data vertical asks it before letting a dataset be registered under a credential.
+// Exposing the question rather than the tables is what keeps one definition of who may
+// use a credential: owner, admin, or a share, resolved exactly as it is here.
+type CredentialAccess struct{ credentialAccess }
+
+// NewCredentialAccess returns a checker over the credential and sharing tables.
+func NewCredentialAccess(
+	bindings *SSHEndpointCredentialRepository,
+	sharing *SSHEndpointCredentialSharingRepository,
+	members *iam.GroupMemberRepository,
+) *CredentialAccess {
+	return &CredentialAccess{credentialAccess{credentials: bindings, sharing: sharing, members: members}}
+}
+
+// WithTx returns a checker bound to tx, for checks made from inside a transaction.
+func (a *CredentialAccess) WithTx(tx *gorm.DB) *CredentialAccess {
+	return &CredentialAccess{a.credentialAccess.withTx(tx)}
+}
+
+// RequireUsable loads a binding and checks the caller may act under it: 404 when there
+// is no such binding, 403 when it is neither theirs nor shared with them.
+func (a *CredentialAccess) RequireUsable(ctx context.Context, id string) (*model.SSHEndpointCredential, error) {
+	credential, err := a.requireCredential(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if _, _, err := a.require(ctx, credential, permRead); err != nil {
+		return nil, err
+	}
+	return credential, nil
+}
+
 // SSHEndpointCredentialService manages the bindings that let a user act on a host.
 //
 // This is the tightest authorisation model in the API. Ownership comes from the access

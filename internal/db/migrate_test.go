@@ -58,6 +58,8 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"ssh_endpoints", "clusters", "cluster_partitions",
 		"ssh_endpoint_credentials",
 		"ssh_endpoint_credential_group_sharings", "ssh_endpoint_credential_user_sharings",
+		"scp_data_storages", "scp_data_storage_group_sharings", "scp_data_storage_user_sharings",
+		"data_products", "data_product_group_sharings", "data_product_user_sharings",
 		"application_templates", "application_template_inputs", "application_template_outputs",
 		"batch_application_deployments", "batch_job_configs",
 		"batch_job_processes",

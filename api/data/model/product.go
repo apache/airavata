@@ -1,6 +1,9 @@
 package model
 
 import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
@@ -58,7 +61,26 @@ type DataProduct struct {
 	DataStorageID   *string         `gorm:"column:data_storage_id;type:varchar(36);index" json:"dataStorageId,omitempty"`
 	DataStorageType DataStorageType `gorm:"column:data_storage_type;type:varchar(32)" json:"dataStorageType,omitempty"`
 
+	CredentialID *string `gorm:"column:credential_id;type:varchar(36);index" json:"credentialId,omitempty"`
+
 	CreatedAt int64 `gorm:"column:created_at;not null" json:"createdAt"`
+}
+
+// TableName returns the table backing DataProduct.
+func (DataProduct) TableName() string { return "data_products" }
+
+// BeforeCreate assigns a UUID when none was supplied.
+func (p *DataProduct) BeforeCreate(*gorm.DB) error {
+	if p.ID == "" {
+		p.ID = uuid.NewString()
+	}
+	return nil
+}
+
+// OwnedBy reports whether userID owns this product. A product with no owner is owned
+// by nobody, so it must not match the empty principal name.
+func (p *DataProduct) OwnedBy(userID string) bool {
+	return p.OwnerID != nil && *p.OwnerID == userID
 }
 
 type DataProductPermission string
@@ -68,6 +90,17 @@ const (
 	DataProductPermissionWrite DataProductPermission = "WRITE"
 )
 
+// Valid reports whether p is a recognised permission.
+func (p DataProductPermission) Valid() bool {
+	switch p {
+	case DataProductPermissionRead, DataProductPermissionWrite:
+		return true
+	}
+	return false
+}
+
+// DataProductGroupSharing grants a group access to one product. Every active member of
+// the group holds the permission it names.
 type DataProductGroupSharing struct {
 	ID string `gorm:"column:data_product_group_sharing_id;primaryKey;type:varchar(36)" json:"dataProductGroupSharingId"`
 
@@ -80,6 +113,18 @@ type DataProductGroupSharing struct {
 	Permission *DataProductPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
 }
 
+// TableName returns the table backing DataProductGroupSharing.
+func (DataProductGroupSharing) TableName() string { return "data_product_group_sharings" }
+
+// BeforeCreate assigns a UUID when none was supplied.
+func (s *DataProductGroupSharing) BeforeCreate(*gorm.DB) error {
+	if s.ID == "" {
+		s.ID = uuid.NewString()
+	}
+	return nil
+}
+
+// DataProductUserSharing grants one named user access to one product.
 type DataProductUserSharing struct {
 	ID string `gorm:"column:data_product_user_sharing_id;primaryKey;type:varchar(36)" json:"dataProductUserSharingId"`
 
@@ -90,4 +135,15 @@ type DataProductUserSharing struct {
 	User   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
 	Permission *DataProductPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
+}
+
+// TableName returns the table backing DataProductUserSharing.
+func (DataProductUserSharing) TableName() string { return "data_product_user_sharings" }
+
+// BeforeCreate assigns a UUID when none was supplied.
+func (s *DataProductUserSharing) BeforeCreate(*gorm.DB) error {
+	if s.ID == "" {
+		s.ID = uuid.NewString()
+	}
+	return nil
 }

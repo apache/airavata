@@ -10,6 +10,7 @@ import (
 	"github.com/apache/airavata/api/application"
 	"github.com/apache/airavata/api/compute"
 	"github.com/apache/airavata/api/credentials"
+	"github.com/apache/airavata/api/data"
 	"github.com/apache/airavata/api/iam"
 	"github.com/apache/airavata/api/process"
 	"github.com/apache/airavata/internal/auth"
@@ -36,6 +37,10 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	bindingShares := compute.NewSSHEndpointCredentialSharingRepository(db)
 	templates := application.NewTemplateRepository(db)
 	deployments := application.NewBatchDeploymentRepository(db)
+	storages := data.NewSCPDataStorageRepository(db)
+	storageShares := data.NewSCPDataStorageSharingRepository(db)
+	products := data.NewDataProductRepository(db)
+	productShares := data.NewDataProductSharingRepository(db)
 	processes := process.NewRepository(db)
 	statuses := process.NewStatusRepository(db)
 
@@ -52,6 +57,11 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	bindingShareSvc := compute.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers)
 	templateSvc := application.NewTemplateService(db, templates, deployments)
 	deploymentSvc := application.NewBatchDeploymentService(db, deployments, templates, clusters, bindings)
+	bindingAccess := compute.NewCredentialAccess(bindings, bindingShares, groupMembers)
+	storageSvc := data.NewSCPDataStorageService(db, storages, storageShares, endpoints, products, users, groupMembers)
+	storageShareSvc := data.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers)
+	productSvc := data.NewDataProductService(db, products, productShares, storages, storageShares, bindingAccess, users, groupMembers)
+	productShareSvc := data.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
 	statusSvc := process.NewStatusService(db, statuses, processes)
 	processSvc := process.NewService(db, processes, deployments, users, statusSvc)
 
@@ -68,6 +78,10 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	compute.NewSSHEndpointCredentialSharingController(bindingShareSvc).Register(mux)
 	application.NewTemplateController(templateSvc).Register(mux)
 	application.NewBatchDeploymentController(deploymentSvc).Register(mux)
+	data.NewSCPDataStorageController(storageSvc).Register(mux)
+	data.NewSCPDataStorageSharingController(storageShareSvc).Register(mux)
+	data.NewDataProductController(productSvc).Register(mux)
+	data.NewDataProductSharingController(productShareSvc).Register(mux)
 	process.NewController(processSvc).Register(mux)
 	process.NewStatusController(statusSvc).Register(mux)
 
