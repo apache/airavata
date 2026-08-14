@@ -3,7 +3,9 @@
     "allow": [
       "Bash(docker stop *)",
       "Bash(rm -f /tmp/airavata-server-smoke)",
-      "Bash(docker exec *)"
+      "Bash(docker exec *)",
+      "Bash(gofmt -w api/application/service.go api/compute/dto/cluster.go)",
+      "Bash(gofmt -l .)"
     ]
   }
 }

@@ -17,7 +17,7 @@ import (
 //
 // The root token authenticates as a Super Admin without touching this table, so
 // admin actions work from a fresh database with no row at all. Owning resources is
-// different: cluster credentials, SCP data and batch job processes resolve the caller
+// different: SSH endpoint credentials, SCP data and batch job processes resolve the caller
 // to a users row and refuse if none exists. This closes that gap on startup instead of
 // requiring the manual INSERT documented in INSTALL.md.
 func EnsureRootUser(ctx context.Context, db *gorm.DB) error {

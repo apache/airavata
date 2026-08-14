@@ -48,7 +48,7 @@ func (r *UserRepository) Save(ctx context.Context, u *model.User) error {
 // every ownership check work, and it is why a token identifying a caller who was
 // never registered fails here rather than silently creating a record.
 //
-// Three services depend on this: cluster credentials, SCP data and batch job
+// Three services depend on this: SSH endpoint credentials, SCP data and batch job
 // processes all derive ownership from the token this way.
 func RequireCurrentUser(ctx context.Context, repo *UserRepository) (*model.User, error) {
 	principal, err := auth.RequireAuthenticated(ctx)

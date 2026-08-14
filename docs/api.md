@@ -44,9 +44,72 @@ The statuses in use:
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
+## SSH Endpoints
+
+An SSH endpoint is a host reachable over SSH. It was split out of the cluster, which used to carry a bare host name: separating it lets several clusters share one login host, and lets a credential be held against the host itself rather than against one cluster's view of it.
+
+Endpoints are deployment topology and hold no secret, so reads are open and writes require `ADMIN` or `SUPER_ADMIN`.
+
+### Create SSH Endpoint
+
+```
+POST /api/v1/ssh-endpoints
+```
+
+**curl example**
+
+The example below captures `sshEndpointId` into `$SSH_ENDPOINT_ID` (requires `jq`), for use when creating a cluster and a credential binding below.
+
+```bash
+TOKEN='<the token printed at startup>'
+
+SSH_ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "expanse-login",
+    "hostName": "login.expanse.sdsc.edu",
+    "port": 22
+  }' | jq -r '.sshEndpointId')
+
+echo "$SSH_ENDPOINT_ID"
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string | required, cannot be blank |
+| `hostName` | string | required, cannot be blank |
+| `port` | integer \| null | optional, 1–65535; defaults to `22` |
+
+**Response — `201 Created`**
+
+```json
+{
+  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+  "name": "expanse-login",
+  "hostName": "login.expanse.sdsc.edu",
+  "port": 22
+}
+```
+
+### Read, Update and Delete SSH Endpoints
+
+```
+GET    /api/v1/ssh-endpoints
+GET    /api/v1/ssh-endpoints/{sshEndpointId}
+PUT    /api/v1/ssh-endpoints/{sshEndpointId}
+DELETE /api/v1/ssh-endpoints/{sshEndpointId}
+```
+
+Updating an endpoint silently redirects every cluster and credential that names it, which is what moving a login node should do — hence the admin requirement.
+
+`DELETE` returns `204 No Content`, or `409 Conflict` naming how many clusters or credential bindings still reference it. Detach those first; the foreign keys are `RESTRICT`, so the delete is refused rather than cascading into resources people are using.
+
 ## Clusters
 
-A cluster is a Slurm-managed HPC resource that batch deployments submit jobs to.
+A cluster is a Slurm-managed HPC resource that batch deployments submit jobs to. It is reached through an [SSH endpoint](#ssh-endpoints), named by id.
 
 ### Create Cluster
 
@@ -58,18 +121,16 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-The example below captures `clusterId` from the response into `$CLUSTER_ID` (requires `jq`), so it can be reused when creating a batch deployment further down.
+Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) above, and captures `clusterId` into `$CLUSTER_ID` (requires `jq`) for the batch deployment step further down.
 
 ```bash
-TOKEN='<the token printed at startup>'
-
 CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/clusters \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "clusterName": "expanse",
     "clusterDescription": "SDSC Expanse HPC cluster",
-    "hostName": "login.expanse.sdsc.edu",
+    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
     "slurmHome": "/usr/bin"
   }' | jq -r '.clusterId')
 
@@ -82,28 +143,34 @@ echo "$CLUSTER_ID"
 |---|---|---|
 | `clusterName` | string | required, cannot be blank |
 | `clusterDescription` | string \| null | optional |
-| `hostName` | string | required, cannot be blank |
+| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
 | `slurmHome` | string | required, cannot be blank |
 
 ```json
 {
   "clusterName": "expanse",
   "clusterDescription": "SDSC Expanse HPC cluster",
-  "hostName": "login.expanse.sdsc.edu",
+  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
   "slurmHome": "/usr/bin"
 }
 ```
 
 **Response — `201 Created`**
 
-`clusterId` is server-generated (UUID). `partitions` is empty until partitions are added via `/api/v1/clusters/{clusterId}/partitions`.
+`clusterId` is server-generated (UUID). The endpoint is inlined, since every caller that wants a cluster wants the host it lives on. `partitions` is empty until partitions are added via `/api/v1/clusters/{clusterId}/partitions`.
 
 ```json
 {
   "clusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
   "clusterName": "expanse",
   "clusterDescription": "SDSC Expanse HPC cluster",
-  "hostName": "login.expanse.sdsc.edu",
+  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+  "sshEndpoint": {
+    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+    "name": "expanse-login",
+    "hostName": "login.expanse.sdsc.edu",
+    "port": 22
+  },
   "slurmHome": "/usr/bin",
   "partitions": []
 }
@@ -111,7 +178,7 @@ echo "$CLUSTER_ID"
 
 **Validation errors — `400 Bad Request`**
 
-Returned when `clusterName`, `hostName` or `slurmHome` is blank.
+Returned when `clusterName`, `sshEndpointId` or `slurmHome` is blank. An `sshEndpointId` that does not resolve to an existing endpoint is returned as `404 Not Found` instead.
 
 ```json
 {
@@ -120,7 +187,7 @@ Returned when `clusterName`, `hostName` or `slurmHome` is blank.
   "message": "Validation failed",
   "fieldErrors": [
     { "field": "clusterName", "message": "Cluster name cannot be blank" },
-    { "field": "hostName", "message": "Host name cannot be blank" }
+    { "field": "sshEndpointId", "message": "SSH endpoint id cannot be blank" }
   ]
 }
 ```
@@ -319,7 +386,7 @@ Returned when `sshKeyName` or `publicKey` is blank.
 POST /api/v1/ssh-credentials
 ```
 
-Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create Cluster Credential](#create-cluster-credential) below binds to a cluster.
+Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) below binds to a host.
 
 **curl example**
 
@@ -383,75 +450,147 @@ Returned when `username` or `sshKeyId` is blank. An `sshKeyId` that does not res
 }
 ```
 
-### Create Cluster Credential
+### Create SSH Endpoint Credential
 
 ```
-POST /api/v1/cluster-credentials
+POST /api/v1/ssh-endpoint-credentials
 ```
 
-Binds an SSH credential to a cluster so the caller can submit jobs there. Requires only an authenticated principal — not admin — but that principal must have a matching row in `users` (see INSTALL.md's "Owning resources requires a matching `users` row"), since the binding's owner is resolved from the token rather than accepted as a request field.
+Binds an SSH credential to an [SSH endpoint](#ssh-endpoints) so the caller can act on that host. Requires only an authenticated principal — not admin — but that principal must have a matching row in `users` (see INSTALL.md's "Owning resources requires a matching `users` row"), since the binding's owner is resolved from the token rather than accepted as a request field.
 
-The resulting binding id is what [Create Batch Deployment](#create-batch-deployment) below uses as `defaultSubmissionCredentialId`: a deployment submits under a specific cluster credential, not a bare SSH credential, since the binding is what ties the submitting identity to both a cluster and an owner.
+The resulting binding id is what [Create Batch Deployment](#create-batch-deployment) below uses as `defaultSubmissionCredentialId`: a deployment submits under a specific endpoint credential, not a bare SSH credential, since the binding is what ties the submitting identity to both a host and an owner.
 
 **curl example**
 
-Uses `$CLUSTER_ID` from [Create Cluster](#create-cluster) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `clusterCredentialId` into `$CLUSTER_CREDENTIAL_ID` for the batch deployment step.
+Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `sshEndpointCredentialId` into `$ENDPOINT_CREDENTIAL_ID` for the batch deployment step.
 
 ```bash
-CLUSTER_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/cluster-credentials \
+ENDPOINT_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "clusterId": "'"$CLUSTER_ID"'",
+    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
     "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
-  }' | jq -r '.clusterCredentialId')
+  }' | jq -r '.sshEndpointCredentialId')
 
-echo "$CLUSTER_CREDENTIAL_ID"
+echo "$ENDPOINT_CREDENTIAL_ID"
 ```
 
 **Request body**
 
 | Field | Type | Notes |
 |---|---|---|
-| `clusterId` | string | required, must reference an existing cluster |
+| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
 | `sshCredentialId` | string | required, must reference an existing SSH credential |
-
-```json
-{
-  "clusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
-  "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f"
-}
-```
 
 **Response — `201 Created`**
 
-`clusterCredentialId` is server-generated (UUID); `userId` is the owner resolved from the caller's token, not a request field.
+`sshEndpointCredentialId` is server-generated (UUID); `userId` is the owner resolved from the caller's token, not a request field. `permission` is what the *calling* principal may do with it — a property of the request rather than of the record.
 
 ```json
 {
-  "clusterCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "clusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
+  "sshEndpointCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
   "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
-  "userId": "root"
+  "userId": "root",
+  "permission": "WRITE"
 }
 ```
 
 **Validation errors**
 
-- `400 Bad Request` when `clusterId` or `sshCredentialId` is blank.
-- `404 Not Found` when the caller has no matching `users` row, or `clusterId`/`sshCredentialId` does not resolve to an existing record.
+- `400 Bad Request` when `sshEndpointId` or `sshCredentialId` is blank.
+- `404 Not Found` when the caller has no matching `users` row, or `sshEndpointId`/`sshCredentialId` does not resolve to an existing record.
+
+### Read, Update and Delete SSH Endpoint Credentials
+
+```
+GET    /api/v1/ssh-endpoint-credentials
+GET    /api/v1/ssh-endpoint-credentials/me
+GET    /api/v1/ssh-endpoint-credentials/shared-with-me
+GET    /api/v1/ssh-endpoint-credentials/{id}
+PUT    /api/v1/ssh-endpoint-credentials/{id}
+DELETE /api/v1/ssh-endpoint-credentials/{id}
+```
+
+`GET /api/v1/ssh-endpoint-credentials` lists every binding across every user and requires `ADMIN` or `SUPER_ADMIN` — it exposes who can reach what. Both it and `/me` accept an optional `?sshEndpointId=` filter. `/me` returns the caller's own bindings; `/shared-with-me` returns the ones other users have shared with them, each carrying the permission it grants.
+
+`PUT` repoints a binding at a different endpoint or SSH credential and needs `WRITE`. The owner is never re-derived from the caller's token, so an admin — or a grantee — editing someone's binding does not acquire it.
+
+`DELETE` returns `204 No Content` and removes the binding's shares with it. It is refused for anyone but the owner and platform admins, even a grantee holding `WRITE`.
+
+### Share an SSH Endpoint Credential
+
+```
+GET    /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares
+POST   /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares
+PUT    /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares/{sharingId}
+DELETE /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares/{sharingId}
+
+GET    /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares
+POST   /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares
+PUT    /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares/{sharingId}
+DELETE /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares/{sharingId}
+```
+
+A binding can be shared with a [group](#groups) or with a named user. Every one of these routes — reads included — is restricted to the owner and platform admins: the share list names who can reach a host, which is more than a grantee needs to know.
+
+What a share confers:
+
+| Holding | May do |
+|---|---|
+| `READ` | read the binding, and see it under `/shared-with-me` |
+| `WRITE` | the above, and repoint the binding at a different endpoint or SSH credential |
+| Ownership | the above, and delete the binding, and manage its shares |
+
+`WRITE` implies `READ`. Control is deliberately not reachable through a share at all: a share lets someone use a credential, while deciding who *else* gets it stays with the owner. Where several shares reach the same caller — say a `READ` user share and a `WRITE` group share — the strongest one applies.
+
+A group share reaches a member only while their membership is `ACTIVE`. Suspending a member withdraws their access without touching the share; reinstating them restores it.
+
+**curl example**
+
+Uses `$ENDPOINT_CREDENTIAL_ID` from above and `$GROUP_ID` from [Create Group](#create-group).
+
+```bash
+curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials/"$ENDPOINT_CREDENTIAL_ID"/group-shares \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "groupId": "'"$GROUP_ID"'",
+    "permission": "READ"
+  }'
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `groupId` / `userId` | string | required; `groupId` for a group share, `userId` for a user share. Must reference an existing record |
+| `permission` | string \| null | optional, `READ` or `WRITE`; defaults to `READ` |
+
+`PUT` takes only `permission`, which is required there — the subject of a share is fixed at creation, so widening or narrowing it is the only edit.
+
+**Response — `201 Created`**
 
 ```json
 {
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Validation failed",
-  "fieldErrors": [
-    { "field": "clusterId", "message": "Cluster id cannot be blank" },
-    { "field": "sshCredentialId", "message": "SSH credential id cannot be blank" }
-  ]
+  "sshEndpointCredentialGroupSharingId": "5c4b3a29-1807-4f6e-9d5c-4b3a29180765",
+  "sshEndpointCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
+  "permission": "READ"
 }
 ```
+
+A user share is the same shape with `sshEndpointCredentialUserSharingId` and `userId`.
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `groupId`/`userId` blank, or an unrecognised `permission` |
+| `403 Forbidden` | the caller is not the owner — a grantee cannot read or change the share list |
+| `404 Not Found` | no such binding, group or user; or a `sharingId` that belongs to a different binding |
+| `409 Conflict` | already shared with that group or user (widen the existing share instead), or shared with the owner, which would grant nothing |
 
 ## Application Templates
 
@@ -649,7 +788,7 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template), `$CLUSTER_ID` from [Create Cluster](#create-cluster), and `$CLUSTER_CREDENTIAL_ID` from [Create Cluster Credential](#create-cluster-credential) above.
+Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template), `$CLUSTER_ID` from [Create Cluster](#create-cluster), and `$ENDPOINT_CREDENTIAL_ID` from [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) above.
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -671,7 +810,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
       "gres": "gpu:1",
       "gpus": 1
     },
-    "defaultSubmissionCredentialId": "'"$CLUSTER_CREDENTIAL_ID"'",
+    "defaultSubmissionCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
     "workDir": "/scratch/$USER/alphafold",
     "partition": "gpu"
   }'
@@ -700,7 +839,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `batchJobConfig.cpusPerGpu` | string \| null | optional |
 | `batchJobConfig.gpusPerNode` | integer \| null | optional |
 | `batchJobConfig.constraints` | string \| null | optional |
-| `defaultSubmissionCredentialId` | string | required, must reference an existing cluster credential binding (see [Create Cluster Credential](#create-cluster-credential)), not a bare SSH credential |
+| `defaultSubmissionCredentialId` | string | required, must reference an existing SSH endpoint credential binding (see [Create SSH Endpoint Credential](#create-ssh-endpoint-credential)), not a bare SSH credential |
 | `workDir` | string \| null | optional |
 | `partition` | string \| null | optional |
 

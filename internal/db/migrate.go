@@ -20,7 +20,7 @@ func Entities() []any {
 		// No outbound references.
 		&iammodel.User{},
 		&credentialsmodel.SSHKey{},
-		&computemodel.Cluster{},
+		&computemodel.SSHEndpoint{},
 		&applicationmodel.Template{},
 		&applicationmodel.BatchJobConfig{},
 
@@ -28,15 +28,20 @@ func Entities() []any {
 		&iammodel.UserRole{},
 		&iammodel.Group{},
 		&credentialsmodel.SSHUserCredential{},
-		&computemodel.ClusterPartition{},
+		&computemodel.Cluster{},
 		&applicationmodel.TemplateInput{},
 		&applicationmodel.TemplateOutput{},
 
 		// Depend on the above.
 		&iammodel.GroupMember{},
-		&computemodel.ClusterCredential{},
+		&computemodel.ClusterPartition{},
+		&computemodel.SSHEndpointCredential{},
 		&applicationmodel.BatchDeployment{},
 		&processmodel.BatchJobProcess{},
+
+		// Sharing rows reference a credential, and a group or a user.
+		&computemodel.SSHEndpointCredentialGroupSharing{},
+		&computemodel.SSHEndpointCredentialUserSharing{},
 
 		// References BatchJobProcess, which in turn references it back through
 		// LastStatusID — the one circular pair in the schema.

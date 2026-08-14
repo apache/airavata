@@ -162,11 +162,11 @@ func (s *TemplateService) Delete(ctx context.Context, id string) error {
 
 // BatchDeploymentService manages deployments: a template made runnable somewhere.
 type BatchDeploymentService struct {
-	db           *gorm.DB
-	deployments  *BatchDeploymentRepository
-	templates    *TemplateRepository
-	clusters     *compute.ClusterRepository
-	clusterCreds *compute.ClusterCredentialRepository
+	db            *gorm.DB
+	deployments   *BatchDeploymentRepository
+	templates     *TemplateRepository
+	clusters      *compute.ClusterRepository
+	endpointCreds *compute.SSHEndpointCredentialRepository
 }
 
 // NewBatchDeploymentService returns a deployment service.
@@ -175,9 +175,9 @@ func NewBatchDeploymentService(
 	deployments *BatchDeploymentRepository,
 	templates *TemplateRepository,
 	clusters *compute.ClusterRepository,
-	clusterCreds *compute.ClusterCredentialRepository,
+	endpointCreds *compute.SSHEndpointCredentialRepository,
 ) *BatchDeploymentService {
-	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, clusterCreds: clusterCreds}
+	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, endpointCreds: endpointCreds}
 }
 
 // List returns every deployment, or only those of templateID when it is non-empty.
@@ -221,7 +221,7 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		deployments := s.deployments.WithTx(tx)
 
-		template, cluster, clusterCred, err := s.resolveReferences(ctx, tx, req)
+		template, cluster, endpointCred, err := s.resolveReferences(ctx, tx, req)
 		if err != nil {
 			return err
 		}
@@ -238,7 +238,7 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 			SlurmRunSection:               req.SlurmRunSection,
 			BatchJobConfigID:              config.ID,
 			BatchJobConfig:                config,
-			DefaultSubmissionCredentialID: clusterCred.ID,
+			DefaultSubmissionCredentialID: endpointCred.ID,
 			WorkDir:                       req.WorkDir,
 			Partition:                     req.Partition,
 		}
@@ -269,7 +269,7 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		if err != nil {
 			return notFoundAs(err, "Deployment not found: %s", id)
 		}
-		template, cluster, clusterCred, err := s.resolveReferences(ctx, tx, req)
+		template, cluster, endpointCred, err := s.resolveReferences(ctx, tx, req)
 		if err != nil {
 			return err
 		}
@@ -288,7 +288,7 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		deployment.SlurmRunSection = req.SlurmRunSection
 		deployment.BatchJobConfigID = config.ID
 		deployment.BatchJobConfig = config
-		deployment.DefaultSubmissionCredentialID = clusterCred.ID
+		deployment.DefaultSubmissionCredentialID = endpointCred.ID
 		deployment.WorkDir = req.WorkDir
 		deployment.Partition = req.Partition
 
@@ -322,7 +322,7 @@ func (s *BatchDeploymentService) Delete(ctx context.Context, id string) error {
 // The cluster is the only optional one: an absent or blank id is legitimate and
 // leaves the deployment unbound to a cluster, while an id that is supplied but
 // unknown is an error. Conflating those would let a typo silently unbind a deployment.
-func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *computemodel.ClusterCredential, error) {
+func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *computemodel.SSHEndpointCredential, error) {
 	template, err := s.templates.WithTx(tx).FindByID(ctx, req.TemplateID)
 	if err != nil {
 		return nil, nil, nil, notFoundAs(err, "Template not found: %s", req.TemplateID)
@@ -337,10 +337,10 @@ func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm
 		clusterID = &cluster.ID
 	}
 
-	clusterCred, err := s.clusterCreds.WithTx(tx).FindByID(ctx, req.DefaultSubmissionCredentialID)
+	endpointCred, err := s.endpointCreds.WithTx(tx).FindByID(ctx, req.DefaultSubmissionCredentialID)
 	if err != nil {
-		return nil, nil, nil, notFoundAs(err, "Cluster credential not found: %s", req.DefaultSubmissionCredentialID)
+		return nil, nil, nil, notFoundAs(err, "SSH endpoint credential not found: %s", req.DefaultSubmissionCredentialID)
 	}
 
-	return template, clusterID, clusterCred, nil
+	return template, clusterID, endpointCred, nil
 }

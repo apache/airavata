@@ -17,7 +17,7 @@ func NewGroupController(svc *GroupService) *GroupController { return &GroupContr
 // Register mounts the group routes.
 //
 // /groups/me is registered alongside /groups/{groupId}; the literal segment wins for
-// that exact path, the same way /cluster-credentials/me does.
+// that exact path, the same way /ssh-endpoint-credentials/me does.
 func (h *GroupController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/groups", h.list)
 	mux.HandleFunc("GET /api/v1/groups/me", h.listMine)

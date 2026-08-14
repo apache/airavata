@@ -13,10 +13,8 @@ import (
 // generates its key in BeforeCreate.
 //
 // Every service that resolves ownership assumes the authenticated principal's name is
-// exactly this ID. That assumption is load-bearing in ClusterCredential and
+// exactly this ID. That assumption is load-bearing in SSHEndpointCredential and
 // BatchJobProcess authorisation.
-//
-// Java: org.apache.airavata.iam.model.UserEntity (@Entity(name = "users"))
 type User struct {
 	ID string `gorm:"column:user_id;primaryKey;type:varchar(255)" json:"userId"`
 

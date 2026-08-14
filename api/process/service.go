@@ -26,7 +26,7 @@ func notFoundAs(err error, format string, args ...any) error {
 
 // Service manages batch job processes: individual runs of a deployment.
 //
-// Note the asymmetry with cluster credentials and SCP data. Submitting is
+// Note the asymmetry with SSH endpoint credentials and SCP data. Submitting is
 // self-service and ownership is taken from the token, but reads are not owner-scoped:
 // listing by deployment and fetching by id carry no authorisation at all, matching
 // the Java service. That is worth revisiting, but it is the behaviour clients have.

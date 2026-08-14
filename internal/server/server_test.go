@@ -19,6 +19,7 @@ import (
 	"github.com/apache/airavata/internal/role"
 	"github.com/apache/airavata/internal/server"
 
+	computemodel "github.com/apache/airavata/api/compute/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
@@ -136,11 +137,21 @@ func (h *harness) mustDo(method, path, token string, body any, wantStatus int) m
 	return out
 }
 
-// seedCluster creates a cluster as admin and returns its id.
+// seedSSHEndpoint creates an SSH endpoint as admin and returns its id.
+func (h *harness) seedSSHEndpoint(name string) string {
+	h.t.Helper()
+	out := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoints", tokenAdmin, map[string]any{
+		"name": name, "hostName": name + ".example.edu",
+	}, http.StatusCreated)
+	return out["sshEndpointId"].(string)
+}
+
+// seedCluster creates an endpoint and a cluster reached through it, returning the
+// cluster's id.
 func (h *harness) seedCluster(name string) string {
 	h.t.Helper()
 	out := h.mustDo(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": name, "hostName": name + ".example.edu", "slurmHome": "/usr/bin",
+		"clusterName": name, "sshEndpointId": h.seedSSHEndpoint(name), "slurmHome": "/usr/bin",
 	}, http.StatusCreated)
 	return out["clusterId"].(string)
 }
@@ -159,17 +170,17 @@ func (h *harness) seedSSHKeyAndCredential(name string) (keyID, credentialID stri
 	return keyID, cred["sshCredentialId"].(string)
 }
 
-// seedClusterCredential creates a cluster, an SSH credential, and a binding between
+// seedEndpointCredential creates an endpoint, an SSH credential, and a binding between
 // them, returning the binding's id — what a deployment's defaultSubmissionCredentialId
 // points at.
-func (h *harness) seedClusterCredential(name string) (clusterID, bindingID string) {
+func (h *harness) seedEndpointCredential(name, token string) (endpointID, bindingID string) {
 	h.t.Helper()
-	clusterID = h.seedCluster(name)
+	endpointID = h.seedSSHEndpoint(name)
 	_, credentialID := h.seedSSHKeyAndCredential(name)
-	binding := h.mustDo(http.MethodPost, "/api/v1/cluster-credentials", tokenAdmin, map[string]any{
-		"clusterId": clusterID, "sshCredentialId": credentialID,
+	binding := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", token, map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
 	}, http.StatusCreated)
-	return clusterID, binding["clusterCredentialId"].(string)
+	return endpointID, binding["sshEndpointCredentialId"].(string)
 }
 
 func TestHealthIsOpen(t *testing.T) {
@@ -183,6 +194,7 @@ func TestReadsAreOpenToAnonymousCallers(t *testing.T) {
 	h := newHarness(t)
 	for _, path := range []string{
 		"/api/v1/clusters",
+		"/api/v1/ssh-endpoints",
 		"/api/v1/ssh-keys",
 		"/api/v1/ssh-credentials",
 		"/api/v1/application-templates",
@@ -211,7 +223,7 @@ func TestInvalidTokenIsRejected(t *testing.T) {
 // (a token will not help).
 func TestWritesRequireAdmin(t *testing.T) {
 	h := newHarness(t)
-	body := map[string]any{"clusterName": "c", "hostName": "h", "slurmHome": "/usr/bin"}
+	body := map[string]any{"clusterName": "c", "sshEndpointId": h.seedSSHEndpoint("c"), "slurmHome": "/usr/bin"}
 
 	if rec := h.do(http.MethodPost, "/api/v1/clusters", "", body); rec.Code != http.StatusUnauthorized {
 		t.Errorf("anonymous create: status = %d, want 401", rec.Code)
@@ -227,7 +239,7 @@ func TestWritesRequireAdmin(t *testing.T) {
 func TestValidationReportsFieldErrors(t *testing.T) {
 	h := newHarness(t)
 	rec := h.do(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": "  ", "hostName": "", "slurmHome": "/usr/bin",
+		"clusterName": "  ", "sshEndpointId": "", "slurmHome": "/usr/bin",
 	})
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d, want 400\nbody: %s", rec.Code, rec.Body.String())
@@ -246,8 +258,8 @@ func TestValidationReportsFieldErrors(t *testing.T) {
 	if got["clusterName"] != "Cluster name cannot be blank" {
 		t.Errorf("clusterName error = %q, want the Java message", got["clusterName"])
 	}
-	if got["hostName"] != "Host name cannot be blank" {
-		t.Errorf("hostName error = %q, want the Java message", got["hostName"])
+	if got["sshEndpointId"] != "SSH endpoint id cannot be blank" {
+		t.Errorf("sshEndpointId error = %q, want the blank-endpoint message", got["sshEndpointId"])
 	}
 }
 
@@ -354,7 +366,7 @@ func TestDeletingSSHKeyInUseConflicts(t *testing.T) {
 
 func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("deploy")
+	_, bindingID := h.seedEndpointCredential("deploy", tokenAdmin)
 
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin, map[string]any{
 		"templateName": "gromacs",
@@ -427,7 +439,7 @@ func TestDuplicateTemplateInputNamesAreRejected(t *testing.T) {
 // unknown is an error rather than silently ignored.
 func TestDeploymentClusterIsOptionalButValidatedWhenPresent(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("optional-cluster")
+	_, bindingID := h.seedEndpointCredential("optional-cluster", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "t"}, http.StatusCreated)
 
@@ -458,51 +470,49 @@ func TestDeploymentClusterIsOptionalButValidatedWhenPresent(t *testing.T) {
 }
 
 // Ownership comes from the token and is enforced on every read of an owned resource.
-func TestClusterCredentialOwnershipIsEnforced(t *testing.T) {
+func TestEndpointCredentialOwnershipIsEnforced(t *testing.T) {
 	h := newHarness(t)
-	clusterID := h.seedCluster("owned")
+	endpointID := h.seedSSHEndpoint("owned")
 	_, credentialID := h.seedSSHKeyAndCredential("owned")
 
-	created := h.mustDo(http.MethodPost, "/api/v1/cluster-credentials", tokenAlice, map[string]any{
-		"clusterId": clusterID, "sshCredentialId": credentialID,
+	created := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
 	}, http.StatusCreated)
-	bindingID := created["clusterCredentialId"].(string)
+	bindingID := created["sshEndpointCredentialId"].(string)
 
 	if got := created["userId"]; got != "alice" {
 		t.Errorf("owner = %v, want it taken from the token (alice)", got)
 	}
+	if got := created["permission"]; got != "WRITE" {
+		t.Errorf("owner permission = %v, want WRITE", got)
+	}
 
-	h.mustDo(http.MethodGet, "/api/v1/cluster-credentials/"+bindingID, tokenAlice, nil, http.StatusOK)
-	if rec := h.do(http.MethodGet, "/api/v1/cluster-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+	h.mustDo(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenAlice, nil, http.StatusOK)
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("read by another user: status = %d, want 403", rec.Code)
 	}
-	h.mustDo(http.MethodGet, "/api/v1/cluster-credentials/"+bindingID, tokenAdmin, nil, http.StatusOK)
+	h.mustDo(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenAdmin, nil, http.StatusOK)
 
 	// The unfiltered listing exposes who can reach what, so it is admin only.
-	if rec := h.do(http.MethodGet, "/api/v1/cluster-credentials", tokenAlice, nil); rec.Code != http.StatusForbidden {
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoint-credentials", tokenAlice, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("listing by a non-admin: status = %d, want 403", rec.Code)
 	}
 
 	// /me is scoped to the caller.
-	var mine []map[string]any
-	rec := h.do(http.MethodGet, "/api/v1/cluster-credentials/me", tokenBob, nil)
-	if err := json.Unmarshal(rec.Body.Bytes(), &mine); err != nil {
-		t.Fatalf("decode /me: %v", err)
-	}
-	if len(mine) != 0 {
+	if mine := h.list("/api/v1/ssh-endpoint-credentials/me", tokenBob); len(mine) != 0 {
 		t.Errorf("bob's own bindings = %d, want 0", len(mine))
 	}
 }
 
 // A request body cannot name an owner, so a caller cannot create a binding for
 // someone else even by trying.
-func TestClusterCredentialOwnerCannotBeSpoofed(t *testing.T) {
+func TestEndpointCredentialOwnerCannotBeSpoofed(t *testing.T) {
 	h := newHarness(t)
-	clusterID := h.seedCluster("spoof")
+	endpointID := h.seedSSHEndpoint("spoof")
 	_, credentialID := h.seedSSHKeyAndCredential("spoof")
 
-	created := h.mustDo(http.MethodPost, "/api/v1/cluster-credentials", tokenAlice, map[string]any{
-		"clusterId": clusterID, "sshCredentialId": credentialID,
+	created := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
 		"userId": "bob", "ownerId": "bob",
 	}, http.StatusCreated)
 
@@ -512,20 +522,295 @@ func TestClusterCredentialOwnerCannotBeSpoofed(t *testing.T) {
 }
 
 // Ownership is immutable: an admin editing someone's binding must not acquire it.
-func TestUpdatingClusterCredentialKeepsItsOwner(t *testing.T) {
+func TestUpdatingEndpointCredentialKeepsItsOwner(t *testing.T) {
 	h := newHarness(t)
-	clusterID := h.seedCluster("keep-owner")
+	endpointID := h.seedSSHEndpoint("keep-owner")
 	_, credentialID := h.seedSSHKeyAndCredential("keep-owner")
 
-	created := h.mustDo(http.MethodPost, "/api/v1/cluster-credentials", tokenAlice, map[string]any{
-		"clusterId": clusterID, "sshCredentialId": credentialID,
+	created := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
 	}, http.StatusCreated)
 
-	updated := h.mustDo(http.MethodPut, "/api/v1/cluster-credentials/"+created["clusterCredentialId"].(string),
-		tokenAdmin, map[string]any{"clusterId": clusterID, "sshCredentialId": credentialID}, http.StatusOK)
+	updated := h.mustDo(http.MethodPut, "/api/v1/ssh-endpoint-credentials/"+created["sshEndpointCredentialId"].(string),
+		tokenAdmin, map[string]any{"sshEndpointId": endpointID, "sshCredentialId": credentialID}, http.StatusOK)
 
 	if got := updated["userId"]; got != "alice" {
 		t.Errorf("owner after an admin update = %v, want alice", got)
+	}
+}
+
+// The host a cluster is reached through is its own record now, and the cluster
+// response carries it inline rather than making callers fetch it separately.
+func TestClusterCarriesItsSSHEndpoint(t *testing.T) {
+	h := newHarness(t)
+	endpointID := h.seedSSHEndpoint("expanse")
+
+	created := h.mustDo(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
+		"clusterName": "expanse", "sshEndpointId": endpointID, "slurmHome": "/usr/bin",
+	}, http.StatusCreated)
+
+	if got := created["sshEndpointId"]; got != endpointID {
+		t.Errorf("sshEndpointId = %v, want %s", got, endpointID)
+	}
+	endpoint, ok := created["sshEndpoint"].(map[string]any)
+	if !ok {
+		t.Fatalf("sshEndpoint = %v, want the endpoint inlined", created["sshEndpoint"])
+	}
+	if endpoint["hostName"] != "expanse.example.edu" || endpoint["port"].(float64) != 22 {
+		t.Errorf("inlined endpoint = %v, want the seeded host on the default port", endpoint)
+	}
+
+	// Reads go through a different path than the create response, so check both.
+	fetched := h.mustDo(http.MethodGet, "/api/v1/clusters/"+created["clusterId"].(string), "", nil, http.StatusOK)
+	if fetched["sshEndpoint"] == nil {
+		t.Error("GET cluster did not preload the endpoint")
+	}
+
+	// An endpoint that does not resolve is a 404, not a dangling reference.
+	if rec := h.do(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
+		"clusterName": "ghost", "sshEndpointId": "nope", "slurmHome": "/usr/bin",
+	}); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown endpoint id: status = %d, want 404", rec.Code)
+	}
+}
+
+// An endpoint in use cannot be deleted: the foreign keys are RESTRICT, and the service
+// reports what is still holding it rather than letting the constraint fail opaquely.
+func TestSSHEndpointInUseCannotBeDeleted(t *testing.T) {
+	h := newHarness(t)
+
+	// Held by a cluster.
+	endpointID := h.seedSSHEndpoint("busy")
+	h.mustDo(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
+		"clusterName": "busy", "sshEndpointId": endpointID, "slurmHome": "/usr/bin",
+	}, http.StatusCreated)
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoints/"+endpointID, tokenAdmin, nil); rec.Code != http.StatusConflict {
+		t.Errorf("delete with a cluster attached: status = %d, want 409", rec.Code)
+	}
+
+	// Held by a credential binding.
+	boundID, _ := h.seedEndpointCredential("bound", tokenAlice)
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoints/"+boundID, tokenAdmin, nil); rec.Code != http.StatusConflict {
+		t.Errorf("delete with a binding attached: status = %d, want 409", rec.Code)
+	}
+
+	// Unreferenced, it goes.
+	freeID := h.seedSSHEndpoint("free")
+	h.mustDo(http.MethodDelete, "/api/v1/ssh-endpoints/"+freeID, tokenAdmin, nil, http.StatusNoContent)
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoints/"+freeID, "", nil); rec.Code != http.StatusNotFound {
+		t.Errorf("read after delete: status = %d, want 404", rec.Code)
+	}
+}
+
+// Endpoints are deployment topology, not secrets: reads are open, writes are
+// administrative.
+func TestSSHEndpointWritesRequireAdmin(t *testing.T) {
+	h := newHarness(t)
+	body := map[string]any{"name": "login", "hostName": "login.example.edu"}
+
+	if rec := h.do(http.MethodPost, "/api/v1/ssh-endpoints", "", body); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous create: status = %d, want 401", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/ssh-endpoints", tokenAlice, body); rec.Code != http.StatusForbidden {
+		t.Errorf("non-admin create: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/ssh-endpoints", tokenAdmin, map[string]any{
+		"name": "login", "hostName": "login.example.edu", "port": 70000,
+	}); rec.Code != http.StatusBadRequest {
+		t.Errorf("out-of-range port: status = %d, want 400", rec.Code)
+	}
+
+	created := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoints", tokenAdmin, body, http.StatusCreated)
+	if created["port"].(float64) != 22 {
+		t.Errorf("port = %v, want the default 22 rather than the zero value", created["port"])
+	}
+}
+
+// A user share grants exactly what it names: READ lets the grantee read the binding
+// and nothing more, and the share itself stays the owner's to see and to revoke.
+func TestEndpointCredentialUserSharing(t *testing.T) {
+	h := newHarness(t)
+	endpointID, bindingID := h.seedEndpointCredential("user-share", tokenAlice)
+	shares := "/api/v1/ssh-endpoint-credentials/" + bindingID + "/user-shares"
+
+	// Bob cannot see it at all to begin with.
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Fatalf("read before sharing: status = %d, want 403", rec.Code)
+	}
+
+	share := h.mustDo(http.MethodPost, shares, tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
+	if share["permission"] != "READ" {
+		t.Errorf("permission = %v, want READ by default", share["permission"])
+	}
+
+	got := h.mustDo(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "READ" {
+		t.Errorf("reported permission = %v, want READ", got["permission"])
+	}
+	if shared := h.list("/api/v1/ssh-endpoint-credentials/shared-with-me", tokenBob); len(shared) != 1 {
+		t.Errorf("shared-with-me = %d, want the one binding", len(shared))
+	}
+	// A share is not ownership: /me stays empty for the grantee.
+	if mine := h.list("/api/v1/ssh-endpoint-credentials/me", tokenBob); len(mine) != 0 {
+		t.Errorf("bob's own bindings = %d, want 0", len(mine))
+	}
+
+	// READ is not WRITE, and no share confers control.
+	repoint := map[string]any{"sshEndpointId": endpointID, "sshCredentialId": share["x"]}
+	repoint["sshCredentialId"] = h.mustDo(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID,
+		tokenAlice, nil, http.StatusOK)["sshCredentialId"]
+	if rec := h.do(http.MethodPut, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, repoint); rec.Code != http.StatusForbidden {
+		t.Errorf("update with READ: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodGet, shares, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee listing the shares: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee deleting the binding: status = %d, want 403", rec.Code)
+	}
+
+	// Widened to WRITE, the update goes through — but control still does not.
+	sharingID := share["sshEndpointCredentialUserSharingId"].(string)
+	h.mustDo(http.MethodPut, shares+"/"+sharingID, tokenAlice, map[string]any{"permission": "WRITE"}, http.StatusOK)
+	h.mustDo(http.MethodPut, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, repoint, http.StatusOK)
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee deleting with WRITE: status = %d, want 403", rec.Code)
+	}
+
+	// Revoked, the access goes with it.
+	h.mustDo(http.MethodDelete, shares+"/"+sharingID, tokenAlice, nil, http.StatusNoContent)
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read after revoke: status = %d, want 403", rec.Code)
+	}
+}
+
+// A group share reaches every active member, and stops reaching them when their
+// membership is suspended or the group is left.
+func TestEndpointCredentialGroupSharing(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedEndpointCredential("group-share", tokenAlice)
+	groupID := h.seedGroup("collab", tokenAlice)
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+
+	shares := "/api/v1/ssh-endpoint-credentials/" + bindingID + "/group-shares"
+	share := h.mustDo(http.MethodPost, shares, tokenAlice,
+		map[string]any{"groupId": groupID, "permission": "WRITE"}, http.StatusCreated)
+
+	got := h.mustDo(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "WRITE" {
+		t.Errorf("permission through the group = %v, want WRITE", got["permission"])
+	}
+
+	// Suspending the membership withdraws access without touching the share.
+	h.mustDo(http.MethodPut, "/api/v1/groups/"+groupID+"/members/bob", tokenAlice,
+		map[string]any{"groupMemberStatus": "INACTIVE"}, http.StatusOK)
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read by a suspended member: status = %d, want 403", rec.Code)
+	}
+	if shared := h.list("/api/v1/ssh-endpoint-credentials/shared-with-me", tokenBob); len(shared) != 0 {
+		t.Errorf("shared-with-me while suspended = %d, want 0", len(shared))
+	}
+
+	// Reinstated, so is the access.
+	h.mustDo(http.MethodPut, "/api/v1/groups/"+groupID+"/members/bob", tokenAlice,
+		map[string]any{"groupMemberStatus": "ACTIVE"}, http.StatusOK)
+	h.mustDo(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil, http.StatusOK)
+
+	// Revoking the share ends it for the whole group.
+	h.mustDo(http.MethodDelete, shares+"/"+share["sshEndpointCredentialGroupSharingId"].(string),
+		tokenAlice, nil, http.StatusNoContent)
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-endpoint-credentials/"+bindingID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("read after revoke: status = %d, want 403", rec.Code)
+	}
+}
+
+// The strongest grant reaching a caller is the one that applies: a READ user share
+// does not cap what a WRITE group share gives them.
+func TestStrongestShareWins(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedEndpointCredential("strongest", tokenAlice)
+	groupID := h.seedGroup("writers", tokenAlice)
+	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+
+	base := "/api/v1/ssh-endpoint-credentials/" + bindingID
+	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob", "permission": "READ"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/group-shares", tokenAlice,
+		map[string]any{"groupId": groupID, "permission": "WRITE"}, http.StatusCreated)
+
+	got := h.mustDo(http.MethodGet, base, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "WRITE" {
+		t.Errorf("permission = %v, want WRITE from the stronger group share", got["permission"])
+	}
+	shared := h.list("/api/v1/ssh-endpoint-credentials/shared-with-me", tokenBob)
+	if len(shared) != 1 || shared[0]["permission"] != "WRITE" {
+		t.Errorf("shared-with-me = %v, want one binding at WRITE", shared)
+	}
+}
+
+func TestEndpointCredentialSharingRejectsBadRequests(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedEndpointCredential("share-validation", tokenAlice)
+	base := "/api/v1/ssh-endpoint-credentials/" + bindingID
+
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "nobody"}); rec.Code != http.StatusNotFound {
+		t.Errorf("sharing with an unknown user: status = %d, want 404", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, base+"/group-shares", tokenAlice,
+		map[string]any{"groupId": "nope"}); rec.Code != http.StatusNotFound {
+		t.Errorf("sharing with an unknown group: status = %d, want 404", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob", "permission": "ROOT"}); rec.Code != http.StatusBadRequest {
+		t.Errorf("unrecognised permission: status = %d, want 400", rec.Code)
+	}
+	// Sharing with the owner would grant nothing and could not be revoked meaningfully.
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "alice"}); rec.Code != http.StatusConflict {
+		t.Errorf("sharing with the owner: status = %d, want 409", rec.Code)
+	}
+	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
+	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob", "permission": "WRITE"}); rec.Code != http.StatusConflict {
+		t.Errorf("duplicate share: status = %d, want 409 — widen the existing one instead", rec.Code)
+	}
+
+	// A sharing id from one binding is not reachable through another's path.
+	_, otherID := h.seedEndpointCredential("other-binding", tokenAlice)
+	shares := h.list(base+"/user-shares", tokenAlice)
+	sharingID := shares[0]["sshEndpointCredentialUserSharingId"].(string)
+	if rec := h.do(http.MethodDelete,
+		"/api/v1/ssh-endpoint-credentials/"+otherID+"/user-shares/"+sharingID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("cross-binding share delete: status = %d, want 404", rec.Code)
+	}
+}
+
+// Shares point at the binding with RESTRICT, so deleting one has to take its shares
+// with it rather than tripping over them.
+func TestDeletingEndpointCredentialRemovesItsShares(t *testing.T) {
+	h := newHarness(t)
+	_, bindingID := h.seedEndpointCredential("doomed", tokenAlice)
+	groupID := h.seedGroup("doomed-group", tokenAlice)
+	base := "/api/v1/ssh-endpoint-credentials/" + bindingID
+
+	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/group-shares", tokenAlice, map[string]any{"groupId": groupID}, http.StatusCreated)
+
+	h.mustDo(http.MethodDelete, base, tokenAlice, nil, http.StatusNoContent)
+
+	var remaining int64
+	h.db.Model(&computemodel.SSHEndpointCredentialUserSharing{}).
+		Where("ssh_endpoint_credential_id = ?", bindingID).Count(&remaining)
+	if remaining != 0 {
+		t.Errorf("%d user shares survived the delete, want 0", remaining)
+	}
+	h.db.Model(&computemodel.SSHEndpointCredentialGroupSharing{}).
+		Where("ssh_endpoint_credential_id = ?", bindingID).Count(&remaining)
+	if remaining != 0 {
+		t.Errorf("%d group shares survived the delete, want 0", remaining)
 	}
 }
 
@@ -533,7 +818,7 @@ func TestUpdatingClusterCredentialKeepsItsOwner(t *testing.T) {
 // the resources come from the request rather than the deployment's default.
 func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("proc")
+	_, bindingID := h.seedEndpointCredential("proc", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "proc"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
@@ -564,7 +849,7 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 // outward and the database cannot cascade in that direction.
 func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("cleanup")
+	_, bindingID := h.seedEndpointCredential("cleanup", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "cleanup"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
@@ -593,7 +878,7 @@ func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 // reference before removing its statuses, or the RESTRICT constraints deadlock.
 func TestDeletingProcessRemovesItsStatuses(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("status-cleanup")
+	_, bindingID := h.seedEndpointCredential("status-cleanup", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "status-cleanup"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
@@ -620,7 +905,7 @@ func TestDeletingProcessRemovesItsStatuses(t *testing.T) {
 // a caller never observes a process that exists but has no status history yet.
 func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("initial-status")
+	_, bindingID := h.seedEndpointCredential("initial-status", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "initial-status"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
@@ -661,7 +946,7 @@ func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 // it — so the two write methods on the same path must fail, not silently succeed.
 func TestProcessStatusWritesAreNotExposed(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("status-readonly")
+	_, bindingID := h.seedEndpointCredential("status-readonly", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "status-readonly"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
@@ -688,7 +973,7 @@ func TestProcessStatusWritesAreNotExposed(t *testing.T) {
 // the same scoping ClusterPartition already applies to its cluster.
 func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedClusterCredential("status-scope")
+	_, bindingID := h.seedEndpointCredential("status-scope", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "status-scope"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
@@ -723,7 +1008,7 @@ func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 // A caller whose token is valid but who has no users row cannot own anything.
 func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 	h := newHarness(t)
-	clusterID := h.seedCluster("ghost")
+	endpointID := h.seedSSHEndpoint("ghost")
 	_, credentialID := h.seedSSHKeyAndCredential("ghost")
 
 	// A token naming a principal with no users row.
@@ -732,8 +1017,8 @@ func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 	}
 	h.srv = server.New(config.Config{CORSAllowedOrigins: []string{"*"}}, h.db, introspector)
 
-	rec := h.do(http.MethodPost, "/api/v1/cluster-credentials", "ghost-token", map[string]any{
-		"clusterId": clusterID, "sshCredentialId": credentialID,
+	rec := h.do(http.MethodPost, "/api/v1/ssh-endpoint-credentials", "ghost-token", map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
 	})
 	if rec.Code != http.StatusNotFound {
 		t.Errorf("status = %d, want 404\nbody: %s", rec.Code, rec.Body.String())
@@ -1034,6 +1319,7 @@ func TestUnknownResourcesReportNotFound(t *testing.T) {
 	h := newHarness(t)
 	for _, path := range []string{
 		"/api/v1/clusters/nope",
+		"/api/v1/ssh-endpoints/nope",
 		"/api/v1/ssh-keys/nope",
 		"/api/v1/application-templates/nope",
 		"/api/v1/slurm-deployments/nope",

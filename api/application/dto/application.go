@@ -281,9 +281,9 @@ type BatchDeploymentRequest struct {
 	SlurmRunSection string                 `json:"slurmRunSection"`
 	BatchJobConfig  *BatchJobConfigRequest `json:"batchJobConfig"`
 
-	// DefaultSubmissionCredentialID names a cluster credential binding (the id
-	// returned by POST /api/v1/cluster-credentials), not a bare SSH credential — a
-	// binding ties the submitting identity to both a cluster and an owner.
+	// DefaultSubmissionCredentialID names an SSH endpoint credential binding (the id
+	// returned by POST /api/v1/ssh-endpoint-credentials), not a bare SSH credential —
+	// a binding ties the submitting identity to both a host and an owner.
 	DefaultSubmissionCredentialID string `json:"defaultSubmissionCredentialId"`
 
 	WorkDir   *string `json:"workDir"`

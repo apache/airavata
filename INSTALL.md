@@ -213,17 +213,23 @@ That is enough to administer clusters, SSH keys, templates and deployments right
 ```bash
 TOKEN='<the token printed at startup>'
 
+# A cluster is reached through an SSH endpoint, so create the host first.
+ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"expanse-login","hostName":"login.expanse.sdsc.edu"}' | jq -r '.sshEndpointId')
+
 curl -s -X POST localhost:9095/api/v1/clusters \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
-  -d '{"clusterName":"expanse","hostName":"login.expanse.sdsc.edu","slurmHome":"/usr/bin"}'
+  -d '{"clusterName":"expanse","sshEndpointId":"'"$ENDPOINT_ID"'","slurmHome":"/usr/bin"}'
 ```
 
 ### Two things that need a manual step
 
 **1. Owning resources requires a matching `users` row.**
 
-Endpoints that create *owned* resources — cluster credentials, batch job processes —
+Endpoints that create *owned* resources — SSH endpoint credentials, batch job processes —
 resolve the caller to a user record and refuse if none exists:
 
 ```
@@ -278,11 +284,11 @@ curl -s localhost:9095/api/v1/clusters      # readable without a token
 Catalogue reads — clusters, partitions, SSH keys, SSH credentials, templates and
 deployments — are open to anonymous callers. Beyond those:
 
-- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating cluster credentials
+- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating SSH endpoint credentials
   and batch job processes, which any authenticated caller may do for themselves.
-- **Owner-scoped reads** (`/cluster-credentials/{id}`, `/users/{id}`) require
+- **Owner-scoped reads** (`/ssh-endpoint-credentials/{id}`, `/users/{id}`) require
   authentication and are refused unless the caller owns the record or is an admin.
-- **Unfiltered listings** of cluster credentials, batch job processes and users
+- **Unfiltered listings** of SSH endpoint credentials, batch job processes and users
   require `ADMIN`, because they expose who holds access to what.
 
 A request with no token to a guarded endpoint returns `401`, while an authenticated

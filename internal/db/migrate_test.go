@@ -38,13 +38,26 @@ func newTestDB(t *testing.T) *gorm.DB {
 	return gdb
 }
 
+// seedSSHEndpoint creates the host a cluster or a credential binding points at. It
+// exists because the host name clusters used to carry is now an entity of its own.
+func seedSSHEndpoint(t *testing.T, gdb *gorm.DB, name string) *computemodel.SSHEndpoint {
+	t.Helper()
+	endpoint := &computemodel.SSHEndpoint{Name: name, HostName: name + ".example.edu", Port: 22}
+	if err := gdb.Create(endpoint).Error; err != nil {
+		t.Fatalf("create ssh endpoint: %v", err)
+	}
+	return endpoint
+}
+
 func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 	gdb := newTestDB(t)
 
 	want := []string{
 		"users", "user_roles", "groups", "group_members",
 		"ssh_keys", "ssh_user_credentials",
-		"clusters", "cluster_partitions", "cluster_credentials",
+		"ssh_endpoints", "clusters", "cluster_partitions",
+		"ssh_endpoint_credentials",
+		"ssh_endpoint_credential_group_sharings", "ssh_endpoint_credential_user_sharings",
 		"application_templates", "application_template_inputs", "application_template_outputs",
 		"batch_application_deployments", "batch_job_configs",
 		"batch_job_processes",
@@ -59,7 +72,8 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 func TestBeforeCreateGeneratesUUID(t *testing.T) {
 	gdb := newTestDB(t)
 
-	cluster := &computemodel.Cluster{ClusterName: "expanse", HostName: "login.expanse.edu", SlurmHome: "/usr/bin"}
+	endpoint := seedSSHEndpoint(t, gdb, "expanse")
+	cluster := &computemodel.Cluster{ClusterName: "expanse", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
@@ -183,7 +197,8 @@ func TestGroupMemberRejectsUnknownRoleAndStatus(t *testing.T) {
 func TestDeletingClusterCascadesToPartitions(t *testing.T) {
 	gdb := newTestDB(t)
 
-	cluster := &computemodel.Cluster{ClusterName: "anvil", HostName: "anvil.rcac.edu", SlurmHome: "/usr/bin"}
+	endpoint := seedSSHEndpoint(t, gdb, "anvil")
+	cluster := &computemodel.Cluster{ClusterName: "anvil", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
@@ -220,13 +235,14 @@ func TestDeletingDeploymentRemovesOwnedBatchJobConfig(t *testing.T) {
 	if err := gdb.Create(cred).Error; err != nil {
 		t.Fatalf("create ssh credential: %v", err)
 	}
-	cluster := &computemodel.Cluster{ClusterName: "anvil", HostName: "anvil.rcac.edu", SlurmHome: "/usr/bin"}
+	endpoint := seedSSHEndpoint(t, gdb, "anvil")
+	cluster := &computemodel.Cluster{ClusterName: "anvil", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
-	binding := &computemodel.ClusterCredential{ClusterID: &cluster.ID, SSHCredentialID: &cred.ID}
+	binding := &computemodel.SSHEndpointCredential{SSHEndpointID: &endpoint.ID, SSHCredentialID: &cred.ID}
 	if err := gdb.Create(binding).Error; err != nil {
-		t.Fatalf("create cluster credential: %v", err)
+		t.Fatalf("create ssh endpoint credential: %v", err)
 	}
 	tmpl := &applicationmodel.Template{TemplateName: ptr.To("gromacs")}
 	if err := gdb.Create(tmpl).Error; err != nil {
@@ -294,7 +310,8 @@ func TestTemplateInputNameIsUniquePerTemplate(t *testing.T) {
 func TestNullableColumnsRoundTripAsNil(t *testing.T) {
 	gdb := newTestDB(t)
 
-	cluster := &computemodel.Cluster{ClusterName: "delta", HostName: "delta.ncsa.edu", SlurmHome: "/usr/bin"}
+	endpoint := seedSSHEndpoint(t, gdb, "delta")
+	cluster := &computemodel.Cluster{ClusterName: "delta", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
@@ -318,7 +335,7 @@ func TestNullableColumnsRoundTripAsNil(t *testing.T) {
 // Ownership drives authorisation on credentials, datasets and processes, so the
 // helpers must not treat a missing owner as a match for the empty principal.
 func TestOwnedByRejectsUnownedRows(t *testing.T) {
-	cred := &computemodel.ClusterCredential{}
+	cred := &computemodel.SSHEndpointCredential{}
 	if cred.OwnedBy("") {
 		t.Error("a credential with no owner reported ownership by the empty user id")
 	}

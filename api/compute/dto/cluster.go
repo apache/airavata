@@ -8,11 +8,15 @@ import (
 
 // ClusterRequest is the create/update payload for a cluster.
 //
+// The host name it used to carry is now an SSH endpoint of its own, named by id. The
+// field is required for the same reason the host name was: a cluster nothing can log
+// in to cannot be submitted to.
+//
 // Java: org.apache.airavata.compute.dto.ClusterRequestDto
 type ClusterRequest struct {
 	ClusterName        string  `json:"clusterName"`
 	ClusterDescription *string `json:"clusterDescription"`
-	HostName           string  `json:"hostName"`
+	SSHEndpointID      string  `json:"sshEndpointId"`
 	SlurmHome          string  `json:"slurmHome"`
 }
 
@@ -20,31 +24,35 @@ type ClusterRequest struct {
 func (r *ClusterRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("clusterName", "Cluster name cannot be blank", r.ClusterName)
-	c.NotBlank("hostName", "Host name cannot be blank", r.HostName)
+	c.NotBlank("sshEndpointId", "SSH endpoint id cannot be blank", r.SSHEndpointID)
 	c.NotBlank("slurmHome", "Slurm home cannot be blank", r.SlurmHome)
 	return c.Fields()
 }
 
 // ClusterResponse is the read model for a cluster.
 //
+// The endpoint is inlined rather than left as a bare id: every caller that wants a
+// cluster wants the host it lives on, and it is a small, non-secret record.
+//
 // Java: org.apache.airavata.compute.dto.ClusterResponseDto
 type ClusterResponse struct {
 	ClusterID          string                     `json:"clusterId"`
 	ClusterName        string                     `json:"clusterName"`
 	ClusterDescription *string                    `json:"clusterDescription"`
-	HostName           string                     `json:"hostName"`
+	SSHEndpointID      *string                    `json:"sshEndpointId"`
+	SSHEndpoint        *SSHEndpointResponse       `json:"sshEndpoint"`
 	SlurmHome          string                     `json:"slurmHome"`
 	Partitions         []ClusterPartitionResponse `json:"partitions"`
 }
 
-// applyClusterRequest copies the mutable fields of a request onto an entity. The id
+// ApplyClusterRequest copies the mutable fields of a request onto an entity. The id
 // and the partitions are never written from a request: partitions are managed through
 // their own endpoints, and overwriting the collection here would risk removing rows
-// the caller never mentioned.
+// the caller never mentioned. The SSH endpoint is resolved by the service, which is
+// what turns an unknown id into a 404 rather than a dangling reference.
 func ApplyClusterRequest(dst *model.Cluster, src *ClusterRequest) {
 	dst.ClusterName = src.ClusterName
 	dst.ClusterDescription = src.ClusterDescription
-	dst.HostName = src.HostName
 	dst.SlurmHome = src.SlurmHome
 }
 
@@ -53,14 +61,19 @@ func ToClusterResponse(c *model.Cluster) ClusterResponse {
 	for i := range c.Partitions {
 		partitions = append(partitions, ToClusterPartitionResponse(&c.Partitions[i]))
 	}
-	return ClusterResponse{
+	out := ClusterResponse{
 		ClusterID:          c.ID,
 		ClusterName:        c.ClusterName,
 		ClusterDescription: c.ClusterDescription,
-		HostName:           c.HostName,
+		SSHEndpointID:      c.SSHEndpointID,
 		SlurmHome:          c.SlurmHome,
 		Partitions:         partitions,
 	}
+	if c.SSHEndpoint != nil {
+		endpoint := ToSSHEndpointResponse(c.SSHEndpoint)
+		out.SSHEndpoint = &endpoint
+	}
+	return out
 }
 
 // ClusterPartitionRequest is the create/update payload for a partition.
@@ -152,50 +165,4 @@ func ToClusterPartitionResponse(p *model.ClusterPartition) ClusterPartitionRespo
 		IsDefaultQueue:   p.IsDefaultQueue,
 		IsCheckpointable: p.IsCheckpointable,
 	}
-}
-
-// ClusterCredentialRequest is the create/update payload for a binding.
-//
-// There is no owner field, and that is the point: the owning user comes from the
-// access token, so a caller cannot create a binding on someone else's behalf.
-//
-// Java: org.apache.airavata.compute.dto.ClusterCredentialRequestDto
-type ClusterCredentialRequest struct {
-	ClusterID       string `json:"clusterId"`
-	SSHCredentialID string `json:"sshCredentialId"`
-}
-
-// Validate implements httpx.Validator.
-func (r *ClusterCredentialRequest) Validate() []httpx.FieldError {
-	var c httpx.Constraints
-	c.NotBlank("clusterId", "Cluster id cannot be blank", r.ClusterID)
-	c.NotBlank("sshCredentialId", "SSH credential id cannot be blank", r.SSHCredentialID)
-	return c.Fields()
-}
-
-// ClusterCredentialResponse is the read model for a binding.
-//
-// Java: org.apache.airavata.compute.dto.ClusterCredentialResponseDto
-type ClusterCredentialResponse struct {
-	ClusterCredentialID string  `json:"clusterCredentialId"`
-	ClusterID           *string `json:"clusterId"`
-	SSHCredentialID     *string `json:"sshCredentialId"`
-	UserID              *string `json:"userId"`
-}
-
-func ToClusterCredentialResponse(c *model.ClusterCredential) ClusterCredentialResponse {
-	return ClusterCredentialResponse{
-		ClusterCredentialID: c.ID,
-		ClusterID:           c.ClusterID,
-		SSHCredentialID:     c.SSHCredentialID,
-		UserID:              c.OwnerID,
-	}
-}
-
-func ToClusterCredentialResponses(in []model.ClusterCredential) []ClusterCredentialResponse {
-	out := make([]ClusterCredentialResponse, 0, len(in))
-	for i := range in {
-		out = append(out, ToClusterCredentialResponse(&in[i]))
-	}
-	return out
 }
