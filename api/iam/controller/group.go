@@ -1,4 +1,5 @@
-package iam
+// Package controller serves the user, group and group membership routes.
+package controller
 
 import (
 	"net/http"
@@ -6,13 +7,16 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/iam/dto"
+	"github.com/apache/airavata/api/iam/service"
 )
 
 // GroupController serves /api/v1/groups.
-type GroupController struct{ svc *GroupService }
+type GroupController struct{ svc *service.GroupService }
 
 // NewGroupController returns a handler delegating to svc.
-func NewGroupController(svc *GroupService) *GroupController { return &GroupController{svc: svc} }
+func NewGroupController(svc *service.GroupService) *GroupController {
+	return &GroupController{svc: svc}
+}
 
 // Register mounts the group routes.
 //
@@ -91,10 +95,10 @@ func (h *GroupController) delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // GroupMemberController serves /api/v1/groups/{groupId}/members.
-type GroupMemberController struct{ svc *GroupMemberService }
+type GroupMemberController struct{ svc *service.GroupMemberService }
 
 // NewGroupMemberController returns a handler delegating to svc.
-func NewGroupMemberController(svc *GroupMemberService) *GroupMemberController {
+func NewGroupMemberController(svc *service.GroupMemberService) *GroupMemberController {
 	return &GroupMemberController{svc: svc}
 }
 

@@ -1,4 +1,6 @@
-package compute
+// Package repository reads and writes SSH endpoints, clusters, partitions and the
+// credential bindings that let a user act on a host.
+package repository
 
 import (
 	"context"

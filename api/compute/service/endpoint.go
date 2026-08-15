@@ -1,4 +1,4 @@
-package compute
+package service
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
+	"github.com/apache/airavata/api/compute/repository"
 )
 
 // SSHEndpointService manages the hosts clusters and credentials are reached through.
@@ -19,17 +20,17 @@ import (
 // administrative.
 type SSHEndpointService struct {
 	db          *gorm.DB
-	endpoints   *SSHEndpointRepository
-	clusters    *ClusterRepository
-	credentials *SSHEndpointCredentialRepository
+	endpoints   *repository.SSHEndpointRepository
+	clusters    *repository.ClusterRepository
+	credentials *repository.SSHEndpointCredentialRepository
 }
 
 // NewSSHEndpointService returns an endpoint service.
 func NewSSHEndpointService(
 	db *gorm.DB,
-	endpoints *SSHEndpointRepository,
-	clusters *ClusterRepository,
-	credentials *SSHEndpointCredentialRepository,
+	endpoints *repository.SSHEndpointRepository,
+	clusters *repository.ClusterRepository,
+	credentials *repository.SSHEndpointCredentialRepository,
 ) *SSHEndpointService {
 	return &SSHEndpointService{db: db, endpoints: endpoints, clusters: clusters, credentials: credentials}
 }

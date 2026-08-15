@@ -1,4 +1,4 @@
-package data
+package service
 
 import (
 	"context"
@@ -6,13 +6,14 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/apache/airavata/api/compute"
-	"github.com/apache/airavata/api/iam"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
+	computerepo "github.com/apache/airavata/api/compute/repository"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
+	"github.com/apache/airavata/api/data/repository"
+	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
 // storageAccess resolves what the calling principal may do with a storage.
@@ -23,8 +24,8 @@ import (
 // share.
 type storageAccess struct {
 	access
-	storages *SCPDataStorageRepository
-	sharing  *SCPDataStorageSharingRepository
+	storages *repository.SCPDataStorageRepository
+	sharing  *repository.SCPDataStorageSharingRepository
 }
 
 func (a storageAccess) withTx(tx *gorm.DB) storageAccess {
@@ -95,7 +96,7 @@ func (a storageAccess) requireControl(ctx context.Context, storage *model.SCPDat
 // requireStorageReadable is the check the product service runs before letting a
 // dataset be registered into a storage. It lives here so both services read the same
 // rule.
-func requireStorageReadable(ctx context.Context, base access, sharing *SCPDataStorageSharingRepository, storage *model.SCPDataStorage) error {
+func requireStorageReadable(ctx context.Context, base access, sharing *repository.SCPDataStorageSharingRepository, storage *model.SCPDataStorage) error {
 	a := storageAccess{access: base, sharing: sharing}
 	_, err := a.require(ctx, storage, permRead)
 	return err
@@ -109,20 +110,20 @@ func requireStorageReadable(ctx context.Context, base access, sharing *SCPDataSt
 type SCPDataStorageService struct {
 	storageAccess
 	db        *gorm.DB
-	endpoints *compute.SSHEndpointRepository
-	products  *DataProductRepository
-	users     *iam.UserRepository
+	endpoints *computerepo.SSHEndpointRepository
+	products  *repository.DataProductRepository
+	users     *iamrepo.UserRepository
 }
 
 // NewSCPDataStorageService returns a storage service.
 func NewSCPDataStorageService(
 	db *gorm.DB,
-	storages *SCPDataStorageRepository,
-	sharing *SCPDataStorageSharingRepository,
-	endpoints *compute.SSHEndpointRepository,
-	products *DataProductRepository,
-	users *iam.UserRepository,
-	members *iam.GroupMemberRepository,
+	storages *repository.SCPDataStorageRepository,
+	sharing *repository.SCPDataStorageSharingRepository,
+	endpoints *computerepo.SSHEndpointRepository,
+	products *repository.DataProductRepository,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *SCPDataStorageService {
 	return &SCPDataStorageService{
 		storageAccess: storageAccess{
@@ -318,18 +319,18 @@ func (s *SCPDataStorageService) Delete(ctx context.Context, id string) error {
 type SCPDataStorageSharingService struct {
 	storageAccess
 	db     *gorm.DB
-	groups *iam.GroupRepository
-	users  *iam.UserRepository
+	groups *iamrepo.GroupRepository
+	users  *iamrepo.UserRepository
 }
 
 // NewSCPDataStorageSharingService returns a storage sharing service.
 func NewSCPDataStorageSharingService(
 	db *gorm.DB,
-	storages *SCPDataStorageRepository,
-	sharing *SCPDataStorageSharingRepository,
-	groups *iam.GroupRepository,
-	users *iam.UserRepository,
-	members *iam.GroupMemberRepository,
+	storages *repository.SCPDataStorageRepository,
+	sharing *repository.SCPDataStorageSharingRepository,
+	groups *iamrepo.GroupRepository,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *SCPDataStorageSharingService {
 	return &SCPDataStorageSharingService{
 		storageAccess: storageAccess{

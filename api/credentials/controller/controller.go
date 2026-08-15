@@ -1,4 +1,5 @@
-package credentials
+// Package controller serves the SSH key and SSH credential routes.
+package controller
 
 import (
 	"net/http"
@@ -6,13 +7,16 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/credentials/dto"
+	"github.com/apache/airavata/api/credentials/service"
 )
 
 // SSHKeyController serves /api/v1/ssh-keys.
-type SSHKeyController struct{ svc *SSHKeyService }
+type SSHKeyController struct{ svc *service.SSHKeyService }
 
 // NewSSHKeyController returns a handler delegating to svc.
-func NewSSHKeyController(svc *SSHKeyService) *SSHKeyController { return &SSHKeyController{svc: svc} }
+func NewSSHKeyController(svc *service.SSHKeyService) *SSHKeyController {
+	return &SSHKeyController{svc: svc}
+}
 
 // Register mounts the SSH key routes.
 func (h *SSHKeyController) Register(mux *http.ServeMux) {
@@ -78,10 +82,12 @@ func (h *SSHKeyController) delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // SSHUserCredentialController serves /api/v1/ssh-credentials.
-type SSHUserCredentialController struct{ svc *SSHUserCredentialService }
+type SSHUserCredentialController struct {
+	svc *service.SSHUserCredentialService
+}
 
 // NewSSHUserCredentialController returns a handler delegating to svc.
-func NewSSHUserCredentialController(svc *SSHUserCredentialService) *SSHUserCredentialController {
+func NewSSHUserCredentialController(svc *service.SSHUserCredentialService) *SSHUserCredentialController {
 	return &SSHUserCredentialController{svc: svc}
 }
 

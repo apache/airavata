@@ -1,6 +1,7 @@
-// Package data serves registered datasets and the storages they live on. Both are
-// reached through sharing rules rather than through platform roles.
-package data
+// Package service holds the data vertical's business rules: registered datasets and
+// the storages they live on, both reached through ownership and sharing rules rather
+// than through platform roles.
+package service
 
 import (
 	"context"
@@ -8,9 +9,10 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/apache/airavata/api/iam"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+
+	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
 // notFoundAs converts a missing-row error into a 404 and leaves anything else alone.
@@ -75,7 +77,7 @@ func newShare(subject *string, grants *string) share {
 // reachable through a share, because deciding who else gets access stays with the
 // owner.
 type access struct {
-	members *iam.GroupMemberRepository
+	members *iamrepo.GroupMemberRepository
 }
 
 // withTx binds the membership lookup to tx, for checks made from inside a transaction.

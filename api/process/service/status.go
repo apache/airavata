@@ -1,4 +1,4 @@
-package process
+package service
 
 import (
 	"context"
@@ -10,24 +10,25 @@ import (
 
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/api/process/repository"
 )
 
 // StatusService records and reads BatchJobProcess status history.
 //
 // There is no create/update HTTP endpoint for statuses, by design: they are recorded
 // internally rather than accepted from a client request body — an initial CREATED
-// status when a process is submitted (see Service.Create), and later transitions by
+// status when a process is submitted (see ProcessService.Create), and later transitions by
 // whatever submits and monitors the actual job. Reads are still a service concern
 // other code can call directly, and (via StatusController) a read-only API a client
 // can poll for progress.
 type StatusService struct {
 	db        *gorm.DB
-	statuses  *StatusRepository
-	processes *Repository
+	statuses  *repository.StatusRepository
+	processes *repository.ProcessRepository
 }
 
 // NewStatusService returns a status service.
-func NewStatusService(db *gorm.DB, statuses *StatusRepository, processes *Repository) *StatusService {
+func NewStatusService(db *gorm.DB, statuses *repository.StatusRepository, processes *repository.ProcessRepository) *StatusService {
 	return &StatusService{db: db, statuses: statuses, processes: processes}
 }
 
@@ -55,7 +56,7 @@ func (s *StatusService) Record(ctx context.Context, processID string, status mod
 }
 
 // RecordTx appends a new status inside an already-open transaction, so a caller that
-// is already inside one of its own — Service.Create recording the initial CREATED
+// is already inside one of its own — ProcessService.Create recording the initial CREATED
 // status alongside the process it belongs to, or another service's own multi-step
 // write — commits or rolls back the status together with the rest of its work.
 func (s *StatusService) RecordTx(ctx context.Context, tx *gorm.DB, processID string, status model.BatchProcessStatusType, log *string) (*model.BatchJobProcessStatus, error) {
@@ -77,7 +78,7 @@ func (s *StatusService) RecordTx(ctx context.Context, tx *gorm.DB, processID str
 
 // ListForProcess returns every recorded status of a process, oldest first.
 //
-// Not owner-scoped, matching the rest of this package's reads (see Service's doc
+// Not owner-scoped, matching the rest of this package's reads (see ProcessService's doc
 // comment) — the Java service carried no authorisation on process status either.
 func (s *StatusService) ListForProcess(ctx context.Context, processID string) ([]dto.StatusResponse, error) {
 	if _, err := s.processes.FindByID(ctx, processID); err != nil {

@@ -1,4 +1,6 @@
-package iam
+// Package service holds the identity vertical's business rules: user registration,
+// group ownership and membership, and the root-account bootstrap.
+package service
 
 import (
 	"context"
@@ -10,6 +12,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 
 	model "github.com/apache/airavata/api/iam/model"
+	"github.com/apache/airavata/api/iam/repository"
 )
 
 // EnsureRootUser inserts a users row for the bootstrap root account if none exists
@@ -21,7 +24,7 @@ import (
 // to a users row and refuse if none exists. This closes that gap on startup instead of
 // requiring the manual INSERT documented in INSTALL.md.
 func EnsureRootUser(ctx context.Context, db *gorm.DB) error {
-	repo := NewUserRepository(db)
+	repo := repository.NewUserRepository(db)
 	if _, err := repo.FindByID(ctx, auth.RootUsername); err == nil {
 		return nil
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {

@@ -1,4 +1,6 @@
-package compute
+// Package service holds the compute vertical's business rules, including the sharing
+// model that decides who may use an SSH endpoint credential.
+package service
 
 import (
 	"context"
@@ -11,6 +13,7 @@ import (
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
+	"github.com/apache/airavata/api/compute/repository"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -23,12 +26,12 @@ func notFoundAs(err error, format string, args ...any) error {
 // ClusterService manages Slurm clusters. Reads are open; writes are administrative.
 type ClusterService struct {
 	db        *gorm.DB
-	clusters  *ClusterRepository
-	endpoints *SSHEndpointRepository
+	clusters  *repository.ClusterRepository
+	endpoints *repository.SSHEndpointRepository
 }
 
 // NewClusterService returns a cluster service.
-func NewClusterService(db *gorm.DB, clusters *ClusterRepository, endpoints *SSHEndpointRepository) *ClusterService {
+func NewClusterService(db *gorm.DB, clusters *repository.ClusterRepository, endpoints *repository.SSHEndpointRepository) *ClusterService {
 	return &ClusterService{db: db, clusters: clusters, endpoints: endpoints}
 }
 
@@ -141,12 +144,12 @@ func (s *ClusterService) Delete(ctx context.Context, id string) error {
 // owned, cascading collection risks deleting rows the caller never named.
 type ClusterPartitionService struct {
 	db         *gorm.DB
-	partitions *ClusterPartitionRepository
-	clusters   *ClusterRepository
+	partitions *repository.ClusterPartitionRepository
+	clusters   *repository.ClusterRepository
 }
 
 // NewClusterPartitionService returns a partition service.
-func NewClusterPartitionService(db *gorm.DB, partitions *ClusterPartitionRepository, clusters *ClusterRepository) *ClusterPartitionService {
+func NewClusterPartitionService(db *gorm.DB, partitions *repository.ClusterPartitionRepository, clusters *repository.ClusterRepository) *ClusterPartitionService {
 	return &ClusterPartitionService{db: db, partitions: partitions, clusters: clusters}
 }
 

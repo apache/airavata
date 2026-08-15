@@ -1,4 +1,5 @@
-package application
+// Package controller serves the application template and batch deployment routes.
+package controller
 
 import (
 	"net/http"
@@ -6,13 +7,14 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/application/dto"
+	"github.com/apache/airavata/api/application/service"
 )
 
 // TemplateController serves /api/v1/application-templates.
-type TemplateController struct{ svc *TemplateService }
+type TemplateController struct{ svc *service.TemplateService }
 
 // NewTemplateController returns a handler delegating to svc.
-func NewTemplateController(svc *TemplateService) *TemplateController {
+func NewTemplateController(svc *service.TemplateService) *TemplateController {
 	return &TemplateController{svc: svc}
 }
 
@@ -80,10 +82,12 @@ func (h *TemplateController) delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // BatchDeploymentController serves /api/v1/slurm-deployments.
-type BatchDeploymentController struct{ svc *BatchDeploymentService }
+type BatchDeploymentController struct {
+	svc *service.BatchDeploymentService
+}
 
 // NewBatchDeploymentController returns a handler delegating to svc.
-func NewBatchDeploymentController(svc *BatchDeploymentService) *BatchDeploymentController {
+func NewBatchDeploymentController(svc *service.BatchDeploymentService) *BatchDeploymentController {
 	return &BatchDeploymentController{svc: svc}
 }
 

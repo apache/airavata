@@ -1,4 +1,5 @@
-package application
+// Package repository reads and writes application templates and batch deployments.
+package repository
 
 import (
 	"context"

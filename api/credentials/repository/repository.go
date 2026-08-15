@@ -1,4 +1,5 @@
-package credentials
+// Package repository reads and writes SSH keys and the user credentials using them.
+package repository
 
 import (
 	"context"

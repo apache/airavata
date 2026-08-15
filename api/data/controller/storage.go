@@ -1,4 +1,4 @@
-package data
+package controller
 
 import (
 	"net/http"
@@ -6,13 +6,16 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/data/dto"
+	"github.com/apache/airavata/api/data/service"
 )
 
 // SCPDataStorageController serves /api/v1/scp-data-storages.
-type SCPDataStorageController struct{ svc *SCPDataStorageService }
+type SCPDataStorageController struct {
+	svc *service.SCPDataStorageService
+}
 
 // NewSCPDataStorageController returns a handler delegating to svc.
-func NewSCPDataStorageController(svc *SCPDataStorageService) *SCPDataStorageController {
+func NewSCPDataStorageController(svc *service.SCPDataStorageService) *SCPDataStorageController {
 	return &SCPDataStorageController{svc: svc}
 }
 
@@ -103,10 +106,12 @@ func (h *SCPDataStorageController) delete(w http.ResponseWriter, r *http.Request
 }
 
 // SCPDataStorageSharingController serves the share sub-resources of one storage.
-type SCPDataStorageSharingController struct{ svc *SCPDataStorageSharingService }
+type SCPDataStorageSharingController struct {
+	svc *service.SCPDataStorageSharingService
+}
 
 // NewSCPDataStorageSharingController returns a handler delegating to svc.
-func NewSCPDataStorageSharingController(svc *SCPDataStorageSharingService) *SCPDataStorageSharingController {
+func NewSCPDataStorageSharingController(svc *service.SCPDataStorageSharingService) *SCPDataStorageSharingController {
 	return &SCPDataStorageSharingController{svc: svc}
 }
 

@@ -1,13 +1,9 @@
-package iam
+package repository
 
 import (
 	"context"
-	"errors"
 
 	"gorm.io/gorm"
-
-	"github.com/apache/airavata/internal/auth"
-	"github.com/apache/airavata/internal/httpx"
 
 	model "github.com/apache/airavata/api/iam/model"
 )
@@ -40,27 +36,4 @@ func (r *UserRepository) FindByID(ctx context.Context, id string) (*model.User, 
 // Save inserts or updates a user.
 func (r *UserRepository) Save(ctx context.Context, u *model.User) error {
 	return r.db.WithContext(ctx).Save(u).Error
-}
-
-// RequireCurrentUser resolves the authenticated caller to their stored user record.
-//
-// The principal name is used as the user id directly — that equivalence is what makes
-// every ownership check work, and it is why a token identifying a caller who was
-// never registered fails here rather than silently creating a record.
-//
-// Three services depend on this: SSH endpoint credentials, SCP data and batch job
-// processes all derive ownership from the token this way.
-func RequireCurrentUser(ctx context.Context, repo *UserRepository) (*model.User, error) {
-	principal, err := auth.RequireAuthenticated(ctx)
-	if err != nil {
-		return nil, err
-	}
-	user, err := repo.FindByID(ctx, principal.Name)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, httpx.NotFound("No user record found for authenticated principal: %s", principal.Name)
-		}
-		return nil, err
-	}
-	return user, nil
 }

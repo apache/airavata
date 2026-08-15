@@ -1,4 +1,4 @@
-package data
+package service
 
 import (
 	"context"
@@ -7,21 +7,22 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/apache/airavata/api/compute"
-	"github.com/apache/airavata/api/iam"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
+	computesvc "github.com/apache/airavata/api/compute/service"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
+	"github.com/apache/airavata/api/data/repository"
+	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
 // productAccess resolves what the calling principal may do with a product, by loading
 // its shares and handing them to the shared resolver.
 type productAccess struct {
 	access
-	products *DataProductRepository
-	sharing  *DataProductSharingRepository
+	products *repository.DataProductRepository
+	sharing  *repository.DataProductSharingRepository
 }
 
 func (a productAccess) withTx(tx *gorm.DB) productAccess {
@@ -105,22 +106,22 @@ func permissionString[T ~string](p *T) *string {
 type DataProductService struct {
 	productAccess
 	db             *gorm.DB
-	storages       *SCPDataStorageRepository
-	storageSharing *SCPDataStorageSharingRepository
-	credentials    *compute.CredentialAccess
-	users          *iam.UserRepository
+	storages       *repository.SCPDataStorageRepository
+	storageSharing *repository.SCPDataStorageSharingRepository
+	credentials    *computesvc.CredentialAccess
+	users          *iamrepo.UserRepository
 }
 
 // NewDataProductService returns a data product service.
 func NewDataProductService(
 	db *gorm.DB,
-	products *DataProductRepository,
-	sharing *DataProductSharingRepository,
-	storages *SCPDataStorageRepository,
-	storageSharing *SCPDataStorageSharingRepository,
-	credentials *compute.CredentialAccess,
-	users *iam.UserRepository,
-	members *iam.GroupMemberRepository,
+	products *repository.DataProductRepository,
+	sharing *repository.DataProductSharingRepository,
+	storages *repository.SCPDataStorageRepository,
+	storageSharing *repository.SCPDataStorageSharingRepository,
+	credentials *computesvc.CredentialAccess,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *DataProductService {
 	return &DataProductService{
 		productAccess: productAccess{
@@ -344,18 +345,18 @@ func sameEndpoint(a, b *string) bool {
 type DataProductSharingService struct {
 	productAccess
 	db     *gorm.DB
-	groups *iam.GroupRepository
-	users  *iam.UserRepository
+	groups *iamrepo.GroupRepository
+	users  *iamrepo.UserRepository
 }
 
 // NewDataProductSharingService returns a product sharing service.
 func NewDataProductSharingService(
 	db *gorm.DB,
-	products *DataProductRepository,
-	sharing *DataProductSharingRepository,
-	groups *iam.GroupRepository,
-	users *iam.UserRepository,
-	members *iam.GroupMemberRepository,
+	products *repository.DataProductRepository,
+	sharing *repository.DataProductSharingRepository,
+	groups *iamrepo.GroupRepository,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *DataProductSharingService {
 	return &DataProductSharingService{
 		productAccess: productAccess{

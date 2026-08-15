@@ -12,7 +12,7 @@ import (
 // Principal is the authenticated caller.
 //
 // Name is the identity every service compares ownership against, and it is expected
-// to equal iam.User.ID: CILogon subjects normalised to "cilogon:12345", or "root" for
+// to equal iam/model.User.ID: CILogon subjects normalised to "cilogon:12345", or "root" for
 // the bootstrap account.
 //
 // Authorities are bare role names — "ADMIN", "SUPER_ADMIN", "USER" — with no "ROLE_"

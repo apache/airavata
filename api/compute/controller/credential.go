@@ -1,4 +1,4 @@
-package compute
+package controller
 
 import (
 	"net/http"
@@ -6,13 +6,16 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/compute/dto"
+	"github.com/apache/airavata/api/compute/service"
 )
 
 // SSHEndpointCredentialController serves /api/v1/ssh-endpoint-credentials.
-type SSHEndpointCredentialController struct{ svc *SSHEndpointCredentialService }
+type SSHEndpointCredentialController struct {
+	svc *service.SSHEndpointCredentialService
+}
 
 // NewSSHEndpointCredentialController returns a handler delegating to svc.
-func NewSSHEndpointCredentialController(svc *SSHEndpointCredentialService) *SSHEndpointCredentialController {
+func NewSSHEndpointCredentialController(svc *service.SSHEndpointCredentialService) *SSHEndpointCredentialController {
 	return &SSHEndpointCredentialController{svc: svc}
 }
 
@@ -105,11 +108,11 @@ func (h *SSHEndpointCredentialController) delete(w http.ResponseWriter, r *http.
 // SSHEndpointCredentialSharingController serves the share sub-resources of one
 // binding.
 type SSHEndpointCredentialSharingController struct {
-	svc *SSHEndpointCredentialSharingService
+	svc *service.SSHEndpointCredentialSharingService
 }
 
 // NewSSHEndpointCredentialSharingController returns a handler delegating to svc.
-func NewSSHEndpointCredentialSharingController(svc *SSHEndpointCredentialSharingService) *SSHEndpointCredentialSharingController {
+func NewSSHEndpointCredentialSharingController(svc *service.SSHEndpointCredentialSharingService) *SSHEndpointCredentialSharingController {
 	return &SSHEndpointCredentialSharingController{svc: svc}
 }
 

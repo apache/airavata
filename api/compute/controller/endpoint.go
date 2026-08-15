@@ -1,4 +1,4 @@
-package compute
+package controller
 
 import (
 	"net/http"
@@ -6,13 +6,14 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/compute/dto"
+	"github.com/apache/airavata/api/compute/service"
 )
 
 // SSHEndpointController serves /api/v1/ssh-endpoints.
-type SSHEndpointController struct{ svc *SSHEndpointService }
+type SSHEndpointController struct{ svc *service.SSHEndpointService }
 
 // NewSSHEndpointController returns a handler delegating to svc.
-func NewSSHEndpointController(svc *SSHEndpointService) *SSHEndpointController {
+func NewSSHEndpointController(svc *service.SSHEndpointService) *SSHEndpointController {
 	return &SSHEndpointController{svc: svc}
 }
 

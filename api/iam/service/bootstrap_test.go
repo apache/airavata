@@ -1,4 +1,4 @@
-package iam_test
+package service_test
 
 import (
 	"context"
@@ -11,8 +11,9 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/db"
 
-	"github.com/apache/airavata/api/iam"
 	model "github.com/apache/airavata/api/iam/model"
+	iamrepo "github.com/apache/airavata/api/iam/repository"
+	service "github.com/apache/airavata/api/iam/service"
 )
 
 func openTestDB(t *testing.T) *gorm.DB {
@@ -33,11 +34,11 @@ func TestEnsureRootUserCreatesMissingRow(t *testing.T) {
 	gdb := openTestDB(t)
 	ctx := context.Background()
 
-	if err := iam.EnsureRootUser(ctx, gdb); err != nil {
+	if err := service.EnsureRootUser(ctx, gdb); err != nil {
 		t.Fatalf("EnsureRootUser: %v", err)
 	}
 
-	repo := iam.NewUserRepository(gdb)
+	repo := iamrepo.NewUserRepository(gdb)
 	user, err := repo.FindByID(ctx, auth.RootUsername)
 	if err != nil {
 		t.Fatalf("FindByID: %v", err)
@@ -54,14 +55,14 @@ func TestEnsureRootUserLeavesExistingRowAlone(t *testing.T) {
 	gdb := openTestDB(t)
 	ctx := context.Background()
 
-	repo := iam.NewUserRepository(gdb)
+	repo := iamrepo.NewUserRepository(gdb)
 	email := "root@example.org"
 	existing := &model.User{ID: auth.RootUsername, Email: &email, CreatedAt: 1}
 	if err := repo.Save(ctx, existing); err != nil {
 		t.Fatalf("seed root user: %v", err)
 	}
 
-	if err := iam.EnsureRootUser(ctx, gdb); err != nil {
+	if err := service.EnsureRootUser(ctx, gdb); err != nil {
 		t.Fatalf("EnsureRootUser: %v", err)
 	}
 

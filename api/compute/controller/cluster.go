@@ -1,4 +1,5 @@
-package compute
+// Package controller serves the SSH endpoint, cluster and endpoint-credential routes.
+package controller
 
 import (
 	"net/http"
@@ -6,13 +7,14 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/compute/dto"
+	"github.com/apache/airavata/api/compute/service"
 )
 
 // ClusterController serves /api/v1/clusters.
-type ClusterController struct{ svc *ClusterService }
+type ClusterController struct{ svc *service.ClusterService }
 
 // NewClusterController returns a handler delegating to svc.
-func NewClusterController(svc *ClusterService) *ClusterController {
+func NewClusterController(svc *service.ClusterService) *ClusterController {
 	return &ClusterController{svc: svc}
 }
 
@@ -80,10 +82,12 @@ func (h *ClusterController) delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // ClusterPartitionController serves /api/v1/clusters/{clusterId}/partitions.
-type ClusterPartitionController struct{ svc *ClusterPartitionService }
+type ClusterPartitionController struct {
+	svc *service.ClusterPartitionService
+}
 
 // NewClusterPartitionController returns a handler delegating to svc.
-func NewClusterPartitionController(svc *ClusterPartitionService) *ClusterPartitionController {
+func NewClusterPartitionController(svc *service.ClusterPartitionService) *ClusterPartitionController {
 	return &ClusterPartitionController{svc: svc}
 }
 

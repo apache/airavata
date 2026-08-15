@@ -17,7 +17,7 @@ type RoleLookup interface {
 // MockRoleLookup is the hardcoded stand-in carried over from the Java service: two
 // fixed usernames are admins and everyone else is a plain user.
 //
-// It is a placeholder. iam.DBRoleLookup reads the user_roles table the schema already
+// It is a placeholder. iam/repository.DBRoleLookup reads the user_roles table the schema already
 // provides and should replace this once roles are actually administered.
 type MockRoleLookup struct{}
 

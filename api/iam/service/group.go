@@ -1,4 +1,4 @@
-package iam
+package service
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
+	"github.com/apache/airavata/api/iam/repository"
 )
 
 // groupAccess resolves what the calling principal may do within a group. Both the
@@ -22,8 +23,8 @@ import (
 // own owner field and membership rows, not by platform roles: groups are user-owned,
 // so being an ADMIN of one group says nothing about any other.
 type groupAccess struct {
-	groups  *GroupRepository
-	members *GroupMemberRepository
+	groups  *repository.GroupRepository
+	members *repository.GroupMemberRepository
 }
 
 // requireGroup loads a group or reports 404.
@@ -112,11 +113,11 @@ func (a groupAccess) requireOwner(ctx context.Context, group *model.Group) (*aut
 type GroupService struct {
 	groupAccess
 	db    *gorm.DB
-	users *UserRepository
+	users *repository.UserRepository
 }
 
 // NewGroupService returns a group service.
-func NewGroupService(db *gorm.DB, groups *GroupRepository, members *GroupMemberRepository, users *UserRepository) *GroupService {
+func NewGroupService(db *gorm.DB, groups *repository.GroupRepository, members *repository.GroupMemberRepository, users *repository.UserRepository) *GroupService {
 	return &GroupService{
 		groupAccess: groupAccess{groups: groups, members: members},
 		db:          db,
@@ -245,11 +246,11 @@ func (s *GroupService) Delete(ctx context.Context, groupID string) error {
 type GroupMemberService struct {
 	groupAccess
 	db    *gorm.DB
-	users *UserRepository
+	users *repository.UserRepository
 }
 
 // NewGroupMemberService returns a membership service.
-func NewGroupMemberService(db *gorm.DB, groups *GroupRepository, members *GroupMemberRepository, users *UserRepository) *GroupMemberService {
+func NewGroupMemberService(db *gorm.DB, groups *repository.GroupRepository, members *repository.GroupMemberRepository, users *repository.UserRepository) *GroupMemberService {
 	return &GroupMemberService{
 		groupAccess: groupAccess{groups: groups, members: members},
 		db:          db,

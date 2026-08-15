@@ -1,6 +1,6 @@
 // Package role defines the granted authorities.
 //
-// It is a leaf package on purpose. Roles are both a persisted column on iam.UserRole
+// It is a leaf package on purpose. Roles are both a persisted column on iam/model.UserRole
 // and the authority string the auth guards compare against; giving them their own
 // package lets both sides share one definition instead of one importing the other.
 package role

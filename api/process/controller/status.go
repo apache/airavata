@@ -1,21 +1,25 @@
-package process
+package controller
 
 import (
 	"net/http"
 
 	"github.com/apache/airavata/internal/httpx"
+
+	"github.com/apache/airavata/api/process/service"
 )
 
 // StatusController serves read-only access to a process's status history, nested
 // under /api/v1/batch-job-processes/{processId}.
 //
 // There is deliberately no POST or PUT: statuses are recorded internally by
-// StatusService — from process submission and from whatever submits and monitors the
+// service.StatusService — from process submission and from whatever submits and monitors the
 // actual job — never accepted as a request body from a client.
-type StatusController struct{ svc *StatusService }
+type StatusController struct{ svc *service.StatusService }
 
 // NewStatusController returns a handler delegating to svc.
-func NewStatusController(svc *StatusService) *StatusController { return &StatusController{svc: svc} }
+func NewStatusController(svc *service.StatusService) *StatusController {
+	return &StatusController{svc: svc}
+}
 
 // Register mounts the read-only status routes.
 func (h *StatusController) Register(mux *http.ServeMux) {

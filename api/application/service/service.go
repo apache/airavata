@@ -1,4 +1,6 @@
-package application
+// Package service holds the application vertical's business rules: templates and the
+// batch deployments that bind them to a cluster.
+package service
 
 import (
 	"context"
@@ -7,13 +9,14 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/apache/airavata/api/compute"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/application/dto"
 	model "github.com/apache/airavata/api/application/model"
+	"github.com/apache/airavata/api/application/repository"
 	computemodel "github.com/apache/airavata/api/compute/model"
+	computerepo "github.com/apache/airavata/api/compute/repository"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -30,12 +33,12 @@ func notFoundAs(err error, format string, args ...any) error {
 // on update rather than patched.
 type TemplateService struct {
 	db          *gorm.DB
-	templates   *TemplateRepository
-	deployments *BatchDeploymentRepository
+	templates   *repository.TemplateRepository
+	deployments *repository.BatchDeploymentRepository
 }
 
 // NewTemplateService returns a template service.
-func NewTemplateService(db *gorm.DB, templates *TemplateRepository, deployments *BatchDeploymentRepository) *TemplateService {
+func NewTemplateService(db *gorm.DB, templates *repository.TemplateRepository, deployments *repository.BatchDeploymentRepository) *TemplateService {
 	return &TemplateService{db: db, templates: templates, deployments: deployments}
 }
 
@@ -163,19 +166,19 @@ func (s *TemplateService) Delete(ctx context.Context, id string) error {
 // BatchDeploymentService manages deployments: a template made runnable somewhere.
 type BatchDeploymentService struct {
 	db            *gorm.DB
-	deployments   *BatchDeploymentRepository
-	templates     *TemplateRepository
-	clusters      *compute.ClusterRepository
-	endpointCreds *compute.SSHEndpointCredentialRepository
+	deployments   *repository.BatchDeploymentRepository
+	templates     *repository.TemplateRepository
+	clusters      *computerepo.ClusterRepository
+	endpointCreds *computerepo.SSHEndpointCredentialRepository
 }
 
 // NewBatchDeploymentService returns a deployment service.
 func NewBatchDeploymentService(
 	db *gorm.DB,
-	deployments *BatchDeploymentRepository,
-	templates *TemplateRepository,
-	clusters *compute.ClusterRepository,
-	endpointCreds *compute.SSHEndpointCredentialRepository,
+	deployments *repository.BatchDeploymentRepository,
+	templates *repository.TemplateRepository,
+	clusters *computerepo.ClusterRepository,
+	endpointCreds *computerepo.SSHEndpointCredentialRepository,
 ) *BatchDeploymentService {
 	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, endpointCreds: endpointCreds}
 }

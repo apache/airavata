@@ -1,4 +1,5 @@
-package data
+// Package controller serves the data product and SCP data storage routes.
+package controller
 
 import (
 	"net/http"
@@ -6,13 +7,14 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/data/dto"
+	"github.com/apache/airavata/api/data/service"
 )
 
 // DataProductController serves /api/v1/data-products.
-type DataProductController struct{ svc *DataProductService }
+type DataProductController struct{ svc *service.DataProductService }
 
 // NewDataProductController returns a handler delegating to svc.
-func NewDataProductController(svc *DataProductService) *DataProductController {
+func NewDataProductController(svc *service.DataProductService) *DataProductController {
 	return &DataProductController{svc: svc}
 }
 
@@ -103,10 +105,12 @@ func (h *DataProductController) delete(w http.ResponseWriter, r *http.Request) {
 }
 
 // DataProductSharingController serves the share sub-resources of one product.
-type DataProductSharingController struct{ svc *DataProductSharingService }
+type DataProductSharingController struct {
+	svc *service.DataProductSharingService
+}
 
 // NewDataProductSharingController returns a handler delegating to svc.
-func NewDataProductSharingController(svc *DataProductSharingService) *DataProductSharingController {
+func NewDataProductSharingController(svc *service.DataProductSharingService) *DataProductSharingController {
 	return &DataProductSharingController{svc: svc}
 }
 

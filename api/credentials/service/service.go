@@ -1,4 +1,6 @@
-package credentials
+// Package service holds the credential vertical's business rules, including the
+// write-only handling that keeps a stored private key from ever being read back.
+package service
 
 import (
 	"context"
@@ -13,6 +15,7 @@ import (
 
 	dto "github.com/apache/airavata/api/credentials/dto"
 	model "github.com/apache/airavata/api/credentials/model"
+	"github.com/apache/airavata/api/credentials/repository"
 )
 
 // SSHKeyService manages registered SSH keypairs.
@@ -21,12 +24,12 @@ import (
 // write is administrative.
 type SSHKeyService struct {
 	db     *gorm.DB
-	keys   *SSHKeyRepository
-	usedBy *SSHUserCredentialRepository
+	keys   *repository.SSHKeyRepository
+	usedBy *repository.SSHUserCredentialRepository
 }
 
 // NewSSHKeyService returns an SSH key service.
-func NewSSHKeyService(db *gorm.DB, keys *SSHKeyRepository, usedBy *SSHUserCredentialRepository) *SSHKeyService {
+func NewSSHKeyService(db *gorm.DB, keys *repository.SSHKeyRepository, usedBy *repository.SSHUserCredentialRepository) *SSHKeyService {
 	return &SSHKeyService{db: db, keys: keys, usedBy: usedBy}
 }
 
@@ -148,12 +151,12 @@ func (s *SSHKeyService) requireKey(ctx context.Context, id string) (*model.SSHKe
 // SSHUserCredentialService manages username-to-key credentials.
 type SSHUserCredentialService struct {
 	db          *gorm.DB
-	credentials *SSHUserCredentialRepository
-	keys        *SSHKeyRepository
+	credentials *repository.SSHUserCredentialRepository
+	keys        *repository.SSHKeyRepository
 }
 
 // NewSSHUserCredentialService returns a credential service.
-func NewSSHUserCredentialService(db *gorm.DB, creds *SSHUserCredentialRepository, keys *SSHKeyRepository) *SSHUserCredentialService {
+func NewSSHUserCredentialService(db *gorm.DB, creds *repository.SSHUserCredentialRepository, keys *repository.SSHKeyRepository) *SSHUserCredentialService {
 	return &SSHUserCredentialService{db: db, credentials: creds, keys: keys}
 }
 

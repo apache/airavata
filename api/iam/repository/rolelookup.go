@@ -1,4 +1,4 @@
-package iam
+package repository
 
 import (
 	"context"

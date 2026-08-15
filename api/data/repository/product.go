@@ -1,4 +1,6 @@
-package data
+// Package repository reads and writes registered datasets, the storages they live on,
+// and the sharing rows that open either up.
+package repository
 
 import (
 	"context"

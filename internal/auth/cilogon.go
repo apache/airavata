@@ -143,7 +143,7 @@ func (c *CILogonIntrospector) userInfo(ctx context.Context, token string) map[st
 	return claims
 }
 
-// NormalizeUsername reduces a CILogon identifier to the form stored as iam.User.ID.
+// NormalizeUsername reduces a CILogon identifier to the form stored as iam/model.User.ID.
 //
 // CILogon sometimes reports usernames as full URIs like
 // "http://cilogon.org/serverE/users/12345"; those collapse to "cilogon:12345" so that

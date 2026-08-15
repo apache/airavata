@@ -1,4 +1,5 @@
-package iam
+// Package repository reads and writes users, roles, groups and group memberships.
+package repository
 
 import (
 	"context"

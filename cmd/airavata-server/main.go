@@ -12,7 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/apache/airavata/api/iam"
+	iamrepo "github.com/apache/airavata/api/iam/repository"
+	iamsvc "github.com/apache/airavata/api/iam/service"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -114,13 +115,13 @@ func runServer() error {
 	// Roles come from the database rather than the hardcoded mock: the schema already
 	// carries user_roles, and reading them is what makes an administrator an
 	// administrator instead of a name in a switch statement.
-	roles := iam.DBRoleLookup{DB: gdb}
+	roles := iamrepo.DBRoleLookup{DB: gdb}
 
 	var root *auth.RootTokenProvider
 	if cfg.RootAccountEnabled {
 		root = auth.NewRootTokenProvider(cfg.RootAccountToken)
 		fmt.Print(root.Banner())
-		if err := iam.EnsureRootUser(context.Background(), gdb); err != nil {
+		if err := iamsvc.EnsureRootUser(context.Background(), gdb); err != nil {
 			return fmt.Errorf("ensure root user: %w", err)
 		}
 	}

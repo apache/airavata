@@ -1,4 +1,4 @@
-package iam
+package service
 
 import (
 	"context"
@@ -12,29 +12,30 @@ import (
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
+	"github.com/apache/airavata/api/iam/repository"
 )
 
-// Service is the user management API.
+// UserService is the user management API.
 //
 // Unlike the other services it predates the @PreAuthorize convention and does its
 // authority checks inline. The checks are also asymmetric in ways worth preserving
 // rather than tidying, because clients depend on them: registration is SUPER_ADMIN
 // only, reading is ADMIN or self, and updating is SUPER_ADMIN or self.
-type Service struct {
-	repo *UserRepository
+type UserService struct {
+	repo *repository.UserRepository
 	db   *gorm.DB
 }
 
-// NewService returns a user service.
-func NewService(db *gorm.DB, repo *UserRepository) *Service {
-	return &Service{repo: repo, db: db}
+// NewUserService returns a user service.
+func NewUserService(db *gorm.DB, repo *repository.UserRepository) *UserService {
+	return &UserService{repo: repo, db: db}
 }
 
 // Register creates a user. Only a Super Admin may do this.
 //
 // Status and creation time are set here rather than taken from the request, so a
 // caller cannot register an account that is already suspended or backdated.
-func (s *Service) Register(ctx context.Context, req *dto.UserRegistration) (*dto.UserResponse, error) {
+func (s *UserService) Register(ctx context.Context, req *dto.UserRegistration) (*dto.UserResponse, error) {
 	if _, err := auth.RequireSuperAdmin(ctx); err != nil {
 		return nil, err
 	}
@@ -59,7 +60,7 @@ func (s *Service) Register(ctx context.Context, req *dto.UserRegistration) (*dto
 
 // Get returns one user. Admins may read anyone; everyone else may read only
 // themselves.
-func (s *Service) Get(ctx context.Context, userID string) (*dto.UserResponse, error) {
+func (s *UserService) Get(ctx context.Context, userID string) (*dto.UserResponse, error) {
 	if _, err := auth.RequireSelfOrAdmin(ctx, userID,
 		"Access denied: You can only access your own user information"); err != nil {
 		return nil, err
@@ -74,7 +75,7 @@ func (s *Service) Get(ctx context.Context, userID string) (*dto.UserResponse, er
 }
 
 // List returns every user. Admin only.
-func (s *Service) List(ctx context.Context) ([]dto.UserResponse, error) {
+func (s *UserService) List(ctx context.Context) ([]dto.UserResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return nil, err
 	}
@@ -96,7 +97,7 @@ func (s *Service) List(ctx context.Context) ([]dto.UserResponse, error) {
 // Only the three profile fields are writable. Auth method, status and roles are
 // deliberately not updatable through this API — letting a self-service update touch
 // them would let any user change their own standing.
-func (s *Service) Update(ctx context.Context, userID string, req *dto.UserRegistration) (*dto.UserResponse, error) {
+func (s *UserService) Update(ctx context.Context, userID string, req *dto.UserRegistration) (*dto.UserResponse, error) {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
 		return nil, err
@@ -127,4 +128,27 @@ func notFoundAs(err error, format string, args ...any) error {
 		return httpx.NotFound(format, args...)
 	}
 	return err
+}
+
+// RequireCurrentUser resolves the authenticated caller to their stored user record.
+//
+// The principal name is used as the user id directly — that equivalence is what makes
+// every ownership check work, and it is why a token identifying a caller who was
+// never registered fails here rather than silently creating a record.
+//
+// Three services depend on this: SSH endpoint credentials, SCP data and batch job
+// processes all derive ownership from the token this way.
+func RequireCurrentUser(ctx context.Context, repo *repository.UserRepository) (*model.User, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	user, err := repo.FindByID(ctx, principal.Name)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, httpx.NotFound("No user record found for authenticated principal: %s", principal.Name)
+		}
+		return nil, err
+	}
+	return user, nil
 }

@@ -1,4 +1,4 @@
-package compute
+package service
 
 import (
 	"context"
@@ -6,13 +6,14 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/apache/airavata/api/credentials"
-	"github.com/apache/airavata/api/iam"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
+	"github.com/apache/airavata/api/compute/repository"
+	credentialsrepo "github.com/apache/airavata/api/credentials/repository"
+	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
 const (
@@ -31,9 +32,9 @@ const (
 // reachable through a WRITE share. A share lets someone use and repoint a credential;
 // deciding who else gets it stays with the owner.
 type credentialAccess struct {
-	credentials *SSHEndpointCredentialRepository
-	sharing     *SSHEndpointCredentialSharingRepository
-	members     *iam.GroupMemberRepository
+	credentials *repository.SSHEndpointCredentialRepository
+	sharing     *repository.SSHEndpointCredentialSharingRepository
+	members     *iamrepo.GroupMemberRepository
 }
 
 // withTx binds every repository the check reads to tx.
@@ -157,9 +158,9 @@ type CredentialAccess struct{ credentialAccess }
 
 // NewCredentialAccess returns a checker over the credential and sharing tables.
 func NewCredentialAccess(
-	bindings *SSHEndpointCredentialRepository,
-	sharing *SSHEndpointCredentialSharingRepository,
-	members *iam.GroupMemberRepository,
+	bindings *repository.SSHEndpointCredentialRepository,
+	sharing *repository.SSHEndpointCredentialSharingRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *CredentialAccess {
 	return &CredentialAccess{credentialAccess{credentials: bindings, sharing: sharing, members: members}}
 }
@@ -191,20 +192,20 @@ func (a *CredentialAccess) RequireUsable(ctx context.Context, id string) (*model
 type SSHEndpointCredentialService struct {
 	credentialAccess
 	db        *gorm.DB
-	endpoints *SSHEndpointRepository
-	sshCreds  *credentials.SSHUserCredentialRepository
-	users     *iam.UserRepository
+	endpoints *repository.SSHEndpointRepository
+	sshCreds  *credentialsrepo.SSHUserCredentialRepository
+	users     *iamrepo.UserRepository
 }
 
 // NewSSHEndpointCredentialService returns an endpoint credential service.
 func NewSSHEndpointCredentialService(
 	db *gorm.DB,
-	bindings *SSHEndpointCredentialRepository,
-	sharing *SSHEndpointCredentialSharingRepository,
-	endpoints *SSHEndpointRepository,
-	sshCreds *credentials.SSHUserCredentialRepository,
-	users *iam.UserRepository,
-	members *iam.GroupMemberRepository,
+	bindings *repository.SSHEndpointCredentialRepository,
+	sharing *repository.SSHEndpointCredentialSharingRepository,
+	endpoints *repository.SSHEndpointRepository,
+	sshCreds *credentialsrepo.SSHUserCredentialRepository,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *SSHEndpointCredentialService {
 	return &SSHEndpointCredentialService{
 		credentialAccess: credentialAccess{credentials: bindings, sharing: sharing, members: members},
@@ -415,18 +416,18 @@ func (s *SSHEndpointCredentialService) Delete(ctx context.Context, id string) er
 type SSHEndpointCredentialSharingService struct {
 	credentialAccess
 	db     *gorm.DB
-	groups *iam.GroupRepository
-	users  *iam.UserRepository
+	groups *iamrepo.GroupRepository
+	users  *iamrepo.UserRepository
 }
 
 // NewSSHEndpointCredentialSharingService returns a sharing service.
 func NewSSHEndpointCredentialSharingService(
 	db *gorm.DB,
-	bindings *SSHEndpointCredentialRepository,
-	sharing *SSHEndpointCredentialSharingRepository,
-	groups *iam.GroupRepository,
-	users *iam.UserRepository,
-	members *iam.GroupMemberRepository,
+	bindings *repository.SSHEndpointCredentialRepository,
+	sharing *repository.SSHEndpointCredentialSharingRepository,
+	groups *iamrepo.GroupRepository,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
 ) *SSHEndpointCredentialSharingService {
 	return &SSHEndpointCredentialSharingService{
 		credentialAccess: credentialAccess{credentials: bindings, sharing: sharing, members: members},
