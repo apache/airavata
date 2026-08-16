@@ -53,6 +53,13 @@ func Entities() []any {
 		// References BatchJobProcess, which in turn references it back through
 		// LastStatusID — the one circular pair in the schema.
 		&processmodel.BatchJobProcessStatus{},
+
+		// The steps of a process. They name their process by id and type rather than
+		// through a foreign key, so they are not tied to one kind of process.
+		&processmodel.DataStagingTask{},
+		&processmodel.JobSubmissionTask{},
+		&processmodel.JobMonitoringTask{},
+		&processmodel.InteractiveCommandTask{},
 	}
 }
 

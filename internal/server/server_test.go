@@ -1212,6 +1212,194 @@ func TestDataSharingRejectsBadRequests(t *testing.T) {
 
 // Submitting is self-service: a plain user may create a process for themselves, and
 // the resources come from the request rather than the deployment's default.
+// seedProcess submits a process owned by the caller of token and returns its id.
+func (h *harness) seedProcess(name, token string) string {
+	h.t.Helper()
+	_, bindingID := h.seedEndpointCredential(name, tokenAdmin)
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": name}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultSubmissionCredentialId": bindingID,
+		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+	}, http.StatusCreated)
+	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", token, map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC"},
+	}, http.StatusCreated)
+	return proc["processId"].(string)
+}
+
+// Every task kind is the same five routes over a different payload, so one table
+// exercises the shape and each kind brings its own body.
+func TestProcessTasksAreScopedToTheirProcess(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("tasks", tokenAlice)
+	other := h.seedProcess("other-tasks", tokenAlice)
+
+	for _, tc := range []struct {
+		path    string
+		create  map[string]any
+		update  map[string]any
+		checkOn string // a response field the update must have changed
+		want    any
+	}{
+		{
+			path: "data-staging-tasks",
+			create: map[string]any{
+				"sourcePath": "/scratch/in", "destinationPath": "/scratch/out",
+				"sourceDataStorageType": "SCP", "taskOrder": 1,
+			},
+			update:  map[string]any{"sourcePath": "/scratch/in2", "destinationPath": "/scratch/out", "taskOrder": 2},
+			checkOn: "sourcePath", want: "/scratch/in2",
+		},
+		{
+			path:    "job-submission-tasks",
+			create:  map[string]any{"onFailure": "RETRY", "retryCount": 3, "taskOrder": 2},
+			update:  map[string]any{"jobId": "slurm-4242", "onFailure": "EXIT"},
+			checkOn: "jobId", want: "slurm-4242",
+		},
+		{
+			path:    "job-monitoring-tasks",
+			create:  map[string]any{"jobId": "slurm-4242", "taskOrder": 3},
+			update:  map[string]any{"jobId": "slurm-4243"},
+			checkOn: "jobId", want: "slurm-4243",
+		},
+		{
+			path:    "interactive-command-tasks",
+			create:  map[string]any{"command": "squeue -j $JOBID", "taskOrder": 4},
+			update:  map[string]any{"command": "squeue -j $JOBID", "output": "RUNNING"},
+			checkOn: "output", want: "RUNNING",
+		},
+	} {
+		t.Run(tc.path, func(t *testing.T) {
+			base := "/api/v1/batch-job-processes/" + processID + "/" + tc.path
+
+			created := h.mustDo(http.MethodPost, base, tokenAlice, tc.create, http.StatusCreated)
+			taskID := created["taskId"].(string)
+			if created["processId"] != processID {
+				t.Errorf("processId = %v, want it taken from the path", created["processId"])
+			}
+			if created["processType"] != "BATCH_JOB" {
+				t.Errorf("processType = %v, want it stamped by the service", created["processType"])
+			}
+
+			updated := h.mustDo(http.MethodPut, base+"/"+taskID, tokenAlice, tc.update, http.StatusOK)
+			if updated[tc.checkOn] != tc.want {
+				t.Errorf("%s = %v, want %v", tc.checkOn, updated[tc.checkOn], tc.want)
+			}
+			if updated["processId"] != processID {
+				t.Errorf("processId after update = %v, want it unchanged", updated["processId"])
+			}
+
+			if tasks := h.list(base, tokenAlice); len(tasks) != 1 {
+				t.Errorf("tasks = %d, want 1", len(tasks))
+			}
+
+			// A task id from one process is not reachable through another's path.
+			otherBase := "/api/v1/batch-job-processes/" + other + "/" + tc.path
+			if rec := h.do(http.MethodGet, otherBase+"/"+taskID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+				t.Errorf("cross-process read: status = %d, want 404", rec.Code)
+			}
+			if tasks := h.list(otherBase, tokenAlice); len(tasks) != 0 {
+				t.Errorf("other process tasks = %d, want 0", len(tasks))
+			}
+
+			h.mustDo(http.MethodDelete, base+"/"+taskID, tokenAlice, nil, http.StatusNoContent)
+			if rec := h.do(http.MethodGet, base+"/"+taskID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+				t.Errorf("read after delete: status = %d, want 404", rec.Code)
+			}
+		})
+	}
+}
+
+// Tasks carry paths and shell commands, so they are owner-scoped even though process
+// and status reads in this package are not.
+func TestProcessTasksAreOwnerScoped(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("owned-tasks", tokenAlice)
+	base := "/api/v1/batch-job-processes/" + processID + "/interactive-command-tasks"
+
+	created := h.mustDo(http.MethodPost, base, tokenAlice,
+		map[string]any{"command": "cat /etc/passwd"}, http.StatusCreated)
+	taskID := created["taskId"].(string)
+
+	for _, tc := range []struct {
+		method string
+		path   string
+		body   map[string]any
+	}{
+		{http.MethodGet, base, nil},
+		{http.MethodGet, base + "/" + taskID, nil},
+		{http.MethodPost, base, map[string]any{"command": "whoami"}},
+		{http.MethodPut, base + "/" + taskID, map[string]any{"command": "whoami"}},
+		{http.MethodDelete, base + "/" + taskID, nil},
+	} {
+		if rec := h.do(tc.method, tc.path, tokenBob, tc.body); rec.Code != http.StatusForbidden {
+			t.Errorf("%s %s as another user: status = %d, want 403", tc.method, tc.path, rec.Code)
+		}
+		if rec := h.do(tc.method, tc.path, "", tc.body); rec.Code != http.StatusUnauthorized {
+			t.Errorf("%s %s anonymously: status = %d, want 401", tc.method, tc.path, rec.Code)
+		}
+	}
+
+	// An admin may still reach them.
+	h.mustDo(http.MethodGet, base+"/"+taskID, tokenAdmin, nil, http.StatusOK)
+}
+
+// Ordering is what a client reads the list for: explicit orders first, unordered last.
+func TestProcessTasksListInExecutionOrder(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("ordered-tasks", tokenAlice)
+	base := "/api/v1/batch-job-processes/" + processID + "/job-submission-tasks"
+
+	h.mustDo(http.MethodPost, base, tokenAlice, map[string]any{"taskOrder": 2}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base, tokenAlice, map[string]any{}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base, tokenAlice, map[string]any{"taskOrder": 1}, http.StatusCreated)
+
+	tasks := h.list(base, tokenAlice)
+	if len(tasks) != 3 {
+		t.Fatalf("tasks = %d, want 3", len(tasks))
+	}
+	if tasks[0]["taskOrder"].(float64) != 1 || tasks[1]["taskOrder"].(float64) != 2 {
+		t.Errorf("ordered tasks = %v, %v; want 1 then 2", tasks[0]["taskOrder"], tasks[1]["taskOrder"])
+	}
+	if tasks[2]["taskOrder"] != nil {
+		t.Errorf("last task order = %v, want the unordered one last", tasks[2]["taskOrder"])
+	}
+}
+
+func TestProcessTaskRejectsBadRequests(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("task-validation", tokenAlice)
+
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/data-staging-tasks", tokenAlice,
+		map[string]any{"sourcePath": "  ", "destinationPath": "/out"}); rec.Code != http.StatusBadRequest {
+		t.Errorf("blank source path: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/data-staging-tasks", tokenAlice,
+		map[string]any{"sourcePath": "/in", "destinationPath": "/out", "sourceDataStorageType": "FTP"}); rec.Code != http.StatusBadRequest {
+		t.Errorf("unrecognised storage type: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/job-submission-tasks", tokenAlice,
+		map[string]any{"onFailure": "PANIC"}); rec.Code != http.StatusBadRequest {
+		t.Errorf("unrecognised on-failure action: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/job-submission-tasks", tokenAlice,
+		map[string]any{"retryCount": -1}); rec.Code != http.StatusBadRequest {
+		t.Errorf("negative retry count: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/interactive-command-tasks", tokenAlice,
+		map[string]any{}); rec.Code != http.StatusBadRequest {
+		t.Errorf("missing command: status = %d, want 400", rec.Code)
+	}
+	// A task cannot be attached to a process that does not exist.
+	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/nope/job-monitoring-tasks", tokenAlice,
+		map[string]any{}); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown process: status = %d, want 404", rec.Code)
+	}
+}
+
 func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	h := newHarness(t)
 	_, bindingID := h.seedEndpointCredential("proc", tokenAdmin)

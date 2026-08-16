@@ -56,6 +56,10 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	productShares := datarepo.NewDataProductSharingRepository(db)
 	processes := processrepo.NewProcessRepository(db)
 	statuses := processrepo.NewStatusRepository(db)
+	stagingTasks := processrepo.NewDataStagingTaskRepository(db)
+	submissionTasks := processrepo.NewJobSubmissionTaskRepository(db)
+	monitoringTasks := processrepo.NewJobMonitoringTaskRepository(db)
+	commandTasks := processrepo.NewInteractiveCommandTaskRepository(db)
 
 	// Services.
 	userSvc := iamsvc.NewUserService(db, users)
@@ -77,6 +81,10 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	productShareSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
 	processSvc := processsvc.NewProcessService(db, processes, deployments, users, statusSvc)
+	stagingTaskSvc := processsvc.NewDataStagingTaskService(db, stagingTasks, processes)
+	submissionTaskSvc := processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes)
+	monitoringTaskSvc := processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes)
+	commandTaskSvc := processsvc.NewInteractiveCommandTaskService(db, commandTasks, processes)
 
 	mux := http.NewServeMux()
 	iamctl.NewUserController(userSvc).Register(mux)
@@ -97,6 +105,10 @@ func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Ha
 	datactl.NewDataProductSharingController(productShareSvc).Register(mux)
 	processctl.NewProcessController(processSvc).Register(mux)
 	processctl.NewStatusController(statusSvc).Register(mux)
+	processctl.NewDataStagingTaskController(stagingTaskSvc).Register(mux)
+	processctl.NewJobSubmissionTaskController(submissionTaskSvc).Register(mux)
+	processctl.NewJobMonitoringTaskController(monitoringTaskSvc).Register(mux)
+	processctl.NewInteractiveCommandTaskController(commandTaskSvc).Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})

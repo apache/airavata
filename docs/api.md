@@ -915,6 +915,143 @@ Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredenti
 ```
 
 
+## Process Tasks
+
+A process is carried out as an ordered list of tasks. There are four kinds, each its own collection under the process:
+
+| Collection | Carries |
+|---|---|
+| `data-staging-tasks` | a source and destination storage, credential and path — a transfer |
+| `job-submission-tasks` | the scheduler job id the submission produced |
+| `job-monitoring-tasks` | the job id being watched |
+| `interactive-command-tasks` | a command to run on the remote host, and its output |
+
+All four share the same five routes, the same shape of body, and the same rules:
+
+```
+GET    /api/v1/batch-job-processes/{processId}/{collection}
+POST   /api/v1/batch-job-processes/{processId}/{collection}
+GET    /api/v1/batch-job-processes/{processId}/{collection}/{taskId}
+PUT    /api/v1/batch-job-processes/{processId}/{collection}/{taskId}
+DELETE /api/v1/batch-job-processes/{processId}/{collection}/{taskId}
+```
+
+**These endpoints are owner-scoped**, unlike the process and status reads above: the owner of the process and platform admins may use them, everyone else gets `403 Forbidden`. Tasks carry filesystem paths and shell commands, so there is no reason to expose them more widely than the run they belong to.
+
+Neither `processId` nor `processType` is accepted in a body — both come from the path, so a task cannot be moved to another run by editing it. `processType` is stamped as `BATCH_JOB`; the pair is a discriminated reference rather than a foreign key, so tasks are not tied to one kind of process.
+
+**Fields shared by every kind**
+
+| Field | Type | Notes |
+|---|---|---|
+| `onFailure` | string \| null | optional, one of `RETRY`, `SKIP`, `EXIT` |
+| `retryCount` | integer \| null | optional, cannot be negative |
+| `taskOrder` | integer \| null | optional, cannot be negative — see ordering below |
+
+Listings come back in execution order: lower `taskOrder` first, tasks sharing an order run in parallel, and tasks with no order sort last rather than ahead of an explicitly ordered step.
+
+### Create Data Staging Task
+
+```
+POST /api/v1/batch-job-processes/{processId}/data-staging-tasks
+```
+
+```bash
+curl -s -X POST localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/data-staging-tasks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sourceDataStorageId": "'"$STORAGE_ID"'",
+    "sourceCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
+    "sourceDataStorageType": "SCP",
+    "sourcePath": "/scratch/alphafold/run-1/input.fasta",
+    "destinationPath": "/scratch/alphafold/run-1/staged/",
+    "onFailure": "RETRY",
+    "retryCount": 3,
+    "taskOrder": 1
+  }'
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `sourcePath` | string | required, cannot be blank. A single path, or a JSON array of paths |
+| `destinationPath` | string | required, cannot be blank |
+| `sourceDataStorageId` / `destinationDataStorageId` | string \| null | optional |
+| `sourceCredentialId` / `destinationCredentialId` | string \| null | optional |
+| `sourceDataStorageType` / `destinationDataStorageType` | string \| null | optional, one of `SCP`, `S3` |
+
+**Response — `201 Created`**
+
+```json
+{
+  "taskId": "b4c5d6e7-f809-4a1b-8c2d-3e4f5a6b7c8d",
+  "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+  "processType": "BATCH_JOB",
+  "sourceDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+  "sourceCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+  "sourceDataStorageType": "SCP",
+  "destinationDataStorageId": null,
+  "destinationCredentialId": null,
+  "destinationDataStorageType": null,
+  "sourcePath": "/scratch/alphafold/run-1/input.fasta",
+  "destinationPath": "/scratch/alphafold/run-1/staged/",
+  "onFailure": "RETRY",
+  "retryCount": 3,
+  "taskOrder": 1
+}
+```
+
+### Create Job Submission and Job Monitoring Tasks
+
+```
+POST /api/v1/batch-job-processes/{processId}/job-submission-tasks
+POST /api/v1/batch-job-processes/{processId}/job-monitoring-tasks
+```
+
+Both take the shared fields plus an optional `jobId`. It is writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded here afterwards with a `PUT`.
+
+```bash
+curl -s -X PUT localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/job-submission-tasks/"$TASK_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "jobId": "4821577", "onFailure": "EXIT" }'
+```
+
+### Create Interactive Command Task
+
+```
+POST /api/v1/batch-job-processes/{processId}/interactive-command-tasks
+```
+
+Runs a command on the remote host — filtering the output of a running job, for instance.
+
+| Field | Type | Notes |
+|---|---|---|
+| `command` | string | required, cannot be blank |
+| `output` | string \| null | optional; the result, recorded once whatever ran the command knows it |
+
+```json
+{
+  "taskId": "c5d6e7f8-091a-4b2c-8d3e-4f5a6b7c8d9e",
+  "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+  "processType": "BATCH_JOB",
+  "command": "squeue -j 4821577 -o %T",
+  "output": "RUNNING",
+  "onFailure": "SKIP",
+  "retryCount": null,
+  "taskOrder": 4
+}
+```
+
+**Errors (all four kinds)**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | a required field blank, an unrecognised `onFailure` or storage type, or a negative `retryCount`/`taskOrder` |
+| `401 Unauthorized` | no token — these routes are never anonymous |
+| `403 Forbidden` | the process is not the caller's |
+| `404 Not Found` | no such process, or a `taskId` that belongs to a different process |
+
 ## SCP Data Storages
 
 An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) and belongs to whoever registered it.
