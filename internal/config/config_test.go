@@ -46,7 +46,7 @@ func TestDefaults(t *testing.T) {
 	if !cfg.RootAccountEnabled {
 		t.Error("RootAccountEnabled = false, want true by default")
 	}
-	for _, want := range []string{"airavata:123456@tcp(localhost:13306)/airavata", "parseTime=true"} {
+	for _, want := range []string{"postgres://airavata:123456@localhost:15432/airavata", "sslmode=disable"} {
 		if !strings.Contains(cfg.DSN, want) {
 			t.Errorf("DSN = %q, want it to contain %q", cfg.DSN, want)
 		}

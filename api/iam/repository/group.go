@@ -100,12 +100,12 @@ func (r *GroupMemberRepository) FindByGroupIDAndUserID(ctx context.Context, grou
 
 // Save inserts or updates a membership.
 //
-// This is an explicit upsert rather than a plain Save. Save decides between an insert
+// This is an explicit upsert rather than a plain Save, which decides between an insert
 // and an update by running the update first and inserting when it reports no rows
-// affected — and MySQL reports rows *changed*, so re-submitting a membership with the
-// values it already holds would fall through to an insert and fail on the primary key.
-// The whole key is always known here, so stating the conflict is both cheaper and
-// exact.
+// affected. That indirection is worth avoiding for a composite key: the whole key is
+// always known here, so stating the conflict is both cheaper and exact — one statement
+// that cannot be tripped up by a dialect's idea of how many rows an unchanged update
+// affected.
 func (r *GroupMemberRepository) Save(ctx context.Context, m *model.GroupMember) error {
 	return r.db.WithContext(ctx).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "group_id"}, {Name: "user_id"}},

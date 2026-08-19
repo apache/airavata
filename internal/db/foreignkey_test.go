@@ -56,7 +56,9 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"batch_job_processes", "user_id", "users", "user_id"},
 		{"batch_job_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
 		{"batch_job_process_statuses", "process_id", "batch_job_processes", "process_id"},
-		{"batch_job_processes", "last_status_id", "batch_job_process_statuses", "process_status_id"},
+		// batch_job_processes.last_status_id deliberately has none: a constraint in that
+		// direction would make the two tables mutually dependent, which PostgreSQL
+		// cannot create. See BatchJobProcess.LastStatusID.
 	}
 
 	// Collect what the schema actually declares.

@@ -25,8 +25,13 @@ type BatchJobProcess struct {
 	BatchJobConfig   *applicationmodel.BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"batchJobConfig,omitempty"`
 
 	// The last status recorded for this process, if any.
-	LastStatusID *string                `gorm:"column:last_status_id;type:varchar(36);index" json:"lastStatusId,omitempty"`
-	LastStatus   *BatchJobProcessStatus `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	//
+	// It carries no foreign key, deliberately. A status already points at its process,
+	// and a constraint in this direction as well would make the two tables mutually
+	// dependent — a cycle PostgreSQL cannot create, since it validates a referenced
+	// table exists when the referencing table is declared. This column is a cache of
+	// the newest status row, maintained by BatchJobProcessStatus.AfterCreate.
+	LastStatusID *string `gorm:"column:last_status_id;type:varchar(36);index" json:"lastStatusId,omitempty"`
 }
 
 // TableName returns the table backing BatchJobProcess.
@@ -42,16 +47,11 @@ func (p *BatchJobProcess) BeforeCreate(*gorm.DB) error {
 
 // BeforeDelete removes every recorded status ahead of the process itself.
 //
-// The two tables reference each other, so order matters: LastStatusID is cleared
-// first, since RESTRICT on that column would otherwise block deleting a status that
-// this process still points at as its most recent; only then can the statuses
-// themselves be removed without RESTRICT on their own ProcessID blocking the process
-// delete that is about to happen.
+// The statuses have to go first: their own ProcessID foreign key is RESTRICT, so the
+// database would refuse to delete a process any status still points at. LastStatusID
+// needs no clearing — it holds no constraint — and the row carrying it is about to be
+// deleted in this same transaction.
 func (p *BatchJobProcess) BeforeDelete(tx *gorm.DB) error {
-	if err := tx.Model(&BatchJobProcess{}).Where("process_id = ?", p.ID).
-		Update("last_status_id", nil).Error; err != nil {
-		return err
-	}
 	return tx.Where("process_id = ?", p.ID).Delete(&BatchJobProcessStatus{}).Error
 }
 

@@ -70,7 +70,7 @@ type BatchDeployment struct {
 
 	// SlurmRunSection carries every execution command — module loads, the run command
 	// itself, and cleanup. It is a Jinja template, parameterised at submission time.
-	SlurmRunSection string `gorm:"column:slurm_run_section;type:longtext;not null" json:"slurmRunSection"`
+	SlurmRunSection string `gorm:"column:slurm_run_section;type:text;not null" json:"slurmRunSection"`
 
 	// Owned one-to-one. The foreign key lives on this side and is unique, so no two
 	// deployments can share a config. Because the key points outward, the orphaned

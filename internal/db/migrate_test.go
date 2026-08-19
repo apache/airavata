@@ -19,8 +19,8 @@ import (
 
 // newTestDB brings up an in-memory SQLite database with the full schema.
 //
-// Production runs on MariaDB, so this does not verify the exact DDL that dialect
-// emits. What it does verify is everything above the dialect: that the struct tags
+// Production runs on PostgreSQL, so this does not verify the exact DDL that dialect
+// emits — internal/db/postgres_test.go does that against a real server. What it does verify is everything above the dialect: that the struct tags
 // parse, that every association resolves to a real column, that the hooks fire, and
 // that the ownership cascades behave as the JPA model did.
 func newTestDB(t *testing.T) *gorm.DB {

@@ -1,19 +1,18 @@
 services:
-  mariadb:
-    image: mariadb:11
-    container_name: mariadb
+  postgres:
+    image: postgres:17
+    container_name: postgres
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: 123456
-      MARIADB_DATABASE: airavata
-      MARIADB_USER: airavata
-      MARIADB_PASSWORD: 123456
+      POSTGRES_DB: airavata
+      POSTGRES_USER: airavata
+      POSTGRES_PASSWORD: 123456
     ports:
-      - "13306:3306"
+      - "15432:5432"
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ["CMD-SHELL", "pg_isready -U airavata -d airavata"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,11 +22,11 @@ services:
     container_name: adminer
     restart: unless-stopped
     environment:
-      ADMINER_DEFAULT_SERVER: mariadb
+      ADMINER_DEFAULT_SERVER: postgres
     ports:
       - "18080:8080"
     depends_on:
-      mariadb:
+      postgres:
         condition: service_healthy
 
   zookeeper:
@@ -50,6 +49,6 @@ services:
       retries: 5
 
 volumes:
-  mariadb_data:
+  postgres_data:
   zookeeper_data:
   zookeeper_datalog:

@@ -4,6 +4,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -65,15 +66,19 @@ func Load() (Config, error) {
 	return cfg, nil
 }
 
-// defaultDSN builds the MariaDB DSN from the same host, port, database, user and
-// password defaults the Java service used.
+// defaultDSN builds the PostgreSQL connection URL from the same host, port, database,
+// user and password defaults the Java service used.
+//
+// sslmode is disabled because the default host is localhost — a development database
+// reached over a loopback socket. A deployment talking to a real server should set
+// AIRAVATA_DB_SSLMODE to require (or stricter), or supply AIRAVATA_DB_DSN outright.
 func defaultDSN() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&charset=utf8mb4&loc=UTC",
-		env("AIRAVATA_DB_USER", "airavata"),
-		env("AIRAVATA_DB_PASSWORD", "123456"),
+	return fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=%s",
+		url.UserPassword(env("AIRAVATA_DB_USER", "airavata"), env("AIRAVATA_DB_PASSWORD", "123456")).String(),
 		env("AIRAVATA_DB_HOST", "localhost"),
-		env("AIRAVATA_DB_PORT", "13306"),
+		env("AIRAVATA_DB_PORT", "15432"),
 		env("AIRAVATA_DB_NAME", "airavata"),
+		env("AIRAVATA_DB_SSLMODE", "disable"),
 	)
 }
 

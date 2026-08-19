@@ -10,8 +10,8 @@ Airavata API (`cmd/airavata-server`).
 | Requirement | Version | Check using |
 |---|---|---|
 | **Go** | 1.24.2+ | `go version` |
-| **MariaDB** | 11+ | `mariadb --version` |
-| **Docker Engine** | 20.10+ *(optional — only to run MariaDB locally)* | `docker -v` |
+| **PostgreSQL** | 14+ | `psql --version` |
+| **Docker Engine** | 20.10+ *(optional — only to run PostgreSQL locally)* | `docker -v` |
 | **Docker Compose** | 2.0+ *(optional)* | `docker compose version` |
 
 No other tooling is needed. All Go dependencies are declared in `go.mod` and fetched
@@ -24,8 +24,8 @@ by the build.
 From a clean checkout, this brings up a database and a running API:
 
 ```bash
-# 1. Start MariaDB (listens on host port 13306)
-docker compose -f dev-tools/compose/compose.yml up -d mariadb
+# 1. Start PostgreSQL (listens on host port 15432)
+docker compose -f dev-tools/compose/compose.yml up -d postgres
 
 # 2. Build
 go build -o bin/airavata-server ./cmd/airavata-server
@@ -94,18 +94,19 @@ compose database.
 
 | Variable | Default | Description |
 |---|---|---|
-| `AIRAVATA_DB_HOST` | `localhost` | MariaDB host. |
-| `AIRAVATA_DB_PORT` | `13306` | MariaDB port (the compose file maps container `3306` to host `13306`). |
+| `AIRAVATA_DB_HOST` | `localhost` | PostgreSQL host. |
+| `AIRAVATA_DB_PORT` | `15432` | PostgreSQL port (the compose file maps container `5432` to host `15432`). |
 | `AIRAVATA_DB_NAME` | `airavata` | Database name. |
 | `AIRAVATA_DB_USER` | `airavata` | Database user. |
 | `AIRAVATA_DB_PASSWORD` | `123456` | Database password. **Change this outside development.** |
-| `AIRAVATA_DB_DSN` | *(built from the above)* | Full Go MySQL DSN. Set this to override the five variables above entirely — useful for TLS options or a managed database. |
+| `AIRAVATA_DB_SSLMODE` | `disable` | libpq TLS mode: `disable`, `require`, `verify-ca`, `verify-full`. **Set at least `require` for anything but a loopback database.** |
+| `AIRAVATA_DB_DSN` | *(built from the above)* | Full PostgreSQL connection URL. Set this to override the six variables above entirely — useful for extra TLS options or a managed database. |
 | `AIRAVATA_DB_AUTO_MIGRATE` | `true` | Create/update tables from the entity model at startup. |
 
 The assembled default DSN is:
 
 ```
-airavata:123456@tcp(localhost:13306)/airavata?parseTime=true&charset=utf8mb4&loc=UTC
+postgres://airavata:123456@localhost:15432/airavata?sslmode=disable
 ```
 
 Connection pooling follows the settings the Java service used for HikariCP: a maximum
@@ -151,10 +152,10 @@ is configured. It is intended for initial setup and testing.
 ### With Docker
 
 ```bash
-docker compose -f dev-tools/compose/compose.yml up -d mariadb
+docker compose -f dev-tools/compose/compose.yml up -d postgres
 ```
 
-This starts MariaDB 11 on host port `13306` with the database, user and password
+This starts PostgreSQL 17 on host port `15432` with the database, user and password
 matching the defaults above. Adminer is also available (`up -d adminer`,
 `http://localhost:18080`) for browsing the schema.
 
@@ -163,16 +164,18 @@ matching the defaults above. Adminer is also available (`up -d adminer`,
 Create the database and user, then point the server at it:
 
 ```sql
-CREATE DATABASE airavata CHARACTER SET utf8mb4;
-CREATE USER 'airavata'@'%' IDENTIFIED BY 'a-strong-password';
-GRANT ALL PRIVILEGES ON airavata.* TO 'airavata'@'%';
-FLUSH PRIVILEGES;
+CREATE USER airavata WITH PASSWORD 'a-strong-password';
+CREATE DATABASE airavata OWNER airavata ENCODING 'UTF8';
 ```
+
+The server needs to create tables in the `public` schema of that database, which the
+database owner already may:
 
 ```bash
 export AIRAVATA_DB_HOST=db.internal
-export AIRAVATA_DB_PORT=3306
+export AIRAVATA_DB_PORT=5432
 export AIRAVATA_DB_PASSWORD='a-strong-password'
+export AIRAVATA_DB_SSLMODE=require
 ```
 
 ### Schema management
@@ -196,12 +199,27 @@ server, connect, and exit — they never start the HTTP server. Applied versions
 tracked in a `schema_migrations` table the migrator creates on first use.
 
 Migrations live as plain `.sql` files in `internal/db/migrations/`, named
-`NNNN_description.sql`. `0001_baseline.sql` is the full schema captured from
-`AutoMigrate`, so a fresh production database ends up identical to a fresh
-development one. Add a new file with the next number for any later schema change —
-there are no down migrations: like `ddl-auto`, this framework never rewrites or drops
-history, so a mistake is corrected with a further migration rather than a rollback
-script.
+`NNNN_description.sql`. `0001_baseline.sql` is the full schema recorded from a real
+`AutoMigrate` run against PostgreSQL, so a fresh production database ends up identical
+to a fresh development one — a claim `internal/db/postgres_test.go` checks against a
+live server rather than asserting. Add a new file with the next number for any later
+schema change — there are no down migrations: like `ddl-auto`, this framework never
+rewrites or drops history, so a mistake is corrected with a further migration rather
+than a rollback script.
+
+Each migration runs inside a transaction, and PostgreSQL rolls back DDL, so a file that
+fails partway through leaves the schema untouched and can simply be fixed and re-run.
+
+To exercise the two schema paths against a real server:
+
+```bash
+docker compose -f dev-tools/compose/compose.yml up -d postgres
+AIRAVATA_TEST_POSTGRES_DSN='postgres://airavata:123456@localhost:15432/airavata?sslmode=disable' \
+  go test ./internal/db/
+```
+
+Those tests skip without that variable, so `go test ./...` stays green on a machine
+with no database.
 
 ---
 
@@ -320,7 +338,7 @@ caller lacking the required role returns `403`.
 
 | Symptom | Cause and fix |
 |---|---|
-| `connect to database: dial tcp ...: connection refused` | MariaDB is not running or the host/port is wrong. Check `docker compose -f dev-tools/compose/compose.yml ps`. |
+| `connect to database: dial tcp ...: connection refused` | PostgreSQL is not running or the host/port is wrong. Check `docker compose -f dev-tools/compose/compose.yml ps`. |
 | `no authentication configured` at startup | Root account disabled with no `CILOGON_CLIENT_ID`. Set one or re-enable the root account. |
 | `401` with `WWW-Authenticate: Bearer error="invalid_token"` | The token was rejected by introspection, or it is a stale root token from a previous start. Restart and use the newly printed token, or pin it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`. |
 | `502 Unable to validate bearer token` | CILogon is unreachable. This is reported separately from `401` because it is not the caller's fault. |

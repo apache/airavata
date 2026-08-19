@@ -119,7 +119,7 @@ type TemplateInput struct {
 
 	// DefaultValue is a JSON document, either {"value": "..."} for a single value or
 	// {"values": [...]} for a list.
-	DefaultValue *string `gorm:"column:default_value;type:longtext" json:"defaultValue,omitempty"`
+	DefaultValue *string `gorm:"column:default_value;type:text" json:"defaultValue,omitempty"`
 }
 
 // TableName returns the table backing TemplateInput.

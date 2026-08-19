@@ -96,7 +96,7 @@ const migrationsTableDDL = `
 CREATE TABLE IF NOT EXISTS schema_migrations (
 	version bigint NOT NULL PRIMARY KEY,
 	description varchar(255) NOT NULL,
-	applied_at datetime NOT NULL
+	applied_at timestamp NOT NULL
 )`
 
 // Status is one migration's applied state.
@@ -121,7 +121,7 @@ type Migrator struct {
 // NewMigrator returns a migrator over the given, explicit migration set — Migrations()
 // for the real embedded set in production, or a small hand-built slice in a test, so
 // the runner's mechanics can be exercised without depending on the committed SQL
-// files or a MariaDB-specific dialect.
+// files or a PostgreSQL-specific dialect.
 //
 // The set is sorted by version here, so every method applies and reports migrations
 // in order regardless of the order the caller happened to list them in.
@@ -169,11 +169,12 @@ func (m *Migrator) Pending(ctx context.Context) ([]Migration, error) {
 
 // Up applies every pending migration in order and returns the ones it applied.
 //
-// Each migration runs in its own transaction, but that only protects the bookkeeping
-// insert: MariaDB's InnoDB DDL commits statement-by-statement regardless of the
-// surrounding transaction, so a migration that fails partway through a multi-statement
-// file can leave some of its DDL applied. Fix forward with a new migration rather than
-// assuming a failed one rolled back cleanly.
+// Each migration runs in its own transaction, and on PostgreSQL that covers the DDL as
+// well as the bookkeeping insert: a file that fails partway through leaves the schema
+// as it was, so a failed migration can be fixed and re-run rather than needing a
+// repair migration for whatever it managed to apply. (This is one of the things that
+// changed with the move off MariaDB, where InnoDB committed each DDL statement
+// regardless of the surrounding transaction.)
 func (m *Migrator) Up(ctx context.Context) ([]Migration, error) {
 	pending, err := m.Pending(ctx)
 	if err != nil {

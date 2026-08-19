@@ -20,8 +20,8 @@ type SSHKey struct {
 	SSHKeyName string `gorm:"column:ssh_key_name;type:varchar(255);not null" json:"sshKeyName"`
 
 	// @Lob in Java: keys are far longer than a default varchar.
-	PublicKey  string `gorm:"column:public_key;type:longtext;not null" json:"publicKey"`
-	PrivateKey string `gorm:"column:private_key;type:longtext;not null" json:"-"`
+	PublicKey  string `gorm:"column:public_key;type:text;not null" json:"publicKey"`
+	PrivateKey string `gorm:"column:private_key;type:text;not null" json:"-"`
 
 	Passphrase *string `gorm:"column:passphrase;type:varchar(255)" json:"-"`
 }
