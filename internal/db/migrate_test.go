@@ -62,7 +62,8 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"data_products", "data_product_group_sharings", "data_product_user_sharings",
 		"application_templates", "application_template_inputs", "application_template_outputs",
 		"batch_application_deployments", "batch_job_configs",
-		"batch_job_processes",
+		"processes", "batch_processes", "process_statuses",
+		"process_template_input_mappings", "process_template_output_mappings",
 		"data_staging_tasks", "job_submission_tasks", "job_monitoring_tasks",
 		"interactive_command_tasks",
 	}
@@ -351,7 +352,7 @@ func TestOwnedByRejectsUnownedRows(t *testing.T) {
 		t.Error("a different user was reported as the owner")
 	}
 
-	proc := &processmodel.BatchJobProcess{}
+	proc := &processmodel.Process{}
 	if proc.OwnedBy("") {
 		t.Error("a process with no user reported ownership by the empty user id")
 	}

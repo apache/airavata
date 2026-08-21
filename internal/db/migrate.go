@@ -40,7 +40,9 @@ func Entities() []any {
 		&computemodel.ClusterPartition{},
 		&computemodel.SSHEndpointCredential{},
 		&applicationmodel.BatchDeployment{},
-		&processmodel.BatchJobProcess{},
+
+		// A run. Everything below in this package hangs off it.
+		&processmodel.Process{},
 
 		// Sharing rows reference the record they open up, and a group or a user.
 		&computemodel.SSHEndpointCredentialGroupSharing{},
@@ -50,12 +52,20 @@ func Entities() []any {
 		&datamodel.DataProductGroupSharing{},
 		&datamodel.DataProductUserSharing{},
 
-		// References BatchJobProcess, which in turn references it back through
-		// LastStatusID — the one circular pair in the schema.
-		&processmodel.BatchJobProcessStatus{},
+		// What a BATCH_JOB run carries beyond a Process. Owned by the process rather
+		// than addressable on its own, which is why there is no repository, service or
+		// route for it — only a section of the process body.
+		&processmodel.BatchJobProcess{},
 
-		// The steps of a process. They name their process by id and type rather than
-		// through a foreign key, so they are not tied to one kind of process.
+		// References Process, which in turn references it back through LastStatusID —
+		// the one circular pair in the schema.
+		&processmodel.ProcessStatus{},
+
+		// The values this run supplies for its template's declared inputs and outputs.
+		&processmodel.TemplateInputMapping{},
+		&processmodel.TemplateOutputMapping{},
+
+		// The steps of a process, in execution order.
 		&processmodel.DataStagingTask{},
 		&processmodel.JobSubmissionTask{},
 		&processmodel.JobMonitoringTask{},

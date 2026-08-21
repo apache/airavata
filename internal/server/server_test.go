@@ -1223,9 +1223,12 @@ func (h *harness) seedProcess(name, token string) string {
 		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
-	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", token, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC"},
+	proc := h.mustDo(http.MethodPost, "/api/v1/processes", token, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC"},
+		},
 	}, http.StatusCreated)
 	return proc["processId"].(string)
 }
@@ -1273,15 +1276,12 @@ func TestProcessTasksAreScopedToTheirProcess(t *testing.T) {
 		},
 	} {
 		t.Run(tc.path, func(t *testing.T) {
-			base := "/api/v1/batch-job-processes/" + processID + "/" + tc.path
+			base := "/api/v1/processes/" + processID + "/" + tc.path
 
 			created := h.mustDo(http.MethodPost, base, tokenAlice, tc.create, http.StatusCreated)
 			taskID := created["taskId"].(string)
 			if created["processId"] != processID {
 				t.Errorf("processId = %v, want it taken from the path", created["processId"])
-			}
-			if created["processType"] != "BATCH_JOB" {
-				t.Errorf("processType = %v, want it stamped by the service", created["processType"])
 			}
 
 			updated := h.mustDo(http.MethodPut, base+"/"+taskID, tokenAlice, tc.update, http.StatusOK)
@@ -1297,7 +1297,7 @@ func TestProcessTasksAreScopedToTheirProcess(t *testing.T) {
 			}
 
 			// A task id from one process is not reachable through another's path.
-			otherBase := "/api/v1/batch-job-processes/" + other + "/" + tc.path
+			otherBase := "/api/v1/processes/" + other + "/" + tc.path
 			if rec := h.do(http.MethodGet, otherBase+"/"+taskID, tokenAlice, nil); rec.Code != http.StatusNotFound {
 				t.Errorf("cross-process read: status = %d, want 404", rec.Code)
 			}
@@ -1318,7 +1318,7 @@ func TestProcessTasksAreScopedToTheirProcess(t *testing.T) {
 func TestProcessTasksAreOwnerScoped(t *testing.T) {
 	h := newHarness(t)
 	processID := h.seedProcess("owned-tasks", tokenAlice)
-	base := "/api/v1/batch-job-processes/" + processID + "/interactive-command-tasks"
+	base := "/api/v1/processes/" + processID + "/interactive-command-tasks"
 
 	created := h.mustDo(http.MethodPost, base, tokenAlice,
 		map[string]any{"command": "cat /etc/passwd"}, http.StatusCreated)
@@ -1351,7 +1351,7 @@ func TestProcessTasksAreOwnerScoped(t *testing.T) {
 func TestProcessTasksListInExecutionOrder(t *testing.T) {
 	h := newHarness(t)
 	processID := h.seedProcess("ordered-tasks", tokenAlice)
-	base := "/api/v1/batch-job-processes/" + processID + "/job-submission-tasks"
+	base := "/api/v1/processes/" + processID + "/job-submission-tasks"
 
 	h.mustDo(http.MethodPost, base, tokenAlice, map[string]any{"taskOrder": 2}, http.StatusCreated)
 	h.mustDo(http.MethodPost, base, tokenAlice, map[string]any{}, http.StatusCreated)
@@ -1373,28 +1373,28 @@ func TestProcessTaskRejectsBadRequests(t *testing.T) {
 	h := newHarness(t)
 	processID := h.seedProcess("task-validation", tokenAlice)
 
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/data-staging-tasks", tokenAlice,
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/data-staging-tasks", tokenAlice,
 		map[string]any{"sourcePath": "  ", "destinationPath": "/out"}); rec.Code != http.StatusBadRequest {
 		t.Errorf("blank source path: status = %d, want 400", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/data-staging-tasks", tokenAlice,
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/data-staging-tasks", tokenAlice,
 		map[string]any{"sourcePath": "/in", "destinationPath": "/out", "sourceDataStorageType": "FTP"}); rec.Code != http.StatusBadRequest {
 		t.Errorf("unrecognised storage type: status = %d, want 400", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/job-submission-tasks", tokenAlice,
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/job-submission-tasks", tokenAlice,
 		map[string]any{"onFailure": "PANIC"}); rec.Code != http.StatusBadRequest {
 		t.Errorf("unrecognised on-failure action: status = %d, want 400", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/job-submission-tasks", tokenAlice,
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/job-submission-tasks", tokenAlice,
 		map[string]any{"retryCount": -1}); rec.Code != http.StatusBadRequest {
 		t.Errorf("negative retry count: status = %d, want 400", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/interactive-command-tasks", tokenAlice,
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/interactive-command-tasks", tokenAlice,
 		map[string]any{}); rec.Code != http.StatusBadRequest {
 		t.Errorf("missing command: status = %d, want 400", rec.Code)
 	}
 	// A task cannot be attached to a process that does not exist.
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/nope/job-monitoring-tasks", tokenAlice,
+	if rec := h.do(http.MethodPost, "/api/v1/processes/nope/job-monitoring-tasks", tokenAlice,
 		map[string]any{}); rec.Code != http.StatusNotFound {
 		t.Errorf("unknown process: status = %d, want 404", rec.Code)
 	}
@@ -1411,21 +1411,282 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 
-	created := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 120, "allocation": "ALICE-ALLOC", "gpus": 2},
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 120, "allocation": "ALICE-ALLOC", "gpus": 2},
+		},
 	}, http.StatusCreated)
 
 	if got := created["userId"]; got != "alice" {
 		t.Errorf("userId = %v, want it taken from the token", got)
 	}
-	cfg := created["batchJobConfig"].(map[string]any)
+	batch := created["batchProcess"].(map[string]any)
+	cfg := batch["batchJobConfig"].(map[string]any)
 	if cfg["allocation"] != "ALICE-ALLOC" || cfg["wallTimeMinutes"].(float64) != 120 {
 		t.Errorf("config = %v, want the values from the request, not the deployment default", cfg)
 	}
 	// The process owns its own config, distinct from the deployment's.
 	if cfg["batchJobConfigId"] == deployment["batchJobConfig"].(map[string]any)["batchJobConfigId"] {
 		t.Error("process and deployment share one batch job config; each must own its own")
+	}
+}
+
+// seedDeploymentWithIO creates a deployment whose template declares one input and one
+// output, and returns the deployment together with those two declaration ids. The
+// mapping tests need real declarations to point at: a mapping carries a foreign key to
+// the template input it supplies a value for.
+func (h *harness) seedDeploymentWithIO(name string) (deployment map[string]any, inputID, outputID string) {
+	h.t.Helper()
+	_, bindingID := h.seedEndpointCredential(name, tokenAdmin)
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin, map[string]any{
+		"templateName": name,
+		"inputs":       []any{map[string]any{"inputName": "sequence", "inputType": "FILE"}},
+		"outputs":      []any{map[string]any{"outputName": "model", "outputType": "FILE"}},
+	}, http.StatusCreated)
+	deployment = h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultSubmissionCredentialId": bindingID,
+		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+	}, http.StatusCreated)
+
+	inputs := tmpl["inputs"].([]any)
+	outputs := tmpl["outputs"].([]any)
+	return deployment, inputs[0].(map[string]any)["inputId"].(string), outputs[0].(map[string]any)["outputId"].(string)
+}
+
+// A batch job is not a resource of its own: it is configured as a section of the
+// process body, so which sections a body may carry follows from its process type.
+func TestProcessRejectsSectionsThatDoNotMatchItsType(t *testing.T) {
+	h := newHarness(t)
+	deployment, _, _ := h.seedDeploymentWithIO("sections")
+	batch := map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+	}
+
+	for _, tc := range []struct {
+		name string
+		body map[string]any
+	}{
+		{"no process type", map[string]any{"batchProcess": batch}},
+		{"unrecognised process type", map[string]any{"processType": "SOMETHING", "batchProcess": batch}},
+		{"batch job with no batch process", map[string]any{"processType": "BATCH_JOB"}},
+		{"batch process on another kind of process", map[string]any{"processType": "CLOUD_JOB", "batchProcess": batch}},
+		{"batch process with no deployment", map[string]any{"processType": "BATCH_JOB", "batchProcess": map[string]any{
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		}}},
+		{"batch process with no config", map[string]any{"processType": "BATCH_JOB", "batchProcess": map[string]any{
+			"deploymentId": deployment["deploymentId"],
+		}}},
+	} {
+		if rec := h.do(http.MethodPost, "/api/v1/processes", tokenAlice, tc.body); rec.Code != http.StatusBadRequest {
+			t.Errorf("%s: status = %d, want 400\nbody: %s", tc.name, rec.Code, rec.Body.String())
+		}
+	}
+
+	// A deployment that does not resolve is a 404 rather than a validation error, the
+	// same as everywhere else.
+	if rec := h.do(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   "nope",
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		},
+	}); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown deployment: status = %d, want 404", rec.Code)
+	}
+}
+
+// A process of a kind that carries no batch section is still a process: it is created,
+// read and listed through exactly the same routes.
+func TestProcessWithoutABatchSectionIsStillAProcess(t *testing.T) {
+	h := newHarness(t)
+
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
+		map[string]any{"processType": "CLOUD_JOB"}, http.StatusCreated)
+	if created["batchProcess"] != nil {
+		t.Errorf("batchProcess = %v, want null for a process that carries none", created["batchProcess"])
+	}
+
+	got := h.mustDo(http.MethodGet, "/api/v1/processes/"+created["processId"].(string), tokenAlice, nil, http.StatusOK)
+	if got["processType"] != "CLOUD_JOB" {
+		t.Errorf("processType = %v, want CLOUD_JOB", got["processType"])
+	}
+	// Its tasks work the same way, since a task hangs off the process rather than off
+	// any one kind of run.
+	h.mustDo(http.MethodPost, "/api/v1/processes/"+created["processId"].(string)+"/interactive-command-tasks",
+		tokenAlice, map[string]any{"command": "hostname"}, http.StatusCreated)
+}
+
+// The template mappings are a section of the process too: written with it, read back
+// nested in it, and replaced wholesale by an update.
+func TestProcessCarriesItsTemplateMappings(t *testing.T) {
+	h := newHarness(t)
+	deployment, inputID, outputID := h.seedDeploymentWithIO("mappings")
+	batch := map[string]any{
+		"deploymentId":   deployment["deploymentId"],
+		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+	}
+
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType":  "BATCH_JOB",
+		"batchProcess": batch,
+		"inputMappings": []any{
+			map[string]any{"templateInputId": inputID, "value": `{"value": "/scratch/in.fasta"}`},
+		},
+		"outputMappings": []any{
+			map[string]any{"templateOutputId": outputID, "value": `{"value": "/scratch/out.pdb"}`},
+		},
+	}, http.StatusCreated)
+
+	processID := created["processId"].(string)
+	inputs := created["inputMappings"].([]any)
+	if len(inputs) != 1 {
+		t.Fatalf("inputMappings = %v, want one", created["inputMappings"])
+	}
+	first := inputs[0].(map[string]any)
+	if first["templateInputId"] != inputID {
+		t.Errorf("templateInputId = %v, want %s", first["templateInputId"], inputID)
+	}
+	if first["templateInputMappingId"] == "" || first["templateInputMappingId"] == nil {
+		t.Error("templateInputMappingId was not assigned")
+	}
+	if len(created["outputMappings"].([]any)) != 1 {
+		t.Errorf("outputMappings = %v, want one", created["outputMappings"])
+	}
+
+	// An update replaces the set rather than merging into it, so dropping a mapping
+	// from the body drops it from the process.
+	updated := h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
+		"processType":  "BATCH_JOB",
+		"batchProcess": batch,
+		"inputMappings": []any{
+			map[string]any{"templateInputId": inputID, "value": `{"value": "/scratch/other.fasta"}`},
+		},
+	}, http.StatusOK)
+	if got := updated["inputMappings"].([]any)[0].(map[string]any)["value"]; got != `{"value": "/scratch/other.fasta"}` {
+		t.Errorf("value after update = %v, want the replacement", got)
+	}
+	if len(updated["outputMappings"].([]any)) != 0 {
+		t.Errorf("outputMappings after update = %v, want the omitted set emptied", updated["outputMappings"])
+	}
+	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
+		"processType":   "BATCH_JOB",
+		"batchProcess":  batch,
+		"inputMappings": []any{map[string]any{"templateInputId": "  "}},
+	}); rec.Code != http.StatusBadRequest {
+		t.Errorf("blank template input id: status = %d, want 400", rec.Code)
+	}
+
+	// Deleting the process takes the mappings with it.
+	h.mustDo(http.MethodDelete, "/api/v1/processes/"+processID, tokenAdmin, nil, http.StatusNoContent)
+	var remaining int64
+	h.db.Table("process_template_input_mappings").Where("process_id = ?", processID).Count(&remaining)
+	if remaining != 0 {
+		t.Error("the process's input mappings survived the delete")
+	}
+}
+
+// An update corrects the resources a run asked for. It must mutate the config the
+// process already owns rather than replacing it, since a new row would leave the old
+// one orphaned with nothing pointing at it.
+func TestUpdatingProcessKeepsItsOwnedConfig(t *testing.T) {
+	h := newHarness(t)
+	deployment, _, _ := h.seedDeploymentWithIO("update")
+
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		},
+	}, http.StatusCreated)
+	processID := created["processId"].(string)
+	before := created["batchProcess"].(map[string]any)
+
+	updated := h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 90, "allocation": "B"},
+			"jobId":          "4821577",
+			"jobName":        "fold-1",
+		},
+	}, http.StatusOK)
+
+	after := updated["batchProcess"].(map[string]any)
+	if after["batchProcessId"] != before["batchProcessId"] {
+		t.Errorf("batchProcessId = %v, want the section mutated in place (%v)", after["batchProcessId"], before["batchProcessId"])
+	}
+	cfg := after["batchJobConfig"].(map[string]any)
+	if cfg["batchJobConfigId"] != before["batchJobConfig"].(map[string]any)["batchJobConfigId"] {
+		t.Error("the update replaced the owned config instead of mutating it, orphaning the old row")
+	}
+	if cfg["allocation"] != "B" || cfg["wallTimeMinutes"].(float64) != 90 {
+		t.Errorf("config = %v, want the updated values", cfg)
+	}
+	if after["jobId"] != "4821577" || after["jobName"] != "fold-1" {
+		t.Errorf("jobId/jobName = %v/%v, want what the request recorded", after["jobId"], after["jobName"])
+	}
+
+	// Exactly one config row belongs to this run, whatever the update did.
+	var configs int64
+	h.db.Table("batch_processes").Where("parent_process_id = ?", processID).Count(&configs)
+	if configs != 1 {
+		t.Errorf("batch process rows = %d, want exactly 1", configs)
+	}
+
+	// The type a process was created as is what decides which sections it carries, so
+	// it cannot be edited out from under them.
+	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin,
+		map[string]any{"processType": "CLOUD_JOB"}); rec.Code != http.StatusConflict {
+		t.Errorf("changing the process type: status = %d, want 409", rec.Code)
+	}
+	// And an update is administrative, not self-service.
+	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 90, "allocation": "B"},
+		},
+	}); rec.Code != http.StatusForbidden {
+		t.Errorf("update by the owner: status = %d, want 403", rec.Code)
+	}
+}
+
+// Listing by deployment reaches through the batch section, since the deployment is
+// named there rather than on the process.
+func TestListingProcessesByDeployment(t *testing.T) {
+	h := newHarness(t)
+	deployment, _, _ := h.seedDeploymentWithIO("by-deployment")
+	body := map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		},
+	}
+	h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, body, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, body, http.StatusCreated)
+	// A process of another kind, which no deployment filter should match.
+	h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
+		map[string]any{"processType": "CLOUD_JOB"}, http.StatusCreated)
+
+	found := h.list("/api/v1/processes?deploymentId="+deployment["deploymentId"].(string), tokenAlice)
+	if len(found) != 2 {
+		t.Errorf("processes of the deployment = %d, want 2", len(found))
+	}
+	if len(h.list("/api/v1/processes?deploymentId=nope", tokenAlice)) != 0 {
+		t.Error("an unknown deployment matched a process")
+	}
+	// The unfiltered listing is admin only, and sees all three.
+	if rec := h.do(http.MethodGet, "/api/v1/processes", tokenAlice, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("unfiltered listing by a plain user: status = %d, want 403", rec.Code)
+	}
+	if all := h.list("/api/v1/processes", tokenAdmin); len(all) != 3 {
+		t.Errorf("all processes = %d, want 3", len(all))
 	}
 }
 
@@ -1441,13 +1702,16 @@ func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
-	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+		},
 	}, http.StatusCreated)
 
-	configID := proc["batchJobConfig"].(map[string]any)["batchJobConfigId"].(string)
-	h.mustDo(http.MethodDelete, "/api/v1/batch-job-processes/"+proc["processId"].(string),
+	configID := proc["batchProcess"].(map[string]any)["batchJobConfig"].(map[string]any)["batchJobConfigId"].(string)
+	h.mustDo(http.MethodDelete, "/api/v1/processes/"+proc["processId"].(string),
 		tokenAdmin, nil, http.StatusNoContent)
 
 	var remaining int64
@@ -1470,16 +1734,19 @@ func TestDeletingProcessRemovesItsStatuses(t *testing.T) {
 		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
-	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+		},
 	}, http.StatusCreated)
 	processID := proc["processId"].(string)
 
-	h.mustDo(http.MethodDelete, "/api/v1/batch-job-processes/"+processID, tokenAdmin, nil, http.StatusNoContent)
+	h.mustDo(http.MethodDelete, "/api/v1/processes/"+processID, tokenAdmin, nil, http.StatusNoContent)
 
 	var remaining int64
-	h.db.Table("batch_job_process_statuses").Where("process_id = ?", processID).Count(&remaining)
+	h.db.Table("process_statuses").Where("process_id = ?", processID).Count(&remaining)
 	if remaining != 0 {
 		t.Error("the process's statuses survived the delete")
 	}
@@ -1497,14 +1764,17 @@ func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
-	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+		},
 	}, http.StatusCreated)
 	processID := proc["processId"].(string)
 
 	var statuses []map[string]any
-	rec := h.do(http.MethodGet, "/api/v1/batch-job-processes/"+processID+"/statuses", "", nil)
+	rec := h.do(http.MethodGet, "/api/v1/processes/"+processID+"/statuses", "", nil)
 	if rec.Code != http.StatusOK {
 		t.Fatalf("list statuses: status = %d, want 200\nbody: %s", rec.Code, rec.Body.String())
 	}
@@ -1523,7 +1793,7 @@ func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 
 	statusID := statuses[0]["processStatusId"].(string)
 	h.mustDo(http.MethodGet,
-		"/api/v1/batch-job-processes/"+processID+"/statuses/"+statusID, "", nil, http.StatusOK)
+		"/api/v1/processes/"+processID+"/statuses/"+statusID, "", nil, http.StatusOK)
 }
 
 // There is no way to create or update a status through the REST API — only to read
@@ -1538,17 +1808,20 @@ func TestProcessStatusWritesAreNotExposed(t *testing.T) {
 		"defaultSubmissionCredentialId": bindingID,
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
-	proc := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+		},
 	}, http.StatusCreated)
 	processID := proc["processId"].(string)
 
 	body := map[string]any{"status": "RUNNING"}
-	if rec := h.do(http.MethodPost, "/api/v1/batch-job-processes/"+processID+"/statuses", tokenAdmin, body); rec.Code != http.StatusMethodNotAllowed {
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/statuses", tokenAdmin, body); rec.Code != http.StatusMethodNotAllowed {
 		t.Errorf("POST statuses: status = %d, want 405", rec.Code)
 	}
-	if rec := h.do(http.MethodPut, "/api/v1/batch-job-processes/"+processID+"/statuses", tokenAdmin, body); rec.Code != http.StatusMethodNotAllowed {
+	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID+"/statuses", tokenAdmin, body); rec.Code != http.StatusMethodNotAllowed {
 		t.Errorf("PUT statuses: status = %d, want 405", rec.Code)
 	}
 }
@@ -1566,24 +1839,30 @@ func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 
-	procA := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	procA := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+		},
 	}, http.StatusCreated)
-	procB := h.mustDo(http.MethodPost, "/api/v1/batch-job-processes", tokenAlice, map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+	procB := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+		},
 	}, http.StatusCreated)
 
 	var statusesA []map[string]any
-	rec := h.do(http.MethodGet, "/api/v1/batch-job-processes/"+procA["processId"].(string)+"/statuses", "", nil)
+	rec := h.do(http.MethodGet, "/api/v1/processes/"+procA["processId"].(string)+"/statuses", "", nil)
 	if err := json.Unmarshal(rec.Body.Bytes(), &statusesA); err != nil {
 		t.Fatalf("decode: %v", err)
 	}
 	statusID := statusesA[0]["processStatusId"].(string)
 
 	if rec := h.do(http.MethodGet,
-		"/api/v1/batch-job-processes/"+procB["processId"].(string)+"/statuses/"+statusID, "", nil,
+		"/api/v1/processes/"+procB["processId"].(string)+"/statuses/"+statusID, "", nil,
 	); rec.Code != http.StatusNotFound {
 		t.Errorf("cross-process status read: status = %d, want 404", rec.Code)
 	}
@@ -1907,7 +2186,7 @@ func TestUnknownResourcesReportNotFound(t *testing.T) {
 		"/api/v1/ssh-keys/nope",
 		"/api/v1/application-templates/nope",
 		"/api/v1/slurm-deployments/nope",
-		"/api/v1/batch-job-processes/nope",
+		"/api/v1/processes/nope",
 		"/api/v1/groups/nope",
 	} {
 		rec := h.do(http.MethodGet, path, tokenAdmin, nil)

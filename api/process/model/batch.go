@@ -1,4 +1,3 @@
-// Package process holds the batch job process entities.
 package model
 
 import (
@@ -7,12 +6,20 @@ import (
 	"gorm.io/gorm"
 )
 
-// BatchJobProcess is one run of a BatchDeployment.
+// BatchJobProcess carries what a BATCH_JOB process needs beyond a Process: the
+// deployment being run, the resources this run asked for, and the scheduler's
+// identifiers for the job once it has one.
+//
+// It is not a resource of its own. A caller creates it as the batchProcess section of
+// a process, reads it back nested in that process, and deletes it by deleting the
+// process — which is why the row is keyed by its own id but reached only through
+// parent_process_id, unique because a process has at most one of them.
 type BatchJobProcess struct {
 	ID string `gorm:"column:batch_process_id;primaryKey;type:varchar(36)" json:"batchProcessId"`
 
-	ProcessID *string  `gorm:"column:parent_process_id;type:varchar(36);index" json:"parentProcessId,omitempty"`
-	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"parentProcess,omitempty"`
+	// Owned by Process.BatchProcess, which declares the cascade; only the key is held
+	// here. Unique because a process has at most one batch process.
+	ProcessID *string `gorm:"column:parent_process_id;type:varchar(36);uniqueIndex" json:"parentProcessId,omitempty"`
 
 	DeploymentID *string                           `gorm:"column:deployment_id;type:varchar(36);index" json:"deploymentId,omitempty"`
 	Deployment   *applicationmodel.BatchDeployment `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
@@ -24,14 +31,6 @@ type BatchJobProcess struct {
 
 	JobID   *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
 	JobName *string `gorm:"column:job_name;type:varchar(255)" json:"jobName,omitempty"`
-	// The last status recorded for this process, if any.
-	//
-	// It carries no foreign key, deliberately. A status already points at its process,
-	// and a constraint in this direction as well would make the two tables mutually
-	// dependent — a cycle PostgreSQL cannot create, since it validates a referenced
-	// table exists when the referencing table is declared. This column is a cache of
-	// the newest status row, maintained by BatchJobProcessStatus.AfterCreate.
-	LastStatusID *string `gorm:"column:last_status_id;type:varchar(36);index" json:"lastStatusId,omitempty"`
 }
 
 // TableName returns the table backing BatchJobProcess.
@@ -46,6 +45,9 @@ func (p *BatchJobProcess) BeforeCreate(*gorm.DB) error {
 }
 
 // AfterDelete removes the owned BatchJobConfig, standing in for JPA's orphanRemoval.
+//
+// It fires only when the row is deleted through GORM, which is why Process.BeforeDelete
+// deletes it explicitly rather than letting the database cascade do it.
 func (p *BatchJobProcess) AfterDelete(tx *gorm.DB) error {
 	if p.BatchJobConfigID == "" {
 		return nil

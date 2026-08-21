@@ -13,17 +13,17 @@ type SubmitBatchJobParameters struct {
 	Environment    map[string]string
 }
 
-func SubmitBatchJob(ctx context.Context, batchJobProcess model.BatchJobProcess) (int, error) {
+func SubmitBatchJob(ctx context.Context, process model.Process) (int, error) {
 	slog.Info("Submitting batch job ...")
 	return 0, nil
 }
 
-func CancelBatchJob(ctx context.Context, batchJobProcess model.BatchJobProcess) (int, error) {
+func CancelBatchJob(ctx context.Context, process model.Process) (int, error) {
 	slog.Info("Cancelling batch job ...")
 	return 0, nil
 }
 
-func MonitorBatchJob(ctx context.Context, batchJobProcess model.BatchJobProcess) (int, error) {
+func MonitorBatchJob(ctx context.Context, process model.Process) (int, error) {
 	slog.Info("Monitoring batch job ...")
 	return 0, nil
 }

@@ -10,11 +10,11 @@ import (
 	workflow "github.com/cschleiden/go-workflows/workflow"
 )
 
-func SubmitBatchJobWorkflow(ctx workflow.Context, batchJobProcess model.BatchJobProcess, dataStagingTaskService service.DataStagingTaskService) error {
+func SubmitBatchJobWorkflow(ctx workflow.Context, process model.Process, dataStagingTaskService service.DataStagingTaskService) error {
 
 	serviceCtx := context.Background()
 
-	dataStagingTasks, err := dataStagingTaskService.ListForProcess(serviceCtx, batchJobProcess.ID)
+	dataStagingTasks, err := dataStagingTaskService.ListForProcess(serviceCtx, process.ID)
 
 	if err != nil {
 		return err
@@ -24,8 +24,8 @@ func SubmitBatchJobWorkflow(ctx workflow.Context, batchJobProcess model.BatchJob
 		workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.CopyData, dataStagingTask)
 	}
 
-	workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.CopyData, batchJobProcess)
-	_, err = workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.SubmitBatchJob, batchJobProcess).Get(ctx)
+	workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.CopyData, process)
+	_, err = workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.SubmitBatchJob, process).Get(ctx)
 	return err
 }
 

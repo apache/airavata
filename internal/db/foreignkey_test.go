@@ -52,13 +52,24 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"batch_application_deployments", "template_id", "application_templates", "template_id"},
 		{"batch_application_deployments", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
 		{"batch_application_deployments", "default_submission_credential_id", "ssh_endpoint_credentials", "ssh_endpoint_credential_id"},
-		{"batch_job_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
-		{"batch_job_processes", "user_id", "users", "user_id"},
-		{"batch_job_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
-		{"batch_job_process_statuses", "process_id", "batch_job_processes", "process_id"},
-		// batch_job_processes.last_status_id deliberately has none: a constraint in that
+		{"processes", "user_id", "users", "user_id"},
+		{"batch_processes", "parent_process_id", "processes", "process_id"},
+		{"batch_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
+		{"batch_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
+		{"process_statuses", "process_id", "processes", "process_id"},
+		{"process_template_input_mappings", "process_id", "processes", "process_id"},
+		{"process_template_input_mappings", "template_input_id", "application_template_inputs", "input_id"},
+		{"process_template_output_mappings", "process_id", "processes", "process_id"},
+		{"process_template_output_mappings", "template_output_id", "application_template_outputs", "output_id"},
+		// The tasks name their process through a real foreign key, so a task cannot
+		// outlive the run it belongs to.
+		{"data_staging_tasks", "process_id", "processes", "process_id"},
+		{"job_submission_tasks", "process_id", "processes", "process_id"},
+		{"job_monitoring_tasks", "process_id", "processes", "process_id"},
+		{"interactive_command_tasks", "process_id", "processes", "process_id"},
+		// processes.last_status_id deliberately has none: a constraint in that
 		// direction would make the two tables mutually dependent, which PostgreSQL
-		// cannot create. See BatchJobProcess.LastStatusID.
+		// cannot create. See Process.LastStatusID.
 	}
 
 	// Collect what the schema actually declares.

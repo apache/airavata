@@ -247,7 +247,7 @@ curl -s -X POST localhost:9095/api/v1/clusters \
 
 **1. Owning resources requires a matching `users` row.**
 
-Endpoints that create *owned* resources — SSH endpoint credentials, batch job processes —
+Endpoints that create *owned* resources — SSH endpoint credentials, processes —
 resolve the caller to a user record and refuse if none exists:
 
 ```
@@ -303,18 +303,18 @@ Catalogue reads — clusters, partitions, SSH keys, SSH credentials, templates a
 deployments — are open to anonymous callers. Beyond those:
 
 - **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating SSH endpoint credentials
-  and batch job processes, which any authenticated caller may do for themselves.
+  and processes, which any authenticated caller may do for themselves.
 - **Owner-scoped reads** (`/ssh-endpoint-credentials/{id}`, `/users/{id}`) require
   authentication and are refused unless the caller owns the record or is an admin.
-- **Unfiltered listings** of SSH endpoint credentials, batch job processes and users
-  require `ADMIN`, because they expose who holds access to what.
+- **Unfiltered listings** of SSH endpoint credentials, processes and users require
+  `ADMIN`, because they expose who holds access to what.
 
 A request with no token to a guarded endpoint returns `401`, while an authenticated
 caller lacking the required role returns `403`.
 
-> **Known gap:** reading a batch job process by id (`GET /api/v1/batch-job-processes/{id}`)
-> or by deployment carries no authorisation at all, so any caller can read any
-> process. This is carried over from the Java service rather than introduced here, but
+> **Known gap:** reading a process by id (`GET /api/v1/processes/{id}`) or by
+> deployment carries no authorisation at all, so any caller can read any process,
+> including the batch section nested inside it. This is carried over from the Java service rather than introduced here, but
 > it is worth knowing before exposing the API publicly.
 
 ---

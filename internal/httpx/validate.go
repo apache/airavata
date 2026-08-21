@@ -1,6 +1,9 @@
 package httpx
 
-import "strings"
+import (
+	"reflect"
+	"strings"
+)
 
 // Constraints accumulates field violations, standing in for the jakarta.validation
 // annotations on the Java DTOs. The messages are carried over verbatim so clients see
@@ -71,19 +74,19 @@ func (c *Constraints) Nested(prefix string, v Validator) {
 // Fields returns everything recorded so far.
 func (c *Constraints) Fields() []FieldError { return c.fields }
 
+// isNil reports whether v holds no value.
+//
+// Reflection rather than a type switch over the pointer types in use: a nil pointer
+// wrapped in an interface is not equal to nil, so a switch silently passes every type
+// it does not list — which for a DTO field like *model.ProcessType means a required
+// enum with no value validates cleanly.
 func isNil(v any) bool {
 	if v == nil {
 		return true
 	}
-	switch t := v.(type) {
-	case *string:
-		return t == nil
-	case *int64:
-		return t == nil
-	case *int32:
-		return t == nil
-	case *bool:
-		return t == nil
+	switch rv := reflect.ValueOf(v); rv.Kind() {
+	case reflect.Ptr, reflect.Interface, reflect.Map, reflect.Slice, reflect.Func, reflect.Chan:
+		return rv.IsNil()
 	}
 	return false
 }

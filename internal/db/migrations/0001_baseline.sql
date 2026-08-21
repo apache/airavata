@@ -11,6 +11,13 @@
 -- deployment carrying data cannot replay anything to get here; it needs a data
 -- migration, which no DDL file can stand in for.
 --
+-- Re-recorded when the process vertical was reorganised around a single Process entity:
+-- batch_job_processes and batch_job_process_statuses became processes, batch_processes
+-- and process_statuses, the tasks traded their process_type discriminator for a real
+-- foreign key, and the template input and output mappings arrived. None of those tables
+-- had run outside development, so the baseline was re-recorded rather than migrated
+-- forward from a shape no deployment held.
+--
 -- Do not hand-edit this file once it has run anywhere outside development: a change to
 -- a table's shape belongs in a new migration (0002_..., 0003_..., ...), the same way
 -- ddl-auto never narrows a column and this framework never rewrites history.
@@ -80,7 +87,7 @@ CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_ssh_credential_id" ON "
 
 CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_ssh_endpoint_id" ON "ssh_endpoint_credentials" ("ssh_endpoint_id");
 
-CREATE TABLE "batch_application_deployments" ("deployment_id" varchar(36),"cluster_id" varchar(36),"template_id" varchar(36),"slurm_run_section" text NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"default_submission_credential_id" varchar(36) NOT NULL,"work_dir" varchar(1024),"partition" varchar(255),PRIMARY KEY ("deployment_id"),CONSTRAINT "fk_batch_application_deployments_cluster" FOREIGN KEY ("cluster_id") REFERENCES "clusters"("cluster_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_template" FOREIGN KEY ("template_id") REFERENCES "application_templates"("template_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_default_submission_credential" FOREIGN KEY ("default_submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "batch_application_deployments" ("deployment_id" varchar(36),"cluster_id" varchar(36),"template_id" varchar(36),"slurm_run_section" text NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"default_submission_credential_id" varchar(36) NOT NULL,"work_dir" varchar(1024),"partition" varchar(255),PRIMARY KEY ("deployment_id"),CONSTRAINT "fk_batch_application_deployments_template" FOREIGN KEY ("template_id") REFERENCES "application_templates"("template_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_default_submission_credential" FOREIGN KEY ("default_submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_cluster" FOREIGN KEY ("cluster_id") REFERENCES "clusters"("cluster_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_batch_application_deployments_default_submission_cr850dbe93" ON "batch_application_deployments" ("default_submission_credential_id");
 
@@ -90,15 +97,11 @@ CREATE INDEX IF NOT EXISTS "idx_batch_application_deployments_template_id" ON "b
 
 CREATE INDEX IF NOT EXISTS "idx_batch_application_deployments_cluster_id" ON "batch_application_deployments" ("cluster_id");
 
-CREATE TABLE "batch_job_processes" ("process_id" varchar(36),"deployment_id" varchar(36),"user_id" varchar(255),"batch_job_config_id" varchar(36) NOT NULL,"last_status_id" varchar(36),PRIMARY KEY ("process_id"),CONSTRAINT "fk_batch_job_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_job_processes_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_job_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "processes" ("process_id" varchar(36),"user_id" varchar(255),"process_type" varchar(32),"last_status_id" varchar(36),PRIMARY KEY ("process_id"),CONSTRAINT "fk_processes_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
-CREATE INDEX IF NOT EXISTS "idx_batch_job_processes_last_status_id" ON "batch_job_processes" ("last_status_id");
+CREATE INDEX IF NOT EXISTS "idx_processes_last_status_id" ON "processes" ("last_status_id");
 
-CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_job_processes_batch_job_config_id" ON "batch_job_processes" ("batch_job_config_id");
-
-CREATE INDEX IF NOT EXISTS "idx_batch_job_processes_owner_id" ON "batch_job_processes" ("user_id");
-
-CREATE INDEX IF NOT EXISTS "idx_batch_job_processes_deployment_id" ON "batch_job_processes" ("deployment_id");
+CREATE INDEX IF NOT EXISTS "idx_processes_owner_id" ON "processes" ("user_id");
 
 CREATE TABLE "ssh_endpoint_credential_group_sharings" ("ssh_endpoint_credential_group_sharing_id" varchar(36),"ssh_endpoint_credential_id" varchar(36),"group_id" varchar(36),"permission" varchar(32),PRIMARY KEY ("ssh_endpoint_credential_group_sharing_id"),CONSTRAINT "fk_ssh_endpoint_credential_group_sharings_ssh_endpoint_e0bc6690" FOREIGN KEY ("ssh_endpoint_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credential_group_sharings_group" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
@@ -136,11 +139,31 @@ CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_user_id" ON "data_pro
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_data_product_id" ON "data_product_user_sharings" ("data_product_id");
 
-CREATE TABLE "batch_job_process_statuses" ("process_status_id" varchar(36),"process_id" varchar(36),"status" varchar(255),"log" text,"timestamp" bigint,PRIMARY KEY ("process_status_id"),CONSTRAINT "fk_batch_job_process_statuses_process" FOREIGN KEY ("process_id") REFERENCES "batch_job_processes"("process_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
-CREATE INDEX IF NOT EXISTS "idx_batch_job_process_statuses_process_id" ON "batch_job_process_statuses" ("process_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_batch_job_config_id" ON "batch_processes" ("batch_job_config_id");
 
-CREATE TABLE "data_staging_tasks" ("task_id" varchar(36),"process_id" varchar(36),"process_type" varchar(32),"source_data_storage_id" varchar(36),"source_credential_id" varchar(36),"source_data_storage_type" varchar(32),"destination_data_storage_id" varchar(36),"destination_credential_id" varchar(36),"destination_data_storage_type" varchar(32),"source_path" text,"destination_path" text,"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"));
+CREATE INDEX IF NOT EXISTS "idx_batch_processes_deployment_id" ON "batch_processes" ("deployment_id");
+
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_process_id" ON "batch_processes" ("parent_process_id");
+
+CREATE TABLE "process_statuses" ("process_status_id" varchar(36),"process_id" varchar(36),"status" varchar(255),"log" text,"timestamp" bigint,PRIMARY KEY ("process_status_id"),CONSTRAINT "fk_process_statuses_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_process_statuses_process_id" ON "process_statuses" ("process_id");
+
+CREATE TABLE "process_template_input_mappings" ("template_input_mapping_id" varchar(36),"template_input_id" varchar(36),"process_id" varchar(36),"value" text,PRIMARY KEY ("template_input_mapping_id"),CONSTRAINT "fk_process_template_input_mappings_template_input" FOREIGN KEY ("template_input_id") REFERENCES "application_template_inputs"("input_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_processes_input_mappings" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_process_template_input_mappings_process_id" ON "process_template_input_mappings" ("process_id");
+
+CREATE INDEX IF NOT EXISTS "idx_process_template_input_mappings_template_input_id" ON "process_template_input_mappings" ("template_input_id");
+
+CREATE TABLE "process_template_output_mappings" ("template_output_mapping_id" varchar(36),"template_output_id" varchar(36),"process_id" varchar(36),"value" text,PRIMARY KEY ("template_output_mapping_id"),CONSTRAINT "fk_process_template_output_mappings_template_output" FOREIGN KEY ("template_output_id") REFERENCES "application_template_outputs"("output_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_processes_output_mappings" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_process_id" ON "process_template_output_mappings" ("process_id");
+
+CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_template_output_id" ON "process_template_output_mappings" ("template_output_id");
+
+CREATE TABLE "data_staging_tasks" ("task_id" varchar(36),"process_id" varchar(36),"source_data_storage_id" varchar(36),"source_credential_id" varchar(36),"source_data_storage_type" varchar(32),"destination_data_storage_id" varchar(36),"destination_credential_id" varchar(36),"destination_data_storage_type" varchar(32),"source_path" text,"destination_path" text,"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_data_staging_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_destination_credential_id" ON "data_staging_tasks" ("destination_credential_id");
 
@@ -152,15 +175,14 @@ CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_source_data_storage_id" ON "d
 
 CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_process_id" ON "data_staging_tasks" ("process_id");
 
-CREATE TABLE "job_submission_tasks" ("task_id" varchar(36),"process_id" varchar(36),"process_type" varchar(32),"job_id" varchar(255),"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"));
+CREATE TABLE "job_submission_tasks" ("task_id" varchar(36),"process_id" varchar(36),"job_id" varchar(255),"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_job_submission_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_job_submission_tasks_process_id" ON "job_submission_tasks" ("process_id");
 
-CREATE TABLE "job_monitoring_tasks" ("task_id" varchar(36),"process_id" varchar(36),"process_type" varchar(32),"job_id" varchar(255),"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"));
+CREATE TABLE "job_monitoring_tasks" ("task_id" varchar(36),"process_id" varchar(36),"job_id" varchar(255),"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_job_monitoring_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_job_monitoring_tasks_process_id" ON "job_monitoring_tasks" ("process_id");
 
-CREATE TABLE "interactive_command_tasks" ("task_id" varchar(36),"process_id" varchar(36),"process_type" varchar(32),"command" text,"output" text,"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"));
+CREATE TABLE "interactive_command_tasks" ("task_id" varchar(36),"process_id" varchar(36),"command" text,"output" text,"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_interactive_command_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_interactive_command_tasks_process_id" ON "interactive_command_tasks" ("process_id");
-

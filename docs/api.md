@@ -915,9 +915,225 @@ Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredenti
 ```
 
 
+## Processes
+
+A process is one run. It is the only resource in this part of the API: everything a run
+carries hangs off it, and nothing that hangs off it is addressable on its own.
+
+What a run needs beyond an owner and a type depends on what kind of run it is, and that
+is carried in a **section** of the process body rather than in a resource of its own. A
+`BATCH_JOB` carries a `batchProcess` section — the deployment being run and the
+resources this run asks for. Every process may carry `inputMappings` and
+`outputMappings`, the values it supplies for its template's declared inputs and
+outputs.
+
+So there is no `POST /api/v1/batch-processes`, and no batch process id to address: a
+batch process is created with its process, read back nested inside it, corrected by
+updating the process, and deleted when the process is deleted.
+
+```
+GET    /api/v1/processes                 # every process — admin only
+GET    /api/v1/processes?deploymentId=…  # the runs of one deployment
+POST   /api/v1/processes
+GET    /api/v1/processes/{processId}
+PUT    /api/v1/processes/{processId}
+DELETE /api/v1/processes/{processId}
+```
+
+**Authorization.** Submitting is self-service: any authenticated caller may create a
+process, and the owner is taken from the token rather than the body. The unfiltered
+listing, `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Reading one process, and
+listing the runs of a deployment, carry no authorization at all — carried over from the
+Java service, which did the same.
+
+### Create Process
+
+```
+POST /api/v1/processes
+```
+
+Uses `$DEPLOYMENT_ID` from [Create Batch Deployment](#create-batch-deployment), and the
+`inputId`/`outputId` values returned by
+[Create Application Template](#create-application-template).
+
+```bash
+curl -s -X POST localhost:9095/api/v1/processes \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "processType": "BATCH_JOB",
+    "batchProcess": {
+      "deploymentId": "'"$DEPLOYMENT_ID"'",
+      "jobName": "alphafold-run-1",
+      "batchJobConfig": {
+        "wallTimeMinutes": 120,
+        "allocation": "MY-ALLOC",
+        "nodes": 1,
+        "gpus": 2
+      }
+    },
+    "inputMappings": [
+      { "templateInputId": "'"$INPUT_ID"'", "value": "{\"value\": \"/scratch/input.fasta\"}" }
+    ],
+    "outputMappings": [
+      { "templateOutputId": "'"$OUTPUT_ID"'", "value": "{\"value\": \"/scratch/out/\"}" }
+    ]
+  }'
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `processType` | string | required, one of `BATCH_JOB`, `CLOUD_JOB` |
+| `batchProcess` | object \| null | required when `processType` is `BATCH_JOB`, rejected otherwise |
+| `inputMappings` | array | optional; replaced wholesale by a `PUT` |
+| `outputMappings` | array | optional; replaced wholesale by a `PUT` |
+
+There is no `userId`: ownership comes from the token.
+
+**`batchProcess`**
+
+| Field | Type | Notes |
+|---|---|---|
+| `deploymentId` | string | required, cannot be blank |
+| `batchJobConfig` | object | required — the same shape a deployment carries |
+| `jobName` | string \| null | optional |
+| `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
+
+The resource request is carried here rather than copied from the deployment's default,
+which is what lets a caller ask for different resources for a particular run. Each run
+owns its own `batchJobConfig` row, distinct from the deployment's, and deleting the
+process deletes it.
+
+**`inputMappings` / `outputMappings`**
+
+| Field | Type | Notes |
+|---|---|---|
+| `templateInputId` / `templateOutputId` | string | required, cannot be blank. Names a declaration on the deployment's template |
+| `value` | string \| null | a JSON document: `{"value": "…"}` for a single value, `{"values": [...]}` for a list |
+| `templateInputMappingId` / `templateOutputMappingId` | string | echoed on reads, ignored on writes |
+
+A `PUT` replaces each set wholesale rather than merging into it, the same way a
+template's declarations are replaced — the mapping ids are not part of the request, so
+there is nothing to match an incoming mapping to an existing row by. Omitting a set
+empties it.
+
+**Response — `201 Created`**
+
+```json
+{
+  "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+  "userId": "cilogon:sub:1234",
+  "processType": "BATCH_JOB",
+  "lastStatusId": "9f8e7d6c-5b4a-4392-8172-6a5b4c3d2e1f",
+  "batchProcess": {
+    "batchProcessId": "7e6d5c4b-3a29-4187-9605-4b3a2c1d0e9f",
+    "deploymentId": "c3d4e5f6-a7b8-4901-a2b3-c4d5e6f7a8b9",
+    "jobId": null,
+    "jobName": "alphafold-run-1",
+    "batchJobConfig": {
+      "batchJobConfigId": "20e56e93-cf74-4834-a7b3-877df2663257",
+      "wallTimeMinutes": 120,
+      "allocation": "MY-ALLOC",
+      "nodes": 1,
+      "gpus": 2
+    }
+  },
+  "inputMappings": [
+    {
+      "templateInputMappingId": "1a2b3c4d-5e6f-4708-8192-a3b4c5d6e7f8",
+      "templateInputId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+      "value": "{\"value\": \"/scratch/input.fasta\"}"
+    }
+  ],
+  "outputMappings": []
+}
+```
+
+Submitting also records the run's first status, `CREATED`, in the same transaction — so
+a caller never observes a process that exists but has no status history yet. See
+[Process Statuses](#process-statuses).
+
+### Read, Update and Delete Processes
+
+```
+GET    /api/v1/processes/{processId}
+PUT    /api/v1/processes/{processId}
+DELETE /api/v1/processes/{processId}
+```
+
+`PUT` is an administrative correction — of the deployment, the resources the run asked
+for, or its template mappings. It takes the same body as `POST`. Two things are
+deliberately immutable:
+
+- **the owner**, because re-deriving it from the caller's token would reassign the
+  process to whichever admin issued the request;
+- **`processType`**, because which sections a process carries follows from it. A
+  `BATCH_JOB` turned into something else would strand its batch process with no way to
+  reach it, so a changed type is rejected with `409 Conflict`.
+
+An update mutates the `batchJobConfig` the run already owns rather than replacing it: a
+new row on every update would leave the previous one orphaned with nothing pointing at
+it.
+
+`DELETE` removes the process and everything it owns — the batch process and its resource
+request, the status history, the tasks and the mappings.
+
+**Validation errors — `400 Bad Request`**
+
+Returned when `processType` is missing or unrecognised, when a `BATCH_JOB` carries no
+`batchProcess`, when a `batchProcess` is sent for any other kind of process, or when a
+section fails its own constraints. A `deploymentId` or `templateInputId` that does not
+resolve to an existing record is returned as `404 Not Found` instead.
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
+    { "field": "batchProcess", "message": "Batch process cannot be null for a BATCH_JOB process" },
+    { "field": "batchProcess.batchJobConfig.wallTimeMinutes", "message": "Wall time must be positive" }
+  ]
+}
+```
+
+## Process Statuses
+
+A run's status history, read-only and nested under the process:
+
+```
+GET /api/v1/processes/{processId}/statuses
+GET /api/v1/processes/{processId}/statuses/{statusId}
+```
+
+There is deliberately no `POST` or `PUT` — both return `405 Method Not Allowed`.
+Statuses are recorded internally, never accepted from a client request body: `CREATED`
+when the process is submitted, and later transitions by whatever submits and monitors
+the actual job. A client polls the listing for progress.
+
+Statuses come back oldest first. The newest one is also cached on the process itself as
+`lastStatusId`.
+
+```json
+[
+  {
+    "processStatusId": "9f8e7d6c-5b4a-4392-8172-6a5b4c3d2e1f",
+    "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+    "status": "CREATED",
+    "log": null,
+    "timestamp": 1755780000000
+  }
+]
+```
+
+`status` is one of `CREATED`, `SUBMITTED`, `RUNNING`, `COMPLETED`, `FAILED`.
+
+A `statusId` from one process is not reachable through another process's path: the
+mismatch is a `404`, not another run's status.
+
 ## Process Tasks
 
-A process is carried out as an ordered list of tasks. There are four kinds, each its own collection under the process:
+A [process](#processes) is carried out as an ordered list of tasks. There are four kinds, each its own collection under the process:
 
 | Collection | Carries |
 |---|---|
@@ -929,16 +1145,16 @@ A process is carried out as an ordered list of tasks. There are four kinds, each
 All four share the same five routes, the same shape of body, and the same rules:
 
 ```
-GET    /api/v1/batch-job-processes/{processId}/{collection}
-POST   /api/v1/batch-job-processes/{processId}/{collection}
-GET    /api/v1/batch-job-processes/{processId}/{collection}/{taskId}
-PUT    /api/v1/batch-job-processes/{processId}/{collection}/{taskId}
-DELETE /api/v1/batch-job-processes/{processId}/{collection}/{taskId}
+GET    /api/v1/processes/{processId}/{collection}
+POST   /api/v1/processes/{processId}/{collection}
+GET    /api/v1/processes/{processId}/{collection}/{taskId}
+PUT    /api/v1/processes/{processId}/{collection}/{taskId}
+DELETE /api/v1/processes/{processId}/{collection}/{taskId}
 ```
 
 **These endpoints are owner-scoped**, unlike the process and status reads above: the owner of the process and platform admins may use them, everyone else gets `403 Forbidden`. Tasks carry filesystem paths and shell commands, so there is no reason to expose them more widely than the run they belong to.
 
-Neither `processId` nor `processType` is accepted in a body — both come from the path, so a task cannot be moved to another run by editing it. `processType` is stamped as `BATCH_JOB`; the pair is a discriminated reference rather than a foreign key, so tasks are not tied to one kind of process.
+`processId` is not accepted in a body — it comes from the path, so a task cannot be moved to another run by editing it. Nor is there a `processType`: a task names its [process](#processes) through a real foreign key, so there is nothing to discriminate, and any kind of process may carry any kind of task.
 
 **Fields shared by every kind**
 
@@ -953,11 +1169,11 @@ Listings come back in execution order: lower `taskOrder` first, tasks sharing an
 ### Create Data Staging Task
 
 ```
-POST /api/v1/batch-job-processes/{processId}/data-staging-tasks
+POST /api/v1/processes/{processId}/data-staging-tasks
 ```
 
 ```bash
-curl -s -X POST localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/data-staging-tasks \
+curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/data-staging-tasks \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -986,7 +1202,6 @@ curl -s -X POST localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/data-sta
 {
   "taskId": "b4c5d6e7-f809-4a1b-8c2d-3e4f5a6b7c8d",
   "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
-  "processType": "BATCH_JOB",
   "sourceDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
   "sourceCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
   "sourceDataStorageType": "SCP",
@@ -1004,14 +1219,14 @@ curl -s -X POST localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/data-sta
 ### Create Job Submission and Job Monitoring Tasks
 
 ```
-POST /api/v1/batch-job-processes/{processId}/job-submission-tasks
-POST /api/v1/batch-job-processes/{processId}/job-monitoring-tasks
+POST /api/v1/processes/{processId}/job-submission-tasks
+POST /api/v1/processes/{processId}/job-monitoring-tasks
 ```
 
 Both take the shared fields plus an optional `jobId`. It is writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded here afterwards with a `PUT`.
 
 ```bash
-curl -s -X PUT localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/job-submission-tasks/"$TASK_ID" \
+curl -s -X PUT localhost:9095/api/v1/processes/"$PROCESS_ID"/job-submission-tasks/"$TASK_ID" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "jobId": "4821577", "onFailure": "EXIT" }'
@@ -1020,7 +1235,7 @@ curl -s -X PUT localhost:9095/api/v1/batch-job-processes/"$PROCESS_ID"/job-submi
 ### Create Interactive Command Task
 
 ```
-POST /api/v1/batch-job-processes/{processId}/interactive-command-tasks
+POST /api/v1/processes/{processId}/interactive-command-tasks
 ```
 
 Runs a command on the remote host — filtering the output of a running job, for instance.
@@ -1034,7 +1249,6 @@ Runs a command on the remote host — filtering the output of a running job, for
 {
   "taskId": "c5d6e7f8-091a-4b2c-8d3e-4f5a6b7c8d9e",
   "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
-  "processType": "BATCH_JOB",
   "command": "squeue -j 4821577 -o %T",
   "output": "RUNNING",
   "onFailure": "SKIP",
