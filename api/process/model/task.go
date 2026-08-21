@@ -5,11 +5,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// ProcessTypeBatchJob is the ProcessType a task carries when it belongs to a
-// BatchJobProcess. The column is a plain string rather than an enum because the set of
-// process kinds is expected to grow; this is the only member so far.
-const ProcessTypeBatchJob = "BATCH_JOB"
-
 type OnFailureAction string
 
 const (
@@ -46,9 +41,8 @@ func (t DataStorageType) Valid() bool {
 type DataStagingTask struct {
 	ID string `gorm:"column:task_id;primaryKey;type:varchar(36)" json:"taskId"`
 
-	// The process this task belongs to.
-	ProcessID   *string `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
-	ProcessType *string `gorm:"column:process_type;type:varchar(32)" json:"processType,omitempty"`
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
 	SourceDataStorageID   *string          `gorm:"column:source_data_storage_id;type:varchar(36);index" json:"sourceDataStorageId,omitempty"`
 	SourceCredentialID    *string          `gorm:"column:source_credential_id;type:varchar(36);index" json:"sourceCredentialId,omitempty"`
@@ -75,9 +69,8 @@ type DataStagingTask struct {
 type JobSubmissionTask struct {
 	ID string `gorm:"column:task_id;primaryKey;type:varchar(36)" json:"taskId"`
 
-	// The process this task belongs to.
-	ProcessID   *string `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
-	ProcessType *string `gorm:"column:process_type;type:varchar(32)" json:"processType,omitempty"`
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
 	JobId      *string          `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
 	OnFailure  *OnFailureAction `gorm:"column:on_failure;type:varchar(32)" json:"onFailure,omitempty"`
@@ -89,9 +82,8 @@ type JobSubmissionTask struct {
 type JobMonitoringTask struct {
 	ID string `gorm:"column:task_id;primaryKey;type:varchar(36)" json:"taskId"`
 
-	// The process this task belongs to.
-	ProcessID   *string `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
-	ProcessType *string `gorm:"column:process_type;type:varchar(32)" json:"processType,omitempty"`
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
 	JobId      *string          `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
 	OnFailure  *OnFailureAction `gorm:"column:on_failure;type:varchar(32)" json:"onFailure,omitempty"`
@@ -104,9 +96,8 @@ type JobMonitoringTask struct {
 type InteractiveCommandTask struct {
 	ID string `gorm:"column:task_id;primaryKey;type:varchar(36)" json:"taskId"`
 
-	// The process this task belongs to.
-	ProcessID   *string `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
-	ProcessType *string `gorm:"column:process_type;type:varchar(32)" json:"processType,omitempty"`
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
 	Command    *string          `gorm:"column:command;type:text" json:"command,omitempty"`
 	Output     *string          `gorm:"column:output;type:text" json:"output,omitempty"`
