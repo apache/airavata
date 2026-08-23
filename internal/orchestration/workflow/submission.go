@@ -1,46 +1,96 @@
+// Package workflow holds the durable orchestration: what runs, in what order, and what
+// happens when a step fails.
 package workflow
 
 import (
 	"context"
-	model "github.com/apache/airavata/api/process/model"
-	service "github.com/apache/airavata/api/process/service"
-	"github.com/apache/airavata/internal/orchestration/activities"
-	backend "github.com/cschleiden/go-workflows/backend"
-	worker "github.com/cschleiden/go-workflows/worker"
 	workflow "github.com/cschleiden/go-workflows/workflow"
+
+	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/app"
+	"github.com/apache/airavata/internal/orchestration/activities"
+	"log/slog"
 )
 
-func SubmitBatchJobWorkflow(ctx workflow.Context, process model.Process, dataStagingTaskService service.DataStagingTaskService) error {
-
-	serviceCtx := context.Background()
-
-	dataStagingTasks, err := dataStagingTaskService.ListForProcess(serviceCtx, process.ID)
-
-	if err != nil {
-		return err
-	}
-
-	for _, dataStagingTask := range dataStagingTasks {
-		workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.CopyData, dataStagingTask)
-	}
-
-	workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.CopyData, process)
-	_, err = workflow.ExecuteActivity[int](ctx, workflow.ActivityOptions{}, activities.SubmitBatchJob, process).Get(ctx)
-	return err
+type Workflows struct {
+	svscs *app.Services
+	acts  *activities.Activities
 }
 
-func RunWorker(ctx context.Context, mb backend.Backend) error {
-	w := worker.New(mb, nil)
+// NewWorkflows returns the workflow set scheduling acts.
+func NewWorkflows(svcs *app.Services, acts *activities.Activities) *Workflows {
+	return &Workflows{svscs: svcs, acts: acts}
+}
 
-	w.RegisterWorkflow(SubmitBatchJobWorkflow)
-	w.RegisterActivity(activities.CopyData)
-	w.RegisterActivity(activities.SubmitBatchJob)
-	w.RegisterActivity(activities.CancelBatchJob)
-	w.RegisterActivity(activities.MonitorBatchJob)
-
-	if err := w.Start(ctx); err != nil {
+func (w *Workflows) HandleProcessExecution(ctx workflow.Context, processID string) error {
+	ctxInt := context.Background()
+	dsts, err := w.svscs.DataStagingTask.ListForProcess(ctxInt, processID)
+	if err != nil {
+		slog.Error("Failed to list data staging tasks", "processId", processID, "error", err)
 		return err
+	}
+
+	jsts, err := w.svscs.JobSubmissionTask.ListForProcess(ctxInt, processID)
+	if err != nil {
+		slog.Error("Failed to list job submission tasks", "processId", processID, "error", err)
+		return err
+	}
+
+	jmts, err := w.svscs.JobMonitoringTask.ListForProcess(ctxInt, processID)
+	if err != nil {
+		slog.Error("Failed to list job monitoring tasks", "processId", processID, "error", err)
+		return err
+	}
+
+	currentOrder := 0
+	isPending := true
+
+	for isPending {
+		isPending = false
+		for _, dst := range dsts {
+			if dst.TaskOrder != nil && *dst.TaskOrder == currentOrder {
+				workflow.ExecuteActivity[int](
+					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, dst.RetryCount)}, w.acts.CopyData, processID, dst.ID)
+			} else if dst.TaskOrder != nil && *dst.TaskOrder > currentOrder {
+				isPending = true
+			}
+		}
+
+		for _, jst := range jsts {
+			if jst.TaskOrder != nil && *jst.TaskOrder == currentOrder {
+				workflow.ExecuteActivity[int](
+					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, jst.RetryCount)}, w.acts.SubmitBatchJob, processID, jst.ID)
+			} else if jst.TaskOrder != nil && *jst.TaskOrder > currentOrder {
+				isPending = true
+			}
+		}
+
+		for _, jmt := range jmts {
+			if jmt.TaskOrder != nil && *jmt.TaskOrder == currentOrder {
+				workflow.ExecuteActivity[int](
+					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, jmt.RetryCount)}, w.acts.MonitorBatchJob, processID, jmt.ID)
+			} else if jmt.TaskOrder != nil && *jmt.TaskOrder > currentOrder {
+				isPending = true
+			}
+		}
+
+		currentOrder += 1
+
+		if !isPending {
+			slog.Info("All tasks completed for process", "processId", processID)
+		}
 	}
 
 	return nil
+}
+
+func retryOptions(onFailure model.OnFailureAction, retryCount *int) workflow.RetryOptions {
+	opts := workflow.RetryOptions{MaxAttempts: 1}
+	if onFailure != model.OnFailureActionRetry {
+		return opts
+	}
+	// retryCount counts retries, so the first run is one attempt on top of it.
+	opts.MaxAttempts = 1 + *retryCount
+	opts.BackoffCoefficient = workflow.DefaultRetryOptions.BackoffCoefficient
+	return opts
 }

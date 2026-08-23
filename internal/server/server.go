@@ -5,110 +5,48 @@ import (
 	"net/http"
 	"strings"
 
-	"gorm.io/gorm"
-
+	"github.com/apache/airavata/internal/app"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/httpx"
 
 	applicationctl "github.com/apache/airavata/api/application/controller"
-	applicationrepo "github.com/apache/airavata/api/application/repository"
-	applicationsvc "github.com/apache/airavata/api/application/service"
 	computectl "github.com/apache/airavata/api/compute/controller"
-	computerepo "github.com/apache/airavata/api/compute/repository"
-	computesvc "github.com/apache/airavata/api/compute/service"
 	credentialsctl "github.com/apache/airavata/api/credentials/controller"
-	credentialsrepo "github.com/apache/airavata/api/credentials/repository"
-	credentialssvc "github.com/apache/airavata/api/credentials/service"
 	datactl "github.com/apache/airavata/api/data/controller"
-	datarepo "github.com/apache/airavata/api/data/repository"
-	datasvc "github.com/apache/airavata/api/data/service"
 	iamctl "github.com/apache/airavata/api/iam/controller"
-	iamrepo "github.com/apache/airavata/api/iam/repository"
-	iamsvc "github.com/apache/airavata/api/iam/service"
 	processctl "github.com/apache/airavata/api/process/controller"
-	processrepo "github.com/apache/airavata/api/process/repository"
-	processsvc "github.com/apache/airavata/api/process/service"
 )
 
-// New builds the fully wired HTTP handler.
+// New builds the fully wired HTTP handler over an already-assembled object graph.
 //
-// Construction is explicit rather than reflective: every repository, service and
-// handler is assembled here, so the dependency graph the Java service expressed
-// through component scanning is readable in one place.
-func New(cfg config.Config, db *gorm.DB, introspector auth.Introspector) http.Handler {
-	// Repositories.
-	users := iamrepo.NewUserRepository(db)
-	groups := iamrepo.NewGroupRepository(db)
-	groupMembers := iamrepo.NewGroupMemberRepository(db)
-	sshKeys := credentialsrepo.NewSSHKeyRepository(db)
-	sshCreds := credentialsrepo.NewSSHUserCredentialRepository(db)
-	endpoints := computerepo.NewSSHEndpointRepository(db)
-	clusters := computerepo.NewClusterRepository(db)
-	partitions := computerepo.NewClusterPartitionRepository(db)
-	bindings := computerepo.NewSSHEndpointCredentialRepository(db)
-	bindingShares := computerepo.NewSSHEndpointCredentialSharingRepository(db)
-	templates := applicationrepo.NewTemplateRepository(db)
-	deployments := applicationrepo.NewBatchDeploymentRepository(db)
-	storages := datarepo.NewSCPDataStorageRepository(db)
-	storageShares := datarepo.NewSCPDataStorageSharingRepository(db)
-	products := datarepo.NewDataProductRepository(db)
-	productShares := datarepo.NewDataProductSharingRepository(db)
-	processes := processrepo.NewProcessRepository(db)
-	statuses := processrepo.NewStatusRepository(db)
-	stagingTasks := processrepo.NewDataStagingTaskRepository(db)
-	submissionTasks := processrepo.NewJobSubmissionTaskRepository(db)
-	monitoringTasks := processrepo.NewJobMonitoringTaskRepository(db)
-	commandTasks := processrepo.NewInteractiveCommandTaskRepository(db)
-
-	// Services.
-	userSvc := iamsvc.NewUserService(db, users)
-	groupSvc := iamsvc.NewGroupService(db, groups, groupMembers, users)
-	groupMemberSvc := iamsvc.NewGroupMemberService(db, groups, groupMembers, users)
-	sshKeySvc := credentialssvc.NewSSHKeyService(db, sshKeys, sshCreds)
-	sshCredSvc := credentialssvc.NewSSHUserCredentialService(db, sshCreds, sshKeys)
-	endpointSvc := computesvc.NewSSHEndpointService(db, endpoints, clusters, bindings)
-	clusterSvc := computesvc.NewClusterService(db, clusters, endpoints)
-	partitionSvc := computesvc.NewClusterPartitionService(db, partitions, clusters)
-	bindingSvc := computesvc.NewSSHEndpointCredentialService(db, bindings, bindingShares, endpoints, sshCreds, users, groupMembers)
-	bindingShareSvc := computesvc.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers)
-	templateSvc := applicationsvc.NewTemplateService(db, templates, deployments)
-	deploymentSvc := applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters, bindings)
-	bindingAccess := computesvc.NewCredentialAccess(bindings, bindingShares, groupMembers)
-	storageSvc := datasvc.NewSCPDataStorageService(db, storages, storageShares, endpoints, products, users, groupMembers)
-	storageShareSvc := datasvc.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers)
-	productSvc := datasvc.NewDataProductService(db, products, productShares, storages, storageShares, bindingAccess, users, groupMembers)
-	productShareSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
-	statusSvc := processsvc.NewStatusService(db, statuses, processes)
-	processSvc := processsvc.NewProcessService(db, processes, deployments, users, statusSvc)
-	stagingTaskSvc := processsvc.NewDataStagingTaskService(db, stagingTasks, processes)
-	submissionTaskSvc := processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes)
-	monitoringTaskSvc := processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes)
-	commandTaskSvc := processsvc.NewInteractiveCommandTaskService(db, commandTasks, processes)
-
+// Routing only: the services come from internal/app, which builds them once so the
+// workflow worker can be handed the same ones rather than constructing a second set
+// over the same database.
+func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) http.Handler {
 	mux := http.NewServeMux()
-	iamctl.NewUserController(userSvc).Register(mux)
-	iamctl.NewGroupController(groupSvc).Register(mux)
-	iamctl.NewGroupMemberController(groupMemberSvc).Register(mux)
-	credentialsctl.NewSSHKeyController(sshKeySvc).Register(mux)
-	credentialsctl.NewSSHUserCredentialController(sshCredSvc).Register(mux)
-	computectl.NewSSHEndpointController(endpointSvc).Register(mux)
-	computectl.NewClusterController(clusterSvc).Register(mux)
-	computectl.NewClusterPartitionController(partitionSvc).Register(mux)
-	computectl.NewSSHEndpointCredentialController(bindingSvc).Register(mux)
-	computectl.NewSSHEndpointCredentialSharingController(bindingShareSvc).Register(mux)
-	applicationctl.NewTemplateController(templateSvc).Register(mux)
-	applicationctl.NewBatchDeploymentController(deploymentSvc).Register(mux)
-	datactl.NewSCPDataStorageController(storageSvc).Register(mux)
-	datactl.NewSCPDataStorageSharingController(storageShareSvc).Register(mux)
-	datactl.NewDataProductController(productSvc).Register(mux)
-	datactl.NewDataProductSharingController(productShareSvc).Register(mux)
-	processctl.NewProcessController(processSvc).Register(mux)
-	processctl.NewStatusController(statusSvc).Register(mux)
-	processctl.NewDataStagingTaskController(stagingTaskSvc).Register(mux)
-	processctl.NewJobSubmissionTaskController(submissionTaskSvc).Register(mux)
-	processctl.NewJobMonitoringTaskController(monitoringTaskSvc).Register(mux)
-	processctl.NewInteractiveCommandTaskController(commandTaskSvc).Register(mux)
+	iamctl.NewUserController(svcs.User).Register(mux)
+	iamctl.NewGroupController(svcs.Group).Register(mux)
+	iamctl.NewGroupMemberController(svcs.GroupMember).Register(mux)
+	credentialsctl.NewSSHKeyController(svcs.SSHKey).Register(mux)
+	credentialsctl.NewSSHUserCredentialController(svcs.SSHUserCredential).Register(mux)
+	computectl.NewSSHEndpointController(svcs.SSHEndpoint).Register(mux)
+	computectl.NewClusterController(svcs.Cluster).Register(mux)
+	computectl.NewClusterPartitionController(svcs.ClusterPartition).Register(mux)
+	computectl.NewSSHEndpointCredentialController(svcs.SSHEndpointCredential).Register(mux)
+	computectl.NewSSHEndpointCredentialSharingController(svcs.SSHEndpointCredentialSharing).Register(mux)
+	applicationctl.NewTemplateController(svcs.Template).Register(mux)
+	applicationctl.NewBatchDeploymentController(svcs.BatchDeployment).Register(mux)
+	datactl.NewSCPDataStorageController(svcs.SCPDataStorage).Register(mux)
+	datactl.NewSCPDataStorageSharingController(svcs.SCPDataStorageSharing).Register(mux)
+	datactl.NewDataProductController(svcs.DataProduct).Register(mux)
+	datactl.NewDataProductSharingController(svcs.DataProductSharing).Register(mux)
+	processctl.NewProcessController(svcs.Process).Register(mux)
+	processctl.NewStatusController(svcs.ProcessStatus).Register(mux)
+	processctl.NewDataStagingTaskController(svcs.DataStagingTask).Register(mux)
+	processctl.NewJobSubmissionTaskController(svcs.JobSubmissionTask).Register(mux)
+	processctl.NewJobMonitoringTaskController(svcs.JobMonitoringTask).Register(mux)
+	processctl.NewInteractiveCommandTaskController(svcs.InteractiveCommandTask).Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})

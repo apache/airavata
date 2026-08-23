@@ -294,7 +294,7 @@ curl -s -X POST localhost:9095/api/v1/users \
 ## Verifying the installation
 
 ```bash
-go test ./...            # 39 tests covering the schema, routing and authorisation
+go test ./...            # 99 tests covering the schema, routing, authorisation and orchestration
 curl -s localhost:9095/health
 curl -s localhost:9095/api/v1/clusters      # readable without a token
 ```

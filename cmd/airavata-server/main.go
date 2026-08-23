@@ -14,6 +14,7 @@ import (
 
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	iamsvc "github.com/apache/airavata/api/iam/service"
+	"github.com/apache/airavata/internal/app"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -128,9 +129,14 @@ func runServer() error {
 	introspector := auth.NewCILogonIntrospector(
 		cfg.IntrospectionURI, cfg.UserInfoURI, cfg.ClientID, cfg.ClientSecret, roles, root)
 
+	// The object graph, built once. The HTTP handler takes it, and so does the workflow
+	// worker once it has a backend to run against — both act through the same services
+	// rather than each assembling a set of their own.
+	svcs := app.New(cfg, gdb)
+
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,
-		Handler:           server.New(cfg, gdb, introspector),
+		Handler:           server.New(cfg, svcs, introspector),
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}

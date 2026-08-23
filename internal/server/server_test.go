@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"github.com/apache/airavata/internal/app"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -44,9 +45,11 @@ const (
 )
 
 type harness struct {
-	t   *testing.T
-	srv http.Handler
-	db  *gorm.DB
+	t    *testing.T
+	srv  http.Handler
+	db   *gorm.DB
+	cfg  config.Config
+	svcs *app.Services
 }
 
 func newHarness(t *testing.T) *harness {
@@ -80,17 +83,27 @@ func newHarness(t *testing.T) *harness {
 		}
 	}
 
+	cfg := config.Config{CORSAllowedOrigins: []string{"*"}}
 	introspector := stubIntrospector{
 		tokenAdmin: {Name: "admin-user", Authorities: []string{string(role.Admin)}},
 		tokenAlice: {Name: "alice", Authorities: []string{string(role.User)}},
 		tokenBob:   {Name: "bob", Authorities: []string{string(role.User)}},
 	}
 
+	svcs := app.New(cfg, gdb)
 	return &harness{
-		t:   t,
-		db:  gdb,
-		srv: server.New(config.Config{CORSAllowedOrigins: []string{"*"}}, gdb, introspector),
+		t:    t,
+		db:   gdb,
+		cfg:  cfg,
+		svcs: svcs,
+		srv:  server.New(cfg, svcs, introspector),
 	}
+}
+
+// withIntrospector rebuilds the handler over the same services, for a test that needs a
+// different set of principals than the three every harness seeds.
+func (h *harness) withIntrospector(introspector auth.Introspector) {
+	h.srv = server.New(h.cfg, h.svcs, introspector)
 }
 
 // do issues a request. An empty token means an anonymous caller.
@@ -1878,7 +1891,7 @@ func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 	introspector := stubIntrospector{
 		"ghost-token": {Name: "ghost", Authorities: []string{string(role.User)}},
 	}
-	h.srv = server.New(config.Config{CORSAllowedOrigins: []string{"*"}}, h.db, introspector)
+	h.withIntrospector(introspector)
 
 	rec := h.do(http.MethodPost, "/api/v1/ssh-endpoint-credentials", "ghost-token", map[string]any{
 		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
@@ -1917,7 +1930,7 @@ func TestUserRegistrationRequiresSuperAdmin(t *testing.T) {
 	}
 
 	superToken := "token-super"
-	h.srv = server.New(config.Config{CORSAllowedOrigins: []string{"*"}}, h.db, stubIntrospector{
+	h.withIntrospector(stubIntrospector{
 		superToken: {Name: "admin-user", Authorities: []string{string(role.SuperAdmin)}},
 	})
 
